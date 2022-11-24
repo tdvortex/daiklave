@@ -18,7 +18,7 @@ impl Default for Ability {
 
 struct NonZeroAbility {
     value: AbilityValue,
-    specialties: Option<Specialties>
+    specialties: Option<Specialties>,
 }
 
 impl NonZeroAbility {
@@ -46,12 +46,11 @@ impl NonZeroAbility {
     }
 }
 
-
 impl Ability {
     fn value(&self) -> AbilityValue {
         match &self {
             Self::Zero => 0,
-            Self::NonZero(nonzero) => nonzero.value
+            Self::NonZero(nonzero) => nonzero.value,
         }
     }
 
@@ -66,10 +65,13 @@ impl Ability {
         if new_value == 0 {
             *self = Self::Zero;
         } else if let Self::NonZero(nonzero) = self {
-                nonzero.value = new_value;
-            } else {
-                *self = Self::NonZero(NonZeroAbility { value: new_value, specialties: None });
-            }
+            nonzero.value = new_value;
+        } else {
+            *self = Self::NonZero(NonZeroAbility {
+                value: new_value,
+                specialties: None,
+            });
+        }
     }
 
     fn add_specialty(&mut self, specialty: String) -> bool {
@@ -115,7 +117,7 @@ enum AbilityName {
     Stealth,
     Survival,
     Thrown,
-    War
+    War,
 }
 
 #[derive(Default)]
