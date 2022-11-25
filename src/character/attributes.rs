@@ -1,8 +1,8 @@
 // Attributes are nonnegative integers
 // Usually rated 1 to 5, but may be 6+ in some cases
-type AttributeValue = u8;
+pub type AttributeValue = u8;
 
-enum AttributeName {
+pub enum AttributeName {
     Strength,
     Dexterity,
     Stamina,
@@ -45,8 +45,8 @@ impl Default for Attributes {
 }
 
 impl Attributes {
-    fn get(&self, attribute: &AttributeName) -> AttributeValue {
-        match attribute {
+    pub fn get(&self, attribute_name: &AttributeName) -> AttributeValue {
+        match attribute_name {
             AttributeName::Strength => self.strength,
             AttributeName::Dexterity => self.dexterity,
             AttributeName::Stamina => self.stamina,
@@ -59,8 +59,8 @@ impl Attributes {
         }
     }
 
-    fn set(&mut self, attribute: &AttributeName, new_value: AttributeValue) {
-        match attribute {
+    pub fn set(&mut self, attribute_name: &AttributeName, new_value: AttributeValue) {
+        match attribute_name {
             AttributeName::Strength => self.strength = new_value,
             AttributeName::Dexterity => self.dexterity = new_value,
             AttributeName::Stamina => self.stamina = new_value,
