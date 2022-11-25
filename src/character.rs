@@ -11,10 +11,21 @@ use weapons::Weapons;
 use willpower::Willpower;
 
 #[derive(Default, Debug)]
-pub struct Character {
+pub struct MortalCharacter {
     attributes: Attributes,
     abilities: Abilities,
     merits: Merits,
-    owned_weapons: Weapons,
+    weapons: Weapons,
     willpower: Willpower,
+}
+
+#[derive(Debug)]
+pub enum Character {
+    MortalCharacter(MortalCharacter),
+}
+
+impl Default for Character {
+    fn default() -> Self {
+        Self::MortalCharacter(MortalCharacter::default())
+    }
 }

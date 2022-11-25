@@ -16,13 +16,6 @@ enum DamageType {
 }
 
 #[derive(Debug)]
-enum Handedness {
-    HandsFree,
-    OneHanded,
-    TwoHanded,
-}
-
-#[derive(Debug)]
 enum WeightClass {
     Light,
     Medium,
@@ -30,7 +23,7 @@ enum WeightClass {
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-enum SpecialTag {
+enum Tag {
     Balanced,
     Chopping,
     Concealable,
@@ -77,18 +70,32 @@ impl AttackMethods {
     }
 }
 
+pub trait Weapon {
+    fn name(&self) -> &str;
+    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8, String>;
+    fn damage(&self, attack_method: &AttackMethod) -> i8;
+    fn damage_type(&self) -> &DamageType;
+    fn overwhelming(&self) -> i8;
+    fn attunement(&self) -> i8;
+    fn defense(&self) -> Option<i8>;
+    fn has_tag(&self, tag: &Tag) -> bool;
+}
+
 #[derive(Debug)]
-pub struct Weapon {
+pub struct WeaponDetails {
     name: String,
     quality: Quality,
     weight_class: WeightClass,
     damage_type: DamageType,
     attack_methods: AttackMethods,
-    handedness: Handedness,
-    special_tags: HashSet<SpecialTag>,
+    tags: HashSet<Tag>,
 }
 
-impl Weapon {
+impl Weapon for WeaponDetails {
+    fn name(&self) -> &str {
+        self.name.as_str()
+    }
+
     fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8, String> {
         if !self.attack_methods.contains(attack_method) {
             return Err(format!("Invalid attack method: {:?}", attack_method));
@@ -128,10 +135,7 @@ impl Weapon {
 
         let exceptional_bonus =
             i8::from(self.quality == Quality::Exceptional || self.quality == Quality::Artifact);
-        let flame_bonus = match (
-            self.special_tags.contains(&SpecialTag::Flame),
-            attack_method,
-        ) {
+        let flame_bonus = match (self.tags.contains(&Tag::Flame), attack_method) {
             (true, AttackMethod::Archery(RangeBand::Close))
             | (true, AttackMethod::MartialArtsArchery(_, RangeBand::Close)) => 2,
             (_, _) => 0,
@@ -141,10 +145,7 @@ impl Weapon {
     }
 
     fn damage(&self, attack_method: &AttackMethod) -> i8 {
-        let effective_weight = match (
-            self.special_tags.contains(&SpecialTag::Powerful),
-            attack_method,
-        ) {
+        let effective_weight = match (self.tags.contains(&Tag::Powerful), attack_method) {
             (true, AttackMethod::Archery(RangeBand::Close))
             | (true, AttackMethod::MartialArtsArchery(_, RangeBand::Close)) => &WeightClass::Heavy,
             (_, _) => &self.weight_class,
@@ -158,10 +159,7 @@ impl Weapon {
 
         let artifact_bonus = 3 * i8::from(self.quality == Quality::Artifact);
 
-        let shield_penalty = match (
-            self.special_tags.contains(&SpecialTag::Shield),
-            attack_method,
-        ) {
+        let shield_penalty = match (self.tags.contains(&Tag::Shield), attack_method) {
             (true, AttackMethod::Brawl)
             | (true, AttackMethod::Melee)
             | (true, AttackMethod::MartialArts(_)) => -2,
@@ -172,7 +170,7 @@ impl Weapon {
     }
 
     fn overwhelming(&self) -> i8 {
-        let balanced_bonus = 2 * i8::from(self.special_tags.contains(&SpecialTag::Balanced));
+        let balanced_bonus = 2 * i8::from(self.tags.contains(&Tag::Balanced));
 
         let base_overwhelming = match (&self.quality, &self.weight_class) {
             (Quality::Artifact, WeightClass::Light) => 3,
@@ -203,11 +201,151 @@ impl Weapon {
             (_, WeightClass::Heavy, _) => Some(-1),
         }
     }
+
+    fn damage_type(&self) -> &DamageType {
+        &self.damage_type
+    }
+
+    fn has_tag(&self, tag: &Tag) -> bool {
+        self.tags.contains(tag)
+    }
 }
 
-impl Default for Weapon {
+#[derive(Debug)]
+pub struct OneHandedWeapon(WeaponDetails);
+
+impl Weapon for OneHandedWeapon {
+    fn name(&self) -> &str {
+        self.0.name()
+    }
+
+    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8, String> {
+        self.0.accuracy(attack_method)
+    }
+
+    fn attunement(&self) -> i8 {
+        self.0.attunement()
+    }
+
+    fn damage(&self, attack_method: &AttackMethod) -> i8 {
+        self.0.damage(attack_method)
+    }
+
+    fn damage_type(&self) -> &DamageType {
+        self.0.damage_type()
+    }
+
+    fn overwhelming(&self) -> i8 {
+        self.0.overwhelming()
+    }
+
+    fn defense(&self) -> Option<i8> {
+        self.0.defense()
+    }
+
+    fn has_tag(&self, tag: &Tag) -> bool {
+        self.0.has_tag(tag)
+    }
+}
+#[derive(Debug)]
+pub struct TwoHandedWeapon(WeaponDetails);
+
+impl Weapon for TwoHandedWeapon {
+    fn name(&self) -> &str {
+        self.0.name()
+    }
+
+    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8, String> {
+        self.0.accuracy(attack_method)
+    }
+
+    fn attunement(&self) -> i8 {
+        self.0.attunement()
+    }
+
+    fn damage(&self, attack_method: &AttackMethod) -> i8 {
+        self.0.damage(attack_method)
+    }
+
+    fn damage_type(&self) -> &DamageType {
+        self.0.damage_type()
+    }
+
+    fn overwhelming(&self) -> i8 {
+        self.0.overwhelming()
+    }
+
+    fn defense(&self) -> Option<i8> {
+        self.0.defense()
+    }
+
+    fn has_tag(&self, tag: &Tag) -> bool {
+        self.0.has_tag(tag)
+    }
+}
+#[derive(Debug)]
+pub struct ZeroHandedWeapon(WeaponDetails);
+
+impl Weapon for ZeroHandedWeapon {
+    fn name(&self) -> &str {
+        self.0.name()
+    }
+
+    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8, String> {
+        self.0.accuracy(attack_method)
+    }
+
+    fn attunement(&self) -> i8 {
+        self.0.attunement()
+    }
+
+    fn damage(&self, attack_method: &AttackMethod) -> i8 {
+        self.0.damage(attack_method)
+    }
+
+    fn damage_type(&self) -> &DamageType {
+        self.0.damage_type()
+    }
+
+    fn overwhelming(&self) -> i8 {
+        self.0.overwhelming()
+    }
+
+    fn defense(&self) -> Option<i8> {
+        self.0.defense()
+    }
+
+    fn has_tag(&self, tag: &Tag) -> bool {
+        self.0.has_tag(tag)
+    }
+}
+
+#[derive(Debug)]
+enum EquippedState {
+    HandsFree,
+    MainHandOnly(OneHandedWeapon),
+    TwoDifferent(OneHandedWeapon, OneHandedWeapon),
+    Paired(OneHandedWeapon),
+    TwoHanded(TwoHandedWeapon),
+}
+
+impl Default for EquippedState {
     fn default() -> Self {
-        Self {
+        Self::HandsFree
+    }
+}
+
+#[derive(Debug)]
+pub struct Weapons {
+    equipped: EquippedState,
+    unequipped_one_handed: Vec<OneHandedWeapon>,
+    unequipped_two_handed: Vec<OneHandedWeapon>,
+    zero_handed: Vec<ZeroHandedWeapon>,
+}
+
+impl Default for Weapons {
+    fn default() -> Self {
+        let unarmed = OneHandedWeapon(WeaponDetails {
             name: "Unarmed".to_owned(),
             quality: Quality::Mundane,
             weight_class: WeightClass::Light,
@@ -216,10 +354,16 @@ impl Default for Weapon {
                 default_attack_method: AttackMethod::Brawl,
                 alternate_attack_methods: HashSet::new(),
             },
-            handedness: Handedness::HandsFree,
-            special_tags: [SpecialTag::Grappling, SpecialTag::Natural].into(),
+            tags: [Tag::Grappling, Tag::Natural].into(),
+        });
+
+        let equipped = EquippedState::MainHandOnly(unarmed);
+
+        Self {
+            equipped,
+            unequipped_one_handed: Vec::new(),
+            unequipped_two_handed: Vec::new(),
+            zero_handed: Vec::new(),
         }
     }
 }
-
-pub type Weapons = HashSet<Weapon>;
