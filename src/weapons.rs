@@ -31,6 +31,7 @@ enum SpecialTag {
     Balanced,
     Chopping,
     Concealable,
+    Crossbow,
     Cutting,
     Disarming,
     Flame,
@@ -115,5 +116,27 @@ impl Weapon {
         };
 
         Ok(base_accuracy + exceptional_bonus + flame_bonus)
+    }
+
+    fn damage(&self, attack_method: &AttackMethod) -> i8 {
+        let effective_weight = match (self.special_tags.contains(&SpecialTag::Powerful), attack_method) {
+            (true, AttackMethod::Archery(RangeBand::Close)) | (true, AttackMethod::MartialArtsArchery(_, RangeBand::Close)) => &WeightClass::Heavy,
+            (_, _) => &self.weight_class,
+        };
+
+        let base_damage = match (effective_weight) {
+            (WeightClass::Light) => 7,
+            (WeightClass::Medium) => 9,
+            (WeightClass::Heavy) => 11,
+        };
+
+        let artifact_bonus = 3 * i8::from(self.quality == Quality::Artifact);
+
+        let shield_penalty = match (self.special_tags.contains(&SpecialTag::Shield), attack_method) {
+                (true, AttackMethod::Brawl) | (true, AttackMethod::Melee) | (true, AttackMethod::MartialArts(_)) => -2,
+                _ => 0
+            };
+
+        base_damage + artifact_bonus + shield_penalty       
     }
 }
