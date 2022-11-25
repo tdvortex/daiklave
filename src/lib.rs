@@ -1,6 +1,2 @@
-mod abilities;
-mod attributes;
-mod merits;
+mod character;
 mod range_bands;
-mod weapons;
-mod willpower;
