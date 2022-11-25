@@ -14,7 +14,8 @@ enum AttributeName {
     Wits,
 }
 
-struct Attributes {
+#[derive(Debug)]
+pub struct Attributes {
     strength: AttributeValue,
     dexterity: AttributeValue,
     stamina: AttributeValue,

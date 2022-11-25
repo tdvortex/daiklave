@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 
+#[derive(Debug)]
 enum MeritType {
     Innate,
     Supernatural,
@@ -13,6 +14,7 @@ trait MeritProperties: std::fmt::Display {
     fn description(&self) -> &str;
 }
 
+#[derive(Debug)]
 struct SimpleMerit {
     name: String,
     dots: u8,
@@ -41,6 +43,7 @@ impl MeritProperties for SimpleMerit {
     }
 }
 
+#[derive(Debug)]
 struct DetailedMerit {
     name: String,
     detail: String,
@@ -70,7 +73,8 @@ impl MeritProperties for DetailedMerit {
     }
 }
 
-enum Merit {
+#[derive(Debug)]
+pub enum Merit {
     Simple(SimpleMerit),
     Detailed(DetailedMerit),
 }
@@ -134,4 +138,4 @@ impl Merit {
     }
 }
 
-type Merits = HashSet<Merit>;
+pub type Merits = HashSet<Merit>;

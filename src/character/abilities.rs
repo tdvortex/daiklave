@@ -5,6 +5,7 @@ type Specialty = String;
 type Specialties = HashSet<Specialty>;
 
 // Abilities rated as zero may not have specialties
+#[derive(Debug)]
 enum Ability {
     Zero,
     NonZero(NonZeroAbility),
@@ -16,6 +17,7 @@ impl Default for Ability {
     }
 }
 
+#[derive(Debug)]
 struct NonZeroAbility {
     value: AbilityValue,
     specialties: Option<Specialties>,
@@ -120,8 +122,8 @@ enum AbilityName {
     War,
 }
 
-#[derive(Default)]
-struct Abilities {
+#[derive(Default, Debug)]
+pub struct Abilities {
     archery: Ability,
     athletics: Ability,
     awareness: Ability,

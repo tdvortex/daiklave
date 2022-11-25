@@ -1,7 +1,7 @@
 use crate::range_bands::RangeBand;
 use std::collections::HashSet;
 
-#[derive(PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 enum Quality {
     Improvised,
     Mundane,
@@ -9,24 +9,27 @@ enum Quality {
     Artifact,
 }
 
+#[derive(Debug)]
 enum DamageType {
     Bashing,
     Lethal,
 }
 
+#[derive(Debug)]
 enum Handedness {
     HandsFree,
     OneHanded,
     TwoHanded,
 }
 
+#[derive(Debug)]
 enum WeightClass {
     Light,
     Medium,
     Heavy,
 }
 
-#[derive(PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 enum SpecialTag {
     Balanced,
     Chopping,
@@ -50,16 +53,6 @@ enum SpecialTag {
     Worn,
 }
 
-struct Weapon {
-    name: String,
-    quality: Quality,
-    weight_class: WeightClass,
-    damage_type: DamageType,
-    attack_methods: AttackMethods,
-    handedness: Handedness,
-    special_tags: HashSet<SpecialTag>,
-}
-
 #[derive(PartialEq, Eq, Hash, Debug)]
 enum AttackMethod {
     Brawl,
@@ -71,6 +64,7 @@ enum AttackMethod {
     MartialArtsArchery(String, RangeBand), // ex Righteous Devil Style
 }
 
+#[derive(Debug)]
 struct AttackMethods {
     default_attack_method: AttackMethod,
     alternate_attack_methods: HashSet<AttackMethod>,
@@ -81,6 +75,17 @@ impl AttackMethods {
         self.default_attack_method == *attack_method
             || self.alternate_attack_methods.contains(attack_method)
     }
+}
+
+#[derive(Debug)]
+pub struct Weapon {
+    name: String,
+    quality: Quality,
+    weight_class: WeightClass,
+    damage_type: DamageType,
+    attack_methods: AttackMethods,
+    handedness: Handedness,
+    special_tags: HashSet<SpecialTag>,
 }
 
 impl Weapon {
@@ -145,10 +150,10 @@ impl Weapon {
             (_, _) => &self.weight_class,
         };
 
-        let base_damage = match (effective_weight) {
-            (WeightClass::Light) => 7,
-            (WeightClass::Medium) => 9,
-            (WeightClass::Heavy) => 11,
+        let base_damage = match effective_weight {
+            WeightClass::Light => 7,
+            WeightClass::Medium => 9,
+            WeightClass::Heavy => 11,
         };
 
         let artifact_bonus = 3 * i8::from(self.quality == Quality::Artifact);
@@ -199,3 +204,22 @@ impl Weapon {
         }
     }
 }
+
+impl Default for Weapon {
+    fn default() -> Self {
+        Self {
+            name: "Unarmed".to_owned(),
+            quality: Quality::Mundane,
+            weight_class: WeightClass::Light,
+            damage_type: DamageType::Bashing,
+            attack_methods: AttackMethods {
+                default_attack_method: AttackMethod::Brawl,
+                alternate_attack_methods: HashSet::new(),
+            },
+            handedness: Handedness::HandsFree,
+            special_tags: [SpecialTag::Grappling, SpecialTag::Natural].into(),
+        }
+    }
+}
+
+pub type Weapons = HashSet<Weapon>;
