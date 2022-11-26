@@ -57,6 +57,12 @@ pub enum AttackMethod {
     MartialArtsArchery(String, RangeBand), // ex Righteous Devil Style
 }
 
+impl AttackMethod {
+    fn martial_arts(style: String) -> Self {
+        Self::MartialArts(style)
+    }
+}
+
 #[derive(Debug)]
 struct AttackMethods {
     default_attack_method: AttackMethod,
@@ -367,7 +373,10 @@ impl Default for Weapons {
                     "Water Dragon Style".to_owned(),
                     "White Reaper Style".to_owned(),
                     "Wood Dragon Style".to_owned(),
-                ].into_iter().map(|focus| AttackMethod::MartialArts(focus)).collect()
+                ]
+                .into_iter()
+                .map(AttackMethod::martial_arts)
+                .collect(),
             },
             tags: [Tag::Grappling, Tag::Natural].into(),
         });

@@ -2,8 +2,8 @@ mod character;
 mod mortal;
 mod range_bands;
 
-pub use crate::mortal::MortalCharacter;
 pub use crate::character::Character;
+pub use crate::mortal::MortalCharacter;
 
 #[cfg(test)]
 mod tests {

@@ -1,7 +1,7 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, hash::Hash};
 
-#[derive(Debug)]
-enum MeritType {
+#[derive(Debug, PartialEq, Eq, Hash)]
+pub enum MeritType {
     Innate,
     Supernatural,
     Story,
@@ -14,12 +14,25 @@ trait MeritProperties: std::fmt::Display {
     fn description(&self) -> &str;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq)]
 pub struct SimpleMerit {
     name: String,
     dots: u8,
     merit_type: MeritType,
     description: String,
+}
+
+impl PartialEq for SimpleMerit {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name && self.dots == other.dots
+    }
+}
+
+impl Hash for SimpleMerit {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
+        self.dots.hash(state);
+    }
 }
 
 impl std::fmt::Display for SimpleMerit {
@@ -43,13 +56,27 @@ impl MeritProperties for SimpleMerit {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq)]
 pub struct DetailedMerit {
     name: String,
     detail: String,
     dots: u8,
     merit_type: MeritType,
     description: String,
+}
+
+impl PartialEq for DetailedMerit {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name && self.dots == other.dots && self.detail == other.detail
+    }
+}
+
+impl Hash for DetailedMerit {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
+        self.detail.hash(state);
+        self.dots.hash(state);
+    }
 }
 
 impl std::fmt::Display for DetailedMerit {
@@ -73,7 +100,7 @@ impl MeritProperties for DetailedMerit {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum Merit {
     Simple(SimpleMerit),
     Detailed(DetailedMerit),
@@ -112,7 +139,7 @@ impl MeritProperties for Merit {
 }
 
 impl Merit {
-    fn new(
+    pub fn new(
         name: String,
         dots: u8,
         merit_type: MeritType,

@@ -1,6 +1,6 @@
+use eyre::{eyre, Result};
 use std::collections::hash_map::Keys;
 use std::collections::{HashMap, HashSet};
-use eyre::{eyre, Result};
 
 pub type AbilityValue = u8;
 type Specialty = String;
@@ -25,15 +25,15 @@ pub struct NonZeroAbility {
 }
 
 impl NonZeroAbility {
-    fn add_specialty(&mut self, specialty: &String) -> Result<()> {
-        if self.specialties.insert(specialty.clone()) {
+    fn add_specialty(&mut self, specialty: &str) -> Result<()> {
+        if self.specialties.insert(specialty.to_owned()) {
             Ok(())
         } else {
             Err(eyre!("specialty already exists"))
         }
     }
 
-    fn remove_specialty(&mut self, specialty: &String) -> Result<()> {
+    fn remove_specialty(&mut self, specialty: &str) -> Result<()> {
         if self.specialties.remove(specialty) {
             Ok(())
         } else {
@@ -419,7 +419,11 @@ impl<'a> Iterator for AbilityNamesIter<'a> {
             Some(ability_name_no_focus.into())
         } else if let Some(craft_focus) = self.craft_iter.next() {
             Some(AbilityName::Craft(craft_focus.clone()))
-        } else { self.martial_arts_iter.next().map(|martial_arts_focus| AbilityName::MartialArts(martial_arts_focus.clone())) }
+        } else {
+            self.martial_arts_iter
+                .next()
+                .map(|martial_arts_focus| AbilityName::MartialArts(martial_arts_focus.clone()))
+        }
     }
 }
 
