@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use exalted_3e_gui::{AbilityName, MortalCharacter};
+use exalted_3e_gui::{AbilityName, AttributeName, MortalCharacter};
 
 fn default_mortal_character() -> MortalCharacter {
     MortalCharacter::default()
@@ -8,6 +8,27 @@ fn default_mortal_character() -> MortalCharacter {
 
 fn custom_mortal_character() -> MortalCharacter {
     let mut mortal = MortalCharacter::default();
+
+    [
+        (AttributeName::Appearance, 4),
+        (AttributeName::Charisma, 2),
+        (AttributeName::Dexterity, 3),
+        (AttributeName::Intelligence, 2),
+        (AttributeName::Manipulation, 5),
+        (AttributeName::Perception, 3),
+        (AttributeName::Stamina, 2),
+        (AttributeName::Strength, 2),
+        (AttributeName::Wits, 4),
+    ]
+    .into_iter()
+    .for_each(|(attribute_name, rating)| {
+        mortal
+            .attributes
+            .get_mut(&attribute_name)
+            .set_value(rating)
+            .unwrap()
+    });
+
     mortal
         .abilities
         .add_martial_arts_style("Crane Style".to_owned());
@@ -187,6 +208,60 @@ fn test_custom_abilities() {
         (AbilityName::Thrown, 1, None),
         (AbilityName::War, 0, None),
         (AbilityName::MartialArts("Crane Style".to_owned()), 4, None),
+    ];
+
+    for (act, exp) in actual.into_iter().zip(expected.into_iter()) {
+        assert_eq!(act, exp)
+    }
+}
+
+#[test]
+fn test_default_attributes() {
+    let mortal = default_mortal_character();
+
+    let actual: Vec<(AttributeName, u8)> = mortal
+        .attributes
+        .iter()
+        .map(|attribute| (attribute.name(), attribute.dots()))
+        .collect();
+
+    let expected: Vec<(AttributeName, u8)> = vec![
+        (AttributeName::Strength, 1),
+        (AttributeName::Dexterity, 1),
+        (AttributeName::Stamina, 1),
+        (AttributeName::Charisma, 1),
+        (AttributeName::Manipulation, 1),
+        (AttributeName::Appearance, 1),
+        (AttributeName::Perception, 1),
+        (AttributeName::Intelligence, 1),
+        (AttributeName::Wits, 1),
+    ];
+
+    for (act, exp) in actual.into_iter().zip(expected.into_iter()) {
+        assert_eq!(act, exp)
+    }
+}
+
+#[test]
+fn test_custom_attributes() {
+    let mortal = custom_mortal_character();
+
+    let actual: Vec<(AttributeName, u8)> = mortal
+        .attributes
+        .iter()
+        .map(|attribute| (attribute.name(), attribute.dots()))
+        .collect();
+
+    let expected: Vec<(AttributeName, u8)> = vec![
+        (AttributeName::Strength, 2),
+        (AttributeName::Dexterity, 3),
+        (AttributeName::Stamina, 2),
+        (AttributeName::Charisma, 2),
+        (AttributeName::Manipulation, 5),
+        (AttributeName::Appearance, 4),
+        (AttributeName::Perception, 3),
+        (AttributeName::Intelligence, 2),
+        (AttributeName::Wits, 4),
     ];
 
     for (act, exp) in actual.into_iter().zip(expected.into_iter()) {

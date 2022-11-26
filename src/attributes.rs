@@ -1,16 +1,7 @@
+use eyre::{eyre, Result};
 use std::iter::{ExactSizeIterator, FusedIterator};
 
-pub trait HasAttributes {
-    fn attributes_iter(&self) -> AttributesIter;
-    fn get_attribute(&self, attribute_name: &AttributeName) -> AttributeValue;
-    fn set_attribute(&mut self, attribute_name: &AttributeName, new_value: AttributeValue);
-}
-
-// Attributes are nonnegative integers
-// Usually rated 1 to 5, but may be 6+ in some cases
-pub type AttributeValue = u8;
-
-#[derive(Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum AttributeName {
     Strength,
     Dexterity,
@@ -65,17 +56,56 @@ impl ExactSizeIterator for AttributeNameIter {
 
 impl FusedIterator for AttributeNameIter {}
 
+pub struct Attribute<'a> {
+    name: AttributeName,
+    value: &'a u8,
+}
+
+impl<'a> Attribute<'a> {
+    pub fn name(&self) -> AttributeName {
+        self.name
+    }
+
+    pub fn dots(&self) -> u8 {
+        *self.value
+    }
+}
+
+pub struct AttributeMut<'a> {
+    name: AttributeName,
+    value: &'a mut u8,
+}
+
+impl<'a> AttributeMut<'a> {
+    pub fn name(&self) -> AttributeName {
+        self.name
+    }
+
+    pub fn dots(&self) -> u8 {
+        *self.value
+    }
+
+    pub fn set_value(&mut self, new_value: u8) -> Result<()> {
+        if new_value > 0 {
+            *self.value = new_value;
+            Ok(())
+        } else {
+            Err(eyre!("attributes must be 1 or more"))
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct Attributes {
-    strength: AttributeValue,
-    dexterity: AttributeValue,
-    stamina: AttributeValue,
-    charisma: AttributeValue,
-    manipulation: AttributeValue,
-    appearance: AttributeValue,
-    perception: AttributeValue,
-    intelligence: AttributeValue,
-    wits: AttributeValue,
+    strength: u8,
+    dexterity: u8,
+    stamina: u8,
+    charisma: u8,
+    manipulation: u8,
+    appearance: u8,
+    perception: u8,
+    intelligence: u8,
+    wits: u8,
 }
 
 // Attributes default to 1, not 0
@@ -96,31 +126,37 @@ impl Default for Attributes {
 }
 
 impl Attributes {
-    pub fn get(&self, attribute_name: &AttributeName) -> AttributeValue {
-        match attribute_name {
-            AttributeName::Strength => self.strength,
-            AttributeName::Dexterity => self.dexterity,
-            AttributeName::Stamina => self.stamina,
-            AttributeName::Charisma => self.charisma,
-            AttributeName::Manipulation => self.manipulation,
-            AttributeName::Appearance => self.appearance,
-            AttributeName::Perception => self.perception,
-            AttributeName::Intelligence => self.intelligence,
-            AttributeName::Wits => self.wits,
+    pub fn get(&self, attribute_name: &AttributeName) -> Attribute {
+        Attribute {
+            name: *attribute_name,
+            value: match attribute_name {
+                AttributeName::Strength => &self.strength,
+                AttributeName::Dexterity => &self.dexterity,
+                AttributeName::Stamina => &self.stamina,
+                AttributeName::Charisma => &self.charisma,
+                AttributeName::Manipulation => &self.manipulation,
+                AttributeName::Appearance => &self.appearance,
+                AttributeName::Perception => &self.perception,
+                AttributeName::Intelligence => &self.intelligence,
+                AttributeName::Wits => &self.wits,
+            },
         }
     }
 
-    pub fn set(&mut self, attribute_name: &AttributeName, new_value: AttributeValue) {
-        match attribute_name {
-            AttributeName::Strength => self.strength = new_value,
-            AttributeName::Dexterity => self.dexterity = new_value,
-            AttributeName::Stamina => self.stamina = new_value,
-            AttributeName::Charisma => self.charisma = new_value,
-            AttributeName::Manipulation => self.manipulation = new_value,
-            AttributeName::Appearance => self.appearance = new_value,
-            AttributeName::Perception => self.perception = new_value,
-            AttributeName::Intelligence => self.intelligence = new_value,
-            AttributeName::Wits => self.wits = new_value,
+    pub fn get_mut(&mut self, attribute_name: &AttributeName) -> AttributeMut {
+        AttributeMut {
+            name: *attribute_name,
+            value: match attribute_name {
+                AttributeName::Strength => &mut self.strength,
+                AttributeName::Dexterity => &mut self.dexterity,
+                AttributeName::Stamina => &mut self.stamina,
+                AttributeName::Charisma => &mut self.charisma,
+                AttributeName::Manipulation => &mut self.manipulation,
+                AttributeName::Appearance => &mut self.appearance,
+                AttributeName::Perception => &mut self.perception,
+                AttributeName::Intelligence => &mut self.intelligence,
+                AttributeName::Wits => &mut self.wits,
+            },
         }
     }
 
@@ -138,12 +174,11 @@ pub struct AttributesIter<'a> {
 }
 
 impl<'a> Iterator for AttributesIter<'a> {
-    type Item = (AttributeName, AttributeValue);
+    type Item = Attribute<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
         let attribute_name = self.name_iter.next()?;
-
-        Some((attribute_name, self.attributes.get(&attribute_name)))
+        Some(self.attributes.get(&attribute_name))
     }
 }
 

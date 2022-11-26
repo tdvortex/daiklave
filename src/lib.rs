@@ -8,3 +8,4 @@ mod willpower;
 
 pub use crate::mortal::MortalCharacter;
 pub use abilities::AbilityName;
+pub use attributes::AttributeName;

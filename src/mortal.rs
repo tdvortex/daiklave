@@ -1,5 +1,5 @@
 use crate::abilities::Abilities;
-use crate::attributes::{AttributeName, AttributeValue, Attributes, AttributesIter, HasAttributes};
+use crate::attributes::Attributes;
 use crate::merits::{HasMerits, Merit, MeritType, Merits};
 use crate::weapons::{Hand, HasWeapons, WeaponDetails, WeaponPosition, Weapons, WeaponsIter};
 use crate::willpower::{HasWillpower, Willpower};
@@ -7,25 +7,11 @@ use eyre::{eyre, Result};
 
 #[derive(Default, Debug)]
 pub struct MortalCharacter {
-    attributes: Attributes,
+    pub attributes: Attributes,
     pub abilities: Abilities,
     merits: Merits,
     weapons: Weapons,
     willpower: Willpower,
-}
-
-impl HasAttributes for MortalCharacter {
-    fn attributes_iter(&self) -> AttributesIter {
-        self.attributes.iter()
-    }
-
-    fn get_attribute(&self, attribute_name: &AttributeName) -> AttributeValue {
-        self.attributes.get(attribute_name)
-    }
-
-    fn set_attribute(&mut self, attribute_name: &AttributeName, new_value: AttributeValue) {
-        self.attributes.set(attribute_name, new_value);
-    }
 }
 
 impl HasMerits for MortalCharacter {
