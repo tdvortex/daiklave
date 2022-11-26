@@ -15,7 +15,7 @@ trait MeritProperties: std::fmt::Display {
 }
 
 #[derive(Debug)]
-struct SimpleMerit {
+pub struct SimpleMerit {
     name: String,
     dots: u8,
     merit_type: MeritType,
@@ -44,7 +44,7 @@ impl MeritProperties for SimpleMerit {
 }
 
 #[derive(Debug)]
-struct DetailedMerit {
+pub struct DetailedMerit {
     name: String,
     detail: String,
     dots: u8,

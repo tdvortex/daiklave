@@ -10,7 +10,7 @@ enum Quality {
 }
 
 #[derive(Debug)]
-enum DamageType {
+pub enum DamageType {
     Bashing,
     Lethal,
 }
@@ -23,7 +23,7 @@ enum WeightClass {
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-enum Tag {
+pub enum Tag {
     Balanced,
     Chopping,
     Concealable,
@@ -47,7 +47,7 @@ enum Tag {
 }
 
 #[derive(PartialEq, Eq, Hash, Debug)]
-enum AttackMethod {
+pub enum AttackMethod {
     Brawl,
     Melee,
     Thrown(RangeBand),

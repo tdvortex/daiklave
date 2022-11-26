@@ -1,7 +1,7 @@
-use std::collections::{HashMap, HashSet};
 use std::collections::hash_map::Keys;
+use std::collections::{HashMap, HashSet};
 
-type AbilityValue = u8;
+pub type AbilityValue = u8;
 type Specialty = String;
 type Specialties = HashSet<Specialty>;
 
@@ -50,21 +50,21 @@ impl NonZeroAbility {
 }
 
 impl Ability {
-    fn value(&self) -> AbilityValue {
+    pub fn value(&self) -> AbilityValue {
         match &self {
             Self::Zero => 0,
             Self::NonZero(nonzero) => nonzero.value,
         }
     }
 
-    fn specialties(&self) -> Option<&Specialties> {
+    pub fn specialties(&self) -> Option<&Specialties> {
         match &self {
             Self::Zero => None,
             Self::NonZero(nonzero) => nonzero.specialties.as_ref(),
         }
     }
 
-    fn set_value(&mut self, new_value: AbilityValue) {
+    pub fn set_value(&mut self, new_value: AbilityValue) {
         if new_value == 0 {
             *self = Self::Zero;
         } else if let Self::NonZero(nonzero) = self {
@@ -77,7 +77,7 @@ impl Ability {
         }
     }
 
-    fn add_specialty(&mut self, specialty: String) -> bool {
+    pub fn add_specialty(&mut self, specialty: String) -> bool {
         if let Self::NonZero(nonzero) = self {
             nonzero.add_specialty(specialty)
         } else {
@@ -85,7 +85,7 @@ impl Ability {
         }
     }
 
-    fn remove_specialty(&mut self, specialty: String) -> bool {
+    pub fn remove_specialty(&mut self, specialty: String) -> bool {
         if let Self::NonZero(nonzero) = self {
             nonzero.remove_specialty(specialty)
         } else {
@@ -171,7 +171,7 @@ impl Iterator for AbilityNameNoFocusIter {
     }
 }
 
-enum AbilityName {
+pub enum AbilityName {
     Archery,
     Athletics,
     Awareness,
@@ -201,11 +201,11 @@ enum AbilityName {
 }
 
 impl AbilityName {
-    fn craft(focus: String) -> AbilityName {
+    pub fn craft(focus: String) -> AbilityName {
         AbilityName::Craft(focus)
     }
 
-    fn martial_arts(focus: String) -> AbilityName {
+    pub fn martial_arts(focus: String) -> AbilityName {
         AbilityName::MartialArts(focus)
     }
 }
@@ -272,7 +272,7 @@ pub struct Abilities {
 }
 
 impl Abilities {
-    fn borrow(&self, ability: &AbilityName) -> Option<&Ability> {
+    pub fn get(&self, ability: &AbilityName) -> Option<&Ability> {
         match ability {
             AbilityName::Archery => Some(&self.archery),
             AbilityName::Athletics => Some(&self.athletics),
@@ -303,7 +303,7 @@ impl Abilities {
         }
     }
 
-    fn borrow_mut(&mut self, ability: &AbilityName) -> Option<&mut Ability> {
+    pub fn get_mut(&mut self, ability: &AbilityName) -> Option<&mut Ability> {
         match ability {
             AbilityName::Archery => Some(&mut self.archery),
             AbilityName::Athletics => Some(&mut self.athletics),
@@ -334,26 +334,14 @@ impl Abilities {
         }
     }
 
-    fn value(&self, ability: AbilityName) -> AbilityValue {
-        if let Some(a) = self.borrow(&ability) {
-            a.value()
-        } else {
-            0
-        }
-    }
-
-    fn specialties(&self, ability: AbilityName) -> Option<&Specialties> {
-        self.borrow(&ability).and_then(|a| a.specialties())
-    }
-
-    fn set_value(&mut self, ability: AbilityName, new_value: AbilityValue) {
-        if let Some(a) = self.borrow_mut(&ability) {
+    pub fn set_value(&mut self, ability: &AbilityName, new_value: AbilityValue) {
+        if let Some(a) = self.get_mut(ability) {
             a.set_value(new_value);
         } else if new_value > 0 {
             match ability {
                 AbilityName::Craft(focus) => {
                     self.craft.insert(
-                        focus,
+                        focus.clone(),
                         Ability::NonZero(NonZeroAbility {
                             value: new_value,
                             specialties: None,
@@ -362,7 +350,7 @@ impl Abilities {
                 }
                 AbilityName::MartialArts(focus) => {
                     self.martial_arts.insert(
-                        focus,
+                        focus.clone(),
                         Ability::NonZero(NonZeroAbility {
                             value: new_value,
                             specialties: None,
@@ -375,25 +363,8 @@ impl Abilities {
         }
     }
 
-    fn add_specialty(&mut self, ability: AbilityName, specialty: String) -> bool {
-        if let Some(ability) = self.borrow_mut(&ability) {
-            ability.add_specialty(specialty)
-        } else {
-            false
-        }
-    }
-
-    fn remove_specialty(&mut self, ability: AbilityName, specialty: String) -> bool {
-        if let Some(ability) = self.borrow_mut(&ability) {
-            ability.remove_specialty(specialty)
-        } else {
-            false
-        }
-    }
-
     fn ability_names_iter(&self) -> AbilityNamesIter {
         AbilityNamesIter {
-            abilities: &self,
             ability_name_no_focus_iter: AbilityNameNoFocus::iter(),
             craft_iter: self.craft.keys(),
             martial_arts_iter: self.martial_arts.keys(),
@@ -403,13 +374,12 @@ impl Abilities {
     pub fn iter(&self) -> AbilitiesIter {
         AbilitiesIter {
             abilities: self,
-            ability_names_iter: self.ability_names_iter()
+            ability_names_iter: self.ability_names_iter(),
         }
     }
 }
 
 struct AbilityNamesIter<'a> {
-    abilities: &'a Abilities,
     ability_name_no_focus_iter: AbilityNameNoFocusIter,
     craft_iter: Keys<'a, String, Ability>,
     martial_arts_iter: Keys<'a, String, Ability>,
@@ -423,18 +393,13 @@ impl<'a> Iterator for AbilityNamesIter<'a> {
             Some(ability_name_no_focus.into())
         } else if let Some(craft_focus) = self.craft_iter.next() {
             Some(AbilityName::Craft(craft_focus.clone()))
-        } else if let Some(martial_arts_focus) = self.martial_arts_iter.next() {
-            Some(AbilityName::MartialArts(martial_arts_focus.clone()))
-        } else {
-            None
-        }
+        } else { self.martial_arts_iter.next().map(|martial_arts_focus| AbilityName::MartialArts(martial_arts_focus.clone())) }
     }
 }
 
-
 pub struct AbilitiesIter<'a> {
     abilities: &'a Abilities,
-    ability_names_iter: AbilityNamesIter<'a>
+    ability_names_iter: AbilityNamesIter<'a>,
 }
 
 impl<'a> Iterator for AbilitiesIter<'a> {
@@ -443,6 +408,6 @@ impl<'a> Iterator for AbilitiesIter<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         let ability_name = self.ability_names_iter.next()?;
 
-        self.abilities.borrow(&ability_name)
+        self.abilities.get(&ability_name)
     }
 }
