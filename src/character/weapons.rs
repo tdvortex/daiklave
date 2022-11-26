@@ -1,11 +1,6 @@
 use crate::range_bands::RangeBand;
 use eyre::{eyre, Result};
-use std::{
-    collections::HashSet,
-    hash::Hash,
-    iter::{FusedIterator},
-    ops::Deref,
-};
+use std::{collections::HashSet, hash::Hash, iter::FusedIterator, ops::Deref};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Quality {
@@ -255,8 +250,11 @@ impl Default for WeaponDetails {
             quality: Quality::Mundane,
             weight_class: WeightClass::Light,
             damage_type: DamageType::Bashing,
-            attack_methods: AttackMethods { default_attack_method: AttackMethod::Brawl, alternate_attack_methods: HashSet::new() },
-            tags: HashSet::new()
+            attack_methods: AttackMethods {
+                default_attack_method: AttackMethod::Brawl,
+                alternate_attack_methods: HashSet::new(),
+            },
+            tags: HashSet::new(),
         }
     }
 }
@@ -485,7 +483,7 @@ impl Equipped {
                 first: Some(WeaponPosition::Equipped(Hand::Main)),
                 second: None,
             },
-            Equipped::TwoDifferent(_, _) | Equipped::Paired(_)=> EquippedIter {
+            Equipped::TwoDifferent(_, _) | Equipped::Paired(_) => EquippedIter {
                 first: Some(WeaponPosition::Equipped(Hand::Main)),
                 second: Some(WeaponPosition::Equipped(Hand::Off)),
             },
@@ -580,7 +578,9 @@ impl Weapons {
     fn unequip_weapon(&mut self, hand: Hand) -> Result<()> {
         match (hand, &mut self.equipped) {
             (_, Equipped::HandsFree) => Err(eyre!("no equipped weapons to unequip")),
-            (Hand::Off, Equipped::MainHandOnly(_)) => Err(eyre!("no equipped off-hand weapon to unequip")),
+            (Hand::Off, Equipped::MainHandOnly(_)) => {
+                Err(eyre!("no equipped off-hand weapon to unequip"))
+            }
             (Hand::Main, Equipped::TwoDifferent(main_weapon, off_weapon)) => {
                 self.unequipped_one_handed.push(std::mem::take(main_weapon));
                 self.equipped = Equipped::MainHandOnly(std::mem::take(off_weapon));
@@ -603,7 +603,7 @@ impl Weapons {
             }
             (Hand::Main, Equipped::MainHandOnly(main_weapon)) => {
                 self.unequipped_one_handed.push(std::mem::take(main_weapon));
-                self.equipped =  Equipped::HandsFree;
+                self.equipped = Equipped::HandsFree;
                 Ok(())
             }
         }
@@ -611,22 +611,41 @@ impl Weapons {
 
     fn equip_weapon(&mut self, hand: Hand, position: WeaponPosition) -> Result<()> {
         match (hand, position, &mut self.equipped) {
-            (_, WeaponPosition::Equipped(_), Equipped::HandsFree) => Err(eyre!("no equipped weapons to re-equip")),
-            (_, WeaponPosition::Equipped(Hand::Off), Equipped::MainHandOnly(_)) => Err(eyre!("no off-hand weapon to re-equip")),
-            (Hand::Off, WeaponPosition::Equipped(Hand::Main), Equipped::MainHandOnly(_)) 
-            | (Hand::Off, WeaponPosition::UnequippedOneHanded(_), Equipped::HandsFree) => Err(eyre!("single one-handed weapon must be in main hand")),
-            (Hand::Main, WeaponPosition::Equipped(Hand::Main), _) 
+            (_, WeaponPosition::Equipped(_), Equipped::HandsFree) => {
+                Err(eyre!("no equipped weapons to re-equip"))
+            }
+            (_, WeaponPosition::Equipped(Hand::Off), Equipped::MainHandOnly(_)) => {
+                Err(eyre!("no off-hand weapon to re-equip"))
+            }
+            (Hand::Off, WeaponPosition::Equipped(Hand::Main), Equipped::MainHandOnly(_))
+            | (Hand::Off, WeaponPosition::UnequippedOneHanded(_), Equipped::HandsFree) => {
+                Err(eyre!("single one-handed weapon must be in main hand"))
+            }
+            (Hand::Main, WeaponPosition::Equipped(Hand::Main), _)
             | (_, WeaponPosition::Equipped(_), Equipped::Paired(_))
             | (Hand::Off, WeaponPosition::Equipped(Hand::Off), Equipped::TwoDifferent(_, _))
-            | (_, WeaponPosition::Equipped(_), Equipped::TwoHanded(_)) => Err(eyre!("weapon is already equipped")),
-            |(Hand::Off, WeaponPosition::Equipped(Hand::Main), Equipped::TwoDifferent(main, off)) 
-            | (Hand::Main, WeaponPosition::Equipped(Hand::Off), Equipped::TwoDifferent(main, off)) => {
+            | (_, WeaponPosition::Equipped(_), Equipped::TwoHanded(_)) => {
+                Err(eyre!("weapon is already equipped"))
+            }
+            (
+                Hand::Off,
+                WeaponPosition::Equipped(Hand::Main),
+                Equipped::TwoDifferent(main, off),
+            )
+            | (
+                Hand::Main,
+                WeaponPosition::Equipped(Hand::Off),
+                Equipped::TwoDifferent(main, off),
+            ) => {
                 std::mem::swap(main, off);
                 Ok(())
             }
             (_, WeaponPosition::UnequippedTwoHanded(index), Equipped::HandsFree) => {
                 if index >= self.unequipped_two_handed.len() {
-                    Err(eyre!("out of bounds index for two-handed weapons: {}", index))
+                    Err(eyre!(
+                        "out of bounds index for two-handed weapons: {}",
+                        index
+                    ))
                 } else {
                     let weapon = self.unequipped_two_handed.remove(index);
                     self.equipped = Equipped::TwoHanded(weapon);
@@ -638,7 +657,10 @@ impl Weapons {
             }
             (Hand::Main, WeaponPosition::UnequippedOneHanded(index), Equipped::HandsFree) => {
                 if index >= self.unequipped_one_handed.len() {
-                    Err(eyre!("out of bounds index for one-handed weapons: {}", index))
+                    Err(eyre!(
+                        "out of bounds index for one-handed weapons: {}",
+                        index
+                    ))
                 } else {
                     let weapon = self.unequipped_one_handed.remove(index);
                     self.equipped = Equipped::MainHandOnly(weapon);
@@ -648,10 +670,19 @@ impl Weapons {
             (Hand::Main, _, _) => Err(eyre!("main hand already occupied, unequip first")),
             (Hand::Off, _, Equipped::Paired(_))
             | (Hand::Off, _, Equipped::TwoDifferent(_, _))
-            | (Hand::Off, _, Equipped::TwoHanded(_)) => Err(eyre!("off hand already occupied, unequip first")),
-            (Hand::Off, WeaponPosition::UnequippedOneHanded(index), Equipped::MainHandOnly(main)) => {
+            | (Hand::Off, _, Equipped::TwoHanded(_)) => {
+                Err(eyre!("off hand already occupied, unequip first"))
+            }
+            (
+                Hand::Off,
+                WeaponPosition::UnequippedOneHanded(index),
+                Equipped::MainHandOnly(main),
+            ) => {
                 if index >= self.unequipped_one_handed.len() {
-                    Err(eyre!("out of bounds index for one-handed weapons: {}", index))
+                    Err(eyre!(
+                        "out of bounds index for one-handed weapons: {}",
+                        index
+                    ))
                 } else {
                     let main = std::mem::take(main);
                     let off = self.unequipped_one_handed.remove(index);
@@ -660,6 +691,61 @@ impl Weapons {
                     } else {
                         self.equipped = Equipped::TwoDifferent(main, off);
                     }
+                    Ok(())
+                }
+            }
+        }
+    }
+
+    fn remove_weapon(&mut self, position: WeaponPosition) -> Result<()> {
+        match position {
+            WeaponPosition::Equipped(Hand::Main) => match self.equipped {
+                Equipped::HandsFree => Err(eyre!("no weapon in main hand to remove")),
+                Equipped::MainHandOnly(_) | Equipped::TwoDifferent(_, _) | Equipped::Paired(_) => {
+                    self.unequip_weapon(Hand::Main).unwrap();
+                    self.unequipped_one_handed.pop().unwrap();
+                    Ok(())
+                }
+                Equipped::TwoHanded(_) => {
+                    self.unequip_weapon(Hand::Main).unwrap();
+                    self.unequipped_two_handed.pop().unwrap();
+                    Ok(())
+                }
+            },
+            WeaponPosition::Equipped(Hand::Off) => match self.equipped {
+                Equipped::HandsFree | Equipped::MainHandOnly(_) => {
+                    Err(eyre!("no weapon in off hand to remove"))
+                }
+                Equipped::TwoDifferent(_, _) | Equipped::Paired(_) => {
+                    self.unequip_weapon(Hand::Off).unwrap();
+                    self.unequipped_one_handed.pop().unwrap();
+                    Ok(())
+                }
+                Equipped::TwoHanded(_) => {
+                    self.unequip_weapon(Hand::Off).unwrap();
+                    self.unequipped_two_handed.pop().unwrap();
+                    Ok(())
+                }
+            },
+            WeaponPosition::UnequippedOneHanded(index) => {
+                if index >= self.unequipped_one_handed.len() {
+                    Err(eyre!(
+                        "out of bounds index for one-handed weapons: {}",
+                        index
+                    ))
+                } else {
+                    self.unequipped_one_handed.remove(index);
+                    Ok(())
+                }
+            }
+            WeaponPosition::UnequippedTwoHanded(index) => {
+                if index >= self.unequipped_two_handed.len() {
+                    Err(eyre!(
+                        "out of bounds index for two-handed weapons: {}",
+                        index
+                    ))
+                } else {
+                    self.unequipped_two_handed.remove(index);
                     Ok(())
                 }
             }
@@ -679,8 +765,7 @@ impl<'a> Iterator for WeaponsIter {
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(weapon) = self.in_hands_iter.next() {
             Some(weapon)
-        } else if let Some(index) = self.unequipped_one_handed_index_iter.next()
-        {
+        } else if let Some(index) = self.unequipped_one_handed_index_iter.next() {
             Some(WeaponPosition::UnequippedOneHanded(index))
         } else if let Some(index) = self.unequipped_two_handed_index_iter.next() {
             Some(WeaponPosition::UnequippedTwoHanded(index))
