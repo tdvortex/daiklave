@@ -2,6 +2,15 @@ use crate::range_bands::RangeBand;
 use eyre::{eyre, Result};
 use std::{collections::HashSet, hash::Hash, iter::FusedIterator, ops::Deref};
 
+pub trait HasWeapons {
+    fn weapons_iter(&self) -> WeaponsIter;
+    fn get_weapon_at_position(&self, position: WeaponPosition) -> Result<&WeaponDetails>;
+    fn add_weapon(&mut self, weapon: WeaponDetails, two_handed: bool);
+    fn remove_weapon(&mut self, position: WeaponPosition) -> Result<()>;
+    fn equip_weapon(&mut self, hand: Hand, position: WeaponPosition) -> Result<()>;
+    fn unequip_weapon(&mut self, hand: Hand) -> Result<()>;
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Quality {
     Improvised,

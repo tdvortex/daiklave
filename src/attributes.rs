@@ -1,5 +1,11 @@
 use std::iter::{ExactSizeIterator, FusedIterator};
 
+pub trait HasAttributes {
+    fn attributes_iter(&self) -> AttributesIter;
+    fn get_attribute(&self, attribute_name: &AttributeName) -> AttributeValue;
+    fn set_attribute(&mut self, attribute_name: &AttributeName, new_value: AttributeValue);
+}
+
 // Attributes are nonnegative integers
 // Usually rated 1 to 5, but may be 6+ in some cases
 pub type AttributeValue = u8;

@@ -1,4 +1,18 @@
 use std::{collections::HashSet, hash::Hash};
+use eyre::Result;
+
+pub trait HasMerits {
+    fn merits_iter(&self) -> std::collections::hash_set::Iter<'_, Merit>;
+    fn add_merit(
+        &mut self,
+        name: String,
+        maybe_detail: Option<String>,
+        dots: u8,
+        merit_type: MeritType,
+        description: String,
+    );
+    fn remove_merit(&mut self, name: String, maybe_detail: Option<String>, dots: u8) -> Result<()>;
+}
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub enum MeritType {

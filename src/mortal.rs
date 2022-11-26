@@ -1,9 +1,8 @@
-use crate::character::abilities::{Abilities, AbilitiesIter, Ability, AbilityName, AbilityValue};
-use crate::character::attributes::{AttributeName, AttributeValue, Attributes, AttributesIter};
-use crate::character::merits::{Merit, MeritType, Merits};
-use crate::character::weapons::{Hand, WeaponDetails, WeaponPosition, Weapons, WeaponsIter};
-use crate::character::willpower::Willpower;
-use crate::character::Character;
+use crate::abilities::{Abilities, AbilitiesIter, Ability, AbilityName, AbilityValue, HasAbilities};
+use crate::attributes::{HasAttributes, AttributeName, AttributeValue, Attributes, AttributesIter};
+use crate::merits::{Merit, MeritType, Merits, HasMerits};
+use crate::weapons::{Hand, WeaponDetails, WeaponPosition, Weapons, WeaponsIter, HasWeapons};
+use crate::willpower::{Willpower, HasWillpower};
 use eyre::{eyre, Result};
 
 #[derive(Default, Debug)]
@@ -15,7 +14,7 @@ pub struct MortalCharacter {
     willpower: Willpower,
 }
 
-impl Character for MortalCharacter {
+impl HasAttributes for MortalCharacter {
     fn attributes_iter(&self) -> AttributesIter {
         self.attributes.iter()
     }
@@ -27,7 +26,9 @@ impl Character for MortalCharacter {
     fn set_attribute(&mut self, attribute_name: &AttributeName, new_value: AttributeValue) {
         self.attributes.set(attribute_name, new_value);
     }
+}
 
+impl HasAbilities for MortalCharacter {
     fn abilities_iter(&self) -> AbilitiesIter {
         self.abilities.iter()
     }
@@ -64,7 +65,10 @@ impl Character for MortalCharacter {
         }
     }
 
-    fn merits_iter(&self) -> std::collections::hash_set::Iter<'_, crate::character::merits::Merit> {
+}
+
+impl HasMerits for MortalCharacter {
+    fn merits_iter(&self) -> std::collections::hash_set::Iter<'_, Merit> {
         self.merits.iter()
     }
 
@@ -73,7 +77,7 @@ impl Character for MortalCharacter {
         name: String,
         maybe_detail: Option<String>,
         dots: u8,
-        merit_type: crate::character::merits::MeritType,
+        merit_type: MeritType,
         description: String,
     ) {
         let merit_to_add = Merit::new(name, dots, merit_type, description, maybe_detail);
@@ -95,7 +99,9 @@ impl Character for MortalCharacter {
             Err(eyre!("merit {} not found", merit_to_remove))
         }
     }
+}
 
+impl HasWillpower for MortalCharacter {
     fn recover_one_willpower(&mut self) {
         self.willpower.recover_one()
     }
@@ -111,7 +117,9 @@ impl Character for MortalCharacter {
     fn spend_one_willpower(&mut self) -> Result<()> {
         self.willpower.spend_one()
     }
+}
 
+impl HasWeapons for MortalCharacter {
     fn weapons_iter(&self) -> WeaponsIter {
         self.weapons.iter()
     }

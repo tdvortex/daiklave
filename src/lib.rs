@@ -1,8 +1,12 @@
-mod character;
+mod abilities;
+mod attributes;
+mod merits;
 mod mortal;
 mod range_bands;
+mod weapons;
+mod willpower;
 
-pub use crate::character::Character;
+pub use crate::abilities::HasAbilities;
 pub use crate::mortal::MortalCharacter;
 
 #[cfg(test)]

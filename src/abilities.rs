@@ -3,6 +3,23 @@ use std::collections::hash_map::Keys;
 use std::collections::{HashMap, HashSet};
 use std::iter::{ExactSizeIterator, FusedIterator};
 
+pub trait HasAbilities {
+    fn abilities_iter(&self) -> AbilitiesIter;
+    fn get_ability(&self, ability_name: &AbilityName) -> Option<&Ability>;
+    fn set_ability_value(&mut self, ability_name: &AbilityName, new_value: AbilityValue);
+    fn add_specialty_to_ability(
+        &mut self,
+        ability_name: &AbilityName,
+        specialty: String,
+    ) -> Result<()>;
+    fn remove_specialty_from_ability(
+        &mut self,
+        ability_name: &AbilityName,
+        specialty: String,
+    ) -> Result<()>;
+}
+
+
 pub type AbilityValue = u8;
 type Specialty = String;
 
