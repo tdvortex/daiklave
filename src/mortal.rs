@@ -1,7 +1,7 @@
 use crate::character::abilities::{Abilities, AbilitiesIter, Ability, AbilityName, AbilityValue};
 use crate::character::attributes::{AttributeName, AttributeValue, Attributes, AttributesIter};
 use crate::character::merits::{Merit, MeritType, Merits};
-use crate::character::weapons::{EquippedIter, Weapons, WeaponPositionsIter};
+use crate::character::weapons::{Hand, WeaponDetails, WeaponPosition, Weapons, WeaponsIter};
 use crate::character::willpower::Willpower;
 use crate::character::Character;
 use eyre::{eyre, Result};
@@ -110,5 +110,29 @@ impl Character for MortalCharacter {
 
     fn spend_one_willpower(&mut self) -> Result<()> {
         self.willpower.spend_one()
+    }
+
+    fn weapons_iter(&self) -> WeaponsIter {
+        self.weapons.iter()
+    }
+
+    fn get_weapon_at_position(&self, position: WeaponPosition) -> Result<&WeaponDetails> {
+        self.weapons.get_at_position(position)
+    }
+
+    fn add_weapon(&mut self, weapon: WeaponDetails, two_handed: bool) {
+        self.weapons.add_weapon(weapon, two_handed)
+    }
+
+    fn remove_weapon(&mut self, position: WeaponPosition) -> Result<()> {
+        self.weapons.remove_weapon(position)
+    }
+
+    fn equip_weapon(&mut self, hand: Hand, position: WeaponPosition) -> Result<()> {
+        self.weapons.equip_weapon(hand, position)
+    }
+
+    fn unequip_weapon(&mut self, hand: Hand) -> Result<()> {
+        self.weapons.unequip_weapon(hand)
     }
 }
