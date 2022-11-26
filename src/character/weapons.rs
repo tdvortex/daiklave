@@ -1,5 +1,5 @@
 use crate::range_bands::RangeBand;
-use std::collections::HashSet;
+use std::{collections::HashSet, iter::FusedIterator};
 use eyre::{eyre, Result};
 
 #[derive(Debug, PartialEq, Eq)]
@@ -292,7 +292,7 @@ impl Weapon for TwoHandedWeapon {
 }
 
 #[derive(Debug)]
-enum InHands {
+enum Equipped {
     HandsFree,
     MainHandOnly(OneHandedWeapon),
     TwoDifferent(OneHandedWeapon, OneHandedWeapon),
@@ -300,17 +300,46 @@ enum InHands {
     TwoHanded(TwoHandedWeapon),
 }
 
-impl Default for InHands {
+impl Default for Equipped {
     fn default() -> Self {
         Self::HandsFree
     }
 }
 
+pub struct EquippedIter<'a> {
+    first: Option<&'a dyn Weapon>,
+    second: Option<&'a dyn Weapon>,
+}
+
+impl Equipped {
+    fn iter(&self) -> EquippedIter {
+        match self {
+            Equipped::HandsFree => EquippedIter { first: None, second: None },
+            Equipped::MainHandOnly(weapon) => EquippedIter { first: Some(weapon), second: None },
+            Equipped::TwoDifferent(main, off) => EquippedIter { first: Some(main), second: Some(off) },
+            Equipped::Paired(each) => EquippedIter { first: Some(each), second: Some(each) },
+            Equipped::TwoHanded(both) => EquippedIter { first: Some(both), second: None},
+        }
+    }
+}
+
+impl<'a> Iterator for EquippedIter<'a> {
+    type Item = &'a dyn Weapon;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let out = self.first;
+        self.first = self.second;
+        self.second = None;
+        out
+    }
+}
+
+impl<'a> FusedIterator for EquippedIter<'a> {}
 #[derive(Debug)]
 pub struct Weapons {
-    equipped: InHands,
+    equipped: Equipped,
     unequipped_one_handed: Vec<OneHandedWeapon>,
-    unequipped_two_handed: Vec<OneHandedWeapon>,
+    unequipped_two_handed: Vec<TwoHandedWeapon>,
 }
 
 impl Default for Weapons {
@@ -346,9 +375,46 @@ impl Default for Weapons {
         });
 
         Self {
-            equipped: InHands::default(),
+            equipped: Equipped::default(),
             unequipped_one_handed: vec![unarmed],
             unequipped_two_handed: Vec::new(),
+        }
+    }
+}
+
+impl Weapons {
+    pub fn equipped_iter(&self) -> EquippedIter<'_> {
+        self.equipped.iter()
+    }
+
+    pub fn iter(&self) -> WeaponsIter<'_> {
+        WeaponsIter { 
+            in_hands_iter: self.equipped.iter(), 
+            unequipped_one_handed_iter: self.unequipped_one_handed.iter(), 
+            unequipped_two_handed_iter: self.unequipped_two_handed.iter(), 
+        }
+    }
+}
+
+
+pub struct WeaponsIter<'a> {
+    in_hands_iter: EquippedIter<'a>,
+    unequipped_one_handed_iter: std::slice::Iter<'a, OneHandedWeapon>,
+    unequipped_two_handed_iter: std::slice::Iter<'a, TwoHandedWeapon>,
+}
+
+impl<'a> Iterator for WeaponsIter<'a> {
+    type Item = &'a dyn Weapon;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(weapon) = self.in_hands_iter.next() {
+            Some(weapon)
+        } else if let Some(weapon) = self.unequipped_one_handed_iter.next() {
+            Some(&*weapon)
+        } else if let Some(weapon) = self.unequipped_two_handed_iter.next() {
+            Some(&*weapon)
+        } else {
+            None
         }
     }
 }
