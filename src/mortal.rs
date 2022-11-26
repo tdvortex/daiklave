@@ -15,6 +15,10 @@ pub struct MortalCharacter {
 }
 
 impl Character for MortalCharacter {
+    fn attributes_iter(&self) -> AttributesIter {
+        self.attributes.iter()
+    }
+    
     fn get_attribute(&self, attribute_name: &AttributeName) -> AttributeValue {
         self.attributes.get(attribute_name)
     }
@@ -22,11 +26,7 @@ impl Character for MortalCharacter {
     fn set_attribute(&mut self, attribute_name: &AttributeName, new_value: AttributeValue) {
         self.attributes.set(attribute_name, new_value);
     }
-
-    fn attributes_iter(&self) -> AttributesIter {
-        self.attributes.iter()
-    }
-
+    
     fn abilities_iter(&self) -> AbilitiesIter {
         self.abilities.iter()
     }
