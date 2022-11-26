@@ -1,14 +1,14 @@
-use crate::abilities::{Abilities, AbilitiesIter, Ability, AbilityName, AbilityValue, HasAbilities};
-use crate::attributes::{HasAttributes, AttributeName, AttributeValue, Attributes, AttributesIter};
-use crate::merits::{Merit, MeritType, Merits, HasMerits};
-use crate::weapons::{Hand, WeaponDetails, WeaponPosition, Weapons, WeaponsIter, HasWeapons};
-use crate::willpower::{Willpower, HasWillpower};
+use crate::abilities::Abilities;
+use crate::attributes::{AttributeName, AttributeValue, Attributes, AttributesIter, HasAttributes};
+use crate::merits::{HasMerits, Merit, MeritType, Merits};
+use crate::weapons::{Hand, HasWeapons, WeaponDetails, WeaponPosition, Weapons, WeaponsIter};
+use crate::willpower::{HasWillpower, Willpower};
 use eyre::{eyre, Result};
 
 #[derive(Default, Debug)]
 pub struct MortalCharacter {
     attributes: Attributes,
-    abilities: Abilities,
+    pub abilities: Abilities,
     merits: Merits,
     weapons: Weapons,
     willpower: Willpower,
@@ -26,45 +26,6 @@ impl HasAttributes for MortalCharacter {
     fn set_attribute(&mut self, attribute_name: &AttributeName, new_value: AttributeValue) {
         self.attributes.set(attribute_name, new_value);
     }
-}
-
-impl HasAbilities for MortalCharacter {
-    fn abilities_iter(&self) -> AbilitiesIter {
-        self.abilities.iter()
-    }
-
-    fn get_ability(&self, ability_name: &AbilityName) -> Option<&Ability> {
-        self.abilities.get(ability_name)
-    }
-
-    fn set_ability_value(&mut self, ability_name: &AbilityName, new_value: AbilityValue) {
-        self.abilities.set_value(ability_name, new_value)
-    }
-
-    fn add_specialty_to_ability(
-        &mut self,
-        ability_name: &AbilityName,
-        specialty: String,
-    ) -> Result<()> {
-        if let Some(ability) = self.abilities.get_mut(ability_name) {
-            ability.add_specialty(specialty)
-        } else {
-            Err(eyre!("could not find ability {}", ability_name))
-        }
-    }
-
-    fn remove_specialty_from_ability(
-        &mut self,
-        ability_name: &AbilityName,
-        specialty: String,
-    ) -> Result<()> {
-        if let Some(ability) = self.abilities.get_mut(ability_name) {
-            ability.remove_specialty(specialty)
-        } else {
-            Err(eyre!("could not find ability {}", ability_name))
-        }
-    }
-
 }
 
 impl HasMerits for MortalCharacter {

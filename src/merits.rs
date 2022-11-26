@@ -1,5 +1,5 @@
-use std::{collections::HashSet, hash::Hash};
 use eyre::Result;
+use std::{collections::HashSet, hash::Hash};
 
 pub trait HasMerits {
     fn merits_iter(&self) -> std::collections::hash_set::Iter<'_, Merit>;
