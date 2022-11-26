@@ -1,7 +1,7 @@
 use crate::character::abilities::{Abilities, AbilitiesIter, Ability, AbilityName, AbilityValue};
 use crate::character::attributes::{AttributeName, AttributeValue, Attributes, AttributesIter};
 use crate::character::merits::{Merit, MeritType, Merits};
-use crate::character::weapons::{EquippedIter, Weapons, WeaponsIter};
+use crate::character::weapons::{EquippedIter, Weapons, WeaponPositionsIter};
 use crate::character::willpower::Willpower;
 use crate::character::Character;
 use eyre::{eyre, Result};
@@ -110,13 +110,5 @@ impl Character for MortalCharacter {
 
     fn spend_one_willpower(&mut self) -> Result<()> {
         self.willpower.spend_one()
-    }
-
-    fn equipped_iter(&self) -> EquippedIter {
-        self.weapons.equipped_iter()
-    }
-
-    fn weapons_iter(&self) -> WeaponsIter {
-        self.weapons.iter()
     }
 }

@@ -559,11 +559,61 @@ impl Weapons {
         self.equipped.iter()
     }
 
-    pub fn iter(&self) -> WeaponsIter {
-        WeaponsIter {
+    pub fn positions_iter(&self) -> WeaponPositionsIter {
+        WeaponPositionsIter {
             in_hands_iter: self.equipped.iter(),
             unequipped_one_handed_index_iter: 0..self.unequipped_one_handed.len(),
             unequipped_two_handed_index_iter: 0..self.unequipped_two_handed.len(),
+        }
+    }
+
+    fn get_at_position(&self, position: WeaponPosition) -> Result<&WeaponDetails> {
+        match position {
+            WeaponPosition::Equipped(Hand::Main) => {
+                match &self.equipped {
+                    Equipped::HandsFree => Err(eyre!("no weapon in main hand")),
+                    Equipped::MainHandOnly(weapon)
+                    | Equipped::TwoDifferent(weapon, _)
+                    | Equipped::Paired(weapon) => {
+                        Ok(weapon.deref())
+                    }
+                    Equipped::TwoHanded(weapon) => {
+                        Ok(weapon.deref())
+                    }
+                }
+            }
+            WeaponPosition::Equipped(Hand::Off) => {
+                match &self.equipped {
+                    Equipped::HandsFree | Equipped::MainHandOnly(_) => Err(eyre!("no weapon in off hand")),
+                    Equipped::TwoDifferent(_, weapon)
+                    | Equipped::Paired(weapon) => {
+                        Ok(weapon.deref())
+                    }
+                    Equipped::TwoHanded(weapon) => {
+                        Ok(weapon.deref())
+                    }
+                }
+            }
+            WeaponPosition::UnequippedOneHanded(index) => {
+                if index >= self.unequipped_one_handed.len() {
+                    Err(eyre!(
+                        "out of bounds index for one-handed weapons: {}",
+                        index
+                    ))
+                } else {
+                    Ok(&self.unequipped_one_handed[index])
+                }
+            }
+            WeaponPosition::UnequippedTwoHanded(index) => {
+                if index >= self.unequipped_two_handed.len() {
+                    Err(eyre!(
+                        "out of bounds index for two-handed weapons: {}",
+                        index
+                    ))
+                } else {
+                    Ok(&self.unequipped_two_handed[index])
+                }
+            }
         }
     }
 
@@ -753,13 +803,13 @@ impl Weapons {
     }
 }
 
-pub struct WeaponsIter {
+pub struct WeaponPositionsIter {
     in_hands_iter: EquippedIter,
     unequipped_one_handed_index_iter: std::ops::Range<usize>,
     unequipped_two_handed_index_iter: std::ops::Range<usize>,
 }
 
-impl<'a> Iterator for WeaponsIter {
+impl<'a> Iterator for WeaponPositionsIter {
     type Item = WeaponPosition;
 
     fn next(&mut self) -> Option<Self::Item> {

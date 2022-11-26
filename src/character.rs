@@ -8,7 +8,6 @@ use abilities::{AbilitiesIter, Ability, AbilityName, AbilityValue};
 use attributes::{AttributeName, AttributeValue, AttributesIter};
 use eyre::Result;
 use merits::{Merit, MeritType};
-use weapons::{EquippedIter, WeaponsIter};
 
 pub trait Character {
     fn attributes_iter(&self) -> AttributesIter;
@@ -41,6 +40,4 @@ pub trait Character {
     fn recover_all_willpower(&mut self);
     fn gain_one_willpower(&mut self);
     fn spend_one_willpower(&mut self) -> Result<()>;
-    fn equipped_iter(&self) -> EquippedIter;
-    fn weapons_iter(&self) -> WeaponsIter;
 }
