@@ -1,3 +1,5 @@
+use std::iter::{ExactSizeIterator, FusedIterator};
+
 // Attributes are nonnegative integers
 // Usually rated 1 to 5, but may be 6+ in some cases
 pub type AttributeValue = u8;
@@ -48,6 +50,14 @@ impl Iterator for AttributeNameIter {
         out
     }
 }
+
+impl ExactSizeIterator for AttributeNameIter {
+    fn len(&self) -> usize {
+        9
+    }
+}
+
+impl FusedIterator for AttributeNameIter {}
 
 #[derive(Debug)]
 pub struct Attributes {
@@ -130,3 +140,11 @@ impl<'a> Iterator for AttributesIter<'a> {
         Some((attribute_name, self.attributes.get(&attribute_name)))
     }
 }
+
+impl<'a> ExactSizeIterator for AttributesIter<'a> {
+    fn len(&self) -> usize {
+        9
+    }
+}
+
+impl<'a> FusedIterator for AttributesIter<'a> {}

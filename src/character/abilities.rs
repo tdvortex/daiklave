@@ -1,6 +1,7 @@
 use eyre::{eyre, Result};
 use std::collections::hash_map::Keys;
 use std::collections::{HashMap, HashSet};
+use std::iter::{ExactSizeIterator, FusedIterator};
 
 pub type AbilityValue = u8;
 type Specialty = String;
@@ -163,6 +164,14 @@ impl Iterator for AbilityNameNoFocusIter {
         out
     }
 }
+
+impl ExactSizeIterator for AbilityNameNoFocusIter {
+    fn len(&self) -> usize {
+        24
+    }
+}
+
+impl FusedIterator for AbilityNameNoFocusIter {}
 
 pub enum AbilityName {
     Archery,
@@ -441,3 +450,5 @@ impl<'a> Iterator for AbilitiesIter<'a> {
         self.abilities.get(&ability_name)
     }
 }
+
+impl<'a> FusedIterator for AbilitiesIter<'a> {}
