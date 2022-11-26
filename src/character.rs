@@ -6,11 +6,9 @@ pub mod willpower;
 
 use abilities::{AbilitiesIter, Ability, AbilityName, AbilityValue};
 use attributes::{AttributeName, AttributeValue, AttributesIter};
-use weapons::{WeaponsIter, EquippedIter};
 use eyre::Result;
 use merits::{Merit, MeritType};
-
-use self::weapons::Weapon;
+use weapons::{EquippedIter, WeaponsIter};
 
 pub trait Character {
     fn attributes_iter(&self) -> AttributesIter;

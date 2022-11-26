@@ -1,9 +1,14 @@
 use crate::range_bands::RangeBand;
-use std::{collections::HashSet, iter::FusedIterator};
 use eyre::{eyre, Result};
+use std::{
+    collections::HashSet,
+    hash::Hash,
+    iter::{Enumerate, FusedIterator},
+    ops::Deref,
+};
 
 #[derive(Debug, PartialEq, Eq)]
-enum Quality {
+pub enum Quality {
     Improvised,
     Mundane,
     Exceptional,
@@ -17,7 +22,7 @@ pub enum DamageType {
 }
 
 #[derive(Debug)]
-enum WeightClass {
+pub enum WeightClass {
     Light,
     Medium,
     Heavy,
@@ -59,13 +64,155 @@ pub enum AttackMethod {
 }
 
 impl AttackMethod {
-    fn martial_arts(style: String) -> Self {
-        Self::MartialArts(style)
+    pub fn brawl() -> std::vec::IntoIter<AttackMethod> {
+        vec![Self::Brawl].into_iter()
+    }
+
+    pub fn melee() -> std::vec::IntoIter<AttackMethod> {
+        vec![Self::Melee].into_iter()
+    }
+
+    pub fn thrown(max_range: RangeBand) -> std::vec::IntoIter<AttackMethod> {
+        match max_range {
+            RangeBand::Close => vec![Self::Thrown(RangeBand::Close)].into_iter(),
+            RangeBand::Short => vec![
+                Self::Thrown(RangeBand::Close),
+                Self::Thrown(RangeBand::Short),
+            ]
+            .into_iter(),
+            RangeBand::Medium => vec![
+                Self::Thrown(RangeBand::Close),
+                Self::Thrown(RangeBand::Short),
+                Self::Thrown(RangeBand::Medium),
+            ]
+            .into_iter(),
+            RangeBand::Long => vec![
+                Self::Thrown(RangeBand::Close),
+                Self::Thrown(RangeBand::Short),
+                Self::Thrown(RangeBand::Medium),
+                Self::Thrown(RangeBand::Long),
+            ]
+            .into_iter(),
+            RangeBand::Extreme => vec![
+                Self::Thrown(RangeBand::Close),
+                Self::Thrown(RangeBand::Short),
+                Self::Thrown(RangeBand::Medium),
+                Self::Thrown(RangeBand::Long),
+                Self::Thrown(RangeBand::Extreme),
+            ]
+            .into_iter(),
+        }
+    }
+
+    pub fn archery(max_range: RangeBand) -> std::vec::IntoIter<AttackMethod> {
+        match max_range {
+            RangeBand::Close => vec![Self::Archery(RangeBand::Close)].into_iter(),
+            RangeBand::Short => vec![
+                Self::Archery(RangeBand::Close),
+                Self::Archery(RangeBand::Short),
+            ]
+            .into_iter(),
+            RangeBand::Medium => vec![
+                Self::Archery(RangeBand::Close),
+                Self::Archery(RangeBand::Short),
+                Self::Archery(RangeBand::Medium),
+            ]
+            .into_iter(),
+            RangeBand::Long => vec![
+                Self::Archery(RangeBand::Close),
+                Self::Archery(RangeBand::Short),
+                Self::Archery(RangeBand::Medium),
+                Self::Archery(RangeBand::Long),
+            ]
+            .into_iter(),
+            RangeBand::Extreme => vec![
+                Self::Archery(RangeBand::Close),
+                Self::Archery(RangeBand::Short),
+                Self::Archery(RangeBand::Medium),
+                Self::Archery(RangeBand::Long),
+                Self::Archery(RangeBand::Extreme),
+            ]
+            .into_iter(),
+        }
+    }
+
+    pub fn martial_arts(style: String) -> std::vec::IntoIter<AttackMethod> {
+        vec![Self::MartialArts(style)].into_iter()
+    }
+
+    pub fn martial_arts_thrown(
+        style: String,
+        max_range: RangeBand,
+    ) -> std::vec::IntoIter<AttackMethod> {
+        match max_range {
+            RangeBand::Close => vec![Self::MartialArtsThrown(style, RangeBand::Close)].into_iter(),
+            RangeBand::Short => vec![
+                Self::MartialArtsThrown(style.clone(), RangeBand::Close),
+                Self::MartialArtsThrown(style, RangeBand::Short),
+            ]
+            .into_iter(),
+            RangeBand::Medium => vec![
+                Self::MartialArtsThrown(style.clone(), RangeBand::Close),
+                Self::MartialArtsThrown(style.clone(), RangeBand::Short),
+                Self::MartialArtsThrown(style, RangeBand::Medium),
+            ]
+            .into_iter(),
+            RangeBand::Long => vec![
+                Self::MartialArtsThrown(style.clone(), RangeBand::Close),
+                Self::MartialArtsThrown(style.clone(), RangeBand::Short),
+                Self::MartialArtsThrown(style.clone(), RangeBand::Medium),
+                Self::MartialArtsThrown(style, RangeBand::Long),
+            ]
+            .into_iter(),
+            RangeBand::Extreme => vec![
+                Self::MartialArtsThrown(style.clone(), RangeBand::Close),
+                Self::MartialArtsThrown(style.clone(), RangeBand::Short),
+                Self::MartialArtsThrown(style.clone(), RangeBand::Medium),
+                Self::MartialArtsThrown(style.clone(), RangeBand::Long),
+                Self::MartialArtsThrown(style, RangeBand::Extreme),
+            ]
+            .into_iter(),
+        }
+    }
+
+    pub fn martial_arts_archery(
+        style: String,
+        max_range: RangeBand,
+    ) -> std::vec::IntoIter<AttackMethod> {
+        match max_range {
+            RangeBand::Close => vec![Self::MartialArtsArchery(style, RangeBand::Close)].into_iter(),
+            RangeBand::Short => vec![
+                Self::MartialArtsArchery(style.clone(), RangeBand::Close),
+                Self::MartialArtsArchery(style, RangeBand::Short),
+            ]
+            .into_iter(),
+            RangeBand::Medium => vec![
+                Self::MartialArtsArchery(style.clone(), RangeBand::Close),
+                Self::MartialArtsArchery(style.clone(), RangeBand::Short),
+                Self::MartialArtsArchery(style, RangeBand::Medium),
+            ]
+            .into_iter(),
+            RangeBand::Long => vec![
+                Self::MartialArtsArchery(style.clone(), RangeBand::Close),
+                Self::MartialArtsArchery(style.clone(), RangeBand::Short),
+                Self::MartialArtsArchery(style.clone(), RangeBand::Medium),
+                Self::MartialArtsArchery(style, RangeBand::Long),
+            ]
+            .into_iter(),
+            RangeBand::Extreme => vec![
+                Self::MartialArtsArchery(style.clone(), RangeBand::Close),
+                Self::MartialArtsArchery(style.clone(), RangeBand::Short),
+                Self::MartialArtsArchery(style.clone(), RangeBand::Medium),
+                Self::MartialArtsArchery(style.clone(), RangeBand::Long),
+                Self::MartialArtsArchery(style, RangeBand::Extreme),
+            ]
+            .into_iter(),
+        }
     }
 }
 
 #[derive(Debug)]
-struct AttackMethods {
+pub struct AttackMethods {
     default_attack_method: AttackMethod,
     alternate_attack_methods: HashSet<AttackMethod>,
 }
@@ -75,18 +222,21 @@ impl AttackMethods {
         self.default_attack_method == *attack_method
             || self.alternate_attack_methods.contains(attack_method)
     }
+
+    fn try_from_iter<T: Iterator<Item = AttackMethod>>(mut iter: T) -> Result<Self> {
+        if let Some(default_attack_method) = iter.next() {
+            let alternate_attack_methods: HashSet<AttackMethod> = iter.collect();
+            Ok(Self {
+                default_attack_method,
+                alternate_attack_methods,
+            })
+        } else {
+            Err(eyre!("must have at least one attack method"))
+        }
+    }
 }
 
-pub trait Weapon {
-    fn name(&self) -> &str;
-    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8>;
-    fn damage(&self, attack_method: &AttackMethod) -> i8;
-    fn damage_type(&self) -> &DamageType;
-    fn overwhelming(&self) -> i8;
-    fn attunement(&self) -> i8;
-    fn defense(&self) -> Option<i8>;
-    fn has_tag(&self, tag: &Tag) -> bool;
-}
+pub trait Weapon: Deref<Target = WeaponDetails> {}
 
 #[derive(Debug)]
 pub struct WeaponDetails {
@@ -98,9 +248,27 @@ pub struct WeaponDetails {
     tags: HashSet<Tag>,
 }
 
-impl Weapon for WeaponDetails {
-    fn name(&self) -> &str {
-        self.name.as_str()
+impl WeaponDetails {
+    pub fn new(
+        name: String,
+        quality: Quality,
+        weight_class: WeightClass,
+        damage_type: DamageType,
+        attack_methods: AttackMethods,
+        tags: HashSet<Tag>,
+    ) -> Self {
+        Self {
+            name,
+            quality,
+            weight_class,
+            damage_type,
+            attack_methods,
+            tags,
+        }
+    }
+
+    fn has_tag(&self, tag: &Tag) -> bool {
+        self.tags.contains(tag)
     }
 
     fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8> {
@@ -208,88 +376,45 @@ impl Weapon for WeaponDetails {
             (_, WeightClass::Heavy, _) => Some(-1),
         }
     }
-
-    fn damage_type(&self) -> &DamageType {
-        &self.damage_type
-    }
-
-    fn has_tag(&self, tag: &Tag) -> bool {
-        self.tags.contains(tag)
-    }
 }
 
 #[derive(Debug)]
 pub struct OneHandedWeapon(WeaponDetails);
 
-impl Weapon for OneHandedWeapon {
-    fn name(&self) -> &str {
-        self.0.name()
-    }
-
-    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8> {
-        self.0.accuracy(attack_method)
-    }
-
-    fn attunement(&self) -> i8 {
-        self.0.attunement()
-    }
-
-    fn damage(&self, attack_method: &AttackMethod) -> i8 {
-        self.0.damage(attack_method)
-    }
-
-    fn damage_type(&self) -> &DamageType {
-        self.0.damage_type()
-    }
-
-    fn overwhelming(&self) -> i8 {
-        self.0.overwhelming()
-    }
-
-    fn defense(&self) -> Option<i8> {
-        self.0.defense()
-    }
-
-    fn has_tag(&self, tag: &Tag) -> bool {
-        self.0.has_tag(tag)
+impl From<WeaponDetails> for OneHandedWeapon {
+    fn from(details: WeaponDetails) -> Self {
+        OneHandedWeapon(details)
     }
 }
+
+impl Deref for OneHandedWeapon {
+    type Target = WeaponDetails;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl Weapon for OneHandedWeapon {}
+
 #[derive(Debug)]
 pub struct TwoHandedWeapon(WeaponDetails);
 
-impl Weapon for TwoHandedWeapon {
-    fn name(&self) -> &str {
-        self.0.name()
-    }
-
-    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8> {
-        self.0.accuracy(attack_method)
-    }
-
-    fn attunement(&self) -> i8 {
-        self.0.attunement()
-    }
-
-    fn damage(&self, attack_method: &AttackMethod) -> i8 {
-        self.0.damage(attack_method)
-    }
-
-    fn damage_type(&self) -> &DamageType {
-        self.0.damage_type()
-    }
-
-    fn overwhelming(&self) -> i8 {
-        self.0.overwhelming()
-    }
-
-    fn defense(&self) -> Option<i8> {
-        self.0.defense()
-    }
-
-    fn has_tag(&self, tag: &Tag) -> bool {
-        self.0.has_tag(tag)
+impl From<WeaponDetails> for TwoHandedWeapon {
+    fn from(details: WeaponDetails) -> Self {
+        TwoHandedWeapon(details)
     }
 }
+
+impl Deref for TwoHandedWeapon {
+    type Target = WeaponDetails;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl Weapon for TwoHandedWeapon {}
 
 #[derive(Debug)]
 enum Equipped {
@@ -306,30 +431,85 @@ impl Default for Equipped {
     }
 }
 
+#[derive(Clone, Copy)]
+pub struct WeaponPosition<'a> {
+    equipped: bool,
+    one_handed: bool,
+    index: usize,
+    details: &'a WeaponDetails,
+}
+
 pub struct EquippedIter<'a> {
-    first: Option<&'a dyn Weapon>,
-    second: Option<&'a dyn Weapon>,
+    first: Option<WeaponPosition<'a>>,
+    second: Option<WeaponPosition<'a>>,
 }
 
 impl Equipped {
     fn iter(&self) -> EquippedIter {
         match self {
-            Equipped::HandsFree => EquippedIter { first: None, second: None },
-            Equipped::MainHandOnly(weapon) => EquippedIter { first: Some(weapon), second: None },
-            Equipped::TwoDifferent(main, off) => EquippedIter { first: Some(main), second: Some(off) },
-            Equipped::Paired(each) => EquippedIter { first: Some(each), second: Some(each) },
-            Equipped::TwoHanded(both) => EquippedIter { first: Some(both), second: None},
+            Equipped::HandsFree => EquippedIter {
+                first: None,
+                second: None,
+            },
+            Equipped::MainHandOnly(weapon) => EquippedIter {
+                first: Some(WeaponPosition {
+                    equipped: true,
+                    one_handed: true,
+                    index: 0,
+                    details: weapon.deref(),
+                }),
+                second: None,
+            },
+            Equipped::TwoDifferent(main, off) => EquippedIter {
+                first: Some(WeaponPosition {
+                    equipped: true,
+                    one_handed: true,
+                    index: 0,
+                    details: main.deref(),
+                }),
+                second: Some(WeaponPosition {
+                    equipped: true,
+                    one_handed: true,
+                    index: 1,
+                    details: off.deref(),
+                }),
+            },
+            Equipped::Paired(each) => EquippedIter {
+                first: Some(WeaponPosition {
+                    equipped: true,
+                    one_handed: true,
+                    index: 0,
+                    details: each.deref(),
+                }),
+                second: Some(WeaponPosition {
+                    equipped: true,
+                    one_handed: true,
+                    index: 1,
+                    details: each.deref(),
+                }),
+            },
+            Equipped::TwoHanded(both) => EquippedIter {
+                first: Some(WeaponPosition {
+                    equipped: true,
+                    one_handed: true,
+                    index: 0,
+                    details: both.deref(),
+                }),
+                second: None,
+            },
         }
     }
 }
 
 impl<'a> Iterator for EquippedIter<'a> {
-    type Item = &'a dyn Weapon;
+    type Item = WeaponPosition<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
         let out = self.first;
-        self.first = self.second;
-        self.second = None;
+        if let Some(weapon_position) = self.second {
+            self.first = Some(weapon_position);
+            self.second = None;
+        }
         out
     }
 }
@@ -349,28 +529,30 @@ impl Default for Weapons {
             quality: Quality::Mundane,
             weight_class: WeightClass::Light,
             damage_type: DamageType::Bashing,
-            attack_methods: AttackMethods {
-                default_attack_method: AttackMethod::Brawl,
-                alternate_attack_methods: [
-                    "Air Dragon Style".to_owned(),
-                    "Black Claw Style".to_owned(),
-                    "Centipede Style".to_owned(),
-                    "Crane Style".to_owned(),
-                    "Earth Dragon Style".to_owned(),
-                    "Falcon Style".to_owned(),
-                    "Fire Dragon Style".to_owned(),
-                    "Laughing Monster Style".to_owned(),
-                    "Snake Style".to_owned(),
-                    "Swaying Grass Dance Style".to_owned(),
-                    "Tiger Style".to_owned(),
-                    "Water Dragon Style".to_owned(),
-                    "White Reaper Style".to_owned(),
-                    "Wood Dragon Style".to_owned(),
-                ]
-                .into_iter()
-                .map(AttackMethod::martial_arts)
-                .collect(),
-            },
+            attack_methods: AttackMethods::try_from_iter(
+                AttackMethod::brawl().chain(
+                    [
+                        "Air Dragon Style",
+                        "Black Claw Style",
+                        "Centipede Style",
+                        "Crane Style",
+                        "Earth Dragon Style",
+                        "Falcon Style",
+                        "Fire Dragon Style",
+                        "Laughing Monster Style",
+                        "Snake Style",
+                        "Swaying Grass Dance Style",
+                        "Tiger Style",
+                        "Water Dragon Style",
+                        "White Reaper Style",
+                        "Wood Dragon Style",
+                    ]
+                    .map(|s| s.to_owned())
+                    .into_iter()
+                    .flat_map(AttackMethod::martial_arts),
+                ),
+            )
+            .unwrap(),
             tags: [Tag::Grappling, Tag::Natural].into(),
         });
 
@@ -388,31 +570,50 @@ impl Weapons {
     }
 
     pub fn iter(&self) -> WeaponsIter<'_> {
-        WeaponsIter { 
-            in_hands_iter: self.equipped.iter(), 
-            unequipped_one_handed_iter: self.unequipped_one_handed.iter(), 
-            unequipped_two_handed_iter: self.unequipped_two_handed.iter(), 
+        WeaponsIter {
+            in_hands_iter: self.equipped.iter(),
+            unequipped_one_handed_enumerate: self.unequipped_one_handed.iter().enumerate(),
+            unequipped_two_handed_enumerate: self.unequipped_two_handed.iter().enumerate(),
+        }
+    }
+
+    fn add_weapon(&mut self, weapon: WeaponDetails, two_handed: bool) {
+        if two_handed {
+            self.unequipped_two_handed.push(TwoHandedWeapon(weapon));
+        } else {
+            self.unequipped_one_handed.push(OneHandedWeapon(weapon));
         }
     }
 }
 
-
 pub struct WeaponsIter<'a> {
     in_hands_iter: EquippedIter<'a>,
-    unequipped_one_handed_iter: std::slice::Iter<'a, OneHandedWeapon>,
-    unequipped_two_handed_iter: std::slice::Iter<'a, TwoHandedWeapon>,
+    unequipped_one_handed_enumerate: Enumerate<std::slice::Iter<'a, OneHandedWeapon>>,
+    unequipped_two_handed_enumerate: Enumerate<std::slice::Iter<'a, TwoHandedWeapon>>,
 }
 
 impl<'a> Iterator for WeaponsIter<'a> {
-    type Item = &'a dyn Weapon;
+    type Item = WeaponPosition<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(weapon) = self.in_hands_iter.next() {
             Some(weapon)
-        } else if let Some(weapon) = self.unequipped_one_handed_iter.next() {
-            Some(&*weapon)
-        } else if let Some(weapon) = self.unequipped_two_handed_iter.next() {
-            Some(&*weapon)
+        } else if let Some((index, one_handed_weapon)) = self.unequipped_one_handed_enumerate.next()
+        {
+            Some(WeaponPosition {
+                equipped: false,
+                one_handed: true,
+                index,
+                details: one_handed_weapon.deref(),
+            })
+        } else if let Some((index, two_handed_weapon)) = self.unequipped_two_handed_enumerate.next()
+        {
+            Some(WeaponPosition {
+                equipped: false,
+                one_handed: true,
+                index,
+                details: two_handed_weapon.deref(),
+            })
         } else {
             None
         }

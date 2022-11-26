@@ -1,7 +1,7 @@
 use crate::character::abilities::{Abilities, AbilitiesIter, Ability, AbilityName, AbilityValue};
 use crate::character::attributes::{AttributeName, AttributeValue, Attributes, AttributesIter};
 use crate::character::merits::{Merit, MeritType, Merits};
-use crate::character::weapons::{Weapons, EquippedIter, WeaponsIter};
+use crate::character::weapons::{EquippedIter, Weapons, WeaponsIter};
 use crate::character::willpower::Willpower;
 use crate::character::Character;
 use eyre::{eyre, Result};
