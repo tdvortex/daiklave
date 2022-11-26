@@ -4,6 +4,7 @@ use crate::character::merits::Merits;
 use crate::character::weapons::Weapons;
 use crate::character::willpower::Willpower;
 use crate::character::Character;
+use eyre::{eyre, Result};
 
 #[derive(Default, Debug)]
 pub struct MortalCharacter {
@@ -39,11 +40,11 @@ impl Character for MortalCharacter {
         self.abilities.set_value(ability_name, new_value)
     }
 
-    fn add_specialty_to_ability(&mut self, ability_name: &AbilityName, specialty: String) -> bool {
+    fn add_specialty_to_ability(&mut self, ability_name: &AbilityName, specialty: String) -> Result<()> {
         if let Some(ability) = self.abilities.get_mut(ability_name) {
             ability.add_specialty(specialty)
         } else {
-            false
+            Err(eyre!("could not find ability {}", ability_name))
         }
     }
 
@@ -51,11 +52,11 @@ impl Character for MortalCharacter {
         &mut self,
         ability_name: &AbilityName,
         specialty: String,
-    ) -> bool {
+    ) -> Result<()> {
         if let Some(ability) = self.abilities.get_mut(ability_name) {
             ability.remove_specialty(specialty)
         } else {
-            false
+            Err(eyre!("could not find ability {}", ability_name))
         }
     }
 }

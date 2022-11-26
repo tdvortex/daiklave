@@ -1,9 +1,9 @@
 use std::collections::hash_map::Keys;
 use std::collections::{HashMap, HashSet};
+use eyre::{eyre, Result};
 
 pub type AbilityValue = u8;
 type Specialty = String;
-type Specialties = HashSet<Specialty>;
 
 // Abilities rated as zero may not have specialties
 #[derive(Debug)]
@@ -21,30 +21,23 @@ impl Default for Ability {
 #[derive(Debug)]
 pub struct NonZeroAbility {
     value: AbilityValue,
-    specialties: Option<Specialties>,
+    specialties: HashSet<Specialty>,
 }
 
 impl NonZeroAbility {
-    fn add_specialty(&mut self, specialty: String) -> bool {
-        if let Some(hashset) = &mut self.specialties {
-            hashset.insert(specialty)
+    fn add_specialty(&mut self, specialty: &String) -> Result<()> {
+        if self.specialties.insert(specialty.clone()) {
+            Ok(())
         } else {
-            let mut hashset = HashSet::new();
-            hashset.insert(specialty);
-            self.specialties = Some(hashset);
-            true
+            Err(eyre!("specialty already exists"))
         }
     }
 
-    fn remove_specialty(&mut self, specialty: String) -> bool {
-        if let Some(hashset) = &mut self.specialties {
-            let removed = hashset.remove(&specialty);
-            if hashset.is_empty() {
-                self.specialties = None;
-            }
-            removed
+    fn remove_specialty(&mut self, specialty: &String) -> Result<()> {
+        if self.specialties.remove(specialty) {
+            Ok(())
         } else {
-            false
+            Err(eyre!("specialy \"{}\" does not exist", specialty))
         }
     }
 }
@@ -57,10 +50,10 @@ impl Ability {
         }
     }
 
-    pub fn specialties(&self) -> Option<&Specialties> {
+    pub fn specialties(&self) -> Option<&HashSet<Specialty>> {
         match &self {
             Self::Zero => None,
-            Self::NonZero(nonzero) => nonzero.specialties.as_ref(),
+            Self::NonZero(nonzero) => Some(&nonzero.specialties),
         }
     }
 
@@ -72,24 +65,24 @@ impl Ability {
         } else {
             *self = Self::NonZero(NonZeroAbility {
                 value: new_value,
-                specialties: None,
+                specialties: HashSet::new(),
             });
         }
     }
 
-    pub fn add_specialty(&mut self, specialty: String) -> bool {
+    pub fn add_specialty(&mut self, specialty: String) -> Result<()> {
         if let Self::NonZero(nonzero) = self {
-            nonzero.add_specialty(specialty)
+            nonzero.add_specialty(&specialty)
         } else {
-            false
+            Err(eyre!("cannot add specialty to ability with zero dots"))
         }
     }
 
-    pub fn remove_specialty(&mut self, specialty: String) -> bool {
+    pub fn remove_specialty(&mut self, specialty: String) -> Result<()> {
         if let Self::NonZero(nonzero) = self {
-            nonzero.remove_specialty(specialty)
+            nonzero.remove_specialty(&specialty)
         } else {
-            false
+            Err(eyre!("cannot remove specialty from ability with zero dots"))
         }
     }
 }
@@ -241,6 +234,39 @@ impl From<AbilityNameNoFocus> for AbilityName {
     }
 }
 
+impl std::fmt::Display for AbilityName {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            AbilityName::Archery => write!(f, "Archery"),
+            AbilityName::Athletics => write!(f, "Athletics"),
+            AbilityName::Awareness => write!(f, "Awareness"),
+            AbilityName::Brawl => write!(f, "Brawl"),
+            AbilityName::Bureaucracy => write!(f, "Bureaucracy"),
+            AbilityName::Craft(focus) => write!(f, "Craft ({})", focus),
+            AbilityName::Dodge => write!(f, "Dodge"),
+            AbilityName::Integrity => write!(f, "Integrity"),
+            AbilityName::Investigation => write!(f, "Investigation"),
+            AbilityName::Larcency => write!(f, "Larcency"),
+            AbilityName::Linguistics => write!(f, "Linguistics"),
+            AbilityName::Lore => write!(f, "Lore"),
+            AbilityName::MartialArts(focus) => write!(f, "Martial Arts ({})", focus),
+            AbilityName::Medicine => write!(f, "Medicine"),
+            AbilityName::Melee => write!(f, "Melee"),
+            AbilityName::Occult => write!(f, "Occult"),
+            AbilityName::Performance => write!(f, "Performance"),
+            AbilityName::Presence => write!(f, "Presence"),
+            AbilityName::Resistance => write!(f, "LoResistancere"),
+            AbilityName::Ride => write!(f, "Ride"),
+            AbilityName::Sail => write!(f, "Sail"),
+            AbilityName::Socialize => write!(f, "Socialize"),
+            AbilityName::Stealth => write!(f, "Stealth"),
+            AbilityName::Survival => write!(f, "Survival"),
+            AbilityName::Thrown => write!(f, "Thrown"),
+            AbilityName::War => write!(f, "War"),
+        }
+    }
+}
+
 #[derive(Default, Debug)]
 pub struct Abilities {
     archery: Ability,
@@ -344,7 +370,7 @@ impl Abilities {
                         focus.clone(),
                         Ability::NonZero(NonZeroAbility {
                             value: new_value,
-                            specialties: None,
+                            specialties: HashSet::new(),
                         }),
                     );
                 }
@@ -353,7 +379,7 @@ impl Abilities {
                         focus.clone(),
                         Ability::NonZero(NonZeroAbility {
                             value: new_value,
-                            specialties: None,
+                            specialties: HashSet::new(),
                         }),
                     );
                 }
