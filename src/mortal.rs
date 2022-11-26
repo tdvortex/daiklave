@@ -22,4 +22,8 @@ impl Character for MortalCharacter {
     fn set_attribute(&mut self, attribute_name: &AttributeName, new_value: AttributeValue) {
         self.attributes.set(attribute_name, new_value);
     }
+
+    fn attributes_iter(&self) -> crate::character::attributes::AttributesIter {
+        self.attributes.iter()
+    }
 }

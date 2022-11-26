@@ -2,6 +2,7 @@
 // Usually rated 1 to 5, but may be 6+ in some cases
 pub type AttributeValue = u8;
 
+#[derive(Clone, Copy)]
 pub enum AttributeName {
     Strength,
     Dexterity,
@@ -12,6 +13,38 @@ pub enum AttributeName {
     Perception,
     Intelligence,
     Wits,
+}
+
+impl AttributeName {
+    fn iter() -> AttributeNameIter {
+        AttributeNameIter { next_name: Some(AttributeName::Strength) }
+    }
+}
+
+struct AttributeNameIter {
+    next_name: Option<AttributeName>
+}
+
+impl Iterator for AttributeNameIter {
+    type Item = AttributeName;
+
+    fn next(&mut self) -> Option<Self::Item> {       
+        let next = match &self.next_name {
+            None => None,
+            Some(AttributeName::Strength) => Some(AttributeName::Dexterity),
+            Some(AttributeName::Dexterity) => Some(AttributeName::Stamina),
+            Some(AttributeName::Stamina) => Some(AttributeName::Charisma),
+            Some(AttributeName::Charisma) => Some(AttributeName::Manipulation),
+            Some(AttributeName::Manipulation) => Some(AttributeName::Appearance),
+            Some(AttributeName::Appearance) => Some(AttributeName::Perception),
+            Some(AttributeName::Perception) => Some(AttributeName::Intelligence),
+            Some(AttributeName::Intelligence) => Some(AttributeName::Wits),
+            Some(AttributeName::Wits) => None,
+        };
+        let out = self.next_name;
+        self.next_name = next;
+        out
+    }
 }
 
 #[derive(Debug)]
@@ -71,5 +104,27 @@ impl Attributes {
             AttributeName::Intelligence => self.intelligence = new_value,
             AttributeName::Wits => self.wits = new_value,
         }
+    }
+
+    pub fn iter(&self) -> AttributesIter {
+        AttributesIter {
+            attributes: self,
+            name_iter: AttributeName::iter()
+        }
+    }
+}
+
+pub struct AttributesIter<'a> {
+    attributes: &'a Attributes,
+    name_iter: AttributeNameIter,
+}
+
+impl<'a> Iterator for AttributesIter<'a> {
+    type Item = (AttributeName, AttributeValue);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let attribute_name = self.name_iter.next()?;
+
+        Some((attribute_name, self.attributes.get(&attribute_name)))
     }
 }
