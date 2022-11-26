@@ -352,7 +352,22 @@ impl Default for Weapons {
             damage_type: DamageType::Bashing,
             attack_methods: AttackMethods {
                 default_attack_method: AttackMethod::Brawl,
-                alternate_attack_methods: HashSet::new(),
+                alternate_attack_methods: [
+                    "Air Dragon Style".to_owned(),
+                    "Black Claw Style".to_owned(),
+                    "Centipede Style".to_owned(),
+                    "Crane Style".to_owned(),
+                    "Earth Dragon Style".to_owned(),
+                    "Falcon Style".to_owned(),
+                    "Fire Dragon Style".to_owned(),
+                    "Laughing Monster Style".to_owned(),
+                    "Snake Style".to_owned(),
+                    "Swaying Grass Dance Style".to_owned(),
+                    "Tiger Style".to_owned(),
+                    "Water Dragon Style".to_owned(),
+                    "White Reaper Style".to_owned(),
+                    "Wood Dragon Style".to_owned(),
+                ].into_iter().map(|focus| AttackMethod::MartialArts(focus)).collect()
             },
             tags: [Tag::Grappling, Tag::Natural].into(),
         });
