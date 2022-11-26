@@ -95,4 +95,20 @@ impl Character for MortalCharacter {
             Err(eyre!("merit {} not found", merit_to_remove))
         }
     }
+
+    fn recover_one_willpower(&mut self) {
+        self.willpower.recover_one()
+    }
+
+    fn recover_all_willpower(&mut self) {
+        self.willpower.recover_all()
+    }
+
+    fn gain_one_willpower(&mut self) {
+        self.willpower.gain_one()
+    }
+
+    fn spend_one_willpower(&mut self) -> Result<()> {
+        self.willpower.spend_one()
+    }
 }

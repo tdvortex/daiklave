@@ -35,6 +35,9 @@ pub trait Character {
         merit_type: MeritType,
         description: String,
     );
-
     fn remove_merit(&mut self, name: String, maybe_detail: Option<String>, dots: u8) -> Result<()>;
+    fn recover_one_willpower(&mut self);
+    fn recover_all_willpower(&mut self);
+    fn gain_one_willpower(&mut self);
+    fn spend_one_willpower(&mut self) -> Result<()>;
 }
