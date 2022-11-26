@@ -3,11 +3,11 @@ use eyre::{eyre, Result};
 use std::{
     collections::HashSet,
     hash::Hash,
-    iter::{Enumerate, FusedIterator},
+    iter::{FusedIterator},
     ops::Deref,
 };
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Quality {
     Improvised,
     Mundane,
@@ -15,20 +15,20 @@ pub enum Quality {
     Artifact,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DamageType {
     Bashing,
     Lethal,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum WeightClass {
     Light,
     Medium,
     Heavy,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum Tag {
     Balanced,
     Chopping,
@@ -52,7 +52,7 @@ pub enum Tag {
     Worn,
 }
 
-#[derive(PartialEq, Eq, Hash, Debug)]
+#[derive(PartialEq, Eq, Hash, Debug, Clone)]
 pub enum AttackMethod {
     Brawl,
     Melee,
@@ -211,7 +211,7 @@ impl AttackMethod {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AttackMethods {
     default_attack_method: AttackMethod,
     alternate_attack_methods: HashSet<AttackMethod>,
@@ -238,7 +238,7 @@ impl AttackMethods {
 
 pub trait Weapon: Deref<Target = WeaponDetails> {}
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WeaponDetails {
     name: String,
     quality: Quality,
@@ -246,6 +246,19 @@ pub struct WeaponDetails {
     damage_type: DamageType,
     attack_methods: AttackMethods,
     tags: HashSet<Tag>,
+}
+
+impl Default for WeaponDetails {
+    fn default() -> Self {
+        Self {
+            name: "".to_owned(),
+            quality: Quality::Mundane,
+            weight_class: WeightClass::Light,
+            damage_type: DamageType::Bashing,
+            attack_methods: AttackMethods { default_attack_method: AttackMethod::Brawl, alternate_attack_methods: HashSet::new() },
+            tags: HashSet::new()
+        }
+    }
 }
 
 impl WeaponDetails {
@@ -378,8 +391,14 @@ impl WeaponDetails {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct OneHandedWeapon(WeaponDetails);
+
+impl Default for OneHandedWeapon {
+    fn default() -> Self {
+        Self(WeaponDetails::default())
+    }
+}
 
 impl From<WeaponDetails> for OneHandedWeapon {
     fn from(details: WeaponDetails) -> Self {
@@ -399,6 +418,12 @@ impl Weapon for OneHandedWeapon {}
 
 #[derive(Debug)]
 pub struct TwoHandedWeapon(WeaponDetails);
+
+impl Default for TwoHandedWeapon {
+    fn default() -> Self {
+        Self(WeaponDetails::default())
+    }
+}
 
 impl From<WeaponDetails> for TwoHandedWeapon {
     fn from(details: WeaponDetails) -> Self {
@@ -431,17 +456,22 @@ impl Default for Equipped {
     }
 }
 
-#[derive(Clone, Copy)]
-pub struct WeaponPosition<'a> {
-    equipped: bool,
-    one_handed: bool,
-    index: usize,
-    details: &'a WeaponDetails,
+#[derive(PartialEq, Eq, Clone, Copy)]
+pub enum Hand {
+    Main,
+    Off,
 }
 
-pub struct EquippedIter<'a> {
-    first: Option<WeaponPosition<'a>>,
-    second: Option<WeaponPosition<'a>>,
+#[derive(PartialEq, Eq, Clone, Copy)]
+pub enum WeaponPosition {
+    Equipped(Hand),
+    UnequippedOneHanded(usize),
+    UnequippedTwoHanded(usize),
+}
+
+pub struct EquippedIter {
+    first: Option<WeaponPosition>,
+    second: Option<WeaponPosition>,
 }
 
 impl Equipped {
@@ -451,58 +481,20 @@ impl Equipped {
                 first: None,
                 second: None,
             },
-            Equipped::MainHandOnly(weapon) => EquippedIter {
-                first: Some(WeaponPosition {
-                    equipped: true,
-                    one_handed: true,
-                    index: 0,
-                    details: weapon.deref(),
-                }),
+            Equipped::MainHandOnly(_) | Equipped::TwoHanded(_) => EquippedIter {
+                first: Some(WeaponPosition::Equipped(Hand::Main)),
                 second: None,
             },
-            Equipped::TwoDifferent(main, off) => EquippedIter {
-                first: Some(WeaponPosition {
-                    equipped: true,
-                    one_handed: true,
-                    index: 0,
-                    details: main.deref(),
-                }),
-                second: Some(WeaponPosition {
-                    equipped: true,
-                    one_handed: true,
-                    index: 1,
-                    details: off.deref(),
-                }),
-            },
-            Equipped::Paired(each) => EquippedIter {
-                first: Some(WeaponPosition {
-                    equipped: true,
-                    one_handed: true,
-                    index: 0,
-                    details: each.deref(),
-                }),
-                second: Some(WeaponPosition {
-                    equipped: true,
-                    one_handed: true,
-                    index: 1,
-                    details: each.deref(),
-                }),
-            },
-            Equipped::TwoHanded(both) => EquippedIter {
-                first: Some(WeaponPosition {
-                    equipped: true,
-                    one_handed: true,
-                    index: 0,
-                    details: both.deref(),
-                }),
-                second: None,
+            Equipped::TwoDifferent(_, _) | Equipped::Paired(_)=> EquippedIter {
+                first: Some(WeaponPosition::Equipped(Hand::Main)),
+                second: Some(WeaponPosition::Equipped(Hand::Off)),
             },
         }
     }
 }
 
-impl<'a> Iterator for EquippedIter<'a> {
-    type Item = WeaponPosition<'a>;
+impl<'a> Iterator for EquippedIter {
+    type Item = WeaponPosition;
 
     fn next(&mut self) -> Option<Self::Item> {
         let out = self.first;
@@ -514,7 +506,7 @@ impl<'a> Iterator for EquippedIter<'a> {
     }
 }
 
-impl<'a> FusedIterator for EquippedIter<'a> {}
+impl<'a> FusedIterator for EquippedIter {}
 #[derive(Debug)]
 pub struct Weapons {
     equipped: Equipped,
@@ -565,15 +557,15 @@ impl Default for Weapons {
 }
 
 impl Weapons {
-    pub fn equipped_iter(&self) -> EquippedIter<'_> {
+    pub fn equipped_iter(&self) -> EquippedIter {
         self.equipped.iter()
     }
 
-    pub fn iter(&self) -> WeaponsIter<'_> {
+    pub fn iter(&self) -> WeaponsIter {
         WeaponsIter {
             in_hands_iter: self.equipped.iter(),
-            unequipped_one_handed_enumerate: self.unequipped_one_handed.iter().enumerate(),
-            unequipped_two_handed_enumerate: self.unequipped_two_handed.iter().enumerate(),
+            unequipped_one_handed_index_iter: 0..self.unequipped_one_handed.len(),
+            unequipped_two_handed_index_iter: 0..self.unequipped_two_handed.len(),
         }
     }
 
@@ -584,36 +576,114 @@ impl Weapons {
             self.unequipped_one_handed.push(OneHandedWeapon(weapon));
         }
     }
+
+    fn unequip_weapon(&mut self, hand: Hand) -> Result<()> {
+        match (hand, &mut self.equipped) {
+            (_, Equipped::HandsFree) => Err(eyre!("no equipped weapons to unequip")),
+            (Hand::Off, Equipped::MainHandOnly(_)) => Err(eyre!("no equipped off-hand weapon to unequip")),
+            (Hand::Main, Equipped::TwoDifferent(main_weapon, off_weapon)) => {
+                self.unequipped_one_handed.push(std::mem::take(main_weapon));
+                self.equipped = Equipped::MainHandOnly(std::mem::take(off_weapon));
+                Ok(())
+            }
+            (Hand::Off, Equipped::TwoDifferent(main_weapon, off_weapon)) => {
+                self.unequipped_one_handed.push(std::mem::take(off_weapon));
+                self.equipped = Equipped::MainHandOnly(std::mem::take(main_weapon));
+                Ok(())
+            }
+            (_, Equipped::Paired(each)) => {
+                self.unequipped_one_handed.push(each.clone());
+                self.equipped = Equipped::MainHandOnly(std::mem::take(each));
+                Ok(())
+            }
+            (_, Equipped::TwoHanded(both)) => {
+                self.unequipped_two_handed.push(std::mem::take(both));
+                self.equipped = Equipped::HandsFree;
+                Ok(())
+            }
+            (Hand::Main, Equipped::MainHandOnly(main_weapon)) => {
+                self.unequipped_one_handed.push(std::mem::take(main_weapon));
+                self.equipped =  Equipped::HandsFree;
+                Ok(())
+            }
+        }
+    }
+
+    fn equip_weapon(&mut self, hand: Hand, position: WeaponPosition) -> Result<()> {
+        match (hand, position, &mut self.equipped) {
+            (_, WeaponPosition::Equipped(_), Equipped::HandsFree) => Err(eyre!("no equipped weapons to re-equip")),
+            (_, WeaponPosition::Equipped(Hand::Off), Equipped::MainHandOnly(_)) => Err(eyre!("no off-hand weapon to re-equip")),
+            (Hand::Off, WeaponPosition::Equipped(Hand::Main), Equipped::MainHandOnly(_)) 
+            | (Hand::Off, WeaponPosition::UnequippedOneHanded(_), Equipped::HandsFree) => Err(eyre!("single one-handed weapon must be in main hand")),
+            (Hand::Main, WeaponPosition::Equipped(Hand::Main), _) 
+            | (_, WeaponPosition::Equipped(_), Equipped::Paired(_))
+            | (Hand::Off, WeaponPosition::Equipped(Hand::Off), Equipped::TwoDifferent(_, _))
+            | (_, WeaponPosition::Equipped(_), Equipped::TwoHanded(_)) => Err(eyre!("weapon is already equipped")),
+            |(Hand::Off, WeaponPosition::Equipped(Hand::Main), Equipped::TwoDifferent(main, off)) 
+            | (Hand::Main, WeaponPosition::Equipped(Hand::Off), Equipped::TwoDifferent(main, off)) => {
+                std::mem::swap(main, off);
+                Ok(())
+            }
+            (_, WeaponPosition::UnequippedTwoHanded(index), Equipped::HandsFree) => {
+                if index >= self.unequipped_two_handed.len() {
+                    Err(eyre!("out of bounds index for two-handed weapons: {}", index))
+                } else {
+                    let weapon = self.unequipped_two_handed.remove(index);
+                    self.equipped = Equipped::TwoHanded(weapon);
+                    Ok(())
+                }
+            }
+            (_, WeaponPosition::UnequippedTwoHanded(_), _) => {
+                Err(eyre!("need both hands free to equip two-handed weapon"))
+            }
+            (Hand::Main, WeaponPosition::UnequippedOneHanded(index), Equipped::HandsFree) => {
+                if index >= self.unequipped_one_handed.len() {
+                    Err(eyre!("out of bounds index for one-handed weapons: {}", index))
+                } else {
+                    let weapon = self.unequipped_one_handed.remove(index);
+                    self.equipped = Equipped::MainHandOnly(weapon);
+                    Ok(())
+                }
+            }
+            (Hand::Main, _, _) => Err(eyre!("main hand already occupied, unequip first")),
+            (Hand::Off, _, Equipped::Paired(_))
+            | (Hand::Off, _, Equipped::TwoDifferent(_, _))
+            | (Hand::Off, _, Equipped::TwoHanded(_)) => Err(eyre!("off hand already occupied, unequip first")),
+            (Hand::Off, WeaponPosition::UnequippedOneHanded(index), Equipped::MainHandOnly(main)) => {
+                if index >= self.unequipped_one_handed.len() {
+                    Err(eyre!("out of bounds index for one-handed weapons: {}", index))
+                } else {
+                    let main = std::mem::take(main);
+                    let off = self.unequipped_one_handed.remove(index);
+                    if *main == *off {
+                        self.equipped = Equipped::Paired(main);
+                    } else {
+                        self.equipped = Equipped::TwoDifferent(main, off);
+                    }
+                    Ok(())
+                }
+            }
+        }
+    }
 }
 
-pub struct WeaponsIter<'a> {
-    in_hands_iter: EquippedIter<'a>,
-    unequipped_one_handed_enumerate: Enumerate<std::slice::Iter<'a, OneHandedWeapon>>,
-    unequipped_two_handed_enumerate: Enumerate<std::slice::Iter<'a, TwoHandedWeapon>>,
+pub struct WeaponsIter {
+    in_hands_iter: EquippedIter,
+    unequipped_one_handed_index_iter: std::ops::Range<usize>,
+    unequipped_two_handed_index_iter: std::ops::Range<usize>,
 }
 
-impl<'a> Iterator for WeaponsIter<'a> {
-    type Item = WeaponPosition<'a>;
+impl<'a> Iterator for WeaponsIter {
+    type Item = WeaponPosition;
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(weapon) = self.in_hands_iter.next() {
             Some(weapon)
-        } else if let Some((index, one_handed_weapon)) = self.unequipped_one_handed_enumerate.next()
+        } else if let Some(index) = self.unequipped_one_handed_index_iter.next()
         {
-            Some(WeaponPosition {
-                equipped: false,
-                one_handed: true,
-                index,
-                details: one_handed_weapon.deref(),
-            })
-        } else if let Some((index, two_handed_weapon)) = self.unequipped_two_handed_enumerate.next()
-        {
-            Some(WeaponPosition {
-                equipped: false,
-                one_handed: true,
-                index,
-                details: two_handed_weapon.deref(),
-            })
+            Some(WeaponPosition::UnequippedOneHanded(index))
+        } else if let Some(index) = self.unequipped_two_handed_index_iter.next() {
+            Some(WeaponPosition::UnequippedTwoHanded(index))
         } else {
             None
         }
