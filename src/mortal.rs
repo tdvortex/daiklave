@@ -1,5 +1,5 @@
-use crate::character::abilities::Abilities;
-use crate::character::attributes::{AttributeName, AttributeValue, Attributes};
+use crate::character::abilities::{Abilities, AbilitiesIter};
+use crate::character::attributes::{AttributeName, AttributeValue, Attributes, AttributesIter};
 use crate::character::merits::Merits;
 use crate::character::weapons::Weapons;
 use crate::character::willpower::Willpower;
@@ -23,7 +23,11 @@ impl Character for MortalCharacter {
         self.attributes.set(attribute_name, new_value);
     }
 
-    fn attributes_iter(&self) -> crate::character::attributes::AttributesIter {
+    fn attributes_iter(&self) -> AttributesIter {
         self.attributes.iter()
+    }
+
+    fn abilities_iter(&self) -> AbilitiesIter {
+        self.abilities.iter()
     }
 }

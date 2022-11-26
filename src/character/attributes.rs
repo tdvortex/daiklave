@@ -17,18 +17,20 @@ pub enum AttributeName {
 
 impl AttributeName {
     fn iter() -> AttributeNameIter {
-        AttributeNameIter { next_name: Some(AttributeName::Strength) }
+        AttributeNameIter {
+            next_name: Some(AttributeName::Strength),
+        }
     }
 }
 
 struct AttributeNameIter {
-    next_name: Option<AttributeName>
+    next_name: Option<AttributeName>,
 }
 
 impl Iterator for AttributeNameIter {
     type Item = AttributeName;
 
-    fn next(&mut self) -> Option<Self::Item> {       
+    fn next(&mut self) -> Option<Self::Item> {
         let next = match &self.next_name {
             None => None,
             Some(AttributeName::Strength) => Some(AttributeName::Dexterity),
@@ -109,7 +111,7 @@ impl Attributes {
     pub fn iter(&self) -> AttributesIter {
         AttributesIter {
             attributes: self,
-            name_iter: AttributeName::iter()
+            name_iter: AttributeName::iter(),
         }
     }
 }
