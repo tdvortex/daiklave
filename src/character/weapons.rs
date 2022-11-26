@@ -1,5 +1,6 @@
 use crate::range_bands::RangeBand;
 use std::collections::HashSet;
+use eyre::{eyre, Result};
 
 #[derive(Debug, PartialEq, Eq)]
 enum Quality {
@@ -78,7 +79,7 @@ impl AttackMethods {
 
 pub trait Weapon {
     fn name(&self) -> &str;
-    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8, String>;
+    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8>;
     fn damage(&self, attack_method: &AttackMethod) -> i8;
     fn damage_type(&self) -> &DamageType;
     fn overwhelming(&self) -> i8;
@@ -102,9 +103,9 @@ impl Weapon for WeaponDetails {
         self.name.as_str()
     }
 
-    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8, String> {
+    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8> {
         if !self.attack_methods.contains(attack_method) {
-            return Err(format!("Invalid attack method: {:?}", attack_method));
+            return Err(eyre!("Invalid attack method: {:?}", attack_method));
         }
 
         let base_accuracy = match (&self.weight_class, attack_method) {
@@ -225,7 +226,7 @@ impl Weapon for OneHandedWeapon {
         self.0.name()
     }
 
-    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8, String> {
+    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8> {
         self.0.accuracy(attack_method)
     }
 
@@ -261,43 +262,7 @@ impl Weapon for TwoHandedWeapon {
         self.0.name()
     }
 
-    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8, String> {
-        self.0.accuracy(attack_method)
-    }
-
-    fn attunement(&self) -> i8 {
-        self.0.attunement()
-    }
-
-    fn damage(&self, attack_method: &AttackMethod) -> i8 {
-        self.0.damage(attack_method)
-    }
-
-    fn damage_type(&self) -> &DamageType {
-        self.0.damage_type()
-    }
-
-    fn overwhelming(&self) -> i8 {
-        self.0.overwhelming()
-    }
-
-    fn defense(&self) -> Option<i8> {
-        self.0.defense()
-    }
-
-    fn has_tag(&self, tag: &Tag) -> bool {
-        self.0.has_tag(tag)
-    }
-}
-#[derive(Debug)]
-pub struct ZeroHandedWeapon(WeaponDetails);
-
-impl Weapon for ZeroHandedWeapon {
-    fn name(&self) -> &str {
-        self.0.name()
-    }
-
-    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8, String> {
+    fn accuracy(&self, attack_method: &AttackMethod) -> Result<i8> {
         self.0.accuracy(attack_method)
     }
 
@@ -327,7 +292,7 @@ impl Weapon for ZeroHandedWeapon {
 }
 
 #[derive(Debug)]
-enum EquippedState {
+enum InHands {
     HandsFree,
     MainHandOnly(OneHandedWeapon),
     TwoDifferent(OneHandedWeapon, OneHandedWeapon),
@@ -335,7 +300,7 @@ enum EquippedState {
     TwoHanded(TwoHandedWeapon),
 }
 
-impl Default for EquippedState {
+impl Default for InHands {
     fn default() -> Self {
         Self::HandsFree
     }
@@ -343,10 +308,9 @@ impl Default for EquippedState {
 
 #[derive(Debug)]
 pub struct Weapons {
-    equipped: EquippedState,
+    equipped: InHands,
     unequipped_one_handed: Vec<OneHandedWeapon>,
     unequipped_two_handed: Vec<OneHandedWeapon>,
-    zero_handed: Vec<ZeroHandedWeapon>,
 }
 
 impl Default for Weapons {
@@ -381,13 +345,10 @@ impl Default for Weapons {
             tags: [Tag::Grappling, Tag::Natural].into(),
         });
 
-        let equipped = EquippedState::MainHandOnly(unarmed);
-
         Self {
-            equipped,
-            unequipped_one_handed: Vec::new(),
+            equipped: InHands::default(),
+            unequipped_one_handed: vec![unarmed],
             unequipped_two_handed: Vec::new(),
-            zero_handed: Vec::new(),
         }
     }
 }
