@@ -1,31 +1,11 @@
-use eyre::Result;
 use std::{collections::HashSet, hash::Hash};
 
-pub trait HasMerits {
-    fn merits_iter(&self) -> std::collections::hash_set::Iter<'_, Merit>;
-    fn add_merit(
-        &mut self,
-        name: String,
-        maybe_detail: Option<String>,
-        dots: u8,
-        merit_type: MeritType,
-        description: String,
-    );
-    fn remove_merit(&mut self, name: String, maybe_detail: Option<String>, dots: u8) -> Result<()>;
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum MeritType {
     Innate,
     Supernatural,
     Story,
     Purchased,
-}
-
-trait MeritProperties: std::fmt::Display {
-    fn dots(&self) -> u8;
-    fn merit_type(&self) -> &MeritType;
-    fn description(&self) -> &str;
 }
 
 #[derive(Debug, Eq)]
@@ -52,11 +32,11 @@ impl Hash for SimpleMerit {
 impl std::fmt::Display for SimpleMerit {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let dots = String::from_utf16(&vec![0x2022; self.dots as usize]).unwrap();
-        write!(f, "{}, ({})", self.name, dots)
+        write!(f, "{} ({})", self.name, dots)
     }
 }
 
-impl MeritProperties for SimpleMerit {
+impl SimpleMerit {
     fn dots(&self) -> u8 {
         self.dots
     }
@@ -96,11 +76,11 @@ impl Hash for DetailedMerit {
 impl std::fmt::Display for DetailedMerit {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let dots = String::from_utf16(&vec![0x2022; self.dots as usize]).unwrap();
-        write!(f, "{}, ({}), ({})", self.name, self.detail, dots)
+        write!(f, "{} ({}) ({})", self.name, self.detail, dots)
     }
 }
 
-impl MeritProperties for DetailedMerit {
+impl DetailedMerit {
     fn dots(&self) -> u8 {
         self.dots
     }
@@ -129,22 +109,22 @@ impl std::fmt::Display for Merit {
     }
 }
 
-impl MeritProperties for Merit {
-    fn dots(&self) -> u8 {
+impl Merit {
+    pub fn dots(&self) -> u8 {
         match self {
             Self::Simple(simple) => simple.dots(),
             Self::Detailed(detailed) => detailed.dots(),
         }
     }
 
-    fn merit_type(&self) -> &MeritType {
+    pub fn merit_type(&self) -> &MeritType {
         match self {
             Self::Simple(simple) => simple.merit_type(),
             Self::Detailed(detailed) => detailed.merit_type(),
         }
     }
 
-    fn description(&self) -> &str {
+    pub fn description(&self) -> &str {
         match self {
             Self::Simple(simple) => simple.description(),
             Self::Detailed(detailed) => detailed.description(),

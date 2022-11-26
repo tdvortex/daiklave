@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use exalted_3e_gui::{AbilityName, AttributeName, MortalCharacter};
+use exalted_3e_gui::{AbilityName, AttributeName, Merit, MeritType, MortalCharacter};
 
 fn default_mortal_character() -> MortalCharacter {
     MortalCharacter::default()
@@ -75,6 +75,61 @@ fn custom_mortal_character() -> MortalCharacter {
             .unwrap();
     });
 
+    [
+        (
+            "Martial Artist",
+            4,
+            MeritType::Purchased,
+            "The character has undergone near-perfect training[...]",
+            Some("Crane Style"),
+        ),
+        (
+            "Eidetic Memory",
+            2,
+            MeritType::Innate,
+            "The character enjoys near-perfect recall[...]",
+            None,
+        ),
+        (
+            "Language",
+            1,
+            MeritType::Purchased,
+            "Each purchase grants the character fluency in one language[...]",
+            Some("Low Realm"),
+        ),
+        (
+            "Language",
+            1,
+            MeritType::Purchased,
+            "Each purchase grants the character fluency in one language[...]",
+            Some("Dragontongue"),
+        ),
+        (
+            "Natural Immunity",
+            4,
+            MeritType::Innate,
+            "Whether naturally hardy or blessed by a spirit[...]",
+            None,
+        ),
+        (
+            "Resources",
+            1,
+            MeritType::Story,
+            "This Merit describes a character's finances[...]",
+            Some("Remaining Savings"),
+        ),
+    ]
+    .into_iter()
+    .for_each(|(name, dots, merit_type, description, maybe_detail)| {
+        mortal.merits.insert(Merit::new(
+            name.to_owned(),
+            dots,
+            merit_type,
+            description.to_owned(),
+            maybe_detail.map(|detail| detail.to_owned()),
+        ));
+    });
+
     mortal
 }
 
@@ -85,7 +140,8 @@ fn test_build_default() {
 
 #[test]
 fn test_build_custom() {
-    let _mortal = custom_mortal_character();
+    let mortal = custom_mortal_character();
+    dbg!(mortal);
 }
 
 #[test]
@@ -266,5 +322,91 @@ fn test_custom_attributes() {
 
     for (act, exp) in actual.into_iter().zip(expected.into_iter()) {
         assert_eq!(act, exp)
+    }
+}
+
+#[test]
+fn test_default_merits() {
+    let mortal = default_mortal_character();
+
+    let actual: HashSet<(String, u8, MeritType, String)> = mortal
+        .merits
+        .iter()
+        .map(|merit| {
+            (
+                format!("{}", merit),
+                merit.dots(),
+                merit.merit_type().clone(),
+                merit.description().to_owned(),
+            )
+        })
+        .collect();
+
+    let expected: HashSet<(String, u8, MeritType, String)> = HashSet::new();
+
+    assert_eq!(actual, expected);
+}
+
+#[test]
+fn test_custom_merits() {
+    let mortal = custom_mortal_character();
+
+    let actual: HashSet<(String, u8, MeritType, String)> = mortal
+        .merits
+        .iter()
+        .map(|merit| {
+            (
+                format!("{}", merit),
+                merit.dots(),
+                merit.merit_type().clone(),
+                merit.description().to_owned(),
+            )
+        })
+        .collect();
+
+    let expected: HashSet<(String, u8, MeritType, String)> = [
+        (
+            "Martial Artist (Crane Style) (••••)".to_owned(),
+            4,
+            MeritType::Purchased,
+            "The character has undergone near-perfect training[...]".to_owned(),
+        ),
+        (
+            "Natural Immunity (••••)".to_owned(),
+            4,
+            MeritType::Innate,
+            "Whether naturally hardy or blessed by a spirit[...]".to_owned(),
+        ),
+        (
+            "Resources (Remaining Savings) (•)".to_owned(),
+            1,
+            MeritType::Story,
+            "This Merit describes a character's finances[...]".to_owned(),
+        ),
+        (
+            "Language (Dragontongue) (•)".to_owned(),
+            1,
+            MeritType::Purchased,
+            "Each purchase grants the character fluency in one language[...]".to_owned(),
+        ),
+        (
+            "Language (Low Realm) (•)".to_owned(),
+            1,
+            MeritType::Purchased,
+            "Each purchase grants the character fluency in one language[...]".to_owned(),
+        ),
+        (
+            "Eidetic Memory (••)".to_owned(),
+            2,
+            MeritType::Innate,
+            "The character enjoys near-perfect recall[...]".to_owned(),
+        ),
+    ]
+    .into_iter()
+    .collect();
+
+    assert!(actual.len() == expected.len());
+    for act in actual.iter() {
+        assert_eq!(Some(act), expected.get(&act));
     }
 }

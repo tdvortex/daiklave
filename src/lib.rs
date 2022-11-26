@@ -6,6 +6,7 @@ mod range_bands;
 mod weapons;
 mod willpower;
 
-pub use crate::mortal::MortalCharacter;
-pub use abilities::AbilityName;
-pub use attributes::AttributeName;
+pub use abilities::{Abilities, AbilitiesIter, Ability, AbilityMut, AbilityName};
+pub use attributes::{Attribute, AttributeMut, AttributeName, Attributes, AttributesIter};
+pub use merits::{Merit, MeritType, Merits};
+pub use mortal::MortalCharacter;
