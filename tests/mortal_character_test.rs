@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use exalted_3e_gui::{AbilityName, AttributeName, Merit, MeritType, MortalCharacter, Weapon, Tag};
+use exalted_3e_gui::{AbilityName, AttributeName, Merit, MeritType, MortalCharacter, Weapon, Tag, RangeBand, EquipHand};
 
 fn default_mortal_character() -> MortalCharacter {
     MortalCharacter::default()
@@ -421,5 +421,117 @@ fn test_custom_merits() {
     assert!(actual.len() == expected.len());
     for act in actual.iter() {
         assert_eq!(Some(act), expected.get(&act));
+    }
+}
+
+#[test]
+fn test_default_character_weapons() {
+    let mortal = default_mortal_character();
+
+    assert!(mortal.weapons.equipped_iter().collect::<Vec<(usize, &Weapon)>>().is_empty());
+    assert!(mortal.weapons.iter().collect::<Vec<(usize, &Weapon)>>().is_empty());
+}
+
+#[test]
+fn test_custom_character_weapons() {
+    let mut mortal = custom_mortal_character();
+
+    // Test owned iterato
+    let expected: [(usize, String, Option<i8>, Option<i8>, i8, Option<i8>, u8, i8); 1] = [
+        (
+            0,
+            "Hook Swords".to_owned(),
+            Some(2),
+            None,
+            9,
+            Some(1),
+            0,
+            1
+        )
+    ];
+
+    let actual = mortal.weapons.iter().collect::<Vec<(usize, &Weapon)>>();
+
+    assert_eq!(actual.len(), expected.len());
+
+    for ((actual_key, actual_weapon), right) in mortal.weapons.iter().zip(expected) {
+        assert_eq!(actual_key, right.0);
+        assert_eq!(actual_weapon.name(), right.1);
+        assert_eq!(actual_weapon.accuracy(RangeBand::Close), right.2);
+        assert_eq!(actual_weapon.accuracy(RangeBand::Extreme), right.3);
+        assert_eq!(actual_weapon.damage(), right.4);
+        assert_eq!(actual_weapon.defense(), right.5);
+        assert_eq!(actual_weapon.attunement(), right.6);
+        assert_eq!(actual_weapon.overwhelming(), right.7);
+    }
+
+    // Test equipped iterator
+    let expected: [(usize, String, Option<i8>, Option<i8>, i8, Option<i8>, u8, i8); 2] = [
+        (
+            0,
+            "Hook Swords".to_owned(),
+            Some(2),
+            None,
+            9,
+            Some(1),
+            0,
+            1
+        ),
+        (
+            0,
+            "Hook Swords".to_owned(),
+            Some(2),
+            None,
+            9,
+            Some(1),
+            0,
+            1
+        )
+    ];
+
+    let actual = mortal.weapons.equipped_iter().collect::<Vec<(usize, &Weapon)>>();
+
+    assert_eq!(actual.len(), expected.len());
+
+    for ((actual_key, actual_weapon), right) in mortal.weapons.iter().zip(expected) {
+        assert_eq!(actual_key, right.0);
+        assert_eq!(actual_weapon.name(), right.1);
+        assert_eq!(actual_weapon.accuracy(RangeBand::Close), right.2);
+        assert_eq!(actual_weapon.accuracy(RangeBand::Extreme), right.3);
+        assert_eq!(actual_weapon.damage(), right.4);
+        assert_eq!(actual_weapon.defense(), right.5);
+        assert_eq!(actual_weapon.attunement(), right.6);
+        assert_eq!(actual_weapon.overwhelming(), right.7);
+    }
+
+    // Test unequip
+    mortal.weapons.unequip(EquipHand::Main);
+
+    let expected: [(usize, String, Option<i8>, Option<i8>, i8, Option<i8>, u8, i8); 1] = [
+        (
+            0,
+            "Hook Swords".to_owned(),
+            Some(2),
+            None,
+            9,
+            Some(1),
+            0,
+            1
+        )
+    ];
+
+    let actual = mortal.weapons.equipped_iter().collect::<Vec<(usize, &Weapon)>>();
+
+    assert_eq!(actual.len(), expected.len());
+
+    for ((actual_key, actual_weapon), right) in mortal.weapons.iter().zip(expected) {
+        assert_eq!(actual_key, right.0);
+        assert_eq!(actual_weapon.name(), right.1);
+        assert_eq!(actual_weapon.accuracy(RangeBand::Close), right.2);
+        assert_eq!(actual_weapon.accuracy(RangeBand::Extreme), right.3);
+        assert_eq!(actual_weapon.damage(), right.4);
+        assert_eq!(actual_weapon.defense(), right.5);
+        assert_eq!(actual_weapon.attunement(), right.6);
+        assert_eq!(actual_weapon.overwhelming(), right.7);
     }
 }
