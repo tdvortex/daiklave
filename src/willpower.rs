@@ -1,16 +1,9 @@
 use eyre::{eyre, Result};
 
-pub trait HasWillpower {
-    fn recover_one_willpower(&mut self);
-    fn recover_all_willpower(&mut self);
-    fn gain_one_willpower(&mut self);
-    fn spend_one_willpower(&mut self) -> Result<()>;
-}
-
 #[derive(Debug)]
 pub struct Willpower {
-    current: u8,
-    maximum: u8,
+    pub current: u8,
+    pub maximum: u8,
 }
 
 impl Default for Willpower {
