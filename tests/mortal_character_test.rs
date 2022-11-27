@@ -1,6 +1,14 @@
 use std::collections::HashSet;
 
-use exalted_3e_gui::{MortalCharacter, attributes::AttributeName, abilities::AbilityName, merits::{MeritType, Merit}, weapons::{Weapon, Tag, EquipHand}, range_bands::RangeBand};
+use exalted_3e_gui::{
+    abilities::AbilityName,
+    armor::{ArmorItem, ArmorTag},
+    attributes::AttributeName,
+    merits::{Merit, MeritType},
+    range_bands::RangeBand,
+    weapons::{EquipHand, Weapon, WeaponTag},
+    MortalCharacter,
+};
 
 fn default_mortal_character() -> MortalCharacter {
     MortalCharacter::default()
@@ -29,9 +37,7 @@ fn custom_mortal_character() -> MortalCharacter {
             .unwrap()
     });
 
-    mortal
-        .abilities
-        .add_martial_arts("Crane Style".to_owned());
+    mortal.abilities.add_martial_arts("Crane Style".to_owned());
 
     [
         (AbilityName::Athletics, 3),
@@ -132,16 +138,36 @@ fn custom_mortal_character() -> MortalCharacter {
 
     let key = mortal.weapons.add_weapon(
         Weapon::new(
-        "Hook Swords".to_owned(), 
-        [
-            Tag::Medium,
-            Tag::Disarming,
-            Tag::Lethal,
-            Tag::MartialArts("Crane Style".to_owned()),
-            Tag::OneHanded,
-        ].into()).unwrap());
-    
+            "Hook Swords".to_owned(),
+            [
+                WeaponTag::Medium,
+                WeaponTag::Disarming,
+                WeaponTag::Lethal,
+                WeaponTag::MartialArts("Crane Style".to_owned()),
+                WeaponTag::OneHanded,
+            ]
+            .into(),
+        )
+        .unwrap(),
+    );
+
     mortal.weapons.equip(key, EquipHand::Both).unwrap();
+
+    let key = mortal.armor.add_armor_item(
+        ArmorItem::new(
+            "Silken Armor".to_owned(),
+            [
+                ArmorTag::Light,
+                ArmorTag::Artifact,
+                ArmorTag::Silent,
+                ArmorTag::Special("Doesn't count as armor for Martial Arts".to_owned()),
+            ]
+            .into(),
+        )
+        .unwrap(),
+    );
+
+    mortal.armor.equip_armor_item(key).unwrap();
 
     mortal
 }
@@ -428,8 +454,16 @@ fn test_custom_merits() {
 fn test_default_character_weapons() {
     let mortal = default_mortal_character();
 
-    assert!(mortal.weapons.equipped_iter().collect::<Vec<(usize, &Weapon)>>().is_empty());
-    assert!(mortal.weapons.iter().collect::<Vec<(usize, &Weapon)>>().is_empty());
+    assert!(mortal
+        .weapons
+        .equipped_iter()
+        .collect::<Vec<(usize, &Weapon)>>()
+        .is_empty());
+    assert!(mortal
+        .weapons
+        .iter()
+        .collect::<Vec<(usize, &Weapon)>>()
+        .is_empty());
 }
 
 #[test]
@@ -437,18 +471,16 @@ fn test_custom_character_weapons() {
     let mut mortal = custom_mortal_character();
 
     // Test owned iterato
-    let expected: [(usize, String, Option<i8>, Option<i8>, i8, Option<i8>, u8, i8); 1] = [
-        (
-            0,
-            "Hook Swords".to_owned(),
-            Some(2),
-            None,
-            9,
-            Some(1),
-            0,
-            1
-        )
-    ];
+    let expected: [(
+        usize,
+        String,
+        Option<i8>,
+        Option<i8>,
+        i8,
+        Option<i8>,
+        u8,
+        i8,
+    ); 1] = [(0, "Hook Swords".to_owned(), Some(2), None, 9, Some(1), 0, 1)];
 
     let actual = mortal.weapons.iter().collect::<Vec<(usize, &Weapon)>>();
 
@@ -466,30 +498,24 @@ fn test_custom_character_weapons() {
     }
 
     // Test equipped iterator
-    let expected: [(usize, String, Option<i8>, Option<i8>, i8, Option<i8>, u8, i8); 2] = [
-        (
-            0,
-            "Hook Swords".to_owned(),
-            Some(2),
-            None,
-            9,
-            Some(1),
-            0,
-            1
-        ),
-        (
-            0,
-            "Hook Swords".to_owned(),
-            Some(2),
-            None,
-            9,
-            Some(1),
-            0,
-            1
-        )
+    let expected: [(
+        usize,
+        String,
+        Option<i8>,
+        Option<i8>,
+        i8,
+        Option<i8>,
+        u8,
+        i8,
+    ); 2] = [
+        (0, "Hook Swords".to_owned(), Some(2), None, 9, Some(1), 0, 1),
+        (0, "Hook Swords".to_owned(), Some(2), None, 9, Some(1), 0, 1),
     ];
 
-    let actual = mortal.weapons.equipped_iter().collect::<Vec<(usize, &Weapon)>>();
+    let actual = mortal
+        .weapons
+        .equipped_iter()
+        .collect::<Vec<(usize, &Weapon)>>();
 
     assert_eq!(actual.len(), expected.len());
 
@@ -507,20 +533,21 @@ fn test_custom_character_weapons() {
     // Test unequip
     mortal.weapons.unequip(EquipHand::Main);
 
-    let expected: [(usize, String, Option<i8>, Option<i8>, i8, Option<i8>, u8, i8); 1] = [
-        (
-            0,
-            "Hook Swords".to_owned(),
-            Some(2),
-            None,
-            9,
-            Some(1),
-            0,
-            1
-        )
-    ];
+    let expected: [(
+        usize,
+        String,
+        Option<i8>,
+        Option<i8>,
+        i8,
+        Option<i8>,
+        u8,
+        i8,
+    ); 1] = [(0, "Hook Swords".to_owned(), Some(2), None, 9, Some(1), 0, 1)];
 
-    let actual = mortal.weapons.equipped_iter().collect::<Vec<(usize, &Weapon)>>();
+    let actual = mortal
+        .weapons
+        .equipped_iter()
+        .collect::<Vec<(usize, &Weapon)>>();
 
     assert_eq!(actual.len(), expected.len());
 
@@ -534,4 +561,30 @@ fn test_custom_character_weapons() {
         assert_eq!(actual_weapon.attunement(), right.6);
         assert_eq!(actual_weapon.overwhelming(), right.7);
     }
+}
+
+#[test]
+fn test_default_character_armor() {
+    let mortal = default_mortal_character();
+
+    assert!(mortal.armor.iter().count() == 0);
+    assert!(mortal.armor.equipped().is_none());
+}
+
+#[test]
+fn test_custom_character_armor() {
+    let mut mortal = custom_mortal_character();
+
+    assert!(mortal.armor.iter().count() == 1);
+    assert!(mortal.armor.equipped().is_some());
+    let actual = mortal.armor.equipped().unwrap();
+    assert_eq!(actual.name(), "Silken Armor".to_owned());
+    assert_eq!(actual.soak(), 5);
+    assert_eq!(actual.hardness(), 4);
+    assert_eq!(actual.mobility_penality(), 0);
+    assert_eq!(actual.attunement(), 4);
+
+    mortal.armor.unequip_armor_item();
+    assert!(mortal.armor.iter().count() == 1);
+    assert!(mortal.armor.equipped().is_none());
 }

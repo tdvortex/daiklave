@@ -6,7 +6,7 @@ use eyre::{eyre, Result};
 
 // Weapons are constructed and displayed as a collection of Tags
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum Tag {
+pub enum WeaponTag {
     Archery(RangeBand),
     Artifact,
     Balanced,
@@ -49,7 +49,7 @@ pub enum Tag {
 pub struct Weapon(Handedness);
 
 impl Weapon {
-    pub fn new(name: String, tags: HashSet<Tag>) -> Result<Weapon> {
+    pub fn new(name: String, tags: HashSet<WeaponTag>) -> Result<Weapon> {
         let mut two_handed = None::<bool>;
         let mut weight_class = None::<WeightClass>;
         let mut damage_type = None::<DamageType>;
@@ -63,20 +63,20 @@ impl Weapon {
 
         for tag in tags {
             match tag {
-                Tag::Archery(range) => {
+                WeaponTag::Archery(range) => {
                     if let Some(old_range) = archery {
                         archery = Some(old_range.max(range));
                     } else {
                         archery = Some(range);
                     }
                 }
-                Tag::Artifact => {
+                WeaponTag::Artifact => {
                     other_tags.insert(OtherTag::Artifact);
                 }
-                Tag::Balanced => {
+                WeaponTag::Balanced => {
                     other_tags.insert(OtherTag::Balanced);
                 }
-                Tag::Bashing => {
+                WeaponTag::Bashing => {
                     if let Some(other_type) = damage_type {
                         if other_type != DamageType::Bashing {
                             return Err(eyre!("weapons must be exactly one of Bashing or Lethal"));
@@ -84,37 +84,37 @@ impl Weapon {
                     }
                     damage_type = Some(DamageType::Bashing);
                 }
-                Tag::Brawl => {
+                WeaponTag::Brawl => {
                     brawl = true;
                 }
-                Tag::Chopping => {
+                WeaponTag::Chopping => {
                     other_tags.insert(OtherTag::Chopping);
                 }
-                Tag::Concealable => {
+                WeaponTag::Concealable => {
                     other_tags.insert(OtherTag::Concealable);
                 }
-                Tag::Crossbow => {
+                WeaponTag::Crossbow => {
                     other_tags.insert(OtherTag::Crossbow);
                 }
-                Tag::Cutting => {
+                WeaponTag::Cutting => {
                     other_tags.insert(OtherTag::Cutting);
                 }
-                Tag::Disarming => {
+                WeaponTag::Disarming => {
                     other_tags.insert(OtherTag::Disarming);
                 }
-                Tag::Exceptional => {
+                WeaponTag::Exceptional => {
                     other_tags.insert(OtherTag::Exceptional);
                 }
-                Tag::Flame => {
+                WeaponTag::Flame => {
                     other_tags.insert(OtherTag::Flame);
                 }
-                Tag::Flexible => {
+                WeaponTag::Flexible => {
                     other_tags.insert(OtherTag::Flexible);
                 }
-                Tag::Grappling => {
+                WeaponTag::Grappling => {
                     other_tags.insert(OtherTag::Grappling);
                 }
-                Tag::Heavy => {
+                WeaponTag::Heavy => {
                     if let Some(other_class) = weight_class {
                         if other_class != WeightClass::Heavy {
                             return Err(eyre!(
@@ -124,10 +124,10 @@ impl Weapon {
                     }
                     weight_class = Some(WeightClass::Heavy);
                 }
-                Tag::Improvised => {
+                WeaponTag::Improvised => {
                     other_tags.insert(OtherTag::Improvised);
                 }
-                Tag::Lethal => {
+                WeaponTag::Lethal => {
                     if let Some(other_type) = damage_type {
                         if other_type != DamageType::Lethal {
                             return Err(eyre!("weapons must be exactly one of Bashing or Lethal"));
@@ -135,7 +135,7 @@ impl Weapon {
                     }
                     damage_type = Some(DamageType::Lethal);
                 }
-                Tag::Light => {
+                WeaponTag::Light => {
                     if let Some(other_class) = weight_class {
                         if other_class != WeightClass::Light {
                             return Err(eyre!(
@@ -145,10 +145,10 @@ impl Weapon {
                     }
                     weight_class = Some(WeightClass::Light);
                 }
-                Tag::MartialArts(style) => {
+                WeaponTag::MartialArts(style) => {
                     martial_arts_styles.insert(style);
                 }
-                Tag::Medium => {
+                WeaponTag::Medium => {
                     if let Some(other_class) = weight_class {
                         if other_class != WeightClass::Medium {
                             return Err(eyre!(
@@ -158,13 +158,13 @@ impl Weapon {
                     }
                     weight_class = Some(WeightClass::Medium);
                 }
-                Tag::Melee => {
+                WeaponTag::Melee => {
                     melee = true;
                 }
-                Tag::Mounted => {
+                WeaponTag::Mounted => {
                     other_tags.insert(OtherTag::Mounted);
                 }
-                Tag::OneHanded => {
+                WeaponTag::OneHanded => {
                     if let Some(two) = two_handed {
                         if two {
                             return Err(eyre!(
@@ -174,48 +174,48 @@ impl Weapon {
                     }
                     two_handed = Some(false);
                 }
-                Tag::Natural => {
+                WeaponTag::Natural => {
                     other_tags.insert(OtherTag::Natural);
                 }
-                Tag::Piercing => {
+                WeaponTag::Piercing => {
                     other_tags.insert(OtherTag::Piercing);
                 }
-                Tag::Poisonable => {
+                WeaponTag::Poisonable => {
                     other_tags.insert(OtherTag::Poisonable);
                 }
-                Tag::Powerful => {
+                WeaponTag::Powerful => {
                     other_tags.insert(OtherTag::Powerful);
                 }
-                Tag::Reaching => {
+                WeaponTag::Reaching => {
                     other_tags.insert(OtherTag::Reaching);
                 }
-                Tag::Shield => {
+                WeaponTag::Shield => {
                     other_tags.insert(OtherTag::Shield);
                 }
-                Tag::Slow => {
+                WeaponTag::Slow => {
                     other_tags.insert(OtherTag::Slow);
                 }
-                Tag::Smashing => {
+                WeaponTag::Smashing => {
                     other_tags.insert(OtherTag::Smashing);
                 }
-                Tag::Special(property) => {
+                WeaponTag::Special(property) => {
                     if special_property.is_some() {
                         return Err(eyre!("weapons can have no more than one Special tag"));
                     } else {
                         special_property = Some(property);
                     }
                 }
-                Tag::Subtle => {
+                WeaponTag::Subtle => {
                     other_tags.insert(OtherTag::Subtle);
                 }
-                Tag::Thrown(range) => {
+                WeaponTag::Thrown(range) => {
                     if let Some(old_range) = thrown {
                         thrown = Some(old_range.max(range));
                     } else {
                         thrown = Some(range);
                     }
                 }
-                Tag::TwoHanded => {
+                WeaponTag::TwoHanded => {
                     if let Some(two) = two_handed {
                         if !two {
                             return Err(eyre!(
@@ -225,7 +225,7 @@ impl Weapon {
                     }
                     two_handed = Some(true);
                 }
-                Tag::Worn => {
+                WeaponTag::Worn => {
                     other_tags.insert(OtherTag::Worn);
                 }
             }
@@ -443,91 +443,91 @@ impl Weapon {
         }
     }
 
-    pub fn tags(&self) -> HashSet<Tag> {
-        let mut output = HashSet::<Tag>::new();
+    pub fn tags(&self) -> HashSet<WeaponTag> {
+        let mut output = HashSet::<WeaponTag>::new();
 
         match self.0 {
             Handedness::OneHanded(_) => {
-                output.insert(Tag::OneHanded);
+                output.insert(WeaponTag::OneHanded);
             }
             Handedness::TwoHanded(_) => {
-                output.insert(Tag::TwoHanded);
+                output.insert(WeaponTag::TwoHanded);
             }
         }
 
         let details = self.details();
         match details.weight_class {
             WeightClass::Light => {
-                output.insert(Tag::Light);
+                output.insert(WeaponTag::Light);
             }
             WeightClass::Medium => {
-                output.insert(Tag::Medium);
+                output.insert(WeaponTag::Medium);
             }
             WeightClass::Heavy => {
-                output.insert(Tag::Heavy);
+                output.insert(WeaponTag::Heavy);
             }
         }
         match details.damage_type {
             DamageType::Bashing => {
-                output.insert(Tag::Bashing);
+                output.insert(WeaponTag::Bashing);
             }
             DamageType::Lethal => {
-                output.insert(Tag::Lethal);
+                output.insert(WeaponTag::Lethal);
             }
         }
         match details.main_attack_method {
             MainAttackMethod::Archery(range) => {
-                output.insert(Tag::Archery(range));
+                output.insert(WeaponTag::Archery(range));
             }
             MainAttackMethod::Brawl => {
-                output.insert(Tag::Brawl);
+                output.insert(WeaponTag::Brawl);
             }
             MainAttackMethod::Melee => {
-                output.insert(Tag::Melee);
+                output.insert(WeaponTag::Melee);
             }
             MainAttackMethod::MeleeAndThrown(range) => {
-                output.insert(Tag::Melee);
-                output.insert(Tag::Thrown(range));
+                output.insert(WeaponTag::Melee);
+                output.insert(WeaponTag::Thrown(range));
             }
             MainAttackMethod::MartialArtsOnly => {}
             MainAttackMethod::ThrownOnly(range) => {
-                output.insert(Tag::Thrown(range));
+                output.insert(WeaponTag::Thrown(range));
             }
         }
 
         for style in details.martial_arts_styles.iter() {
-            output.insert(Tag::MartialArts(style.clone()));
+            output.insert(WeaponTag::MartialArts(style.clone()));
         }
 
         if let Some(property) = &details.special_property {
-            output.insert(Tag::Special(property.clone()));
+            output.insert(WeaponTag::Special(property.clone()));
         }
 
         for other_tag in &details.other_tags {
             let tag = match other_tag {
-                OtherTag::Artifact => Tag::Artifact,
-                OtherTag::Balanced => Tag::Balanced,
-                OtherTag::Chopping => Tag::Chopping,
-                OtherTag::Concealable => Tag::Concealable,
-                OtherTag::Crossbow => Tag::Crossbow,
-                OtherTag::Cutting => Tag::Cutting,
-                OtherTag::Disarming => Tag::Disarming,
-                OtherTag::Exceptional => Tag::Exceptional,
-                OtherTag::Flame => Tag::Flame,
-                OtherTag::Flexible => Tag::Flexible,
-                OtherTag::Grappling => Tag::Grappling,
-                OtherTag::Improvised => Tag::Improvised,
-                OtherTag::Mounted => Tag::Mounted,
-                OtherTag::Natural => Tag::Natural,
-                OtherTag::Piercing => Tag::Piercing,
-                OtherTag::Poisonable => Tag::Poisonable,
-                OtherTag::Powerful => Tag::Powerful,
-                OtherTag::Reaching => Tag::Reaching,
-                OtherTag::Shield => Tag::Shield,
-                OtherTag::Slow => Tag::Slow,
-                OtherTag::Smashing => Tag::Smashing,
-                OtherTag::Subtle => Tag::Subtle,
-                OtherTag::Worn => Tag::Worn,
+                OtherTag::Artifact => WeaponTag::Artifact,
+                OtherTag::Balanced => WeaponTag::Balanced,
+                OtherTag::Chopping => WeaponTag::Chopping,
+                OtherTag::Concealable => WeaponTag::Concealable,
+                OtherTag::Crossbow => WeaponTag::Crossbow,
+                OtherTag::Cutting => WeaponTag::Cutting,
+                OtherTag::Disarming => WeaponTag::Disarming,
+                OtherTag::Exceptional => WeaponTag::Exceptional,
+                OtherTag::Flame => WeaponTag::Flame,
+                OtherTag::Flexible => WeaponTag::Flexible,
+                OtherTag::Grappling => WeaponTag::Grappling,
+                OtherTag::Improvised => WeaponTag::Improvised,
+                OtherTag::Mounted => WeaponTag::Mounted,
+                OtherTag::Natural => WeaponTag::Natural,
+                OtherTag::Piercing => WeaponTag::Piercing,
+                OtherTag::Poisonable => WeaponTag::Poisonable,
+                OtherTag::Powerful => WeaponTag::Powerful,
+                OtherTag::Reaching => WeaponTag::Reaching,
+                OtherTag::Shield => WeaponTag::Shield,
+                OtherTag::Slow => WeaponTag::Slow,
+                OtherTag::Smashing => WeaponTag::Smashing,
+                OtherTag::Subtle => WeaponTag::Subtle,
+                OtherTag::Worn => WeaponTag::Worn,
             };
             output.insert(tag);
         }
@@ -700,6 +700,12 @@ impl Weapons {
 
     pub fn iter(&self) -> impl Iterator<Item = (usize, &Weapon)> {
         self.owned.iter()
+    }
+
+    pub fn get(&self, key: usize) -> Result<&Weapon> {
+        self.owned
+            .get(key)
+            .ok_or_else(|| eyre!("weapon {} not found", key))
     }
 
     pub fn equip(&mut self, key: usize, hand: EquipHand) -> Result<()> {
