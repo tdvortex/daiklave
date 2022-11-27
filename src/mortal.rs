@@ -1,6 +1,7 @@
 use crate::abilities::Abilities;
 use crate::armor::Armor;
 use crate::attributes::Attributes;
+use crate::health::Health;
 use crate::merits::Merits;
 use crate::weapons::Weapons;
 use crate::willpower::Willpower;
@@ -12,5 +13,6 @@ pub struct MortalCharacter {
     pub merits: Merits,
     pub weapons: Weapons,
     pub armor: Armor,
+    pub health: Health,
     pub willpower: Willpower,
 }
