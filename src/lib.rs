@@ -11,4 +11,4 @@ pub use attributes::{Attribute, AttributeMut, AttributeName, Attributes, Attribu
 pub use merits::{Merit, MeritType, Merits};
 pub use mortal::MortalCharacter;
 pub use range_bands::RangeBand;
-pub use weapons::{Weapon, Weapons};
+pub use weapons::{Weapon, Weapons, Tag, EquipHand};

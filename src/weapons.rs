@@ -81,9 +81,8 @@ impl Weapon {
                         if other_type != DamageType::Bashing {
                             return Err(eyre!("weapons must be exactly one of Bashing or Lethal"));
                         }
-                    } else {
-                        damage_type = Some(DamageType::Bashing);
                     }
+                    damage_type = Some(DamageType::Bashing);
                 }
                 Tag::Brawl => {
                     brawl = true;
@@ -122,9 +121,8 @@ impl Weapon {
                                 "weapons must be exactly one of Light, Medium, or Heavy"
                             ));
                         }
-                    } else {
-                        weight_class = Some(WeightClass::Heavy);
                     }
+                    weight_class = Some(WeightClass::Heavy);
                 }
                 Tag::Improvised => {
                     other_tags.insert(OtherTag::Improvised);
@@ -134,9 +132,8 @@ impl Weapon {
                         if other_type != DamageType::Lethal {
                             return Err(eyre!("weapons must be exactly one of Bashing or Lethal"));
                         }
-                    } else {
-                        damage_type = Some(DamageType::Lethal);
                     }
+                    damage_type = Some(DamageType::Lethal);
                 }
                 Tag::Light => {
                     if let Some(other_class) = weight_class {
@@ -144,10 +141,9 @@ impl Weapon {
                             return Err(eyre!(
                                 "weapons must be exactly one of Light, Medium, or Heavy"
                             ));
-                        } else {
-                            weight_class = Some(WeightClass::Light);
                         }
                     }
+                    weight_class = Some(WeightClass::Light);
                 }
                 Tag::MartialArts(style) => {
                     martial_arts_styles.insert(style);
@@ -158,10 +154,9 @@ impl Weapon {
                             return Err(eyre!(
                                 "weapons must be exactly one of Light, Medium, or Heavy"
                             ));
-                        } else {
-                            weight_class = Some(WeightClass::Medium);
                         }
                     }
+                    weight_class = Some(WeightClass::Medium);
                 }
                 Tag::Melee => {
                     melee = true;
@@ -176,9 +171,8 @@ impl Weapon {
                                 "weapons must be exactly one of OneHanded or TwoHanded"
                             ));
                         }
-                    } else {
-                        two_handed = Some(false);
                     }
+                    two_handed = Some(false);
                 }
                 Tag::Natural => {
                     other_tags.insert(OtherTag::Natural);
@@ -228,9 +222,8 @@ impl Weapon {
                                 "weapons must be exactly one of OneHanded or TwoHanded"
                             ));
                         }
-                    } else {
-                        two_handed = Some(true);
                     }
+                    two_handed = Some(true);
                 }
                 Tag::Worn => {
                     other_tags.insert(OtherTag::Worn);

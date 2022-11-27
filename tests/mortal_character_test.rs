@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use exalted_3e_gui::{AbilityName, AttributeName, Merit, MeritType, MortalCharacter};
+use exalted_3e_gui::{AbilityName, AttributeName, Merit, MeritType, MortalCharacter, Weapon, Tag};
 
 fn default_mortal_character() -> MortalCharacter {
     MortalCharacter::default()
@@ -129,6 +129,19 @@ fn custom_mortal_character() -> MortalCharacter {
             maybe_detail.map(|detail| detail.to_owned()),
         ));
     });
+
+    let key = mortal.weapons.add_weapon(
+        Weapon::new(
+        "Hook Swords".to_owned(), 
+        [
+            Tag::Medium,
+            Tag::Disarming,
+            Tag::Lethal,
+            Tag::MartialArts("Crane Style".to_owned()),
+            Tag::OneHanded,
+        ].into()).unwrap());
+    
+    mortal.weapons.equip(key, exalted_3e_gui::EquipHand::Both).unwrap();
 
     mortal
 }
