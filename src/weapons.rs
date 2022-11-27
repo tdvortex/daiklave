@@ -1,4 +1,5 @@
-use std::collections::{HashSet};
+use slab::Slab;
+use std::{collections::HashSet, ops::Deref};
 
 use crate::RangeBand;
 use eyre::{eyre, Result};
@@ -44,6 +45,7 @@ pub enum Tag {
     Worn,
 }
 // Weapon API
+#[derive(Debug)]
 pub struct Weapon(Handedness);
 
 impl Weapon {
@@ -203,7 +205,7 @@ impl Weapon {
                     other_tags.insert(OtherTag::Smashing);
                 }
                 Tag::Special(property) => {
-                    if let Some(other_property) = special_property {
+                    if special_property.is_some() {
                         return Err(eyre!("weapons can have no more than one Special tag"));
                     } else {
                         special_property = Some(property);
@@ -236,19 +238,19 @@ impl Weapon {
             }
         }
 
-        if let None = two_handed {
+        if two_handed.is_none() {
             return Err(eyre!(
                 "weapons must be exactly one of OneHanded or TwoHanded"
             ));
         }
 
-        if let None = weight_class {
+        if weight_class.is_none() {
             return Err(eyre!(
                 "weapons must be exactly one of Light, Medium, or Heavy"
             ));
         }
 
-        if let None = damage_type {
+        if damage_type.is_none() {
             return Err(eyre!("weapons must be exactly one of Bashing or Lethal"));
         }
 
@@ -299,9 +301,7 @@ impl Weapon {
     }
 
     fn details(&self) -> &WeaponDetails {
-        match self.0 {
-            Handedness::OneHanded(inner) | Handedness::TwoHanded(inner) => &inner,
-        }
+        &self.0
     }
 
     pub fn name(&self) -> &str {
@@ -309,7 +309,11 @@ impl Weapon {
     }
 
     pub fn accuracy(&self, range: RangeBand) -> Option<i8> {
-        let base_accuracy: i8 = match (range, self.details().main_attack_method, self.details().weight_class) {
+        let base_accuracy: i8 = match (
+            range,
+            self.details().main_attack_method,
+            self.details().weight_class,
+        ) {
             (RangeBand::Close, MainAttackMethod::Archery(_), _) => Some(-2),
             (RangeBand::Close, MainAttackMethod::ThrownOnly(_), _) => Some(4),
             (RangeBand::Close, _, WeightClass::Light) => Some(4),
@@ -343,7 +347,7 @@ impl Weapon {
                     None
                 }
             }
-            (RangeBand::Short, MainAttackMethod::ThrownOnly(range), _) 
+            (RangeBand::Short, MainAttackMethod::ThrownOnly(range), _)
             | (RangeBand::Short, MainAttackMethod::MeleeAndThrown(range), _) => {
                 if range >= RangeBand::Short {
                     Some(3)
@@ -351,7 +355,7 @@ impl Weapon {
                     None
                 }
             }
-            (RangeBand::Medium, MainAttackMethod::ThrownOnly(range), _) 
+            (RangeBand::Medium, MainAttackMethod::ThrownOnly(range), _)
             | (RangeBand::Medium, MainAttackMethod::MeleeAndThrown(range), _) => {
                 if range >= RangeBand::Medium {
                     Some(2)
@@ -359,7 +363,7 @@ impl Weapon {
                     None
                 }
             }
-            (RangeBand::Long, MainAttackMethod::ThrownOnly(range), _) 
+            (RangeBand::Long, MainAttackMethod::ThrownOnly(range), _)
             | (RangeBand::Long, MainAttackMethod::MeleeAndThrown(range), _) => {
                 if range >= RangeBand::Long {
                     Some(-1)
@@ -367,7 +371,7 @@ impl Weapon {
                     None
                 }
             }
-            (RangeBand::Extreme, MainAttackMethod::ThrownOnly(range), _) 
+            (RangeBand::Extreme, MainAttackMethod::ThrownOnly(range), _)
             | (RangeBand::Extreme, MainAttackMethod::MeleeAndThrown(range), _) => {
                 if range >= RangeBand::Extreme {
                     Some(-3)
@@ -378,7 +382,10 @@ impl Weapon {
             (_, _, _) => None,
         }?;
 
-        let exceptional_bonus = i8::from(self.details().other_tags.contains(&OtherTag::Artifact) || self.details().other_tags.contains(&OtherTag::Exceptional));
+        let exceptional_bonus = i8::from(
+            self.details().other_tags.contains(&OtherTag::Artifact)
+                || self.details().other_tags.contains(&OtherTag::Exceptional),
+        );
         let flame_bonus = if self.details().other_tags.contains(&OtherTag::Flame) {
             if let MainAttackMethod::Archery(_) = self.details().main_attack_method {
                 2
@@ -409,19 +416,17 @@ impl Weapon {
     pub fn defense(&self) -> Option<i8> {
         match self.details().main_attack_method {
             MainAttackMethod::Archery(_) | MainAttackMethod::ThrownOnly(_) => None,
-            _ => {
-                match self.details().weight_class {
-                    WeightClass::Light => Some(0),
-                    WeightClass::Medium => Some(1),
-                    WeightClass::Heavy => {
-                        if self.details().other_tags.contains(&OtherTag::Artifact) {
-                            Some(0)
-                        } else {
-                            Some(-1)
-                        }
+            _ => match self.details().weight_class {
+                WeightClass::Light => Some(0),
+                WeightClass::Medium => Some(1),
+                WeightClass::Heavy => {
+                    if self.details().other_tags.contains(&OtherTag::Artifact) {
+                        Some(0)
+                    } else {
+                        Some(-1)
                     }
                 }
-            }
+            },
         }
     }
 
@@ -434,11 +439,14 @@ impl Weapon {
     }
 
     pub fn overwhelming(&self) -> i8 {
-        match (self.details().other_tags.contains(&OtherTag::Artifact), self.details().weight_class) {
+        match (
+            self.details().other_tags.contains(&OtherTag::Artifact),
+            self.details().weight_class,
+        ) {
             (true, WeightClass::Light) => 3,
             (true, WeightClass::Medium) => 4,
             (true, WeightClass::Heavy) => 5,
-            (false,_) => 1,
+            (false, _) => 1,
         }
     }
 
@@ -494,15 +502,15 @@ impl Weapon {
             }
         }
 
-        for style in details.martial_arts_styles {
-            output.insert(Tag::MartialArts(style));
+        for style in details.martial_arts_styles.iter() {
+            output.insert(Tag::MartialArts(style.clone()));
         }
 
-        if let Some(property) = details.special_property {
-            output.insert(Tag::Special(property));
+        if let Some(property) = &details.special_property {
+            output.insert(Tag::Special(property.clone()));
         }
 
-        for other_tag in details.other_tags {
+        for other_tag in &details.other_tags {
             let tag = match other_tag {
                 OtherTag::Artifact => Tag::Artifact,
                 OtherTag::Balanced => Tag::Balanced,
@@ -535,6 +543,7 @@ impl Weapon {
     }
 }
 
+#[derive(Debug)]
 struct WeaponDetails {
     name: String,
     weight_class: WeightClass,
@@ -617,7 +626,189 @@ enum OtherTag {
     Worn,
 }
 
+#[derive(Debug)]
 enum Handedness {
     OneHanded(WeaponDetails),
     TwoHanded(WeaponDetails),
+}
+
+impl Deref for Handedness {
+    type Target = WeaponDetails;
+
+    fn deref(&self) -> &Self::Target {
+        match self {
+            Handedness::OneHanded(details) | Handedness::TwoHanded(details) => details,
+        }
+    }
+}
+
+#[derive(Debug)]
+enum Equipped {
+    None,
+    MainHandOnly(usize),
+    OffHandOnly(usize),
+    Paired(usize),
+    TwoDifferent(usize, usize),
+    TwoHanded(usize),
+}
+
+impl Default for Equipped {
+    fn default() -> Self {
+        Self::None
+    }
+}
+
+pub enum EquipHand {
+    Main,
+    Off,
+    Both,
+}
+
+#[derive(Debug, Default)]
+pub struct Weapons {
+    equipped: Equipped,
+    owned: Slab<Weapon>,
+}
+
+struct EquippedIter<'a> {
+    weapons: &'a Weapons,
+    first: Option<usize>,
+    second: Option<usize>,
+}
+
+impl<'a> Iterator for EquippedIter<'a> {
+    type Item = (usize, &'a Weapon);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let key = self.first?;
+        self.first = self.second;
+        self.second = None;
+        Some((key, self.weapons.owned.get(key).unwrap()))
+    }
+}
+
+impl Weapons {
+    pub fn equipped_iter(&self) -> impl Iterator<Item = (usize, &Weapon)> {
+        let (first, second) = match self.equipped {
+            Equipped::None => (None, None),
+            Equipped::MainHandOnly(key) => (Some(key), None),
+            Equipped::OffHandOnly(key) => (Some(key), None),
+            Equipped::Paired(key) => (Some(key), Some(key)),
+            Equipped::TwoDifferent(key1, key2) => (Some(key1), Some(key2)),
+            Equipped::TwoHanded(key) => (Some(key), None),
+        };
+
+        EquippedIter {
+            weapons: self,
+            first,
+            second,
+        }
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = (usize, &Weapon)> {
+        self.owned.iter()
+    }
+
+    pub fn equip(&mut self, key: usize, hand: EquipHand) -> Result<()> {
+        let weapon = self
+            .owned
+            .get(key)
+            .ok_or_else(|| eyre!("weapon {} not found", key))?;
+        self.equipped = match (&weapon.0, hand, &self.equipped) {
+            (Handedness::OneHanded(_), EquipHand::Main, Equipped::None)
+            | (Handedness::OneHanded(_), EquipHand::Main, Equipped::MainHandOnly(_))
+            | (Handedness::OneHanded(_), EquipHand::Main, Equipped::TwoHanded(_)) => {
+                Equipped::MainHandOnly(key)
+            }
+            (Handedness::OneHanded(_), EquipHand::Off, Equipped::None)
+            | (Handedness::OneHanded(_), EquipHand::Off, Equipped::OffHandOnly(_))
+            | (Handedness::OneHanded(_), EquipHand::Off, Equipped::TwoHanded(_)) => {
+                Equipped::OffHandOnly(key)
+            }
+            (Handedness::OneHanded(_), EquipHand::Main, Equipped::OffHandOnly(other))
+            | (Handedness::OneHanded(_), EquipHand::Main, Equipped::Paired(other))
+            | (Handedness::OneHanded(_), EquipHand::Main, Equipped::TwoDifferent(_, other)) => {
+                if key == *other {
+                    Equipped::Paired(key)
+                } else {
+                    Equipped::TwoDifferent(key, *other)
+                }
+            }
+            (Handedness::OneHanded(_), EquipHand::Off, Equipped::MainHandOnly(other))
+            | (Handedness::OneHanded(_), EquipHand::Off, Equipped::Paired(other))
+            | (Handedness::OneHanded(_), EquipHand::Off, Equipped::TwoDifferent(other, _)) => {
+                if key == *other {
+                    Equipped::Paired(key)
+                } else {
+                    Equipped::TwoDifferent(*other, key)
+                }
+            }
+            (Handedness::OneHanded(_), EquipHand::Both, _) => Equipped::Paired(key),
+            (Handedness::TwoHanded(_), _, _) => Equipped::TwoHanded(key),
+        };
+        Ok(())
+    }
+
+    pub fn unequip(&mut self, hand: EquipHand) {
+        match (&self.equipped, hand) {
+            (Equipped::None, _)
+            | (Equipped::MainHandOnly(_), EquipHand::Off)
+            | (Equipped::OffHandOnly(_), EquipHand::Main) => {}
+            (_, EquipHand::Both)
+            | (Equipped::TwoHanded(_), _)
+            | (Equipped::MainHandOnly(_), EquipHand::Main)
+            | (Equipped::OffHandOnly(_), EquipHand::Off) => {
+                self.equipped = Equipped::None;
+            }
+            (Equipped::Paired(key), EquipHand::Main)
+            | (Equipped::TwoDifferent(_, key), EquipHand::Main) => {
+                self.equipped = Equipped::OffHandOnly(*key);
+            }
+            (Equipped::Paired(key), EquipHand::Off)
+            | (Equipped::TwoDifferent(key, _), EquipHand::Off) => {
+                self.equipped = Equipped::MainHandOnly(*key);
+            }
+        }
+    }
+
+    pub fn add_weapon(&mut self, weapon: Weapon) -> usize {
+        self.owned.insert(weapon)
+    }
+
+    pub fn remove_weapon(&mut self, key: usize) -> Result<()> {
+        if !self.owned.contains(key) {
+            return Err(eyre!("weapon {} not found", key));
+        }
+
+        match self.equipped {
+            Equipped::None => {}
+            Equipped::MainHandOnly(curr) | Equipped::TwoHanded(curr) => {
+                if curr == key {
+                    self.unequip(EquipHand::Main);
+                }
+            }
+            Equipped::OffHandOnly(curr) => {
+                if curr == key {
+                    self.unequip(EquipHand::Off);
+                }
+            }
+            Equipped::Paired(curr) => {
+                if curr == key {
+                    self.unequip(EquipHand::Both);
+                }
+            }
+            Equipped::TwoDifferent(main, off) => {
+                if key == main {
+                    self.unequip(EquipHand::Main);
+                }
+                if key == off {
+                    self.unequip(EquipHand::Off)
+                }
+            }
+        }
+
+        self.owned.remove(key);
+
+        Ok(())
+    }
 }

@@ -4,7 +4,6 @@ mod merits;
 mod mortal;
 mod range_bands;
 mod weapons;
-mod weapons_old;
 mod willpower;
 
 pub use abilities::{Abilities, AbilitiesIter, Ability, AbilityMut, AbilityName};
@@ -12,4 +11,4 @@ pub use attributes::{Attribute, AttributeMut, AttributeName, Attributes, Attribu
 pub use merits::{Merit, MeritType, Merits};
 pub use mortal::MortalCharacter;
 pub use range_bands::RangeBand;
-pub use weapons::{Weapon, Weapons, WeaponsIter};
+pub use weapons::{Weapon, Weapons};
