@@ -1,7 +1,11 @@
 pub mod abilities;
 pub mod armor;
 pub mod attributes;
+pub mod essence;
+pub mod experience;
 pub mod health;
+pub mod intimacies;
+pub mod limit;
 pub mod merits;
 mod mortal;
 pub mod range_bands;
