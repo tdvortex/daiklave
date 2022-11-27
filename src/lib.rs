@@ -1,6 +1,7 @@
 pub mod abilities;
 pub mod armor;
 pub mod attributes;
+pub mod charms;
 pub mod essence;
 pub mod experience;
 pub mod health;
