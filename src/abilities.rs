@@ -560,25 +560,25 @@ impl Abilities {
         }
     }
 
-    pub fn add_craft_focus(&mut self, focus: String) -> AbilityMut {
+    pub fn add_craft(&mut self, focus: String) -> AbilityMut {
         if !self.craft.contains_key(&focus) {
             self.craft.insert(focus.clone(), AbilityRating::Zero);
         }
         self.get_mut(&AbilityName::Craft(focus)).unwrap()
     }
 
-    pub fn add_martial_arts_style(&mut self, style: String) -> AbilityMut {
+    pub fn add_martial_arts(&mut self, style: String) -> AbilityMut {
         if !self.martial_arts.contains_key(&style) {
             self.martial_arts.insert(style.clone(), AbilityRating::Zero);
         }
         self.get_mut(&AbilityName::MartialArts(style)).unwrap()
     }
 
-    pub fn remove_craft_focus(&mut self, focus: &String) {
+    pub fn remove_craft(&mut self, focus: &String) {
         self.craft.remove(focus);
     }
 
-    pub fn remove_martial_arts_style(&mut self, style: &String) {
+    pub fn remove_martial_arts(&mut self, style: &String) {
         self.martial_arts.remove(style);
     }
 
@@ -590,7 +590,7 @@ impl Abilities {
         }
     }
 
-    pub fn iter(&self) -> AbilitiesIter {
+    pub fn iter(&self) -> impl Iterator<Item = Ability> {
         AbilitiesIter {
             abilities: self,
             ability_names_iter: self.ability_names_iter(),
@@ -620,7 +620,7 @@ impl<'a> Iterator for AbilityNamesIter<'a> {
     }
 }
 
-pub struct AbilitiesIter<'a> {
+struct AbilitiesIter<'a> {
     abilities: &'a Abilities,
     ability_names_iter: AbilityNamesIter<'a>,
 }

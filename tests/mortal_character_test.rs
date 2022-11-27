@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use exalted_3e_gui::{AbilityName, AttributeName, Merit, MeritType, MortalCharacter, Weapon, Tag, RangeBand, EquipHand};
+use exalted_3e_gui::{MortalCharacter, attributes::AttributeName, abilities::AbilityName, merits::{MeritType, Merit}, weapons::{Weapon, Tag, EquipHand}, range_bands::RangeBand};
 
 fn default_mortal_character() -> MortalCharacter {
     MortalCharacter::default()
@@ -31,7 +31,7 @@ fn custom_mortal_character() -> MortalCharacter {
 
     mortal
         .abilities
-        .add_martial_arts_style("Crane Style".to_owned());
+        .add_martial_arts("Crane Style".to_owned());
 
     [
         (AbilityName::Athletics, 3),
@@ -141,7 +141,7 @@ fn custom_mortal_character() -> MortalCharacter {
             Tag::OneHanded,
         ].into()).unwrap());
     
-    mortal.weapons.equip(key, exalted_3e_gui::EquipHand::Both).unwrap();
+    mortal.weapons.equip(key, EquipHand::Both).unwrap();
 
     mortal
 }

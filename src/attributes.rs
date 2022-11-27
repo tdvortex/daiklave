@@ -160,7 +160,7 @@ impl Attributes {
         }
     }
 
-    pub fn iter(&self) -> AttributesIter {
+    pub fn iter(&self) -> impl Iterator<Item = Attribute> {
         AttributesIter {
             attributes: self,
             name_iter: AttributeName::iter(),
@@ -168,7 +168,7 @@ impl Attributes {
     }
 }
 
-pub struct AttributesIter<'a> {
+struct AttributesIter<'a> {
     attributes: &'a Attributes,
     name_iter: AttributeNameIter,
 }

@@ -110,29 +110,6 @@ impl std::fmt::Display for Merit {
 }
 
 impl Merit {
-    pub fn dots(&self) -> u8 {
-        match self {
-            Self::Simple(simple) => simple.dots(),
-            Self::Detailed(detailed) => detailed.dots(),
-        }
-    }
-
-    pub fn merit_type(&self) -> &MeritType {
-        match self {
-            Self::Simple(simple) => simple.merit_type(),
-            Self::Detailed(detailed) => detailed.merit_type(),
-        }
-    }
-
-    pub fn description(&self) -> &str {
-        match self {
-            Self::Simple(simple) => simple.description(),
-            Self::Detailed(detailed) => detailed.description(),
-        }
-    }
-}
-
-impl Merit {
     pub fn new(
         name: String,
         dots: u8,
@@ -155,6 +132,26 @@ impl Merit {
                 merit_type,
                 description,
             })
+        }
+    }
+    pub fn dots(&self) -> u8 {
+        match self {
+            Self::Simple(simple) => simple.dots(),
+            Self::Detailed(detailed) => detailed.dots(),
+        }
+    }
+
+    pub fn merit_type(&self) -> &MeritType {
+        match self {
+            Self::Simple(simple) => simple.merit_type(),
+            Self::Detailed(detailed) => detailed.merit_type(),
+        }
+    }
+
+    pub fn description(&self) -> &str {
+        match self {
+            Self::Simple(simple) => simple.description(),
+            Self::Detailed(detailed) => detailed.description(),
         }
     }
 }
