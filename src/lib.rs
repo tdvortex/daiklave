@@ -1,3 +1,4 @@
+#![deny(missing_docs)]
 mod abilities;
 mod attributes;
 mod merits;
