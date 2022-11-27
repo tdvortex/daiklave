@@ -1,5 +1,4 @@
-use core::arch;
-use std::collections::HashSet;
+use std::collections::{HashSet};
 
 use crate::RangeBand;
 use eyre::{eyre, Result};
@@ -299,12 +298,98 @@ impl Weapon {
         }
     }
 
+    fn details(&self) -> &WeaponDetails {
+        match self.0 {
+            Handedness::OneHanded(inner) | Handedness::TwoHanded(inner) => &inner,
+        }
+    }
+
     pub fn name(&self) -> &str {
-        todo!()
+        self.details().name.as_str()
     }
 
     pub fn accuracy(&self, range: RangeBand) -> Option<i8> {
-        todo!()
+        let base_accuracy: i8 = match (range, self.details().main_attack_method, self.details().weight_class) {
+            (RangeBand::Close, MainAttackMethod::Archery(_), _) => Some(-2),
+            (RangeBand::Close, MainAttackMethod::ThrownOnly(_), _) => Some(4),
+            (RangeBand::Close, _, WeightClass::Light) => Some(4),
+            (RangeBand::Close, _, WeightClass::Medium) => Some(2), // Assumption: Medium, MeleeAndThrown weapons are wielded as melee in Close
+            (RangeBand::Close, _, WeightClass::Heavy) => Some(0),
+            (RangeBand::Short, MainAttackMethod::Archery(range), _) => {
+                if range >= RangeBand::Short {
+                    Some(4)
+                } else {
+                    None
+                }
+            }
+            (RangeBand::Medium, MainAttackMethod::Archery(range), _) => {
+                if range >= RangeBand::Medium {
+                    Some(2)
+                } else {
+                    None
+                }
+            }
+            (RangeBand::Long, MainAttackMethod::Archery(range), _) => {
+                if range >= RangeBand::Long {
+                    Some(0)
+                } else {
+                    None
+                }
+            }
+            (RangeBand::Extreme, MainAttackMethod::Archery(range), _) => {
+                if range >= RangeBand::Extreme {
+                    Some(-2)
+                } else {
+                    None
+                }
+            }
+            (RangeBand::Short, MainAttackMethod::ThrownOnly(range), _) 
+            | (RangeBand::Short, MainAttackMethod::MeleeAndThrown(range), _) => {
+                if range >= RangeBand::Short {
+                    Some(3)
+                } else {
+                    None
+                }
+            }
+            (RangeBand::Medium, MainAttackMethod::ThrownOnly(range), _) 
+            | (RangeBand::Medium, MainAttackMethod::MeleeAndThrown(range), _) => {
+                if range >= RangeBand::Medium {
+                    Some(2)
+                } else {
+                    None
+                }
+            }
+            (RangeBand::Long, MainAttackMethod::ThrownOnly(range), _) 
+            | (RangeBand::Long, MainAttackMethod::MeleeAndThrown(range), _) => {
+                if range >= RangeBand::Long {
+                    Some(-1)
+                } else {
+                    None
+                }
+            }
+            (RangeBand::Extreme, MainAttackMethod::ThrownOnly(range), _) 
+            | (RangeBand::Extreme, MainAttackMethod::MeleeAndThrown(range), _) => {
+                if range >= RangeBand::Extreme {
+                    Some(-3)
+                } else {
+                    None
+                }
+            }
+            (_, _, _) => None,
+        }?;
+
+        let exceptional_bonus = i8::from(self.details().other_tags.contains(&OtherTag::Artifact) || self.details().other_tags.contains(&OtherTag::Exceptional));
+        let flame_bonus = if self.details().other_tags.contains(&OtherTag::Flame) {
+            if let MainAttackMethod::Archery(_) = self.details().main_attack_method {
+                2
+            } else {
+                0
+            }
+        } else {
+            0
+        };
+
+        Some(base_accuracy + exceptional_bonus + flame_bonus)
     }
 
     pub fn damage(&self) -> i8 {
@@ -320,28 +405,105 @@ impl Weapon {
     }
 
     pub fn tags(&self) -> HashSet<Tag> {
-        todo!()
+        let mut output = HashSet::<Tag>::new();
+
+        match self.0 {
+            Handedness::OneHanded(_) => {
+                output.insert(Tag::OneHanded);
+            }
+            Handedness::TwoHanded(_) => {
+                output.insert(Tag::TwoHanded);
+            }
+        }
+
+        let details = self.details();
+        match details.weight_class {
+            WeightClass::Light => {
+                output.insert(Tag::Light);
+            }
+            WeightClass::Medium => {
+                output.insert(Tag::Medium);
+            }
+            WeightClass::Heavy => {
+                output.insert(Tag::Heavy);
+            }
+        }
+        match details.damage_type {
+            DamageType::Bashing => {
+                output.insert(Tag::Bashing);
+            }
+            DamageType::Lethal => {
+                output.insert(Tag::Lethal);
+            }
+        }
+        match details.main_attack_method {
+            MainAttackMethod::Archery(range) => {
+                output.insert(Tag::Archery(range));
+            }
+            MainAttackMethod::Brawl => {
+                output.insert(Tag::Brawl);
+            }
+            MainAttackMethod::Melee => {
+                output.insert(Tag::Melee);
+            }
+            MainAttackMethod::MeleeAndThrown(range) => {
+                output.insert(Tag::Melee);
+                output.insert(Tag::Thrown(range));
+            }
+            MainAttackMethod::MartialArtsOnly => {}
+            MainAttackMethod::ThrownOnly(range) => {
+                output.insert(Tag::Thrown(range));
+            }
+        }
+
+        for style in details.martial_arts_styles {
+            output.insert(Tag::MartialArts(style));
+        }
+
+        if let Some(property) = details.special_property {
+            output.insert(Tag::Special(property));
+        }
+
+        for other_tag in details.other_tags {
+            let tag = match other_tag {
+                OtherTag::Artifact => Tag::Artifact,
+                OtherTag::Balanced => Tag::Balanced,
+                OtherTag::Chopping => Tag::Chopping,
+                OtherTag::Concealable => Tag::Concealable,
+                OtherTag::Crossbow => Tag::Crossbow,
+                OtherTag::Cutting => Tag::Cutting,
+                OtherTag::Disarming => Tag::Disarming,
+                OtherTag::Exceptional => Tag::Exceptional,
+                OtherTag::Flame => Tag::Flame,
+                OtherTag::Flexible => Tag::Flexible,
+                OtherTag::Grappling => Tag::Grappling,
+                OtherTag::Improvised => Tag::Improvised,
+                OtherTag::Mounted => Tag::Mounted,
+                OtherTag::Natural => Tag::Natural,
+                OtherTag::Piercing => Tag::Piercing,
+                OtherTag::Poisonable => Tag::Poisonable,
+                OtherTag::Powerful => Tag::Powerful,
+                OtherTag::Reaching => Tag::Reaching,
+                OtherTag::Shield => Tag::Shield,
+                OtherTag::Slow => Tag::Slow,
+                OtherTag::Smashing => Tag::Smashing,
+                OtherTag::Subtle => Tag::Subtle,
+                OtherTag::Worn => Tag::Worn,
+            };
+            output.insert(tag);
+        }
+
+        output
     }
 }
 
 struct WeaponDetails {
-    // Weapons must have a name
     name: String,
-
-    // Weapons must be rated as Light, Medium, or Heavy
     weight_class: WeightClass,
-
-    // Weapons must be either Bashing or Lethal
     damage_type: DamageType,
-
-    // Weapons must specify their attack methods
     main_attack_method: MainAttackMethod,
     martial_arts_styles: HashSet<String>,
-
-    // Weapons may have one special property
     special_property: Option<String>,
-
-    // Weapons may have any number of other unique tags
     other_tags: HashSet<OtherTag>,
 }
 
