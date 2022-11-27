@@ -393,15 +393,53 @@ impl Weapon {
     }
 
     pub fn damage(&self) -> i8 {
-        todo!()
+        // Ignoring Powerful tag to keep API simple--only applies for crossbows at close range
+        let base_damage = match self.details().weight_class {
+            WeightClass::Light => 7,
+            WeightClass::Medium => 9,
+            WeightClass::Heavy => 11,
+        };
+
+        let artifact_bonus = 3 * i8::from(self.details().other_tags.contains(&OtherTag::Artifact));
+        let shield_penalty = -2 * i8::from(self.details().other_tags.contains(&OtherTag::Shield));
+
+        base_damage + artifact_bonus + shield_penalty
     }
 
-    pub fn defense(&self) -> i8 {
-        todo!()
+    pub fn defense(&self) -> Option<i8> {
+        match self.details().main_attack_method {
+            MainAttackMethod::Archery(_) | MainAttackMethod::ThrownOnly(_) => None,
+            _ => {
+                match self.details().weight_class {
+                    WeightClass::Light => Some(0),
+                    WeightClass::Medium => Some(1),
+                    WeightClass::Heavy => {
+                        if self.details().other_tags.contains(&OtherTag::Artifact) {
+                            Some(0)
+                        } else {
+                            Some(-1)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     pub fn attunement(&self) -> u8 {
-        todo!()
+        if self.details().other_tags.contains(&OtherTag::Artifact) {
+            5
+        } else {
+            0
+        }
+    }
+
+    pub fn overwhelming(&self) -> i8 {
+        match (self.details().other_tags.contains(&OtherTag::Artifact), self.details().weight_class) {
+            (true, WeightClass::Light) => 3,
+            (true, WeightClass::Medium) => 4,
+            (true, WeightClass::Heavy) => 5,
+            (false,_) => 1,
+        }
     }
 
     pub fn tags(&self) -> HashSet<Tag> {
