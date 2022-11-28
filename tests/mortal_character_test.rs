@@ -179,8 +179,7 @@ fn test_build_default() {
 
 #[test]
 fn test_build_custom() {
-    let mortal = custom_mortal_character();
-    dbg!(mortal);
+    let _mortal = custom_mortal_character();
 }
 
 #[test]
@@ -374,9 +373,9 @@ fn test_default_merits() {
         .map(|merit| {
             (
                 format!("{}", merit),
-                merit.dots(),
-                merit.merit_type().clone(),
-                merit.description().to_owned(),
+                merit.dots,
+                merit.merit_type.clone(),
+                merit.description.clone(),
             )
         })
         .collect();
@@ -396,9 +395,9 @@ fn test_custom_merits() {
         .map(|merit| {
             (
                 format!("{}", merit),
-                merit.dots(),
-                merit.merit_type().clone(),
-                merit.description().to_owned(),
+                merit.dots,
+                merit.merit_type.clone(),
+                merit.description.clone(),
             )
         })
         .collect();
