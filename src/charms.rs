@@ -73,6 +73,7 @@ pub enum CostType {
     Initiative(u8),
     Experience(u8),
     CraftingExperience(CraftingExperienceType),
+    SorcerousMotes(u8),
 }
 
 pub enum CharmKeyword {
@@ -121,3 +122,5 @@ pub enum ActionType {
     Reflexive,
     Permanent,
 }
+
+pub struct Spell(Charm);
