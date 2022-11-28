@@ -9,6 +9,7 @@ pub mod intimacies;
 pub mod limit;
 pub mod merits;
 mod mortal;
+pub mod prerequisite;
 pub mod range_bands;
 pub mod weapons;
 pub mod willpower;

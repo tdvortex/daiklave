@@ -37,3 +37,12 @@ impl Anima {
         };
     }
 }
+
+pub enum DragonBloodedAura {
+    None,
+    Air,
+    Earth,
+    Fire,
+    Water,
+    Wood,
+}

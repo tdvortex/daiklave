@@ -11,3 +11,9 @@ pub struct CraftingExperience {
     pub white: usize,
     pub major_slots: usize,
 }
+
+pub enum CraftingExperienceType {
+    Silver,
+    Gold,
+    White,
+}
