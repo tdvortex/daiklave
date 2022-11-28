@@ -1,20 +1,22 @@
 #[derive(Debug)]
 pub struct Health {
     health_boxes: Vec<WoundLevel>,
-    damage_boxes: Vec<Option<DamageLevel>>
+    damage_boxes: Vec<Option<DamageLevel>>,
 }
 
 impl Default for Health {
     fn default() -> Self {
         Self {
-            health_boxes: vec![WoundLevel::Zero, 
-            WoundLevel::MinusOne, 
-            WoundLevel::MinusOne, 
-            WoundLevel::MinusTwo, 
-            WoundLevel::MinusTwo, 
-            WoundLevel::MinusFour, 
-            WoundLevel::Incapacitated],
-            damage_boxes: vec![None; 7]
+            health_boxes: vec![
+                WoundLevel::Zero,
+                WoundLevel::MinusOne,
+                WoundLevel::MinusOne,
+                WoundLevel::MinusTwo,
+                WoundLevel::MinusTwo,
+                WoundLevel::MinusFour,
+                WoundLevel::Incapacitated,
+            ],
+            damage_boxes: vec![None; 7],
         }
     }
 }
@@ -29,9 +31,12 @@ impl Health {
     }
 
     pub fn take_damage(&mut self, damage_type: DamageLevel, amount: usize) {
-        self.damage_boxes.append(&mut vec![Some(damage_type); amount]);
+        self.damage_boxes
+            .append(&mut vec![Some(damage_type); amount]);
         self.damage_boxes.sort_by(|a, b| b.cmp(a));
-        (0..amount).for_each(|_| {self.damage_boxes.pop();});
+        (0..amount).for_each(|_| {
+            self.damage_boxes.pop();
+        });
     }
 
     pub fn heal_damage(&mut self, damage_type: DamageLevel, amount: usize) {
@@ -71,7 +76,9 @@ impl Health {
             }
         }
         self.health_boxes = new_health_boxes;
-        (0..deleted).for_each(|_| {self.damage_boxes.pop();});
+        (0..deleted).for_each(|_| {
+            self.damage_boxes.pop();
+        });
     }
 
     pub fn current_wound_level(&self) -> Option<WoundLevel> {
@@ -86,18 +93,18 @@ impl Health {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)] 
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 pub enum WoundLevel {
     Zero,
     MinusOne,
     MinusTwo,
     MinusFour,
     Incapacitated,
- }
+}
 
- #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
- pub enum DamageLevel {
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+pub enum DamageLevel {
     Bashing,
     Lethal,
     Aggravated,
- }
+}

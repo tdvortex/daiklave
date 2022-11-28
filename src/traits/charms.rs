@@ -1,7 +1,9 @@
-use slab::Slab;
 use eyre::{eyre, Result};
+use slab::Slab;
 
-use crate::{prerequisite::PrerequisiteSet, health::DamageLevel, experience::CraftingExperienceType};
+use crate::prerequisite::PrerequisiteSet;
+
+use super::{experience::CraftingExperienceType, health::DamageLevel};
 
 pub struct BookReference {
     pub book_name: String,
@@ -15,7 +17,9 @@ pub struct Charms {
 
 impl Charms {
     pub fn active_iter(&self) -> impl Iterator<Item = (usize, &Charm)> {
-        self.active.iter().map(|&key| (key, self.known.get(key).unwrap()))
+        self.active
+            .iter()
+            .map(|&key| (key, self.known.get(key).unwrap()))
     }
 
     pub fn iter(&self) -> impl Iterator<Item = (usize, &Charm)> {
@@ -46,7 +50,7 @@ impl Charms {
         if !self.known.contains(key) {
             Err(eyre!("charm {} not found", key))
         } else {
-            self.active = self.active.iter().filter(|&x| *x != key).map(|x| x.clone()).collect();
+            self.active.retain(|&x| x != key);
             self.known.remove(key);
             Ok(())
         }

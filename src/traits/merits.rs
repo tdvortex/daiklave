@@ -55,7 +55,7 @@ impl Merit {
             detail,
             dots,
             merit_type,
-            description
+            description,
         }
     }
 }

@@ -23,17 +23,29 @@ pub enum Anima {
 impl Anima {
     pub fn increase(&mut self) {
         match &self {
-            Anima::Dim => {*self = Anima::Glowing;}
-            Anima::Glowing => {*self = Anima::Burning;}
-            Anima::Burning | Anima::Bonfire=> {*self = Anima::Bonfire;}
+            Anima::Dim => {
+                *self = Anima::Glowing;
+            }
+            Anima::Glowing => {
+                *self = Anima::Burning;
+            }
+            Anima::Burning | Anima::Bonfire => {
+                *self = Anima::Bonfire;
+            }
         };
     }
 
     pub fn decrease(&mut self) {
         match &self {
-            Anima::Dim | Anima::Glowing=> {*self = Anima::Dim;}
-            Anima::Burning => {*self = Anima::Glowing;}
-            Anima::Bonfire => {*self = Anima::Burning;}
+            Anima::Dim | Anima::Glowing => {
+                *self = Anima::Dim;
+            }
+            Anima::Burning => {
+                *self = Anima::Glowing;
+            }
+            Anima::Bonfire => {
+                *self = Anima::Burning;
+            }
         };
     }
 }

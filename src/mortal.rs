@@ -1,12 +1,12 @@
-use crate::abilities::Abilities;
-use crate::armor::Armor;
-use crate::attributes::Attributes;
-use crate::experience::ExperiencePoints;
-use crate::health::Health;
-use crate::intimacies::Intimacies;
-use crate::merits::Merits;
-use crate::weapons::Weapons;
-use crate::willpower::Willpower;
+use crate::traits::abilities::Abilities;
+use crate::traits::armor::Armor;
+use crate::traits::attributes::Attributes;
+use crate::traits::experience::ExperiencePoints;
+use crate::traits::health::Health;
+use crate::traits::intimacies::Intimacies;
+use crate::traits::merits::Merits;
+use crate::traits::weapons::Weapons;
+use crate::traits::willpower::Willpower;
 
 #[derive(Default, Debug)]
 pub struct MortalCharacter {
