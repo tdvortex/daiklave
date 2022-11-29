@@ -1,5 +1,2 @@
-mod mortal;
-pub mod prerequisite;
-pub mod range_bands;
-pub mod traits;
-pub use mortal::MortalCharacter;
+pub use character::mortal::MortalCharacter;
+pub mod character;

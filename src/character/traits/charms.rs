@@ -1,7 +1,7 @@
 use eyre::{eyre, Result};
 use slab::Slab;
 
-use crate::prerequisite::PrerequisiteSet;
+use crate::character::traits::prerequisite::PrerequisiteSet;
 
 use super::{experience::CraftingExperienceType, health::DamageLevel};
 

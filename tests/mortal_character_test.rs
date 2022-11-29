@@ -1,12 +1,12 @@
 use std::collections::HashSet;
 
 use exalted_3e_gui::{
-    range_bands::RangeBand,
-    traits::abilities::AbilityName,
-    traits::armor::{ArmorItem, ArmorTag},
-    traits::attributes::AttributeName,
-    traits::merits::{Merit, MeritType},
-    traits::weapons::{EquipHand, Weapon, WeaponTag},
+    character::traits::range_bands::RangeBand,
+    character::traits::abilities::AbilityName,
+    character::traits::armor::{ArmorItem, ArmorTag},
+    character::traits::attributes::AttributeName,
+    character::traits::merits::{Merit, MeritType},
+    character::traits::weapons::{EquipHand, Weapon, WeaponTag},
     MortalCharacter,
 };
 

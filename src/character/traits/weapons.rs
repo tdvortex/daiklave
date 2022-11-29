@@ -1,7 +1,7 @@
 use slab::Slab;
 use std::{collections::HashSet, ops::Deref};
 
-use crate::range_bands::RangeBand;
+use super::range_bands::RangeBand;
 use eyre::{eyre, Result};
 
 // Weapons are constructed and displayed as a collection of Tags

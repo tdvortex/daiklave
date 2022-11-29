@@ -1,4 +1,6 @@
-use crate::{traits::abilities::AbilityName, traits::attributes::AttributeName};
+use super::{abilities::AbilityName, attributes::AttributeName};
+
+
 
 pub struct AbilityPrerequisite {
     pub ability_name: AbilityName,

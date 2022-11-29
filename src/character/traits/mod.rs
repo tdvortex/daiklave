@@ -8,5 +8,7 @@ pub mod health;
 pub mod intimacies;
 pub mod limit;
 pub mod merits;
+pub mod prerequisite;
+pub mod range_bands;
 pub mod weapons;
 pub mod willpower;
