@@ -30,13 +30,28 @@ impl Campaign {
         Ok(id)
     }
     
-    pub async fn remove(pool: &PgPool, id: i64) -> Result<()> {
+    pub async fn remove(self, pool: &PgPool) -> Result<()> {
         query!(
             "DELETE FROM campaigns WHERE id = $1",
-            id
+            self.id
         ).execute(pool).await?;
     
         Ok(())
+    }
+
+    pub async fn get_players_of(&self, pool: &PgPool) -> Result<Vec<Player>> {
+        let players = query_as!(
+            Player,
+            "
+            SELECT players.id, players.name 
+            FROM players 
+            INNER JOIN campaign_players ON (players.id = campaign_players.player_id) 
+            WHERE campaign_players.campaign_id = $1
+            ",
+            self.id
+        ).fetch_all(pool).await?;
+
+        Ok(players)
     }
 }
 
@@ -65,12 +80,27 @@ impl Player {
         Ok(id)
     }
 
-    pub async fn remove(pool: &PgPool, id: i64) -> Result<()> {
+    pub async fn remove(self, pool: &PgPool) -> Result<()> {
         query!(
             "DELETE FROM players WHERE id = $1",
-            id
+            self.id
         ).execute(pool).await?;
     
         Ok(())
+    }
+
+    pub async fn get_campaigns_of(&self, pool: &PgPool) -> Result<Vec<Campaign>> {
+        let campaigns = query_as!(
+            Campaign,
+            "
+            SELECT campaigns.id, campaigns.name, campaigns.description, campaigns.bot_channel
+            FROM campaigns 
+            INNER JOIN campaign_players ON (campaigns.id = campaign_players.campaign_id) 
+            WHERE campaign_players.player_id = $1
+            ",
+            self.id
+        ).fetch_all(pool).await?;
+
+        Ok(campaigns)
     }
 }
