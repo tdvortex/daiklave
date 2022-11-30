@@ -66,3 +66,21 @@ pub enum IntimacyLevel {
     Major,
     Defining,
 }
+
+#[derive(sqlx::Type)]
+#[sqlx(type_name = "WOUNDPENALTY", rename_all = "UPPERCASE")]
+pub enum WoundPenalty {
+    Zero,
+    MinusOne,
+    MinusTwo,
+    MinusFour,
+    Incapacitated,
+}
+
+#[derive(sqlx::Type)]
+#[sqlx(type_name = "DAMAGETYPE", rename_all = "UPPERCASE")]
+pub enum DamageType {
+    Bashing,
+    Lethal,
+    Aggravated,
+}

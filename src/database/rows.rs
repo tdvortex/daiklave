@@ -1,4 +1,4 @@
-use super::enums::{ExaltType, AbilityName, AttributeName, IntimacyType, IntimacyLevel};
+use super::enums::{ExaltType, WoundPenalty, DamageType, AbilityName, AttributeName, IntimacyType, IntimacyLevel};
 
 pub struct CampaignRow {
     pub id: i64,
@@ -50,4 +50,11 @@ pub struct IntimacyRow {
     pub intimacy_type: IntimacyType,
     pub level: IntimacyLevel,
     pub description: String,
+}
+
+pub struct HealthBox {
+    pub character_id: i64,
+    pub position: i16,
+    pub wound_level: WoundPenalty,
+    pub damage: Option<DamageType>,
 }
