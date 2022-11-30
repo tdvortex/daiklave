@@ -1,3 +1,5 @@
+mod enum_encodings;
+
 use eyre::{Result};
 use sqlx::{query, query_as, PgPool};
 
@@ -122,24 +124,6 @@ impl Player {
     }
 }
 
-pub enum ExaltType {
-    Solar,
-    Lunar,
-    DragonBlooded,
-}
-
-impl TryFrom<String> for ExaltType {
-    type Error = eyre::Report;
-
-    fn try_from(value: String) -> Result<Self, Self::Error> {
-        match value.as_str() {
-            "SO" => Ok(Self::Solar),
-            "LU" => Ok(Self::Lunar),
-            "DB" => Ok(Self::DragonBlooded),
-            _ => Err(eyre::eyre!("unknown exalt type encoding: {}", value))
-        }
-    }
-}
 
 pub struct CharacterStub {
     pub id: i64,
@@ -151,13 +135,19 @@ pub struct CharacterStub {
 
 pub struct CharacterRow {
     pub id: i64,
-    pub campaign_id: i64,
-    pub player_id: i64,
+    pub campaign_player_id: i64,
     pub name: String,
     pub concept: Option<String>,
-    pub exalt_type: String,
+    pub exalt_type: Option<String>,
     pub current_willpower: i16,
     pub max_willpower: i16,
     pub current_experience: i16,
     pub total_experience: i16,
+    pub attributes: Vec<AttributesRow>,
+}
+
+pub struct AttributesRow {
+    pub character_id: i64,
+    pub attribute_name: String,
+    pub dots: i16,
 }
