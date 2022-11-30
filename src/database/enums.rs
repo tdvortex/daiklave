@@ -51,3 +51,18 @@ pub enum AbilityName {
     Thrown,
     War,
 }
+
+#[derive(sqlx::Type)]
+#[sqlx(type_name = "INTIMACYTYPE", rename_all = "UPPERCASE")]
+pub enum IntimacyType {
+    Tie,
+    Principle,
+}
+
+#[derive(sqlx::Type)]
+#[sqlx(type_name = "INTIMACYLEVEL", rename_all = "UPPERCASE")]
+pub enum IntimacyLevel {
+    Minor,
+    Major,
+    Defining,
+}

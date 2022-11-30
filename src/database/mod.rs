@@ -1,4 +1,4 @@
-mod enum_encodings;
+mod enums;
 pub mod rows;
 
 use eyre::Result;

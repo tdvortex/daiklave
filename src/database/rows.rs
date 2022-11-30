@@ -1,4 +1,4 @@
-use super::enum_encodings::{ExaltType, AbilityName, AttributeName};
+use super::enums::{ExaltType, AbilityName, AttributeName, IntimacyType, IntimacyLevel};
 
 pub struct CampaignRow {
     pub id: i64,
@@ -38,8 +38,16 @@ pub struct AbilityRow {
     pub subskill: Option<String>,
 }
 
-pub struct Specialty {
+pub struct SpecialtyRow {
     pub id: i64,
     pub ability_id: i64,
     pub specialty: String,
+}
+
+pub struct IntimacyRow {
+    pub id: i64,
+    pub character_id: i64,
+    pub intimacy_type: IntimacyType,
+    pub level: IntimacyLevel,
+    pub description: String,
 }
