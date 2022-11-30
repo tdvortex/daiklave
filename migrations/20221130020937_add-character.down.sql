@@ -1,1 +1,3 @@
 DROP TABLE characters;
+
+DROP TYPE EXALTTYPE;

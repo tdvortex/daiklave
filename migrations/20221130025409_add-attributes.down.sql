@@ -1,1 +1,3 @@
 DROP TABLE attributes;
+
+DROP TYPE ATTRIBUTENAME;

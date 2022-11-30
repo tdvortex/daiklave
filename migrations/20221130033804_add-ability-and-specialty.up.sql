@@ -1,10 +1,19 @@
+CREATE TYPE ABILITYNAME AS ENUM ('ARCHERY', 'ATHLETICS', 'AWARENESS', 'BRAWL', 
+    'BUREAUCRACY', 'CRAFT', 'DODGE', 'INTEGRITY', 'INVESTIGATION', 'LORE', 
+    'MARTIALARTS', 'MEDICINE', 'MELEE', 'OCCULT', 'PERFORMANCE', 'PRESENCE', 
+    'RESISTANCE', 'RIDE', 'SAIL', 'SOCIALIZE', 'STEALTH', 'SURVIVAL', 'THROWN', 'WAR');
+
 CREATE TABLE abilities (
     id BIGSERIAL PRIMARY KEY,
     character_id BIGSERIAL NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
-    name CHAR(2) NOT NULL,
-    dots SMALLINT NOT NULL,
+    name ABILITYNAME NOT NULL,
+    dots SMALLINT NOT NULL CHECK (dots >= 0),
     subskill VARCHAR(255),
-    UNIQUE(character_id, name, subskill)
+    UNIQUE(character_id, name, subskill),
+    CHECK (
+        ((name != 'CRAFT' OR name != 'MARTIALARTS') AND subskill IS NULL) 
+        OR subskill IS NOT NULL
+        )
 );
 
 CREATE TABLE specialties (
