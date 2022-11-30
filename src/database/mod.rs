@@ -103,4 +103,61 @@ impl Player {
 
         Ok(campaigns)
     }
+
+    pub async fn get_character_stubs_of(&self, pool: &PgPool) -> Result<Vec<CharacterStub>> {
+        let character_stubs = query_as!(
+            CharacterStub,
+            "
+            SELECT characters.id as id, characters.name as name, campaigns.id as campaign_id, campaigns.name as campaign_name, players.id as player_id
+            FROM players
+            INNER JOIN campaign_players ON (players.id = campaign_players.player_id)
+            INNER JOIN campaigns ON (campaigns.id = campaign_players.campaign_id)
+            INNER JOIN characters ON (characters.campaign_player_id = campaign_players.id)
+            WHERE players.id = $1
+            ",
+            self.id
+        ).fetch_all(pool).await?;
+
+        Ok(character_stubs)
+    }
+}
+
+pub enum ExaltType {
+    Solar,
+    Lunar,
+    DragonBlooded,
+}
+
+impl TryFrom<String> for ExaltType {
+    type Error = eyre::Report;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        match value.as_str() {
+            "SO" => Ok(Self::Solar),
+            "LU" => Ok(Self::Lunar),
+            "DB" => Ok(Self::DragonBlooded),
+            _ => Err(eyre::eyre!("unknown exalt type encoding: {}", value))
+        }
+    }
+}
+
+pub struct CharacterStub {
+    pub id: i64,
+    pub name: String,
+    pub campaign_id: i64,
+    pub campaign_name: String,
+    pub player_id: i64,
+}
+
+pub struct CharacterRow {
+    pub id: i64,
+    pub campaign_id: i64,
+    pub player_id: i64,
+    pub name: String,
+    pub concept: Option<String>,
+    pub exalt_type: String,
+    pub current_willpower: i16,
+    pub max_willpower: i16,
+    pub current_experience: i16,
+    pub total_experience: i16,
 }
