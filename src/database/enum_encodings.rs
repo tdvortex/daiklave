@@ -14,7 +14,7 @@ impl TryFrom<String> for ExaltType {
             "SO" => Ok(Self::Solar),
             "LU" => Ok(Self::Lunar),
             "DB" => Ok(Self::DragonBlooded),
-            _ => Err(eyre::eyre!("unknown exalt type encoding: {}", value))
+            _ => Err(eyre::eyre!("unknown exalt type encoding: {}", value)),
         }
     }
 }
@@ -43,7 +43,7 @@ impl TryFrom<String> for AttributeName {
             "PER" => Ok(Self::Perception),
             "INT" => Ok(Self::Intelligence),
             "WIT" => Ok(Self::Wits),
-            _ => Err(eyre::eyre!("unknown attribute encoding: {}", value))
+            _ => Err(eyre::eyre!("unknown attribute encoding: {}", value)),
         }
     }
 }

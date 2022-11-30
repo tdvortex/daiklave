@@ -1,49 +1,46 @@
 mod enum_encodings;
+pub mod rows;
 
-use eyre::{Result};
+use eyre::Result;
+use rows::{CampaignRow, PlayerRow};
 use sqlx::{query, query_as, PgPool};
 
-pub struct Campaign {
-    pub id: i64,
-    pub name: String,
-    pub description: Option<String>,
-    pub bot_channel: i64,
-}
+impl CampaignRow {
+    pub async fn get(pool: &PgPool, id: i64) -> Result<CampaignRow> {
+        let campaign = query_as!(CampaignRow, "SELECT * FROM campaigns WHERE id = $1", id)
+            .fetch_one(pool)
+            .await?;
 
-impl Campaign {
-    pub async fn get(pool: &PgPool, id: i64) -> Result<Campaign> {
-        let campaign = query_as!(
-            Campaign,
-            "SELECT * FROM campaigns WHERE id = $1",
-            id
-        ).fetch_one(pool).await?;
-    
         Ok(campaign)
     }
-    
-    pub async fn create(pool: &PgPool, name: String, bot_channel: i64, maybe_description: Option<String>) -> Result<i64> {
+
+    pub async fn create(
+        pool: &PgPool,
+        name: String,
+        bot_channel: i64,
+        maybe_description: Option<String>,
+    ) -> Result<i64> {
         let id = query!(
             "INSERT INTO campaigns(name, bot_channel, description) VALUES ($1, $2, $3) RETURNING id",
             name,
             bot_channel,
             maybe_description
         ).fetch_one(pool).await?.id;
-    
+
         Ok(id)
     }
-    
+
     pub async fn remove(self, pool: &PgPool) -> Result<()> {
-        query!(
-            "DELETE FROM campaigns WHERE id = $1",
-            self.id
-        ).execute(pool).await?;
-    
+        query!("DELETE FROM campaigns WHERE id = $1", self.id)
+            .execute(pool)
+            .await?;
+
         Ok(())
     }
 
-    pub async fn get_players_of(&self, pool: &PgPool) -> Result<Vec<Player>> {
+    pub async fn get_players_of(&self, pool: &PgPool) -> Result<Vec<PlayerRow>> {
         let players = query_as!(
-            Player,
+            PlayerRow,
             "
             SELECT players.id, players.name 
             FROM players 
@@ -51,49 +48,43 @@ impl Campaign {
             WHERE campaign_players.campaign_id = $1
             ",
             self.id
-        ).fetch_all(pool).await?;
+        )
+        .fetch_all(pool)
+        .await?;
 
         Ok(players)
     }
 }
 
-pub struct Player {
-    pub id: i64,
-    pub name: String,
-}
+impl PlayerRow {
+    pub async fn get(pool: &PgPool, id: i64) -> Result<PlayerRow> {
+        let player = query_as!(PlayerRow, "SELECT * FROM players WHERE id = $1", id)
+            .fetch_one(pool)
+            .await?;
 
-impl Player {
-    pub async fn get(pool: &PgPool, id: i64) -> Result<Player> {
-        let player = query_as!(
-            Player,
-            "SELECT * FROM players WHERE id = $1",
-            id
-        ).fetch_one(pool).await?;
-    
         Ok(player)
     }
 
     pub async fn create(pool: &PgPool, name: String) -> Result<i64> {
-        let id = query!(
-            "INSERT INTO players(name) VALUES ($1) RETURNING id",
-            name
-        ).fetch_one(pool).await?.id;
-    
+        let id = query!("INSERT INTO players(name) VALUES ($1) RETURNING id", name)
+            .fetch_one(pool)
+            .await?
+            .id;
+
         Ok(id)
     }
 
     pub async fn remove(self, pool: &PgPool) -> Result<()> {
-        query!(
-            "DELETE FROM players WHERE id = $1",
-            self.id
-        ).execute(pool).await?;
-    
+        query!("DELETE FROM players WHERE id = $1", self.id)
+            .execute(pool)
+            .await?;
+
         Ok(())
     }
 
-    pub async fn get_campaigns_of(&self, pool: &PgPool) -> Result<Vec<Campaign>> {
+    pub async fn get_campaigns_of(&self, pool: &PgPool) -> Result<Vec<CampaignRow>> {
         let campaigns = query_as!(
-            Campaign,
+            CampaignRow,
             "
             SELECT campaigns.id, campaigns.name, campaigns.description, campaigns.bot_channel
             FROM campaigns 
@@ -101,7 +92,9 @@ impl Player {
             WHERE campaign_players.player_id = $1
             ",
             self.id
-        ).fetch_all(pool).await?;
+        )
+        .fetch_all(pool)
+        .await?;
 
         Ok(campaigns)
     }
@@ -124,30 +117,10 @@ impl Player {
     }
 }
 
-
 pub struct CharacterStub {
     pub id: i64,
     pub name: String,
     pub campaign_id: i64,
     pub campaign_name: String,
     pub player_id: i64,
-}
-
-pub struct CharacterRow {
-    pub id: i64,
-    pub campaign_player_id: i64,
-    pub name: String,
-    pub concept: Option<String>,
-    pub exalt_type: Option<String>,
-    pub current_willpower: i16,
-    pub max_willpower: i16,
-    pub current_experience: i16,
-    pub total_experience: i16,
-    pub attributes: Vec<AttributesRow>,
-}
-
-pub struct AttributesRow {
-    pub character_id: i64,
-    pub attribute_name: String,
-    pub dots: i16,
 }

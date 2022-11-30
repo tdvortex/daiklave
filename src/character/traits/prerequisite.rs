@@ -1,7 +1,5 @@
 use super::{abilities::AbilityName, attributes::AttributeName};
 
-
-
 pub struct AbilityPrerequisite {
     pub ability_name: AbilityName,
     pub level: u8,
