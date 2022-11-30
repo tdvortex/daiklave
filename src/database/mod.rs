@@ -2,10 +2,10 @@ use eyre::{Result};
 use sqlx::{query, query_as, PgPool};
 
 pub struct Campaign {
-    id: i64,
-    name: String,
-    description: Option<String>,
-    bot_channel: i64,
+    pub id: i64,
+    pub name: String,
+    pub description: Option<String>,
+    pub bot_channel: i64,
 }
 
 impl Campaign {
