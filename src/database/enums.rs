@@ -84,3 +84,74 @@ pub enum DamageType {
     Lethal,
     Aggravated,
 }
+
+#[derive(sqlx::Type)]
+#[sqlx(type_name = "WEAPONTAGTYPE", rename_all = "UPPERCASE")]
+pub enum WeaponTagType {
+    Archery,
+    Artifact,
+    Balanced,
+    Bashing,
+    Brawl,
+    Chopping,
+    Concealable,
+    Crossbow,
+    Cutting,
+    Disarming,
+    Exceptional,
+    Flame,
+    Flexible,
+    Grappling,
+    Heavy,
+    Improvised,
+    Lethal,
+    Light,
+    MartialArts,
+    Medium,
+    Melee,
+    Mounted,
+    OneHanded,
+    Natural,
+    Piercing,
+    Poisonable,
+    Powerful,
+    Reaching,
+    Shield,
+    Slow,
+    Smashing,
+    Special,
+    Subtle,
+    Thrown,
+    TwoHanded,
+    Worn,
+}
+
+#[derive(sqlx::Type)]
+#[sqlx(type_name = "RANGEBAND", rename_all = "UPPERCASE")]
+pub enum RangeBand {
+    Close,
+    Short,
+    Medium,
+    Long,
+    Extreme,
+}
+
+#[derive(sqlx::Type)]
+#[sqlx(type_name = "WEAPONTAG")]
+pub struct WeaponTag {
+    tag_type: WeaponTagType,
+    max_range: Option<RangeBand>,
+    martial_arts_style: Option<String>,
+}
+
+#[derive(sqlx::Type)]
+#[sqlx(type_name = "ARMORTAG", rename_all = "UPPERCASE")]
+pub enum ArmorTag {
+    Artifact,
+    Concealable,
+    Heavy,
+    Light,
+    Medium,
+    Silent,
+    Special,
+}

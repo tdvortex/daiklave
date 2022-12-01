@@ -1,4 +1,6 @@
-use super::enums::{ExaltType, WoundPenalty, DamageType, AbilityName, AttributeName, IntimacyType, IntimacyLevel};
+use sqlx::Postgres;
+
+use super::enums::{ExaltType, WoundPenalty, DamageType, AbilityName, AttributeName, IntimacyType, IntimacyLevel, WeaponTag};
 
 pub struct CampaignRow {
     pub id: i64,
@@ -7,9 +9,63 @@ pub struct CampaignRow {
     pub bot_channel: i64,
 }
 
+impl sqlx::Type<sqlx::Postgres> for CampaignRow {
+    fn type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("campaigns")
+    }
+}
+
+impl<'r> sqlx::Decode<'r, Postgres> for CampaignRow {
+    fn decode(
+        value: sqlx::postgres::PgValueRef<'r>,
+    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
+        let id = decoder.try_decode::<i64>()?;
+        let name = decoder.try_decode::<String>()?;
+        let description = decoder.try_decode::<Option<String>>()?;
+        let bot_channel = decoder.try_decode::<i64>()?;
+
+        Ok(Self { id, name, description, bot_channel })
+    }
+}
+
+pub struct CampaignRows(Vec<CampaignRow>);
+
+impl sqlx::Type<Postgres> for CampaignRows {
+    fn type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("_campaigns")
+    }
+}
+
+impl<'r> sqlx::Decode<'r, Postgres> for CampaignRows {
+    fn decode(
+        value: sqlx::postgres::PgValueRef<'r>,
+    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+        Ok(Self(Vec::<CampaignRow>::decode(value)?))
+    }
+}
+
 pub struct PlayerRow {
     pub id: i64,
     pub name: String,
+}
+
+impl sqlx::Type<sqlx::Postgres> for PlayerRow {
+    fn type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("players")
+    }
+}
+
+impl<'r> sqlx::Decode<'r, Postgres> for PlayerRow {
+    fn decode(
+        value: sqlx::postgres::PgValueRef<'r>,
+    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
+        let id = decoder.try_decode::<i64>()?;
+        let name = decoder.try_decode::<String>()?;
+
+        Ok(Self { id, name})
+    }
 }
 
 pub struct CharacterRow {
@@ -52,9 +108,15 @@ pub struct IntimacyRow {
     pub description: String,
 }
 
-pub struct HealthBox {
+pub struct HealthBoxRow {
     pub character_id: i64,
     pub position: i16,
     pub wound_level: WoundPenalty,
     pub damage: Option<DamageType>,
+}
+
+pub struct WeaponRow {
+    pub id: i64,
+    pub name: String,
+    pub tags: Vec<WeaponTag>,
 }

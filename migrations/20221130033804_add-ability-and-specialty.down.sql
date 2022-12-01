@@ -1,3 +1,5 @@
 DROP TABLE specialties;
 
 DROP TABLE abilities;
+
+DROP TYPE ABILITYNAME;
