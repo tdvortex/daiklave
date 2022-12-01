@@ -1,7 +1,6 @@
-use sqlx::Postgres;
-
 use super::enums::{ExaltType, WoundPenalty, DamageType, AbilityName, AttributeName, IntimacyType, IntimacyLevel, WeaponTag};
 
+#[derive(Debug)]
 pub struct CampaignRow {
     pub id: i64,
     pub name: String,
@@ -15,7 +14,7 @@ impl sqlx::Type<sqlx::Postgres> for CampaignRow {
     }
 }
 
-impl<'r> sqlx::Decode<'r, Postgres> for CampaignRow {
+impl<'r> sqlx::Decode<'r, sqlx::Postgres> for CampaignRow {
     fn decode(
         value: sqlx::postgres::PgValueRef<'r>,
     ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
@@ -29,44 +28,48 @@ impl<'r> sqlx::Decode<'r, Postgres> for CampaignRow {
     }
 }
 
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name="_campaigns")]
 pub struct CampaignRows(Vec<CampaignRow>);
 
-impl sqlx::Type<Postgres> for CampaignRows {
-    fn type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_campaigns")
-    }
-}
+// impl sqlx::Type<Postgres> for CampaignRows {
+//     fn type_info() -> sqlx::postgres::PgTypeInfo {
+//         sqlx::postgres::PgTypeInfo::with_name("_campaigns")
+//     }
+// }
 
-impl<'r> sqlx::Decode<'r, Postgres> for CampaignRows {
-    fn decode(
-        value: sqlx::postgres::PgValueRef<'r>,
-    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
-        Ok(Self(Vec::<CampaignRow>::decode(value)?))
-    }
-}
+// impl<'r> sqlx::Decode<'r, Postgres> for CampaignRows {
+//     fn decode(
+//         value: sqlx::postgres::PgValueRef<'r>,
+//     ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+//         Ok(Self(Vec::<CampaignRow>::decode(value)?))
+//     }
+// }
 
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name="players")]
 pub struct PlayerRow {
     pub id: i64,
     pub name: String,
 }
 
-impl sqlx::Type<sqlx::Postgres> for PlayerRow {
-    fn type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("players")
-    }
-}
+// impl sqlx::Type<sqlx::Postgres> for PlayerRow {
+//     fn type_info() -> sqlx::postgres::PgTypeInfo {
+//         sqlx::postgres::PgTypeInfo::with_name("players")
+//     }
+// }
 
-impl<'r> sqlx::Decode<'r, Postgres> for PlayerRow {
-    fn decode(
-        value: sqlx::postgres::PgValueRef<'r>,
-    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
-        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let id = decoder.try_decode::<i64>()?;
-        let name = decoder.try_decode::<String>()?;
+// impl<'r> sqlx::Decode<'r, Postgres> for PlayerRow {
+//     fn decode(
+//         value: sqlx::postgres::PgValueRef<'r>,
+//     ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+//         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
+//         let id = decoder.try_decode::<i64>()?;
+//         let name = decoder.try_decode::<String>()?;
 
-        Ok(Self { id, name})
-    }
-}
+//         Ok(Self { id, name})
+//     }
+// }
 
 pub struct CharacterRow {
     pub id: i64,
