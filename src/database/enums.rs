@@ -162,3 +162,16 @@ pub enum ArmorTag {
     Silent,
     Special,
 }
+
+impl PgHasArrayType for ArmorTag {
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("_ARMORTAG")
+    }
+}
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "EQUIPHAND", rename_all = "UPPERCASE")]
+pub enum EquipHand {
+    Main,
+    Off,
+}

@@ -2,7 +2,7 @@ CREATE TYPE EXALTTYPE AS ENUM ('SOLAR', 'LUNAR', 'DRAGONBLOODED');
 
 CREATE TABLE characters (
     id BIGSERIAL PRIMARY KEY,
-    campaign_player_id BIGSERIAL NOT NULL REFERENCES campaign_players(id) ON DELETE CASCADE,
+    campaign_player_id BIGINT NOT NULL REFERENCES campaign_players(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     concept TEXT,
     exalt_type EXALTTYPE,

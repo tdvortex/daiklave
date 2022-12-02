@@ -6,7 +6,7 @@ CREATE TYPE ABILITYNAME AS ENUM ('ARCHERY', 'ATHLETICS', 'AWARENESS', 'BRAWL',
 
 CREATE TABLE abilities (
     id BIGSERIAL PRIMARY KEY,
-    character_id BIGSERIAL NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+    character_id BIGINT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
     name ABILITYNAME NOT NULL,
     dots SMALLINT NOT NULL CHECK (dots >= 0),
     subskill VARCHAR(255),
@@ -19,7 +19,7 @@ CREATE TABLE abilities (
 
 CREATE TABLE specialties (
     id BIGSERIAL PRIMARY KEY,
-    ability_id BIGSERIAL NOT NULL REFERENCES abilities(id) ON DELETE CASCADE,
+    ability_id BIGINT NOT NULL REFERENCES abilities(id) ON DELETE CASCADE,
     specialty VARCHAR(255) NOT NULL,
     UNIQUE(ability_id, specialty)
 );

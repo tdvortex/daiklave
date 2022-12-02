@@ -2,7 +2,7 @@ use sqlx::postgres::PgHasArrayType;
 
 use super::enums::{
     AbilityName, AttributeName, DamageType, ExaltType, IntimacyLevel, IntimacyType, WeaponTag,
-    WoundPenalty,
+    WoundPenalty, ArmorTag, EquipHand,
 };
 
 #[derive(Debug)]
@@ -150,10 +150,12 @@ pub struct HealthBoxRow {
     pub damage: Option<DamageType>,
 }
 
+#[derive(Debug)]
 pub struct WeaponRow {
     pub id: i64,
     pub name: String,
     pub tags: Vec<WeaponTag>,
+    pub creator_id: Option<i64>,
 }
 
 impl sqlx::Type<sqlx::Postgres> for WeaponRow {
@@ -170,7 +172,93 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponRow {
         let id = decoder.try_decode::<i64>()?;
         let name = decoder.try_decode::<String>()?;
         let tags = decoder.try_decode::<Vec<WeaponTag>>()?;
+        let creator_id = decoder.try_decode::<Option<i64>>()?;
 
-        Ok(Self { id, name, tags })
+        Ok(Self { id, name, tags, creator_id })
+    }
+}
+
+#[derive(Debug)]
+pub struct WeaponEquippedRow {
+    pub character_id: i64,
+    pub weapon_id: i64,
+    pub equip_hand: Option<EquipHand>,
+    pub creator_id: Option<i64>,
+}
+
+impl sqlx::Type<sqlx::Postgres> for WeaponEquippedRow {
+    fn type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("character_weapons")
+    }
+}
+
+impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponEquippedRow {
+    fn decode(
+        value: sqlx::postgres::PgValueRef<'r>,
+    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
+        let character_id = decoder.try_decode::<i64>()?;
+        let weapon_id = decoder.try_decode::<i64>()?;
+        let equip_hand = decoder.try_decode::<Option<EquipHand>>()?;
+        let creator_id = decoder.try_decode::<Option<i64>>()?;
+
+        Ok(Self { character_id, weapon_id, equip_hand, creator_id})
+    }
+}
+
+#[derive(Debug)]
+pub struct ArmorRow {
+    pub id: i64,
+    pub name: String,
+    pub tags: Vec<ArmorTag>,
+    pub creator_id: Option<i64>,
+}
+
+impl sqlx::Type<sqlx::Postgres> for ArmorRow {
+    fn type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("armor")
+    }
+}
+
+impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorRow {
+    fn decode(
+        value: sqlx::postgres::PgValueRef<'r>,
+    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
+        let id = decoder.try_decode::<i64>()?;
+        let name = decoder.try_decode::<String>()?;
+        let tags = decoder.try_decode::<Vec<ArmorTag>>()?;
+        let creator_id = decoder.try_decode::<Option<i64>>()?;
+
+        Ok(Self { id, name, tags, creator_id})
+    }
+}
+
+
+#[derive(Debug)]
+pub struct ArmorWornRow {
+    pub character_id: i64,
+    pub armor_id: i64,
+    pub worn: bool,
+    pub creator_id: Option<i64>,
+}
+
+impl sqlx::Type<sqlx::Postgres> for ArmorWornRow {
+    fn type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("character_armor")
+    }
+}
+
+impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorWornRow {
+    fn decode(
+        value: sqlx::postgres::PgValueRef<'r>,
+    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
+        let character_id = decoder.try_decode::<i64>()?;
+        let armor_id = decoder.try_decode::<i64>()?;
+        let worn = decoder.try_decode::<bool>()?;
+        let creator_id = decoder.try_decode::<Option<i64>>()?;
+
+        Ok(Self { character_id, armor_id, worn, creator_id})
     }
 }

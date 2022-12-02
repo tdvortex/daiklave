@@ -22,9 +22,7 @@ fn create_get_delete() {
 
     let (campaign, player) = tokio::try_join!(insert_campaign, insert_player).unwrap();
     let campaign_id = campaign.id;
-    println!("campaign_id {}", campaign_id);
     let player_id = player.id;
-    println!("player_id {}", player_id);
 
     let campaign_player_id = sqlx::query!(
         "INSERT INTO campaign_players(campaign_id, player_id) VALUES($1, $2) RETURNING id",
@@ -71,7 +69,6 @@ fn create_get_delete() {
     .rows_affected();
 
     assert!(rows_affected == 9);
-    //dbg!(sqlx::query_as!(AttributeRow, r#"SELECT character_id, name as "name!: AttributeName", dots FROM attributes"#).fetch_all(&pool).await.unwrap());
 
     let rows_affected = sqlx::query!(
         "INSERT INTO abilities(character_id, name, dots) VALUES
@@ -128,6 +125,55 @@ fn create_get_delete() {
     .rows_affected();
 
     assert!(rows_affected == 7);
+
+    let maybe_unarmed_id = sqlx::query!(
+        "SELECT id FROM weapons WHERE weapons.name = 'Unarmed' LIMIT 1"
+    ).fetch_optional(&pool).await.unwrap().map(|rec| rec.id);
+
+    let unarmed_id = if let Some(id) = maybe_unarmed_id {
+        id
+    } else {
+        sqlx::query!(
+            "INSERT INTO weapons(name, tags)
+            VALUES ('Unarmed', ARRAY[
+                ('BASHING', NULL, NULL),
+                ('BRAWL', NULL, NULL),
+                ('GRAPPLING', NULL, NULL),
+                ('LIGHT', NULL, NULL),
+                ('MARTIALARTS', NULL, 'Air Dragon Style'),
+                ('MARTIALARTS', NULL, 'Black Claw Style'),
+                ('MARTIALARTS', NULL, 'Centipede Style'),
+                ('MARTIALARTS', NULL, 'Crane Style'),
+                ('MARTIALARTS', NULL, 'Earth Dragon Style'),
+                ('MARTIALARTS', NULL, 'Falcon Style'),
+                ('MARTIALARTS', NULL, 'Fire Dragon Style'),
+                ('MARTIALARTS', NULL, 'Laughing Monster Style'),
+                ('MARTIALARTS', NULL, 'Snake Style'),
+                ('MARTIALARTS', NULL, 'Swaying Grass Dance Style'),
+                ('MARTIALARTS', NULL, 'Tiger Style'),
+                ('MARTIALARTS', NULL, 'Water Dragon Style'),
+                ('MARTIALARTS', NULL, 'White Reaper Style'),
+                ('MARTIALARTS', NULL, 'Wood Dragon Style'),
+                ('ONEHANDED', NULL, NULL),
+                ('NATURAL', NULL, NULL)
+            ]::WEAPONTAG[])
+            RETURNING id"
+        ).fetch_one(&pool).await.unwrap().id
+    };
+
+    let rows_affected = sqlx::query!(
+        "INSERT INTO character_weapons(character_id, weapon_id) VALUES
+            ($1, $2)
+            ",
+        character_id,
+        unarmed_id
+    )
+    .execute(&pool)
+    .await
+    .unwrap()
+    .rows_affected();
+
+    assert!(rows_affected == 1);
 
     let get_character = GetCharacter::execute(&pool, character_id)
         .await
