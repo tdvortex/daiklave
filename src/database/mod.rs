@@ -5,6 +5,7 @@ use self::rows::{
 use eyre::Result;
 use sqlx::PgPool;
 
+pub mod composites;
 pub mod enums;
 pub mod queries;
 pub mod rows;

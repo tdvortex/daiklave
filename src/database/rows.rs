@@ -1,9 +1,10 @@
 use sqlx::postgres::PgHasArrayType;
 
 use super::enums::{
-    AbilityName, AttributeName, DamageType, ExaltType, IntimacyLevel, IntimacyType, WeaponTag,
-    WoundPenalty, ArmorTag, EquipHand,
+    AbilityName, AttributeName, DamageType, ExaltType, IntimacyLevel, IntimacyType,
+    WoundPenalty, ArmorTag, EquipHand, CharmKeyword, CharmDurationType, CharmActionType,
 };
+use super::composites::{WeaponTag, CharmCost};
 
 #[derive(Debug)]
 pub struct CampaignRow {
@@ -261,4 +262,20 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorWornRow {
 
         Ok(Self { character_id, armor_id, worn, creator_id})
     }
+}
+
+#[derive(Debug)]
+pub struct CharmRow {
+    pub id: i64,
+    pub name: String,
+    pub costs: Vec<CharmCost>,
+    pub action_type: CharmActionType,
+    pub keywords: Vec<CharmKeyword>,
+    pub duration: CharmDurationType,
+    pub special_duration: Option<String>,
+    pub book_name: Option<String>,
+    pub page_number: Option<i32>,
+    pub creator_id: Option<i64>,
+    pub summary: String,
+    pub description: String,
 }

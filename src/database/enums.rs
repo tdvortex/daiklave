@@ -137,19 +137,6 @@ pub enum RangeBand {
     Extreme,
 }
 
-#[derive(Debug, sqlx::Type)]
-#[sqlx(type_name = "WEAPONTAG")]
-pub struct WeaponTag {
-    tag_type: WeaponTagType,
-    max_range: Option<RangeBand>,
-    martial_arts_style: Option<String>,
-}
-
-impl PgHasArrayType for WeaponTag {
-    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_WEAPONTAG")
-    }
-}
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "ARMORTAG", rename_all = "UPPERCASE")]
@@ -174,4 +161,74 @@ impl PgHasArrayType for ArmorTag {
 pub enum EquipHand {
     Main,
     Off,
+}
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "CHARMKEYWORD", rename_all = "UPPERCASE")]
+pub enum CharmKeyword {
+    Air,
+    Aggravated,
+    Archetype,
+    Aura,
+    Balanced,
+    Bridge,
+    Clash,
+    Counterattack,
+    DecisiveOnly,
+    Dual,
+    Excellency,
+    Fire,
+    Earth,
+    Mute,
+    Pilot,
+    Protean,
+    Psyche,
+    Perilous,
+    Salient,
+    Signature,
+    Stackable,
+    Uniform,
+    Water,
+    WitheringOnly,
+    Wood,
+    WrittenOnly,
+}
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "CHARMDURATIONTYPE", rename_all = "UPPERCASE")]
+pub enum CharmDurationType {
+    Instant,
+    Tick,
+    Turn,
+    Round,
+    Scene,
+    Indefinite,
+    Permanent,
+    Special,
+}
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "CHARMACTIONTYPE", rename_all = "UPPERCASE")]
+pub enum CharmActionType {
+    Simple,
+    Supplemental,
+    Reflexive,
+    Permanent,
+}
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "CHARMCOSTTYPE", rename_all = "UPPERCASE")]
+pub enum CharmCostType {
+    Motes,
+    Willpower,
+    BashingHealth,
+    LethalHealth,
+    AggravatedHealth,
+    AnimaLevels,
+    Initiative,
+    Experience,
+    SilverCraftExperience,
+    GoldCraftExperience,
+    WhiteCraftExperience,
+    SorcerousMotes,
 }
