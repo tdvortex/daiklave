@@ -1,33 +1,32 @@
+use self::rows::{
+    AbilityRow, AttributeRow, CampaignRow, CharacterRow, HealthBoxRow, IntimacyRow, PlayerRow,
+    SpecialtyRow,
+};
 use eyre::Result;
-use self::rows::{PlayerRow, CampaignRows};
-use sqlx::{PgPool};
+use sqlx::PgPool;
 
-mod enums;
-pub mod rows;
+pub mod enums;
 pub mod queries;
+pub mod rows;
 
-#[derive(Debug, sqlx::FromRow)]
-pub struct PlayerAndCampaigns {
-    player: PlayerRow,
-    campaigns: CampaignRows
+#[derive(Debug)]
+pub struct GetCharacter {
+    pub character: CharacterRow,
+    pub player: PlayerRow,
+    pub campaign: CampaignRow,
+    pub attributes: Vec<AttributeRow>,
+    pub abilities: Vec<AbilityRow>,
+    pub specialties: Option<Vec<SpecialtyRow>>,
+    pub intimacies: Option<Vec<IntimacyRow>>,
+    pub health_boxes: Vec<HealthBoxRow>,
 }
 
-
-pub async fn workaround(pool: &PgPool, player_id: i64) -> Result<PlayerAndCampaigns>{
-    Ok(
-        sqlx::query_as!(
-            PlayerAndCampaigns,
-            r#"
-        SELECT
-            players as "player!: PlayerRow",
-            ARRAY_AGG(campaigns) as "campaigns!: CampaignRows"
-        FROM players 
-        INNER JOIN campaign_players ON (players.id = campaign_players.player_id)
-        INNER JOIN campaigns ON (campaigns.id = campaign_players.campaign_id)
-        WHERE players.id = $1
-        GROUP BY 1
-        "#,
-        player_id
-        ).fetch_one(pool).await?
-    )
+impl GetCharacter {
+    pub async fn execute(pool: &PgPool, character_id: i64) -> Result<Option<GetCharacter>> {
+        Ok(
+            sqlx::query_file_as!(GetCharacter, "src/database/get_character.sql", character_id)
+                .fetch_optional(pool)
+                .await?,
+        )
+    }
 }

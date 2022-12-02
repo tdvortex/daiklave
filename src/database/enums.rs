@@ -1,4 +1,6 @@
-#[derive(sqlx::Type)]
+use sqlx::postgres::PgHasArrayType;
+
+#[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "EXALTTYPE", rename_all = "UPPERCASE")]
 pub enum ExaltType {
     Solar,
@@ -6,8 +8,7 @@ pub enum ExaltType {
     DragonBlooded,
 }
 
-
-#[derive(sqlx::Type)]
+#[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "ATTRIBUTENAME", rename_all = "UPPERCASE")]
 pub enum AttributeName {
     Strength,
@@ -21,7 +22,7 @@ pub enum AttributeName {
     Wits,
 }
 
-#[derive(sqlx::Type)]
+#[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "ABILITYNAME", rename_all = "UPPERCASE")]
 pub enum AbilityName {
     Archery,
@@ -33,7 +34,7 @@ pub enum AbilityName {
     Dodge,
     Integrity,
     Investigation,
-    Larcency,
+    Larceny,
     Linguistics,
     Lore,
     MartialArts,
@@ -52,14 +53,14 @@ pub enum AbilityName {
     War,
 }
 
-#[derive(sqlx::Type)]
+#[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "INTIMACYTYPE", rename_all = "UPPERCASE")]
 pub enum IntimacyType {
     Tie,
     Principle,
 }
 
-#[derive(sqlx::Type)]
+#[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "INTIMACYLEVEL", rename_all = "UPPERCASE")]
 pub enum IntimacyLevel {
     Minor,
@@ -67,7 +68,7 @@ pub enum IntimacyLevel {
     Defining,
 }
 
-#[derive(sqlx::Type)]
+#[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "WOUNDPENALTY", rename_all = "UPPERCASE")]
 pub enum WoundPenalty {
     Zero,
@@ -77,7 +78,7 @@ pub enum WoundPenalty {
     Incapacitated,
 }
 
-#[derive(sqlx::Type)]
+#[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "DAMAGETYPE", rename_all = "UPPERCASE")]
 pub enum DamageType {
     Bashing,
@@ -85,7 +86,7 @@ pub enum DamageType {
     Aggravated,
 }
 
-#[derive(sqlx::Type)]
+#[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "WEAPONTAGTYPE", rename_all = "UPPERCASE")]
 pub enum WeaponTagType {
     Archery,
@@ -126,7 +127,7 @@ pub enum WeaponTagType {
     Worn,
 }
 
-#[derive(sqlx::Type)]
+#[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "RANGEBAND", rename_all = "UPPERCASE")]
 pub enum RangeBand {
     Close,
@@ -136,7 +137,7 @@ pub enum RangeBand {
     Extreme,
 }
 
-#[derive(sqlx::Type)]
+#[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "WEAPONTAG")]
 pub struct WeaponTag {
     tag_type: WeaponTagType,
@@ -144,7 +145,13 @@ pub struct WeaponTag {
     martial_arts_style: Option<String>,
 }
 
-#[derive(sqlx::Type)]
+impl PgHasArrayType for WeaponTag {
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("_WEAPONTAG")
+    }
+}
+
+#[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "ARMORTAG", rename_all = "UPPERCASE")]
 pub enum ArmorTag {
     Artifact,

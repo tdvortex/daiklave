@@ -1,7 +1,8 @@
 CREATE TYPE ABILITYNAME AS ENUM ('ARCHERY', 'ATHLETICS', 'AWARENESS', 'BRAWL', 
-    'BUREAUCRACY', 'CRAFT', 'DODGE', 'INTEGRITY', 'INVESTIGATION', 'LORE', 
-    'MARTIALARTS', 'MEDICINE', 'MELEE', 'OCCULT', 'PERFORMANCE', 'PRESENCE', 
-    'RESISTANCE', 'RIDE', 'SAIL', 'SOCIALIZE', 'STEALTH', 'SURVIVAL', 'THROWN', 'WAR');
+    'BUREAUCRACY', 'CRAFT', 'DODGE', 'INTEGRITY', 'INVESTIGATION', 'LARCENY', 
+    'LINGUISTICS', 'LORE', 'MARTIALARTS', 'MEDICINE', 'MELEE', 'OCCULT', 
+    'PERFORMANCE', 'PRESENCE', 'RESISTANCE', 'RIDE', 'SAIL', 'SOCIALIZE', 
+    'STEALTH', 'SURVIVAL', 'THROWN', 'WAR');
 
 CREATE TABLE abilities (
     id BIGSERIAL PRIMARY KEY,
@@ -11,8 +12,8 @@ CREATE TABLE abilities (
     subskill VARCHAR(255),
     UNIQUE(character_id, name, subskill),
     CHECK (
-        ((name != 'CRAFT' OR name != 'MARTIALARTS') AND subskill IS NULL) 
-        OR subskill IS NOT NULL
+        ((name != 'CRAFT' OR name != 'MARTIALARTS') AND subskill IS NOT NULL) 
+        OR subskill IS NULL
         )
 );
 

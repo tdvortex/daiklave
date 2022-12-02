@@ -1,5 +1,5 @@
-use eyre::Result;
 use super::rows::{CampaignRow, PlayerRow};
+use eyre::Result;
 use sqlx::{query, query_as, PgPool};
 
 impl CampaignRow {
