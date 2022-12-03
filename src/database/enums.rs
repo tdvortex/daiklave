@@ -252,3 +252,12 @@ pub enum PrerequisiteExaltType {
     Spirit,
     SpiritOrEclipse,
 }
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "MERITTYPE", rename_all = "UPPERCASE")]
+pub enum MeritType {
+    Innate,
+    Supernatural,
+    Story,
+    Purchased,
+}

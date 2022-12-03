@@ -86,7 +86,37 @@ intimacies_query AS (
         INNER JOIN character_armor ON (characters.id = character_armor.character_id)
     WHERE characters.id = $1 AND character_armor.worn
     GROUP BY 1
-) 
+), merits_query AS (
+    SELECT
+        characters.id AS character_id,
+        ARRAY_AGG(merits) AS merts
+    FROM characters 
+        INNER JOIN character_merits ON (characters.id = character_merits.character_id)
+        INNER JOIN merits ON (merits.id = character_merits.merit_id)
+    WHERE characters.id = $1
+    GROUP BY 1
+), merit_prerequisite_sets_query AS (
+    SELECT
+        characters.id AS character_id,
+        ARRAY_AGG(merit_prerequisite_sets) AS mprss
+    FROM characters
+        INNER JOIN character_merits ON (characters.id = character_merits.character_id)
+        INNER JOIN merits ON (merits.id = character_merits.merit_id)
+        INNER JOIN merit_prerequisite_sets ON (merit_prerequisite_sets.merit_id = merits.id)
+    WHERE characters.id = $1
+    GROUP BY 1
+), merit_prerequisites_query AS (
+    SELECT
+        characters.id AS character_id,
+        ARRAY_AGG(prerequisites) AS meprs
+    FROM characters
+        INNER JOIN character_merits ON (characters.id = character_merits.character_id)
+        INNER JOIN merits ON (merits.id = character_merits.merit_id)
+        INNER JOIN merit_prerequisite_sets ON (merit_prerequisite_sets.merit_id = merits.id)
+        INNER JOIN prerequisites ON (merit_prerequisite_sets.prerequisite_id = prerequisites.id)
+    WHERE characters.id = $1
+    GROUP BY 1
+)
 SELECT
     characters AS "character!: CharacterRow",
     player AS "player!: PlayerRow",
@@ -99,7 +129,10 @@ SELECT
     weaps AS "weapons_owned!: Vec<WeaponRow>",
     eqwps AS "weapons_equipped: Vec<WeaponEquippedRow>",
     armrs AS "armor_owned: Vec<ArmorRow>",
-    wrars AS "armor_worn: Vec<ArmorWornRow>"
+    wrars AS "armor_worn: Vec<ArmorWornRow>",
+    merts AS "merits: Vec<MeritRow>",
+    mprss AS "merit_prerequisite_sets: Vec<MeritPrerequisiteSetRow>",
+    meprs AS "merit_prerequisites:  Vec<PrerequisiteRow>"
 FROM characters
     INNER JOIN player_campaign_query ON (characters.id = character_id)
     INNER JOIN attributes_query USING (character_id)
@@ -111,4 +144,7 @@ FROM characters
     LEFT JOIN weapons_equipped_query USING (character_id)
     LEFT JOIN armor_query USING (character_id)
     LEFT JOIN armor_worn_query USING (character_id)
+    LEFT JOIN merits_query USING (character_id)
+    LEFT JOIN merit_prerequisite_sets_query USING (character_id)
+    LEFT JOIN merit_prerequisites_query USING (character_id)
 WHERE characters.id = $1;

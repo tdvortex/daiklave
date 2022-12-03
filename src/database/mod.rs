@@ -1,6 +1,6 @@
 use self::rows::{
     AbilityRow, AttributeRow, CampaignRow, CharacterRow, HealthBoxRow, IntimacyRow, PlayerRow,
-    SpecialtyRow, WeaponRow, ArmorRow, WeaponEquippedRow, ArmorWornRow,
+    SpecialtyRow, WeaponRow, ArmorRow, WeaponEquippedRow, ArmorWornRow, MeritRow, MeritPrerequisiteSetRow, PrerequisiteRow,
 };
 use eyre::Result;
 use sqlx::PgPool;
@@ -24,6 +24,9 @@ pub struct GetCharacter {
     pub weapons_equipped: Option<Vec<WeaponEquippedRow>>,
     pub armor_owned: Option<Vec<ArmorRow>>,
     pub armor_worn: Option<Vec<ArmorWornRow>>,
+    pub merits: Option<Vec<MeritRow>>,
+    pub merit_prerequisite_sets: Option<Vec<MeritPrerequisiteSetRow>>,
+    pub merit_prerequisites: Option<Vec<PrerequisiteRow>>,
 }
 
 impl GetCharacter {

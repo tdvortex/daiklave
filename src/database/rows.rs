@@ -2,7 +2,7 @@ use sqlx::postgres::PgHasArrayType;
 
 use super::enums::{
     AbilityName, AttributeName, DamageType, ExaltType, IntimacyLevel, IntimacyType,
-    WoundPenalty, ArmorTag, EquipHand, CharmKeyword, CharmDurationType, CharmActionType, PrerequisiteType, PrerequisiteExaltType,
+    WoundPenalty, ArmorTag, EquipHand, CharmKeyword, CharmDurationType, CharmActionType, PrerequisiteType, PrerequisiteExaltType, MeritType,
 };
 use super::composites::{WeaponTag, CharmCost};
 
@@ -295,5 +295,55 @@ pub struct PrerequisiteRow {
     pub attribute_name: Option<AttributeName>,
     pub dots: Option<i16>,
     pub prerequisite_charm_id: Option<i64>,
-    pub prerequisite_exalt_type: PrerequisiteExaltType,
+    pub prerequisite_exalt_type: Option<PrerequisiteExaltType>,
+}
+
+impl sqlx::Type<sqlx::Postgres> for PrerequisiteRow {
+    fn type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("prerequisites")
+    }
+}
+
+impl<'r> sqlx::Decode<'r, sqlx::Postgres> for PrerequisiteRow {
+    fn decode(
+        value: sqlx::postgres::PgValueRef<'r>,
+    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
+        let id = decoder.try_decode::<i64>()?;
+        let prerequisite_type = decoder.try_decode::<PrerequisiteType>()?;
+        let ability_name = decoder.try_decode::<Option<AbilityName>>()?;
+        let attribute_name = decoder.try_decode::<Option<AttributeName>>()?;
+        let dots = decoder.try_decode::<Option<i16>>()?;
+        let prerequisite_charm_id = decoder.try_decode::<Option<i64>>()?;
+        let prerequisite_exalt_type = decoder.try_decode::<Option<PrerequisiteExaltType>>()?;
+        
+
+        Ok(Self { id, prerequisite_type, ability_name, attribute_name, dots, prerequisite_charm_id, prerequisite_exalt_type })
+    }
+}
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "merits")]
+pub struct MeritRow {
+    pub id: i64,
+    pub name: String, 
+    pub dots: i16,
+    pub merit_type: MeritType,
+    pub description: String,
+}
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "merit_prerequisite_sets")]
+pub struct MeritPrerequisiteSetRow {
+    pub id: i64,
+    pub merit_id: i64,
+    pub prerequisite_id: i64,
+}
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "merit_prerequisite_sets")]
+pub struct CharacterMeritRow {
+    pub character_id: i64,
+    pub merit_id: i64,
+    pub detail: Option<String>,
 }
