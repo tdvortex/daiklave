@@ -77,14 +77,14 @@ impl CharacterBuilder {
         self
     }
 
-    pub fn with_craft(&mut self, craft_focus: String, value: u8) -> &mut Self {
-        self.abilities.add_craft(craft_focus).set_dots(value);
+    pub fn with_craft(&mut self, craft_focus: &str, value: u8) -> &mut Self {
+        self.abilities.add_craft(craft_focus.to_owned()).set_dots(value);
         self
     }
 
-    pub fn with_martial_arts(&mut self, martial_arts_style: String, value: u8) -> &mut Self {
+    pub fn with_martial_arts(&mut self, martial_arts_style: &str, value: u8) -> &mut Self {
         self.abilities
-            .add_martial_arts(martial_arts_style)
+            .add_martial_arts(martial_arts_style.to_owned())
             .set_dots(value);
         self
     }
@@ -103,11 +103,11 @@ impl CharacterBuilder {
 
     pub fn with_craft_specialty(
         &mut self,
-        craft_focus: String,
+        craft_focus: &str,
         specialty: String,
     ) -> Result<&mut Self> {
         self.abilities
-            .get_mut(&AbilityName::Craft(craft_focus.clone()))
+            .get_mut(&AbilityName::Craft(craft_focus.to_owned()))
             .ok_or_else(|| eyre!("craft focus {} not found", craft_focus))
             .and_then(|mut craft| craft.add_specialty(specialty))?;
         Ok(self)
@@ -115,11 +115,11 @@ impl CharacterBuilder {
 
     pub fn with_martial_arts_specialty(
         &mut self,
-        martial_arts_style: String,
+        martial_arts_style: &str,
         specialty: String,
     ) -> Result<&mut Self> {
         self.abilities
-            .get_mut(&AbilityName::MartialArts(martial_arts_style.clone()))
+            .get_mut(&AbilityName::MartialArts(martial_arts_style.to_owned()))
             .ok_or_else(|| eyre!("martial arts style {} not found", martial_arts_style))
             .and_then(|mut ma| ma.add_specialty(specialty))?;
         Ok(self)

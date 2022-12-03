@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::character::{
     builder::create_character,
     builder::CharacterBuilder,
@@ -90,21 +92,41 @@ impl CharacterBuilder {
         self.with_attribute(attribute_name, value)
     }
 
-    fn apply_ability_row(&mut self, ability_row: AbilityRow) -> Result<&mut Self> {
+    fn apply_ability_and_specialties_rows(&mut self, ability_row: AbilityRow, specialty_rows: Vec<SpecialtyRow>) -> Result<&mut Self> {
         let dots: u8 = ability_row.dots.try_into()?;
 
-        if ability_row.name == AbilityName::Craft {
-            let craft_focus = ability_row
-                .subskill
-                .ok_or(eyre!("craft abilities must have a focus"))?;
-            Ok(self.with_craft(craft_focus, dots))
-        } else if ability_row.name == AbilityName::MartialArts {
-            let martial_arts_style = ability_row
-                .subskill
-                .ok_or(eyre!("martial arts abilities must have a style"))?;
-            Ok(self.with_martial_arts(martial_arts_style, dots))
-        } else {
-            Ok(self.with_ability(ability_row.name.try_into().unwrap(), dots))
+        match ability_row.name {
+            AbilityName::Craft => {
+                let craft_focus = ability_row
+                    .subskill
+                    .ok_or(eyre!("craft abilities must have a focus"))?;
+                self.with_craft(&craft_focus.as_str(), dots);
+                specialty_rows.into_iter().fold(Ok(self), |character_result, specialty_row| {
+                    character_result.and_then(|character| {
+                        character.with_craft_specialty(&craft_focus.as_str(), specialty_row.specialty)
+                    })
+                })
+            }
+            AbilityName::MartialArts => {
+                let martial_arts_style = ability_row
+                    .subskill
+                    .ok_or(eyre!("martial arts abilities must have a style"))?;
+                self.with_martial_arts(&martial_arts_style.as_str(), dots);
+                specialty_rows.into_iter().fold(Ok(self), |character_result, specialty_row| {
+                    character_result.and_then(|character| {
+                        character.with_martial_arts_specialty(&martial_arts_style.as_str(), specialty_row.specialty)
+                    })
+                })
+            }
+            no_focus_name => {
+                let ability_name = no_focus_name.try_into().unwrap();
+                self.with_ability(ability_name, dots);
+                specialty_rows.into_iter().fold(Ok(self), |character_result, specialty_row| {
+                    character_result.and_then(|character| {
+                        character.with_specialty(ability_name, specialty_row.specialty)
+                    })
+                })
+            }
         }
     }
 }
@@ -128,11 +150,32 @@ impl TryInto<Character> for GetCharacter {
             },
         )?;
 
-        self.abilities
-            .into_iter()
-            .fold(Ok(&mut character), |character_result, ability_row| {
-                character_result.and_then(|character| character.apply_ability_row(ability_row))
-            })?;
+        let mut abilities_hashmap =
+            self.abilities
+                .into_iter()
+                .fold(HashMap::new(), |mut map, ability| {
+                    map.insert(ability.id, (ability, Vec::<SpecialtyRow>::new()));
+                    map
+                });
+
+        if let Some(specialties) = self.specialties {
+            specialties
+                .into_iter()
+                .fold(Ok(&mut abilities_hashmap), |map: Result<&mut HashMap<i32, (AbilityRow, Vec<SpecialtyRow>)>, eyre::Report>, specialty: SpecialtyRow| {
+                    map.and_then(|m| {
+                        m.get_mut(&specialty.ability_id)
+                            .ok_or_else(|| eyre!("ability {} not found", specialty.ability_id))
+                            .map(|tup| tup.1.push(specialty))?;
+                        Ok(m)
+                    })
+                })?;
+        };
+
+        abilities_hashmap.into_iter().fold(Ok(&mut character), |character_result, (_, (ability_row, specialty_rows))| {
+            character_result.and_then(|character| {
+                character.apply_ability_and_specialties_rows(ability_row, specialty_rows)
+            })
+        })?;
 
         character.build()
     }

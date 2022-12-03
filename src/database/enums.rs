@@ -23,7 +23,6 @@ pub enum AttributeName {
     Wits,
 }
 
-
 impl From<AttributeName> for crate::character::traits::attributes::AttributeName {
     fn from(val: AttributeName) -> Self {
         use crate::character::traits::attributes::AttributeName as TraitsAttributeName;
