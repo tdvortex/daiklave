@@ -50,7 +50,18 @@ impl Iterator for AttributeNameIter {
 
 impl ExactSizeIterator for AttributeNameIter {
     fn len(&self) -> usize {
-        9
+        match self.next_name {
+            None => 0,
+            Some(AttributeName::Strength) => 9,
+            Some(AttributeName::Dexterity) => 8,
+            Some(AttributeName::Stamina) => 7,
+            Some(AttributeName::Charisma) => 6,
+            Some(AttributeName::Manipulation) => 5,
+            Some(AttributeName::Appearance) => 4,
+            Some(AttributeName::Perception) => 3,
+            Some(AttributeName::Intelligence) => 2,
+            Some(AttributeName::Wits) => 1,
+        }
     }
 }
 
@@ -68,30 +79,6 @@ impl<'a> Attribute<'a> {
 
     pub fn dots(&self) -> u8 {
         *self.value
-    }
-}
-
-pub struct AttributeMut<'a> {
-    name: AttributeName,
-    value: &'a mut u8,
-}
-
-impl<'a> AttributeMut<'a> {
-    pub fn name(&self) -> AttributeName {
-        self.name
-    }
-
-    pub fn dots(&self) -> u8 {
-        *self.value
-    }
-
-    pub fn set_value(&mut self, new_value: u8) -> Result<()> {
-        if new_value > 0 {
-            *self.value = new_value;
-            Ok(())
-        } else {
-            Err(eyre!("attributes must be 1 or more"))
-        }
     }
 }
 
@@ -126,9 +113,9 @@ impl Default for Attributes {
 }
 
 impl Attributes {
-    pub fn get(&self, attribute_name: &AttributeName) -> Attribute {
+    pub fn get(&self, attribute_name: AttributeName) -> Attribute {
         Attribute {
-            name: *attribute_name,
+            name: attribute_name,
             value: match attribute_name {
                 AttributeName::Strength => &self.strength,
                 AttributeName::Dexterity => &self.dexterity,
@@ -143,21 +130,25 @@ impl Attributes {
         }
     }
 
-    pub fn get_mut(&mut self, attribute_name: &AttributeName) -> AttributeMut {
-        AttributeMut {
-            name: *attribute_name,
-            value: match attribute_name {
-                AttributeName::Strength => &mut self.strength,
-                AttributeName::Dexterity => &mut self.dexterity,
-                AttributeName::Stamina => &mut self.stamina,
-                AttributeName::Charisma => &mut self.charisma,
-                AttributeName::Manipulation => &mut self.manipulation,
-                AttributeName::Appearance => &mut self.appearance,
-                AttributeName::Perception => &mut self.perception,
-                AttributeName::Intelligence => &mut self.intelligence,
-                AttributeName::Wits => &mut self.wits,
-            },
+    pub fn set(&mut self, attribute_name: AttributeName, value: u8) -> Result<()> {
+        if value < 1 {
+            return Err(eyre!("attributes must be 1 or more"));
         }
+
+        let ptr = match attribute_name {
+            AttributeName::Strength => &mut self.strength,
+            AttributeName::Dexterity => &mut self.dexterity,
+            AttributeName::Stamina => &mut self.stamina,
+            AttributeName::Charisma => &mut self.charisma,
+            AttributeName::Manipulation => &mut self.manipulation,
+            AttributeName::Appearance => &mut self.appearance,
+            AttributeName::Perception => &mut self.perception,
+            AttributeName::Intelligence => &mut self.intelligence,
+            AttributeName::Wits => &mut self.wits,
+        };
+
+        *ptr = value;
+        Ok(())
     }
 
     pub fn iter(&self) -> impl Iterator<Item = Attribute> {
@@ -178,13 +169,13 @@ impl<'a> Iterator for AttributesIter<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let attribute_name = self.name_iter.next()?;
-        Some(self.attributes.get(&attribute_name))
+        Some(self.attributes.get(attribute_name))
     }
 }
 
 impl<'a> ExactSizeIterator for AttributesIter<'a> {
     fn len(&self) -> usize {
-        9
+        self.name_iter.len()
     }
 }
 

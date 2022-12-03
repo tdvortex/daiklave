@@ -1,6 +1,7 @@
+use eyre::eyre;
 use sqlx::postgres::PgHasArrayType;
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "EXALTTYPE", rename_all = "UPPERCASE")]
 pub enum ExaltType {
     Solar,
@@ -8,7 +9,7 @@ pub enum ExaltType {
     DragonBlooded,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ATTRIBUTENAME", rename_all = "UPPERCASE")]
 pub enum AttributeName {
     Strength,
@@ -22,7 +23,26 @@ pub enum AttributeName {
     Wits,
 }
 
-#[derive(Debug, sqlx::Type)]
+
+impl From<AttributeName> for crate::character::traits::attributes::AttributeName {
+    fn from(val: AttributeName) -> Self {
+        use crate::character::traits::attributes::AttributeName as TraitsAttributeName;
+
+        match val {
+            AttributeName::Strength => TraitsAttributeName::Strength,
+            AttributeName::Dexterity => TraitsAttributeName::Dexterity,
+            AttributeName::Stamina => TraitsAttributeName::Stamina,
+            AttributeName::Charisma => TraitsAttributeName::Charisma,
+            AttributeName::Manipulation => TraitsAttributeName::Manipulation,
+            AttributeName::Appearance => TraitsAttributeName::Appearance,
+            AttributeName::Perception => TraitsAttributeName::Perception,
+            AttributeName::Intelligence => TraitsAttributeName::Intelligence,
+            AttributeName::Wits => TraitsAttributeName::Wits,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ABILITYNAME", rename_all = "UPPERCASE")]
 pub enum AbilityName {
     Archery,
@@ -53,14 +73,53 @@ pub enum AbilityName {
     War,
 }
 
-#[derive(Debug, sqlx::Type)]
+impl TryInto<crate::character::traits::abilities::AbilityNameNoFocus> for AbilityName {
+    type Error = eyre::Report;
+
+    fn try_into(
+        self,
+    ) -> Result<crate::character::traits::abilities::AbilityNameNoFocus, Self::Error> {
+        use crate::character::traits::abilities::AbilityNameNoFocus;
+
+        match self {
+            Self::Archery => Ok(AbilityNameNoFocus::Archery),
+            Self::Athletics => Ok(AbilityNameNoFocus::Athletics),
+            Self::Awareness => Ok(AbilityNameNoFocus::Awareness),
+            Self::Brawl => Ok(AbilityNameNoFocus::Brawl),
+            Self::Bureaucracy => Ok(AbilityNameNoFocus::Bureaucracy),
+            Self::Dodge => Ok(AbilityNameNoFocus::Dodge),
+            Self::Integrity => Ok(AbilityNameNoFocus::Integrity),
+            Self::Investigation => Ok(AbilityNameNoFocus::Investigation),
+            Self::Larceny => Ok(AbilityNameNoFocus::Larceny),
+            Self::Linguistics => Ok(AbilityNameNoFocus::Linguistics),
+            Self::Lore => Ok(AbilityNameNoFocus::Lore),
+            Self::Medicine => Ok(AbilityNameNoFocus::Medicine),
+            Self::Melee => Ok(AbilityNameNoFocus::Melee),
+            Self::Occult => Ok(AbilityNameNoFocus::Occult),
+            Self::Performance => Ok(AbilityNameNoFocus::Performance),
+            Self::Presence => Ok(AbilityNameNoFocus::Presence),
+            Self::Resistance => Ok(AbilityNameNoFocus::Resistance),
+            Self::Ride => Ok(AbilityNameNoFocus::Ride),
+            Self::Sail => Ok(AbilityNameNoFocus::Sail),
+            Self::Socialize => Ok(AbilityNameNoFocus::Socialize),
+            Self::Stealth => Ok(AbilityNameNoFocus::Stealth),
+            Self::Survival => Ok(AbilityNameNoFocus::Survival),
+            Self::Thrown => Ok(AbilityNameNoFocus::Thrown),
+            Self::War => Ok(AbilityNameNoFocus::War),
+            Self::Craft => Err(eyre!("craft requires a focus")),
+            Self::MartialArts => Err(eyre!("martial arts requires a style")),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "INTIMACYTYPE", rename_all = "UPPERCASE")]
 pub enum IntimacyType {
     Tie,
     Principle,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "INTIMACYLEVEL", rename_all = "UPPERCASE")]
 pub enum IntimacyLevel {
     Minor,
@@ -68,7 +127,7 @@ pub enum IntimacyLevel {
     Defining,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "WOUNDPENALTY", rename_all = "UPPERCASE")]
 pub enum WoundPenalty {
     Zero,
@@ -78,7 +137,7 @@ pub enum WoundPenalty {
     Incapacitated,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "DAMAGETYPE", rename_all = "UPPERCASE")]
 pub enum DamageType {
     Bashing,
@@ -86,7 +145,7 @@ pub enum DamageType {
     Aggravated,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "WEAPONTAGTYPE", rename_all = "UPPERCASE")]
 pub enum WeaponTagType {
     Archery,
@@ -127,7 +186,7 @@ pub enum WeaponTagType {
     Worn,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "RANGEBAND", rename_all = "UPPERCASE")]
 pub enum RangeBand {
     Close,
@@ -137,7 +196,7 @@ pub enum RangeBand {
     Extreme,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ARMORTAG", rename_all = "UPPERCASE")]
 pub enum ArmorTag {
     Artifact,
@@ -155,14 +214,14 @@ impl PgHasArrayType for ArmorTag {
     }
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "EQUIPHAND", rename_all = "UPPERCASE")]
 pub enum EquipHand {
     Main,
     Off,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "CHARMKEYWORD", rename_all = "UPPERCASE")]
 pub enum CharmKeyword {
     Air,
@@ -193,7 +252,7 @@ pub enum CharmKeyword {
     WrittenOnly,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "CHARMDURATIONTYPE", rename_all = "UPPERCASE")]
 pub enum CharmDurationType {
     Instant,
@@ -206,7 +265,7 @@ pub enum CharmDurationType {
     Special,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "CHARMACTIONTYPE", rename_all = "UPPERCASE")]
 pub enum CharmActionType {
     Simple,
@@ -215,7 +274,7 @@ pub enum CharmActionType {
     Permanent,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "CHARMCOSTTYPE", rename_all = "UPPERCASE")]
 pub enum CharmCostType {
     Motes,
@@ -232,7 +291,7 @@ pub enum CharmCostType {
     SorcerousMotes,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "PREREQUISITETYPE", rename_all = "UPPERCASE")]
 pub enum PrerequisiteType {
     Ability,
@@ -242,7 +301,7 @@ pub enum PrerequisiteType {
     ExaltType,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "PREREQUISITEEXALTTYPE", rename_all = "UPPERCASE")]
 pub enum PrerequisiteExaltType {
     Solar,
@@ -252,7 +311,7 @@ pub enum PrerequisiteExaltType {
     SpiritOrEclipse,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "MERITTYPE", rename_all = "UPPERCASE")]
 pub enum MeritType {
     Innate,

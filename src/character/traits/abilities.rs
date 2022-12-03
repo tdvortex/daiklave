@@ -43,7 +43,7 @@ impl NonZeroAbility {
 }
 
 #[derive(Clone, Copy)]
-enum AbilityNameNoFocus {
+pub enum AbilityNameNoFocus {
     Archery,
     Athletics,
     Awareness,
@@ -52,7 +52,7 @@ enum AbilityNameNoFocus {
     Dodge,
     Integrity,
     Investigation,
-    Larcency,
+    Larceny,
     Linguistics,
     Lore,
     Medicine,
@@ -94,8 +94,8 @@ impl Iterator for AbilityNameNoFocusIter {
             Some(AbilityNameNoFocus::Bureaucracy) => Some(AbilityNameNoFocus::Dodge),
             Some(AbilityNameNoFocus::Dodge) => Some(AbilityNameNoFocus::Integrity),
             Some(AbilityNameNoFocus::Integrity) => Some(AbilityNameNoFocus::Investigation),
-            Some(AbilityNameNoFocus::Investigation) => Some(AbilityNameNoFocus::Larcency),
-            Some(AbilityNameNoFocus::Larcency) => Some(AbilityNameNoFocus::Linguistics),
+            Some(AbilityNameNoFocus::Investigation) => Some(AbilityNameNoFocus::Larceny),
+            Some(AbilityNameNoFocus::Larceny) => Some(AbilityNameNoFocus::Linguistics),
             Some(AbilityNameNoFocus::Linguistics) => Some(AbilityNameNoFocus::Lore),
             Some(AbilityNameNoFocus::Lore) => Some(AbilityNameNoFocus::Medicine),
             Some(AbilityNameNoFocus::Medicine) => Some(AbilityNameNoFocus::Melee),
@@ -138,7 +138,7 @@ pub enum AbilityName {
     Dodge,
     Integrity,
     Investigation,
-    Larcency,
+    Larceny,
     Linguistics,
     Lore,
     MartialArts(String),
@@ -168,7 +168,7 @@ impl From<AbilityNameNoFocus> for AbilityName {
             AbilityNameNoFocus::Dodge => AbilityName::Dodge,
             AbilityNameNoFocus::Integrity => AbilityName::Integrity,
             AbilityNameNoFocus::Investigation => AbilityName::Investigation,
-            AbilityNameNoFocus::Larcency => AbilityName::Larcency,
+            AbilityNameNoFocus::Larceny => AbilityName::Larceny,
             AbilityNameNoFocus::Linguistics => AbilityName::Linguistics,
             AbilityNameNoFocus::Lore => AbilityName::Lore,
             AbilityNameNoFocus::Medicine => AbilityName::Medicine,
@@ -200,7 +200,7 @@ impl std::fmt::Display for AbilityName {
             AbilityName::Dodge => write!(f, "Dodge"),
             AbilityName::Integrity => write!(f, "Integrity"),
             AbilityName::Investigation => write!(f, "Investigation"),
-            AbilityName::Larcency => write!(f, "Larcency"),
+            AbilityName::Larceny => write!(f, "Larcency"),
             AbilityName::Linguistics => write!(f, "Linguistics"),
             AbilityName::Lore => write!(f, "Lore"),
             AbilityName::MartialArts(focus) => write!(f, "Martial Arts ({})", focus),
@@ -376,7 +376,7 @@ impl Abilities {
                 name: ability_name.clone(),
                 rating: &self.investigation,
             }),
-            AbilityName::Larcency => Some(Ability {
+            AbilityName::Larceny => Some(Ability {
                 name: ability_name.clone(),
                 rating: &self.larcency,
             }),
@@ -485,7 +485,7 @@ impl Abilities {
                 name: ability_name.clone(),
                 rating: &mut self.investigation,
             }),
-            AbilityName::Larcency => Some(AbilityMut {
+            AbilityName::Larceny => Some(AbilityMut {
                 name: ability_name.clone(),
                 rating: &mut self.larcency,
             }),

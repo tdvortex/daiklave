@@ -21,7 +21,7 @@ impl Campaign {
     }
 
     pub fn description(&self) -> Option<&str> {
-        self.description.as_ref().map(|d| d.as_str())
+        self.description.as_deref()
     }
 
     pub fn bot_channel(&self) -> i64 {

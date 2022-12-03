@@ -1,15 +1,21 @@
 use crate::character::{
-    create_character,
-    traits::{experience::ExperiencePoints, willpower::Willpower, player::Player, campaign::Campaign},
-    Character, CharacterBuilder,
+    builder::create_character,
+    builder::CharacterBuilder,
+    traits::{
+        campaign::Campaign, experience::ExperiencePoints, player::Player, willpower::Willpower,
+    },
+    Character,
 };
 
-use self::rows::{
-    AbilityRow, ArmorRow, ArmorWornRow, AttributeRow, CampaignRow, CharacterRow, HealthBoxRow,
-    IntimacyRow, MeritPrerequisiteSetRow, MeritRow, PlayerRow, PrerequisiteRow, SpecialtyRow,
-    WeaponEquippedRow, WeaponRow,
+use self::{
+    enums::AbilityName,
+    rows::{
+        AbilityRow, ArmorRow, ArmorWornRow, AttributeRow, CampaignRow, CharacterRow, HealthBoxRow,
+        IntimacyRow, MeritPrerequisiteSetRow, MeritRow, PlayerRow, PrerequisiteRow, SpecialtyRow,
+        WeaponEquippedRow, WeaponRow,
+    },
 };
-use eyre::Result;
+use eyre::{eyre, Result};
 use sqlx::PgPool;
 
 pub mod composites;
@@ -49,7 +55,12 @@ impl CharacterBuilder {
     }
 
     fn apply_campaign_row(&mut self, campaign_row: CampaignRow) -> &mut Self {
-        self.with_campaign(Campaign::new(campaign_row.id, campaign_row.name, campaign_row.bot_channel, campaign_row.description))
+        self.with_campaign(Campaign::new(
+            campaign_row.id,
+            campaign_row.name,
+            campaign_row.bot_channel,
+            campaign_row.description,
+        ))
     }
 
     fn apply_character_row(&mut self, character_row: CharacterRow) -> Result<&mut Self> {
@@ -69,9 +80,32 @@ impl CharacterBuilder {
             .with_willpower(willpower)
             .with_experience(experience);
 
-        // TODO: handle Exalt Type
-
         Ok(applied)
+    }
+
+    fn apply_attribute_row(&mut self, attribute_row: AttributeRow) -> Result<&mut Self> {
+        let attribute_name = attribute_row.name.into();
+        let value = attribute_row.dots.try_into()?;
+
+        self.with_attribute(attribute_name, value)
+    }
+
+    fn apply_ability_row(&mut self, ability_row: AbilityRow) -> Result<&mut Self> {
+        let dots: u8 = ability_row.dots.try_into()?;
+
+        if ability_row.name == AbilityName::Craft {
+            let craft_focus = ability_row
+                .subskill
+                .ok_or(eyre!("craft abilities must have a focus"))?;
+            Ok(self.with_craft(craft_focus, dots))
+        } else if ability_row.name == AbilityName::MartialArts {
+            let martial_arts_style = ability_row
+                .subskill
+                .ok_or(eyre!("martial arts abilities must have a style"))?;
+            Ok(self.with_martial_arts(martial_arts_style, dots))
+        } else {
+            Ok(self.with_ability(ability_row.name.try_into().unwrap(), dots))
+        }
     }
 }
 
@@ -81,10 +115,25 @@ impl TryInto<Character> for GetCharacter {
     fn try_into(self) -> Result<Character, Self::Error> {
         let mut character = create_character();
         character.apply_player_row(self.player);
-        if let Some(campaign) = self.campaign {
-            character.apply_campaign_row(campaign);
-        }
+
+        self.campaign
+            .map(|campaign| character.apply_campaign_row(campaign));
+
         character.apply_character_row(self.character)?;
+
+        self.attributes.into_iter().fold(
+            Ok(&mut character),
+            |character_result, attribute_row| {
+                character_result.and_then(|character| character.apply_attribute_row(attribute_row))
+            },
+        )?;
+
+        self.abilities
+            .into_iter()
+            .fold(Ok(&mut character), |character_result, ability_row| {
+                character_result.and_then(|character| character.apply_ability_row(ability_row))
+            })?;
+
         character.build()
     }
 }
