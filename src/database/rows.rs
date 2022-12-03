@@ -2,7 +2,7 @@ use sqlx::postgres::PgHasArrayType;
 
 use super::enums::{
     AbilityName, AttributeName, DamageType, ExaltType, IntimacyLevel, IntimacyType,
-    WoundPenalty, ArmorTag, EquipHand, CharmKeyword, CharmDurationType, CharmActionType,
+    WoundPenalty, ArmorTag, EquipHand, CharmKeyword, CharmDurationType, CharmActionType, PrerequisiteType, PrerequisiteExaltType,
 };
 use super::composites::{WeaponTag, CharmCost};
 
@@ -278,4 +278,22 @@ pub struct CharmRow {
     pub creator_id: Option<i64>,
     pub summary: String,
     pub description: String,
+}
+
+#[derive(Debug)]
+pub struct CharmPrerequisiteSetRow {
+    pub id: i64,
+    pub charm_id: i64,
+    pub prerequisite_id: i64,
+}
+
+#[derive(Debug)]
+pub struct PrerequisiteRow {
+    pub id: i64,
+    pub prerequisite_type: PrerequisiteType,
+    pub ability_name: Option<AbilityName>,
+    pub attribute_name: Option<AttributeName>,
+    pub dots: Option<i16>,
+    pub prerequisite_charm_id: Option<i64>,
+    pub prerequisite_exalt_type: PrerequisiteExaltType,
 }

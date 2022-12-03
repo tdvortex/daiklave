@@ -232,3 +232,23 @@ pub enum CharmCostType {
     WhiteCraftExperience,
     SorcerousMotes,
 }
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "PREREQUISITETYPE", rename_all = "UPPERCASE")]
+pub enum PrerequisiteType {
+    Ability,
+    Attribute,
+    Essence,
+    Charm,
+    ExaltType,
+}
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "PREREQUISITEEXALTTYPE", rename_all = "UPPERCASE")]
+pub enum PrerequisiteExaltType {
+    Solar,
+    Lunar,
+    DragonBlooded,
+    Spirit,
+    SpiritOrEclipse,
+}
