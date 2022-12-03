@@ -11,37 +11,18 @@ fn create_get_delete() {
         .await
         .unwrap();
 
-    let insert_campaign = sqlx::query!(
-        "INSERT INTO campaigns(name, bot_channel) VALUES ('test_campaign', 123456789) RETURNING id"
-    )
-    .fetch_one(&pool);
+    let player_id = sqlx::query!(
+        "INSERT INTO players(name) VALUES ('test_player') RETURNING id"
+    ).fetch_one(&pool).await.unwrap().id;
 
-    let insert_player =
-        sqlx::query!("INSERT INTO players(name) VALUES ('test_player') RETURNING id")
-            .fetch_one(&pool);
-
-    let (campaign, player) = tokio::try_join!(insert_campaign, insert_player).unwrap();
-    let campaign_id = campaign.id;
-    let player_id = player.id;
-
-    let campaign_player_id = sqlx::query!(
-        "INSERT INTO campaign_players(campaign_id, player_id) VALUES($1, $2) RETURNING id",
-        campaign_id,
-        player_id
-    )
-    .fetch_one(&pool)
-    .await
-    .unwrap()
-    .id;
-
-    println!("campaign_player_id {}", campaign_player_id);
+    println!("player_id {}", player_id);
 
     let character_id = sqlx::query!(
-        "INSERT INTO characters(campaign_player_id, name, current_willpower,
+        "INSERT INTO characters(player_id, name, current_willpower,
              max_willpower, current_experience, total_experience)
         VALUES($1, 'test_character', 1, 2, 3, 4)
         RETURNING id",
-        campaign_player_id
+        player_id
     )
     .fetch_one(&pool)
     .await
@@ -181,13 +162,8 @@ fn create_get_delete() {
         .unwrap();
     dbg!(get_character);
 
-    // Clean up by deleting campaign and player
-    // Should cascade to delete everything else
-    sqlx::query!("DELETE FROM campaigns WHERE id = $1", campaign_id)
-        .execute(&pool)
-        .await
-        .unwrap();
-
+    // Clean up by deleting player
+    // Should cascade to delete everything belonging to this player and character
     sqlx::query!("DELETE FROM players WHERE id = $1", player_id)
         .execute(&pool)
         .await

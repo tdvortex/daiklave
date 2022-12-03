@@ -66,7 +66,7 @@ CREATE TYPE CHARMDURATIONTYPE AS ENUM (
 );
 
 CREATE TABLE charms (
-    id BIGSERIAL PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     costs CHARMCOSTTYPE[] NOT NULL,
     action_type CHARMACTIONTYPE NOT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE charms (
     special_duration VARCHAR(255),
     book_name VARCHAR(255),
     page_number INTEGER CHECK (page_number >= 0),
-    creator_id BIGINT REFERENCES characters(id) ON DELETE CASCADE,
+    creator_id INTEGER REFERENCES characters(id) ON DELETE CASCADE,
     summary TEXT NOT NULL,
     description TEXT NOT NULL,
     CHECK (

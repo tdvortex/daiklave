@@ -7,14 +7,13 @@ use sqlx::PgPool;
 
 pub mod composites;
 pub mod enums;
-pub mod queries;
 pub mod rows;
 
 #[derive(Debug)]
 pub struct GetCharacter {
     pub character: CharacterRow,
     pub player: PlayerRow,
-    pub campaign: CampaignRow,
+    pub campaign: Option<CampaignRow>,
     pub attributes: Vec<AttributeRow>,
     pub abilities: Vec<AbilityRow>,
     pub specialties: Option<Vec<SpecialtyRow>>,
@@ -30,7 +29,7 @@ pub struct GetCharacter {
 }
 
 impl GetCharacter {
-    pub async fn execute(pool: &PgPool, character_id: i64) -> Result<Option<GetCharacter>> {
+    pub async fn execute(pool: &PgPool, character_id: i32) -> Result<Option<GetCharacter>> {
         Ok(
             sqlx::query_file_as!(GetCharacter, "src/database/get_character.sql", character_id)
                 .fetch_optional(pool)

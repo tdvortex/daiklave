@@ -8,7 +8,7 @@ use super::composites::{WeaponTag, CharmCost};
 
 #[derive(Debug)]
 pub struct CampaignRow {
-    pub id: i64,
+    pub id: i32,
     pub name: String,
     pub description: Option<String>,
     pub bot_channel: i64,
@@ -25,7 +25,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for CampaignRow {
         value: sqlx::postgres::PgValueRef<'r>,
     ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let id = decoder.try_decode::<i64>()?;
+        let id = decoder.try_decode::<i32>()?;
         let name = decoder.try_decode::<String>()?;
         let description = decoder.try_decode::<Option<String>>()?;
         let bot_channel = decoder.try_decode::<i64>()?;
@@ -42,14 +42,15 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for CampaignRow {
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "players")]
 pub struct PlayerRow {
-    pub id: i64,
+    pub id: i32,
     pub name: String,
 }
 
 #[derive(Debug)]
 pub struct CharacterRow {
-    pub id: i64,
-    pub campaign_player_id: i64,
+    pub id: i32,
+    pub player_id: i32,
+    pub campaign_id: Option<i32>,
     pub name: String,
     pub concept: Option<String>,
     pub exalt_type: Option<ExaltType>,
@@ -70,8 +71,9 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for CharacterRow {
         value: sqlx::postgres::PgValueRef<'r>,
     ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let id = decoder.try_decode::<i64>()?;
-        let campaign_player_id = decoder.try_decode::<i64>()?;
+        let id = decoder.try_decode::<i32>()?;
+        let player_id = decoder.try_decode::<i32>()?;
+        let campaign_id = decoder.try_decode::<Option<i32>>()?;
         let name = decoder.try_decode::<String>()?;
         let concept = decoder.try_decode::<Option<String>>()?;
         let exalt_type = decoder.try_decode::<Option<ExaltType>>()?;
@@ -82,7 +84,8 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for CharacterRow {
 
         Ok(Self {
             id,
-            campaign_player_id,
+            player_id,
+            campaign_id,
             name,
             concept,
             exalt_type,
@@ -97,7 +100,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for CharacterRow {
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "attributes")]
 pub struct AttributeRow {
-    pub character_id: i64,
+    pub character_id: i32,
     pub name: AttributeName,
     pub dots: i16,
 }
@@ -105,8 +108,8 @@ pub struct AttributeRow {
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "abilities")]
 pub struct AbilityRow {
-    pub id: i64,
-    pub character_id: i64,
+    pub id: i32,
+    pub character_id: i32,
     pub name: AbilityName,
     pub dots: i16,
     pub subskill: Option<String>,
@@ -115,8 +118,8 @@ pub struct AbilityRow {
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "specialties")]
 pub struct SpecialtyRow {
-    pub id: i64,
-    pub ability_id: i64,
+    pub id: i32,
+    pub ability_id: i32,
     pub specialty: String,
 }
 
@@ -129,8 +132,8 @@ impl PgHasArrayType for SpecialtyRow {
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "intimacies")]
 pub struct IntimacyRow {
-    pub id: i64,
-    pub character_id: i64,
+    pub id: i32,
+    pub character_id: i32,
     pub intimacy_type: IntimacyType,
     pub level: IntimacyLevel,
     pub description: String,
@@ -145,7 +148,7 @@ impl PgHasArrayType for IntimacyRow {
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "health_boxes")]
 pub struct HealthBoxRow {
-    pub character_id: i64,
+    pub character_id: i32,
     pub position: i16,
     pub wound_penalty: WoundPenalty,
     pub damage: Option<DamageType>,
@@ -153,10 +156,10 @@ pub struct HealthBoxRow {
 
 #[derive(Debug)]
 pub struct WeaponRow {
-    pub id: i64,
+    pub id: i32,
     pub name: String,
     pub tags: Vec<WeaponTag>,
-    pub creator_id: Option<i64>,
+    pub creator_id: Option<i32>,
 }
 
 impl sqlx::Type<sqlx::Postgres> for WeaponRow {
@@ -170,10 +173,10 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponRow {
         value: sqlx::postgres::PgValueRef<'r>,
     ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let id = decoder.try_decode::<i64>()?;
+        let id = decoder.try_decode::<i32>()?;
         let name = decoder.try_decode::<String>()?;
         let tags = decoder.try_decode::<Vec<WeaponTag>>()?;
-        let creator_id = decoder.try_decode::<Option<i64>>()?;
+        let creator_id = decoder.try_decode::<Option<i32>>()?;
 
         Ok(Self { id, name, tags, creator_id })
     }
@@ -181,10 +184,10 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponRow {
 
 #[derive(Debug)]
 pub struct WeaponEquippedRow {
-    pub character_id: i64,
-    pub weapon_id: i64,
+    pub character_id: i32,
+    pub weapon_id: i32,
     pub equip_hand: Option<EquipHand>,
-    pub creator_id: Option<i64>,
+    pub creator_id: Option<i32>,
 }
 
 impl sqlx::Type<sqlx::Postgres> for WeaponEquippedRow {
@@ -198,10 +201,10 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponEquippedRow {
         value: sqlx::postgres::PgValueRef<'r>,
     ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let character_id = decoder.try_decode::<i64>()?;
-        let weapon_id = decoder.try_decode::<i64>()?;
+        let character_id = decoder.try_decode::<i32>()?;
+        let weapon_id = decoder.try_decode::<i32>()?;
         let equip_hand = decoder.try_decode::<Option<EquipHand>>()?;
-        let creator_id = decoder.try_decode::<Option<i64>>()?;
+        let creator_id = decoder.try_decode::<Option<i32>>()?;
 
         Ok(Self { character_id, weapon_id, equip_hand, creator_id})
     }
@@ -209,10 +212,10 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponEquippedRow {
 
 #[derive(Debug)]
 pub struct ArmorRow {
-    pub id: i64,
+    pub id: i32,
     pub name: String,
     pub tags: Vec<ArmorTag>,
-    pub creator_id: Option<i64>,
+    pub creator_id: Option<i32>,
 }
 
 impl sqlx::Type<sqlx::Postgres> for ArmorRow {
@@ -226,10 +229,10 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorRow {
         value: sqlx::postgres::PgValueRef<'r>,
     ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let id = decoder.try_decode::<i64>()?;
+        let id = decoder.try_decode::<i32>()?;
         let name = decoder.try_decode::<String>()?;
         let tags = decoder.try_decode::<Vec<ArmorTag>>()?;
-        let creator_id = decoder.try_decode::<Option<i64>>()?;
+        let creator_id = decoder.try_decode::<Option<i32>>()?;
 
         Ok(Self { id, name, tags, creator_id})
     }
@@ -238,10 +241,10 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorRow {
 
 #[derive(Debug)]
 pub struct ArmorWornRow {
-    pub character_id: i64,
-    pub armor_id: i64,
+    pub character_id: i32,
+    pub armor_id: i32,
     pub worn: bool,
-    pub creator_id: Option<i64>,
+    pub creator_id: Option<i32>,
 }
 
 impl sqlx::Type<sqlx::Postgres> for ArmorWornRow {
@@ -255,10 +258,10 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorWornRow {
         value: sqlx::postgres::PgValueRef<'r>,
     ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let character_id = decoder.try_decode::<i64>()?;
-        let armor_id = decoder.try_decode::<i64>()?;
+        let character_id = decoder.try_decode::<i32>()?;
+        let armor_id = decoder.try_decode::<i32>()?;
         let worn = decoder.try_decode::<bool>()?;
-        let creator_id = decoder.try_decode::<Option<i64>>()?;
+        let creator_id = decoder.try_decode::<Option<i32>>()?;
 
         Ok(Self { character_id, armor_id, worn, creator_id})
     }
@@ -266,7 +269,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorWornRow {
 
 #[derive(Debug)]
 pub struct CharmRow {
-    pub id: i64,
+    pub id: i32,
     pub name: String,
     pub costs: Vec<CharmCost>,
     pub action_type: CharmActionType,
@@ -275,26 +278,26 @@ pub struct CharmRow {
     pub special_duration: Option<String>,
     pub book_name: Option<String>,
     pub page_number: Option<i32>,
-    pub creator_id: Option<i64>,
+    pub creator_id: Option<i32>,
     pub summary: String,
     pub description: String,
 }
 
 #[derive(Debug)]
 pub struct CharmPrerequisiteSetRow {
-    pub id: i64,
-    pub charm_id: i64,
-    pub prerequisite_id: i64,
+    pub id: i32,
+    pub charm_id: i32,
+    pub prerequisite_id: i32,
 }
 
 #[derive(Debug)]
 pub struct PrerequisiteRow {
-    pub id: i64,
+    pub id: i32,
     pub prerequisite_type: PrerequisiteType,
     pub ability_name: Option<AbilityName>,
     pub attribute_name: Option<AttributeName>,
     pub dots: Option<i16>,
-    pub prerequisite_charm_id: Option<i64>,
+    pub prerequisite_charm_id: Option<i32>,
     pub prerequisite_exalt_type: Option<PrerequisiteExaltType>,
 }
 
@@ -309,12 +312,12 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for PrerequisiteRow {
         value: sqlx::postgres::PgValueRef<'r>,
     ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let id = decoder.try_decode::<i64>()?;
+        let id = decoder.try_decode::<i32>()?;
         let prerequisite_type = decoder.try_decode::<PrerequisiteType>()?;
         let ability_name = decoder.try_decode::<Option<AbilityName>>()?;
         let attribute_name = decoder.try_decode::<Option<AttributeName>>()?;
         let dots = decoder.try_decode::<Option<i16>>()?;
-        let prerequisite_charm_id = decoder.try_decode::<Option<i64>>()?;
+        let prerequisite_charm_id = decoder.try_decode::<Option<i32>>()?;
         let prerequisite_exalt_type = decoder.try_decode::<Option<PrerequisiteExaltType>>()?;
         
 
@@ -325,7 +328,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for PrerequisiteRow {
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "merits")]
 pub struct MeritRow {
-    pub id: i64,
+    pub id: i32,
     pub name: String, 
     pub dots: i16,
     pub merit_type: MeritType,
@@ -335,15 +338,15 @@ pub struct MeritRow {
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "merit_prerequisite_sets")]
 pub struct MeritPrerequisiteSetRow {
-    pub id: i64,
-    pub merit_id: i64,
-    pub prerequisite_id: i64,
+    pub id: i32,
+    pub merit_id: i32,
+    pub prerequisite_id: i32,
 }
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "merit_prerequisite_sets")]
 pub struct CharacterMeritRow {
-    pub character_id: i64,
-    pub merit_id: i64,
+    pub character_id: i32,
+    pub merit_id: i32,
     pub detail: Option<String>,
 }

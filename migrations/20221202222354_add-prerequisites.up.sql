@@ -15,12 +15,12 @@ CREATE TYPE PREREQUISITEEXALTTYPE AS ENUM (
 );
 
 CREATE TABLE prerequisites (
-    id BIGSERIAL PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     prerequisite_type PREREQUISITETYPE NOT NULL,
     ability_name ABILITYNAME,
     attribute_name ATTRIBUTENAME,
     dots SMALLINT CHECK (dots >= 0),
-    charm_id BIGINT REFERENCES charms(id) ON DELETE CASCADE,
+    charm_id INTEGER REFERENCES charms(id) ON DELETE CASCADE,
     prerequisite_exalt_type PREREQUISITEEXALTTYPE,
     CHECK (
         CASE
@@ -36,8 +36,8 @@ CREATE TABLE prerequisites (
 );
 
 CREATE TABLE charm_prerequisite_sets (
-    id BIGINT,
-    charm_id BIGINT REFERENCES charms(id) ON DELETE CASCADE,
-    prerequisite_id BIGINT REFERENCES prerequisites(id) ON DELETE CASCADE,
+    id INTEGER NOT NULL,
+    charm_id INTEGER REFERENCES charms(id) ON DELETE CASCADE,
+    prerequisite_id INTEGER REFERENCES prerequisites(id) ON DELETE CASCADE,
     PRIMARY KEY (id, charm_id, prerequisite_id)
 )

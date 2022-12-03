@@ -1,15 +1,14 @@
-WITH player_campaign_query AS (
+WITH player_query AS (
     SELECT
-        players AS player,
-        campaigns AS campaign
-    FROM characters
-        INNER JOIN campaign_players ON (characters.campaign_player_id = campaign_players.id)
-        INNER JOIN players ON (players.id = campaign_players.player_id)
-        INNER JOIN campaigns ON (campaigns.id = campaign_players.campaign_id)
+        players as player
+    FROM characters INNER JOIN players ON (characters.player_id = players.id)
     WHERE characters.id = $1
-    LIMIT 1
-),
-attributes_query AS (
+), campaign_query AS (
+    SELECT
+        campaigns as campaign
+    FROM characters INNER JOIN campaigns ON (characters.campaign_id = campaigns.id)
+    WHERE characters.id = $1
+), attributes_query AS (
     SELECT
         ARRAY_AGG(attributes) AS attrs
     FROM characters
@@ -28,8 +27,7 @@ attributes_query AS (
         INNER JOIN abilities ON (abilities.character_id = characters.id)
         INNER JOIN specialties ON (specialties.ability_id = abilities.id)
     WHERE characters.id = $1
-), 
-intimacies_query AS (
+), intimacies_query AS (
     SELECT
         ARRAY_AGG(intimacies) AS intis
     FROM characters
@@ -95,7 +93,7 @@ intimacies_query AS (
 SELECT
     characters AS "character!: CharacterRow",
     player AS "player!: PlayerRow",
-    campaign AS "campaign!: CampaignRow",
+    campaign AS "campaign: CampaignRow",
     attrs AS "attributes!: Vec<AttributeRow>",
     abils AS "abilities!: Vec<AbilityRow>",
     specs AS "specialties: Vec<SpecialtyRow>",
@@ -109,7 +107,7 @@ SELECT
     mprss AS "merit_prerequisite_sets: Vec<MeritPrerequisiteSetRow>",
     meprs AS "merit_prerequisites:  Vec<PrerequisiteRow>"
 FROM characters,
-    player_campaign_query,
+    player_query,
     attributes_query,
     abilities_query,
     health_boxes_query,
@@ -122,4 +120,5 @@ FROM characters,
     merits_query,
     merit_prerequisite_sets_query,
     merit_prerequisites_query
+    LEFT JOIN campaign_query ON (TRUE)
 WHERE characters.id = $1;
