@@ -118,12 +118,31 @@ pub enum IntimacyType {
     Principle,
 }
 
+impl From<IntimacyType> for crate::character::traits::intimacies::IntimacyType {
+    fn from(intimacy_type: IntimacyType) -> Self {
+        match intimacy_type {
+            IntimacyType::Tie => crate::character::traits::intimacies::IntimacyType::Tie,
+            IntimacyType::Principle => crate::character::traits::intimacies::IntimacyType::Principle,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "INTIMACYLEVEL", rename_all = "UPPERCASE")]
 pub enum IntimacyLevel {
     Minor,
     Major,
     Defining,
+}
+
+impl From<IntimacyLevel> for crate::character::traits::intimacies::IntimacyLevel {
+    fn from(intimacy_level: IntimacyLevel) -> Self {
+        match intimacy_level {
+            IntimacyLevel::Minor => crate::character::traits::intimacies::IntimacyLevel::Minor,
+            IntimacyLevel::Major => crate::character::traits::intimacies::IntimacyLevel::Major,
+            IntimacyLevel::Defining => crate::character::traits::intimacies::IntimacyLevel::Defining,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]

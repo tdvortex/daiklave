@@ -5,7 +5,7 @@ use super::{
         campaign::Campaign,
         experience::ExperiencePoints,
         player::Player,
-        willpower::Willpower,
+        willpower::Willpower, intimacies::{Intimacies, Intimacy},
     },
     Character,
 };
@@ -22,6 +22,7 @@ pub struct CharacterBuilder {
     experience: ExperiencePoints,
     attributes: Attributes,
     abilities: Abilities,
+    intimacies: Intimacies,
 }
 
 impl CharacterBuilder {
@@ -125,6 +126,12 @@ impl CharacterBuilder {
         Ok(self)
     }
 
+    pub fn with_intimacy(&mut self, intimacy: Intimacy) -> &mut Self {
+        self.intimacies.push(intimacy);
+        self
+    }
+
+
     pub fn build(self) -> Result<Character> {
         if self.player.is_none() {
             return Err(eyre!("player must be specified"));
@@ -144,6 +151,7 @@ impl CharacterBuilder {
             experience: self.experience,
             attributes: self.attributes,
             abilities: self.abilities,
+            intimacies: self.intimacies,
         })
     }
 }

@@ -9,6 +9,7 @@ use traits::willpower::Willpower;
 
 use self::traits::abilities::Abilities;
 use self::traits::attributes::Attributes;
+use self::traits::intimacies::Intimacies;
 
 #[derive(Debug)]
 pub struct Character {
@@ -21,4 +22,5 @@ pub struct Character {
     pub experience: ExperiencePoints,
     pub attributes: Attributes,
     pub abilities: Abilities,
+    pub intimacies: Intimacies,
 }

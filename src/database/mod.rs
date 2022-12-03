@@ -4,7 +4,7 @@ use crate::character::{
     builder::create_character,
     builder::CharacterBuilder,
     traits::{
-        campaign::Campaign, experience::ExperiencePoints, player::Player, willpower::Willpower,
+        campaign::Campaign, experience::ExperiencePoints, player::Player, willpower::Willpower, intimacies::Intimacy,
     },
     Character,
 };
@@ -129,6 +129,14 @@ impl CharacterBuilder {
             }
         }
     }
+
+    fn apply_intimacy_row(&mut self, intimacy_row: IntimacyRow) -> &mut Self {
+        self.with_intimacy(Intimacy {
+            intimacy_level: intimacy_row.level.into(),
+            intimacy_type: intimacy_row.intimacy_type.into(),
+            description: intimacy_row.description,
+        })
+    }
 }
 
 impl TryInto<Character> for GetCharacter {
@@ -176,6 +184,10 @@ impl TryInto<Character> for GetCharacter {
                 character.apply_ability_and_specialties_rows(ability_row, specialty_rows)
             })
         })?;
+
+        self.intimacies.map(|intimacy_rows| intimacy_rows.into_iter().map(|intimacy_row| {
+            character.apply_intimacy_row(intimacy_row);
+        }));
 
         character.build()
     }
