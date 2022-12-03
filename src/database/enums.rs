@@ -137,7 +137,6 @@ pub enum RangeBand {
     Extreme,
 }
 
-
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "ARMORTAG", rename_all = "UPPERCASE")]
 pub enum ArmorTag {

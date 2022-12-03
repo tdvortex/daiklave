@@ -1,10 +1,11 @@
 use sqlx::postgres::PgHasArrayType;
 
+use super::composites::{CharmCost, WeaponTag};
 use super::enums::{
-    AbilityName, AttributeName, DamageType, ExaltType, IntimacyLevel, IntimacyType,
-    WoundPenalty, ArmorTag, EquipHand, CharmKeyword, CharmDurationType, CharmActionType, PrerequisiteType, PrerequisiteExaltType, MeritType,
+    AbilityName, ArmorTag, AttributeName, CharmActionType, CharmDurationType, CharmKeyword,
+    DamageType, EquipHand, ExaltType, IntimacyLevel, IntimacyType, MeritType,
+    PrerequisiteExaltType, PrerequisiteType, WoundPenalty,
 };
-use super::composites::{WeaponTag, CharmCost};
 
 #[derive(Debug)]
 pub struct CampaignRow {
@@ -178,7 +179,12 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponRow {
         let tags = decoder.try_decode::<Vec<WeaponTag>>()?;
         let creator_id = decoder.try_decode::<Option<i32>>()?;
 
-        Ok(Self { id, name, tags, creator_id })
+        Ok(Self {
+            id,
+            name,
+            tags,
+            creator_id,
+        })
     }
 }
 
@@ -206,7 +212,12 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponEquippedRow {
         let equip_hand = decoder.try_decode::<Option<EquipHand>>()?;
         let creator_id = decoder.try_decode::<Option<i32>>()?;
 
-        Ok(Self { character_id, weapon_id, equip_hand, creator_id})
+        Ok(Self {
+            character_id,
+            weapon_id,
+            equip_hand,
+            creator_id,
+        })
     }
 }
 
@@ -234,10 +245,14 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorRow {
         let tags = decoder.try_decode::<Vec<ArmorTag>>()?;
         let creator_id = decoder.try_decode::<Option<i32>>()?;
 
-        Ok(Self { id, name, tags, creator_id})
+        Ok(Self {
+            id,
+            name,
+            tags,
+            creator_id,
+        })
     }
 }
-
 
 #[derive(Debug)]
 pub struct ArmorWornRow {
@@ -263,7 +278,12 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorWornRow {
         let worn = decoder.try_decode::<bool>()?;
         let creator_id = decoder.try_decode::<Option<i32>>()?;
 
-        Ok(Self { character_id, armor_id, worn, creator_id})
+        Ok(Self {
+            character_id,
+            armor_id,
+            worn,
+            creator_id,
+        })
     }
 }
 
@@ -319,9 +339,16 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for PrerequisiteRow {
         let dots = decoder.try_decode::<Option<i16>>()?;
         let prerequisite_charm_id = decoder.try_decode::<Option<i32>>()?;
         let prerequisite_exalt_type = decoder.try_decode::<Option<PrerequisiteExaltType>>()?;
-        
 
-        Ok(Self { id, prerequisite_type, ability_name, attribute_name, dots, prerequisite_charm_id, prerequisite_exalt_type })
+        Ok(Self {
+            id,
+            prerequisite_type,
+            ability_name,
+            attribute_name,
+            dots,
+            prerequisite_charm_id,
+            prerequisite_exalt_type,
+        })
     }
 }
 
@@ -329,7 +356,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for PrerequisiteRow {
 #[sqlx(type_name = "merits")]
 pub struct MeritRow {
     pub id: i32,
-    pub name: String, 
+    pub name: String,
     pub dots: i16,
     pub merit_type: MeritType,
     pub description: String,

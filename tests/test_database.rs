@@ -11,9 +11,11 @@ fn create_get_delete() {
         .await
         .unwrap();
 
-    let player_id = sqlx::query!(
-        "INSERT INTO players(name) VALUES ('test_player') RETURNING id"
-    ).fetch_one(&pool).await.unwrap().id;
+    let player_id = sqlx::query!("INSERT INTO players(name) VALUES ('test_player') RETURNING id")
+        .fetch_one(&pool)
+        .await
+        .unwrap()
+        .id;
 
     println!("player_id {}", player_id);
 
@@ -107,9 +109,12 @@ fn create_get_delete() {
 
     assert!(rows_affected == 7);
 
-    let maybe_unarmed_id = sqlx::query!(
-        "SELECT id FROM weapons WHERE weapons.name = 'Unarmed' LIMIT 1"
-    ).fetch_optional(&pool).await.unwrap().map(|rec| rec.id);
+    let maybe_unarmed_id =
+        sqlx::query!("SELECT id FROM weapons WHERE weapons.name = 'Unarmed' LIMIT 1")
+            .fetch_optional(&pool)
+            .await
+            .unwrap()
+            .map(|rec| rec.id);
 
     let unarmed_id = if let Some(id) = maybe_unarmed_id {
         id
@@ -139,7 +144,11 @@ fn create_get_delete() {
                 ('NATURAL', NULL, NULL)
             ]::WEAPONTAG[])
             RETURNING id"
-        ).fetch_one(&pool).await.unwrap().id
+        )
+        .fetch_one(&pool)
+        .await
+        .unwrap()
+        .id
     };
 
     let rows_affected = sqlx::query!(

@@ -1,6 +1,13 @@
+use crate::character::{
+    create_character,
+    traits::{experience::ExperiencePoints, willpower::Willpower, player::Player, campaign::Campaign},
+    Character, CharacterBuilder,
+};
+
 use self::rows::{
-    AbilityRow, AttributeRow, CampaignRow, CharacterRow, HealthBoxRow, IntimacyRow, PlayerRow,
-    SpecialtyRow, WeaponRow, ArmorRow, WeaponEquippedRow, ArmorWornRow, MeritRow, MeritPrerequisiteSetRow, PrerequisiteRow,
+    AbilityRow, ArmorRow, ArmorWornRow, AttributeRow, CampaignRow, CharacterRow, HealthBoxRow,
+    IntimacyRow, MeritPrerequisiteSetRow, MeritRow, PlayerRow, PrerequisiteRow, SpecialtyRow,
+    WeaponEquippedRow, WeaponRow,
 };
 use eyre::Result;
 use sqlx::PgPool;
@@ -28,12 +35,56 @@ pub struct GetCharacter {
     pub merit_prerequisites: Option<Vec<PrerequisiteRow>>,
 }
 
-impl GetCharacter {
-    pub async fn execute(pool: &PgPool, character_id: i32) -> Result<Option<GetCharacter>> {
-        Ok(
-            sqlx::query_file_as!(GetCharacter, "src/database/get_character.sql", character_id)
-                .fetch_optional(pool)
-                .await?,
-        )
+pub async fn get_character(pool: &PgPool, character_id: i32) -> Result<Option<GetCharacter>> {
+    Ok(
+        sqlx::query_file_as!(GetCharacter, "src/database/get_character.sql", character_id)
+            .fetch_optional(pool)
+            .await?,
+    )
+}
+
+impl CharacterBuilder {
+    fn apply_player_row(&mut self, player_row: PlayerRow) -> &mut Self {
+        self.with_player(Player::new(player_row.id, player_row.name))
+    }
+
+    fn apply_campaign_row(&mut self, campaign_row: CampaignRow) -> &mut Self {
+        self.with_campaign(Campaign::new(campaign_row.id, campaign_row.name, campaign_row.bot_channel, campaign_row.description))
+    }
+
+    fn apply_character_row(&mut self, character_row: CharacterRow) -> Result<&mut Self> {
+        let willpower = Willpower {
+            current: character_row.current_willpower.try_into()?,
+            maximum: character_row.max_willpower.try_into()?,
+        };
+
+        let experience = ExperiencePoints {
+            current: character_row.current_experience.try_into()?,
+            total: character_row.total_experience.try_into()?,
+        };
+
+        let applied = self
+            .with_id(character_row.id)
+            .with_name(character_row.name)
+            .with_willpower(willpower)
+            .with_experience(experience);
+
+        // TODO: handle Exalt Type
+
+        Ok(applied)
+    }
+}
+
+impl TryInto<Character> for GetCharacter {
+    type Error = eyre::Report;
+
+    fn try_into(self) -> Result<Character, Self::Error> {
+        let mut character = create_character();
+        character.apply_player_row(self.player);
+        if let Some(campaign) = self.campaign {
+            character.apply_campaign_row(campaign);
+        }
+        character.apply_character_row(self.character)?;
+        character.build()
     }
 }

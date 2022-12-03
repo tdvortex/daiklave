@@ -1,6 +1,6 @@
 use sqlx::postgres::PgHasArrayType;
 
-use super::enums::{WeaponTagType, RangeBand, CharmCostType};
+use super::enums::{CharmCostType, RangeBand, WeaponTagType};
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "WEAPONTAG")]

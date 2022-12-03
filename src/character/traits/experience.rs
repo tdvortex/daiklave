@@ -1,15 +1,15 @@
 #[derive(Debug, Default)]
 pub struct ExperiencePoints {
-    pub current: usize,
-    pub total: usize,
+    pub current: u16,
+    pub total: u16,
 }
 
 #[derive(Debug, Default)]
 pub struct CraftingExperience {
-    pub silver: usize,
-    pub gold: usize,
-    pub white: usize,
-    pub major_slots: usize,
+    pub silver: u16,
+    pub gold: u16,
+    pub white: u16,
+    pub major_slots: u16,
 }
 
 pub enum CraftingExperienceType {

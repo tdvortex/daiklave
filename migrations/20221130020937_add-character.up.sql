@@ -7,8 +7,8 @@ CREATE TABLE characters (
     name VARCHAR(255) NOT NULL,
     concept TEXT,
     exalt_type EXALTTYPE,
-    current_willpower SMALLINT NOT NULL CHECK (current_willpower >= 0),
-    max_willpower SMALLINT NOT NULL CHECK (max_willpower >= 0),
+    current_willpower SMALLINT NOT NULL CHECK (current_willpower >= 0 AND current_willpower <= 255),
+    max_willpower SMALLINT NOT NULL CHECK (max_willpower >= 0 AND max_willpower <= 255),
     current_experience SMALLINT NOT NULL CHECK (current_experience >= 0),
     total_experience SMALLINT NOT NULL CHECK (total_experience >= 0)
 );
