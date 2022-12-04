@@ -1,6 +1,8 @@
 use eyre::{eyre, Result};
 use std::iter::{ExactSizeIterator, FusedIterator};
 
+use super::prerequisite::AttributePrerequisite;
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum AttributeName {
     Strength,
@@ -156,6 +158,10 @@ impl Attributes {
             attributes: self,
             name_iter: AttributeName::iter(),
         }
+    }
+
+    pub fn meets_prerequisite(&self, prerequisite: &AttributePrerequisite) -> bool {
+        self.get(prerequisite.attribute_name).dots() >= prerequisite.dots
     }
 }
 

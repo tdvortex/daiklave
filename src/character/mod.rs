@@ -12,6 +12,8 @@ use self::traits::armor::Armor;
 use self::traits::attributes::Attributes;
 use self::traits::health::Health;
 use self::traits::intimacies::Intimacies;
+use self::traits::merits::Merits;
+use self::traits::prerequisite::{Prerequisite, PrerequisiteSet};
 use self::traits::weapons::Weapons;
 
 #[derive(Debug)]
@@ -29,4 +31,33 @@ pub struct Character {
     pub health: Health,
     pub weapons: Weapons,
     pub armor: Armor,
+    pub merits: Merits,
+}
+
+impl Character {
+    fn meets_prerequisite(&self, prerequisite: &Prerequisite) -> bool {
+        match prerequisite {
+            Prerequisite::Ability(ability_prerequisite) => self.abilities.meets_prerequisite(ability_prerequisite),
+            Prerequisite::Attribute(attribute_prerequisite) => self.attributes.meets_prerequisite(attribute_prerequisite),
+            Prerequisite::Essence(_) => false,
+            Prerequisite::Charm(_) => false,
+            Prerequisite::ExaltType(exalt_type) => {
+                match exalt_type {
+                    traits::prerequisite::ExaltTypePrerequisite::Solar => false,
+                    traits::prerequisite::ExaltTypePrerequisite::Lunar => false,
+                    traits::prerequisite::ExaltTypePrerequisite::DragonBlooded => false,
+                    traits::prerequisite::ExaltTypePrerequisite::Spirit => false,
+                    traits::prerequisite::ExaltTypePrerequisite::SpiritOrEclipse => false,
+                }
+            }
+        }
+    }
+
+    fn meets_prerequisite_set(&self, prerequisite_set: &PrerequisiteSet) -> bool {
+        prerequisite_set.iter().all(|prerequisite| self.meets_prerequisite(prerequisite))
+    }
+
+    pub fn meets_any_prerequisite_set(&self, prerequisite_sets: &Vec<PrerequisiteSet>) -> bool {
+        prerequisite_sets.iter().any(|prerequisite_set| self.meets_prerequisite_set(prerequisite_set))
+    }
 }

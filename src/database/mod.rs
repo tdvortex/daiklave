@@ -12,12 +12,8 @@ use crate::character::{
 };
 
 use self::{
-    enums::AbilityName,
-    rows::{
-        AbilityRow, ArmorRow, ArmorWornRow, AttributeRow, CampaignRow, CharacterRow, HealthBoxRow,
-        IntimacyRow, MeritPrerequisiteSetRow, MeritRow, PlayerRow, PrerequisiteRow, SpecialtyRow,
-        WeaponEquippedRow, WeaponRow,
-    },
+    enums::AbilityNamePostgres,
+    rows::*,
 };
 use eyre::{eyre, Result};
 use sqlx::PgPool;
@@ -40,7 +36,7 @@ pub struct GetCharacter {
     weapons_equipped: Option<Vec<WeaponEquippedRow>>,
     armor_owned: Option<Vec<ArmorRow>>,
     armor_worn: Option<Vec<ArmorWornRow>>,
-    pub merits: Option<Vec<MeritRow>>,
+    pub merit_templates: Option<Vec<MeritTemplateRow>>,
     pub merit_prerequisite_sets: Option<Vec<MeritPrerequisiteSetRow>>,
     pub merit_prerequisites: Option<Vec<PrerequisiteRow>>,
 }
@@ -112,7 +108,7 @@ impl CharacterBuilder {
         let dots: u8 = ability_row.dots.try_into()?;
 
         match ability_row.name {
-            AbilityName::Craft => {
+            AbilityNamePostgres::Craft => {
                 let craft_focus = ability_row
                     .subskill
                     .ok_or(eyre!("craft abilities must have a focus"))?;
@@ -126,7 +122,7 @@ impl CharacterBuilder {
                         })
                     })
             }
-            AbilityName::MartialArts => {
+            AbilityNamePostgres::MartialArts => {
                 let martial_arts_style = ability_row
                     .subskill
                     .ok_or(eyre!("martial arts abilities must have a style"))?;
@@ -142,9 +138,9 @@ impl CharacterBuilder {
                         })
                     })
             }
-            no_focus_name => {
-                let ability_name = no_focus_name.try_into()?;
-                self.with_ability(ability_name, dots);
+            other_ability => {
+                let ability_name = other_ability.try_into()?;
+                self.with_ability(ability_name, dots)?;
                 specialty_rows
                     .into_iter()
                     .fold(Ok(self), |character_result, specialty_row| {
@@ -211,21 +207,21 @@ impl CharacterBuilder {
 
         for health_box_row in health_box_rows.into_iter() {
             wound_penalties.push(match health_box_row.wound_penalty {
-                enums::WoundPenalty::Zero => WoundPenalty::Zero,
-                enums::WoundPenalty::MinusOne => WoundPenalty::MinusOne,
-                enums::WoundPenalty::MinusTwo => WoundPenalty::MinusTwo,
-                enums::WoundPenalty::MinusFour => WoundPenalty::MinusFour,
-                enums::WoundPenalty::Incapacitated => WoundPenalty::Incapacitated,
+                enums::WoundPenaltyPostgres::Zero => WoundPenalty::Zero,
+                enums::WoundPenaltyPostgres::MinusOne => WoundPenalty::MinusOne,
+                enums::WoundPenaltyPostgres::MinusTwo => WoundPenalty::MinusTwo,
+                enums::WoundPenaltyPostgres::MinusFour => WoundPenalty::MinusFour,
+                enums::WoundPenaltyPostgres::Incapacitated => WoundPenalty::Incapacitated,
             });
 
             match health_box_row.damage {
-                Some(enums::DamageType::Bashing) => {
+                Some(enums::DamageTypePostgres::Bashing) => {
                     bashing += 1;
                 }
-                Some(enums::DamageType::Lethal) => {
+                Some(enums::DamageTypePostgres::Lethal) => {
                     lethal += 1;
                 }
-                Some(enums::DamageType::Aggravated) => {
+                Some(enums::DamageTypePostgres::Aggravated) => {
                     aggravated += 1;
                 }
                 None => {}
@@ -274,22 +270,22 @@ impl CharacterBuilder {
                 })?;
 
             *equipped = match (&equipped, weapon_equipped_row.equip_hand.unwrap()) {
-                (None, enums::EquipHand::Main) => Some(TraitsEquipHand::Main),
-                (None, enums::EquipHand::Off) => Some(TraitsEquipHand::Off),
-                (Some(TraitsEquipHand::Main), enums::EquipHand::Main) => {
+                (None, enums::EquipHandPostgres::Main) => Some(TraitsEquipHand::Main),
+                (None, enums::EquipHandPostgres::Off) => Some(TraitsEquipHand::Off),
+                (Some(TraitsEquipHand::Main), enums::EquipHandPostgres::Main) => {
                     return Err(eyre!("cannot equip two weapons in Main hand"));
                 }
-                (Some(TraitsEquipHand::Off), enums::EquipHand::Off) => {
+                (Some(TraitsEquipHand::Off), enums::EquipHandPostgres::Off) => {
                     return Err(eyre!("cannot equip two weapons in Off hand"));
                 }
-                (Some(TraitsEquipHand::Both), enums::EquipHand::Main) => {
+                (Some(TraitsEquipHand::Both), enums::EquipHandPostgres::Main) => {
                     return Err(eyre!("cannot equip two weapons in Main hand"));
                 }
-                (Some(TraitsEquipHand::Both), enums::EquipHand::Off) => {
+                (Some(TraitsEquipHand::Both), enums::EquipHandPostgres::Off) => {
                     return Err(eyre!("cannot equip two weapons in Off hand"));
                 }
-                (Some(TraitsEquipHand::Main), enums::EquipHand::Off) => Some(TraitsEquipHand::Both),
-                (Some(TraitsEquipHand::Off), enums::EquipHand::Main) => Some(TraitsEquipHand::Both),
+                (Some(TraitsEquipHand::Main), enums::EquipHandPostgres::Off) => Some(TraitsEquipHand::Both),
+                (Some(TraitsEquipHand::Off), enums::EquipHandPostgres::Main) => Some(TraitsEquipHand::Both),
             };
         }
 

@@ -9,7 +9,7 @@ use super::{
         intimacies::{Intimacies, Intimacy},
         player::Player,
         weapons::{EquipHand, Weapon, Weapons},
-        willpower::Willpower,
+        willpower::Willpower, merits::{Merits, MeritTemplate, Merit},
     },
     Character,
 };
@@ -30,6 +30,7 @@ pub struct CharacterBuilder {
     health: Health,
     weapons: Weapons,
     armor: Armor,
+    merits: Merits,
 }
 
 impl CharacterBuilder {
@@ -77,12 +78,12 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    pub fn with_ability(&mut self, ability_name: AbilityNameNoFocus, value: u8) -> &mut Self {
+    pub fn with_ability(&mut self, ability_name: AbilityNameNoFocus, value: u8) -> Result<&mut Self> {
         self.abilities
-            .get_mut(&ability_name.into())
+            .get_mut(&ability_name.try_into()?)
             .unwrap()
             .set_dots(value);
-        self
+        Ok(self)
     }
 
     pub fn with_craft(&mut self, craft_focus: &str, value: u8) -> &mut Self {
@@ -105,7 +106,7 @@ impl CharacterBuilder {
         specialty: String,
     ) -> Result<&mut Self> {
         self.abilities
-            .get_mut(&ability_name.into())
+            .get_mut(&ability_name.try_into()?)
             .unwrap()
             .add_specialty(specialty)?;
         Ok(self)
@@ -180,6 +181,12 @@ impl CharacterBuilder {
         Ok(self)
     }
 
+    pub fn with_merit(&mut self, template: MeritTemplate, detail: Option<String>) -> Result<&mut Self> {
+        let merit = Merit::from_template(template, detail)?;
+        self.merits.push(merit);
+        Ok(self)
+    }
+
     pub fn build(self) -> Result<Character> {
         if self.player.is_none() {
             return Err(eyre!("player must be specified"));
@@ -203,6 +210,7 @@ impl CharacterBuilder {
             health: self.health,
             weapons: self.weapons,
             armor: self.armor,
+            merits: self.merits,
         })
     }
 }

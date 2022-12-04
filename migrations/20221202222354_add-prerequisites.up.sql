@@ -18,6 +18,7 @@ CREATE TABLE prerequisites (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     prerequisite_type PREREQUISITETYPE NOT NULL,
     ability_name ABILITYNAME,
+    subskill_name VARCHAR(255),
     attribute_name ATTRIBUTENAME,
     dots SMALLINT CHECK (dots >= 0),
     charm_id INTEGER REFERENCES charms(id) ON DELETE CASCADE,

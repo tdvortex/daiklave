@@ -530,7 +530,7 @@ impl Weapon {
 
 #[derive(Debug)]
 struct WeaponDetails {
-    id: Option<i32>,
+    _id: Option<i32>,
     name: String,
     weight_class: WeightClass,
     damage_type: DamageType,
@@ -550,7 +550,7 @@ impl WeaponDetails {
         other_tags: HashSet<OtherTag>,
     ) -> Self {
         Self {
-            id,
+            _id: id,
             name,
             weight_class,
             damage_type,

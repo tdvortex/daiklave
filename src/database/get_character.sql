@@ -103,7 +103,7 @@ SELECT
     eqwps AS "weapons_equipped: Vec<WeaponEquippedRow>",
     armrs AS "armor_owned: Vec<ArmorRow>",
     wrars AS "armor_worn: Vec<ArmorWornRow>",
-    merts AS "merits: Vec<MeritRow>",
+    merts AS "merit_templates: Vec<MeritTemplateRow>",
     mprss AS "merit_prerequisite_sets: Vec<MeritPrerequisiteSetRow>",
     meprs AS "merit_prerequisites:  Vec<PrerequisiteRow>"
 FROM characters,

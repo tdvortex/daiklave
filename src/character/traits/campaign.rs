@@ -1,6 +1,6 @@
 #[derive(Debug)]
 pub struct Campaign {
-    id: i32,
+    _id: i32,
     name: String,
     description: Option<String>,
     bot_channel: i64,
@@ -9,7 +9,7 @@ pub struct Campaign {
 impl Campaign {
     pub fn new(id: i32, name: String, bot_channel: i64, description: Option<String>) -> Self {
         Self {
-            id,
+            _id: id,
             name,
             description,
             bot_channel,

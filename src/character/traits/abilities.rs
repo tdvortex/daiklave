@@ -1,8 +1,10 @@
-use eyre::{eyre, Result};
+use eyre::{eyre, Result, Report};
 use std::collections::hash_map::Keys;
 use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
 use std::iter::{ExactSizeIterator, FusedIterator};
+
+use super::prerequisite::AbilityPrerequisite;
 
 type Specialty = String;
 
@@ -42,19 +44,21 @@ impl NonZeroAbility {
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum AbilityNameNoFocus {
     Archery,
     Athletics,
     Awareness,
     Brawl,
     Bureaucracy,
+    Craft,
     Dodge,
     Integrity,
     Investigation,
     Larceny,
     Linguistics,
     Lore,
+    MartialArts,
     Medicine,
     Melee,
     Occult,
@@ -91,13 +95,15 @@ impl Iterator for AbilityNameNoFocusIter {
             Some(AbilityNameNoFocus::Athletics) => Some(AbilityNameNoFocus::Awareness),
             Some(AbilityNameNoFocus::Awareness) => Some(AbilityNameNoFocus::Brawl),
             Some(AbilityNameNoFocus::Brawl) => Some(AbilityNameNoFocus::Bureaucracy),
-            Some(AbilityNameNoFocus::Bureaucracy) => Some(AbilityNameNoFocus::Dodge),
+            Some(AbilityNameNoFocus::Bureaucracy) => Some(AbilityNameNoFocus::Craft),
+            Some(AbilityNameNoFocus::Craft) => Some(AbilityNameNoFocus::Dodge),
             Some(AbilityNameNoFocus::Dodge) => Some(AbilityNameNoFocus::Integrity),
             Some(AbilityNameNoFocus::Integrity) => Some(AbilityNameNoFocus::Investigation),
             Some(AbilityNameNoFocus::Investigation) => Some(AbilityNameNoFocus::Larceny),
             Some(AbilityNameNoFocus::Larceny) => Some(AbilityNameNoFocus::Linguistics),
             Some(AbilityNameNoFocus::Linguistics) => Some(AbilityNameNoFocus::Lore),
-            Some(AbilityNameNoFocus::Lore) => Some(AbilityNameNoFocus::Medicine),
+            Some(AbilityNameNoFocus::Lore) => Some(AbilityNameNoFocus::MartialArts),
+            Some(AbilityNameNoFocus::MartialArts) => Some(AbilityNameNoFocus::Medicine),
             Some(AbilityNameNoFocus::Medicine) => Some(AbilityNameNoFocus::Melee),
             Some(AbilityNameNoFocus::Melee) => Some(AbilityNameNoFocus::Occult),
             Some(AbilityNameNoFocus::Occult) => Some(AbilityNameNoFocus::Performance),
@@ -157,33 +163,37 @@ pub enum AbilityName {
     War,
 }
 
-impl From<AbilityNameNoFocus> for AbilityName {
-    fn from(no_focus_name: AbilityNameNoFocus) -> Self {
-        match no_focus_name {
-            AbilityNameNoFocus::Archery => AbilityName::Archery,
-            AbilityNameNoFocus::Athletics => AbilityName::Athletics,
-            AbilityNameNoFocus::Awareness => AbilityName::Awareness,
-            AbilityNameNoFocus::Brawl => AbilityName::Brawl,
-            AbilityNameNoFocus::Bureaucracy => AbilityName::Bureaucracy,
-            AbilityNameNoFocus::Dodge => AbilityName::Dodge,
-            AbilityNameNoFocus::Integrity => AbilityName::Integrity,
-            AbilityNameNoFocus::Investigation => AbilityName::Investigation,
-            AbilityNameNoFocus::Larceny => AbilityName::Larceny,
-            AbilityNameNoFocus::Linguistics => AbilityName::Linguistics,
-            AbilityNameNoFocus::Lore => AbilityName::Lore,
-            AbilityNameNoFocus::Medicine => AbilityName::Medicine,
-            AbilityNameNoFocus::Melee => AbilityName::Melee,
-            AbilityNameNoFocus::Occult => AbilityName::Occult,
-            AbilityNameNoFocus::Performance => AbilityName::Performance,
-            AbilityNameNoFocus::Presence => AbilityName::Presence,
-            AbilityNameNoFocus::Resistance => AbilityName::Resistance,
-            AbilityNameNoFocus::Ride => AbilityName::Ride,
-            AbilityNameNoFocus::Sail => AbilityName::Sail,
-            AbilityNameNoFocus::Socialize => AbilityName::Socialize,
-            AbilityNameNoFocus::Stealth => AbilityName::Stealth,
-            AbilityNameNoFocus::Survival => AbilityName::Survival,
-            AbilityNameNoFocus::Thrown => AbilityName::Thrown,
-            AbilityNameNoFocus::War => AbilityName::War,
+impl TryFrom<AbilityNameNoFocus> for AbilityName {
+    type Error = Report;
+
+    fn try_from(value: AbilityNameNoFocus) -> Result<Self, Self::Error> {
+        match value {
+            AbilityNameNoFocus::Archery => Ok(AbilityName::Archery),
+            AbilityNameNoFocus::Athletics => Ok(AbilityName::Athletics),
+            AbilityNameNoFocus::Awareness => Ok(AbilityName::Awareness),
+            AbilityNameNoFocus::Brawl => Ok(AbilityName::Brawl),
+            AbilityNameNoFocus::Bureaucracy => Ok(AbilityName::Bureaucracy),
+            AbilityNameNoFocus::Craft => Err(eyre!("craft ability requires focus")),
+            AbilityNameNoFocus::Dodge => Ok(AbilityName::Dodge),
+            AbilityNameNoFocus::Integrity => Ok(AbilityName::Integrity),
+            AbilityNameNoFocus::Investigation => Ok(AbilityName::Investigation),
+            AbilityNameNoFocus::Larceny => Ok(AbilityName::Larceny),
+            AbilityNameNoFocus::Linguistics => Ok(AbilityName::Linguistics),
+            AbilityNameNoFocus::Lore => Ok(AbilityName::Lore),
+            AbilityNameNoFocus::MartialArts => Err(eyre!("martial arts ability requires style")),
+            AbilityNameNoFocus::Medicine => Ok(AbilityName::Medicine),
+            AbilityNameNoFocus::Melee => Ok(AbilityName::Melee),
+            AbilityNameNoFocus::Occult => Ok(AbilityName::Occult),
+            AbilityNameNoFocus::Performance => Ok(AbilityName::Performance),
+            AbilityNameNoFocus::Presence => Ok(AbilityName::Presence),
+            AbilityNameNoFocus::Resistance => Ok(AbilityName::Resistance),
+            AbilityNameNoFocus::Ride => Ok(AbilityName::Ride),
+            AbilityNameNoFocus::Sail => Ok(AbilityName::Sail),
+            AbilityNameNoFocus::Socialize => Ok(AbilityName::Socialize),
+            AbilityNameNoFocus::Stealth => Ok(AbilityName::Stealth),
+            AbilityNameNoFocus::Survival => Ok(AbilityName::Survival),
+            AbilityNameNoFocus::Thrown => Ok(AbilityName::Thrown),
+            AbilityNameNoFocus::War => Ok(AbilityName::War),
         }
     }
 }
@@ -567,6 +577,16 @@ impl Abilities {
         self.get_mut(&AbilityName::Craft(focus)).unwrap()
     }
 
+    pub fn remove_craft(&mut self, focus: &String) {
+        self.craft.remove(focus);
+    }
+
+    pub fn craft_iter(&self) -> impl Iterator<Item = Ability> {
+        CraftIter {
+            craft_iter: self.craft.iter(),
+        }
+    }
+
     pub fn add_martial_arts(&mut self, style: String) -> AbilityMut {
         if !self.martial_arts.contains_key(&style) {
             self.martial_arts.insert(style.clone(), AbilityRating::Zero);
@@ -574,18 +594,22 @@ impl Abilities {
         self.get_mut(&AbilityName::MartialArts(style)).unwrap()
     }
 
-    pub fn remove_craft(&mut self, focus: &String) {
-        self.craft.remove(focus);
-    }
-
     pub fn remove_martial_arts(&mut self, style: &String) {
         self.martial_arts.remove(style);
+    }
+
+    pub fn martial_arts_iter(&self) -> impl Iterator<Item = Ability> {
+        MartialArtsIter {
+            martial_arts_iter: self.martial_arts.iter(),
+        }
     }
 
     fn ability_names_iter(&self) -> AbilityNamesIter {
         AbilityNamesIter {
             ability_name_no_focus_iter: AbilityNameNoFocus::iter(),
+            on_craft: false,
             craft_iter: self.craft.keys(),
+            on_martial_arts: false,
             martial_arts_iter: self.martial_arts.keys(),
         }
     }
@@ -596,11 +620,44 @@ impl Abilities {
             ability_names_iter: self.ability_names_iter(),
         }
     }
+
+    pub fn meets_prerequisite(&self, prerequisite: &AbilityPrerequisite) -> bool {
+        match (prerequisite.ability_name, &prerequisite.subskill) {
+            (AbilityNameNoFocus::Craft, Some(focus)) => {
+                let ability_name: AbilityName = AbilityName::Craft(focus.clone());
+                if let Some(ability) = self.get(&ability_name) {
+                    ability.dots() >= prerequisite.dots
+                } else {
+                    false
+                }
+            }
+            (AbilityNameNoFocus::Craft, None) => {
+                self.craft_iter().any(|craft_ability| craft_ability.dots() >= prerequisite.dots)
+            }
+            (AbilityNameNoFocus::MartialArts, Some(style)) => {
+                let ability_name: AbilityName = AbilityName::MartialArts(style.clone());
+                if let Some(ability) = self.get(&ability_name) {
+                    ability.dots() >= prerequisite.dots
+                } else {
+                    false
+                }
+            }
+            (AbilityNameNoFocus::MartialArts, None) => {
+                self.martial_arts_iter().any(|martial_arts_ability| martial_arts_ability.dots() >= prerequisite.dots)
+            }
+            (other_ability, _) => {
+                let ability_name: AbilityName = other_ability.try_into().unwrap();
+                self.get(&ability_name).unwrap().dots() >= prerequisite.dots
+            }
+        }
+    }
 }
 
 struct AbilityNamesIter<'a> {
     ability_name_no_focus_iter: AbilityNameNoFocusIter,
+    on_craft: bool,
     craft_iter: Keys<'a, String, AbilityRating>,
+    on_martial_arts: bool,
     martial_arts_iter: Keys<'a, String, AbilityRating>,
 }
 
@@ -608,14 +665,33 @@ impl<'a> Iterator for AbilityNamesIter<'a> {
     type Item = AbilityName;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if let Some(ability_name_no_focus) = self.ability_name_no_focus_iter.next() {
-            Some(ability_name_no_focus.into())
-        } else if let Some(craft_focus) = self.craft_iter.next() {
-            Some(AbilityName::Craft(craft_focus.clone()))
-        } else {
-            self.martial_arts_iter
-                .next()
-                .map(|martial_arts_focus| AbilityName::MartialArts(martial_arts_focus.clone()))
+        if self.on_craft {
+            if let Some(focus) = self.craft_iter.next() {
+                return Some(AbilityName::Craft(focus.clone()));
+            } else {
+                self.on_craft = false;
+            }
+        }
+
+        if self.on_martial_arts {
+            if let Some(style) = self.martial_arts_iter.next() {
+                return Some(AbilityName::MartialArts(style.clone()));
+            } else {
+                self.on_martial_arts = false;
+            }
+        }
+
+        match self.ability_name_no_focus_iter.next() {
+            None => None,
+            Some(AbilityNameNoFocus::Craft) => {
+                self.on_craft = true;
+                self.next()
+            }
+            Some(AbilityNameNoFocus::MartialArts) => {
+                self.on_martial_arts = true;
+                self.next()
+            }
+            Some(other_name) => Some(other_name.try_into().unwrap()),
         }
     }
 }
@@ -635,3 +711,41 @@ impl<'a> Iterator for AbilitiesIter<'a> {
 }
 
 impl<'a> FusedIterator for AbilitiesIter<'a> {}
+
+struct CraftIter<'a> {
+    craft_iter: std::collections::hash_map::Iter<'a, String, AbilityRating>,
+}
+
+impl<'a> Iterator for CraftIter<'a> {
+    type Item = Ability<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some((focus, rating)) = self.craft_iter.next() {
+            Some(Ability{
+                name: AbilityName::Craft(focus.clone()),
+                rating,
+            })
+        } else {
+            None
+        }
+    }
+}
+
+struct MartialArtsIter<'a> {
+    martial_arts_iter: std::collections::hash_map::Iter<'a, String, AbilityRating>,
+}
+
+impl<'a> Iterator for MartialArtsIter<'a> {
+    type Item = Ability<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some((style, rating)) = self.martial_arts_iter.next() {
+            Some(Ability{
+                name: AbilityName::MartialArts(style.clone()),
+                rating,
+            })
+        } else {
+            None
+        }
+    }
+}

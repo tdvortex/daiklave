@@ -1,10 +1,13 @@
 use sqlx::postgres::PgHasArrayType;
+use eyre::{eyre, Report};
 
-use super::composites::{CharmCost, WeaponTag};
+use crate::character::traits::prerequisite::{Prerequisite, AbilityPrerequisite, AttributePrerequisite};
+
+use super::composites::{CharmCostPostgres, WeaponTagPostgres};
 use super::enums::{
-    AbilityName, ArmorTag, AttributeName, CharmActionType, CharmDurationType, CharmKeyword,
-    DamageType, EquipHand, ExaltType, IntimacyLevel, IntimacyType, MeritType,
-    PrerequisiteExaltType, PrerequisiteType, WoundPenalty,
+    AbilityNamePostgres, ArmorTagPostgres, AttributeNamePostgres, CharmActionTypePostgres, CharmDurationTypePostgres, CharmKeywordPostgres,
+    DamageTypePostgres, EquipHandPostgres, ExaltTypePostgres, IntimacyLevelPostgres, IntimacyTypePostgres, MeritTypePostgres,
+    PrerequisiteExaltTypePostgres, PrerequisiteTypePostgres, WoundPenaltyPostgres,
 };
 
 #[derive(Debug)]
@@ -54,7 +57,7 @@ pub struct CharacterRow {
     pub campaign_id: Option<i32>,
     pub name: String,
     pub concept: Option<String>,
-    pub exalt_type: Option<ExaltType>,
+    pub exalt_type: Option<ExaltTypePostgres>,
     pub current_willpower: i16,
     pub max_willpower: i16,
     pub current_experience: i16,
@@ -77,7 +80,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for CharacterRow {
         let campaign_id = decoder.try_decode::<Option<i32>>()?;
         let name = decoder.try_decode::<String>()?;
         let concept = decoder.try_decode::<Option<String>>()?;
-        let exalt_type = decoder.try_decode::<Option<ExaltType>>()?;
+        let exalt_type = decoder.try_decode::<Option<ExaltTypePostgres>>()?;
         let current_willpower = decoder.try_decode::<i16>()?;
         let max_willpower = decoder.try_decode::<i16>()?;
         let current_experience = decoder.try_decode::<i16>()?;
@@ -102,7 +105,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for CharacterRow {
 #[sqlx(type_name = "attributes")]
 pub struct AttributeRow {
     pub character_id: i32,
-    pub name: AttributeName,
+    pub name: AttributeNamePostgres,
     pub dots: i16,
 }
 
@@ -111,7 +114,7 @@ pub struct AttributeRow {
 pub struct AbilityRow {
     pub id: i32,
     pub character_id: i32,
-    pub name: AbilityName,
+    pub name: AbilityNamePostgres,
     pub dots: i16,
     pub subskill: Option<String>,
 }
@@ -135,8 +138,8 @@ impl PgHasArrayType for SpecialtyRow {
 pub struct IntimacyRow {
     pub id: i32,
     pub character_id: i32,
-    pub intimacy_type: IntimacyType,
-    pub level: IntimacyLevel,
+    pub intimacy_type: IntimacyTypePostgres,
+    pub level: IntimacyLevelPostgres,
     pub description: String,
 }
 
@@ -151,15 +154,15 @@ impl PgHasArrayType for IntimacyRow {
 pub struct HealthBoxRow {
     pub character_id: i32,
     pub position: i16,
-    pub wound_penalty: WoundPenalty,
-    pub damage: Option<DamageType>,
+    pub wound_penalty: WoundPenaltyPostgres,
+    pub damage: Option<DamageTypePostgres>,
 }
 
 #[derive(Debug)]
 pub struct WeaponRow {
     pub id: i32,
     pub name: String,
-    pub tags: Vec<WeaponTag>,
+    pub tags: Vec<WeaponTagPostgres>,
     pub creator_id: Option<i32>,
 }
 
@@ -176,7 +179,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponRow {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
         let id = decoder.try_decode::<i32>()?;
         let name = decoder.try_decode::<String>()?;
-        let tags = decoder.try_decode::<Vec<WeaponTag>>()?;
+        let tags = decoder.try_decode::<Vec<WeaponTagPostgres>>()?;
         let creator_id = decoder.try_decode::<Option<i32>>()?;
 
         Ok(Self {
@@ -192,7 +195,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponRow {
 pub struct WeaponEquippedRow {
     pub character_id: i32,
     pub weapon_id: i32,
-    pub equip_hand: Option<EquipHand>,
+    pub equip_hand: Option<EquipHandPostgres>,
     pub creator_id: Option<i32>,
 }
 
@@ -209,7 +212,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponEquippedRow {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
         let character_id = decoder.try_decode::<i32>()?;
         let weapon_id = decoder.try_decode::<i32>()?;
-        let equip_hand = decoder.try_decode::<Option<EquipHand>>()?;
+        let equip_hand = decoder.try_decode::<Option<EquipHandPostgres>>()?;
         let creator_id = decoder.try_decode::<Option<i32>>()?;
 
         Ok(Self {
@@ -225,7 +228,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponEquippedRow {
 pub struct ArmorRow {
     pub id: i32,
     pub name: String,
-    pub tags: Vec<ArmorTag>,
+    pub tags: Vec<ArmorTagPostgres>,
     pub creator_id: Option<i32>,
 }
 
@@ -242,7 +245,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorRow {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
         let id = decoder.try_decode::<i32>()?;
         let name = decoder.try_decode::<String>()?;
-        let tags = decoder.try_decode::<Vec<ArmorTag>>()?;
+        let tags = decoder.try_decode::<Vec<ArmorTagPostgres>>()?;
         let creator_id = decoder.try_decode::<Option<i32>>()?;
 
         Ok(Self {
@@ -302,10 +305,10 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorWornRow {
 pub struct CharmRow {
     pub id: i32,
     pub name: String,
-    pub costs: Vec<CharmCost>,
-    pub action_type: CharmActionType,
-    pub keywords: Vec<CharmKeyword>,
-    pub duration: CharmDurationType,
+    pub costs: Vec<CharmCostPostgres>,
+    pub action_type: CharmActionTypePostgres,
+    pub keywords: Vec<CharmKeywordPostgres>,
+    pub duration: CharmDurationTypePostgres,
     pub special_duration: Option<String>,
     pub book_name: Option<String>,
     pub page_number: Option<i32>,
@@ -324,12 +327,13 @@ pub struct CharmPrerequisiteSetRow {
 #[derive(Debug)]
 pub struct PrerequisiteRow {
     pub id: i32,
-    pub prerequisite_type: PrerequisiteType,
-    pub ability_name: Option<AbilityName>,
-    pub attribute_name: Option<AttributeName>,
+    pub prerequisite_type: PrerequisiteTypePostgres,
+    pub ability_name: Option<AbilityNamePostgres>,
+    pub subskill_name: Option<String>,
+    pub attribute_name: Option<AttributeNamePostgres>,
     pub dots: Option<i16>,
     pub prerequisite_charm_id: Option<i32>,
-    pub prerequisite_exalt_type: Option<PrerequisiteExaltType>,
+    pub prerequisite_exalt_type: Option<PrerequisiteExaltTypePostgres>,
 }
 
 impl sqlx::Type<sqlx::Postgres> for PrerequisiteRow {
@@ -344,17 +348,19 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for PrerequisiteRow {
     ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
         let id = decoder.try_decode::<i32>()?;
-        let prerequisite_type = decoder.try_decode::<PrerequisiteType>()?;
-        let ability_name = decoder.try_decode::<Option<AbilityName>>()?;
-        let attribute_name = decoder.try_decode::<Option<AttributeName>>()?;
+        let prerequisite_type = decoder.try_decode::<PrerequisiteTypePostgres>()?;
+        let ability_name = decoder.try_decode::<Option<AbilityNamePostgres>>()?;
+        let subskill_name = decoder.try_decode::<Option<String>>()?;
+        let attribute_name = decoder.try_decode::<Option<AttributeNamePostgres>>()?;
         let dots = decoder.try_decode::<Option<i16>>()?;
         let prerequisite_charm_id = decoder.try_decode::<Option<i32>>()?;
-        let prerequisite_exalt_type = decoder.try_decode::<Option<PrerequisiteExaltType>>()?;
+        let prerequisite_exalt_type = decoder.try_decode::<Option<PrerequisiteExaltTypePostgres>>()?;
 
         Ok(Self {
             id,
             prerequisite_type,
             ability_name,
+            subskill_name,
             attribute_name,
             dots,
             prerequisite_charm_id,
@@ -363,14 +369,74 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for PrerequisiteRow {
     }
 }
 
+impl TryInto<Prerequisite> for PrerequisiteRow {
+    type Error = Report;
+
+    fn try_into(self) -> Result<Prerequisite, Self::Error> {
+        match self.prerequisite_type {
+            PrerequisiteTypePostgres::Ability => {
+                if self.ability_name.is_none() {
+                    return Err(eyre!("ability name must be specified for ability prerequisite"));
+                }
+
+                if self.dots.is_none() {
+                    return Err(eyre!("dots level must be specified for ability prerequisite")); 
+                }
+
+                Ok(Prerequisite::Ability(AbilityPrerequisite {
+                    ability_name: self.ability_name.unwrap().into(),
+                    subskill: self.subskill_name,
+                    dots: self.dots.unwrap().try_into()?
+                }))
+            }
+            PrerequisiteTypePostgres::Attribute => {
+                if self.attribute_name.is_none() {
+                    return Err(eyre!("attribute name must be specified for attribute prerequisite"));
+                }
+
+                if self.dots.is_none() {
+                    return Err(eyre!("dots level must be specified for attribute prerequisite")); 
+                }
+
+                Ok(Prerequisite::Attribute(AttributePrerequisite{
+                    attribute_name: self.attribute_name.unwrap().into(),
+                    dots: self.dots.unwrap().try_into()?,
+                }))
+            }
+            PrerequisiteTypePostgres::Essence => {
+                if self.dots.is_none() {
+                    return Err(eyre!("dots level must be specified for essence prerequisite"));
+                }
+
+                Ok(Prerequisite::Essence(self.dots.unwrap().try_into()?))
+            }
+            PrerequisiteTypePostgres::Charm => {
+                if self.prerequisite_charm_id.is_none() {
+                    return Err(eyre!("charm id must be specified for charm prerequisite"));
+                }
+
+                Ok(Prerequisite::Charm(self.prerequisite_charm_id.unwrap()))
+            }
+            PrerequisiteTypePostgres::ExaltType => {
+                if self.prerequisite_exalt_type.is_none() {
+                    return Err(eyre!("exalt type must be specified for exalt type prerequisite"));
+                }
+
+                Ok(Prerequisite::ExaltType(self.prerequisite_exalt_type.unwrap().into()))
+            }
+        }
+    }
+}
+
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "merits")]
-pub struct MeritRow {
+pub struct MeritTemplateRow {
     pub id: i32,
     pub name: String,
     pub dots: i16,
-    pub merit_type: MeritType,
+    pub merit_type: MeritTypePostgres,
     pub description: String,
+    pub requires_detail: bool,
 }
 
 #[derive(Debug, sqlx::Type)]

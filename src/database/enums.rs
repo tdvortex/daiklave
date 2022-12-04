@@ -1,9 +1,15 @@
-use eyre::eyre;
 use sqlx::postgres::PgHasArrayType;
+
+use crate::character::traits::abilities::AbilityNameNoFocus;
+use crate::character::traits::armor::ArmorTag;
+use crate::character::traits::attributes::AttributeName;
+use crate::character::traits::intimacies::{IntimacyType, IntimacyLevel};
+use crate::character::traits::prerequisite::ExaltTypePrerequisite;
+use crate::character::traits::range_bands::RangeBand;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "EXALTTYPE", rename_all = "UPPERCASE")]
-pub enum ExaltType {
+pub enum ExaltTypePostgres {
     Solar,
     Lunar,
     DragonBlooded,
@@ -11,7 +17,7 @@ pub enum ExaltType {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ATTRIBUTENAME", rename_all = "UPPERCASE")]
-pub enum AttributeName {
+pub enum AttributeNamePostgres {
     Strength,
     Dexterity,
     Stamina,
@@ -23,27 +29,25 @@ pub enum AttributeName {
     Wits,
 }
 
-impl From<AttributeName> for crate::character::traits::attributes::AttributeName {
-    fn from(val: AttributeName) -> Self {
-        use crate::character::traits::attributes::AttributeName as TraitsAttributeName;
-
+impl From<AttributeNamePostgres> for AttributeName {
+    fn from(val: AttributeNamePostgres) -> Self {
         match val {
-            AttributeName::Strength => TraitsAttributeName::Strength,
-            AttributeName::Dexterity => TraitsAttributeName::Dexterity,
-            AttributeName::Stamina => TraitsAttributeName::Stamina,
-            AttributeName::Charisma => TraitsAttributeName::Charisma,
-            AttributeName::Manipulation => TraitsAttributeName::Manipulation,
-            AttributeName::Appearance => TraitsAttributeName::Appearance,
-            AttributeName::Perception => TraitsAttributeName::Perception,
-            AttributeName::Intelligence => TraitsAttributeName::Intelligence,
-            AttributeName::Wits => TraitsAttributeName::Wits,
+            AttributeNamePostgres::Strength => Self::Strength,
+            AttributeNamePostgres::Dexterity => Self::Dexterity,
+            AttributeNamePostgres::Stamina => Self::Stamina,
+            AttributeNamePostgres::Charisma => Self::Charisma,
+            AttributeNamePostgres::Manipulation => Self::Manipulation,
+            AttributeNamePostgres::Appearance => Self::Appearance,
+            AttributeNamePostgres::Perception => Self::Perception,
+            AttributeNamePostgres::Intelligence => Self::Intelligence,
+            AttributeNamePostgres::Wits => Self::Wits,
         }
     }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ABILITYNAME", rename_all = "UPPERCASE")]
-pub enum AbilityName {
+pub enum AbilityNamePostgres {
     Archery,
     Athletics,
     Awareness,
@@ -72,86 +76,76 @@ pub enum AbilityName {
     War,
 }
 
-impl TryInto<crate::character::traits::abilities::AbilityNameNoFocus> for AbilityName {
-    type Error = eyre::Report;
-
-    fn try_into(
-        self,
-    ) -> Result<crate::character::traits::abilities::AbilityNameNoFocus, Self::Error> {
-        use crate::character::traits::abilities::AbilityNameNoFocus;
-
-        match self {
-            Self::Archery => Ok(AbilityNameNoFocus::Archery),
-            Self::Athletics => Ok(AbilityNameNoFocus::Athletics),
-            Self::Awareness => Ok(AbilityNameNoFocus::Awareness),
-            Self::Brawl => Ok(AbilityNameNoFocus::Brawl),
-            Self::Bureaucracy => Ok(AbilityNameNoFocus::Bureaucracy),
-            Self::Dodge => Ok(AbilityNameNoFocus::Dodge),
-            Self::Integrity => Ok(AbilityNameNoFocus::Integrity),
-            Self::Investigation => Ok(AbilityNameNoFocus::Investigation),
-            Self::Larceny => Ok(AbilityNameNoFocus::Larceny),
-            Self::Linguistics => Ok(AbilityNameNoFocus::Linguistics),
-            Self::Lore => Ok(AbilityNameNoFocus::Lore),
-            Self::Medicine => Ok(AbilityNameNoFocus::Medicine),
-            Self::Melee => Ok(AbilityNameNoFocus::Melee),
-            Self::Occult => Ok(AbilityNameNoFocus::Occult),
-            Self::Performance => Ok(AbilityNameNoFocus::Performance),
-            Self::Presence => Ok(AbilityNameNoFocus::Presence),
-            Self::Resistance => Ok(AbilityNameNoFocus::Resistance),
-            Self::Ride => Ok(AbilityNameNoFocus::Ride),
-            Self::Sail => Ok(AbilityNameNoFocus::Sail),
-            Self::Socialize => Ok(AbilityNameNoFocus::Socialize),
-            Self::Stealth => Ok(AbilityNameNoFocus::Stealth),
-            Self::Survival => Ok(AbilityNameNoFocus::Survival),
-            Self::Thrown => Ok(AbilityNameNoFocus::Thrown),
-            Self::War => Ok(AbilityNameNoFocus::War),
-            Self::Craft => Err(eyre!("craft requires a focus")),
-            Self::MartialArts => Err(eyre!("martial arts requires a style")),
+impl From<AbilityNamePostgres> for AbilityNameNoFocus {
+    fn from(ability_name_postgres: AbilityNamePostgres) -> Self {
+        match ability_name_postgres {
+            AbilityNamePostgres::Archery => Self::Archery,
+            AbilityNamePostgres::Athletics => Self::Athletics,
+            AbilityNamePostgres::Awareness => Self::Awareness,
+            AbilityNamePostgres::Brawl => Self::Brawl,
+            AbilityNamePostgres::Bureaucracy => Self::Bureaucracy,
+            AbilityNamePostgres::Craft => Self::Craft,
+            AbilityNamePostgres::Dodge => Self::Dodge,
+            AbilityNamePostgres::Integrity => Self::Integrity,
+            AbilityNamePostgres::Investigation => Self::Investigation,
+            AbilityNamePostgres::Larceny => Self::Larceny,
+            AbilityNamePostgres::Linguistics => Self::Linguistics,
+            AbilityNamePostgres::Lore => Self::Lore,
+            AbilityNamePostgres::MartialArts => Self::MartialArts,
+            AbilityNamePostgres::Medicine => Self::Medicine,
+            AbilityNamePostgres::Melee => Self::Melee,
+            AbilityNamePostgres::Occult => Self::Occult,
+            AbilityNamePostgres::Performance => Self::Performance,
+            AbilityNamePostgres::Presence => Self::Presence,
+            AbilityNamePostgres::Resistance => Self::Resistance,
+            AbilityNamePostgres::Ride => Self::Ride,
+            AbilityNamePostgres::Sail => Self::Sail,
+            AbilityNamePostgres::Socialize => Self::Socialize,
+            AbilityNamePostgres::Stealth => Self::Stealth,
+            AbilityNamePostgres::Survival => Self::Survival,
+            AbilityNamePostgres::Thrown => Self::Thrown,
+            AbilityNamePostgres::War => Self::War,
         }
     }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "INTIMACYTYPE", rename_all = "UPPERCASE")]
-pub enum IntimacyType {
+pub enum IntimacyTypePostgres {
     Tie,
     Principle,
 }
 
-impl From<IntimacyType> for crate::character::traits::intimacies::IntimacyType {
-    fn from(intimacy_type: IntimacyType) -> Self {
-        match intimacy_type {
-            IntimacyType::Tie => crate::character::traits::intimacies::IntimacyType::Tie,
-            IntimacyType::Principle => {
-                crate::character::traits::intimacies::IntimacyType::Principle
-            }
+impl From<IntimacyTypePostgres> for IntimacyType {
+    fn from(intimacy_type_postgres: IntimacyTypePostgres) -> Self {
+        match intimacy_type_postgres {
+            IntimacyTypePostgres::Tie => IntimacyType::Tie,
+            IntimacyTypePostgres::Principle => IntimacyType::Principle,
         }
     }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "INTIMACYLEVEL", rename_all = "UPPERCASE")]
-pub enum IntimacyLevel {
+pub enum IntimacyLevelPostgres {
     Minor,
     Major,
     Defining,
 }
 
-impl From<IntimacyLevel> for crate::character::traits::intimacies::IntimacyLevel {
-    fn from(intimacy_level: IntimacyLevel) -> Self {
+impl From<IntimacyLevelPostgres> for IntimacyLevel {
+    fn from(intimacy_level: IntimacyLevelPostgres) -> Self {
         match intimacy_level {
-            IntimacyLevel::Minor => crate::character::traits::intimacies::IntimacyLevel::Minor,
-            IntimacyLevel::Major => crate::character::traits::intimacies::IntimacyLevel::Major,
-            IntimacyLevel::Defining => {
-                crate::character::traits::intimacies::IntimacyLevel::Defining
-            }
+            IntimacyLevelPostgres::Minor => IntimacyLevel::Minor,
+            IntimacyLevelPostgres::Major => IntimacyLevel::Major,
+            IntimacyLevelPostgres::Defining => IntimacyLevel::Defining,
         }
     }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "WOUNDPENALTY", rename_all = "UPPERCASE")]
-pub enum WoundPenalty {
+pub enum WoundPenaltyPostgres {
     Zero,
     MinusOne,
     MinusTwo,
@@ -161,7 +155,7 @@ pub enum WoundPenalty {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "DAMAGETYPE", rename_all = "UPPERCASE")]
-pub enum DamageType {
+pub enum DamageTypePostgres {
     Bashing,
     Lethal,
     Aggravated,
@@ -169,7 +163,7 @@ pub enum DamageType {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "WEAPONTAGTYPE", rename_all = "UPPERCASE")]
-pub enum WeaponTagType {
+pub enum WeaponTagTypePostgres {
     Archery,
     Artifact,
     Balanced,
@@ -210,7 +204,7 @@ pub enum WeaponTagType {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "RANGEBAND", rename_all = "UPPERCASE")]
-pub enum RangeBand {
+pub enum RangeBandPostgres {
     Close,
     Short,
     Medium,
@@ -218,21 +212,21 @@ pub enum RangeBand {
     Extreme,
 }
 
-impl From<RangeBand> for crate::character::traits::range_bands::RangeBand {
-    fn from(range: RangeBand) -> Self {
+impl From<RangeBandPostgres> for RangeBand {
+    fn from(range: RangeBandPostgres) -> Self {
         match range {
-            RangeBand::Close => Self::Close,
-            RangeBand::Short => Self::Short,
-            RangeBand::Medium => Self::Medium,
-            RangeBand::Long => Self::Long,
-            RangeBand::Extreme => Self::Extreme,
+            RangeBandPostgres::Close => Self::Close,
+            RangeBandPostgres::Short => Self::Short,
+            RangeBandPostgres::Medium => Self::Medium,
+            RangeBandPostgres::Long => Self::Long,
+            RangeBandPostgres::Extreme => Self::Extreme,
         }
     }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ARMORTAG", rename_all = "UPPERCASE")]
-pub enum ArmorTag {
+pub enum ArmorTagPostgres {
     Artifact,
     Concealable,
     Heavy,
@@ -242,36 +236,36 @@ pub enum ArmorTag {
     Special,
 }
 
-impl PgHasArrayType for ArmorTag {
+impl PgHasArrayType for ArmorTagPostgres {
     fn array_type_info() -> sqlx::postgres::PgTypeInfo {
         sqlx::postgres::PgTypeInfo::with_name("_ARMORTAG")
     }
 }
 
-impl From<ArmorTag> for crate::character::traits::armor::ArmorTag {
-    fn from(tag: ArmorTag) -> Self {
+impl From<ArmorTagPostgres> for ArmorTag {
+    fn from(tag: ArmorTagPostgres) -> Self {
         match tag {
-            ArmorTag::Artifact => crate::character::traits::armor::ArmorTag::Artifact,
-            ArmorTag::Concealable => crate::character::traits::armor::ArmorTag::Concealable,
-            ArmorTag::Heavy => crate::character::traits::armor::ArmorTag::Heavy,
-            ArmorTag::Light => crate::character::traits::armor::ArmorTag::Light,
-            ArmorTag::Medium => crate::character::traits::armor::ArmorTag::Medium,
-            ArmorTag::Silent => crate::character::traits::armor::ArmorTag::Silent,
-            ArmorTag::Special => crate::character::traits::armor::ArmorTag::Special,
+            ArmorTagPostgres::Artifact => Self::Artifact,
+            ArmorTagPostgres::Concealable => Self::Concealable,
+            ArmorTagPostgres::Heavy => Self::Heavy,
+            ArmorTagPostgres::Light => Self::Light,
+            ArmorTagPostgres::Medium => Self::Medium,
+            ArmorTagPostgres::Silent => Self::Silent,
+            ArmorTagPostgres::Special => Self::Special,
         }
     }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "EQUIPHAND", rename_all = "UPPERCASE")]
-pub enum EquipHand {
+pub enum EquipHandPostgres {
     Main,
     Off,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "CHARMKEYWORD", rename_all = "UPPERCASE")]
-pub enum CharmKeyword {
+pub enum CharmKeywordPostgres {
     Air,
     Aggravated,
     Archetype,
@@ -302,7 +296,7 @@ pub enum CharmKeyword {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "CHARMDURATIONTYPE", rename_all = "UPPERCASE")]
-pub enum CharmDurationType {
+pub enum CharmDurationTypePostgres {
     Instant,
     Tick,
     Turn,
@@ -315,7 +309,7 @@ pub enum CharmDurationType {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "CHARMACTIONTYPE", rename_all = "UPPERCASE")]
-pub enum CharmActionType {
+pub enum CharmActionTypePostgres {
     Simple,
     Supplemental,
     Reflexive,
@@ -324,7 +318,7 @@ pub enum CharmActionType {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "CHARMCOSTTYPE", rename_all = "UPPERCASE")]
-pub enum CharmCostType {
+pub enum CharmCostTypePostgres {
     Motes,
     Willpower,
     BashingHealth,
@@ -341,7 +335,7 @@ pub enum CharmCostType {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "PREREQUISITETYPE", rename_all = "UPPERCASE")]
-pub enum PrerequisiteType {
+pub enum PrerequisiteTypePostgres {
     Ability,
     Attribute,
     Essence,
@@ -351,7 +345,7 @@ pub enum PrerequisiteType {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "PREREQUISITEEXALTTYPE", rename_all = "UPPERCASE")]
-pub enum PrerequisiteExaltType {
+pub enum PrerequisiteExaltTypePostgres {
     Solar,
     Lunar,
     DragonBlooded,
@@ -359,9 +353,21 @@ pub enum PrerequisiteExaltType {
     SpiritOrEclipse,
 }
 
+impl From<PrerequisiteExaltTypePostgres> for ExaltTypePrerequisite {
+    fn from(exalt_type: PrerequisiteExaltTypePostgres) -> Self {
+        match exalt_type {
+            PrerequisiteExaltTypePostgres::Solar => Self::Solar,
+            PrerequisiteExaltTypePostgres::Lunar => Self::Lunar,
+            PrerequisiteExaltTypePostgres::DragonBlooded => Self::DragonBlooded,
+            PrerequisiteExaltTypePostgres::Spirit => Self::Spirit,
+            PrerequisiteExaltTypePostgres::SpiritOrEclipse => Self::SpiritOrEclipse,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "MERITTYPE", rename_all = "UPPERCASE")]
-pub enum MeritType {
+pub enum MeritTypePostgres {
     Innate,
     Supernatural,
     Story,
