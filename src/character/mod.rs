@@ -2,6 +2,8 @@ pub mod builder;
 mod mortal;
 pub mod traits;
 
+use std::ops::Deref;
+
 use traits::campaign::Campaign;
 use traits::experience::ExperiencePoints;
 use traits::player::Player;
@@ -13,7 +15,7 @@ use self::traits::attributes::Attributes;
 use self::traits::health::Health;
 use self::traits::intimacies::Intimacies;
 use self::traits::merits::Merits;
-use self::traits::prerequisite::{Prerequisite, PrerequisiteSet};
+use self::traits::prerequisite::{Prerequisite, PrerequisiteSet, PrerequisiteType};
 use self::traits::weapons::Weapons;
 
 #[derive(Debug)]
@@ -36,12 +38,12 @@ pub struct Character {
 
 impl Character {
     fn meets_prerequisite(&self, prerequisite: &Prerequisite) -> bool {
-        match prerequisite {
-            Prerequisite::Ability(ability_prerequisite) => self.abilities.meets_prerequisite(ability_prerequisite),
-            Prerequisite::Attribute(attribute_prerequisite) => self.attributes.meets_prerequisite(attribute_prerequisite),
-            Prerequisite::Essence(_) => false,
-            Prerequisite::Charm(_) => false,
-            Prerequisite::ExaltType(exalt_type) => {
+        match prerequisite.deref() {
+            PrerequisiteType::Ability(ability_prerequisite) => self.abilities.meets_prerequisite(ability_prerequisite),
+            PrerequisiteType::Attribute(attribute_prerequisite) => self.attributes.meets_prerequisite(attribute_prerequisite),
+            PrerequisiteType::Essence(_) => false,
+            PrerequisiteType::Charm(_) => false,
+            PrerequisiteType::ExaltType(exalt_type) => {
                 match exalt_type {
                     traits::prerequisite::ExaltTypePrerequisite::Solar => false,
                     traits::prerequisite::ExaltTypePrerequisite::Lunar => false,

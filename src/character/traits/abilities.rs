@@ -2,7 +2,7 @@ use eyre::{eyre, Result, Report};
 use std::collections::hash_map::Keys;
 use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
-use std::iter::{ExactSizeIterator, FusedIterator};
+use std::iter::FusedIterator;
 
 use super::prerequisite::AbilityPrerequisite;
 
@@ -122,12 +122,6 @@ impl Iterator for AbilityNameNoFocusIter {
         let out = self.next_ability_name;
         self.next_ability_name = next;
         out
-    }
-}
-
-impl ExactSizeIterator for AbilityNameNoFocusIter {
-    fn len(&self) -> usize {
-        24
     }
 }
 

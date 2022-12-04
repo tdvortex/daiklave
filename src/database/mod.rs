@@ -37,6 +37,7 @@ pub struct GetCharacter {
     armor_owned: Option<Vec<ArmorRow>>,
     armor_worn: Option<Vec<ArmorWornRow>>,
     pub merit_templates: Option<Vec<MeritTemplateRow>>,
+    pub merit_details: Option<Vec<MeritDetailRow>>,
     pub merit_prerequisite_sets: Option<Vec<MeritPrerequisiteSetRow>>,
     pub merit_prerequisites: Option<Vec<PrerequisiteRow>>,
 }
@@ -315,7 +316,7 @@ impl CharacterBuilder {
 
         for armor_row in armor_owned.unwrap().into_iter() {
             let tags = armor_row.tags.into_iter().map(|tag| tag.into()).collect();
-            let armor_item = ArmorItem::new(armor_row.name, tags)?;
+            let armor_item = ArmorItem::new(armor_row.name, tags, Some(armor_row.id))?;
             armor_hashmap.insert(armor_row.id, (armor_item, false));
         }
 

@@ -1,7 +1,7 @@
 use sqlx::postgres::PgHasArrayType;
 use eyre::{eyre, Report};
 
-use crate::character::traits::prerequisite::{Prerequisite, AbilityPrerequisite, AttributePrerequisite};
+use crate::character::traits::prerequisite::{Prerequisite, AbilityPrerequisite, AttributePrerequisite, PrerequisiteType};
 
 use super::composites::{CharmCostPostgres, WeaponTagPostgres};
 use super::enums::{
@@ -264,6 +264,7 @@ impl TryFrom<ArmorRow> for crate::character::traits::armor::ArmorItem {
         Self::new(
             value.name,
             value.tags.into_iter().map(|tag| tag.into()).collect(),
+            Some(value.id)
         )
     }
 }
@@ -383,11 +384,13 @@ impl TryInto<Prerequisite> for PrerequisiteRow {
                     return Err(eyre!("dots level must be specified for ability prerequisite")); 
                 }
 
-                Ok(Prerequisite::Ability(AbilityPrerequisite {
+                Ok(Prerequisite::new(
+                    PrerequisiteType::Ability(AbilityPrerequisite {
                     ability_name: self.ability_name.unwrap().into(),
                     subskill: self.subskill_name,
                     dots: self.dots.unwrap().try_into()?
-                }))
+                }), 
+                Some(self.id)))
             }
             PrerequisiteTypePostgres::Attribute => {
                 if self.attribute_name.is_none() {
@@ -398,31 +401,39 @@ impl TryInto<Prerequisite> for PrerequisiteRow {
                     return Err(eyre!("dots level must be specified for attribute prerequisite")); 
                 }
 
-                Ok(Prerequisite::Attribute(AttributePrerequisite{
-                    attribute_name: self.attribute_name.unwrap().into(),
-                    dots: self.dots.unwrap().try_into()?,
-                }))
+                Ok(Prerequisite::new(
+                    PrerequisiteType::Attribute(AttributePrerequisite {
+                        attribute_name: self.attribute_name.unwrap().into(),
+                    dots: self.dots.unwrap().try_into()?
+                }), 
+                Some(self.id)))
             }
             PrerequisiteTypePostgres::Essence => {
                 if self.dots.is_none() {
                     return Err(eyre!("dots level must be specified for essence prerequisite"));
                 }
 
-                Ok(Prerequisite::Essence(self.dots.unwrap().try_into()?))
+                Ok(Prerequisite::new(
+                    PrerequisiteType::Essence(self.dots.unwrap().try_into()?), 
+                Some(self.id)))
             }
             PrerequisiteTypePostgres::Charm => {
                 if self.prerequisite_charm_id.is_none() {
                     return Err(eyre!("charm id must be specified for charm prerequisite"));
                 }
 
-                Ok(Prerequisite::Charm(self.prerequisite_charm_id.unwrap()))
+                Ok(Prerequisite::new(
+                    PrerequisiteType::Charm(self.prerequisite_charm_id.unwrap()), 
+                Some(self.id)))
             }
             PrerequisiteTypePostgres::ExaltType => {
                 if self.prerequisite_exalt_type.is_none() {
                     return Err(eyre!("exalt type must be specified for exalt type prerequisite"));
                 }
 
-                Ok(Prerequisite::ExaltType(self.prerequisite_exalt_type.unwrap().into()))
+                Ok(Prerequisite::new(
+                    PrerequisiteType::ExaltType(self.prerequisite_exalt_type.unwrap().into()), 
+                Some(self.id)))
             }
         }
     }
@@ -449,8 +460,8 @@ pub struct MeritPrerequisiteSetRow {
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "merit_prerequisite_sets")]
-pub struct CharacterMeritRow {
+pub struct MeritDetailRow {
     pub character_id: i32,
     pub merit_id: i32,
-    pub detail: Option<String>,
+    pub detail: String,
 }

@@ -65,13 +65,19 @@ WITH player_query AS (
     FROM characters
         INNER JOIN character_armor ON (characters.id = character_armor.character_id)
     WHERE characters.id = $1 AND character_armor.worn
-), merits_query AS (
+), merit_templates_query AS (
     SELECT
-        ARRAY_AGG(merits) AS merts
+        ARRAY_AGG(merits) AS mrtts
     FROM characters 
         INNER JOIN character_merits ON (characters.id = character_merits.character_id)
         INNER JOIN merits ON (merits.id = character_merits.merit_id)
     WHERE characters.id = $1
+), merit_details_query AS (
+    SELECT
+        ARRAY_AGG(character_merits) AS mrtds
+    FROM characters 
+        INNER JOIN character_merits ON (characters.id = character_merits.character_id)
+    WHERE characters.id = $1 AND character_merits.detail IS NOT NULL
 ), merit_prerequisite_sets_query AS (
     SELECT
         ARRAY_AGG(merit_prerequisite_sets) AS mprss
@@ -103,7 +109,8 @@ SELECT
     eqwps AS "weapons_equipped: Vec<WeaponEquippedRow>",
     armrs AS "armor_owned: Vec<ArmorRow>",
     wrars AS "armor_worn: Vec<ArmorWornRow>",
-    merts AS "merit_templates: Vec<MeritTemplateRow>",
+    mrtts AS "merit_templates: Vec<MeritTemplateRow>",
+    mrtds AS "merit_details: Vec<MeritDetailRow>",
     mprss AS "merit_prerequisite_sets: Vec<MeritPrerequisiteSetRow>",
     meprs AS "merit_prerequisites:  Vec<PrerequisiteRow>"
 FROM characters,
@@ -118,7 +125,8 @@ FROM characters,
     LEFT JOIN weapons_equipped_query ON (TRUE)
     LEFT JOIN armor_query ON (TRUE)
     LEFT JOIN armor_worn_query ON (TRUE)
-    LEFT JOIN merits_query ON (TRUE)
+    LEFT JOIN merit_templates_query ON (TRUE)
+    LEFT JOIN merit_details_query ON (TRUE)
     LEFT JOIN merit_prerequisite_sets_query ON (TRUE)
     LEFT JOIN merit_prerequisites_query ON (TRUE)
 WHERE characters.id = $1;

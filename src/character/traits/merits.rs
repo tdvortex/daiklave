@@ -64,20 +64,25 @@ impl MeritTemplate {
 
 #[derive(Debug, Clone)]
 pub struct Merit {
+    id: Option<i32>,
     template: MeritTemplate,
     detail: Option<String>,
 }
 
 impl Merit {
-    pub fn from_template(template: MeritTemplate, detail: Option<String>) -> Result<Self> {
+    pub fn from_template(template: MeritTemplate, detail: Option<String>, id: Option<i32>) -> Result<Self> {
         match (template.requires_detail(), detail) {
-            (false, None) => Ok(Self{template, detail: None}),
+            (false, None) => Ok(Self{id, template, detail: None}),
             (true, None) => Err(eyre!("merit {} requires detailing", template.name())),
-            (_, Some(detail_text)) => Ok(Self{template, detail: Some(detail_text)}),
+            (_, Some(detail_text)) => Ok(Self{id, template, detail: Some(detail_text)}),
         }
     }
 
-    pub fn id(&self) -> Option<i32> {
+    pub fn instance_id(&self) -> Option<i32> {
+        self.id
+    }
+
+    pub fn template_id(&self) -> Option<i32> {
         self.template.id()
     }
 

@@ -16,6 +16,7 @@ pub enum ArmorTag {
 
 #[derive(Debug)]
 pub struct ArmorItem {
+    _id: Option<i32>,
     name: String,
     weight_class: WeightClass,
     artifact: bool,
@@ -25,7 +26,7 @@ pub struct ArmorItem {
 }
 
 impl ArmorItem {
-    pub fn new(name: String, tags: HashSet<ArmorTag>) -> Result<ArmorItem> {
+    pub fn new(name: String, tags: HashSet<ArmorTag>, id: Option<i32>) -> Result<ArmorItem> {
         let mut weight_class = None::<WeightClass>;
         let mut artifact = false;
         let mut concealable = false;
@@ -65,6 +66,7 @@ impl ArmorItem {
         }
 
         Ok(ArmorItem {
+            _id: id,
             name,
             weight_class: weight_class.unwrap(),
             artifact,

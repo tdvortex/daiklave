@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use super::{
     traits::{
         abilities::{Abilities, AbilityName, AbilityNameNoFocus},
@@ -9,7 +11,7 @@ use super::{
         intimacies::{Intimacies, Intimacy},
         player::Player,
         weapons::{EquipHand, Weapon, Weapons},
-        willpower::Willpower, merits::{Merits, MeritTemplate, Merit},
+        willpower::Willpower, merits::{Merits, MeritTemplate, Merit}, prerequisite::{PrerequisiteSet, ExaltTypePrerequisite, Prerequisite, PrerequisiteType},
     },
     Character,
 };
@@ -34,6 +36,32 @@ pub struct CharacterBuilder {
 }
 
 impl CharacterBuilder {
+    fn meets_prerequisite(&self, prerequisite: &Prerequisite) -> bool {
+        match prerequisite.deref() {
+            PrerequisiteType::Ability(ability_prerequisite) => self.abilities.meets_prerequisite(ability_prerequisite),
+            PrerequisiteType::Attribute(attribute_prerequisite) => self.attributes.meets_prerequisite(attribute_prerequisite),
+            PrerequisiteType::Essence(_) => false,
+            PrerequisiteType::Charm(_) => false,
+            PrerequisiteType::ExaltType(exalt_type) => {
+                match exalt_type {
+                    ExaltTypePrerequisite::Solar => false,
+                    ExaltTypePrerequisite::Lunar => false,
+                    ExaltTypePrerequisite::DragonBlooded => false,
+                    ExaltTypePrerequisite::Spirit => false,
+                    ExaltTypePrerequisite::SpiritOrEclipse => false,
+                }
+            }
+        }
+    }
+
+    fn meets_prerequisite_set(&self, prerequisite_set: &PrerequisiteSet) -> bool {
+        prerequisite_set.iter().all(|prerequisite| self.meets_prerequisite(prerequisite))
+    }
+
+    pub fn meets_any_prerequisite_set(&self, prerequisite_sets: &Vec<PrerequisiteSet>) -> bool {
+        prerequisite_sets.iter().any(|prerequisite_set| self.meets_prerequisite_set(prerequisite_set))
+    }
+    
     pub fn with_id(&mut self, id: i32) -> &mut Self {
         self.id = Some(id);
         self
@@ -181,10 +209,18 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    pub fn with_merit(&mut self, template: MeritTemplate, detail: Option<String>) -> Result<&mut Self> {
-        let merit = Merit::from_template(template, detail)?;
+    fn with_merit_ignore_prerequisites(&mut self, template: MeritTemplate, detail: Option<String>, id: Option<i32>) -> Result<&mut Self> {
+        let merit = Merit::from_template(template, detail, id)?;
         self.merits.push(merit);
         Ok(self)
+    }
+
+    pub fn with_merit(&mut self, template: MeritTemplate, detail: Option<String>, id: Option<i32>) -> Result<&mut Self> {
+        if self.meets_any_prerequisite_set(template.prerequisites()) {
+            self.with_merit_ignore_prerequisites(template, detail, id)
+        } else {
+            Err(eyre!("prerequisites not met"))
+        }
     }
 
     pub fn build(self) -> Result<Character> {
