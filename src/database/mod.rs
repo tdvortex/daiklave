@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use eyre::Report;
 
 use crate::character::{
     builder::create_character,
@@ -57,13 +58,17 @@ impl CharacterBuilder {
         self.with_player(Player::new(player_row.id, player_row.name))
     }
 
-    fn apply_campaign_row(&mut self, campaign_row: CampaignRow) -> &mut Self {
-        self.with_campaign(Campaign::new(
-            campaign_row.id,
-            campaign_row.name,
-            campaign_row.bot_channel,
-            campaign_row.description,
-        ))
+    fn apply_campaign_row(&mut self, campaign_row: Option<CampaignRow>) -> &mut Self {
+        if let Some(campaign) = campaign_row {
+            self.with_campaign(Campaign::new(
+                campaign.id,
+                campaign.name,
+                campaign.bot_channel,
+                campaign.description,
+            ))
+        } else {
+            self
+        }
     }
 
     fn apply_character_row(&mut self, character_row: CharacterRow) -> Result<&mut Self> {
@@ -93,7 +98,13 @@ impl CharacterBuilder {
         self.with_attribute(attribute_name, value)
     }
 
-    fn apply_ability_and_specialties_rows(
+    fn apply_attribute_rows(&mut self, attribute_rows: Vec<AttributeRow>) -> Result<&mut Self> {
+        attribute_rows.into_iter().fold(Ok(self), |output, attribute_row| {
+            output.and_then(|character| character.apply_attribute_row(attribute_row))
+        })
+    }
+
+    fn apply_ability_with_specialties_rows(
         &mut self,
         ability_row: AbilityRow,
         specialty_rows: Vec<SpecialtyRow>,
@@ -145,15 +156,55 @@ impl CharacterBuilder {
         }
     }
 
-    fn apply_intimacy_row(&mut self, intimacy_row: IntimacyRow) -> &mut Self {
-        self.with_intimacy(Intimacy {
-            intimacy_level: intimacy_row.level.into(),
-            intimacy_type: intimacy_row.intimacy_type.into(),
-            description: intimacy_row.description,
-        })
+    fn apply_abilities_and_specialties_rows(&mut self, abilities_rows: Vec<AbilityRow>, specialty_rows: Option<Vec<SpecialtyRow>>) -> Result<&mut Self> {
+        let mut abilities_hashmap =
+            abilities_rows
+                .into_iter()
+                .fold(HashMap::new(), |mut map, ability| {
+                    map.insert(ability.id, (ability, Vec::<SpecialtyRow>::new()));
+                    map
+                });
+
+        if let Some(specialties) = specialty_rows {
+            specialties.into_iter().fold(
+                Ok(&mut abilities_hashmap),
+                |map: Result<&mut HashMap<i32, (AbilityRow, Vec<SpecialtyRow>)>, eyre::Report>,
+                 specialty: SpecialtyRow| {
+                    map.and_then(|m| {
+                        m.get_mut(&specialty.ability_id)
+                            .ok_or_else(|| eyre!("ability {} not found", specialty.ability_id))
+                            .map(|tup| tup.1.push(specialty))?;
+                        Ok(m)
+                    })
+                },
+            )?;
+        };
+
+        abilities_hashmap.into_iter().fold(
+            Ok(self),
+            |character_result: Result<&mut CharacterBuilder, Report>, (_, (ability_row, specialty_rows))| {
+                character_result.and_then(|character| {
+                    character.apply_ability_with_specialties_rows(ability_row, specialty_rows)
+                })
+            },
+        )
     }
 
-    fn apply_health_boxes(&mut self, health_box_rows: Vec<HealthBoxRow>) -> &mut Self {
+    fn apply_intimacy_rows(&mut self, intimacy_rows: Option<Vec<IntimacyRow>>) -> &mut Self {
+        if let Some(rows) = intimacy_rows {
+            rows.into_iter().fold(self, |s, intimacy_row| {
+                s.with_intimacy(Intimacy {
+                    intimacy_level: intimacy_row.level.into(),
+                    intimacy_type: intimacy_row.intimacy_type.into(),
+                    description: intimacy_row.description,
+                })
+            })
+        } else {
+            self
+        }
+    }
+
+    fn apply_health_box_rows(&mut self, health_box_rows: Vec<HealthBoxRow>) -> &mut Self {
         use crate::character::traits::health::WoundPenalty;
         let (mut bashing, mut lethal, mut aggravated) = (0, 0, 0);
         let mut wound_penalties = Vec::new();
@@ -185,7 +236,7 @@ impl CharacterBuilder {
         self
     }
 
-    fn apply_weapons(
+    fn apply_weapon_rows(
         &mut self,
         weapon_rows: Vec<WeaponRow>,
         weapon_equipped_rows: Option<Vec<WeaponEquippedRow>>,
@@ -305,59 +356,13 @@ impl TryInto<Character> for GetCharacter {
     fn try_into(self) -> Result<Character, Self::Error> {
         let mut character = create_character();
         character.apply_player_row(self.player);
-
-        self.campaign
-            .map(|campaign| character.apply_campaign_row(campaign));
-
+        character.apply_campaign_row(self.campaign);
         character.apply_character_row(self.character)?;
-
-        self.attributes.into_iter().fold(
-            Ok(&mut character),
-            |character_result, attribute_row| {
-                character_result.and_then(|character| character.apply_attribute_row(attribute_row))
-            },
-        )?;
-
-        let mut abilities_hashmap =
-            self.abilities
-                .into_iter()
-                .fold(HashMap::new(), |mut map, ability| {
-                    map.insert(ability.id, (ability, Vec::<SpecialtyRow>::new()));
-                    map
-                });
-
-        if let Some(specialties) = self.specialties {
-            specialties.into_iter().fold(
-                Ok(&mut abilities_hashmap),
-                |map: Result<&mut HashMap<i32, (AbilityRow, Vec<SpecialtyRow>)>, eyre::Report>,
-                 specialty: SpecialtyRow| {
-                    map.and_then(|m| {
-                        m.get_mut(&specialty.ability_id)
-                            .ok_or_else(|| eyre!("ability {} not found", specialty.ability_id))
-                            .map(|tup| tup.1.push(specialty))?;
-                        Ok(m)
-                    })
-                },
-            )?;
-        };
-
-        abilities_hashmap.into_iter().fold(
-            Ok(&mut character),
-            |character_result, (_, (ability_row, specialty_rows))| {
-                character_result.and_then(|character| {
-                    character.apply_ability_and_specialties_rows(ability_row, specialty_rows)
-                })
-            },
-        )?;
-
-        self.intimacies.map(|intimacy_rows| {
-            intimacy_rows.into_iter().map(|intimacy_row| {
-                character.apply_intimacy_row(intimacy_row);
-            })
-        });
-
-        character.apply_health_boxes(self.health_boxes);
-        character.apply_weapons(self.weapons_owned, self.weapons_equipped)?;
+        character.apply_attribute_rows(self.attributes)?;
+        character.apply_abilities_and_specialties_rows(self.abilities, self.specialties)?;
+        character.apply_intimacy_rows(self.intimacies);
+        character.apply_health_box_rows(self.health_boxes);
+        character.apply_weapon_rows(self.weapons_owned, self.weapons_equipped)?;
         character.apply_armor_rows(self.armor_owned, self.armor_worn)?;
 
         character.build()
