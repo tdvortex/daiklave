@@ -218,6 +218,18 @@ pub enum RangeBand {
     Extreme,
 }
 
+impl From<RangeBand> for crate::character::traits::range_bands::RangeBand {
+    fn from(range: RangeBand) -> Self {
+        match range {
+            RangeBand::Close => Self::Close,
+            RangeBand::Short => Self::Short,
+            RangeBand::Medium => Self::Medium,
+            RangeBand::Long => Self::Long,
+            RangeBand::Extreme => Self::Extreme,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ARMORTAG", rename_all = "UPPERCASE")]
 pub enum ArmorTag {

@@ -7,7 +7,7 @@ use super::{
         health::{Health, WoundPenalty},
         intimacies::{Intimacies, Intimacy},
         player::Player,
-        willpower::Willpower,
+        willpower::Willpower, weapons::{Weapon, EquipHand, Weapons},
     },
     Character,
 };
@@ -26,6 +26,7 @@ pub struct CharacterBuilder {
     abilities: Abilities,
     intimacies: Intimacies,
     health: Health,
+    weapons: Weapons,
 }
 
 impl CharacterBuilder {
@@ -152,6 +153,16 @@ impl CharacterBuilder {
         self
     }
 
+    pub fn with_weapon(&mut self, weapon: Weapon, equipped: Option<EquipHand>) -> Result<&mut Self> {
+        let key = self.weapons.add_weapon(weapon);
+
+        if let Some(hand) = equipped {
+            self.weapons.equip(key, hand)?;
+        }
+
+        Ok(self)
+    }
+
     pub fn build(self) -> Result<Character> {
         if self.player.is_none() {
             return Err(eyre!("player must be specified"));
@@ -173,6 +184,7 @@ impl CharacterBuilder {
             abilities: self.abilities,
             intimacies: self.intimacies,
             health: self.health,
+            weapons: self.weapons,
         })
     }
 }

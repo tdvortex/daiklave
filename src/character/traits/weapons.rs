@@ -38,7 +38,7 @@ pub enum WeaponTag {
     Shield,
     Slow,
     Smashing,
-    Special(String),
+    Special,
     Subtle,
     Thrown(RangeBand),
     TwoHanded,
@@ -49,7 +49,7 @@ pub enum WeaponTag {
 pub struct Weapon(Handedness);
 
 impl Weapon {
-    pub fn new(name: String, tags: HashSet<WeaponTag>) -> Result<Weapon> {
+    pub fn new(name: String, tags: HashSet<WeaponTag>, id: Option<i32>) -> Result<Weapon> {
         let mut two_handed = None::<bool>;
         let mut weight_class = None::<WeightClass>;
         let mut damage_type = None::<DamageType>;
@@ -58,7 +58,6 @@ impl Weapon {
         let mut brawl = false;
         let mut melee = false;
         let mut martial_arts_styles = HashSet::<String>::new();
-        let mut special_property = None::<String>;
         let mut other_tags = HashSet::<OtherTag>::new();
 
         for tag in tags {
@@ -198,12 +197,8 @@ impl Weapon {
                 WeaponTag::Smashing => {
                     other_tags.insert(OtherTag::Smashing);
                 }
-                WeaponTag::Special(property) => {
-                    if special_property.is_some() {
-                        return Err(eyre!("weapons can have no more than one Special tag"));
-                    } else {
-                        special_property = Some(property);
-                    }
+                WeaponTag::Special => {
+                    other_tags.insert(OtherTag::Special);
                 }
                 WeaponTag::Subtle => {
                     other_tags.insert(OtherTag::Subtle);
@@ -278,12 +273,12 @@ impl Weapon {
         };
 
         let details = WeaponDetails::new(
+            id,
             name,
             weight_class.unwrap(),
             damage_type.unwrap(),
             main_attack_method,
             martial_arts_styles,
-            special_property,
             other_tags,
         );
         if two_handed.unwrap() {
@@ -498,11 +493,7 @@ impl Weapon {
         for style in details.martial_arts_styles.iter() {
             output.insert(WeaponTag::MartialArts(style.clone()));
         }
-
-        if let Some(property) = &details.special_property {
-            output.insert(WeaponTag::Special(property.clone()));
-        }
-
+        
         for other_tag in &details.other_tags {
             let tag = match other_tag {
                 OtherTag::Artifact => WeaponTag::Artifact,
@@ -526,6 +517,7 @@ impl Weapon {
                 OtherTag::Shield => WeaponTag::Shield,
                 OtherTag::Slow => WeaponTag::Slow,
                 OtherTag::Smashing => WeaponTag::Smashing,
+                OtherTag::Special => WeaponTag::Special,
                 OtherTag::Subtle => WeaponTag::Subtle,
                 OtherTag::Worn => WeaponTag::Worn,
             };
@@ -538,32 +530,32 @@ impl Weapon {
 
 #[derive(Debug)]
 struct WeaponDetails {
+    id: Option<i32>,
     name: String,
     weight_class: WeightClass,
     damage_type: DamageType,
     main_attack_method: MainAttackMethod,
     martial_arts_styles: HashSet<String>,
-    special_property: Option<String>,
     other_tags: HashSet<OtherTag>,
 }
 
 impl WeaponDetails {
     fn new(
+        id: Option<i32>,
         name: String,
         weight_class: WeightClass,
         damage_type: DamageType,
         main_attack_method: MainAttackMethod,
         martial_arts_styles: HashSet<String>,
-        special_property: Option<String>,
         other_tags: HashSet<OtherTag>,
     ) -> Self {
         Self {
+            id,
             name,
             weight_class,
             damage_type,
             main_attack_method,
             martial_arts_styles,
-            special_property,
             other_tags,
         }
     }
@@ -615,6 +607,7 @@ enum OtherTag {
     Shield,
     Slow,
     Smashing,
+    Special,
     Subtle,
     Worn,
 }

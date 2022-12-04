@@ -93,13 +93,13 @@ WITH player_query AS (
 SELECT
     characters AS "character!: CharacterRow",
     player AS "player!: PlayerRow",
-    campaign AS "campaign: CampaignRow",
     attrs AS "attributes!: Vec<AttributeRow>",
     abils AS "abilities!: Vec<AbilityRow>",
-    specs AS "specialties: Vec<SpecialtyRow>",
-    intis AS "intimacies: Vec<IntimacyRow>",
     hboxs AS "health_boxes!: Vec<HealthBoxRow>",
     weaps AS "weapons_owned!: Vec<WeaponRow>",
+    campaign AS "campaign: CampaignRow",
+    specs AS "specialties: Vec<SpecialtyRow>",
+    intis AS "intimacies: Vec<IntimacyRow>",
     eqwps AS "weapons_equipped: Vec<WeaponEquippedRow>",
     armrs AS "armor_owned: Vec<ArmorRow>",
     wrars AS "armor_worn: Vec<ArmorWornRow>",
@@ -111,14 +111,14 @@ FROM characters,
     attributes_query,
     abilities_query,
     health_boxes_query,
-    weapons_query,
-    specialties_query,
-    intimacies_query,
-    weapons_equipped_query,
-    armor_query,
-    armor_worn_query,
-    merits_query,
-    merit_prerequisite_sets_query,
-    merit_prerequisites_query
+    weapons_query
     LEFT JOIN campaign_query ON (TRUE)
+    LEFT JOIN specialties_query ON (TRUE)
+    LEFT JOIN intimacies_query ON (TRUE)
+    LEFT JOIN weapons_equipped_query ON (TRUE)
+    LEFT JOIN armor_query ON (TRUE)
+    LEFT JOIN armor_worn_query ON (TRUE)
+    LEFT JOIN merits_query ON (TRUE)
+    LEFT JOIN merit_prerequisite_sets_query ON (TRUE)
+    LEFT JOIN merit_prerequisites_query ON (TRUE)
 WHERE characters.id = $1;

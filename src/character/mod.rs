@@ -11,6 +11,7 @@ use self::traits::abilities::Abilities;
 use self::traits::attributes::Attributes;
 use self::traits::health::Health;
 use self::traits::intimacies::Intimacies;
+use self::traits::weapons::Weapons;
 
 #[derive(Debug)]
 pub struct Character {
@@ -25,4 +26,5 @@ pub struct Character {
     pub abilities: Abilities,
     pub intimacies: Intimacies,
     pub health: Health,
+    pub weapons: Weapons,
 }

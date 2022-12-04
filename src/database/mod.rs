@@ -1,11 +1,11 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use crate::character::{
     builder::create_character,
     builder::CharacterBuilder,
     traits::{
         campaign::Campaign, experience::ExperiencePoints, intimacies::Intimacy, player::Player,
-        willpower::Willpower,
+        willpower::Willpower, weapons::Weapon,
     },
     Character,
 };
@@ -27,16 +27,16 @@ pub mod rows;
 
 #[derive(Debug)]
 pub struct GetCharacter {
-    pub character: CharacterRow,
-    pub player: PlayerRow,
-    pub campaign: Option<CampaignRow>,
-    pub attributes: Vec<AttributeRow>,
-    pub abilities: Vec<AbilityRow>,
-    pub specialties: Option<Vec<SpecialtyRow>>,
-    pub intimacies: Option<Vec<IntimacyRow>>,
-    pub health_boxes: Vec<HealthBoxRow>,
-    pub weapons_owned: Vec<WeaponRow>,
-    pub weapons_equipped: Option<Vec<WeaponEquippedRow>>,
+    character: CharacterRow,
+    player: PlayerRow,
+    campaign: Option<CampaignRow>,
+    attributes: Vec<AttributeRow>,
+    abilities: Vec<AbilityRow>,
+    specialties: Option<Vec<SpecialtyRow>>,
+    intimacies: Option<Vec<IntimacyRow>>,
+    health_boxes: Vec<HealthBoxRow>,
+    weapons_owned: Vec<WeaponRow>,
+    weapons_equipped: Option<Vec<WeaponEquippedRow>>,
     pub armor_owned: Option<Vec<ArmorRow>>,
     pub armor_worn: Option<Vec<ArmorWornRow>>,
     pub merits: Option<Vec<MeritRow>>,
@@ -184,6 +184,53 @@ impl CharacterBuilder {
         self.with_damage(bashing, lethal, aggravated);
         self
     }
+
+    fn apply_weapons(&mut self, weapon_rows: Vec<WeaponRow>, weapon_equipped_rows: Option<Vec<WeaponEquippedRow>>) -> Result<&mut Self> {
+        use crate::character::traits::weapons::EquipHand as TraitsEquipHand;
+        let mut weapons_hashmap = HashMap::new();
+        
+        for weapon_row in weapon_rows.into_iter() {
+            let mut tags = HashSet::new();
+            for tag in weapon_row.tags {
+                tags.insert(tag.try_into()?);
+            }
+            let weapon = Weapon::new(weapon_row.name, tags, Some(weapon_row.id))?;
+            weapons_hashmap.insert(weapon_row.id, (weapon, None));
+        }
+
+        if weapon_equipped_rows.is_none() {
+            return Ok(self);
+        }
+
+        let equips = weapon_equipped_rows.unwrap();
+
+        for weapon_equipped_row in equips.into_iter() {
+            if weapon_equipped_row.equip_hand.is_none() {
+                continue;
+            }
+
+            let (_, equipped) = weapons_hashmap.get_mut(&weapon_equipped_row.weapon_id).ok_or_else(|| eyre!("cannot equip weapon {} which is not owned", weapon_equipped_row.weapon_id))?;
+
+            *equipped = match (&equipped, weapon_equipped_row.equip_hand.unwrap()) {
+                (None, enums::EquipHand::Main) => Some(TraitsEquipHand::Main),
+                (None, enums::EquipHand::Off) => Some(TraitsEquipHand::Off),
+                (Some(TraitsEquipHand::Main), enums::EquipHand::Main) => {return Err(eyre!("cannot equip two weapons in Main hand"));}
+                (Some(TraitsEquipHand::Off), enums::EquipHand::Off) => {return Err(eyre!("cannot equip two weapons in Off hand"));}
+                (Some(TraitsEquipHand::Both), enums::EquipHand::Main) => {return Err(eyre!("cannot equip two weapons in Main hand"));}
+                (Some(TraitsEquipHand::Both), enums::EquipHand::Off) => {return Err(eyre!("cannot equip two weapons in Off hand"));}
+                (Some(TraitsEquipHand::Main), enums::EquipHand::Off) => Some(TraitsEquipHand::Both),
+                (Some(TraitsEquipHand::Off), enums::EquipHand::Main) => Some(TraitsEquipHand::Both),
+            };
+        }
+
+        let mut applied = Ok(self);
+
+        for (_, (weapon, maybe_equip_hand)) in weapons_hashmap.into_iter() {
+            applied = applied.and_then(|character| character.with_weapon(weapon, maybe_equip_hand));
+        }
+
+        applied
+    }
 }
 
 impl TryInto<Character> for GetCharacter {
@@ -244,6 +291,7 @@ impl TryInto<Character> for GetCharacter {
         });
 
         character.apply_health_boxes(self.health_boxes);
+        character.apply_weapons(self.weapons_owned, self.weapons_equipped)?;
 
         character.build()
     }
