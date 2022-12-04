@@ -4,8 +4,10 @@ use super::{
         attributes::{AttributeName, Attributes},
         campaign::Campaign,
         experience::ExperiencePoints,
+        health::{Health, WoundPenalty},
+        intimacies::{Intimacies, Intimacy},
         player::Player,
-        willpower::Willpower, intimacies::{Intimacies, Intimacy},
+        willpower::Willpower,
     },
     Character,
 };
@@ -23,6 +25,7 @@ pub struct CharacterBuilder {
     attributes: Attributes,
     abilities: Abilities,
     intimacies: Intimacies,
+    health: Health,
 }
 
 impl CharacterBuilder {
@@ -79,7 +82,9 @@ impl CharacterBuilder {
     }
 
     pub fn with_craft(&mut self, craft_focus: &str, value: u8) -> &mut Self {
-        self.abilities.add_craft(craft_focus.to_owned()).set_dots(value);
+        self.abilities
+            .add_craft(craft_focus.to_owned())
+            .set_dots(value);
         self
     }
 
@@ -131,6 +136,21 @@ impl CharacterBuilder {
         self
     }
 
+    pub fn with_wound_penalties(&mut self, wound_penalties: Vec<WoundPenalty>) -> &mut Self {
+        let (bashing, lethal, aggravated) = self.health.damage();
+        self.health = Health::empty();
+        for wound_penalty in wound_penalties.into_iter() {
+            self.health.add_health_box(wound_penalty);
+        }
+        self.health.set_damage(bashing, lethal, aggravated);
+
+        self
+    }
+
+    pub fn with_damage(&mut self, bashing: u8, lethal: u8, aggravated: u8) -> &mut Self {
+        self.health.set_damage(bashing, lethal, aggravated);
+        self
+    }
 
     pub fn build(self) -> Result<Character> {
         if self.player.is_none() {
@@ -152,6 +172,7 @@ impl CharacterBuilder {
             attributes: self.attributes,
             abilities: self.abilities,
             intimacies: self.intimacies,
+            health: self.health,
         })
     }
 }

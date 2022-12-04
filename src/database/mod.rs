@@ -4,7 +4,8 @@ use crate::character::{
     builder::create_character,
     builder::CharacterBuilder,
     traits::{
-        campaign::Campaign, experience::ExperiencePoints, player::Player, willpower::Willpower, intimacies::Intimacy,
+        campaign::Campaign, experience::ExperiencePoints, intimacies::Intimacy, player::Player,
+        willpower::Willpower,
     },
     Character,
 };
@@ -92,7 +93,11 @@ impl CharacterBuilder {
         self.with_attribute(attribute_name, value)
     }
 
-    fn apply_ability_and_specialties_rows(&mut self, ability_row: AbilityRow, specialty_rows: Vec<SpecialtyRow>) -> Result<&mut Self> {
+    fn apply_ability_and_specialties_rows(
+        &mut self,
+        ability_row: AbilityRow,
+        specialty_rows: Vec<SpecialtyRow>,
+    ) -> Result<&mut Self> {
         let dots: u8 = ability_row.dots.try_into()?;
 
         match ability_row.name {
@@ -100,32 +105,42 @@ impl CharacterBuilder {
                 let craft_focus = ability_row
                     .subskill
                     .ok_or(eyre!("craft abilities must have a focus"))?;
-                self.with_craft(&craft_focus.as_str(), dots);
-                specialty_rows.into_iter().fold(Ok(self), |character_result, specialty_row| {
-                    character_result.and_then(|character| {
-                        character.with_craft_specialty(&craft_focus.as_str(), specialty_row.specialty)
+                self.with_craft(craft_focus.as_str(), dots);
+                specialty_rows
+                    .into_iter()
+                    .fold(Ok(self), |character_result, specialty_row| {
+                        character_result.and_then(|character| {
+                            character
+                                .with_craft_specialty(craft_focus.as_str(), specialty_row.specialty)
+                        })
                     })
-                })
             }
             AbilityName::MartialArts => {
                 let martial_arts_style = ability_row
                     .subskill
                     .ok_or(eyre!("martial arts abilities must have a style"))?;
-                self.with_martial_arts(&martial_arts_style.as_str(), dots);
-                specialty_rows.into_iter().fold(Ok(self), |character_result, specialty_row| {
-                    character_result.and_then(|character| {
-                        character.with_martial_arts_specialty(&martial_arts_style.as_str(), specialty_row.specialty)
+                self.with_martial_arts(martial_arts_style.as_str(), dots);
+                specialty_rows
+                    .into_iter()
+                    .fold(Ok(self), |character_result, specialty_row| {
+                        character_result.and_then(|character| {
+                            character.with_martial_arts_specialty(
+                                martial_arts_style.as_str(),
+                                specialty_row.specialty,
+                            )
+                        })
                     })
-                })
             }
             no_focus_name => {
                 let ability_name = no_focus_name.try_into().unwrap();
                 self.with_ability(ability_name, dots);
-                specialty_rows.into_iter().fold(Ok(self), |character_result, specialty_row| {
-                    character_result.and_then(|character| {
-                        character.with_specialty(ability_name, specialty_row.specialty)
+                specialty_rows
+                    .into_iter()
+                    .fold(Ok(self), |character_result, specialty_row| {
+                        character_result.and_then(|character| {
+                            character.with_specialty(ability_name, specialty_row.specialty)
+                        })
                     })
-                })
             }
         }
     }
@@ -136,6 +151,38 @@ impl CharacterBuilder {
             intimacy_type: intimacy_row.intimacy_type.into(),
             description: intimacy_row.description,
         })
+    }
+
+    fn apply_health_boxes(&mut self, health_box_rows: Vec<HealthBoxRow>) -> &mut Self {
+        use crate::character::traits::health::WoundPenalty;
+        let (mut bashing, mut lethal, mut aggravated) = (0, 0, 0);
+        let mut wound_penalties = Vec::new();
+
+        for health_box_row in health_box_rows.into_iter() {
+            wound_penalties.push(match health_box_row.wound_penalty {
+                enums::WoundPenalty::Zero => WoundPenalty::Zero,
+                enums::WoundPenalty::MinusOne => WoundPenalty::MinusOne,
+                enums::WoundPenalty::MinusTwo => WoundPenalty::MinusTwo,
+                enums::WoundPenalty::MinusFour => WoundPenalty::MinusFour,
+                enums::WoundPenalty::Incapacitated => WoundPenalty::Incapacitated,
+            });
+
+            match health_box_row.damage {
+                Some(enums::DamageType::Bashing) => {
+                    bashing += 1;
+                }
+                Some(enums::DamageType::Lethal) => {
+                    lethal += 1;
+                }
+                Some(enums::DamageType::Aggravated) => {
+                    aggravated += 1;
+                }
+                None => {}
+            }
+        }
+        self.with_wound_penalties(wound_penalties);
+        self.with_damage(bashing, lethal, aggravated);
+        self
     }
 }
 
@@ -167,27 +214,36 @@ impl TryInto<Character> for GetCharacter {
                 });
 
         if let Some(specialties) = self.specialties {
-            specialties
-                .into_iter()
-                .fold(Ok(&mut abilities_hashmap), |map: Result<&mut HashMap<i32, (AbilityRow, Vec<SpecialtyRow>)>, eyre::Report>, specialty: SpecialtyRow| {
+            specialties.into_iter().fold(
+                Ok(&mut abilities_hashmap),
+                |map: Result<&mut HashMap<i32, (AbilityRow, Vec<SpecialtyRow>)>, eyre::Report>,
+                 specialty: SpecialtyRow| {
                     map.and_then(|m| {
                         m.get_mut(&specialty.ability_id)
                             .ok_or_else(|| eyre!("ability {} not found", specialty.ability_id))
                             .map(|tup| tup.1.push(specialty))?;
                         Ok(m)
                     })
-                })?;
+                },
+            )?;
         };
 
-        abilities_hashmap.into_iter().fold(Ok(&mut character), |character_result, (_, (ability_row, specialty_rows))| {
-            character_result.and_then(|character| {
-                character.apply_ability_and_specialties_rows(ability_row, specialty_rows)
-            })
-        })?;
+        abilities_hashmap.into_iter().fold(
+            Ok(&mut character),
+            |character_result, (_, (ability_row, specialty_rows))| {
+                character_result.and_then(|character| {
+                    character.apply_ability_and_specialties_rows(ability_row, specialty_rows)
+                })
+            },
+        )?;
 
-        self.intimacies.map(|intimacy_rows| intimacy_rows.into_iter().map(|intimacy_row| {
-            character.apply_intimacy_row(intimacy_row);
-        }));
+        self.intimacies.map(|intimacy_rows| {
+            intimacy_rows.into_iter().map(|intimacy_row| {
+                character.apply_intimacy_row(intimacy_row);
+            })
+        });
+
+        character.apply_health_boxes(self.health_boxes);
 
         character.build()
     }

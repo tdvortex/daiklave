@@ -122,7 +122,9 @@ impl From<IntimacyType> for crate::character::traits::intimacies::IntimacyType {
     fn from(intimacy_type: IntimacyType) -> Self {
         match intimacy_type {
             IntimacyType::Tie => crate::character::traits::intimacies::IntimacyType::Tie,
-            IntimacyType::Principle => crate::character::traits::intimacies::IntimacyType::Principle,
+            IntimacyType::Principle => {
+                crate::character::traits::intimacies::IntimacyType::Principle
+            }
         }
     }
 }
@@ -140,7 +142,9 @@ impl From<IntimacyLevel> for crate::character::traits::intimacies::IntimacyLevel
         match intimacy_level {
             IntimacyLevel::Minor => crate::character::traits::intimacies::IntimacyLevel::Minor,
             IntimacyLevel::Major => crate::character::traits::intimacies::IntimacyLevel::Major,
-            IntimacyLevel::Defining => crate::character::traits::intimacies::IntimacyLevel::Defining,
+            IntimacyLevel::Defining => {
+                crate::character::traits::intimacies::IntimacyLevel::Defining
+            }
         }
     }
 }
