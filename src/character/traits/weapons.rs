@@ -493,7 +493,7 @@ impl Weapon {
         for style in details.martial_arts_styles.iter() {
             output.insert(WeaponTag::MartialArts(style.clone()));
         }
-        
+
         for other_tag in &details.other_tags {
             let tag = match other_tag {
                 OtherTag::Artifact => WeaponTag::Artifact,

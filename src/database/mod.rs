@@ -4,8 +4,8 @@ use crate::character::{
     builder::create_character,
     builder::CharacterBuilder,
     traits::{
-        campaign::Campaign, experience::ExperiencePoints, intimacies::Intimacy, player::Player,
-        willpower::Willpower, weapons::Weapon,
+        armor::ArmorItem, campaign::Campaign, experience::ExperiencePoints, intimacies::Intimacy,
+        player::Player, weapons::Weapon, willpower::Willpower,
     },
     Character,
 };
@@ -185,10 +185,14 @@ impl CharacterBuilder {
         self
     }
 
-    fn apply_weapons(&mut self, weapon_rows: Vec<WeaponRow>, weapon_equipped_rows: Option<Vec<WeaponEquippedRow>>) -> Result<&mut Self> {
+    fn apply_weapons(
+        &mut self,
+        weapon_rows: Vec<WeaponRow>,
+        weapon_equipped_rows: Option<Vec<WeaponEquippedRow>>,
+    ) -> Result<&mut Self> {
         use crate::character::traits::weapons::EquipHand as TraitsEquipHand;
         let mut weapons_hashmap = HashMap::new();
-        
+
         for weapon_row in weapon_rows.into_iter() {
             let mut tags = HashSet::new();
             for tag in weapon_row.tags {
@@ -209,15 +213,30 @@ impl CharacterBuilder {
                 continue;
             }
 
-            let (_, equipped) = weapons_hashmap.get_mut(&weapon_equipped_row.weapon_id).ok_or_else(|| eyre!("cannot equip weapon {} which is not owned", weapon_equipped_row.weapon_id))?;
+            let (_, equipped) = weapons_hashmap
+                .get_mut(&weapon_equipped_row.weapon_id)
+                .ok_or_else(|| {
+                    eyre!(
+                        "cannot equip weapon {} which is not owned",
+                        weapon_equipped_row.weapon_id
+                    )
+                })?;
 
             *equipped = match (&equipped, weapon_equipped_row.equip_hand.unwrap()) {
                 (None, enums::EquipHand::Main) => Some(TraitsEquipHand::Main),
                 (None, enums::EquipHand::Off) => Some(TraitsEquipHand::Off),
-                (Some(TraitsEquipHand::Main), enums::EquipHand::Main) => {return Err(eyre!("cannot equip two weapons in Main hand"));}
-                (Some(TraitsEquipHand::Off), enums::EquipHand::Off) => {return Err(eyre!("cannot equip two weapons in Off hand"));}
-                (Some(TraitsEquipHand::Both), enums::EquipHand::Main) => {return Err(eyre!("cannot equip two weapons in Main hand"));}
-                (Some(TraitsEquipHand::Both), enums::EquipHand::Off) => {return Err(eyre!("cannot equip two weapons in Off hand"));}
+                (Some(TraitsEquipHand::Main), enums::EquipHand::Main) => {
+                    return Err(eyre!("cannot equip two weapons in Main hand"));
+                }
+                (Some(TraitsEquipHand::Off), enums::EquipHand::Off) => {
+                    return Err(eyre!("cannot equip two weapons in Off hand"));
+                }
+                (Some(TraitsEquipHand::Both), enums::EquipHand::Main) => {
+                    return Err(eyre!("cannot equip two weapons in Main hand"));
+                }
+                (Some(TraitsEquipHand::Both), enums::EquipHand::Off) => {
+                    return Err(eyre!("cannot equip two weapons in Off hand"));
+                }
                 (Some(TraitsEquipHand::Main), enums::EquipHand::Off) => Some(TraitsEquipHand::Both),
                 (Some(TraitsEquipHand::Off), enums::EquipHand::Main) => Some(TraitsEquipHand::Both),
             };
@@ -227,6 +246,53 @@ impl CharacterBuilder {
 
         for (_, (weapon, maybe_equip_hand)) in weapons_hashmap.into_iter() {
             applied = applied.and_then(|character| character.with_weapon(weapon, maybe_equip_hand));
+        }
+
+        applied
+    }
+
+    fn apply_armor_rows(
+        &mut self,
+        armor_owned: Option<Vec<ArmorRow>>,
+        armor_worn: Option<Vec<ArmorWornRow>>,
+    ) -> Result<&mut Self> {
+        if armor_owned.is_none() {
+            if armor_worn.is_none() {
+                return Ok(self);
+            } else {
+                return Err(eyre!("cannot wear armor that is not owned"));
+            }
+        }
+
+        let mut armor_hashmap = HashMap::new();
+
+        for armor_row in armor_owned.unwrap().into_iter() {
+            let tags = armor_row.tags.into_iter().map(|tag| tag.into()).collect();
+            let armor_item = ArmorItem::new(armor_row.name, tags)?;
+            armor_hashmap.insert(armor_row.id, (armor_item, false));
+        }
+
+        if let Some(armor_worn_rows) = armor_worn {
+            for armor_worn_row in armor_worn_rows.into_iter() {
+                if armor_worn_row.worn {
+                    let (_, worn) =
+                        armor_hashmap
+                            .get_mut(&armor_worn_row.armor_id)
+                            .ok_or_else(|| {
+                                eyre!(
+                                    "cannot equip unowned armor item {}",
+                                    armor_worn_row.armor_id
+                                )
+                            })?;
+                    *worn = true;
+                }
+            }
+        }
+
+        let mut applied = Ok(self);
+
+        for (_, (armor_item, worn)) in armor_hashmap.into_iter() {
+            applied = applied.and_then(|character| character.with_armor(armor_item, worn));
         }
 
         applied
@@ -292,6 +358,7 @@ impl TryInto<Character> for GetCharacter {
 
         character.apply_health_boxes(self.health_boxes);
         character.apply_weapons(self.weapons_owned, self.weapons_equipped)?;
+        character.apply_armor_rows(self.armor_owned, self.armor_worn)?;
 
         character.build()
     }

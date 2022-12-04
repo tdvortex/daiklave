@@ -1,13 +1,15 @@
 use super::{
     traits::{
         abilities::{Abilities, AbilityName, AbilityNameNoFocus},
+        armor::{Armor, ArmorItem},
         attributes::{AttributeName, Attributes},
         campaign::Campaign,
         experience::ExperiencePoints,
         health::{Health, WoundPenalty},
         intimacies::{Intimacies, Intimacy},
         player::Player,
-        willpower::Willpower, weapons::{Weapon, EquipHand, Weapons},
+        weapons::{EquipHand, Weapon, Weapons},
+        willpower::Willpower,
     },
     Character,
 };
@@ -27,6 +29,7 @@ pub struct CharacterBuilder {
     intimacies: Intimacies,
     health: Health,
     weapons: Weapons,
+    armor: Armor,
 }
 
 impl CharacterBuilder {
@@ -153,11 +156,25 @@ impl CharacterBuilder {
         self
     }
 
-    pub fn with_weapon(&mut self, weapon: Weapon, equipped: Option<EquipHand>) -> Result<&mut Self> {
+    pub fn with_weapon(
+        &mut self,
+        weapon: Weapon,
+        equipped: Option<EquipHand>,
+    ) -> Result<&mut Self> {
         let key = self.weapons.add_weapon(weapon);
 
         if let Some(hand) = equipped {
             self.weapons.equip(key, hand)?;
+        }
+
+        Ok(self)
+    }
+
+    pub fn with_armor(&mut self, armor_item: ArmorItem, worn: bool) -> Result<&mut Self> {
+        let key = self.armor.add_armor_item(armor_item);
+
+        if worn {
+            self.armor.equip_armor_item(key)?;
         }
 
         Ok(self)
@@ -185,6 +202,7 @@ impl CharacterBuilder {
             intimacies: self.intimacies,
             health: self.health,
             weapons: self.weapons,
+            armor: self.armor,
         })
     }
 }

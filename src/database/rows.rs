@@ -254,6 +254,17 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorRow {
     }
 }
 
+impl TryFrom<ArmorRow> for crate::character::traits::armor::ArmorItem {
+    type Error = eyre::Report;
+
+    fn try_from(value: ArmorRow) -> Result<Self, Self::Error> {
+        Self::new(
+            value.name,
+            value.tags.into_iter().map(|tag| tag.into()).collect(),
+        )
+    }
+}
+
 #[derive(Debug)]
 pub struct ArmorWornRow {
     pub character_id: i32,

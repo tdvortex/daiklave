@@ -248,6 +248,20 @@ impl PgHasArrayType for ArmorTag {
     }
 }
 
+impl From<ArmorTag> for crate::character::traits::armor::ArmorTag {
+    fn from(tag: ArmorTag) -> Self {
+        match tag {
+            ArmorTag::Artifact => crate::character::traits::armor::ArmorTag::Artifact,
+            ArmorTag::Concealable => crate::character::traits::armor::ArmorTag::Concealable,
+            ArmorTag::Heavy => crate::character::traits::armor::ArmorTag::Heavy,
+            ArmorTag::Light => crate::character::traits::armor::ArmorTag::Light,
+            ArmorTag::Medium => crate::character::traits::armor::ArmorTag::Medium,
+            ArmorTag::Silent => crate::character::traits::armor::ArmorTag::Silent,
+            ArmorTag::Special => crate::character::traits::armor::ArmorTag::Special,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "EQUIPHAND", rename_all = "UPPERCASE")]
 pub enum EquipHand {

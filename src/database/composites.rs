@@ -1,5 +1,5 @@
-use sqlx::postgres::PgHasArrayType;
 use eyre::{eyre, Report};
+use sqlx::postgres::PgHasArrayType;
 
 use super::enums::{CharmCostType, RangeBand, WeaponTagType};
 
@@ -16,12 +16,10 @@ impl TryFrom<WeaponTag> for crate::character::traits::weapons::WeaponTag {
 
     fn try_from(value: WeaponTag) -> Result<Self, Self::Error> {
         match value.tag_type {
-            WeaponTagType::Archery => {
-                match value.max_range {
-                    Some(range) => Ok(Self::Archery(range.into())),
-                    None => Err(eyre!("archery must have a range band")),
-                }
-            }
+            WeaponTagType::Archery => match value.max_range {
+                Some(range) => Ok(Self::Archery(range.into())),
+                None => Err(eyre!("archery must have a range band")),
+            },
             WeaponTagType::Artifact => Ok(Self::Artifact),
             WeaponTagType::Balanced => Ok(Self::Balanced),
             WeaponTagType::Bashing => Ok(Self::Bashing),
@@ -39,12 +37,10 @@ impl TryFrom<WeaponTag> for crate::character::traits::weapons::WeaponTag {
             WeaponTagType::Improvised => Ok(Self::Improvised),
             WeaponTagType::Lethal => Ok(Self::Lethal),
             WeaponTagType::Light => Ok(Self::Light),
-            WeaponTagType::MartialArts => {
-                match value.martial_arts_style {
-                    Some(style) => Ok(Self::MartialArts(style)),
-                    None => Err(eyre!("martial arts must have a style")),
-                }
-            }
+            WeaponTagType::MartialArts => match value.martial_arts_style {
+                Some(style) => Ok(Self::MartialArts(style)),
+                None => Err(eyre!("martial arts must have a style")),
+            },
             WeaponTagType::Medium => Ok(Self::Medium),
             WeaponTagType::Melee => Ok(Self::Melee),
             WeaponTagType::Mounted => Ok(Self::Mounted),
@@ -59,12 +55,10 @@ impl TryFrom<WeaponTag> for crate::character::traits::weapons::WeaponTag {
             WeaponTagType::Smashing => Ok(Self::Smashing),
             WeaponTagType::Special => Ok(Self::Special),
             WeaponTagType::Subtle => Ok(Self::Subtle),
-            WeaponTagType::Thrown => {
-                match value.max_range {
-                    Some(range) => Ok(Self::Thrown(range.into())),
-                    None => Err(eyre!("thrown must have a range band")),
-                }
-            }
+            WeaponTagType::Thrown => match value.max_range {
+                Some(range) => Ok(Self::Thrown(range.into())),
+                None => Err(eyre!("thrown must have a range band")),
+            },
             WeaponTagType::TwoHanded => Ok(Self::TwoHanded),
             WeaponTagType::Worn => Ok(Self::Worn),
         }

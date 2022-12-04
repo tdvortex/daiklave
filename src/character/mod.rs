@@ -8,6 +8,7 @@ use traits::player::Player;
 use traits::willpower::Willpower;
 
 use self::traits::abilities::Abilities;
+use self::traits::armor::Armor;
 use self::traits::attributes::Attributes;
 use self::traits::health::Health;
 use self::traits::intimacies::Intimacies;
@@ -27,4 +28,5 @@ pub struct Character {
     pub intimacies: Intimacies,
     pub health: Health,
     pub weapons: Weapons,
+    pub armor: Armor,
 }

@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use eyre::{eyre, Result};
 use slab::Slab;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum ArmorTag {
     Artifact,
     Concealable,
@@ -11,7 +11,7 @@ pub enum ArmorTag {
     Light,
     Medium,
     Silent,
-    Special(String),
+    Special,
 }
 
 #[derive(Debug)]
@@ -21,7 +21,7 @@ pub struct ArmorItem {
     artifact: bool,
     concealable: bool,
     silent: bool,
-    special_property: Option<String>,
+    special: bool,
 }
 
 impl ArmorItem {
@@ -30,7 +30,7 @@ impl ArmorItem {
         let mut artifact = false;
         let mut concealable = false;
         let mut silent = false;
-        let mut special_property = None::<String>;
+        let mut special = false;
 
         for tag in tags {
             match tag {
@@ -52,11 +52,8 @@ impl ArmorItem {
                 ArmorTag::Silent => {
                     silent = true;
                 }
-                ArmorTag::Special(property) => {
-                    if special_property.is_some() {
-                        return Err(eyre!("armor can have at most one special property"));
-                    }
-                    special_property = Some(property);
+                ArmorTag::Special => {
+                    special = true;
                 }
             }
         }
@@ -73,7 +70,7 @@ impl ArmorItem {
             artifact,
             concealable,
             silent,
-            special_property,
+            special,
         })
     }
 
@@ -145,8 +142,8 @@ impl ArmorItem {
             hash_set.insert(ArmorTag::Silent);
         }
 
-        if let Some(property) = &self.special_property {
-            hash_set.insert(ArmorTag::Special(property.clone()));
+        if self.special {
+            hash_set.insert(ArmorTag::Special);
         }
 
         hash_set
