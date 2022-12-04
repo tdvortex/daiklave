@@ -38,8 +38,8 @@ pub struct GetCharacter {
     health_boxes: Vec<HealthBoxRow>,
     weapons_owned: Vec<WeaponRow>,
     weapons_equipped: Option<Vec<WeaponEquippedRow>>,
-    pub armor_owned: Option<Vec<ArmorRow>>,
-    pub armor_worn: Option<Vec<ArmorWornRow>>,
+    armor_owned: Option<Vec<ArmorRow>>,
+    armor_worn: Option<Vec<ArmorWornRow>>,
     pub merits: Option<Vec<MeritRow>>,
     pub merit_prerequisite_sets: Option<Vec<MeritPrerequisiteSetRow>>,
     pub merit_prerequisites: Option<Vec<PrerequisiteRow>>,
@@ -143,7 +143,7 @@ impl CharacterBuilder {
                     })
             }
             no_focus_name => {
-                let ability_name = no_focus_name.try_into().unwrap();
+                let ability_name = no_focus_name.try_into()?;
                 self.with_ability(ability_name, dots);
                 specialty_rows
                     .into_iter()
