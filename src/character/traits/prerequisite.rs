@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use super::{abilities::{AbilityNameNoFocus}, attributes::AttributeName};
+use super::{abilities::AbilityNameNoFocus, attributes::AttributeName};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum PrerequisiteType {
@@ -68,10 +68,7 @@ pub struct PrerequisiteSet {
 
 impl PrerequisiteSet {
     pub fn new(prerequisites: Vec<Prerequisite>, id: Option<i32>) -> Self {
-        Self {
-            prerequisites,
-            id
-        }
+        Self { prerequisites, id }
     }
 
     pub fn id(&self) -> Option<i32> {

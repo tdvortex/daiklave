@@ -21,7 +21,15 @@ pub struct MeritTemplate {
 }
 
 impl MeritTemplate {
-    pub fn new(name: String, dots: u8, merit_type: MeritType, prerequisites: Vec<PrerequisiteSet>, description: String, requires_detail: bool, id: Option<i32>) -> Self {
+    pub fn new(
+        name: String,
+        dots: u8,
+        merit_type: MeritType,
+        prerequisites: Vec<PrerequisiteSet>,
+        description: String,
+        requires_detail: bool,
+        id: Option<i32>,
+    ) -> Self {
         Self {
             id,
             name,
@@ -70,11 +78,23 @@ pub struct Merit {
 }
 
 impl Merit {
-    pub fn from_template(template: MeritTemplate, detail: Option<String>, id: Option<i32>) -> Result<Self> {
+    pub fn from_template(
+        template: MeritTemplate,
+        detail: Option<String>,
+        id: Option<i32>,
+    ) -> Result<Self> {
         match (template.requires_detail(), detail) {
-            (false, None) => Ok(Self{id, template, detail: None}),
+            (false, None) => Ok(Self {
+                id,
+                template,
+                detail: None,
+            }),
             (true, None) => Err(eyre!("merit {} requires detailing", template.name())),
-            (_, Some(detail_text)) => Ok(Self{id, template, detail: Some(detail_text)}),
+            (_, Some(detail_text)) => Ok(Self {
+                id,
+                template,
+                detail: Some(detail_text),
+            }),
         }
     }
 

@@ -39,27 +39,33 @@ pub struct Character {
 impl Character {
     fn meets_prerequisite(&self, prerequisite: &Prerequisite) -> bool {
         match prerequisite.deref() {
-            PrerequisiteType::Ability(ability_prerequisite) => self.abilities.meets_prerequisite(ability_prerequisite),
-            PrerequisiteType::Attribute(attribute_prerequisite) => self.attributes.meets_prerequisite(attribute_prerequisite),
+            PrerequisiteType::Ability(ability_prerequisite) => {
+                self.abilities.meets_prerequisite(ability_prerequisite)
+            }
+            PrerequisiteType::Attribute(attribute_prerequisite) => {
+                self.attributes.meets_prerequisite(attribute_prerequisite)
+            }
             PrerequisiteType::Essence(_) => false,
             PrerequisiteType::Charm(_) => false,
-            PrerequisiteType::ExaltType(exalt_type) => {
-                match exalt_type {
-                    traits::prerequisite::ExaltTypePrerequisite::Solar => false,
-                    traits::prerequisite::ExaltTypePrerequisite::Lunar => false,
-                    traits::prerequisite::ExaltTypePrerequisite::DragonBlooded => false,
-                    traits::prerequisite::ExaltTypePrerequisite::Spirit => false,
-                    traits::prerequisite::ExaltTypePrerequisite::SpiritOrEclipse => false,
-                }
-            }
+            PrerequisiteType::ExaltType(exalt_type) => match exalt_type {
+                traits::prerequisite::ExaltTypePrerequisite::Solar => false,
+                traits::prerequisite::ExaltTypePrerequisite::Lunar => false,
+                traits::prerequisite::ExaltTypePrerequisite::DragonBlooded => false,
+                traits::prerequisite::ExaltTypePrerequisite::Spirit => false,
+                traits::prerequisite::ExaltTypePrerequisite::SpiritOrEclipse => false,
+            },
         }
     }
 
     fn meets_prerequisite_set(&self, prerequisite_set: &PrerequisiteSet) -> bool {
-        prerequisite_set.iter().all(|prerequisite| self.meets_prerequisite(prerequisite))
+        prerequisite_set
+            .iter()
+            .all(|prerequisite| self.meets_prerequisite(prerequisite))
     }
 
     pub fn meets_any_prerequisite_set(&self, prerequisite_sets: &Vec<PrerequisiteSet>) -> bool {
-        prerequisite_sets.iter().any(|prerequisite_set| self.meets_prerequisite_set(prerequisite_set))
+        prerequisite_sets
+            .iter()
+            .any(|prerequisite_set| self.meets_prerequisite_set(prerequisite_set))
     }
 }

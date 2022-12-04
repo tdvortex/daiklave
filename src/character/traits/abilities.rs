@@ -1,4 +1,4 @@
-use eyre::{eyre, Result, Report};
+use eyre::{eyre, Report, Result};
 use std::collections::hash_map::Keys;
 use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
@@ -625,9 +625,9 @@ impl Abilities {
                     false
                 }
             }
-            (AbilityNameNoFocus::Craft, None) => {
-                self.craft_iter().any(|craft_ability| craft_ability.dots() >= prerequisite.dots)
-            }
+            (AbilityNameNoFocus::Craft, None) => self
+                .craft_iter()
+                .any(|craft_ability| craft_ability.dots() >= prerequisite.dots),
             (AbilityNameNoFocus::MartialArts, Some(style)) => {
                 let ability_name: AbilityName = AbilityName::MartialArts(style.clone());
                 if let Some(ability) = self.get(&ability_name) {
@@ -636,9 +636,9 @@ impl Abilities {
                     false
                 }
             }
-            (AbilityNameNoFocus::MartialArts, None) => {
-                self.martial_arts_iter().any(|martial_arts_ability| martial_arts_ability.dots() >= prerequisite.dots)
-            }
+            (AbilityNameNoFocus::MartialArts, None) => self
+                .martial_arts_iter()
+                .any(|martial_arts_ability| martial_arts_ability.dots() >= prerequisite.dots),
             (other_ability, _) => {
                 let ability_name: AbilityName = other_ability.try_into().unwrap();
                 self.get(&ability_name).unwrap().dots() >= prerequisite.dots
@@ -715,7 +715,7 @@ impl<'a> Iterator for CraftIter<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some((focus, rating)) = self.craft_iter.next() {
-            Some(Ability{
+            Some(Ability {
                 name: AbilityName::Craft(focus.clone()),
                 rating,
             })
@@ -734,7 +734,7 @@ impl<'a> Iterator for MartialArtsIter<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some((style, rating)) = self.martial_arts_iter.next() {
-            Some(Ability{
+            Some(Ability {
                 name: AbilityName::MartialArts(style.clone()),
                 rating,
             })
