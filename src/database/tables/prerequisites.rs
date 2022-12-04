@@ -1,8 +1,10 @@
+use std::collections::HashMap;
+
 use crate::character::traits::prerequisite::{
     AbilityPrerequisite, AttributePrerequisite, ExaltTypePrerequisite, Prerequisite,
-    PrerequisiteType,
+    PrerequisiteSet, PrerequisiteType,
 };
-use eyre::{eyre, Report};
+use eyre::{eyre, Report, Result};
 
 use super::{abilities::AbilityNamePostgres, attributes::AttributeNamePostgres};
 
@@ -168,4 +170,31 @@ impl TryInto<Prerequisite> for PrerequisiteRow {
             }
         }
     }
+}
+
+pub fn prerequisite_row_vec_to_hashmap(
+    prerequisite_row_vec: Vec<PrerequisiteRow>,
+) -> Result<HashMap<i32, Prerequisite>> {
+    prerequisite_row_vec
+        .into_iter()
+        .map(|prerequisite_row| (prerequisite_row.id, prerequisite_row.try_into()))
+        .fold(Ok(HashMap::new()), |hmap_result, (id, prereq_result)| {
+            let prereq = prereq_result?;
+            hmap_result.and_then(|mut hmap| {
+                if hmap.insert(id, prereq).is_some() {
+                    Err(eyre!("duplicate prerequisite id: {}", id))
+                } else {
+                    Ok(hmap)
+                }
+            })
+        })
+}
+
+pub fn flatten_prerequite_set_hashmap_to_vec(
+    prerequisite_set_hashmap: HashMap<i32, Vec<Prerequisite>>,
+) -> Vec<PrerequisiteSet> {
+    prerequisite_set_hashmap
+        .into_iter()
+        .map(|(id, prerequisites)| PrerequisiteSet::new(prerequisites, Some(id)))
+        .collect()
 }

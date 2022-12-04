@@ -32,10 +32,10 @@ pub struct GetCharacter {
     weapons_equipped: Option<Vec<WeaponEquippedRow>>,
     armor_owned: Option<Vec<ArmorRow>>,
     armor_worn: Option<Vec<ArmorWornRow>>,
-    pub merit_templates: Option<Vec<MeritTemplateRow>>,
-    pub merit_details: Option<Vec<MeritDetailRow>>,
-    pub merit_prerequisite_sets: Option<Vec<MeritPrerequisiteSetRow>>,
-    pub merit_prerequisites: Option<Vec<PrerequisiteRow>>,
+    merit_templates: Option<Vec<MeritTemplateRow>>,
+    merit_details: Option<Vec<MeritDetailRow>>,
+    merit_prerequisite_sets: Option<Vec<MeritPrerequisiteSetRow>>,
+    merit_prerequisites: Option<Vec<PrerequisiteRow>>,
 }
 
 pub async fn get_character(pool: &PgPool, character_id: i32) -> Result<Option<GetCharacter>> {
@@ -62,6 +62,12 @@ impl TryInto<Character> for GetCharacter {
         character.apply_health_box_rows(self.health_boxes);
         character.apply_weapon_rows(self.weapons_owned, self.weapons_equipped)?;
         character.apply_armor_rows(self.armor_owned, self.armor_worn)?;
+        character.apply_merits_rows(
+            self.merit_templates,
+            self.merit_details,
+            self.merit_prerequisite_sets,
+            self.merit_prerequisites,
+        )?;
 
         character.build()
     }

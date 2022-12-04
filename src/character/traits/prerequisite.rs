@@ -113,7 +113,7 @@ impl Character {
             .all(|prerequisite| self.meets_prerequisite(prerequisite))
     }
 
-    pub fn meets_any_prerequisite_set(&self, prerequisite_sets: &Vec<PrerequisiteSet>) -> bool {
+    pub fn meets_any_prerequisite_set(&self, prerequisite_sets: &[PrerequisiteSet]) -> bool {
         prerequisite_sets
             .iter()
             .any(|prerequisite_set| self.meets_prerequisite_set(prerequisite_set))

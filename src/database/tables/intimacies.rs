@@ -1,6 +1,9 @@
 use sqlx::postgres::PgHasArrayType;
 
-use crate::character::{traits::intimacies::{IntimacyLevel, IntimacyType, Intimacy}, builder::CharacterBuilder};
+use crate::character::{
+    builder::CharacterBuilder,
+    traits::intimacies::{Intimacy, IntimacyLevel, IntimacyType},
+};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "INTIMACYTYPE", rename_all = "UPPERCASE")]

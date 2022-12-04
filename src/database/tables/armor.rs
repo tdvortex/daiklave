@@ -1,9 +1,12 @@
-use std::collections::HashMap;
 use eyre::{eyre, Result};
+use std::collections::HashMap;
 
 use sqlx::postgres::PgHasArrayType;
 
-use crate::character::{traits::armor::{ArmorTag, ArmorItem}, builder::CharacterBuilder};
+use crate::character::{
+    builder::CharacterBuilder,
+    traits::armor::{ArmorItem, ArmorTag},
+};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ARMORTAG", rename_all = "UPPERCASE")]

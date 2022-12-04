@@ -15,10 +15,10 @@ CREATE TABLE merits (
 );
 
 CREATE TABLE character_merits (
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     character_id INTEGER REFERENCES characters(id) ON DELETE CASCADE,
     merit_id INTEGER REFERENCES merits(id) ON DELETE CASCADE,
-    detail TEXT,
-    PRIMARY KEY (character_id, merit_id)
+    detail TEXT
 );
 
 CREATE TABLE merit_prerequisite_sets (
