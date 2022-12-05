@@ -127,7 +127,7 @@ impl Iterator for AbilityNameNoFocusIter {
 
 impl FusedIterator for AbilityNameNoFocusIter {}
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum AbilityName {
     Archery,
     Athletics,

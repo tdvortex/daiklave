@@ -78,7 +78,10 @@ pub fn merit_template_row_vec_to_hashmap(
         .map(|template_row| (template_row.id, template_row))
         .fold(Ok(HashMap::new()), |hmap_result, (id, template)| {
             hmap_result.and_then(|mut hmap| {
-                if hmap.insert(id, (HashMap::new(), HashMap::new(), template)).is_some() {
+                if hmap
+                    .insert(id, (HashMap::new(), HashMap::new(), template))
+                    .is_some()
+                {
                     Err(eyre!("duplicate merit template id: {}", id))
                 } else {
                     Ok(hmap)
@@ -141,11 +144,7 @@ pub fn insert_prerequisite_sets_into_hashmap(
                             .get(&prerequisite_id)
                             .ok_or_else(|| eyre!("prerequisite id {} not found", prerequisite_id))?
                             .clone();
-                        entry
-                            .1
-                            .entry(set_id)
-                            .or_default()
-                            .push(prerequisite);
+                        entry.1.entry(set_id).or_default().push(prerequisite);
                         Ok(hmap)
                     } else {
                         Err(eyre!("merit template id {} not found", template_id))
