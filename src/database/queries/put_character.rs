@@ -8,12 +8,11 @@ pub async fn put_character(pool: &PgPool, character: Character) -> Result<Charac
     let mut transaction = pool.begin().await?;
 
     let old_character = if character.id.is_none() {
-        post_character_transaction(&mut transaction, character.player).await?
+        post_character_transaction(&mut transaction, character.player.clone()).await?
     } else {
         get_character_transaction(&mut transaction, character.id.unwrap())
             .await?
             .ok_or_else(|| eyre!("no character found with id {}", character.id.unwrap()))?
-            .try_into()?
     };
 
     let character_id = old_character.id.ok_or_else(|| {
@@ -33,12 +32,15 @@ pub async fn put_character(pool: &PgPool, character: Character) -> Result<Charac
         .compare_newer(&character.attributes)
         .save(&mut transaction, character_id)
         .await?;
+    old_character
+        .compare_newer(&character)
+        .save(&mut transaction, character_id)
+        .await?;
 
     let character = get_character_transaction(&mut transaction, character_id)
         .await?
-        .ok_or_else(|| eyre!("could not retrieve put character with id {}", character_id))?
-        .try_into()?;
-
+        .ok_or_else(|| eyre!("could not retrieve put character with id {}", character_id))?;
+        
     transaction.commit().await?;
 
     Ok(character)

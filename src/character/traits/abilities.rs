@@ -156,7 +156,7 @@ impl Iterator for AbilityNameNoFocusIter {
 impl FusedIterator for AbilityNameNoFocusIter {}
 
 /// The name of an Ability, including a specific Craft focus area or Martial Arts style if appropriate.
-/// This is useful for querying a specific ability's dots (e.g. Craft(Masonry) vs Craft(Basketweaving)) 
+/// This is useful for querying a specific ability's dots (e.g. Craft(Masonry) vs Craft(Basketweaving))
 /// or for specific Charm requirements (like most Martial Arts style Charms).
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum AbilityName {

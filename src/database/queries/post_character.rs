@@ -85,8 +85,7 @@ pub async fn post_character_transaction(
     .await?;
 
     // Get the character that was just inserted
-    if let Some(get_character) = get_character_transaction(transaction, character_id).await? {
-        let character = get_character.try_into()?;
+    if let Some(character) = get_character_transaction(transaction, character_id).await? {
         Ok(character)
     } else {
         Err(eyre!(
