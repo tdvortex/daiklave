@@ -45,7 +45,7 @@ impl NonZeroAbility {
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
-pub enum AbilityNameNoFocus {
+pub enum AbilityNameNoSubskill {
     Archery,
     Athletics,
     Awareness,
@@ -74,49 +74,49 @@ pub enum AbilityNameNoFocus {
     War,
 }
 
-impl AbilityNameNoFocus {
+impl AbilityNameNoSubskill {
     fn iter() -> AbilityNameNoFocusIter {
         AbilityNameNoFocusIter {
-            next_ability_name: Some(AbilityNameNoFocus::Archery),
+            next_ability_name: Some(AbilityNameNoSubskill::Archery),
         }
     }
 }
 
 struct AbilityNameNoFocusIter {
-    next_ability_name: Option<AbilityNameNoFocus>,
+    next_ability_name: Option<AbilityNameNoSubskill>,
 }
 
 impl Iterator for AbilityNameNoFocusIter {
-    type Item = AbilityNameNoFocus;
+    type Item = AbilityNameNoSubskill;
 
     fn next(&mut self) -> Option<Self::Item> {
         let next = match self.next_ability_name {
-            Some(AbilityNameNoFocus::Archery) => Some(AbilityNameNoFocus::Athletics),
-            Some(AbilityNameNoFocus::Athletics) => Some(AbilityNameNoFocus::Awareness),
-            Some(AbilityNameNoFocus::Awareness) => Some(AbilityNameNoFocus::Brawl),
-            Some(AbilityNameNoFocus::Brawl) => Some(AbilityNameNoFocus::Bureaucracy),
-            Some(AbilityNameNoFocus::Bureaucracy) => Some(AbilityNameNoFocus::Craft),
-            Some(AbilityNameNoFocus::Craft) => Some(AbilityNameNoFocus::Dodge),
-            Some(AbilityNameNoFocus::Dodge) => Some(AbilityNameNoFocus::Integrity),
-            Some(AbilityNameNoFocus::Integrity) => Some(AbilityNameNoFocus::Investigation),
-            Some(AbilityNameNoFocus::Investigation) => Some(AbilityNameNoFocus::Larceny),
-            Some(AbilityNameNoFocus::Larceny) => Some(AbilityNameNoFocus::Linguistics),
-            Some(AbilityNameNoFocus::Linguistics) => Some(AbilityNameNoFocus::Lore),
-            Some(AbilityNameNoFocus::Lore) => Some(AbilityNameNoFocus::MartialArts),
-            Some(AbilityNameNoFocus::MartialArts) => Some(AbilityNameNoFocus::Medicine),
-            Some(AbilityNameNoFocus::Medicine) => Some(AbilityNameNoFocus::Melee),
-            Some(AbilityNameNoFocus::Melee) => Some(AbilityNameNoFocus::Occult),
-            Some(AbilityNameNoFocus::Occult) => Some(AbilityNameNoFocus::Performance),
-            Some(AbilityNameNoFocus::Performance) => Some(AbilityNameNoFocus::Presence),
-            Some(AbilityNameNoFocus::Presence) => Some(AbilityNameNoFocus::Resistance),
-            Some(AbilityNameNoFocus::Resistance) => Some(AbilityNameNoFocus::Ride),
-            Some(AbilityNameNoFocus::Ride) => Some(AbilityNameNoFocus::Sail),
-            Some(AbilityNameNoFocus::Sail) => Some(AbilityNameNoFocus::Socialize),
-            Some(AbilityNameNoFocus::Socialize) => Some(AbilityNameNoFocus::Stealth),
-            Some(AbilityNameNoFocus::Stealth) => Some(AbilityNameNoFocus::Survival),
-            Some(AbilityNameNoFocus::Survival) => Some(AbilityNameNoFocus::Thrown),
-            Some(AbilityNameNoFocus::Thrown) => Some(AbilityNameNoFocus::War),
-            Some(AbilityNameNoFocus::War) => None,
+            Some(AbilityNameNoSubskill::Archery) => Some(AbilityNameNoSubskill::Athletics),
+            Some(AbilityNameNoSubskill::Athletics) => Some(AbilityNameNoSubskill::Awareness),
+            Some(AbilityNameNoSubskill::Awareness) => Some(AbilityNameNoSubskill::Brawl),
+            Some(AbilityNameNoSubskill::Brawl) => Some(AbilityNameNoSubskill::Bureaucracy),
+            Some(AbilityNameNoSubskill::Bureaucracy) => Some(AbilityNameNoSubskill::Craft),
+            Some(AbilityNameNoSubskill::Craft) => Some(AbilityNameNoSubskill::Dodge),
+            Some(AbilityNameNoSubskill::Dodge) => Some(AbilityNameNoSubskill::Integrity),
+            Some(AbilityNameNoSubskill::Integrity) => Some(AbilityNameNoSubskill::Investigation),
+            Some(AbilityNameNoSubskill::Investigation) => Some(AbilityNameNoSubskill::Larceny),
+            Some(AbilityNameNoSubskill::Larceny) => Some(AbilityNameNoSubskill::Linguistics),
+            Some(AbilityNameNoSubskill::Linguistics) => Some(AbilityNameNoSubskill::Lore),
+            Some(AbilityNameNoSubskill::Lore) => Some(AbilityNameNoSubskill::MartialArts),
+            Some(AbilityNameNoSubskill::MartialArts) => Some(AbilityNameNoSubskill::Medicine),
+            Some(AbilityNameNoSubskill::Medicine) => Some(AbilityNameNoSubskill::Melee),
+            Some(AbilityNameNoSubskill::Melee) => Some(AbilityNameNoSubskill::Occult),
+            Some(AbilityNameNoSubskill::Occult) => Some(AbilityNameNoSubskill::Performance),
+            Some(AbilityNameNoSubskill::Performance) => Some(AbilityNameNoSubskill::Presence),
+            Some(AbilityNameNoSubskill::Presence) => Some(AbilityNameNoSubskill::Resistance),
+            Some(AbilityNameNoSubskill::Resistance) => Some(AbilityNameNoSubskill::Ride),
+            Some(AbilityNameNoSubskill::Ride) => Some(AbilityNameNoSubskill::Sail),
+            Some(AbilityNameNoSubskill::Sail) => Some(AbilityNameNoSubskill::Socialize),
+            Some(AbilityNameNoSubskill::Socialize) => Some(AbilityNameNoSubskill::Stealth),
+            Some(AbilityNameNoSubskill::Stealth) => Some(AbilityNameNoSubskill::Survival),
+            Some(AbilityNameNoSubskill::Survival) => Some(AbilityNameNoSubskill::Thrown),
+            Some(AbilityNameNoSubskill::Thrown) => Some(AbilityNameNoSubskill::War),
+            Some(AbilityNameNoSubskill::War) => None,
             None => None,
         };
         let out = self.next_ability_name;
@@ -157,37 +157,78 @@ pub enum AbilityName {
     War,
 }
 
-impl TryFrom<AbilityNameNoFocus> for AbilityName {
+impl AbilityName {
+    pub fn subskill(&self) -> Option<&str> {
+        match self {
+            AbilityName::Craft(focus) => Some(focus.as_str()),
+            AbilityName::MartialArts(style) => Some(style.as_str()),
+            _ => None,
+        }
+    }
+
+    pub fn without_subskill(&self) -> AbilityNameNoSubskill {
+        match self {
+            AbilityName::Archery => AbilityNameNoSubskill::Archery,
+            AbilityName::Athletics => AbilityNameNoSubskill::Athletics,
+            AbilityName::Awareness => AbilityNameNoSubskill::Awareness,
+            AbilityName::Brawl => AbilityNameNoSubskill::Brawl,
+            AbilityName::Bureaucracy => AbilityNameNoSubskill::Bureaucracy,
+            AbilityName::Craft(_) => AbilityNameNoSubskill::Craft,
+            AbilityName::Dodge => AbilityNameNoSubskill::Dodge,
+            AbilityName::Integrity => AbilityNameNoSubskill::Integrity,
+            AbilityName::Investigation => AbilityNameNoSubskill::Investigation,
+            AbilityName::Larceny => AbilityNameNoSubskill::Larceny,
+            AbilityName::Linguistics => AbilityNameNoSubskill::Linguistics,
+            AbilityName::Lore => AbilityNameNoSubskill::Lore,
+            AbilityName::MartialArts(_) => AbilityNameNoSubskill::MartialArts,
+            AbilityName::Medicine => AbilityNameNoSubskill::Medicine,
+            AbilityName::Melee => AbilityNameNoSubskill::Melee,
+            AbilityName::Occult => AbilityNameNoSubskill::Occult,
+            AbilityName::Performance => AbilityNameNoSubskill::Performance,
+            AbilityName::Presence => AbilityNameNoSubskill::Presence,
+            AbilityName::Resistance => AbilityNameNoSubskill::Resistance,
+            AbilityName::Ride => AbilityNameNoSubskill::Ride,
+            AbilityName::Sail => AbilityNameNoSubskill::Sail,
+            AbilityName::Socialize => AbilityNameNoSubskill::Socialize,
+            AbilityName::Stealth => AbilityNameNoSubskill::Stealth,
+            AbilityName::Survival => AbilityNameNoSubskill::Survival,
+            AbilityName::Thrown => AbilityNameNoSubskill::Thrown,
+            AbilityName::War => AbilityNameNoSubskill::War,
+        }
+    }
+}
+
+impl TryFrom<AbilityNameNoSubskill> for AbilityName {
     type Error = Report;
 
-    fn try_from(value: AbilityNameNoFocus) -> Result<Self, Self::Error> {
+    fn try_from(value: AbilityNameNoSubskill) -> Result<Self, Self::Error> {
         match value {
-            AbilityNameNoFocus::Archery => Ok(AbilityName::Archery),
-            AbilityNameNoFocus::Athletics => Ok(AbilityName::Athletics),
-            AbilityNameNoFocus::Awareness => Ok(AbilityName::Awareness),
-            AbilityNameNoFocus::Brawl => Ok(AbilityName::Brawl),
-            AbilityNameNoFocus::Bureaucracy => Ok(AbilityName::Bureaucracy),
-            AbilityNameNoFocus::Craft => Err(eyre!("craft ability requires focus")),
-            AbilityNameNoFocus::Dodge => Ok(AbilityName::Dodge),
-            AbilityNameNoFocus::Integrity => Ok(AbilityName::Integrity),
-            AbilityNameNoFocus::Investigation => Ok(AbilityName::Investigation),
-            AbilityNameNoFocus::Larceny => Ok(AbilityName::Larceny),
-            AbilityNameNoFocus::Linguistics => Ok(AbilityName::Linguistics),
-            AbilityNameNoFocus::Lore => Ok(AbilityName::Lore),
-            AbilityNameNoFocus::MartialArts => Err(eyre!("martial arts ability requires style")),
-            AbilityNameNoFocus::Medicine => Ok(AbilityName::Medicine),
-            AbilityNameNoFocus::Melee => Ok(AbilityName::Melee),
-            AbilityNameNoFocus::Occult => Ok(AbilityName::Occult),
-            AbilityNameNoFocus::Performance => Ok(AbilityName::Performance),
-            AbilityNameNoFocus::Presence => Ok(AbilityName::Presence),
-            AbilityNameNoFocus::Resistance => Ok(AbilityName::Resistance),
-            AbilityNameNoFocus::Ride => Ok(AbilityName::Ride),
-            AbilityNameNoFocus::Sail => Ok(AbilityName::Sail),
-            AbilityNameNoFocus::Socialize => Ok(AbilityName::Socialize),
-            AbilityNameNoFocus::Stealth => Ok(AbilityName::Stealth),
-            AbilityNameNoFocus::Survival => Ok(AbilityName::Survival),
-            AbilityNameNoFocus::Thrown => Ok(AbilityName::Thrown),
-            AbilityNameNoFocus::War => Ok(AbilityName::War),
+            AbilityNameNoSubskill::Archery => Ok(AbilityName::Archery),
+            AbilityNameNoSubskill::Athletics => Ok(AbilityName::Athletics),
+            AbilityNameNoSubskill::Awareness => Ok(AbilityName::Awareness),
+            AbilityNameNoSubskill::Brawl => Ok(AbilityName::Brawl),
+            AbilityNameNoSubskill::Bureaucracy => Ok(AbilityName::Bureaucracy),
+            AbilityNameNoSubskill::Craft => Err(eyre!("craft ability requires focus")),
+            AbilityNameNoSubskill::Dodge => Ok(AbilityName::Dodge),
+            AbilityNameNoSubskill::Integrity => Ok(AbilityName::Integrity),
+            AbilityNameNoSubskill::Investigation => Ok(AbilityName::Investigation),
+            AbilityNameNoSubskill::Larceny => Ok(AbilityName::Larceny),
+            AbilityNameNoSubskill::Linguistics => Ok(AbilityName::Linguistics),
+            AbilityNameNoSubskill::Lore => Ok(AbilityName::Lore),
+            AbilityNameNoSubskill::MartialArts => Err(eyre!("martial arts ability requires style")),
+            AbilityNameNoSubskill::Medicine => Ok(AbilityName::Medicine),
+            AbilityNameNoSubskill::Melee => Ok(AbilityName::Melee),
+            AbilityNameNoSubskill::Occult => Ok(AbilityName::Occult),
+            AbilityNameNoSubskill::Performance => Ok(AbilityName::Performance),
+            AbilityNameNoSubskill::Presence => Ok(AbilityName::Presence),
+            AbilityNameNoSubskill::Resistance => Ok(AbilityName::Resistance),
+            AbilityNameNoSubskill::Ride => Ok(AbilityName::Ride),
+            AbilityNameNoSubskill::Sail => Ok(AbilityName::Sail),
+            AbilityNameNoSubskill::Socialize => Ok(AbilityName::Socialize),
+            AbilityNameNoSubskill::Stealth => Ok(AbilityName::Stealth),
+            AbilityNameNoSubskill::Survival => Ok(AbilityName::Survival),
+            AbilityNameNoSubskill::Thrown => Ok(AbilityName::Thrown),
+            AbilityNameNoSubskill::War => Ok(AbilityName::War),
         }
     }
 }
@@ -600,7 +641,7 @@ impl Abilities {
 
     fn ability_names_iter(&self) -> AbilityNamesIter {
         AbilityNamesIter {
-            ability_name_no_focus_iter: AbilityNameNoFocus::iter(),
+            ability_name_no_focus_iter: AbilityNameNoSubskill::iter(),
             on_craft: false,
             craft_iter: self.craft.keys(),
             on_martial_arts: false,
@@ -617,7 +658,7 @@ impl Abilities {
 
     pub fn meets_prerequisite(&self, prerequisite: &AbilityPrerequisite) -> bool {
         match (prerequisite.ability_name, &prerequisite.subskill) {
-            (AbilityNameNoFocus::Craft, Some(focus)) => {
+            (AbilityNameNoSubskill::Craft, Some(focus)) => {
                 let ability_name: AbilityName = AbilityName::Craft(focus.clone());
                 if let Some(ability) = self.get(&ability_name) {
                     ability.dots() >= prerequisite.dots
@@ -625,10 +666,10 @@ impl Abilities {
                     false
                 }
             }
-            (AbilityNameNoFocus::Craft, None) => self
+            (AbilityNameNoSubskill::Craft, None) => self
                 .craft_iter()
                 .any(|craft_ability| craft_ability.dots() >= prerequisite.dots),
-            (AbilityNameNoFocus::MartialArts, Some(style)) => {
+            (AbilityNameNoSubskill::MartialArts, Some(style)) => {
                 let ability_name: AbilityName = AbilityName::MartialArts(style.clone());
                 if let Some(ability) = self.get(&ability_name) {
                     ability.dots() >= prerequisite.dots
@@ -636,7 +677,7 @@ impl Abilities {
                     false
                 }
             }
-            (AbilityNameNoFocus::MartialArts, None) => self
+            (AbilityNameNoSubskill::MartialArts, None) => self
                 .martial_arts_iter()
                 .any(|martial_arts_ability| martial_arts_ability.dots() >= prerequisite.dots),
             (other_ability, _) => {
@@ -677,11 +718,11 @@ impl<'a> Iterator for AbilityNamesIter<'a> {
 
         match self.ability_name_no_focus_iter.next() {
             None => None,
-            Some(AbilityNameNoFocus::Craft) => {
+            Some(AbilityNameNoSubskill::Craft) => {
                 self.on_craft = true;
                 self.next()
             }
-            Some(AbilityNameNoFocus::MartialArts) => {
+            Some(AbilityNameNoSubskill::MartialArts) => {
                 self.on_martial_arts = true;
                 self.next()
             }

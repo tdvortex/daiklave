@@ -1,5 +1,5 @@
 use eyre::Result;
-use sqlx::PgPool;
+use sqlx::{PgPool, Postgres, Transaction};
 
 use crate::{
     character::{builder::create_character, Character},
@@ -45,6 +45,19 @@ pub async fn get_character(pool: &PgPool, character_id: i32) -> Result<Option<Ge
         character_id
     )
     .fetch_optional(pool)
+    .await?)
+}
+
+async fn get_character_transaction(
+    transaction: &mut Transaction<'_, Postgres>,
+    character_id: i32,
+) -> Result<Option<GetCharacter>> {
+    Ok(sqlx::query_file_as!(
+        GetCharacter,
+        "src/database/queries/get_character.sql",
+        character_id
+    )
+    .fetch_optional(&mut *transaction)
     .await?)
 }
 

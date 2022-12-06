@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use sqlx::postgres::PgHasArrayType;
 
-use crate::character::{builder::CharacterBuilder, traits::abilities::AbilityNameNoFocus};
+use crate::character::{builder::CharacterBuilder, traits::abilities::AbilityNameNoSubskill};
 use eyre::{eyre, Report, Result};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
@@ -36,7 +36,13 @@ pub enum AbilityNamePostgres {
     War,
 }
 
-impl From<AbilityNamePostgres> for AbilityNameNoFocus {
+impl PgHasArrayType for AbilityNamePostgres {
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("_ABILITYNAME")
+    }
+}
+
+impl From<AbilityNamePostgres> for AbilityNameNoSubskill {
     fn from(ability_name_postgres: AbilityNamePostgres) -> Self {
         match ability_name_postgres {
             AbilityNamePostgres::Archery => Self::Archery,
@@ -69,6 +75,39 @@ impl From<AbilityNamePostgres> for AbilityNameNoFocus {
     }
 }
 
+impl From<AbilityNameNoSubskill> for AbilityNamePostgres {
+    fn from(ability_name: AbilityNameNoSubskill) -> Self {
+        match ability_name {
+            AbilityNameNoSubskill::Archery => Self::Archery,
+            AbilityNameNoSubskill::Athletics => Self::Athletics,
+            AbilityNameNoSubskill::Awareness => Self::Awareness,
+            AbilityNameNoSubskill::Brawl => Self::Brawl,
+            AbilityNameNoSubskill::Bureaucracy => Self::Bureaucracy,
+            AbilityNameNoSubskill::Craft => Self::Craft,
+            AbilityNameNoSubskill::Dodge => Self::Dodge,
+            AbilityNameNoSubskill::Integrity => Self::Integrity,
+            AbilityNameNoSubskill::Investigation => Self::Investigation,
+            AbilityNameNoSubskill::Larceny => Self::Larceny,
+            AbilityNameNoSubskill::Linguistics => Self::Linguistics,
+            AbilityNameNoSubskill::Lore => Self::Lore,
+            AbilityNameNoSubskill::MartialArts => Self::MartialArts,
+            AbilityNameNoSubskill::Medicine => Self::Medicine,
+            AbilityNameNoSubskill::Melee => Self::Melee,
+            AbilityNameNoSubskill::Occult => Self::Occult,
+            AbilityNameNoSubskill::Performance => Self::Performance,
+            AbilityNameNoSubskill::Presence => Self::Presence,
+            AbilityNameNoSubskill::Resistance => Self::Resistance,
+            AbilityNameNoSubskill::Ride => Self::Ride,
+            AbilityNameNoSubskill::Sail => Self::Sail,
+            AbilityNameNoSubskill::Socialize => Self::Socialize,
+            AbilityNameNoSubskill::Stealth => Self::Stealth,
+            AbilityNameNoSubskill::Survival => Self::Survival,
+            AbilityNameNoSubskill::Thrown => Self::Thrown,
+            AbilityNameNoSubskill::War => Self::War,
+        }
+    }
+}
+
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "abilities")]
 pub struct AbilityRow {
@@ -82,7 +121,6 @@ pub struct AbilityRow {
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "specialties")]
 pub struct SpecialtyRow {
-    pub id: i32,
     pub ability_id: i32,
     pub specialty: String,
 }

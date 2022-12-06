@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use super::{
     traits::{
-        abilities::{Abilities, AbilityName, AbilityNameNoFocus},
+        abilities::{Abilities, AbilityName, AbilityNameNoSubskill},
         armor::{Armor, ArmorItem},
         attributes::{AttributeName, Attributes},
         campaign::Campaign,
@@ -116,7 +116,7 @@ impl CharacterBuilder {
 
     pub fn with_ability(
         &mut self,
-        ability_name: AbilityNameNoFocus,
+        ability_name: AbilityNameNoSubskill,
         value: u8,
     ) -> Result<&mut Self> {
         self.abilities
@@ -142,7 +142,7 @@ impl CharacterBuilder {
 
     pub fn with_specialty(
         &mut self,
-        ability_name: AbilityNameNoFocus,
+        ability_name: AbilityNameNoSubskill,
         specialty: String,
     ) -> Result<&mut Self> {
         self.abilities

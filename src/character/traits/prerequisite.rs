@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use crate::character::Character;
 
-use super::{abilities::AbilityNameNoFocus, attributes::AttributeName};
+use super::{abilities::AbilityNameNoSubskill, attributes::AttributeName};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum PrerequisiteType {
@@ -42,7 +42,7 @@ impl Deref for Prerequisite {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AbilityPrerequisite {
-    pub ability_name: AbilityNameNoFocus,
+    pub ability_name: AbilityNameNoSubskill,
     pub subskill: Option<String>,
     pub dots: u8,
 }

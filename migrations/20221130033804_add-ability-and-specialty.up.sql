@@ -10,7 +10,7 @@ CREATE TABLE abilities (
     name ABILITYNAME NOT NULL,
     dots SMALLINT NOT NULL CHECK (dots >= 0),
     subskill VARCHAR(255),
-    UNIQUE(character_id, name, subskill),
+    CONSTRAINT unique_abilities UNIQUE (character_id, name, subskill),
     CHECK (
         ((name != 'CRAFT' OR name != 'MARTIALARTS') AND subskill IS NOT NULL) 
         OR subskill IS NULL
@@ -18,8 +18,7 @@ CREATE TABLE abilities (
 );
 
 CREATE TABLE specialties (
-    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    ability_id INTEGER NOT NULL REFERENCES abilities(id) ON DELETE CASCADE,
-    specialty VARCHAR(255) NOT NULL,
-    UNIQUE(ability_id, specialty)
+    ability_id INTEGER REFERENCES abilities(id) ON DELETE CASCADE,
+    specialty VARCHAR(255),
+    PRIMARY KEY (ability_id, specialty)
 );
