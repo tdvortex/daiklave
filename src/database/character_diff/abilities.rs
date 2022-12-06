@@ -6,7 +6,7 @@ use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 
 #[derive(Debug, Default)]
-struct AbilitiesDiff {
+pub struct AbilitiesDiff {
     abilities_to_upsert: Vec<(AbilityName, u8)>,
     abilities_to_remove: Vec<AbilityName>,
     specialties_to_add: Vec<(AbilityName, String)>,
@@ -14,7 +14,7 @@ struct AbilitiesDiff {
 }
 
 impl Abilities {
-    fn compare_newer(&self, newer: &Self) -> AbilitiesDiff {
+    pub fn compare_newer(&self, newer: &Self) -> AbilitiesDiff {
         let mut diff = AbilitiesDiff::default();
 
         for old_ability in self.iter() {
@@ -256,7 +256,7 @@ impl AbilitiesDiff {
         Ok(self)
     }
 
-    async fn save(
+    pub async fn save(
         self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,

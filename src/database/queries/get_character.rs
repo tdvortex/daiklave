@@ -48,7 +48,7 @@ pub async fn get_character(pool: &PgPool, character_id: i32) -> Result<Option<Ge
     .await?)
 }
 
-async fn get_character_transaction(
+pub async fn get_character_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     character_id: i32,
 ) -> Result<Option<GetCharacter>> {

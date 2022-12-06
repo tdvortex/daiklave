@@ -6,12 +6,12 @@ use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 
 #[derive(Debug, Default)]
-struct AttributesDiff {
+pub struct AttributesDiff {
     updated_abilities: Vec<(AttributeName, u8)>,
 }
 
 impl Attributes {
-    fn compare_newer(&self, newer: &Self) -> AttributesDiff {
+    pub fn compare_newer(&self, newer: &Self) -> AttributesDiff {
         let mut diff = AttributesDiff::default();
 
         self.iter().for_each(|attribute| {
@@ -26,7 +26,7 @@ impl Attributes {
 }
 
 impl AttributesDiff {
-    async fn save(
+    pub async fn save(
         &self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
