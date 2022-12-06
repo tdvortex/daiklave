@@ -1,5 +1,6 @@
 use crate::character::{builder::CharacterBuilder, traits::attributes::AttributeName};
 use eyre::Result;
+use sqlx::postgres::PgHasArrayType;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ATTRIBUTENAME", rename_all = "UPPERCASE")]
@@ -16,8 +17,8 @@ pub enum AttributeNamePostgres {
 }
 
 impl From<AttributeNamePostgres> for AttributeName {
-    fn from(val: AttributeNamePostgres) -> Self {
-        match val {
+    fn from(value: AttributeNamePostgres) -> Self {
+        match value {
             AttributeNamePostgres::Strength => Self::Strength,
             AttributeNamePostgres::Dexterity => Self::Dexterity,
             AttributeNamePostgres::Stamina => Self::Stamina,
@@ -28,6 +29,28 @@ impl From<AttributeNamePostgres> for AttributeName {
             AttributeNamePostgres::Intelligence => Self::Intelligence,
             AttributeNamePostgres::Wits => Self::Wits,
         }
+    }
+}
+
+impl From<AttributeName> for AttributeNamePostgres {
+    fn from(value: AttributeName) -> Self {
+        match value {
+            AttributeName::Strength => Self::Strength,
+            AttributeName::Dexterity => Self::Dexterity,
+            AttributeName::Stamina => Self::Stamina,
+            AttributeName::Charisma => Self::Charisma,
+            AttributeName::Manipulation => Self::Manipulation,
+            AttributeName::Appearance => Self::Appearance,
+            AttributeName::Perception => Self::Perception,
+            AttributeName::Intelligence => Self::Intelligence,
+            AttributeName::Wits => Self::Wits,
+        }
+    }
+}
+
+impl PgHasArrayType for AttributeNamePostgres {
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("_ATTRIBUTENAME")
     }
 }
 

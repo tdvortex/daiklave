@@ -14,7 +14,7 @@ struct AbilitiesDiff {
 }
 
 impl Abilities {
-    fn compare_newer(&self, newer: &Abilities) -> AbilitiesDiff {
+    fn compare_newer(&self, newer: &Self) -> AbilitiesDiff {
         let mut diff = AbilitiesDiff::default();
 
         for old_ability in self.iter() {
