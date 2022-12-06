@@ -36,11 +36,16 @@ pub async fn put_character(pool: &PgPool, character: Character) -> Result<Charac
         .compare_newer(&character)
         .save(&mut transaction, character_id)
         .await?;
+    old_character
+        .health
+        .compare_newer(&character.health)
+        .save(&mut transaction, character_id)
+        .await?;
 
     let character = get_character_transaction(&mut transaction, character_id)
         .await?
         .ok_or_else(|| eyre!("could not retrieve put character with id {}", character_id))?;
-        
+
     transaction.commit().await?;
 
     Ok(character)

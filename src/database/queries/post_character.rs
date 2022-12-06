@@ -84,6 +84,24 @@ pub async fn post_character_transaction(
     .execute(&mut *transaction)
     .await?;
 
+    // Add health boxes
+    query!(
+        "
+        INSERT INTO health_boxes(character_id, position, wound_penalty)
+        VALUES
+            ($1, 0, 'ZERO'),
+            ($1, 0, 'MINUSONE'),
+            ($1, 0, 'MINUSONE'),
+            ($1, 0, 'MINUSTWO'),
+            ($1, 0, 'MINUSTWO'),
+            ($1, 0, 'MINUSFOUR'),
+            ($1, 0, 'INCAPACITATED')
+        ",
+        character_id
+    )
+    .execute(&mut *transaction)
+    .await?;
+
     // Get the character that was just inserted
     if let Some(character) = get_character_transaction(transaction, character_id).await? {
         Ok(character)
