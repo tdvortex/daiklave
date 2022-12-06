@@ -19,7 +19,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetCharacter {
+struct GetCharacter {
     character: CharacterRow,
     player: PlayerRow,
     campaign: Option<CampaignRow>,
@@ -38,27 +38,41 @@ pub struct GetCharacter {
     merit_prerequisites: Option<Vec<PrerequisiteRow>>,
 }
 
-pub async fn get_character(pool: &PgPool, character_id: i32) -> Result<Option<GetCharacter>> {
-    Ok(sqlx::query_file_as!(
+pub async fn get_character(pool: &PgPool, character_id: i32) -> Result<Option<Character>> {
+    let maybe_get_character = sqlx::query_file_as!(
         GetCharacter,
         "src/database/queries/get_character.sql",
         character_id
     )
     .fetch_optional(pool)
-    .await?)
+    .await?;
+
+    if let Some(get_character) = maybe_get_character {
+        Ok(Some(get_character.try_into()?))
+    } else {
+        // Valid query with no character
+        Ok(None)
+    }
 }
 
 pub async fn get_character_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     character_id: i32,
-) -> Result<Option<GetCharacter>> {
-    Ok(sqlx::query_file_as!(
+) -> Result<Option<Character>> {
+    let maybe_get_character = sqlx::query_file_as!(
         GetCharacter,
         "src/database/queries/get_character.sql",
         character_id
     )
     .fetch_optional(&mut *transaction)
-    .await?)
+    .await?;
+
+    if let Some(get_character) = maybe_get_character {
+        Ok(Some(get_character.try_into()?))
+    } else {
+        // Valid query with no character
+        Ok(None)
+    }
 }
 
 impl TryInto<Character> for GetCharacter {
