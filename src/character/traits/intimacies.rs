@@ -15,6 +15,7 @@ pub enum IntimacyType {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Intimacy {
+    pub id: Option<i32>,
     pub intimacy_level: IntimacyLevel,
     pub intimacy_type: IntimacyType,
     pub description: String,

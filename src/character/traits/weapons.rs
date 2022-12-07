@@ -277,16 +277,16 @@ impl Weapon {
             (None, None, false, false, true) => MainAttackMethod::MartialArtsOnly,
         };
 
-        let details = WeaponDetails::new(
-            id,
+        let details = WeaponDetails {
+            _id: id,
             name,
-            weight_class.unwrap(),
-            damage_type.unwrap(),
+            weight_class: weight_class.unwrap(),
+            damage_type: damage_type.unwrap(),
             main_attack_method,
             martial_arts_styles,
             other_tags,
             creator_id,
-        );
+        };
         if two_handed.unwrap() {
             Ok(Weapon(Handedness::TwoHanded(details)))
         } else {
@@ -552,30 +552,6 @@ struct WeaponDetails {
     martial_arts_styles: HashSet<String>,
     other_tags: HashSet<OtherTag>,
     creator_id: Option<i32>,
-}
-
-impl WeaponDetails {
-    fn new(
-        id: Option<i32>,
-        name: String,
-        weight_class: WeightClass,
-        damage_type: DamageType,
-        main_attack_method: MainAttackMethod,
-        martial_arts_styles: HashSet<String>,
-        other_tags: HashSet<OtherTag>,
-        creator_id: Option<i32>,
-    ) -> Self {
-        Self {
-            _id: id,
-            name,
-            weight_class,
-            damage_type,
-            main_attack_method,
-            martial_arts_styles,
-            other_tags,
-            creator_id,
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]

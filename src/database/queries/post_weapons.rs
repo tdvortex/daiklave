@@ -1,5 +1,5 @@
 use ::eyre::Result;
-use sqlx::{query, Postgres, Transaction, PgPool};
+use sqlx::{query, PgPool, Postgres, Transaction};
 
 use crate::{character::traits::weapons::Weapon, database::tables::weapons::WeaponTagPostgres};
 
@@ -13,7 +13,6 @@ pub async fn post_weapons(pool: &PgPool, weapons: Vec<Weapon>) -> Result<Vec<i32
     Ok(ids)
 }
 
-
 pub async fn post_weapons_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     weapons: Vec<Weapon>,
@@ -25,7 +24,6 @@ pub async fn post_weapons_transaction(
 
     Ok(output)
 }
-
 
 async fn post_weapon_transaction(
     transaction: &mut Transaction<'_, Postgres>,
@@ -40,7 +38,14 @@ async fn post_weapon_transaction(
         )
         RETURNING id",
         weapon.name(),
-        &weapon.tags().into_iter().map(|tag| tag.into()).collect::<Vec<WeaponTagPostgres>>() as &[WeaponTagPostgres],
+        &weapon
+            .tags()
+            .into_iter()
+            .map(|tag| tag.into())
+            .collect::<Vec<WeaponTagPostgres>>() as &[WeaponTagPostgres],
         weapon.creator_id(),
-    ).fetch_one(&mut *transaction).await?.id)
+    )
+    .fetch_one(&mut *transaction)
+    .await?
+    .id)
 }

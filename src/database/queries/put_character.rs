@@ -1,4 +1,4 @@
-use crate::character::Character;
+use crate::{character::Character, database::character_diff::compare_intimacies};
 use eyre::{eyre, Result};
 use sqlx::PgPool;
 
@@ -39,6 +39,9 @@ pub async fn put_character(pool: &PgPool, character: Character) -> Result<Charac
     old_character
         .health
         .compare_newer(&character.health)
+        .save(&mut transaction, character_id)
+        .await?;
+    compare_intimacies(&old_character.intimacies, &character.intimacies)
         .save(&mut transaction, character_id)
         .await?;
 
