@@ -1,4 +1,4 @@
-use std::{ops::Deref};
+use std::ops::Deref;
 
 use super::{
     traits::{
@@ -12,8 +12,9 @@ use super::{
         merits::{Merit, MeritTemplate, Merits},
         player::Player,
         prerequisite::{ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType},
-        weapons::{EquipHand, Weapon, Weapons, WeaponTag},
-        willpower::Willpower, range_bands::RangeBand,
+        range_bands::RangeBand,
+        weapons::{EquipHand, Weapon, WeaponTag, Weapons},
+        willpower::Willpower,
     },
     Character,
 };
@@ -281,15 +282,29 @@ pub fn create_character() -> CharacterBuilder {
 pub struct WeaponBuilder {
     id: Option<i32>,
     name: Option<String>,
-    two_handed: bool, // defaults to false
-    is_lethal: bool, // defaults to false
+    two_handed: bool,
+    is_lethal: bool,
     weight_class_tag: Option<WeaponTag>,
     attack_tags: Vec<WeaponTag>,
     other_tags: Vec<WeaponTag>,
+    creator_id: Option<i32>,
 }
 
-pub fn create_weapon() -> WeaponBuilder {
+pub fn create_book_weapon() -> WeaponBuilder {
     WeaponBuilder::default()
+}
+
+pub fn create_custom_weapon(_character_id: i32) -> WeaponBuilder {
+    WeaponBuilder {
+        id: Default::default(),
+        name: Default::default(),
+        two_handed: Default::default(),
+        is_lethal: Default::default(),
+        weight_class_tag: Default::default(),
+        attack_tags: Default::default(),
+        other_tags: Default::default(),
+        creator_id: Some(_character_id),
+    }
 }
 
 impl WeaponBuilder {
@@ -324,46 +339,54 @@ impl WeaponBuilder {
     }
 
     pub fn as_archery_with_range(&mut self, max_range: RangeBand) -> &mut WeaponBuilder {
-        self.attack_tags = std::mem::take(&mut self.attack_tags).into_iter().filter_map(|tag| {
-            match tag {
+        self.attack_tags = std::mem::take(&mut self.attack_tags)
+            .into_iter()
+            .filter_map(|tag| match tag {
                 WeaponTag::MartialArts(style) => Some(WeaponTag::MartialArts(style)),
                 _ => None,
-            }}).collect();
+            })
+            .collect();
 
         self.attack_tags.push(WeaponTag::Archery(max_range));
         self
     }
 
     pub fn as_brawl(&mut self) -> &mut WeaponBuilder {
-        self.attack_tags = std::mem::take(&mut self.attack_tags).into_iter().filter_map(|tag| {
-            match tag {
+        self.attack_tags = std::mem::take(&mut self.attack_tags)
+            .into_iter()
+            .filter_map(|tag| match tag {
                 WeaponTag::MartialArts(style) => Some(WeaponTag::MartialArts(style)),
                 _ => None,
-            }}).collect(); 
+            })
+            .collect();
 
         self.attack_tags.push(WeaponTag::Brawl);
         self
     }
 
     pub fn as_melee(&mut self) -> &mut WeaponBuilder {
-        self.attack_tags = std::mem::take(&mut self.attack_tags).into_iter().filter_map(|tag| {
-            match tag {
+        self.attack_tags = std::mem::take(&mut self.attack_tags)
+            .into_iter()
+            .filter_map(|tag| match tag {
                 WeaponTag::MartialArts(style) => Some(WeaponTag::MartialArts(style)),
                 WeaponTag::Thrown(range) => Some(WeaponTag::Thrown(range)),
                 _ => None,
-            }}).collect();
+            })
+            .collect();
 
         self.attack_tags.push(WeaponTag::Melee);
         self
     }
 
     pub fn with_thrown_range(&mut self, max_range: RangeBand) -> &mut WeaponBuilder {
-        self.attack_tags = std::mem::take(&mut self.attack_tags).into_iter().filter_map(|tag| {
-            match tag {
+        self.attack_tags = std::mem::take(&mut self.attack_tags)
+            .into_iter()
+            .filter_map(|tag| match tag {
                 WeaponTag::MartialArts(style) => Some(WeaponTag::MartialArts(style)),
                 WeaponTag::Melee => Some(WeaponTag::Melee),
                 _ => None,
-            }}).collect();
+            })
+            .collect();
 
         self.attack_tags.push(WeaponTag::Thrown(max_range));
         self
@@ -409,7 +432,10 @@ impl WeaponBuilder {
             WeaponTag::OneHanded => self.as_one_handed(),
             WeaponTag::Thrown(range) => self.with_thrown_range(range),
             WeaponTag::TwoHanded => self.as_two_handed(),
-            other_tag => {self.other_tags.push(other_tag); self}
+            other_tag => {
+                self.other_tags.push(other_tag);
+                self
+            }
         }
     }
 
@@ -419,7 +445,10 @@ impl WeaponBuilder {
         }
 
         let mut tags = Vec::new();
-        tags.push(self.weight_class_tag.ok_or_else(|| eyre!("weapons must be exactly one of Light, Medium, or Heavy"))?);
+        tags.push(
+            self.weight_class_tag
+                .ok_or_else(|| eyre!("weapons must be exactly one of Light, Medium, or Heavy"))?,
+        );
 
         if self.two_handed {
             tags.push(WeaponTag::TwoHanded)
@@ -436,7 +465,11 @@ impl WeaponBuilder {
         tags.extend(self.attack_tags.into_iter());
         tags.extend(self.other_tags.into_iter());
 
-        Weapon::new(self.name.unwrap(), tags.into_iter().collect(), self.id)
-
+        Weapon::new(
+            self.name.unwrap(),
+            tags.into_iter().collect(),
+            self.id,
+            self.creator_id,
+        )
     }
 }

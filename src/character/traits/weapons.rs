@@ -49,7 +49,12 @@ pub enum WeaponTag {
 pub struct Weapon(Handedness);
 
 impl Weapon {
-    pub fn new(name: String, tags: HashSet<WeaponTag>, id: Option<i32>) -> Result<Weapon> {
+    pub fn new(
+        name: String,
+        tags: HashSet<WeaponTag>,
+        id: Option<i32>,
+        creator_id: Option<i32>,
+    ) -> Result<Weapon> {
         let mut two_handed = None::<bool>;
         let mut weight_class = None::<WeightClass>;
         let mut damage_type = None::<DamageType>;
@@ -280,12 +285,17 @@ impl Weapon {
             main_attack_method,
             martial_arts_styles,
             other_tags,
+            creator_id,
         );
         if two_handed.unwrap() {
             Ok(Weapon(Handedness::TwoHanded(details)))
         } else {
             Ok(Weapon(Handedness::OneHanded(details)))
         }
+    }
+
+    pub fn id(&self) -> Option<i32> {
+        self.0._id
     }
 
     fn details(&self) -> &WeaponDetails {
@@ -526,6 +536,10 @@ impl Weapon {
 
         output
     }
+
+    pub fn creator_id(&self) -> Option<i32> {
+        self.0.creator_id
+    }
 }
 
 #[derive(Debug)]
@@ -537,6 +551,7 @@ struct WeaponDetails {
     main_attack_method: MainAttackMethod,
     martial_arts_styles: HashSet<String>,
     other_tags: HashSet<OtherTag>,
+    creator_id: Option<i32>,
 }
 
 impl WeaponDetails {
@@ -548,6 +563,7 @@ impl WeaponDetails {
         main_attack_method: MainAttackMethod,
         martial_arts_styles: HashSet<String>,
         other_tags: HashSet<OtherTag>,
+        creator_id: Option<i32>,
     ) -> Self {
         Self {
             _id: id,
@@ -557,6 +573,7 @@ impl WeaponDetails {
             main_attack_method,
             martial_arts_styles,
             other_tags,
+            creator_id,
         }
     }
 }

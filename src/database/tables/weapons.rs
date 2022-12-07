@@ -32,6 +32,18 @@ impl From<RangeBandPostgres> for RangeBand {
     }
 }
 
+impl From<RangeBand> for RangeBandPostgres {
+    fn from(range: RangeBand) -> Self {
+        match range {
+            RangeBand::Close => Self::Close,
+            RangeBand::Short => Self::Short,
+            RangeBand::Medium => Self::Medium,
+            RangeBand::Long => Self::Long,
+            RangeBand::Extreme => Self::Extreme,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "WEAPONTAGTYPE", rename_all = "UPPERCASE")]
 pub enum WeaponTagTypePostgres {
@@ -73,12 +85,81 @@ pub enum WeaponTagTypePostgres {
     Worn,
 }
 
+impl From<WeaponTag> for WeaponTagTypePostgres {
+    fn from(tag: WeaponTag) -> Self {
+        match tag {
+            WeaponTag::Archery(_) => Self::Archery,
+            WeaponTag::Artifact => Self::Artifact,
+            WeaponTag::Balanced => Self::Balanced,
+            WeaponTag::Bashing => Self::Bashing,
+            WeaponTag::Brawl => Self::Brawl,
+            WeaponTag::Chopping => Self::Chopping,
+            WeaponTag::Concealable => Self::Concealable,
+            WeaponTag::Crossbow => Self::Crossbow,
+            WeaponTag::Cutting => Self::Cutting,
+            WeaponTag::Disarming => Self::Disarming,
+            WeaponTag::Exceptional => Self::Exceptional,
+            WeaponTag::Flame => Self::Flame,
+            WeaponTag::Flexible => Self::Flexible,
+            WeaponTag::Grappling => Self::Grappling,
+            WeaponTag::Heavy => Self::Heavy,
+            WeaponTag::Improvised => Self::Improvised,
+            WeaponTag::Lethal => Self::Lethal,
+            WeaponTag::Light => Self::Light,
+            WeaponTag::MartialArts(_) => Self::MartialArts,
+            WeaponTag::Medium => Self::Medium,
+            WeaponTag::Melee => Self::Melee,
+            WeaponTag::Mounted => Self::Mounted,
+            WeaponTag::OneHanded => Self::OneHanded,
+            WeaponTag::Natural => Self::Natural,
+            WeaponTag::Piercing => Self::Piercing,
+            WeaponTag::Poisonable => Self::Poisonable,
+            WeaponTag::Powerful => Self::Powerful,
+            WeaponTag::Reaching => Self::Reaching,
+            WeaponTag::Shield => Self::Shield,
+            WeaponTag::Slow => Self::Slow,
+            WeaponTag::Smashing => Self::Smashing,
+            WeaponTag::Special => Self::Special,
+            WeaponTag::Subtle => Self::Subtle,
+            WeaponTag::Thrown(_) => Self::Thrown,
+            WeaponTag::TwoHanded => Self::TwoHanded,
+            WeaponTag::Worn => Self::Worn,
+        }
+    }
+}
+
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "WEAPONTAG")]
 pub struct WeaponTagPostgres {
     tag_type: WeaponTagTypePostgres,
     max_range: Option<RangeBandPostgres>,
     martial_arts_style: Option<String>,
+}
+
+impl WeaponTagPostgres {
+    fn from_archery(range: RangeBandPostgres) -> Self {
+        Self {
+            tag_type: WeaponTagTypePostgres::Archery,
+            max_range: Some(range),
+            martial_arts_style: None,
+        }
+    }
+
+    fn from_martial_arts(style: String) -> Self {
+        Self {
+            tag_type: WeaponTagTypePostgres::MartialArts,
+            max_range: None,
+            martial_arts_style: Some(style),
+        }
+    }
+
+    fn from_thrown(range: RangeBandPostgres) -> Self {
+        Self {
+            tag_type: WeaponTagTypePostgres::Thrown,
+            max_range: Some(range),
+            martial_arts_style: None,
+        }
+    }
 }
 
 impl TryFrom<WeaponTagPostgres> for WeaponTag {
@@ -131,6 +212,21 @@ impl TryFrom<WeaponTagPostgres> for WeaponTag {
             },
             WeaponTagTypePostgres::TwoHanded => Ok(Self::TwoHanded),
             WeaponTagTypePostgres::Worn => Ok(Self::Worn),
+        }
+    }
+}
+
+impl From<WeaponTag> for WeaponTagPostgres {
+    fn from(value: WeaponTag) -> Self {
+        match value {
+            WeaponTag::Archery(range) => Self::from_archery(range.into()),
+            WeaponTag::MartialArts(style) => Self::from_martial_arts(style),
+            WeaponTag::Thrown(range) => Self::from_thrown(range.into()),
+            other => Self {
+                tag_type: other.into(),
+                max_range: None,
+                martial_arts_style: None,
+            },
         }
     }
 }
@@ -228,7 +324,13 @@ impl CharacterBuilder {
             for tag in weapon_row.tags {
                 tags.insert(tag.try_into()?);
             }
-            let weapon = Weapon::new(weapon_row.name, tags, Some(weapon_row.id))?;
+
+            let weapon = Weapon::new(
+                weapon_row.name,
+                tags,
+                Some(weapon_row.id),
+                weapon_row.creator_id,
+            )?;
             weapons_hashmap.insert(weapon_row.id, (weapon, None));
         }
 
