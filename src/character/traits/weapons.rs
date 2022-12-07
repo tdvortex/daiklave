@@ -45,7 +45,7 @@ pub enum WeaponTag {
     Worn,
 }
 // Weapon API
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Weapon(Handedness);
 
 impl Weapon {
@@ -542,7 +542,7 @@ impl Weapon {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct WeaponDetails {
     _id: Option<i32>,
     name: String,
@@ -605,7 +605,7 @@ enum OtherTag {
     Worn,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum Handedness {
     OneHanded(WeaponDetails),
     TwoHanded(WeaponDetails),

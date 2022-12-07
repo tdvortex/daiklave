@@ -38,12 +38,12 @@ impl Character {
 
 impl CharacterBaseDiff {
     pub async fn save(
-        &self,
+        self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
-    ) -> Result<&Self> {
+    ) -> Result<()> {
         if self.0.is_none() {
-            return Ok(self);
+            return Ok(());
         }
 
         let (
@@ -62,6 +62,6 @@ impl CharacterBaseDiff {
             character_id, name, maybe_concept.as_deref(), current_willpower, maximum_willpower, current_experience, total_experience
         ).execute(&mut *transaction).await?;
 
-        Ok(self)
+        Ok(())
     }
 }

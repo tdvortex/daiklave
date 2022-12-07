@@ -27,12 +27,12 @@ impl Attributes {
 
 impl AttributesDiff {
     pub async fn save(
-        &self,
+        self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
-    ) -> Result<&Self> {
+    ) -> Result<()> {
         if self.updated_abilities.is_empty() {
-            return Ok(self);
+            return Ok(());
         }
 
         let updated_ability_names: Vec<AttributeNamePostgres> = self
@@ -60,6 +60,6 @@ impl AttributesDiff {
         .execute(&mut *transaction)
         .await?;
 
-        Ok(self)
+        Ok(())
     }
 }

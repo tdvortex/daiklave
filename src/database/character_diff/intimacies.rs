@@ -150,13 +150,13 @@ impl IntimaciesDiff {
     }
 
     pub async fn save(
-        &self,
+        self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
-    ) -> Result<&Self> {
+    ) -> Result<()> {
         self.delete_intimacies(transaction, character_id).await?;
         self.update_intimacies(transaction, character_id).await?;
         self.add_new_intimacies(transaction, character_id).await?;
-        Ok(self)
+        Ok(())
     }
 }

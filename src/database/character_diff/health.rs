@@ -60,10 +60,10 @@ impl Health {
 
 impl HealthDiff {
     pub async fn save(
-        &self,
+        self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
-    ) -> Result<&Self> {
+    ) -> Result<()> {
         if !self.deleted_boxes.is_empty() {
             query!(
                 "
@@ -113,6 +113,6 @@ impl HealthDiff {
             ).execute(&mut *transaction).await?;
         }
 
-        Ok(self)
+        Ok(())
     }
 }

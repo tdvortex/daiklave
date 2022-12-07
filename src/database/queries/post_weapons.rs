@@ -13,7 +13,7 @@ pub async fn post_weapons(pool: &PgPool, weapons: Vec<Weapon>) -> Result<Vec<i32
     Ok(ids)
 }
 
-pub async fn post_weapons_transaction(
+pub(crate) async fn post_weapons_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     weapons: Vec<Weapon>,
 ) -> Result<Vec<i32>> {
@@ -25,7 +25,7 @@ pub async fn post_weapons_transaction(
     Ok(output)
 }
 
-async fn post_weapon_transaction(
+pub async fn post_weapon_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     weapon: Weapon,
 ) -> Result<i32> {
