@@ -1,48 +1,46 @@
 use ::eyre::Result;
-use sqlx::{query, Postgres, Transaction};
+use sqlx::{query, Postgres, Transaction, PgPool};
 
 use crate::{character::traits::weapons::Weapon, database::tables::weapons::WeaponTagPostgres};
 
+pub async fn post_weapons(pool: &PgPool, weapons: Vec<Weapon>) -> Result<Vec<i32>> {
+    let mut transaction = pool.begin().await?;
+
+    let ids = post_weapons_transaction(&mut transaction, weapons).await?;
+
+    transaction.commit().await?;
+
+    Ok(ids)
+}
+
+
 pub async fn post_weapons_transaction(
     transaction: &mut Transaction<'_, Postgres>,
-    mut weapons: Vec<Weapon>,
+    weapons: Vec<Weapon>,
 ) -> Result<Vec<i32>> {
-    let (names, tags, creator_ids): (Vec<String>, Vec<Vec<WeaponTagPostgres>>, Vec<Option<i32>>) =
-        weapons
-            .into_iter()
-            .filter(|weapon| weapon.id().is_none())
-            .map(|weapon| {
-                (
-                    weapon.name().to_owned(),
-                    weapon
-                        .tags()
-                        .into_iter()
-                        .map(|tag| tag.into())
-                        .collect::<Vec<WeaponTagPostgres>>(),
-                    weapon.creator_id(),
-                )
-            })
-            .fold(
-                (Vec::new(), Vec::new(), Vec::new()),
-                |(mut names, mut tags, mut creator_ids), (name, tag_list, creator_id)| {
-                    names.push(name);
-                    tags.push(tag_list);
-                    creator_ids.push(creator_id);
-                    (names, tags, creator_ids)
-                },
-            );
+    let mut output = Vec::new();
+    for weapon in weapons.into_iter() {
+        output.push(post_weapon_transaction(transaction, weapon).await?);
+    }
 
-    query!(
-          "INSERT INTO weapons(name, tags, creator_id)
-          SELECT 
-               data.name as name,
-               data.input_tags as tags,
-               data.creator_id as creator_id
-          FROM UNNEST($1::VARCHAR(255)[], $2::WEAPONTAG[], $3::INTEGER[]) as data(name, input_tags, creator_id)
-          RETURNING id
-          ",
-          &names as &[&str],
-          tags as Vec<WeaponTagPostgres>,
-          &creator_ids as &[Option<i32>],
-     ).fetch_all(&mut *transaction).await?.iter().map(|record| record.id).collect()
+    Ok(output)
+}
+
+
+async fn post_weapon_transaction(
+    transaction: &mut Transaction<'_, Postgres>,
+    weapon: Weapon,
+) -> Result<i32> {
+    Ok(query!(
+        "INSERT INTO weapons(name, tags, creator_id)
+        VALUES (
+            $1::VARCHAR(255),
+            $2::WEAPONTAG[],
+            $3::INTEGER
+        )
+        RETURNING id",
+        weapon.name(),
+        &weapon.tags().into_iter().map(|tag| tag.into()).collect::<Vec<WeaponTagPostgres>>() as &[WeaponTagPostgres],
+        weapon.creator_id(),
+    ).fetch_one(&mut *transaction).await?.id)
 }
