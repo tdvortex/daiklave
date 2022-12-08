@@ -14,9 +14,9 @@ pub enum ArmorTag {
     Special,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ArmorItem {
-    _id: Option<i32>,
+    id: Option<i32>,
     name: String,
     weight_class: WeightClass,
     artifact: bool,
@@ -66,7 +66,7 @@ impl ArmorItem {
         }
 
         Ok(ArmorItem {
-            _id: id,
+            id,
             name,
             weight_class: weight_class.unwrap(),
             artifact,
@@ -74,6 +74,10 @@ impl ArmorItem {
             silent,
             special,
         })
+    }
+
+    pub fn id(&self) -> Option<i32> {
+        self.id
     }
 
     pub fn name(&self) -> &str {
@@ -223,7 +227,7 @@ impl<'a> Iterator for ArmorIter<'a> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 enum WeightClass {
     Light,
     Medium,
