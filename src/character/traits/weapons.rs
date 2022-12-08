@@ -602,7 +602,7 @@ struct OneHandedWeapon(pub usize);
 #[derive(Debug, Default)]
 struct TwoHandedWeapon(pub usize);
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum EquipHand {
     Main,
     Off,
