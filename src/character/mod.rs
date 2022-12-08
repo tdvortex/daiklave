@@ -1,5 +1,5 @@
-use std::ops::Deref;
 use eyre::{eyre, Result};
+use std::ops::Deref;
 
 /// Contains all of the individual traits that describe a character.
 pub mod traits;
@@ -9,14 +9,16 @@ use traits::experience::ExperiencePoints;
 use traits::player::Player;
 use traits::willpower::Willpower;
 
-use self::traits::abilities::{Abilities, AbilityNameNoSubskill, AbilityName};
+use self::traits::abilities::{Abilities, AbilityName, AbilityNameNoSubskill};
 use self::traits::armor::{Armor, ArmorItem};
-use self::traits::attributes::{Attributes, AttributeName};
+use self::traits::attributes::{AttributeName, Attributes};
 use self::traits::health::{Health, WoundPenalty};
 use self::traits::intimacies::{Intimacies, Intimacy};
-use self::traits::merits::{Merits, MeritTemplate, Merit};
-use self::traits::prerequisite::{Prerequisite, PrerequisiteType, ExaltTypePrerequisite, PrerequisiteSet};
-use self::traits::weapons::{Weapons, Weapon, EquipHand};
+use self::traits::merits::{Merit, MeritTemplate, Merits};
+use self::traits::prerequisite::{
+    ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType,
+};
+use self::traits::weapons::{EquipHand, Weapon, Weapons};
 
 /// The basic Character object, representing a full player character.
 /// This represents the state of a valid character at a given instant of a game.

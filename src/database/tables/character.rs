@@ -1,6 +1,6 @@
 use crate::character::{
-    CharacterBuilder,
     traits::{experience::ExperiencePoints, willpower::Willpower},
+    CharacterBuilder,
 };
 use eyre::Result;
 

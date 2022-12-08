@@ -159,14 +159,13 @@ pub struct Armor {
 }
 
 impl Armor {
-    pub fn iter(&self) -> impl Iterator<Item = (usize, &ArmorItem)> {
-        self.owned.iter()
+    pub fn iter(&self) -> impl Iterator<Item = (usize, bool, &ArmorItem)> {
+        ArmorIter {
+            armor: self,
+            items_iter: self.owned.iter(),
+        }
     }
-
-    pub fn equipped(&self) -> Option<&ArmorItem> {
-        self.equipped.map(|key| self.get(key).unwrap())
-    }
-
+    
     pub fn get(&self, key: usize) -> Result<&ArmorItem> {
         self.owned
             .get(key)
@@ -206,6 +205,24 @@ impl Armor {
     }
 }
 
+struct ArmorIter<'a> {
+    armor: &'a Armor,
+    items_iter: slab::Iter<'a, ArmorItem>,
+}
+
+impl<'a> Iterator for ArmorIter<'a> {
+    type Item = (usize, bool, &'a ArmorItem);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let (key, item) = self.items_iter.next()?;
+        let equipped = self
+            .armor
+            .equipped
+            .map_or(false, |equipped| equipped == key);
+        Some((key, equipped, item))
+    }
+}
+
 #[derive(Debug)]
 enum WeightClass {
     Light,
@@ -221,7 +238,12 @@ pub struct ArmorBuilder {
 }
 
 pub fn create_armor_item() -> ArmorBuilder {
-    ArmorBuilder { id: None, name: None, weight_class: None, tags: HashSet::new() }
+    ArmorBuilder {
+        id: None,
+        name: None,
+        weight_class: None,
+        tags: HashSet::new(),
+    }
 }
 
 impl ArmorBuilder {
@@ -261,7 +283,10 @@ impl ArmorBuilder {
             ArmorTag::Heavy => self.as_heavy(),
             ArmorTag::Light => self.as_light(),
             ArmorTag::Medium => self.as_medium(),
-            other_tag => {self.tags.insert(other_tag); self}
+            other_tag => {
+                self.tags.insert(other_tag);
+                self
+            }
         }
     }
 
@@ -271,7 +296,9 @@ impl ArmorBuilder {
         }
 
         if self.weight_class.is_none() {
-            return Err(eyre!("armor must be exactly one of Light, Medium, or Heavy"));
+            return Err(eyre!(
+                "armor must be exactly one of Light, Medium, or Heavy"
+            ));
         }
 
         let weight_tag = match self.weight_class.unwrap() {

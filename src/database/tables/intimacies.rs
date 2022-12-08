@@ -1,8 +1,8 @@
 use sqlx::postgres::PgHasArrayType;
 
 use crate::character::{
-    CharacterBuilder,
     traits::intimacies::{Intimacy, IntimacyLevel, IntimacyType},
+    CharacterBuilder,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]

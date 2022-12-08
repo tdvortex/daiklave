@@ -1,4 +1,4 @@
-use crate::character::{CharacterBuilder, traits::campaign::Campaign};
+use crate::character::{traits::campaign::Campaign, CharacterBuilder};
 
 #[derive(Debug)]
 pub struct CampaignRow {

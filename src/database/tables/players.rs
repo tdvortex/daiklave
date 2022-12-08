@@ -1,4 +1,4 @@
-use crate::character::{CharacterBuilder, traits::player::Player};
+use crate::character::{traits::player::Player, CharacterBuilder};
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "players")]

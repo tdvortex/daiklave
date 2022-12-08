@@ -1,8 +1,8 @@
 use sqlx::postgres::PgHasArrayType;
 
 use crate::character::{
-    CharacterBuilder,
     traits::health::{DamageLevel, WoundPenalty},
+    CharacterBuilder,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]

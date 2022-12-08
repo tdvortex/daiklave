@@ -1,11 +1,11 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::character::{
-    CharacterBuilder,
     traits::{
         range_bands::RangeBand,
         weapons::{Weapon, WeaponTag},
     },
+    CharacterBuilder,
 };
 use eyre::{eyre, Report, Result};
 use sqlx::postgres::PgHasArrayType;

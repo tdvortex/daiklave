@@ -2,11 +2,11 @@ use eyre::{eyre, Result};
 use std::collections::HashMap;
 
 use crate::character::{
-    CharacterBuilder,
     traits::{
         merits::{MeritTemplate, MeritType},
         prerequisite::Prerequisite,
     },
+    CharacterBuilder,
 };
 
 use super::prerequisites::{
