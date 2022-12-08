@@ -244,6 +244,12 @@ pub enum EquipHandPostgres {
     Off,
 }
 
+impl PgHasArrayType for EquipHandPostgres {
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("_EQUIPHAND")
+    }
+}
+
 #[derive(Debug)]
 pub struct WeaponRow {
     pub id: i32,

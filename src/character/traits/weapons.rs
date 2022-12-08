@@ -785,7 +785,10 @@ impl Weapons {
         match hand {
             EquipHand::Main => self.unequip_main(),
             EquipHand::Off => self.unequip_off(),
-            EquipHand::Both => {self.unequip_main(); self.unequip_off();}
+            EquipHand::Both => {
+                self.unequip_main();
+                self.unequip_off();
+            }
         }
     }
 

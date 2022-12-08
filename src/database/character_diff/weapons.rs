@@ -1,87 +1,27 @@
 use eyre::Result;
-use sqlx::{Postgres, Transaction};
-use std::collections::HashMap;
+use sqlx::{query, Postgres, Transaction};
 
 use crate::{
     character::traits::weapons::{EquipHand, Weapon, Weapons},
-    database::tables::weapons::EquipHandPostgres,
+    database::{queries::post_weapons_transaction, tables::weapons::EquipHandPostgres},
 };
 
 #[derive(Debug, Default)]
-pub struct WeaponsDiff<'a> {
-    insert_weapons: Vec<(&'a Weapon, Option<EquipHand>)>,
-    removed_weapons: Vec<i32>,
-    equipped_weapons: Vec<(i32, EquipHandPostgres)>,
-    unequipped_weapons: Vec<(i32, EquipHandPostgres)>,
+pub struct WeaponsDiff {
+    created_weapons: Vec<(Weapon, Option<EquipHand>)>,
+    owned_weapons: Vec<(i32, Option<EquipHand>)>,
 }
 
-impl<'a> Weapons {
-    pub fn compare_newer(&self, newer: &'a Self) -> WeaponsDiff<'a> {
+impl Weapons {
+    pub fn compare_newer(&self, newer: &Self) -> WeaponsDiff {
         let mut diff = WeaponsDiff::default();
-
-        let mut old_weapons = HashMap::<i32, Option<EquipHand>>::new();
-
-        for (_, maybe_equip_hand, weapon) in self.iter() {
-            if let Some(id) = weapon.id() {
-                old_weapons.insert(id, maybe_equip_hand);
-            }
-        }
-
-        let mut new_weapons = HashMap::<i32, Option<EquipHand>>::new();
 
         for (_, maybe_equip_hand, weapon) in newer.iter() {
             if let Some(id) = weapon.id() {
-                new_weapons.insert(id, maybe_equip_hand);
+                diff.owned_weapons.push((id, maybe_equip_hand));
             } else {
-                diff.insert_weapons.push((weapon, maybe_equip_hand));
-            }
-        }
-
-        for (key, old_hands) in old_weapons.iter() {
-            if let Some(new_hands) = new_weapons.get(key) {
-                match (old_hands, new_hands) {
-                    (None, None)
-                    | (Some(EquipHand::Main), Some(EquipHand::Main))
-                    | (Some(EquipHand::Off), Some(EquipHand::Off))
-                    | (Some(EquipHand::Both), Some(EquipHand::Both)) => { /* do nothing */ }
-                    (None, Some(EquipHand::Main))
-                    | (Some(EquipHand::Off), Some(EquipHand::Both)) => {
-                        diff.equipped_weapons.push((*key, EquipHandPostgres::Main));
-                    }
-                    (None, Some(EquipHand::Off))
-                    | (Some(EquipHand::Main), Some(EquipHand::Both)) => {
-                        diff.equipped_weapons.push((*key, EquipHandPostgres::Off));
-                    }
-                    (None, Some(EquipHand::Both)) => {
-                        diff.equipped_weapons.push((*key, EquipHandPostgres::Main));
-                        diff.equipped_weapons.push((*key, EquipHandPostgres::Off));
-                    }
-                    (Some(EquipHand::Main), None)
-                    | (Some(EquipHand::Both), Some(EquipHand::Off)) => {
-                        diff.unequipped_weapons
-                            .push((*key, EquipHandPostgres::Main));
-                    }
-                    (Some(EquipHand::Off), None)
-                    | (Some(EquipHand::Both), Some(EquipHand::Main)) => {
-                        diff.unequipped_weapons.push((*key, EquipHandPostgres::Off));
-                    }
-                    (Some(EquipHand::Both), None) => {
-                        diff.unequipped_weapons
-                            .push((*key, EquipHandPostgres::Main));
-                        diff.unequipped_weapons.push((*key, EquipHandPostgres::Off));
-                    }
-                    (Some(EquipHand::Main), Some(EquipHand::Off)) => {
-                        diff.unequipped_weapons
-                            .push((*key, EquipHandPostgres::Main));
-                        diff.equipped_weapons.push((*key, EquipHandPostgres::Off));
-                    }
-                    (Some(EquipHand::Off), Some(EquipHand::Main)) => {
-                        diff.equipped_weapons.push((*key, EquipHandPostgres::Main));
-                        diff.unequipped_weapons.push((*key, EquipHandPostgres::Off));
-                    }
-                }
-            } else {
-                diff.removed_weapons.push(*key);
+                diff.created_weapons
+                    .push((weapon.clone(), maybe_equip_hand));
             }
         }
 
@@ -89,12 +29,78 @@ impl<'a> Weapons {
     }
 }
 
-impl<'a> WeaponsDiff<'a> {
+impl WeaponsDiff {
     pub async fn save(
         self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
     ) -> Result<()> {
-        todo!()
+        // Drop all owned/equipped records
+        query!(
+            "DELETE FROM character_weapons
+            WHERE character_id = $1",
+            character_id
+        )
+        .execute(&mut *transaction)
+        .await?;
+
+        let (hands, weapons) = self.created_weapons.into_iter().fold(
+            (Vec::new(), Vec::new()),
+            |(mut hands, mut weapons), (weapon, maybe_hand)| {
+                hands.push(maybe_hand);
+                weapons.push(weapon);
+                (hands, weapons)
+            },
+        );
+
+        let created_ids = post_weapons_transaction(transaction, weapons).await?;
+
+        let (ids, hands_postgres) = created_ids
+            .into_iter()
+            .zip(hands.into_iter())
+            .chain(self.owned_weapons.into_iter())
+            .fold(
+                (Vec::new(), Vec::new()),
+                |(mut ids, mut hands_postgres), (id, maybe_hand)| {
+                    match maybe_hand {
+                        Some(EquipHand::Both) => {
+                            hands_postgres.push(Some(EquipHandPostgres::Main));
+                            hands_postgres.push(Some(EquipHandPostgres::Off));
+                            ids.push(id);
+                            ids.push(id);
+                        }
+                        Some(EquipHand::Main) => {
+                            hands_postgres.push(Some(EquipHandPostgres::Main));
+                            ids.push(id);
+                        }
+                        Some(EquipHand::Off) => {
+                            hands_postgres.push(Some(EquipHandPostgres::Off));
+                            ids.push(id);
+                        }
+                        None => {
+                            hands_postgres.push(None);
+                            ids.push(id);
+                        }
+                    };
+                    (ids, hands_postgres)
+                },
+            );
+
+        query!(
+            "INSERT INTO character_weapons(character_id, weapon_id, equip_hand)
+            SELECT
+                $1::INTEGER as character_id,
+                data.id as weapon_id,
+                data.hand as equip_hand
+            FROM UNNEST($2::INTEGER[], $3::EQUIPHAND[]) as data(id, hand)
+            ",
+            character_id,
+            &ids as &[i32],
+            &hands_postgres as &[Option<EquipHandPostgres>],
+        )
+        .execute(&mut *transaction)
+        .await?;
+
+        Ok(())
     }
 }
