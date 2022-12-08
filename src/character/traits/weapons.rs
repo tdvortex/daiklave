@@ -747,7 +747,7 @@ impl Weapons {
         Ok(())
     }
 
-    pub fn unequip_main(&mut self) {
+    fn unequip_main(&mut self) {
         match &mut self.0 {
             WeaponsPrivate::NoEquipped(_) | WeaponsPrivate::OffHandOnly(_, _) => { /* do nothing */
             }
@@ -764,7 +764,7 @@ impl Weapons {
         }
     }
 
-    pub fn unequip_off(&mut self) {
+    fn unequip_off(&mut self) {
         match &mut self.0 {
             WeaponsPrivate::NoEquipped(_) | WeaponsPrivate::OffHandOnly(_, _) => { /* do nothing */
             }
@@ -778,6 +778,14 @@ impl Weapons {
                     std::mem::take(slab),
                 ));
             }
+        }
+    }
+
+    pub fn unequip(&mut self, hand: EquipHand) {
+        match hand {
+            EquipHand::Main => self.unequip_main(),
+            EquipHand::Off => self.unequip_off(),
+            EquipHand::Both => {self.unequip_main(); self.unequip_off();}
         }
     }
 
