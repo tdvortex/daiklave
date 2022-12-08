@@ -3,7 +3,6 @@
 /// This requires that, at a minimum, the character has been given a player and a name.
 /// All values are otherwise set to either character defaults, or an empty list.
 pub mod builder;
-mod mortal;
 
 /// Contains all of the individual traits that describe a character.
 pub mod traits;

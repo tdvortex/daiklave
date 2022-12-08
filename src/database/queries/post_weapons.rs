@@ -1,7 +1,9 @@
 use ::eyre::Result;
 use sqlx::{query, PgPool, Postgres, Transaction};
 
-use crate::{character::traits::weapons::Weapon, database::tables::weapons::WeaponTagPostgres};
+use crate::{
+    character::traits::weapons::Weapon, database::tables::weapons::WeaponTagPostgres,
+};
 
 pub async fn post_weapons(pool: &PgPool, weapons: Vec<Weapon>) -> Result<Vec<i32>> {
     let mut transaction = pool.begin().await?;
