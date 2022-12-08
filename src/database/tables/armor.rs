@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use sqlx::postgres::PgHasArrayType;
 
 use crate::character::{
-    builder::CharacterBuilder,
+    CharacterBuilder,
     traits::armor::{ArmorItem, ArmorTag},
 };
 

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use sqlx::postgres::PgHasArrayType;
 
-use crate::character::{builder::CharacterBuilder, traits::abilities::AbilityNameNoSubskill};
+use crate::character::{CharacterBuilder, traits::abilities::AbilityNameNoSubskill};
 use eyre::{eyre, Report, Result};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]

@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::character::{
-    builder::CharacterBuilder,
+    CharacterBuilder,
     traits::{
         range_bands::RangeBand,
         weapons::{Weapon, WeaponTag},

@@ -2,7 +2,7 @@ use eyre::Result;
 use sqlx::{PgPool, Postgres, Transaction};
 
 use crate::{
-    character::{builder::create_character, Character},
+    character::{create_character, Character},
     database::tables::{
         abilities::{AbilityRow, SpecialtyRow},
         armor::{ArmorRow, ArmorWornRow},

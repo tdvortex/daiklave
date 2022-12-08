@@ -861,3 +861,199 @@ impl<'a> Iterator for WeaponsIter<'a> {
         }
     }
 }
+
+#[derive(Debug, Default)]
+pub struct WeaponBuilder {
+    id: Option<i32>,
+    name: Option<String>,
+    two_handed: bool,
+    is_lethal: bool,
+    weight_class_tag: Option<WeaponTag>,
+    attack_tags: Vec<WeaponTag>,
+    other_tags: Vec<WeaponTag>,
+    creator_id: Option<i32>,
+}
+
+pub fn create_book_weapon() -> WeaponBuilder {
+    WeaponBuilder::default()
+}
+
+pub fn create_custom_weapon(_character_id: i32) -> WeaponBuilder {
+    WeaponBuilder {
+        id: Default::default(),
+        name: Default::default(),
+        two_handed: Default::default(),
+        is_lethal: Default::default(),
+        weight_class_tag: Default::default(),
+        attack_tags: Default::default(),
+        other_tags: Default::default(),
+        creator_id: Some(_character_id),
+    }
+}
+
+impl WeaponBuilder {
+    pub fn with_id(&mut self, id: i32) -> &mut WeaponBuilder {
+        self.id = Some(id);
+        self
+    }
+
+    pub fn with_name(&mut self, name: String) -> &mut WeaponBuilder {
+        self.name = Some(name);
+        self
+    }
+
+    pub fn dealing_bashing(&mut self) -> &mut WeaponBuilder {
+        self.is_lethal = false;
+        self
+    }
+
+    pub fn dealing_lethal(&mut self) -> &mut WeaponBuilder {
+        self.is_lethal = true;
+        self
+    }
+
+    pub fn as_one_handed(&mut self) -> &mut WeaponBuilder {
+        self.two_handed = false;
+        self
+    }
+
+    pub fn as_two_handed(&mut self) -> &mut WeaponBuilder {
+        self.two_handed = true;
+        self
+    }
+
+    pub fn as_archery_with_range(&mut self, max_range: RangeBand) -> &mut WeaponBuilder {
+        self.attack_tags = std::mem::take(&mut self.attack_tags)
+            .into_iter()
+            .filter_map(|tag| match tag {
+                WeaponTag::MartialArts(style) => Some(WeaponTag::MartialArts(style)),
+                _ => None,
+            })
+            .collect();
+
+        self.attack_tags.push(WeaponTag::Archery(max_range));
+        self
+    }
+
+    pub fn as_brawl(&mut self) -> &mut WeaponBuilder {
+        self.attack_tags = std::mem::take(&mut self.attack_tags)
+            .into_iter()
+            .filter_map(|tag| match tag {
+                WeaponTag::MartialArts(style) => Some(WeaponTag::MartialArts(style)),
+                _ => None,
+            })
+            .collect();
+
+        self.attack_tags.push(WeaponTag::Brawl);
+        self
+    }
+
+    pub fn as_melee(&mut self) -> &mut WeaponBuilder {
+        self.attack_tags = std::mem::take(&mut self.attack_tags)
+            .into_iter()
+            .filter_map(|tag| match tag {
+                WeaponTag::MartialArts(style) => Some(WeaponTag::MartialArts(style)),
+                WeaponTag::Thrown(range) => Some(WeaponTag::Thrown(range)),
+                _ => None,
+            })
+            .collect();
+
+        self.attack_tags.push(WeaponTag::Melee);
+        self
+    }
+
+    pub fn with_thrown_range(&mut self, max_range: RangeBand) -> &mut WeaponBuilder {
+        self.attack_tags = std::mem::take(&mut self.attack_tags)
+            .into_iter()
+            .filter_map(|tag| match tag {
+                WeaponTag::MartialArts(style) => Some(WeaponTag::MartialArts(style)),
+                WeaponTag::Melee => Some(WeaponTag::Melee),
+                _ => None,
+            })
+            .collect();
+
+        self.attack_tags.push(WeaponTag::Thrown(max_range));
+        self
+    }
+
+    pub fn with_martial_arts(&mut self, style: String) -> &mut WeaponBuilder {
+        self.attack_tags.push(WeaponTag::MartialArts(style));
+        self
+    }
+
+    pub fn as_light(&mut self) -> &mut WeaponBuilder {
+        self.weight_class_tag = Some(WeaponTag::Light);
+        self
+    }
+
+    pub fn as_medium(&mut self) -> &mut WeaponBuilder {
+        self.weight_class_tag = Some(WeaponTag::Medium);
+        self
+    }
+
+    pub fn as_heavy(&mut self) -> &mut WeaponBuilder {
+        self.weight_class_tag = Some(WeaponTag::Heavy);
+        self
+    }
+
+    pub fn as_artifact(&mut self) -> &mut WeaponBuilder {
+        self.other_tags.push(WeaponTag::Artifact);
+        self
+    }
+
+    pub fn with_tag(&mut self, tag: WeaponTag) -> &mut WeaponBuilder {
+        match tag {
+            WeaponTag::Archery(range) => self.as_archery_with_range(range),
+            WeaponTag::Artifact => self.as_artifact(),
+            WeaponTag::Bashing => self.dealing_bashing(),
+            WeaponTag::Brawl => self.as_brawl(),
+            WeaponTag::Heavy => self.as_heavy(),
+            WeaponTag::Lethal => self.dealing_lethal(),
+            WeaponTag::Light => self.as_light(),
+            WeaponTag::MartialArts(style) => self.with_martial_arts(style),
+            WeaponTag::Medium => self.as_medium(),
+            WeaponTag::Melee => self.as_melee(),
+            WeaponTag::OneHanded => self.as_one_handed(),
+            WeaponTag::Thrown(range) => self.with_thrown_range(range),
+            WeaponTag::TwoHanded => self.as_two_handed(),
+            other_tag => {
+                self.other_tags.push(other_tag);
+                self
+            }
+        }
+    }
+
+    pub fn build(self) -> Result<Weapon> {
+        if self.name.is_none() {
+            return Err(eyre!("weapon name is required"));
+        }
+
+        let mut tags = Vec::new();
+        tags.push(
+            self.weight_class_tag
+                .ok_or_else(|| eyre!("weapons must be exactly one of Light, Medium, or Heavy"))?,
+        );
+
+        if self.two_handed {
+            tags.push(WeaponTag::TwoHanded)
+        } else {
+            tags.push(WeaponTag::OneHanded)
+        };
+
+        if self.is_lethal {
+            tags.push(WeaponTag::Lethal)
+        } else {
+            tags.push(WeaponTag::Bashing)
+        };
+
+        tags.extend(self.attack_tags.into_iter());
+        tags.extend(self.other_tags.into_iter());
+
+        Weapon::new(
+            self.name.unwrap(),
+            tags.into_iter().collect(),
+            self.id,
+            self.creator_id,
+        )
+    }
+}

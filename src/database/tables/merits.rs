@@ -2,7 +2,7 @@ use eyre::{eyre, Result};
 use std::collections::HashMap;
 
 use crate::character::{
-    builder::CharacterBuilder,
+    CharacterBuilder,
     traits::{
         merits::{MeritTemplate, MeritType},
         prerequisite::Prerequisite,

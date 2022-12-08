@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, hash::Hash};
 
 use eyre::{eyre, Result};
 use slab::Slab;
@@ -211,4 +211,76 @@ enum WeightClass {
     Light,
     Medium,
     Heavy,
+}
+
+pub struct ArmorBuilder {
+    id: Option<i32>,
+    name: Option<String>,
+    weight_class: Option<WeightClass>,
+    tags: HashSet<ArmorTag>,
+}
+
+pub fn create_armor_item() -> ArmorBuilder {
+    ArmorBuilder { id: None, name: None, weight_class: None, tags: HashSet::new() }
+}
+
+impl ArmorBuilder {
+    pub fn with_id(&mut self, id: i32) -> &mut Self {
+        self.id = Some(id);
+        self
+    }
+
+    pub fn with_name(&mut self, name: String) -> &mut Self {
+        self.name = Some(name);
+        self
+    }
+
+    pub fn as_light(&mut self) -> &mut Self {
+        self.weight_class = Some(WeightClass::Light);
+        self
+    }
+
+    pub fn as_medium(&mut self) -> &mut Self {
+        self.weight_class = Some(WeightClass::Medium);
+        self
+    }
+
+    pub fn as_heavy(&mut self) -> &mut Self {
+        self.weight_class = Some(WeightClass::Heavy);
+        self
+    }
+
+    pub fn as_artifact(&mut self) -> &mut Self {
+        self.tags.insert(ArmorTag::Artifact);
+        self
+    }
+
+    pub fn with_tag(&mut self, tag: ArmorTag) -> &mut Self {
+        match tag {
+            ArmorTag::Artifact => self.as_artifact(),
+            ArmorTag::Heavy => self.as_heavy(),
+            ArmorTag::Light => self.as_light(),
+            ArmorTag::Medium => self.as_medium(),
+            other_tag => {self.tags.insert(other_tag); self}
+        }
+    }
+
+    pub fn build(mut self) -> Result<ArmorItem> {
+        if self.name.is_none() {
+            return Err(eyre!("armor must have a name"));
+        }
+
+        if self.weight_class.is_none() {
+            return Err(eyre!("armor must be exactly one of Light, Medium, or Heavy"));
+        }
+
+        let weight_tag = match self.weight_class.unwrap() {
+            WeightClass::Light => ArmorTag::Light,
+            WeightClass::Medium => ArmorTag::Medium,
+            WeightClass::Heavy => ArmorTag::Heavy,
+        };
+        self.tags.insert(weight_tag);
+
+        ArmorItem::new(self.name.unwrap(), self.tags, self.id)
+    }
 }
