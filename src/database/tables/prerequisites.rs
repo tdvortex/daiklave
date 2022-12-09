@@ -95,23 +95,23 @@ impl From<Prerequisite> for PrerequisiteInsert {
     fn from(prerequisite: Prerequisite) -> Self {
         match prerequisite.prerequisite_type() {
             PrerequisiteType::Ability(ability_prerequisite) => Self {
-                    prerequisite_type: PrerequisiteTypePostgres::Ability,
-                    ability_name: Some(ability_prerequisite.ability_name.into()),
-                    subskill_name: ability_prerequisite.subskill.clone(),
-                    attribute_name: None,
-                    dots: Some(ability_prerequisite.dots.into()),
-                    charm_id: None,
-                    exalt_type: None,
-                },
+                prerequisite_type: PrerequisiteTypePostgres::Ability,
+                ability_name: Some(ability_prerequisite.ability_name.into()),
+                subskill_name: ability_prerequisite.subskill.clone(),
+                attribute_name: None,
+                dots: Some(ability_prerequisite.dots.into()),
+                charm_id: None,
+                exalt_type: None,
+            },
             PrerequisiteType::Attribute(attribute_prerequisite) => Self {
-                    prerequisite_type: PrerequisiteTypePostgres::Attribute,
-                    ability_name: None,
-                    subskill_name: None,
-                    attribute_name: Some(attribute_prerequisite.attribute_name.into()),
-                    dots: Some(attribute_prerequisite.dots.into()),
-                    charm_id: None,
-                    exalt_type: None,
-                },
+                prerequisite_type: PrerequisiteTypePostgres::Attribute,
+                ability_name: None,
+                subskill_name: None,
+                attribute_name: Some(attribute_prerequisite.attribute_name.into()),
+                dots: Some(attribute_prerequisite.dots.into()),
+                charm_id: None,
+                exalt_type: None,
+            },
             PrerequisiteType::Essence(dots) => Self {
                 prerequisite_type: PrerequisiteTypePostgres::Essence,
                 ability_name: None,
@@ -142,9 +142,6 @@ impl From<Prerequisite> for PrerequisiteInsert {
         }
     }
 }
-
-
-
 
 impl sqlx::Type<sqlx::Postgres> for PrerequisiteRow {
     fn type_info() -> sqlx::postgres::PgTypeInfo {

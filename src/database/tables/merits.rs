@@ -1,4 +1,5 @@
 use eyre::{eyre, Result};
+use sqlx::postgres::PgHasArrayType;
 use std::collections::HashMap;
 
 use crate::character::{
@@ -22,6 +23,12 @@ pub enum MeritTypePostgres {
     Purchased,
 }
 
+impl PgHasArrayType for MeritTypePostgres {
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("_MERITTYPE")
+    }
+}
+
 impl From<MeritTypePostgres> for MeritType {
     fn from(merit_type_postgres: MeritTypePostgres) -> Self {
         match merit_type_postgres {
@@ -29,6 +36,17 @@ impl From<MeritTypePostgres> for MeritType {
             MeritTypePostgres::Supernatural => Self::Supernatural,
             MeritTypePostgres::Story => Self::Story,
             MeritTypePostgres::Purchased => Self::Purchased,
+        }
+    }
+}
+
+impl From<MeritType> for MeritTypePostgres {
+    fn from(merit_type: MeritType) -> Self {
+        match merit_type {
+            MeritType::Innate => Self::Innate,
+            MeritType::Supernatural => Self::Supernatural,
+            MeritType::Story => Self::Story,
+            MeritType::Purchased => Self::Purchased,
         }
     }
 }
@@ -42,6 +60,27 @@ pub struct MeritTemplateRow {
     pub merit_type: MeritTypePostgres,
     pub description: String,
     pub requires_detail: bool,
+}
+
+#[derive(Debug)]
+pub struct MeritTemplateInsert {
+    pub name: String,
+    pub dots: i16,
+    pub merit_type: MeritTypePostgres,
+    pub description: String,
+    pub requires_detail: bool,
+}
+
+impl From<MeritTemplate> for MeritTemplateInsert {
+    fn from(template: MeritTemplate) -> Self {
+        Self {
+            name: template.name().to_owned(),
+            dots: template.dots().into(),
+            merit_type: template.merit_type().into(),
+            description: template.description().to_owned(),
+            requires_detail: template.requires_detail(),
+        }
+    }
 }
 
 #[derive(Debug, sqlx::Type)]

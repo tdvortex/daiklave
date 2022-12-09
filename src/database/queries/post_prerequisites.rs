@@ -1,18 +1,25 @@
-use sqlx::{Transaction, Postgres, query};
 use eyre::Result;
+use sqlx::{query, Postgres, Transaction};
 
-use crate::database::tables::{prerequisites::{PrerequisiteInsert, PrerequisiteExaltTypePostgres, PrerequisiteTypePostgres}, abilities::AbilityNamePostgres, attributes::AttributeNamePostgres};
+use crate::database::tables::{
+    abilities::AbilityNamePostgres,
+    attributes::AttributeNamePostgres,
+    prerequisites::{PrerequisiteExaltTypePostgres, PrerequisiteInsert, PrerequisiteTypePostgres},
+};
 
-async fn insert_prerequisites_transaction(transaction: &mut Transaction<'_, Postgres>, prerequisites: &[PrerequisiteInsert]) -> Result<Vec<i32>> {
+async fn post_prerequisites_transaction(
+    transaction: &mut Transaction<'_, Postgres>,
+    prerequisites: &[PrerequisiteInsert],
+) -> Result<Vec<i32>> {
     let (
         prerequisite_types,
         ability_names,
-        subskill_names, 
+        subskill_names,
         attribute_names,
         dots_vec,
         prerequisite_charm_ids,
-        prerequisite_exalt_types
-    ) = prerequisites.into_iter().fold(
+        prerequisite_exalt_types,
+    ) = prerequisites.iter().fold(
         (
             Vec::new(),
             Vec::new(),
@@ -21,21 +28,24 @@ async fn insert_prerequisites_transaction(transaction: &mut Transaction<'_, Post
             Vec::new(),
             Vec::new(),
             Vec::new(),
-        ), |
-            (
-                mut prerequisite_types,
-                mut ability_names,
-                mut subskill_names, 
-                mut attribute_names,
-                mut dots_vec,
-                mut prerequisite_charm_ids,
-                mut prerequisite_exalt_types
-            ),
-            prerequisite_insert
-        | {
+        ),
+        |(
+            mut prerequisite_types,
+            mut ability_names,
+            mut subskill_names,
+            mut attribute_names,
+            mut dots_vec,
+            mut prerequisite_charm_ids,
+            mut prerequisite_exalt_types,
+        ),
+         prerequisite_insert| {
             prerequisite_types.push(prerequisite_insert.prerequisite_type);
             ability_names.push(prerequisite_insert.ability_name);
-            subskill_names.push(prerequisite_insert.subskill_name.as_ref().map(|s| s.as_str()));
+            subskill_names.push(
+                prerequisite_insert
+                    .subskill_name
+                    .as_deref()
+            );
             attribute_names.push(prerequisite_insert.attribute_name);
             dots_vec.push(prerequisite_insert.dots);
             prerequisite_charm_ids.push(prerequisite_insert.charm_id);
@@ -43,13 +53,13 @@ async fn insert_prerequisites_transaction(transaction: &mut Transaction<'_, Post
             (
                 prerequisite_types,
                 ability_names,
-                subskill_names, 
+                subskill_names,
                 attribute_names,
                 dots_vec,
                 prerequisite_charm_ids,
-                prerequisite_exalt_types
+                prerequisite_exalt_types,
             )
-        }
+        },
     );
 
     Ok(query!(

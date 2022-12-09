@@ -34,8 +34,11 @@ impl AttributesDiff {
             return Ok(());
         }
 
-        let (updated_attribute_names, updated_attribute_dots) =
-            self.updated_attributes.into_iter().map(|update| update.to_tuple()).fold(
+        let (updated_attribute_names, updated_attribute_dots) = self
+            .updated_attributes
+            .into_iter()
+            .map(|update| update.into_tuple())
+            .fold(
                 (Vec::new(), Vec::new()),
                 |(mut updated_attribute_names, mut updated_attribute_dots), (name, dots)| {
                     updated_attribute_names.push(name);

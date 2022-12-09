@@ -81,7 +81,7 @@ impl From<Attribute> for AttributeUpdate {
 }
 
 impl AttributeUpdate {
-    pub fn to_tuple(self) -> (AttributeNamePostgres, i16) {
+    pub fn into_tuple(self) -> (AttributeNamePostgres, i16) {
         (self.name, self.dots)
     }
 }

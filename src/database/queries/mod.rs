@@ -1,8 +1,9 @@
 mod get_character;
 mod post_armor;
 mod post_character;
+mod post_merits;
+mod post_prerequisites;
 mod post_weapons;
-mod prerequisites;
 mod put_character;
 pub use get_character::get_character;
 pub use post_armor::post_armor;
