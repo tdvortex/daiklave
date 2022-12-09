@@ -1,5 +1,4 @@
 pub mod experience;
-pub mod intimacies;
 pub mod merits;
 pub mod player;
 pub mod prerequisite;

@@ -1,3 +1,5 @@
+pub mod diff;
+pub mod tables;
 pub type Intimacies = Vec<Intimacy>;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]

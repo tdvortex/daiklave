@@ -1,6 +1,5 @@
 pub mod character;
 pub mod charms;
-pub mod intimacies;
 pub mod merits;
 pub mod players;
 pub mod prerequisites;

@@ -1,7 +1,7 @@
 use sqlx::postgres::PgHasArrayType;
 
+use crate::intimacies::{Intimacy, IntimacyLevel, IntimacyType};
 use crate::character::{
-    traits::intimacies::{Intimacy, IntimacyLevel, IntimacyType},
     CharacterBuilder,
 };
 
