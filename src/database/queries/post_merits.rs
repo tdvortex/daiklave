@@ -67,7 +67,7 @@ async fn post_merit_prerequisite_sets_transaction(
     .collect())
 }
 
-async fn post_merits_details_transaction(
+pub async fn post_merits_details_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     merit_details: Vec<(i32, Option<String>)>,
     character_id: i32,
@@ -101,7 +101,7 @@ async fn post_merits_details_transaction(
     .collect())
 }
 
-async fn post_new_merits_transaction(
+pub async fn post_new_merits_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     new_merits: Vec<Merit>,
     character_id: i32,
