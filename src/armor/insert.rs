@@ -1,4 +1,5 @@
-use crate::{character::traits::armor::ArmorItem, database::tables::armor::ArmorTagPostgres};
+use crate::armor::tables::ArmorTagPostgres;
+use crate::armor::ArmorItem;
 use eyre::Result;
 use sqlx::{query, PgPool, Postgres, Transaction};
 

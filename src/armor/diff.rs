@@ -2,10 +2,8 @@ use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 use std::collections::HashSet;
 
-use crate::{
-    character::traits::armor::{Armor, ArmorItem},
-    database::queries::post_armor_transaction,
-};
+use super::insert::post_armor_transaction;
+use super::{Armor, ArmorItem};
 
 pub struct ArmorDiff {
     noop: bool,

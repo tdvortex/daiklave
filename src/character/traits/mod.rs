@@ -1,4 +1,3 @@
-pub mod armor;
 pub mod campaign;
 pub mod experience;
 pub mod health;

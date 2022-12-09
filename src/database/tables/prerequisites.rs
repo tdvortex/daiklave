@@ -2,8 +2,8 @@ use crate::character::traits::prerequisite::ExaltTypePrerequisite;
 use eyre::Result;
 use sqlx::postgres::PgHasArrayType;
 
-use crate::attributes::tables::AttributeNamePostgres;
 use crate::abilities::tables::AbilityNamePostgres;
+use crate::attributes::tables::AttributeNamePostgres;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "PREREQUISITETYPE", rename_all = "UPPERCASE")]

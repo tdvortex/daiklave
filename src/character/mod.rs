@@ -9,7 +9,6 @@ use traits::experience::ExperiencePoints;
 use traits::player::Player;
 use traits::willpower::Willpower;
 
-use self::traits::armor::{Armor, ArmorItem};
 use self::traits::health::{Health, WoundPenalty};
 use self::traits::intimacies::{Intimacies, Intimacy};
 use self::traits::merits::{Merit, MeritTemplate, Merits};
@@ -18,6 +17,7 @@ use self::traits::prerequisite::{
 };
 use self::traits::weapons::{EquipHand, Weapon, Weapons};
 use crate::abilities::{Abilities, AbilityNameNoSubskill};
+use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
 
 /// The basic Character object, representing a full player character.

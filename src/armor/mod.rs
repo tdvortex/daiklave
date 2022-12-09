@@ -1,3 +1,6 @@
+pub mod diff;
+pub mod insert;
+pub mod tables;
 use std::{collections::HashSet, hash::Hash};
 
 use eyre::{eyre, Result};

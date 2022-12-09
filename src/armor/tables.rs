@@ -3,10 +3,8 @@ use std::collections::HashMap;
 
 use sqlx::postgres::PgHasArrayType;
 
-use crate::character::{
-    traits::armor::{ArmorItem, ArmorTag},
-    CharacterBuilder,
-};
+use crate::armor::{ArmorItem, ArmorTag};
+use crate::character::CharacterBuilder;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ARMORTAG", rename_all = "UPPERCASE")]
@@ -87,7 +85,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorRow {
     }
 }
 
-impl TryFrom<ArmorRow> for crate::character::traits::armor::ArmorItem {
+impl TryFrom<ArmorRow> for ArmorItem {
     type Error = eyre::Report;
 
     fn try_from(value: ArmorRow) -> Result<Self, Self::Error> {

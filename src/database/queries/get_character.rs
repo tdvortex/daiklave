@@ -3,10 +3,10 @@ use sqlx::{PgPool, Postgres, Transaction};
 
 use crate::{
     abilities::tables::{AbilityRow, SpecialtyRow},
+    armor::tables::{ArmorRow, ArmorWornRow},
     attributes::tables::AttributeRow,
     character::Character,
     database::tables::{
-        armor::{ArmorRow, ArmorWornRow},
         campaign::CampaignRow,
         character::CharacterRow,
         health::HealthBoxRow,

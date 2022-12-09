@@ -1,7 +1,5 @@
-use crate::{
-    attributes::Attributes,
-};
 use super::tables::{AttributeNamePostgres, AttributeUpdate};
+use crate::attributes::Attributes;
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 
