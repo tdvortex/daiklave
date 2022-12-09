@@ -1,7 +1,10 @@
-pub mod diff;
-pub mod insert;
-pub mod retrieve;
-pub mod tables;
+pub(crate) mod update;
+pub(crate) mod create;
+pub(crate) mod retrieve;
+pub use retrieve::retrieve_character;
+pub use update::CharacterBaseDiff;
+pub use update::update_character;
+pub(crate) mod tables;
 use eyre::{eyre, Result};
 use std::ops::Deref;
 
@@ -287,14 +290,14 @@ pub struct ExperiencePoints {
 }
 
 #[derive(Debug, Default)]
-pub struct CraftingExperience {
+pub(crate) struct CraftingExperience {
     pub silver: u16,
     pub gold: u16,
     pub white: u16,
     pub major_slots: u16,
 }
 
-pub enum CraftingExperienceType {
+pub(crate) enum CraftingExperienceType {
     Silver,
     Gold,
     White,

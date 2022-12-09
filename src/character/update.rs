@@ -3,7 +3,7 @@ use sqlx::{query, Postgres, Transaction, PgPool};
 
 use crate::{character::Character, intimacies::diff::compare_intimacies, merits::diff::compare_merits};
 
-use super::{insert::post_character_transaction, retrieve::get_character_transaction};
+use super::{create::create_character_transaction, retrieve::retrieve_character_transaction};
 
 #[derive(Debug, Default)]
 pub struct CharacterBaseDiff(Option<(String, Option<String>, i16, i16, i16, i16)>);
@@ -39,7 +39,7 @@ impl Character {
 }
 
 impl CharacterBaseDiff {
-    pub async fn save(
+    pub async fn update(
         self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
@@ -68,13 +68,13 @@ impl CharacterBaseDiff {
     }
 }
 
-pub async fn put_character(pool: &PgPool, character: Character) -> Result<Character> {
+pub async fn update_character(pool: &PgPool, character: Character) -> Result<Character> {
     let mut transaction = pool.begin().await?;
 
     let old_character = if character.id.is_none() {
-        post_character_transaction(&mut transaction, character.player.clone()).await?
+        create_character_transaction(&mut transaction, character.player.clone()).await?
     } else {
-        get_character_transaction(&mut transaction, character.id.unwrap())
+        retrieve_character_transaction(&mut transaction, character.id.unwrap())
             .await?
             .ok_or_else(|| eyre!("no character found with id {}", character.id.unwrap()))?
     };
@@ -98,7 +98,7 @@ pub async fn put_character(pool: &PgPool, character: Character) -> Result<Charac
         .await?;
     old_character
         .compare_newer(&character)
-        .save(&mut transaction, character_id)
+        .update(&mut transaction, character_id)
         .await?;
     old_character
         .health
@@ -122,7 +122,7 @@ pub async fn put_character(pool: &PgPool, character: Character) -> Result<Charac
         .save(&mut transaction, character_id)
         .await?;
 
-    let character = get_character_transaction(&mut transaction, character_id)
+    let character = retrieve_character_transaction(&mut transaction, character_id)
         .await?
         .ok_or_else(|| eyre!("could not retrieve put character with id {}", character_id))?;
 

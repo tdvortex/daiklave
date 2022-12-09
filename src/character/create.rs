@@ -3,19 +3,19 @@ use sqlx::{query, PgPool, Postgres, Transaction};
 
 use crate::character::Character;
 use crate::player::Player;
-use crate::character::retrieve::get_character_transaction;
+use crate::character::retrieve::retrieve_character_transaction;
 
-pub async fn post_character(pool: &PgPool, player: Player) -> Result<Character> {
+async fn create_character(pool: &PgPool, player: Player) -> Result<Character> {
     let mut transaction = pool.begin().await?;
 
-    let character = post_character_transaction(&mut transaction, player).await?;
+    let character = create_character_transaction(&mut transaction, player).await?;
 
     transaction.commit().await?;
 
     Ok(character)
 }
 
-pub async fn post_character_transaction(
+pub(crate) async fn create_character_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     player: Player,
 ) -> Result<Character> {
@@ -103,7 +103,7 @@ pub async fn post_character_transaction(
     .await?;
 
     // Get the character that was just inserted
-    if let Some(character) = get_character_transaction(transaction, character_id).await? {
+    if let Some(character) = retrieve_character_transaction(transaction, character_id).await? {
         Ok(character)
     } else {
         Err(eyre!(

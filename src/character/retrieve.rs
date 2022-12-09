@@ -36,16 +36,16 @@ struct GetCharacter {
     merit_prerequisites: Option<Vec<PrerequisiteRow>>,
 }
 
-pub async fn get_character(pool: &PgPool, character_id: i32) -> Result<Option<Character>> {
+pub async fn retrieve_character(pool: &PgPool, character_id: i32) -> Result<Option<Character>> {
     let mut transaction = pool.begin().await?;
 
-    let maybe_character = get_character_transaction(&mut transaction, character_id).await?;
+    let maybe_character = retrieve_character_transaction(&mut transaction, character_id).await?;
 
     transaction.commit().await?;
     Ok(maybe_character)
 }
 
-pub async fn get_character_transaction(
+pub(crate) async fn retrieve_character_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     character_id: i32,
 ) -> Result<Option<Character>> {
