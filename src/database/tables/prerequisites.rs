@@ -8,6 +8,7 @@ use crate::character::traits::{
     },
 };
 use eyre::{eyre, Report, Result};
+use sqlx::postgres::PgHasArrayType;
 
 use super::{abilities::AbilityNamePostgres, attributes::AttributeNamePostgres};
 
@@ -21,6 +22,12 @@ pub enum PrerequisiteTypePostgres {
     ExaltType,
 }
 
+impl PgHasArrayType for PrerequisiteTypePostgres {
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("_PREREQUISITETYPE")
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "PREREQUISITEEXALTTYPE", rename_all = "UPPERCASE")]
 pub enum PrerequisiteExaltTypePostgres {
@@ -31,6 +38,12 @@ pub enum PrerequisiteExaltTypePostgres {
     SpiritOrEclipse,
 }
 
+impl PgHasArrayType for PrerequisiteExaltTypePostgres {
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("_PREREQUISITEEXALTTYPE")
+    }
+}
+
 impl From<PrerequisiteExaltTypePostgres> for ExaltTypePrerequisite {
     fn from(exalt_type: PrerequisiteExaltTypePostgres) -> Self {
         match exalt_type {
@@ -39,6 +52,18 @@ impl From<PrerequisiteExaltTypePostgres> for ExaltTypePrerequisite {
             PrerequisiteExaltTypePostgres::DragonBlooded => Self::DragonBlooded,
             PrerequisiteExaltTypePostgres::Spirit => Self::Spirit,
             PrerequisiteExaltTypePostgres::SpiritOrEclipse => Self::SpiritOrEclipse,
+        }
+    }
+}
+
+impl From<ExaltTypePrerequisite> for PrerequisiteExaltTypePostgres {
+    fn from(exalt_type: ExaltTypePrerequisite) -> Self {
+        match exalt_type {
+            ExaltTypePrerequisite::Solar => Self::Solar,
+            ExaltTypePrerequisite::Lunar => Self::Lunar,
+            ExaltTypePrerequisite::DragonBlooded => Self::DragonBlooded,
+            ExaltTypePrerequisite::Spirit => Self::Spirit,
+            ExaltTypePrerequisite::SpiritOrEclipse => Self::SpiritOrEclipse,
         }
     }
 }
@@ -54,6 +79,72 @@ pub struct PrerequisiteRow {
     pub prerequisite_charm_id: Option<i32>,
     pub prerequisite_exalt_type: Option<PrerequisiteExaltTypePostgres>,
 }
+
+#[derive(Debug)]
+pub struct PrerequisiteInsert {
+    pub prerequisite_type: PrerequisiteTypePostgres,
+    pub ability_name: Option<AbilityNamePostgres>,
+    pub subskill_name: Option<String>,
+    pub attribute_name: Option<AttributeNamePostgres>,
+    pub dots: Option<i16>,
+    pub charm_id: Option<i32>,
+    pub exalt_type: Option<PrerequisiteExaltTypePostgres>,
+}
+
+impl From<Prerequisite> for PrerequisiteInsert {
+    fn from(prerequisite: Prerequisite) -> Self {
+        match prerequisite.prerequisite_type() {
+            PrerequisiteType::Ability(ability_prerequisite) => Self {
+                    prerequisite_type: PrerequisiteTypePostgres::Ability,
+                    ability_name: Some(ability_prerequisite.ability_name.into()),
+                    subskill_name: ability_prerequisite.subskill.clone(),
+                    attribute_name: None,
+                    dots: Some(ability_prerequisite.dots.into()),
+                    charm_id: None,
+                    exalt_type: None,
+                },
+            PrerequisiteType::Attribute(attribute_prerequisite) => Self {
+                    prerequisite_type: PrerequisiteTypePostgres::Attribute,
+                    ability_name: None,
+                    subskill_name: None,
+                    attribute_name: Some(attribute_prerequisite.attribute_name.into()),
+                    dots: Some(attribute_prerequisite.dots.into()),
+                    charm_id: None,
+                    exalt_type: None,
+                },
+            PrerequisiteType::Essence(dots) => Self {
+                prerequisite_type: PrerequisiteTypePostgres::Essence,
+                ability_name: None,
+                subskill_name: None,
+                attribute_name: None,
+                dots: Some((*dots).into()),
+                charm_id: None,
+                exalt_type: None,
+            },
+            PrerequisiteType::Charm(charm_id) => Self {
+                prerequisite_type: PrerequisiteTypePostgres::Charm,
+                ability_name: None,
+                subskill_name: None,
+                attribute_name: None,
+                dots: None,
+                charm_id: Some(*charm_id),
+                exalt_type: None,
+            },
+            PrerequisiteType::ExaltType(exalt_type_prerequisite) => Self {
+                prerequisite_type: PrerequisiteTypePostgres::ExaltType,
+                ability_name: None,
+                subskill_name: None,
+                attribute_name: None,
+                dots: None,
+                charm_id: None,
+                exalt_type: Some((*exalt_type_prerequisite).into()),
+            },
+        }
+    }
+}
+
+
+
 
 impl sqlx::Type<sqlx::Postgres> for PrerequisiteRow {
     fn type_info() -> sqlx::postgres::PgTypeInfo {
