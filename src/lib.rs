@@ -1,4 +1,4 @@
-pub(crate) mod abilities;
+pub mod abilities;
 pub(crate) mod armor;
 pub mod attributes;
 pub mod campaign;

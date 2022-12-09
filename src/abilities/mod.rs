@@ -1,5 +1,5 @@
-pub mod diff;
-pub mod tables;
+pub mod update;
+pub(crate) mod tables;
 use crate::prerequisite::AbilityPrerequisite;
 use eyre::{eyre, Report, Result};
 use std::collections::hash_map::Keys;
