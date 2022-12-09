@@ -9,7 +9,7 @@ use traits::experience::ExperiencePoints;
 use traits::player::Player;
 use traits::willpower::Willpower;
 
-use self::traits::abilities::{Abilities, AbilityName, AbilityNameNoSubskill};
+use self::traits::abilities::{Abilities, AbilityNameNoSubskill};
 use self::traits::armor::{Armor, ArmorItem};
 use self::traits::attributes::{AttributeName, Attributes};
 use self::traits::health::{Health, WoundPenalty};
@@ -142,23 +142,18 @@ impl CharacterBuilder {
         value: u8,
     ) -> Result<&mut Self> {
         self.abilities
-            .get_mut(&ability_name.try_into()?)
-            .unwrap()
-            .set_dots(value);
+            .set_dots(ability_name, None, value);
         Ok(self)
     }
 
     pub fn with_craft(&mut self, craft_focus: &str, value: u8) -> &mut Self {
         self.abilities
-            .add_craft(craft_focus.to_owned())
-            .set_dots(value);
+            .set_dots(AbilityNameNoSubskill::Craft, Some(craft_focus), value);
         self
     }
 
     pub fn with_martial_arts(&mut self, martial_arts_style: &str, value: u8) -> &mut Self {
-        self.abilities
-            .add_martial_arts(martial_arts_style.to_owned())
-            .set_dots(value);
+        self.abilities.set_dots(AbilityNameNoSubskill::MartialArts, Some(martial_arts_style), value);
         self
     }
 
@@ -168,9 +163,7 @@ impl CharacterBuilder {
         specialty: String,
     ) -> Result<&mut Self> {
         self.abilities
-            .get_mut(&ability_name.try_into()?)
-            .unwrap()
-            .add_specialty(specialty)?;
+            .add_specialty(ability_name, None, specialty)?;
         Ok(self)
     }
 
@@ -179,10 +172,7 @@ impl CharacterBuilder {
         craft_focus: &str,
         specialty: String,
     ) -> Result<&mut Self> {
-        self.abilities
-            .get_mut(&AbilityName::Craft(craft_focus.to_owned()))
-            .ok_or_else(|| eyre!("craft focus {} not found", craft_focus))
-            .and_then(|mut craft| craft.add_specialty(specialty))?;
+        self.abilities.add_specialty(AbilityNameNoSubskill::Craft, Some(craft_focus), specialty)?;
         Ok(self)
     }
 
@@ -191,10 +181,7 @@ impl CharacterBuilder {
         martial_arts_style: &str,
         specialty: String,
     ) -> Result<&mut Self> {
-        self.abilities
-            .get_mut(&AbilityName::MartialArts(martial_arts_style.to_owned()))
-            .ok_or_else(|| eyre!("martial arts style {} not found", martial_arts_style))
-            .and_then(|mut ma| ma.add_specialty(specialty))?;
+        self.abilities.add_specialty(AbilityNameNoSubskill::MartialArts, Some(martial_arts_style), specialty)?;
         Ok(self)
     }
 

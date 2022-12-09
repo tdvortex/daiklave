@@ -159,7 +159,7 @@ impl FusedIterator for AbilityNameNoFocusIter {}
 /// This is useful for querying a specific ability's dots (e.g. Craft(Masonry) vs Craft(Basketweaving))
 /// or for specific Charm requirements (like most Martial Arts style Charms).
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub enum AbilityName {
+pub enum AbilityName<'a> {
     /// The Archery ability
     Archery,
     /// The Athletics ability
@@ -171,7 +171,7 @@ pub enum AbilityName {
     /// The Bureaucracy ability
     Bureaucracy,
     /// The Craft ability, augmented with a specific focus area (such as Craft("Artifacts"))
-    Craft(String),
+    Craft(&'a str),
     /// The Dodge ability
     Dodge,
     /// The Integrity ability
@@ -185,7 +185,7 @@ pub enum AbilityName {
     /// The Lore ability
     Lore,
     /// The MartialArts ability, augmented with a specific style (such as MartialArts("Crane Style"))
-    MartialArts(String),
+    MartialArts(&'a str),
     /// The Medicine ability
     Medicine,
     /// The Melee ability
@@ -214,11 +214,11 @@ pub enum AbilityName {
     War,
 }
 
-impl AbilityName {
+impl<'a> AbilityName<'a> {
     pub fn subskill(&self) -> Option<&str> {
         match self {
-            AbilityName::Craft(focus) => Some(focus.as_str()),
-            AbilityName::MartialArts(style) => Some(style.as_str()),
+            AbilityName::Craft(focus) => Some(*focus),
+            AbilityName::MartialArts(style) => Some(*style),
             _ => None,
         }
     }
@@ -255,7 +255,7 @@ impl AbilityName {
     }
 }
 
-impl TryFrom<AbilityNameNoSubskill> for AbilityName {
+impl<'a> TryFrom<AbilityNameNoSubskill> for AbilityName<'a> {
     type Error = Report;
 
     fn try_from(value: AbilityNameNoSubskill) -> Result<Self, Self::Error> {
@@ -290,7 +290,7 @@ impl TryFrom<AbilityNameNoSubskill> for AbilityName {
     }
 }
 
-impl std::fmt::Display for AbilityName {
+impl<'a> std::fmt::Display for AbilityName<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             AbilityName::Archery => write!(f, "Archery"),
@@ -298,14 +298,14 @@ impl std::fmt::Display for AbilityName {
             AbilityName::Awareness => write!(f, "Awareness"),
             AbilityName::Brawl => write!(f, "Brawl"),
             AbilityName::Bureaucracy => write!(f, "Bureaucracy"),
-            AbilityName::Craft(focus) => write!(f, "Craft ({})", focus),
+            AbilityName::Craft(focus) => write!(f, "Craft ({})", *focus),
             AbilityName::Dodge => write!(f, "Dodge"),
             AbilityName::Integrity => write!(f, "Integrity"),
             AbilityName::Investigation => write!(f, "Investigation"),
             AbilityName::Larceny => write!(f, "Larcency"),
             AbilityName::Linguistics => write!(f, "Linguistics"),
             AbilityName::Lore => write!(f, "Lore"),
-            AbilityName::MartialArts(focus) => write!(f, "Martial Arts ({})", focus),
+            AbilityName::MartialArts(focus) => write!(f, "Martial Arts ({})", *focus),
             AbilityName::Medicine => write!(f, "Medicine"),
             AbilityName::Melee => write!(f, "Melee"),
             AbilityName::Occult => write!(f, "Occult"),
@@ -354,7 +354,7 @@ pub struct Abilities {
 }
 
 pub struct Ability<'a> {
-    name: AbilityName,
+    name: &'a AbilityName<'a>,
     rating: &'a AbilityRating,
 }
 
@@ -384,313 +384,304 @@ impl<'a> Ability<'a> {
     }
 }
 
-pub struct AbilityMut<'a> {
-    name: AbilityName,
-    rating: &'a mut AbilityRating,
-}
-
-impl<'a> AbilityMut<'a> {
-    pub fn name(&self) -> &AbilityName {
-        &self.name
-    }
-
-    pub fn dots(&self) -> u8 {
-        match &self.rating {
-            AbilityRating::Zero => 0,
-            AbilityRating::NonZero(non_zero_ability) => non_zero_ability.value,
-        }
-    }
-
-    pub fn specialties(&self) -> Option<&HashSet<String>> {
-        match &self.rating {
-            AbilityRating::Zero => None,
-            AbilityRating::NonZero(non_zero_rating) => {
-                if non_zero_rating.specialties.is_empty() {
-                    None
-                } else {
-                    Some(&non_zero_rating.specialties)
-                }
-            }
-        }
-    }
-
-    pub fn set_dots(&mut self, new_dots: u8) {
-        match (&mut self.rating, new_dots) {
-            (AbilityRating::Zero, 0) => {}
-            (AbilityRating::Zero, new_dots) => {
-                *self.rating = AbilityRating::NonZero(NonZeroAbility {
-                    value: new_dots,
-                    specialties: HashSet::new(),
-                })
-            }
-            (AbilityRating::NonZero(_), 0) => *self.rating = AbilityRating::Zero,
-            (AbilityRating::NonZero(non_zero_rating), new_dots) => non_zero_rating.value = new_dots,
-        }
-    }
-
-    pub fn add_specialty(&mut self, specialty: String) -> Result<()> {
-        match &mut self.rating {
-            AbilityRating::Zero => Err(eyre!("zero-rated abilities cannot have specialties")),
-            AbilityRating::NonZero(non_zero_rating) => non_zero_rating.add_specialty(specialty),
-        }
-    }
-
-    pub fn remove_specialty(&mut self, specialty: &str) -> Result<()> {
-        match &mut self.rating {
-            AbilityRating::Zero => Err(eyre!("zero-rated abilities have no specialties")),
-            AbilityRating::NonZero(non_zero_rating) => non_zero_rating.remove_specialty(specialty),
-        }
-    }
-}
-
 impl Abilities {
-    pub fn get(&self, ability_name: &AbilityName) -> Option<Ability> {
-        match ability_name {
-            AbilityName::Archery => Some(Ability {
-                name: ability_name.clone(),
+    pub fn get(&self, ability_name_no_subskill: AbilityNameNoSubskill, subskill: Option<&str>) -> Option<Ability> {
+        if subskill.is_none() && (ability_name_no_subskill == AbilityNameNoSubskill::Craft || ability_name_no_subskill == AbilityNameNoSubskill::MartialArts) {
+            return None;
+        }
+
+        if ability_name_no_subskill == AbilityNameNoSubskill::Craft {
+            let (key, rating) = self.craft.get_key_value(subskill.unwrap())?;
+            return Some(Ability {
+                name: &AbilityName::Craft(key.as_str()),
+                rating: rating,
+            });
+        }
+
+        if ability_name_no_subskill == AbilityNameNoSubskill::MartialArts {
+            let (key, rating) = self.martial_arts.get_key_value(subskill.unwrap())?;
+            return Some(Ability {
+                name: &AbilityName::MartialArts(key.as_str()),
+                rating: rating,
+            });
+        }
+
+        match ability_name_no_subskill {
+            AbilityNameNoSubskill::Archery => Some(Ability {
+                name: &AbilityName::Archery,
                 rating: &self.archery,
             }),
-            AbilityName::Athletics => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Athletics => Some(Ability {
+                name: &AbilityName::Athletics,
                 rating: &self.athletics,
             }),
-            AbilityName::Awareness => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Awareness => Some(Ability {
+                name: &AbilityName::Awareness,
                 rating: &self.awareness,
             }),
-            AbilityName::Brawl => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Brawl => Some(Ability {
+                name: &AbilityName::Brawl,
                 rating: &self.brawl,
             }),
-            AbilityName::Bureaucracy => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Bureaucracy => Some(Ability {
+                name: &AbilityName::Bureaucracy,
                 rating: &self.bureaucracy,
             }),
-            AbilityName::Dodge => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Dodge => Some(Ability {
+                name: &AbilityName::Dodge,
                 rating: &self.dodge,
             }),
-            AbilityName::Integrity => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Integrity => Some(Ability {
+                name: &AbilityName::Integrity,
                 rating: &self.integrity,
             }),
-            AbilityName::Investigation => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Investigation => Some(Ability {
+                name: &AbilityName::Investigation,
                 rating: &self.investigation,
             }),
-            AbilityName::Larceny => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Larceny => Some(Ability {
+                name: &AbilityName::Larceny,
                 rating: &self.larcency,
             }),
-            AbilityName::Linguistics => Some(Ability {
-                name: ability_name.clone(),
-                rating: &self.linguistics,
+            AbilityNameNoSubskill::Linguistics => Some(Ability {
+                name: &AbilityName::Linguistics,
+                rating: &self.linguistics
             }),
-            AbilityName::Lore => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Lore => Some(Ability {
+                name: &AbilityName::Lore,
                 rating: &self.lore,
             }),
-            AbilityName::Melee => Some(Ability {
-                name: ability_name.clone(),
-                rating: &self.melee,
-            }),
-            AbilityName::Medicine => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Medicine => Some(Ability {
+                name: &AbilityName::Medicine,
                 rating: &self.medicine,
             }),
-            AbilityName::Occult => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Melee => Some(Ability {
+                name: &AbilityName::Melee,
+                rating: &self.melee,
+            }),
+            AbilityNameNoSubskill::Occult => Some(Ability {
+                name: &AbilityName::Occult,
                 rating: &self.occult,
             }),
-            AbilityName::Performance => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Performance => Some(Ability {
+                name: &AbilityName::Performance,
                 rating: &self.performance,
             }),
-            AbilityName::Presence => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Presence => Some(Ability {
+                name: &AbilityName::Presence,
                 rating: &self.presence,
             }),
-            AbilityName::Resistance => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Resistance => Some(Ability {
+                name: &AbilityName::Resistance,
                 rating: &self.resistance,
             }),
-            AbilityName::Ride => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Ride => Some(Ability {
+                name: &AbilityName::Ride,
                 rating: &self.ride,
             }),
-            AbilityName::Sail => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Sail => Some(Ability {
+                name: &AbilityName::Sail,
                 rating: &self.sail,
             }),
-            AbilityName::Socialize => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Socialize => Some(Ability {
+                name: &AbilityName::Socialize,
                 rating: &self.socialize,
             }),
-            AbilityName::Stealth => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Stealth => Some(Ability {
+                name: &AbilityName::Stealth,
                 rating: &self.stealth,
             }),
-            AbilityName::Survival => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Survival => Some(Ability {
+                name: &AbilityName::Survival,
                 rating: &self.survival,
             }),
-            AbilityName::Thrown => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::Thrown => Some(Ability {
+                name: &AbilityName::Thrown,
                 rating: &self.thrown,
             }),
-            AbilityName::War => Some(Ability {
-                name: ability_name.clone(),
+            AbilityNameNoSubskill::War => Some(Ability {
+                name: &AbilityName::War,
                 rating: &self.war,
             }),
-            AbilityName::Craft(focus) => Some(Ability {
-                name: ability_name.clone(),
-                rating: self.craft.get(focus)?,
-            }),
-            AbilityName::MartialArts(style) => Some(Ability {
-                name: ability_name.clone(),
-                rating: self.martial_arts.get(style)?,
-            }),
+            // Covered by guard clauses above
+            AbilityNameNoSubskill::Craft => unreachable!(),
+            AbilityNameNoSubskill::MartialArts => unreachable!(),
         }
     }
 
-    pub fn get_mut(&mut self, ability_name: &AbilityName) -> Option<AbilityMut> {
-        match ability_name {
-            AbilityName::Archery => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.archery,
-            }),
-            AbilityName::Athletics => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.athletics,
-            }),
-            AbilityName::Awareness => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.awareness,
-            }),
-            AbilityName::Brawl => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.brawl,
-            }),
-            AbilityName::Bureaucracy => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.bureaucracy,
-            }),
-            AbilityName::Dodge => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.dodge,
-            }),
-            AbilityName::Integrity => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.integrity,
-            }),
-            AbilityName::Investigation => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.investigation,
-            }),
-            AbilityName::Larceny => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.larcency,
-            }),
-            AbilityName::Linguistics => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.linguistics,
-            }),
-            AbilityName::Lore => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.lore,
-            }),
-            AbilityName::Melee => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.melee,
-            }),
-            AbilityName::Medicine => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.medicine,
-            }),
-            AbilityName::Occult => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.occult,
-            }),
-            AbilityName::Performance => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.performance,
-            }),
-            AbilityName::Presence => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.presence,
-            }),
-            AbilityName::Resistance => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.resistance,
-            }),
-            AbilityName::Ride => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.ride,
-            }),
-            AbilityName::Sail => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.sail,
-            }),
-            AbilityName::Socialize => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.socialize,
-            }),
-            AbilityName::Stealth => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.stealth,
-            }),
-            AbilityName::Survival => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.survival,
-            }),
-            AbilityName::Thrown => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.thrown,
-            }),
-            AbilityName::War => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: &mut self.war,
-            }),
-            AbilityName::Craft(focus) => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: self.craft.get_mut(focus)?,
-            }),
-            AbilityName::MartialArts(style) => Some(AbilityMut {
-                name: ability_name.clone(),
-                rating: self.martial_arts.get_mut(style)?,
-            }),
+    pub fn set_dots(&mut self, ability_name_no_subskill: AbilityNameNoSubskill, subskill: Option<&str>, dots: u8) -> Result<()> {
+        if subskill.is_none() && (ability_name_no_subskill == AbilityNameNoSubskill::Craft || ability_name_no_subskill == AbilityNameNoSubskill::MartialArts) {
+            return Err(eyre!("must specify a subskill for Craft or Martial arts"));
         }
-    }
 
-    pub fn add_craft(&mut self, focus: String) -> AbilityMut {
-        if !self.craft.contains_key(&focus) {
-            self.craft.insert(focus.clone(), AbilityRating::Zero);
+        if ability_name_no_subskill == AbilityNameNoSubskill::Craft {
+            if dots > 0 && !self.craft.contains_key(subskill.unwrap()) {
+                self.craft.insert(subskill.unwrap().to_owned(), AbilityRating::NonZero(NonZeroAbility{value: dots, specialties: HashSet::new()}));
+            } else if dots == 0 && self.craft.contains_key(subskill.unwrap()) {
+                self.craft.remove(subskill.unwrap());
+            } else if dots > 0 && self.craft.contains_key(subskill.unwrap()) {
+                if let AbilityRating::NonZero(non_zero_ability) = self.craft.get_mut(subskill.unwrap()).unwrap() {
+                    non_zero_ability.value = dots;
+                }
+            }
+            return Ok(());
         }
-        self.get_mut(&AbilityName::Craft(focus)).unwrap()
+
+        if ability_name_no_subskill == AbilityNameNoSubskill::MartialArts {
+            if dots > 0 && !self.martial_arts.contains_key(subskill.unwrap()) {
+                self.martial_arts.insert(subskill.unwrap().to_owned(), AbilityRating::NonZero(NonZeroAbility{value: dots, specialties: HashSet::new()}));
+            } else if dots == 0 && self.martial_arts.contains_key(subskill.unwrap()) {
+                self.martial_arts.remove(subskill.unwrap());
+            } else if dots > 0 && self.martial_arts.contains_key(subskill.unwrap()) {
+                if let AbilityRating::NonZero(non_zero_ability) = self.martial_arts.get_mut(subskill.unwrap()).unwrap() {
+                    non_zero_ability.value = dots;
+                }
+            }
+            return Ok(());
+        }
+
+        let ptr = match ability_name_no_subskill {
+            AbilityNameNoSubskill::Archery => &mut self.archery,
+            AbilityNameNoSubskill::Athletics => &mut self.athletics,
+            AbilityNameNoSubskill::Awareness => &mut self.awareness,
+            AbilityNameNoSubskill::Brawl => &mut self.brawl,
+            AbilityNameNoSubskill::Bureaucracy => &mut self.bureaucracy,
+            AbilityNameNoSubskill::Dodge => &mut self.dodge,
+            AbilityNameNoSubskill::Integrity => &mut self.integrity,
+            AbilityNameNoSubskill::Investigation => &mut self.investigation,
+            AbilityNameNoSubskill::Larceny => &mut self.larcency,
+            AbilityNameNoSubskill::Linguistics => &mut self.linguistics,
+            AbilityNameNoSubskill::Lore => &mut self.lore,
+            AbilityNameNoSubskill::Medicine => &mut self.medicine,
+            AbilityNameNoSubskill::Melee => &mut self.melee,
+            AbilityNameNoSubskill::Occult => &mut self.occult,
+            AbilityNameNoSubskill::Performance => &mut self.performance,
+            AbilityNameNoSubskill::Presence => &mut self.presence,
+            AbilityNameNoSubskill::Resistance => &mut self.resistance,
+            AbilityNameNoSubskill::Ride => &mut self.ride,
+            AbilityNameNoSubskill::Sail => &mut self.sail,
+            AbilityNameNoSubskill::Socialize => &mut self.socialize,
+            AbilityNameNoSubskill::Stealth => &mut self.stealth,
+            AbilityNameNoSubskill::Survival => &mut self.survival,
+            AbilityNameNoSubskill::Thrown => &mut self.thrown,
+            AbilityNameNoSubskill::War => &mut self.war,
+            AbilityNameNoSubskill::Craft => unreachable!(),
+            AbilityNameNoSubskill::MartialArts => unreachable!(),
+        };
+
+        if dots == 0 {
+            *ptr = AbilityRating::Zero;
+        } else {
+            match ptr {
+                AbilityRating::Zero => {*ptr = AbilityRating::NonZero(NonZeroAbility {value: dots, specialties: HashSet::new()});}
+                AbilityRating::NonZero(non_zero_ability) => {non_zero_ability.value = dots;}
+            }
+        }
+        Ok(())
     }
 
-    pub fn remove_craft(&mut self, focus: &String) {
-        self.craft.remove(focus);
+    pub fn add_specialty(&mut self, ability_name_no_subskill: AbilityNameNoSubskill, subskill: Option<&str>, specialty: String) -> Result<()> {
+        if subskill.is_none() && (ability_name_no_subskill == AbilityNameNoSubskill::Craft || ability_name_no_subskill == AbilityNameNoSubskill::MartialArts) {
+            return Err(eyre!("must specify a subskill for Craft or Martial arts"));
+        }
+
+        let rating_ptr = match ability_name_no_subskill {
+            AbilityNameNoSubskill::Archery => &mut self.archery,
+            AbilityNameNoSubskill::Athletics => &mut self.athletics,
+            AbilityNameNoSubskill::Awareness => &mut self.awareness,
+            AbilityNameNoSubskill::Brawl => &mut self.brawl,
+            AbilityNameNoSubskill::Bureaucracy => &mut self.bureaucracy,
+            AbilityNameNoSubskill::Dodge => &mut self.dodge,
+            AbilityNameNoSubskill::Integrity => &mut self.integrity,
+            AbilityNameNoSubskill::Investigation => &mut self.investigation,
+            AbilityNameNoSubskill::Larceny => &mut self.larcency,
+            AbilityNameNoSubskill::Linguistics => &mut self.linguistics,
+            AbilityNameNoSubskill::Lore => &mut self.lore,
+            AbilityNameNoSubskill::Medicine => &mut self.medicine,
+            AbilityNameNoSubskill::Melee => &mut self.melee,
+            AbilityNameNoSubskill::Occult => &mut self.occult,
+            AbilityNameNoSubskill::Performance => &mut self.performance,
+            AbilityNameNoSubskill::Presence => &mut self.presence,
+            AbilityNameNoSubskill::Resistance => &mut self.resistance,
+            AbilityNameNoSubskill::Ride => &mut self.ride,
+            AbilityNameNoSubskill::Sail => &mut self.sail,
+            AbilityNameNoSubskill::Socialize => &mut self.socialize,
+            AbilityNameNoSubskill::Stealth => &mut self.stealth,
+            AbilityNameNoSubskill::Survival => &mut self.survival,
+            AbilityNameNoSubskill::Thrown => &mut self.thrown,
+            AbilityNameNoSubskill::War => &mut self.war,
+            AbilityNameNoSubskill::Craft => {
+                self.craft.get_mut(subskill.unwrap()).ok_or_else(|| eyre!("cannot have specialties on 0-rated abilities"))?
+            }
+            AbilityNameNoSubskill::MartialArts =>  {
+                self.martial_arts.get_mut(subskill.unwrap()).ok_or_else(|| eyre!("cannot have specialties on 0-rated abilities"))?
+            }
+        };
+
+        match rating_ptr {
+            AbilityRating::Zero => {return Err(eyre!("cannot have specialties on 0-rated abilities"));}
+            AbilityRating::NonZero(non_zero_rating) => {non_zero_rating.specialties.insert(specialty);}
+        }
+
+
+        Ok(())
     }
 
-    pub fn craft_iter(&self) -> impl Iterator<Item = Ability> {
+    pub fn remove_specialty(&mut self, ability_name_no_subskill: AbilityNameNoSubskill, subskill: Option<&str>, specialty: &str) -> Result<()> {
+        if subskill.is_none() && (ability_name_no_subskill == AbilityNameNoSubskill::Craft || ability_name_no_subskill == AbilityNameNoSubskill::MartialArts) {
+            return Err(eyre!("must specify a subskill for Craft or Martial arts"));
+        }
+
+        let rating_ptr = match ability_name_no_subskill {
+            AbilityNameNoSubskill::Archery => &mut self.archery,
+            AbilityNameNoSubskill::Athletics => &mut self.athletics,
+            AbilityNameNoSubskill::Awareness => &mut self.awareness,
+            AbilityNameNoSubskill::Brawl => &mut self.brawl,
+            AbilityNameNoSubskill::Bureaucracy => &mut self.bureaucracy,
+            AbilityNameNoSubskill::Dodge => &mut self.dodge,
+            AbilityNameNoSubskill::Integrity => &mut self.integrity,
+            AbilityNameNoSubskill::Investigation => &mut self.investigation,
+            AbilityNameNoSubskill::Larceny => &mut self.larcency,
+            AbilityNameNoSubskill::Linguistics => &mut self.linguistics,
+            AbilityNameNoSubskill::Lore => &mut self.lore,
+            AbilityNameNoSubskill::Medicine => &mut self.medicine,
+            AbilityNameNoSubskill::Melee => &mut self.melee,
+            AbilityNameNoSubskill::Occult => &mut self.occult,
+            AbilityNameNoSubskill::Performance => &mut self.performance,
+            AbilityNameNoSubskill::Presence => &mut self.presence,
+            AbilityNameNoSubskill::Resistance => &mut self.resistance,
+            AbilityNameNoSubskill::Ride => &mut self.ride,
+            AbilityNameNoSubskill::Sail => &mut self.sail,
+            AbilityNameNoSubskill::Socialize => &mut self.socialize,
+            AbilityNameNoSubskill::Stealth => &mut self.stealth,
+            AbilityNameNoSubskill::Survival => &mut self.survival,
+            AbilityNameNoSubskill::Thrown => &mut self.thrown,
+            AbilityNameNoSubskill::War => &mut self.war,
+            AbilityNameNoSubskill::Craft => {
+                self.craft.get_mut(subskill.unwrap()).ok_or_else(|| eyre!("cannot have specialties on 0-rated abilities"))?
+            }
+            AbilityNameNoSubskill::MartialArts =>  {
+                self.martial_arts.get_mut(subskill.unwrap()).ok_or_else(|| eyre!("cannot have specialties on 0-rated abilities"))?
+            }
+        };
+
+        match rating_ptr {
+            AbilityRating::Zero => {return Err(eyre!("cannot have specialties on 0-rated abilities"));}
+            AbilityRating::NonZero(non_zero_rating) => {non_zero_rating.specialties.remove(specialty);}
+        }
+
+        Ok(())
+
+    }
+
+
+    fn craft_iter(&self) -> impl Iterator<Item = Ability> {
         CraftIter {
             craft_iter: self.craft.iter(),
         }
     }
 
-    pub fn add_martial_arts(&mut self, style: String) -> AbilityMut {
-        if !self.martial_arts.contains_key(&style) {
-            self.martial_arts.insert(style.clone(), AbilityRating::Zero);
-        }
-        self.get_mut(&AbilityName::MartialArts(style)).unwrap()
-    }
-
-    pub fn remove_martial_arts(&mut self, style: &String) {
-        self.martial_arts.remove(style);
-    }
-
-    pub fn martial_arts_iter(&self) -> impl Iterator<Item = Ability> {
+    fn martial_arts_iter(&self) -> impl Iterator<Item = Ability> {
         MartialArtsIter {
             martial_arts_iter: self.martial_arts.iter(),
         }
@@ -716,8 +707,7 @@ impl Abilities {
     pub fn meets_prerequisite(&self, prerequisite: &AbilityPrerequisite) -> bool {
         match (prerequisite.ability_name, &prerequisite.subskill) {
             (AbilityNameNoSubskill::Craft, Some(focus)) => {
-                let ability_name: AbilityName = AbilityName::Craft(focus.clone());
-                if let Some(ability) = self.get(&ability_name) {
+                if let Some(ability) = self.get(AbilityNameNoSubskill::Craft, Some(focus.as_str())) {
                     ability.dots() >= prerequisite.dots
                 } else {
                     false
@@ -727,8 +717,7 @@ impl Abilities {
                 .craft_iter()
                 .any(|craft_ability| craft_ability.dots() >= prerequisite.dots),
             (AbilityNameNoSubskill::MartialArts, Some(style)) => {
-                let ability_name: AbilityName = AbilityName::MartialArts(style.clone());
-                if let Some(ability) = self.get(&ability_name) {
+                if let Some(ability) = self.get(AbilityNameNoSubskill::MartialArts, Some(style.as_str())) {
                     ability.dots() >= prerequisite.dots
                 } else {
                     false
@@ -739,7 +728,7 @@ impl Abilities {
                 .any(|martial_arts_ability| martial_arts_ability.dots() >= prerequisite.dots),
             (other_ability, _) => {
                 let ability_name: AbilityName = other_ability.try_into().unwrap();
-                self.get(&ability_name).unwrap().dots() >= prerequisite.dots
+                self.get(other_ability, None).unwrap().dots() >= prerequisite.dots
             }
         }
     }
@@ -754,12 +743,12 @@ struct AbilityNamesIter<'a> {
 }
 
 impl<'a> Iterator for AbilityNamesIter<'a> {
-    type Item = AbilityName;
+    type Item = AbilityName<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.on_craft {
             if let Some(focus) = self.craft_iter.next() {
-                return Some(AbilityName::Craft(focus.clone()));
+                return Some(AbilityName::Craft(focus.as_str()));
             } else {
                 self.on_craft = false;
             }
@@ -767,7 +756,7 @@ impl<'a> Iterator for AbilityNamesIter<'a> {
 
         if self.on_martial_arts {
             if let Some(style) = self.martial_arts_iter.next() {
-                return Some(AbilityName::MartialArts(style.clone()));
+                return Some(AbilityName::MartialArts(style.as_str()));
             } else {
                 self.on_martial_arts = false;
             }
@@ -798,7 +787,7 @@ impl<'a> Iterator for AbilitiesIter<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let ability_name = self.ability_names_iter.next()?;
-        self.abilities.get(&ability_name)
+        self.abilities.get(ability_name.without_subskill(), ability_name.subskill())
     }
 }
 
@@ -814,7 +803,7 @@ impl<'a> Iterator for CraftIter<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         if let Some((focus, rating)) = self.craft_iter.next() {
             Some(Ability {
-                name: AbilityName::Craft(focus.clone()),
+                name: &AbilityName::Craft(focus.as_str()),
                 rating,
             })
         } else {
@@ -833,7 +822,7 @@ impl<'a> Iterator for MartialArtsIter<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         if let Some((style, rating)) = self.martial_arts_iter.next() {
             Some(Ability {
-                name: AbilityName::MartialArts(style.clone()),
+                name: &AbilityName::MartialArts(style.as_str()),
                 rating,
             })
         } else {
