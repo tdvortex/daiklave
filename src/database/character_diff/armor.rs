@@ -21,7 +21,6 @@ impl Armor {
         let mut new_owned_set = HashSet::new();
         let mut worn_item = None;
 
-
         for (_, worn, armor_item) in newer.iter() {
             if let Some(id) = armor_item.id() {
                 new_owned_set.insert(id);

@@ -169,7 +169,7 @@ impl Armor {
             items_iter: self.owned.iter(),
         }
     }
-    
+
     pub fn get(&self, key: usize) -> Result<&ArmorItem> {
         self.owned
             .get(key)

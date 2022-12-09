@@ -141,19 +141,25 @@ impl CharacterBuilder {
         ability_name: AbilityNameNoSubskill,
         value: u8,
     ) -> Result<&mut Self> {
-        self.abilities
-            .set_dots(ability_name, None, value);
+        self.abilities.set_dots(ability_name, None, value)?;
         Ok(self)
     }
 
     pub fn with_craft(&mut self, craft_focus: &str, value: u8) -> &mut Self {
         self.abilities
-            .set_dots(AbilityNameNoSubskill::Craft, Some(craft_focus), value);
+            .set_dots(AbilityNameNoSubskill::Craft, Some(craft_focus), value)
+            .unwrap();
         self
     }
 
     pub fn with_martial_arts(&mut self, martial_arts_style: &str, value: u8) -> &mut Self {
-        self.abilities.set_dots(AbilityNameNoSubskill::MartialArts, Some(martial_arts_style), value);
+        self.abilities
+            .set_dots(
+                AbilityNameNoSubskill::MartialArts,
+                Some(martial_arts_style),
+                value,
+            )
+            .unwrap();
         self
     }
 
@@ -172,7 +178,8 @@ impl CharacterBuilder {
         craft_focus: &str,
         specialty: String,
     ) -> Result<&mut Self> {
-        self.abilities.add_specialty(AbilityNameNoSubskill::Craft, Some(craft_focus), specialty)?;
+        self.abilities
+            .add_specialty(AbilityNameNoSubskill::Craft, Some(craft_focus), specialty)?;
         Ok(self)
     }
 
@@ -181,7 +188,11 @@ impl CharacterBuilder {
         martial_arts_style: &str,
         specialty: String,
     ) -> Result<&mut Self> {
-        self.abilities.add_specialty(AbilityNameNoSubskill::MartialArts, Some(martial_arts_style), specialty)?;
+        self.abilities.add_specialty(
+            AbilityNameNoSubskill::MartialArts,
+            Some(martial_arts_style),
+            specialty,
+        )?;
         Ok(self)
     }
 

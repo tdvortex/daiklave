@@ -17,7 +17,6 @@ pub struct WeaponsDiff {
 
 impl Weapons {
     pub fn compare_newer(&self, newer: &Self) -> WeaponsDiff {
-
         let mut noop = true;
         let mut created_weapons = Vec::new();
         let mut new_owned_weapons = HashMap::new();
@@ -43,7 +42,6 @@ impl Weapons {
             noop = old_owned_weapons != new_owned_weapons;
         }
 
-
         if noop {
             WeaponsDiff {
                 noop,
@@ -54,7 +52,7 @@ impl Weapons {
             WeaponsDiff {
                 noop,
                 created_weapons,
-                owned_weapons: new_owned_weapons.into_iter().collect()
+                owned_weapons: new_owned_weapons.into_iter().collect(),
             }
         }
     }
