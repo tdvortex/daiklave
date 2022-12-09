@@ -1,3 +1,5 @@
+pub mod tables;
+
 #[derive(Debug, Clone)]
 pub struct Player {
     id: i32,

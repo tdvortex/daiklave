@@ -1,7 +1,8 @@
 use ::eyre::{eyre, Result};
 use sqlx::{query, PgPool, Postgres, Transaction};
 
-use crate::character::{traits::player::Player, Character};
+use crate::character::Character;
+use crate::player::Player;
 
 use super::get_character::get_character_transaction;
 

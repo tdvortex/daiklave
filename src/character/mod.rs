@@ -5,8 +5,8 @@ use std::ops::Deref;
 pub mod traits;
 
 use crate::campaign::Campaign;
+use crate::player::Player;
 use traits::experience::ExperiencePoints;
-use traits::player::Player;
 use traits::willpower::Willpower;
 
 use self::traits::prerequisite::{

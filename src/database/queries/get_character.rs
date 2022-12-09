@@ -7,12 +7,11 @@ use crate::{
     attributes::tables::AttributeRow,
     campaign::tables::CampaignRow,
     character::Character,
-    database::tables::{
-        character::CharacterRow, players::PlayerRow, prerequisites::PrerequisiteRow,
-    },
+    database::tables::{character::CharacterRow, prerequisites::PrerequisiteRow},
     health::tables::HealthBoxRow,
     intimacies::tables::IntimacyRow,
     merits::tables::{MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow},
+    player::tables::PlayerRow,
     weapons::tables::{WeaponEquippedRow, WeaponRow},
 };
 

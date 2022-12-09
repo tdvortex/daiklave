@@ -7,6 +7,7 @@ pub mod charms;
 pub mod health;
 pub mod intimacies;
 pub mod merits;
+pub mod player;
 pub mod weapons;
 
 #[cfg(feature = "database")]
