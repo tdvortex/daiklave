@@ -44,6 +44,16 @@ pub async fn put_character(pool: &PgPool, character: Character) -> Result<Charac
     compare_intimacies(&old_character.intimacies, &character.intimacies)
         .save(&mut transaction, character_id)
         .await?;
+    old_character
+        .weapons
+        .compare_newer(&character.weapons)
+        .save(&mut transaction, character_id)
+        .await?;
+    old_character
+        .armor
+        .compare_newer(&character.armor)
+        .save(&mut transaction, character_id)
+        .await?;
 
     let character = get_character_transaction(&mut transaction, character_id)
         .await?

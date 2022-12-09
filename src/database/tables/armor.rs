@@ -40,6 +40,20 @@ impl From<ArmorTagPostgres> for ArmorTag {
     }
 }
 
+impl From<ArmorTag> for ArmorTagPostgres {
+    fn from(tag: ArmorTag) -> Self {
+        match tag {
+            ArmorTag::Artifact => Self::Artifact,
+            ArmorTag::Concealable => Self::Concealable,
+            ArmorTag::Heavy => Self::Heavy,
+            ArmorTag::Light => Self::Light,
+            ArmorTag::Medium => Self::Medium,
+            ArmorTag::Silent => Self::Silent,
+            ArmorTag::Special => Self::Special,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct ArmorRow {
     pub id: i32,
@@ -81,6 +95,7 @@ impl TryFrom<ArmorRow> for crate::character::traits::armor::ArmorItem {
             value.name,
             value.tags.into_iter().map(|tag| tag.into()).collect(),
             Some(value.id),
+            value.creator_id,
         )
     }
 }
@@ -136,7 +151,12 @@ impl CharacterBuilder {
 
         for armor_row in armor_owned.unwrap().into_iter() {
             let tags = armor_row.tags.into_iter().map(|tag| tag.into()).collect();
-            let armor_item = ArmorItem::new(armor_row.name, tags, Some(armor_row.id))?;
+            let armor_item = ArmorItem::new(
+                armor_row.name,
+                tags,
+                Some(armor_row.id),
+                armor_row.creator_id,
+            )?;
             armor_hashmap.insert(armor_row.id, (armor_item, false));
         }
 

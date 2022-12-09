@@ -23,10 +23,16 @@ pub struct ArmorItem {
     concealable: bool,
     silent: bool,
     special: bool,
+    creator_id: Option<i32>,
 }
 
 impl ArmorItem {
-    pub fn new(name: String, tags: HashSet<ArmorTag>, id: Option<i32>) -> Result<ArmorItem> {
+    pub fn new(
+        name: String,
+        tags: HashSet<ArmorTag>,
+        id: Option<i32>,
+        creator_id: Option<i32>,
+    ) -> Result<ArmorItem> {
         let mut weight_class = None::<WeightClass>;
         let mut artifact = false;
         let mut concealable = false;
@@ -73,11 +79,16 @@ impl ArmorItem {
             concealable,
             silent,
             special,
+            creator_id,
         })
     }
 
     pub fn id(&self) -> Option<i32> {
         self.id
+    }
+
+    pub fn creator_id(&self) -> Option<i32> {
+        self.creator_id
     }
 
     pub fn name(&self) -> &str {
@@ -239,14 +250,26 @@ pub struct ArmorBuilder {
     name: Option<String>,
     weight_class: Option<WeightClass>,
     tags: HashSet<ArmorTag>,
+    creator_id: Option<i32>,
 }
 
-pub fn create_armor_item() -> ArmorBuilder {
+pub fn create_book_armor_item() -> ArmorBuilder {
     ArmorBuilder {
         id: None,
         name: None,
         weight_class: None,
         tags: HashSet::new(),
+        creator_id: None,
+    }
+}
+
+pub fn create_custom_armor_item(character_id: i32) -> ArmorBuilder {
+    ArmorBuilder {
+        id: None,
+        name: None,
+        weight_class: None,
+        tags: HashSet::new(),
+        creator_id: Some(character_id),
     }
 }
 
@@ -312,6 +335,6 @@ impl ArmorBuilder {
         };
         self.tags.insert(weight_tag);
 
-        ArmorItem::new(self.name.unwrap(), self.tags, self.id)
+        ArmorItem::new(self.name.unwrap(), self.tags, self.id, self.creator_id)
     }
 }
