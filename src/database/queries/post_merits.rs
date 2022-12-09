@@ -1,3 +1,5 @@
+use std::{collections::{HashMap, HashSet}};
+
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 
@@ -40,4 +42,38 @@ async fn post_merit_templates_transaction(
             &descriptions as &[&str]
         ).fetch_all(&mut *transaction).await?.into_iter().map(|record| record.id).collect()
     )
+}
+
+async fn post_merit_prerequisite_sets_transaction(
+    transaction: &mut Transaction<'_, Postgres>,
+    merit_prerequisite_sets: HashMap<i32, Vec<HashSet<i32>>>
+) -> Result<()> {
+
+    let mut groups = Vec::new();
+    let mut merit_ids = Vec::new();
+    let mut prerequisite_ids = Vec::new();
+
+    for (merit_id, vec_of_vecs) in merit_prerequisite_sets.into_iter() {
+        for (group, vec_of_ids) in vec_of_vecs.into_iter().enumerate().take(i32::MAX as usize) {
+            for id in vec_of_ids.into_iter() {
+                groups.push(group as i32);
+                merit_ids.push(merit_id);
+                prerequisite_ids.push(id);
+            }
+        }
+    }
+
+    query!(
+        "INSERT INTO merit_prerequisite_sets(id, merit_id, prerequisite_id)
+        SELECT
+            data.id,
+            data.merit_id,
+            data.prerequisite_id
+        FROM UNNEST($1::INTEGER[], $2::INTEGER[], $3::INTEGER[]) as data(id, merit_id, prerequisite_id)",
+        &groups as &[i32],
+        &merit_ids as &[i32],
+        &prerequisite_ids as &[i32]
+    ).execute(&mut *transaction).await?;
+
+    Ok(())
 }
