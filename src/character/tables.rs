@@ -1,7 +1,4 @@
-use crate::character::{
-    traits::{experience::ExperiencePoints, willpower::Willpower},
-    CharacterBuilder,
-};
+use crate::character::{CharacterBuilder, ExperiencePoints, Willpower};
 use eyre::Result;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]

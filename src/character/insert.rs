@@ -3,8 +3,7 @@ use sqlx::{query, PgPool, Postgres, Transaction};
 
 use crate::character::Character;
 use crate::player::Player;
-
-use super::get_character::get_character_transaction;
+use crate::character::retrieve::get_character_transaction;
 
 pub async fn post_character(pool: &PgPool, player: Player) -> Result<Character> {
     let mut transaction = pool.begin().await?;

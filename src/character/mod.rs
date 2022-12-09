@@ -1,13 +1,12 @@
+pub mod diff;
+pub mod insert;
+pub mod retrieve;
+pub mod tables;
 use eyre::{eyre, Result};
 use std::ops::Deref;
 
-/// Contains all of the individual traits that describe a character.
-pub mod traits;
-
 use crate::campaign::Campaign;
 use crate::player::Player;
-use traits::experience::ExperiencePoints;
-use traits::willpower::Willpower;
 
 use crate::abilities::{Abilities, AbilityNameNoSubskill};
 use crate::armor::{Armor, ArmorItem};
@@ -278,5 +277,63 @@ impl CharacterBuilder {
             armor: self.armor,
             merits: self.merits,
         })
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct ExperiencePoints {
+    pub current: u16,
+    pub total: u16,
+}
+
+#[derive(Debug, Default)]
+pub struct CraftingExperience {
+    pub silver: u16,
+    pub gold: u16,
+    pub white: u16,
+    pub major_slots: u16,
+}
+
+pub enum CraftingExperienceType {
+    Silver,
+    Gold,
+    White,
+}
+
+#[derive(Debug)]
+pub struct Willpower {
+    pub current: u8,
+    pub maximum: u8,
+}
+
+impl Default for Willpower {
+    fn default() -> Self {
+        Self {
+            current: 5,
+            maximum: 5,
+        }
+    }
+}
+
+impl Willpower {
+    pub fn recover_all(&mut self) {
+        self.current = self.current.max(self.maximum);
+    }
+
+    pub fn recover_one(&mut self) {
+        self.current = self.maximum.min(self.current + 1);
+    }
+
+    pub fn gain_one(&mut self) {
+        self.current += 1;
+    }
+
+    pub fn spend_one(&mut self) -> Result<()> {
+        if self.current == 0 {
+            Err(eyre!("Cannot spend willpower while at zero"))
+        } else {
+            self.current -= 1;
+            Ok(())
+        }
     }
 }

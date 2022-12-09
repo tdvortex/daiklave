@@ -7,7 +7,7 @@ use crate::{
     attributes::tables::AttributeRow,
     campaign::tables::CampaignRow,
     character::Character,
-    database::tables::character::CharacterRow,
+    character::tables::CharacterRow,
     health::tables::HealthBoxRow,
     intimacies::tables::IntimacyRow,
     merits::tables::{MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow},
@@ -51,7 +51,7 @@ pub async fn get_character_transaction(
 ) -> Result<Option<Character>> {
     let maybe_get_character = sqlx::query_file_as!(
         GetCharacter,
-        "src/database/queries/get_character.sql",
+        "src/character/retrieve.sql",
         character_id
     )
     .fetch_optional(&mut *transaction)
