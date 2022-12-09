@@ -4,8 +4,8 @@ use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 
 use crate::{
-    intimacies::{Intimacies, Intimacy},
     intimacies::tables::{IntimacyLevelPostgres, IntimacyTypePostgres},
+    intimacies::{Intimacies, Intimacy},
 };
 
 #[derive(Debug, Default)]

@@ -3,11 +3,9 @@ use sqlx::{query, Postgres, Transaction};
 
 use crate::merits::tables::{MeritTemplateInsert, MeritTypePostgres};
 use crate::{
-    merits::Merit, 
     character::traits::prerequisite::PrerequisiteType,
-    database::tables::{
-        prerequisites::{PrerequisiteInsert, PrerequisiteTypePostgres},
-    },
+    database::tables::prerequisites::{PrerequisiteInsert, PrerequisiteTypePostgres},
+    merits::Merit,
 };
 
 use crate::database::queries::post_prerequisites::post_prerequisites_transaction;

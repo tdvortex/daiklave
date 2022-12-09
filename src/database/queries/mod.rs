@@ -1,10 +1,7 @@
 mod get_character;
 mod post_character;
 pub mod post_prerequisites;
-mod post_weapons;
 mod put_character;
 pub use get_character::get_character;
 pub use post_character::post_character;
-pub use post_weapons::post_weapons;
-pub(crate) use post_weapons::post_weapons_transaction;
 pub use put_character::put_character;

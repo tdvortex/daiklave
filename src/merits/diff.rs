@@ -1,5 +1,5 @@
-use super::{Merit, Merits};
 use super::insert::{post_merits_details_transaction, post_new_merits_transaction};
+use super::{Merit, Merits};
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 use std::collections::HashSet;

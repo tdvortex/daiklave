@@ -1,12 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::character::{
-    traits::{
-        range_bands::RangeBand,
-        weapons::{Weapon, WeaponTag},
-    },
-    CharacterBuilder,
-};
+use crate::character::CharacterBuilder;
+use crate::weapons::{EquipHand, RangeBand, Weapon, WeaponTag};
 use eyre::{eyre, Report, Result};
 use sqlx::postgres::PgHasArrayType;
 
@@ -322,7 +317,6 @@ impl CharacterBuilder {
         weapon_rows: Vec<WeaponRow>,
         weapon_equipped_rows: Option<Vec<WeaponEquippedRow>>,
     ) -> Result<Self> {
-        use crate::character::traits::weapons::EquipHand as TraitsEquipHand;
         let mut weapons_hashmap = HashMap::new();
 
         for weapon_row in weapon_rows.into_iter() {
@@ -361,26 +355,22 @@ impl CharacterBuilder {
                 })?;
 
             *equipped = match (&equipped, weapon_equipped_row.equip_hand.unwrap()) {
-                (None, EquipHandPostgres::Main) => Some(TraitsEquipHand::Main),
-                (None, EquipHandPostgres::Off) => Some(TraitsEquipHand::Off),
-                (Some(TraitsEquipHand::Main), EquipHandPostgres::Main) => {
+                (None, EquipHandPostgres::Main) => Some(EquipHand::Main),
+                (None, EquipHandPostgres::Off) => Some(EquipHand::Off),
+                (Some(EquipHand::Main), EquipHandPostgres::Main) => {
                     return Err(eyre!("cannot equip two weapons in Main hand"));
                 }
-                (Some(TraitsEquipHand::Off), EquipHandPostgres::Off) => {
+                (Some(EquipHand::Off), EquipHandPostgres::Off) => {
                     return Err(eyre!("cannot equip two weapons in Off hand"));
                 }
-                (Some(TraitsEquipHand::Both), EquipHandPostgres::Main) => {
+                (Some(EquipHand::Both), EquipHandPostgres::Main) => {
                     return Err(eyre!("cannot equip two weapons in Main hand"));
                 }
-                (Some(TraitsEquipHand::Both), EquipHandPostgres::Off) => {
+                (Some(EquipHand::Both), EquipHandPostgres::Off) => {
                     return Err(eyre!("cannot equip two weapons in Off hand"));
                 }
-                (Some(TraitsEquipHand::Main), EquipHandPostgres::Off) => {
-                    Some(TraitsEquipHand::Both)
-                }
-                (Some(TraitsEquipHand::Off), EquipHandPostgres::Main) => {
-                    Some(TraitsEquipHand::Both)
-                }
+                (Some(EquipHand::Main), EquipHandPostgres::Off) => Some(EquipHand::Both),
+                (Some(EquipHand::Off), EquipHandPostgres::Main) => Some(EquipHand::Both),
             };
         }
 

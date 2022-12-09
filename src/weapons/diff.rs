@@ -3,10 +3,9 @@ use std::collections::HashMap;
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 
-use crate::{
-    character::traits::weapons::{EquipHand, Weapon, Weapons},
-    database::{queries::post_weapons_transaction, tables::weapons::EquipHandPostgres},
-};
+use crate::weapons::insert::post_weapons_transaction;
+use crate::weapons::tables::EquipHandPostgres;
+use crate::weapons::{EquipHand, Weapon, Weapons};
 
 #[derive(Debug, Default)]
 pub struct WeaponsDiff {

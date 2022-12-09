@@ -9,16 +9,16 @@ use traits::experience::ExperiencePoints;
 use traits::player::Player;
 use traits::willpower::Willpower;
 
-use crate::health::{Health, WoundPenalty};
-use crate::intimacies::{Intimacies, Intimacy};
-use crate::merits::{Merit, MeritTemplate, Merits};
 use self::traits::prerequisite::{
     ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType,
 };
-use self::traits::weapons::{EquipHand, Weapon, Weapons};
 use crate::abilities::{Abilities, AbilityNameNoSubskill};
 use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
+use crate::health::{Health, WoundPenalty};
+use crate::intimacies::{Intimacies, Intimacy};
+use crate::merits::{Merit, MeritTemplate, Merits};
+use crate::weapons::{EquipHand, Weapon, Weapons};
 
 /// The basic Character object, representing a full player character.
 /// This represents the state of a valid character at a given instant of a game.

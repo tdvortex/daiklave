@@ -1,5 +1,5 @@
-use super::Health;
 use super::tables::{DamageTypePostgres, WoundPenaltyPostgres};
+use super::Health;
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 

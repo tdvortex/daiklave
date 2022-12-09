@@ -6,6 +6,7 @@ pub mod character;
 pub mod health;
 pub mod intimacies;
 pub mod merits;
+pub mod weapons;
 
 #[cfg(feature = "database")]
 pub mod database;

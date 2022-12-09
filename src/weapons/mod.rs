@@ -1,9 +1,10 @@
+pub mod diff;
+pub mod insert;
+pub mod tables;
 use std::collections::HashSet;
 
 use eyre::{eyre, Result};
 use slab::Slab;
-
-use super::range_bands::RangeBand;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 enum WeightClass {
@@ -16,6 +17,15 @@ enum WeightClass {
 enum DamageType {
     Bashing,
     Lethal,
+}
+
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Clone, Copy)]
+pub enum RangeBand {
+    Close,
+    Short,
+    Medium,
+    Long,
+    Extreme,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]

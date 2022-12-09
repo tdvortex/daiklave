@@ -1,9 +1,7 @@
 use sqlx::postgres::PgHasArrayType;
 
+use crate::character::CharacterBuilder;
 use crate::health::{DamageLevel, WoundPenalty};
-use crate::character::{
-    CharacterBuilder,
-};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "WOUNDPENALTY", rename_all = "UPPERCASE")]
