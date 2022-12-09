@@ -9,7 +9,7 @@ pub struct PlayerRow {
 }
 
 impl CharacterBuilder {
-    pub fn apply_player_row(self, player_row: PlayerRow) -> Self {
+    pub(crate) fn apply_player_row(self, player_row: PlayerRow) -> Self {
         self.with_player(Player::new(player_row.id, player_row.name))
     }
 }

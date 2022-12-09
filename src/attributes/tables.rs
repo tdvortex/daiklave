@@ -92,7 +92,7 @@ impl CharacterBuilder {
         self.with_attribute(attribute_name, value)
     }
 
-    pub fn apply_attribute_rows(self, attribute_rows: Vec<AttributeRow>) -> Result<Self> {
+    pub(crate) fn apply_attribute_rows(self, attribute_rows: Vec<AttributeRow>) -> Result<Self> {
         attribute_rows
             .into_iter()
             .fold(Ok(self), |output, attribute_row| {

@@ -312,7 +312,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponEquippedRow {
 }
 
 impl CharacterBuilder {
-    pub fn apply_weapon_rows(
+    pub(crate) fn apply_weapon_rows(
         self,
         weapon_rows: Vec<WeaponRow>,
         weapon_equipped_rows: Option<Vec<WeaponEquippedRow>>,

@@ -61,7 +61,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for CharacterRow {
 }
 
 impl CharacterBuilder {
-    pub fn apply_character_row(self, character_row: CharacterRow) -> Result<Self> {
+    pub(crate) fn apply_character_row(self, character_row: CharacterRow) -> Result<Self> {
         let willpower = Willpower {
             current: character_row.current_willpower.try_into()?,
             maximum: character_row.max_willpower.try_into()?,

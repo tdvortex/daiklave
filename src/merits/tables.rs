@@ -96,7 +96,7 @@ pub struct MeritDetailRow {
 }
 
 impl CharacterBuilder {
-    pub fn apply_merits_rows(
+    pub(crate) fn apply_merits_rows(
         mut self,
         merit_templates: Option<Vec<MeritTemplateRow>>,
         merit_details: Option<Vec<MeritDetailRow>>,

@@ -132,7 +132,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorWornRow {
 }
 
 impl CharacterBuilder {
-    pub fn apply_armor_rows(
+    pub(crate) fn apply_armor_rows(
         self,
         armor_owned: Option<Vec<ArmorRow>>,
         armor_worn: Option<Vec<ArmorWornRow>>,

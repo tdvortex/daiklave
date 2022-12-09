@@ -184,7 +184,7 @@ impl CharacterBuilder {
         }
     }
 
-    pub fn apply_abilities_and_specialties_rows(
+    pub(crate) fn apply_abilities_and_specialties_rows(
         self,
         abilities_rows: Vec<AbilityRow>,
         specialty_rows: Option<Vec<SpecialtyRow>>,
