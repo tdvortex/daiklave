@@ -3,14 +3,12 @@ use sqlx::postgres::PgHasArrayType;
 use std::collections::HashMap;
 
 use crate::abilities::AbilityNameNoSubskill;
-use crate::character::{
-    traits::prerequisite::{ExaltTypePrerequisite, PrerequisiteSet},
-    CharacterBuilder,
-};
+use crate::character::CharacterBuilder;
 use crate::merits::{MeritTemplate, MeritType};
+use crate::prerequisite::{ExaltTypePrerequisite, PrerequisiteSet};
 
 use crate::abilities::tables::AbilityNamePostgres;
-use crate::database::tables::prerequisites::{PrerequisiteRow, PrerequisiteTypePostgres};
+use crate::prerequisite::tables::{PrerequisiteRow, PrerequisiteTypePostgres};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "MERITTYPE", rename_all = "UPPERCASE")]

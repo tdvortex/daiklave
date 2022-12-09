@@ -9,15 +9,13 @@ use crate::player::Player;
 use traits::experience::ExperiencePoints;
 use traits::willpower::Willpower;
 
-use self::traits::prerequisite::{
-    ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType,
-};
 use crate::abilities::{Abilities, AbilityNameNoSubskill};
 use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
 use crate::health::{Health, WoundPenalty};
 use crate::intimacies::{Intimacies, Intimacy};
 use crate::merits::{Merit, MeritTemplate, Merits};
+use crate::prerequisite::{ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType};
 use crate::weapons::{EquipHand, Weapon, Weapons};
 
 /// The basic Character object, representing a full player character.

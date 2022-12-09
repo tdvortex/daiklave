@@ -3,7 +3,7 @@ use sqlx::{query, Postgres, Transaction};
 
 use crate::abilities::tables::AbilityNamePostgres;
 use crate::attributes::tables::AttributeNamePostgres;
-use crate::database::tables::prerequisites::{
+use crate::prerequisite::tables::{
     PrerequisiteExaltTypePostgres, PrerequisiteInsert, PrerequisiteTypePostgres,
 };
 

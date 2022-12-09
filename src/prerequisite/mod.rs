@@ -1,3 +1,5 @@
+pub mod insert;
+pub mod tables;
 use std::ops::Deref;
 
 use crate::abilities::AbilityNameNoSubskill;

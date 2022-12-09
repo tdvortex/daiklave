@@ -1,4 +1,4 @@
-use crate::character::traits::prerequisite::ExaltTypePrerequisite;
+use crate::prerequisite::ExaltTypePrerequisite;
 use eyre::Result;
 use sqlx::postgres::PgHasArrayType;
 
