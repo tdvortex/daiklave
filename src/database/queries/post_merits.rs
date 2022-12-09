@@ -1,9 +1,9 @@
 use std::{collections::{HashMap, HashSet}};
 
-use eyre::Result;
+use eyre::{eyre, Result};
 use sqlx::{query, Postgres, Transaction};
 
-use crate::database::tables::merits::{MeritTemplateInsert, MeritTypePostgres};
+use crate::{database::tables::merits::{MeritTemplateInsert, MeritTypePostgres}, character::traits::merits::MeritTemplate};
 
 async fn post_merit_templates_transaction(
     transaction: &mut Transaction<'_, Postgres>,
@@ -77,3 +77,28 @@ async fn post_merit_prerequisite_sets_transaction(
 
     Ok(())
 }
+
+// async fn post_merit_templates_and_prerequisites_transaction(
+//     transaction: &mut Transaction<'_, Postgres>,
+//     merit_templates: &[MeritTemplate]
+// ) -> Result<Vec<i32>> {
+//     let mut merit_template_inserts = Vec::new();
+//     let mut groups_and_prerequisites
+//     let mut prerequisite_sets = Vec::new();
+    
+//     for (template_index, merit_template) in merit_templates.into_iter().enumerate() {
+//         merit_template_inserts.push(MeritTemplateInsert {
+//             name: merit_template.name().to_owned(),
+//             dots: merit_template.dots().into(),
+//             merit_type: merit_template.merit_type().into(),
+//             description: merit_template.description().to_owned(),
+//             requires_detail: merit_template.requires_detail(),
+//         });
+
+//         prerequisite_sets.push(merit_template.prerequisites());
+//     }
+
+//     let template_ids = post_merit_templates_transaction(transaction, &merit_template_inserts).await?;
+
+//     Err(eyre!("not yet implemented"))
+// }
