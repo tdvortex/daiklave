@@ -5,7 +5,7 @@ use crate::character::Character;
 use crate::player::Player;
 use crate::character::retrieve::retrieve_character_transaction;
 
-async fn create_character(pool: &PgPool, player: Player) -> Result<Character> {
+pub async fn create_character(pool: &PgPool, player: Player) -> Result<Character> {
     let mut transaction = pool.begin().await?;
 
     let character = create_character_transaction(&mut transaction, player).await?;

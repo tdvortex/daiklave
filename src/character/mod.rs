@@ -1,6 +1,7 @@
 pub(crate) mod update;
 pub(crate) mod create;
 pub(crate) mod retrieve;
+pub use create::create_character;
 pub use retrieve::retrieve_character;
 pub use update::CharacterBaseDiff;
 pub use update::update_character;
@@ -291,13 +292,13 @@ pub struct ExperiencePoints {
 
 #[derive(Debug, Default)]
 pub(crate) struct CraftingExperience {
-    pub silver: u16,
-    pub gold: u16,
-    pub white: u16,
-    pub major_slots: u16,
+    pub _silver: u16,
+    pub _gold: u16,
+    pub _white: u16,
+    pub _major_slots: u16,
 }
 
-pub(crate) enum CraftingExperienceType {
+pub(crate) enum _CraftingExperienceType {
     Silver,
     Gold,
     White,
