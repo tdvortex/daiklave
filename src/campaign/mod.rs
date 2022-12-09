@@ -1,3 +1,5 @@
+pub mod tables;
+
 #[derive(Debug)]
 pub struct Campaign {
     _id: i32,

@@ -4,7 +4,7 @@ use std::ops::Deref;
 /// Contains all of the individual traits that describe a character.
 pub mod traits;
 
-use traits::campaign::Campaign;
+use crate::campaign::Campaign;
 use traits::experience::ExperiencePoints;
 use traits::player::Player;
 use traits::willpower::Willpower;

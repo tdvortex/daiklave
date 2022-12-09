@@ -5,9 +5,9 @@ use crate::{
     abilities::tables::{AbilityRow, SpecialtyRow},
     armor::tables::{ArmorRow, ArmorWornRow},
     attributes::tables::AttributeRow,
+    campaign::tables::CampaignRow,
     character::Character,
     database::tables::{
-        campaign::CampaignRow,
         character::CharacterRow,
         health::HealthBoxRow,
         intimacies::IntimacyRow,
