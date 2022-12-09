@@ -7,9 +7,9 @@ use crate::{
     attributes::tables::AttributeRow,
     campaign::tables::CampaignRow,
     character::Character,
+    health::tables::HealthBoxRow,
     database::tables::{
         character::CharacterRow,
-        health::HealthBoxRow,
         intimacies::IntimacyRow,
         merits::{MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow},
         players::PlayerRow,

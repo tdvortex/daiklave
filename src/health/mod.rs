@@ -1,3 +1,5 @@
+pub mod diff;
+pub mod tables;
 use eyre::Result;
 
 #[derive(Debug)]

@@ -9,7 +9,7 @@ use traits::experience::ExperiencePoints;
 use traits::player::Player;
 use traits::willpower::Willpower;
 
-use self::traits::health::{Health, WoundPenalty};
+use crate::health::{Health, WoundPenalty};
 use self::traits::intimacies::{Intimacies, Intimacy};
 use self::traits::merits::{Merit, MeritTemplate, Merits};
 use self::traits::prerequisite::{

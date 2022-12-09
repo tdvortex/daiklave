@@ -1,7 +1,5 @@
-use crate::{
-    character::traits::health::Health,
-    database::tables::health::{DamageTypePostgres, WoundPenaltyPostgres},
-};
+use super::Health;
+use super::tables::{DamageTypePostgres, WoundPenaltyPostgres};
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 

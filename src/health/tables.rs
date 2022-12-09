@@ -1,7 +1,7 @@
 use sqlx::postgres::PgHasArrayType;
 
+use crate::health::{DamageLevel, WoundPenalty};
 use crate::character::{
-    traits::health::{DamageLevel, WoundPenalty},
     CharacterBuilder,
 };
 
