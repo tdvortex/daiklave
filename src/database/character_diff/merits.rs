@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::character::traits::merits::{Merits, Merit};
+use crate::character::traits::merits::{Merit, Merits};
 
 #[derive(Debug, Default)]
 pub struct MeritDiff {
@@ -12,7 +12,10 @@ pub struct MeritDiff {
 pub fn compare_merits(old_merits: &Merits, new_merits: &Merits) -> MeritDiff {
     let mut diff = MeritDiff::default();
 
-    let mut old_merit_instance_ids: HashSet<i32> = old_merits.iter().filter_map(|merit| merit.instance_id()).collect();
+    let mut old_merit_instance_ids: HashSet<i32> = old_merits
+        .iter()
+        .filter_map(|merit| merit.instance_id())
+        .collect();
 
     for merit in new_merits.iter() {
         if merit.template_id().is_none() {
@@ -25,6 +28,6 @@ pub fn compare_merits(old_merits: &Merits, new_merits: &Merits) -> MeritDiff {
     }
 
     diff.remove_merit_instances = old_merit_instance_ids.into_iter().collect();
-    
+
     diff
 }

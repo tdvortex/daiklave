@@ -1,13 +1,13 @@
 use crate::{
-    character::traits::attributes::{AttributeName, Attributes},
-    database::tables::attributes::AttributeNamePostgres,
+    character::traits::attributes::Attributes,
+    database::tables::attributes::{AttributeNamePostgres, AttributeUpdate},
 };
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 
 #[derive(Debug, Default)]
 pub struct AttributesDiff {
-    updated_abilities: Vec<(AttributeName, u8)>,
+    updated_attributes: Vec<AttributeUpdate>,
 }
 
 impl Attributes {
@@ -16,8 +16,7 @@ impl Attributes {
 
         self.iter().for_each(|attribute| {
             if attribute.dots() != newer.get(attribute.name()).dots() {
-                diff.updated_abilities
-                    .push((attribute.name(), attribute.dots()));
+                diff.updated_attributes.push(attribute.into());
             }
         });
 
@@ -31,20 +30,19 @@ impl AttributesDiff {
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
     ) -> Result<()> {
-        if self.updated_abilities.is_empty() {
+        if self.updated_attributes.is_empty() {
             return Ok(());
         }
 
-        let updated_ability_names: Vec<AttributeNamePostgres> = self
-            .updated_abilities
-            .iter()
-            .map(|(name, _)| (*name).into())
-            .collect();
-        let updated_ability_dots: Vec<i16> = self
-            .updated_abilities
-            .iter()
-            .map(|(_, dots)| *dots as i16)
-            .collect();
+        let (updated_attribute_names, updated_attribute_dots) =
+            self.updated_attributes.into_iter().map(|update| update.to_tuple()).fold(
+                (Vec::new(), Vec::new()),
+                |(mut updated_attribute_names, mut updated_attribute_dots), (name, dots)| {
+                    updated_attribute_names.push(name);
+                    updated_attribute_dots.push(dots);
+                    (updated_attribute_names, updated_attribute_dots)
+                },
+            );
 
         query!(
             "
@@ -54,8 +52,8 @@ impl AttributesDiff {
             WHERE attributes.character_id = $1 AND attributes.name = data.name            
             ",
             character_id,
-            &updated_ability_names as &[AttributeNamePostgres],
-            &updated_ability_dots as &[i16],
+            &updated_attribute_names as &[AttributeNamePostgres],
+            &updated_attribute_dots as &[i16],
         )
         .execute(&mut *transaction)
         .await?;

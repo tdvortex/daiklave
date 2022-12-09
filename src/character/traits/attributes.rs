@@ -69,18 +69,18 @@ impl ExactSizeIterator for AttributeNameIter {
 
 impl FusedIterator for AttributeNameIter {}
 
-pub struct Attribute<'a> {
+pub struct Attribute {
     name: AttributeName,
-    value: &'a u8,
+    value: u8,
 }
 
-impl<'a> Attribute<'a> {
+impl Attribute {
     pub fn name(&self) -> AttributeName {
         self.name
     }
 
     pub fn dots(&self) -> u8 {
-        *self.value
+        self.value
     }
 }
 
@@ -119,15 +119,15 @@ impl Attributes {
         Attribute {
             name: attribute_name,
             value: match attribute_name {
-                AttributeName::Strength => &self.strength,
-                AttributeName::Dexterity => &self.dexterity,
-                AttributeName::Stamina => &self.stamina,
-                AttributeName::Charisma => &self.charisma,
-                AttributeName::Manipulation => &self.manipulation,
-                AttributeName::Appearance => &self.appearance,
-                AttributeName::Perception => &self.perception,
-                AttributeName::Intelligence => &self.intelligence,
-                AttributeName::Wits => &self.wits,
+                AttributeName::Strength => self.strength,
+                AttributeName::Dexterity => self.dexterity,
+                AttributeName::Stamina => self.stamina,
+                AttributeName::Charisma => self.charisma,
+                AttributeName::Manipulation => self.manipulation,
+                AttributeName::Appearance => self.appearance,
+                AttributeName::Perception => self.perception,
+                AttributeName::Intelligence => self.intelligence,
+                AttributeName::Wits => self.wits,
             },
         }
     }
@@ -153,7 +153,7 @@ impl Attributes {
         Ok(())
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = Attribute> {
+    pub fn iter(&self) -> impl Iterator<Item = Attribute> + '_ {
         AttributesIter {
             attributes: self,
             name_iter: AttributeName::iter(),
@@ -171,7 +171,7 @@ struct AttributesIter<'a> {
 }
 
 impl<'a> Iterator for AttributesIter<'a> {
-    type Item = Attribute<'a>;
+    type Item = Attribute;
 
     fn next(&mut self) -> Option<Self::Item> {
         let attribute_name = self.name_iter.next()?;
