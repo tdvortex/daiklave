@@ -144,42 +144,42 @@ pub struct MeritTemplateBuilder {
 }
 
 impl MeritTemplateBuilder {
-    pub fn with_id(&mut self, id: i32) -> &mut Self {
+    pub fn with_id(mut self, id: i32) -> Self {
         self.id = Some(id);
         self
     }
 
-    pub fn with_name(&mut self, name: String) -> &mut Self {
+    pub fn with_name(mut self, name: String) -> Self {
         self.name = Some(name);
         self
     }
 
-    pub fn with_description(&mut self, description: String) -> &mut Self {
+    pub fn with_description(mut self, description: String) -> Self {
         self.description = Some(description);
         self
     }
 
-    pub fn with_dots(&mut self, dots: u8) -> &mut Self {
+    pub fn with_dots(mut self, dots: u8) -> Self {
         self.dots = Some(dots);
         self
     }
 
-    pub fn with_merit_type(&mut self, merit_type: MeritType) -> &mut Self {
+    pub fn with_merit_type(mut self, merit_type: MeritType) -> Self {
         self.merit_type = Some(merit_type);
         self
     }
 
-    pub fn requiring_detail(&mut self) -> &mut Self {
+    pub fn requiring_detail(mut self) -> Self {
         self.requires_detail = Some(true);
         self
     }
 
-    pub fn not_requiring_detail(&mut self) -> &mut Self {
+    pub fn not_requiring_detail(mut self) -> Self {
         self.requires_detail = Some(false);
         self
     }
 
-    pub fn with_prerequisite_set(&mut self, prerequisite_set: PrerequisiteSet) -> &mut Self {
+    pub fn with_prerequisite_set(mut self, prerequisite_set: PrerequisiteSet) -> Self {
         self.prerequisites.push(prerequisite_set);
         self
     }

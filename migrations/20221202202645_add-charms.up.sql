@@ -85,3 +85,8 @@ CREATE TABLE charms (
     ),
     CHECK (duration != 'SPECIAL' OR special_duration IS NOT NULL)
 );
+
+CREATE TABLE charm_prerequisite_sets (
+    id INTEGER PRIMARY KEY,
+    charm_id INTEGER NOT NULL REFERENCES charms(id) ON DELETE CASCADE
+)

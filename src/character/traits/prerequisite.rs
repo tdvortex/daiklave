@@ -15,20 +15,12 @@ pub enum PrerequisiteType {
 
 #[derive(Debug, Clone)]
 pub struct Prerequisite {
-    id: Option<i32>,
     prerequisite_type: PrerequisiteType,
 }
 
 impl Prerequisite {
-    pub fn new(prerequisite_type: PrerequisiteType, id: Option<i32>) -> Self {
-        Self {
-            id,
-            prerequisite_type,
-        }
-    }
-
-    pub fn id(&self) -> Option<i32> {
-        self.id
+    pub fn new(prerequisite_type: PrerequisiteType) -> Self {
+        Self { prerequisite_type }
     }
 
     pub fn prerequisite_type(&self) -> &PrerequisiteType {
@@ -142,10 +134,8 @@ impl PrerequisiteSetBuilder {
         mut self,
         ability_name_no_subskill: AbilityNameNoSubskill,
         dots: u8,
-        id: Option<i32>,
     ) -> Self {
         self.prerequisites.push(Prerequisite {
-            id,
             prerequisite_type: PrerequisiteType::Ability(AbilityPrerequisite {
                 ability_name: ability_name_no_subskill,
                 subskill: None,
@@ -155,9 +145,8 @@ impl PrerequisiteSetBuilder {
         self
     }
 
-    pub fn requiring_craft_focus(mut self, focus: String, dots: u8, id: Option<i32>) -> Self {
+    pub fn requiring_craft_focus(mut self, focus: String, dots: u8) -> Self {
         self.prerequisites.push(Prerequisite {
-            id,
             prerequisite_type: PrerequisiteType::Ability(AbilityPrerequisite {
                 ability_name: AbilityNameNoSubskill::Craft,
                 subskill: Some(focus),
@@ -167,14 +156,8 @@ impl PrerequisiteSetBuilder {
         self
     }
 
-    pub fn requiring_martial_arts_style(
-        mut self,
-        style: String,
-        dots: u8,
-        id: Option<i32>,
-    ) -> Self {
+    pub fn requiring_martial_arts_style(mut self, style: String, dots: u8) -> Self {
         self.prerequisites.push(Prerequisite {
-            id,
             prerequisite_type: PrerequisiteType::Ability(AbilityPrerequisite {
                 ability_name: AbilityNameNoSubskill::MartialArts,
                 subskill: Some(style),
@@ -184,14 +167,8 @@ impl PrerequisiteSetBuilder {
         self
     }
 
-    pub fn requiring_attribute(
-        mut self,
-        attribute_name: AttributeName,
-        dots: u8,
-        id: Option<i32>,
-    ) -> Self {
+    pub fn requiring_attribute(mut self, attribute_name: AttributeName, dots: u8) -> Self {
         self.prerequisites.push(Prerequisite {
-            id,
             prerequisite_type: PrerequisiteType::Attribute(AttributePrerequisite {
                 attribute_name,
                 dots,
@@ -200,54 +177,48 @@ impl PrerequisiteSetBuilder {
         self
     }
 
-    pub fn requiring_essence_rating(mut self, dots: u8, id: Option<i32>) -> Self {
+    pub fn requiring_essence_rating(mut self, dots: u8) -> Self {
         self.prerequisites.push(Prerequisite {
-            id,
             prerequisite_type: PrerequisiteType::Essence(dots),
         });
         self
     }
 
-    pub fn requiring_charm(mut self, charm_id: i32, id: Option<i32>) -> Self {
+    pub fn requiring_charm(mut self, charm_id: i32) -> Self {
         self.prerequisites.push(Prerequisite {
-            id,
             prerequisite_type: PrerequisiteType::Charm(charm_id),
         });
         self
     }
 
-    pub fn requiring_solar(mut self, id: Option<i32>) -> Self {
+    pub fn requiring_solar(mut self) -> Self {
         self.prerequisites.push(Prerequisite {
-            id,
             prerequisite_type: PrerequisiteType::ExaltType(ExaltTypePrerequisite::Solar),
         });
         self
     }
 
-    pub fn requiring_lunar(mut self, id: Option<i32>) -> Self {
+    pub fn requiring_lunar(mut self) -> Self {
         self.prerequisites.push(Prerequisite {
-            id,
             prerequisite_type: PrerequisiteType::ExaltType(ExaltTypePrerequisite::Lunar),
         });
         self
     }
 
-    pub fn requiring_dragon_blooded(mut self, id: Option<i32>) -> Self {
+    pub fn requiring_dragon_blooded(mut self) -> Self {
         self.prerequisites.push(Prerequisite {
-            id,
             prerequisite_type: PrerequisiteType::ExaltType(ExaltTypePrerequisite::DragonBlooded),
         });
         self
     }
 
-    pub fn requiring_spirit(mut self, eclipse_keyword: bool, id: Option<i32>) -> Self {
+    pub fn requiring_spirit(mut self, eclipse_keyword: bool) -> Self {
         let maybe_with_eclipse = if eclipse_keyword {
             ExaltTypePrerequisite::SpiritOrEclipse
         } else {
             ExaltTypePrerequisite::Spirit
         };
         self.prerequisites.push(Prerequisite {
-            id,
             prerequisite_type: PrerequisiteType::ExaltType(maybe_with_eclipse),
         });
         self

@@ -4,12 +4,12 @@ use crate::character::traits::merits::{Merit, Merits};
 
 #[derive(Debug, Default)]
 pub struct MeritDiff {
-    insert_merit_templates: Vec<Merit>,
-    insert_merit_instance: Vec<Merit>,
-    remove_merit_instances: Vec<i32>,
+    _insert_merit_templates: Vec<Merit>,
+    _insert_merit_instance: Vec<Merit>,
+    _remove_merit_instances: Vec<i32>,
 }
 
-pub fn compare_merits(old_merits: &Merits, new_merits: &Merits) -> MeritDiff {
+pub fn _compare_merits(old_merits: &Merits, new_merits: &Merits) -> MeritDiff {
     let mut diff = MeritDiff::default();
 
     let mut old_merit_instance_ids: HashSet<i32> = old_merits
@@ -19,15 +19,15 @@ pub fn compare_merits(old_merits: &Merits, new_merits: &Merits) -> MeritDiff {
 
     for merit in new_merits.iter() {
         if merit.template_id().is_none() {
-            diff.insert_merit_templates.push(merit.clone())
+            diff._insert_merit_templates.push(merit.clone())
         } else if merit.instance_id().is_none() {
-            diff.insert_merit_instance.push(merit.clone())
+            diff._insert_merit_instance.push(merit.clone())
         } else {
             old_merit_instance_ids.remove(merit.instance_id().as_ref().unwrap());
         }
     }
 
-    diff.remove_merit_instances = old_merit_instance_ids.into_iter().collect();
+    diff._remove_merit_instances = old_merit_instance_ids.into_iter().collect();
 
     diff
 }

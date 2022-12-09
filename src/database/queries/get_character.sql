@@ -93,7 +93,7 @@ WITH player_query AS (
         INNER JOIN character_merits ON (characters.id = character_merits.character_id)
         INNER JOIN merits ON (merits.id = character_merits.merit_id)
         INNER JOIN merit_prerequisite_sets ON (merit_prerequisite_sets.merit_id = merits.id)
-        INNER JOIN prerequisites ON (merit_prerequisite_sets.prerequisite_id = prerequisites.id)
+        INNER JOIN prerequisites ON (prerequisites.merit_prerequisite_set_id = merit_prerequisite_sets.id)
     WHERE characters.id = $1
 )
 SELECT

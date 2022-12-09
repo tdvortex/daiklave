@@ -103,5 +103,4 @@ pub struct CharmRow {
 pub struct CharmPrerequisiteSetRow {
     pub id: i32,
     pub charm_id: i32,
-    pub prerequisite_id: i32,
 }

@@ -7,7 +7,7 @@ use crate::database::tables::{
     prerequisites::{PrerequisiteExaltTypePostgres, PrerequisiteInsert, PrerequisiteTypePostgres},
 };
 
-async fn post_prerequisites_transaction(
+async fn _post_prerequisites_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     prerequisites: &[PrerequisiteInsert],
 ) -> Result<Vec<i32>> {
@@ -41,11 +41,7 @@ async fn post_prerequisites_transaction(
          prerequisite_insert| {
             prerequisite_types.push(prerequisite_insert.prerequisite_type);
             ability_names.push(prerequisite_insert.ability_name);
-            subskill_names.push(
-                prerequisite_insert
-                    .subskill_name
-                    .as_deref()
-            );
+            subskill_names.push(prerequisite_insert.subskill_name.as_deref());
             attribute_names.push(prerequisite_insert.attribute_name);
             dots_vec.push(prerequisite_insert.dots);
             prerequisite_charm_ids.push(prerequisite_insert.charm_id);
@@ -75,8 +71,8 @@ async fn post_prerequisites_transaction(
         FROM UNNEST($1::PREREQUISITETYPE[], $2::ABILITYNAME[], $3::VARCHAR(255)[], $4::ATTRIBUTENAME[], $5::SMALLINT[], $6::INTEGER[], $7::PREREQUISITEEXALTTYPE[])
             AS data(prerequisite_type, ability_name, subskill_name, attribute_name, dots, charm_id, prerequisite_exalt_type)
         RETURNING id",
-        &prerequisite_types as &[PrerequisiteTypePostgres], 
-        &ability_names as &[Option<AbilityNamePostgres>], 
+        &prerequisite_types as &[PrerequisiteTypePostgres],
+        &ability_names as &[Option<AbilityNamePostgres>],
         &subskill_names as &[Option<&str>],
         &attribute_names as &[Option<AttributeNamePostgres>],
         &dots_vec as &[Option<i16>],

@@ -39,20 +39,12 @@ struct GetCharacter {
 }
 
 pub async fn get_character(pool: &PgPool, character_id: i32) -> Result<Option<Character>> {
-    let maybe_get_character = sqlx::query_file_as!(
-        GetCharacter,
-        "src/database/queries/get_character.sql",
-        character_id
-    )
-    .fetch_optional(pool)
-    .await?;
+    let mut transaction = pool.begin().await?;
 
-    if let Some(get_character) = maybe_get_character {
-        Ok(Some(get_character.try_into()?))
-    } else {
-        // Valid query with no character
-        Ok(None)
-    }
+    let maybe_character = get_character_transaction(&mut transaction, character_id).await?;
+
+    transaction.commit().await?;
+    Ok(maybe_character)
 }
 
 pub async fn get_character_transaction(

@@ -15,7 +15,9 @@ CREATE TYPE PREREQUISITEEXALTTYPE AS ENUM (
 );
 
 CREATE TABLE prerequisites (
-    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
+    merit_prerequisite_set_id INTEGER REFERENCES merit_prerequisite_sets(id) ON DELETE CASCADE,
+    charm_prerequisite_set_id INTEGER REFERENCES charm_prerequisite_sets(id) ON DELETE CASCADE,
     prerequisite_type PREREQUISITETYPE NOT NULL,
     ability_name ABILITYNAME,
     subskill_name VARCHAR(255),
@@ -33,12 +35,9 @@ CREATE TABLE prerequisites (
             WHEN prerequisite_type = 'CHARM' THEN (charm_id IS NOT NULL)
             WHEN prerequisite_type = 'EXALTTYPE' THEN (prerequisite_exalt_type IS NOT NULL)
         END
+    ),
+    CHECK (
+        (merit_prerequisite_set_id IS NULL AND charm_prerequisite_set_id IS NOT NULL)
+        OR (merit_prerequisite_set_id IS NOT NULL AND charm_prerequisite_set_id IS NULL)
     )
 );
-
-CREATE TABLE charm_prerequisite_sets (
-    id INTEGER NOT NULL,
-    charm_id INTEGER REFERENCES charms(id) ON DELETE CASCADE,
-    prerequisite_id INTEGER REFERENCES prerequisites(id) ON DELETE CASCADE,
-    PRIMARY KEY (id, charm_id, prerequisite_id)
-)
