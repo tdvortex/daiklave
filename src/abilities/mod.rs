@@ -8,8 +8,6 @@ use std::iter::FusedIterator;
 
 use crate::character::traits::prerequisite::AbilityPrerequisite;
 
-type Specialty = String;
-
 #[derive(Debug)]
 enum AbilityRating {
     Zero,
@@ -25,7 +23,7 @@ impl Default for AbilityRating {
 #[derive(Debug)]
 struct NonZeroAbility {
     value: u8,
-    specialties: HashSet<Specialty>,
+    specialties: HashSet<String>,
 }
 
 /// The name of an ability, excluding any Craft focus areas or Martial Arts styles.

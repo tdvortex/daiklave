@@ -1,7 +1,5 @@
-use crate::character::{
-    traits::attributes::{Attribute, AttributeName},
-    CharacterBuilder,
-};
+use crate::attributes::{Attribute, AttributeName};
+use crate::character::CharacterBuilder;
 use eyre::Result;
 use sqlx::postgres::PgHasArrayType;
 

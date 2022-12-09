@@ -10,7 +10,6 @@ use traits::player::Player;
 use traits::willpower::Willpower;
 
 use self::traits::armor::{Armor, ArmorItem};
-use self::traits::attributes::{AttributeName, Attributes};
 use self::traits::health::{Health, WoundPenalty};
 use self::traits::intimacies::{Intimacies, Intimacy};
 use self::traits::merits::{Merit, MeritTemplate, Merits};
@@ -19,6 +18,7 @@ use self::traits::prerequisite::{
 };
 use self::traits::weapons::{EquipHand, Weapon, Weapons};
 use crate::abilities::{Abilities, AbilityNameNoSubskill};
+use crate::attributes::{AttributeName, Attributes};
 
 /// The basic Character object, representing a full player character.
 /// This represents the state of a valid character at a given instant of a game.

@@ -11,11 +11,8 @@ use crate::character::{
     CharacterBuilder,
 };
 
-
+use super::prerequisites::{PrerequisiteRow, PrerequisiteTypePostgres};
 use crate::abilities::tables::AbilityNamePostgres;
-use super::{
-    prerequisites::{PrerequisiteRow, PrerequisiteTypePostgres},
-};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "MERITTYPE", rename_all = "UPPERCASE")]

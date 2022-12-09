@@ -1,7 +1,7 @@
 use std::ops::Deref;
 
-use super::attributes::AttributeName;
 use crate::abilities::AbilityNameNoSubskill;
+use crate::attributes::AttributeName;
 use crate::character::Character;
 
 #[derive(Debug, PartialEq, Eq, Clone)]

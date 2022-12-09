@@ -1,7 +1,10 @@
+pub mod diff;
+pub mod tables;
+
 use eyre::{eyre, Result};
 use std::iter::{ExactSizeIterator, FusedIterator};
 
-use super::prerequisite::AttributePrerequisite;
+use crate::character::traits::prerequisite::AttributePrerequisite;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum AttributeName {

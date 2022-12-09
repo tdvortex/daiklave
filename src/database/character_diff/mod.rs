@@ -1,5 +1,4 @@
 mod armor;
-mod attributes;
 mod character;
 mod health;
 mod intimacies;
