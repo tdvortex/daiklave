@@ -1,10 +1,12 @@
+pub mod diff;
+pub mod tables;
 use eyre::{eyre, Report, Result};
 use std::collections::hash_map::Keys;
 use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
 use std::iter::FusedIterator;
 
-use super::prerequisite::AbilityPrerequisite;
+use crate::character::traits::prerequisite::AbilityPrerequisite;
 
 type Specialty = String;
 

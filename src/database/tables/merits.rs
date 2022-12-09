@@ -2,17 +2,18 @@ use eyre::{eyre, Result};
 use sqlx::postgres::PgHasArrayType;
 use std::collections::HashMap;
 
+use crate::abilities::AbilityNameNoSubskill;
 use crate::character::{
     traits::{
-        abilities::AbilityNameNoSubskill,
         merits::{MeritTemplate, MeritType},
         prerequisite::{ExaltTypePrerequisite, PrerequisiteSet},
     },
     CharacterBuilder,
 };
 
+
+use crate::abilities::tables::AbilityNamePostgres;
 use super::{
-    abilities::AbilityNamePostgres,
     prerequisites::{PrerequisiteRow, PrerequisiteTypePostgres},
 };
 

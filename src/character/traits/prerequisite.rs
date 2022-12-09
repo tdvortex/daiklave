@@ -1,8 +1,8 @@
 use std::ops::Deref;
 
+use super::attributes::AttributeName;
+use crate::abilities::AbilityNameNoSubskill;
 use crate::character::Character;
-
-use super::{abilities::AbilityNameNoSubskill, attributes::AttributeName};
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum PrerequisiteType {

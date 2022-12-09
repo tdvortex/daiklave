@@ -1,4 +1,7 @@
-use crate::{character::Character, database::character_diff::{compare_intimacies, compare_merits}};
+use crate::{
+    character::Character,
+    database::character_diff::{compare_intimacies, compare_merits},
+};
 use eyre::{eyre, Result};
 use sqlx::PgPool;
 
@@ -54,7 +57,9 @@ pub async fn put_character(pool: &PgPool, character: Character) -> Result<Charac
         .compare_newer(&character.armor)
         .save(&mut transaction, character_id)
         .await?;
-    compare_merits(&old_character.merits, &character.merits).save(&mut transaction, character_id).await?;
+    compare_merits(&old_character.merits, &character.merits)
+        .save(&mut transaction, character_id)
+        .await?;
 
     let character = get_character_transaction(&mut transaction, character_id)
         .await?

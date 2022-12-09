@@ -1,7 +1,10 @@
-use std::collections::HashSet;
+use crate::{
+    character::traits::merits::{Merit, Merits},
+    database::queries::{post_merits_details_transaction, post_new_merits_transaction},
+};
 use eyre::Result;
-use sqlx::{query, Transaction, Postgres};
-use crate::{character::traits::merits::{Merit, Merits}, database::queries::{post_new_merits_transaction, post_merits_details_transaction}};
+use sqlx::{query, Postgres, Transaction};
+use std::collections::HashSet;
 
 #[derive(Debug, Default)]
 pub struct MeritDiff {
@@ -22,7 +25,10 @@ pub fn compare_merits(old_merits: &Merits, new_merits: &Merits) -> MeritDiff {
         if merit.template_id().is_none() {
             diff.insert_merit_templates.push(merit.clone())
         } else if merit.instance_id().is_none() {
-            diff.insert_merit_instance.push((merit.template_id().unwrap(), merit.detail().map(|s| s.to_owned())))
+            diff.insert_merit_instance.push((
+                merit.template_id().unwrap(),
+                merit.detail().map(|s| s.to_owned()),
+            ))
         } else {
             old_merit_instance_ids.remove(merit.instance_id().as_ref().unwrap());
         }
@@ -48,7 +54,8 @@ impl MeritDiff {
 
         post_new_merits_transaction(transaction, self.insert_merit_templates, character_id).await?;
 
-        post_merits_details_transaction(transaction, self.insert_merit_instance, character_id).await?;
+        post_merits_details_transaction(transaction, self.insert_merit_instance, character_id)
+            .await?;
         Ok(())
     }
 }

@@ -1,8 +1,8 @@
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 
+use crate::abilities::tables::AbilityNamePostgres;
 use crate::database::tables::{
-    abilities::AbilityNamePostgres,
     attributes::AttributeNamePostgres,
     prerequisites::{PrerequisiteExaltTypePostgres, PrerequisiteInsert, PrerequisiteTypePostgres},
 };

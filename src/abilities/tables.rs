@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use sqlx::postgres::PgHasArrayType;
-
-use crate::character::{traits::abilities::AbilityNameNoSubskill, CharacterBuilder};
+use crate::abilities::AbilityNameNoSubskill;
+use crate::character::CharacterBuilder;
 use eyre::{eyre, Report, Result};
+use sqlx::postgres::PgHasArrayType;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ABILITYNAME", rename_all = "UPPERCASE")]

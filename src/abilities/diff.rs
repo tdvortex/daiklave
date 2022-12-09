@@ -1,6 +1,5 @@
-use crate::{
-    character::traits::abilities::Abilities, database::tables::abilities::AbilityNamePostgres,
-};
+use crate::abilities::tables::AbilityNamePostgres;
+use crate::{abilities::Abilities};
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 

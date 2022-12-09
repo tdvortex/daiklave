@@ -9,7 +9,6 @@ use traits::experience::ExperiencePoints;
 use traits::player::Player;
 use traits::willpower::Willpower;
 
-use self::traits::abilities::{Abilities, AbilityNameNoSubskill};
 use self::traits::armor::{Armor, ArmorItem};
 use self::traits::attributes::{AttributeName, Attributes};
 use self::traits::health::{Health, WoundPenalty};
@@ -19,6 +18,7 @@ use self::traits::prerequisite::{
     ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType,
 };
 use self::traits::weapons::{EquipHand, Weapon, Weapons};
+use crate::abilities::{Abilities, AbilityNameNoSubskill};
 
 /// The basic Character object, representing a full player character.
 /// This represents the state of a valid character at a given instant of a game.

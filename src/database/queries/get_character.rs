@@ -2,9 +2,9 @@ use eyre::Result;
 use sqlx::{PgPool, Postgres, Transaction};
 
 use crate::{
+    abilities::tables::{AbilityRow, SpecialtyRow},
     character::Character,
     database::tables::{
-        abilities::{AbilityRow, SpecialtyRow},
         armor::{ArmorRow, ArmorWornRow},
         attributes::AttributeRow,
         campaign::CampaignRow,
