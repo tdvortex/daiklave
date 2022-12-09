@@ -41,6 +41,12 @@ pub struct Character {
     pub merits: Merits,
 }
 
+impl Character {
+    pub fn create() -> CharacterBuilder {
+        CharacterBuilder::default()
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct CharacterBuilder {
     id: Option<i32>,
@@ -92,67 +98,59 @@ impl CharacterBuilder {
             .any(|prerequisite_set| self.meets_prerequisite_set(prerequisite_set))
     }
 
-    pub fn with_id(&mut self, id: i32) -> &mut Self {
+    pub fn with_id(mut self, id: i32) -> Self {
         self.id = Some(id);
         self
     }
 
-    pub fn with_player(&mut self, player: Player) -> &mut Self {
+    pub fn with_player(mut self, player: Player) -> Self {
         self.player = Some(player);
         self
     }
 
-    pub fn with_campaign(&mut self, campaign: Campaign) -> &mut Self {
+    pub fn with_campaign(mut self, campaign: Campaign) -> Self {
         self.campaign = Some(campaign);
         self
     }
 
-    pub fn with_name(&mut self, name: String) -> &mut Self {
+    pub fn with_name(mut self, name: String) -> Self {
         self.name = Some(name);
         self
     }
 
-    pub fn with_concept(&mut self, concept: String) -> &mut Self {
+    pub fn with_concept(mut self, concept: String) -> Self {
         self.concept = Some(concept);
         self
     }
 
-    pub fn with_willpower(&mut self, willpower: Willpower) -> &mut Self {
+    pub fn with_willpower(mut self, willpower: Willpower) -> Self {
         self.willpower = willpower;
         self
     }
 
-    pub fn with_experience(&mut self, experience: ExperiencePoints) -> &mut Self {
+    pub fn with_experience(mut self, experience: ExperiencePoints) -> Self {
         self.experience = experience;
         self
     }
 
-    pub fn with_attribute(
-        &mut self,
-        attribute_name: AttributeName,
-        value: u8,
-    ) -> Result<&mut Self> {
+    pub fn with_attribute(mut self, attribute_name: AttributeName, value: u8) -> Result<Self> {
         self.attributes.set(attribute_name, value)?;
         Ok(self)
     }
 
-    pub fn with_ability(
-        &mut self,
-        ability_name: AbilityNameNoSubskill,
-        value: u8,
-    ) -> Result<&mut Self> {
+    pub fn with_ability(mut self, ability_name: AbilityNameNoSubskill, value: u8) -> Result<Self> {
         self.abilities.set_dots(ability_name, None, value)?;
         Ok(self)
     }
 
-    pub fn with_craft(&mut self, craft_focus: &str, value: u8) -> &mut Self {
+    pub fn with_craft(mut self, craft_focus: &str, value: u8) -> Self {
         self.abilities
             .set_dots(AbilityNameNoSubskill::Craft, Some(craft_focus), value)
             .unwrap();
         self
     }
 
-    pub fn with_martial_arts(&mut self, martial_arts_style: &str, value: u8) -> &mut Self {
+    pub fn with_martial_arts(mut self, martial_arts_style: &str, value: u8) -> Self {
         self.abilities
             .set_dots(
                 AbilityNameNoSubskill::MartialArts,
@@ -164,30 +162,26 @@ impl CharacterBuilder {
     }
 
     pub fn with_specialty(
-        &mut self,
+        mut self,
         ability_name: AbilityNameNoSubskill,
         specialty: String,
-    ) -> Result<&mut Self> {
+    ) -> Result<Self> {
         self.abilities
             .add_specialty(ability_name, None, specialty)?;
         Ok(self)
     }
 
-    pub fn with_craft_specialty(
-        &mut self,
-        craft_focus: &str,
-        specialty: String,
-    ) -> Result<&mut Self> {
+    pub fn with_craft_specialty(mut self, craft_focus: &str, specialty: String) -> Result<Self> {
         self.abilities
             .add_specialty(AbilityNameNoSubskill::Craft, Some(craft_focus), specialty)?;
         Ok(self)
     }
 
     pub fn with_martial_arts_specialty(
-        &mut self,
+        mut self,
         martial_arts_style: &str,
         specialty: String,
-    ) -> Result<&mut Self> {
+    ) -> Result<Self> {
         self.abilities.add_specialty(
             AbilityNameNoSubskill::MartialArts,
             Some(martial_arts_style),
@@ -196,12 +190,12 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    pub fn with_intimacy(&mut self, intimacy: Intimacy) -> &mut Self {
+    pub fn with_intimacy(mut self, intimacy: Intimacy) -> Self {
         self.intimacies.push(intimacy);
         self
     }
 
-    pub fn with_wound_penalties(&mut self, wound_penalties: Vec<WoundPenalty>) -> &mut Self {
+    pub fn with_wound_penalties(mut self, wound_penalties: Vec<WoundPenalty>) -> Self {
         let (bashing, lethal, aggravated) = self.health.damage();
         self.health = Health::empty();
         for wound_penalty in wound_penalties.into_iter() {
@@ -212,16 +206,12 @@ impl CharacterBuilder {
         self
     }
 
-    pub fn with_damage(&mut self, bashing: u8, lethal: u8, aggravated: u8) -> &mut Self {
+    pub fn with_damage(mut self, bashing: u8, lethal: u8, aggravated: u8) -> Self {
         self.health.set_damage(bashing, lethal, aggravated);
         self
     }
 
-    pub fn with_weapon(
-        &mut self,
-        weapon: Weapon,
-        equipped: Option<EquipHand>,
-    ) -> Result<&mut Self> {
+    pub fn with_weapon(mut self, weapon: Weapon, equipped: Option<EquipHand>) -> Result<Self> {
         let key = self.weapons.add_weapon(weapon);
 
         if let Some(hand) = equipped {
@@ -231,7 +221,7 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    pub fn with_armor(&mut self, armor_item: ArmorItem, worn: bool) -> Result<&mut Self> {
+    pub fn with_armor(mut self, armor_item: ArmorItem, worn: bool) -> Result<Self> {
         let key = self.armor.add_armor_item(armor_item);
 
         if worn {
@@ -242,26 +232,26 @@ impl CharacterBuilder {
     }
 
     fn with_merit_ignore_prerequisites(
-        &mut self,
+        mut self,
         template: MeritTemplate,
         detail: Option<String>,
         id: Option<i32>,
-    ) -> Result<&mut Self> {
+    ) -> Result<Self> {
         let merit = Merit::from_template(template, detail, id)?;
         self.merits.push(merit);
         Ok(self)
     }
 
     pub fn with_merit(
-        &mut self,
+        self,
         template: MeritTemplate,
         detail: Option<String>,
         id: Option<i32>,
-    ) -> Result<&mut Self> {
+    ) -> Result<Self> {
         if self.meets_any_prerequisite_set(template.prerequisites()) {
             self.with_merit_ignore_prerequisites(template, detail, id)
         } else {
-            Err(eyre!("prerequisites not met"))
+            Err(eyre!("prerequisites not met for merit {}", template.name()))
         }
     }
 
@@ -291,8 +281,4 @@ impl CharacterBuilder {
             merits: self.merits,
         })
     }
-}
-
-pub fn create_character() -> CharacterBuilder {
-    CharacterBuilder::default()
 }

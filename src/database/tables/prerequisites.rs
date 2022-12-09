@@ -1,8 +1,11 @@
 use std::collections::HashMap;
 
-use crate::character::traits::prerequisite::{
-    AbilityPrerequisite, AttributePrerequisite, ExaltTypePrerequisite, Prerequisite,
-    PrerequisiteSet, PrerequisiteType,
+use crate::character::traits::{
+    abilities::AbilityNameNoSubskill,
+    prerequisite::{
+        AbilityPrerequisite, AttributePrerequisite, ExaltTypePrerequisite, Prerequisite,
+        PrerequisiteSet, PrerequisiteType,
+    },
 };
 use eyre::{eyre, Report, Result};
 
@@ -195,6 +198,83 @@ pub fn flatten_prerequite_set_hashmap_to_vec(
 ) -> Vec<PrerequisiteSet> {
     prerequisite_set_hashmap
         .into_iter()
-        .map(|(id, prerequisites)| PrerequisiteSet::new(prerequisites, Some(id)))
+        .map(|(id, prerequisites)| {
+            prerequisites
+                .into_iter()
+                .fold(
+                    PrerequisiteSet::create().with_id(id),
+                    |set, prerequisite| {
+                        let prerequisite_id = prerequisite.id();
+                        match prerequisite.prerequisite_type() {
+                            PrerequisiteType::Ability(ability_prerequisite) => {
+                                if ability_prerequisite.ability_name == AbilityNameNoSubskill::Craft
+                                    && ability_prerequisite.subskill.is_some()
+                                {
+                                    set.requiring_craft_focus(
+                                        ability_prerequisite
+                                            .subskill
+                                            .as_deref()
+                                            .unwrap()
+                                            .to_owned(),
+                                        ability_prerequisite.dots,
+                                        prerequisite_id,
+                                    )
+                                } else if ability_prerequisite.ability_name
+                                    == AbilityNameNoSubskill::MartialArts
+                                    && ability_prerequisite.subskill.is_some()
+                                {
+                                    set.requiring_martial_arts_style(
+                                        ability_prerequisite
+                                            .subskill
+                                            .as_deref()
+                                            .unwrap()
+                                            .to_owned(),
+                                        ability_prerequisite.dots,
+                                        prerequisite_id,
+                                    )
+                                } else {
+                                    set.requiring_ability(
+                                        ability_prerequisite.ability_name,
+                                        ability_prerequisite.dots,
+                                        prerequisite_id,
+                                    )
+                                }
+                            }
+                            PrerequisiteType::Attribute(attribute_prerequisite) => set
+                                .requiring_attribute(
+                                    attribute_prerequisite.attribute_name,
+                                    attribute_prerequisite.dots,
+                                    prerequisite_id,
+                                ),
+                            PrerequisiteType::Essence(dots) => {
+                                set.requiring_essence_rating(*dots, prerequisite_id)
+                            }
+                            PrerequisiteType::Charm(charm_id) => {
+                                set.requiring_charm(*charm_id, prerequisite_id)
+                            }
+                            PrerequisiteType::ExaltType(exalt_type_prerequisite) => {
+                                match exalt_type_prerequisite {
+                                    ExaltTypePrerequisite::Solar => {
+                                        set.requiring_solar(prerequisite_id)
+                                    }
+                                    ExaltTypePrerequisite::Lunar => {
+                                        set.requiring_lunar(prerequisite_id)
+                                    }
+                                    ExaltTypePrerequisite::DragonBlooded => {
+                                        set.requiring_dragon_blooded(prerequisite_id)
+                                    }
+                                    ExaltTypePrerequisite::Spirit => {
+                                        set.requiring_spirit(false, prerequisite_id)
+                                    }
+                                    ExaltTypePrerequisite::SpiritOrEclipse => {
+                                        set.requiring_spirit(true, prerequisite_id)
+                                    }
+                                }
+                            }
+                        }
+                    },
+                )
+                .build()
+        })
         .collect()
 }

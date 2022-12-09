@@ -34,7 +34,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for CampaignRow {
 }
 
 impl CharacterBuilder {
-    pub fn apply_campaign_row(&mut self, campaign_row: Option<CampaignRow>) -> &mut Self {
+    pub fn apply_campaign_row(self, campaign_row: Option<CampaignRow>) -> Self {
         if let Some(campaign) = campaign_row {
             self.with_campaign(Campaign::new(
                 campaign.id,

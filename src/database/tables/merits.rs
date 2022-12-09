@@ -155,24 +155,31 @@ pub fn insert_prerequisite_sets_into_hashmap(
 }
 
 impl CharacterBuilder {
-    fn apply_merits_hashmap(&mut self, merits_hashmap: MeritHashMap) -> Result<&mut Self> {
+    fn apply_merits_hashmap(self, merits_hashmap: MeritHashMap) -> Result<Self> {
         merits_hashmap.into_iter().fold(
             Ok(self),
             |character_result,
              (template_id, (details_hashmap, prerequisite_set_hashmap, template_row))| {
                 character_result.and_then(|character| {
-                    let dots = template_row.dots.try_into()?;
-                    let prerequisites =
-                        flatten_prerequite_set_hashmap_to_vec(prerequisite_set_hashmap);
-                    let template = MeritTemplate::new(
-                        template_row.name,
-                        dots,
-                        template_row.merit_type.into(),
-                        prerequisites,
-                        template_row.description,
-                        template_row.requires_detail,
-                        Some(template_id),
-                    );
+                    let template = flatten_prerequite_set_hashmap_to_vec(prerequisite_set_hashmap)
+                        .into_iter()
+                        .fold(
+                            {
+                                let mut builder = MeritTemplate::create();
+                                builder
+                                    .with_id(template_id)
+                                    .with_name(template_row.name)
+                                    .with_dots(template_row.dots.try_into()?)
+                                    .with_merit_type(template_row.merit_type.into())
+                                    .with_description(template_row.description);
+                                builder
+                            },
+                            |mut builder, prerequisite_set| {
+                                builder.with_prerequisite_set(prerequisite_set);
+                                builder
+                            },
+                        )
+                        .build()?;
 
                     details_hashmap.into_iter().fold(
                         Ok(character),
@@ -187,12 +194,12 @@ impl CharacterBuilder {
         )
     }
     pub fn apply_merits_rows(
-        &mut self,
+        self,
         merit_templates: Option<Vec<MeritTemplateRow>>,
         merit_details: Option<Vec<MeritDetailRow>>,
         merit_prerequisite_sets: Option<Vec<MeritPrerequisiteSetRow>>,
         merit_prerequisites: Option<Vec<PrerequisiteRow>>,
-    ) -> Result<&mut Self> {
+    ) -> Result<Self> {
         if merit_templates.is_none() {
             return Ok(self);
         }

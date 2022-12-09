@@ -63,14 +63,14 @@ pub struct AttributeRow {
 }
 
 impl CharacterBuilder {
-    fn apply_attribute_row(&mut self, attribute_row: AttributeRow) -> Result<&mut Self> {
+    fn apply_attribute_row(self, attribute_row: AttributeRow) -> Result<Self> {
         let attribute_name = attribute_row.name.into();
         let value = attribute_row.dots.try_into()?;
 
         self.with_attribute(attribute_name, value)
     }
 
-    pub fn apply_attribute_rows(&mut self, attribute_rows: Vec<AttributeRow>) -> Result<&mut Self> {
+    pub fn apply_attribute_rows(self, attribute_rows: Vec<AttributeRow>) -> Result<Self> {
         attribute_rows
             .into_iter()
             .fold(Ok(self), |output, attribute_row| {

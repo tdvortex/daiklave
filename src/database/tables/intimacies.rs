@@ -87,7 +87,7 @@ impl PgHasArrayType for IntimacyRow {
 }
 
 impl CharacterBuilder {
-    pub fn apply_intimacy_rows(&mut self, intimacy_rows: Option<Vec<IntimacyRow>>) -> &mut Self {
+    pub fn apply_intimacy_rows(self, intimacy_rows: Option<Vec<IntimacyRow>>) -> Self {
         if let Some(rows) = intimacy_rows {
             rows.into_iter().fold(self, |s, intimacy_row| {
                 s.with_intimacy(Intimacy {

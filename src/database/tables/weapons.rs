@@ -318,10 +318,10 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponEquippedRow {
 
 impl CharacterBuilder {
     pub fn apply_weapon_rows(
-        &mut self,
+        self,
         weapon_rows: Vec<WeaponRow>,
         weapon_equipped_rows: Option<Vec<WeaponEquippedRow>>,
-    ) -> Result<&mut Self> {
+    ) -> Result<Self> {
         use crate::character::traits::weapons::EquipHand as TraitsEquipHand;
         let mut weapons_hashmap = HashMap::new();
 

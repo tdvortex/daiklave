@@ -135,10 +135,10 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorWornRow {
 
 impl CharacterBuilder {
     pub fn apply_armor_rows(
-        &mut self,
+        self,
         armor_owned: Option<Vec<ArmorRow>>,
         armor_worn: Option<Vec<ArmorWornRow>>,
-    ) -> Result<&mut Self> {
+    ) -> Result<Self> {
         if armor_owned.is_none() {
             if armor_worn.is_none() {
                 return Ok(self);

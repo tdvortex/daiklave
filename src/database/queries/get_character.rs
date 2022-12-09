@@ -2,7 +2,7 @@ use eyre::Result;
 use sqlx::{PgPool, Postgres, Transaction};
 
 use crate::{
-    character::{create_character, Character},
+    character::Character,
     database::tables::{
         abilities::{AbilityRow, SpecialtyRow},
         armor::{ArmorRow, ArmorWornRow},
@@ -79,23 +79,22 @@ impl TryInto<Character> for GetCharacter {
     type Error = eyre::Report;
 
     fn try_into(self) -> Result<Character, Self::Error> {
-        let mut character = create_character();
-        character.apply_player_row(self.player);
-        character.apply_campaign_row(self.campaign);
-        character.apply_character_row(self.character)?;
-        character.apply_attribute_rows(self.attributes)?;
-        character.apply_abilities_and_specialties_rows(self.abilities, self.specialties)?;
-        character.apply_intimacy_rows(self.intimacies);
-        character.apply_health_box_rows(self.health_boxes);
-        character.apply_weapon_rows(self.weapons_owned, self.weapons_equipped)?;
-        character.apply_armor_rows(self.armor_owned, self.armor_worn)?;
-        character.apply_merits_rows(
-            self.merit_templates,
-            self.merit_details,
-            self.merit_prerequisite_sets,
-            self.merit_prerequisites,
-        )?;
-
-        character.build()
+        Character::create()
+            .apply_player_row(self.player)
+            .apply_campaign_row(self.campaign)
+            .apply_character_row(self.character)?
+            .apply_attribute_rows(self.attributes)?
+            .apply_abilities_and_specialties_rows(self.abilities, self.specialties)?
+            .apply_intimacy_rows(self.intimacies)
+            .apply_health_box_rows(self.health_boxes)
+            .apply_weapon_rows(self.weapons_owned, self.weapons_equipped)?
+            .apply_armor_rows(self.armor_owned, self.armor_worn)?
+            .apply_merits_rows(
+                self.merit_templates,
+                self.merit_details,
+                self.merit_prerequisite_sets,
+                self.merit_prerequisites,
+            )?
+            .build()
     }
 }

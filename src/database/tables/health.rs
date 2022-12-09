@@ -80,7 +80,7 @@ pub struct HealthBoxRow {
 }
 
 impl CharacterBuilder {
-    pub fn apply_health_box_rows(&mut self, health_box_rows: Vec<HealthBoxRow>) -> &mut Self {
+    pub fn apply_health_box_rows(self, health_box_rows: Vec<HealthBoxRow>) -> Self {
         let (mut bashing, mut lethal, mut aggravated) = (0, 0, 0);
         let mut wound_penalties = Vec::new();
 
@@ -100,8 +100,7 @@ impl CharacterBuilder {
                 None => {}
             }
         }
-        self.with_wound_penalties(wound_penalties);
-        self.with_damage(bashing, lethal, aggravated);
-        self
+        self.with_wound_penalties(wound_penalties)
+            .with_damage(bashing, lethal, aggravated)
     }
 }

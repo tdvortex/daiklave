@@ -133,10 +133,10 @@ impl PgHasArrayType for SpecialtyRow {
 
 impl CharacterBuilder {
     fn apply_ability_with_specialties_rows(
-        &mut self,
+        self,
         ability_row: AbilityRow,
         specialty_rows: Vec<SpecialtyRow>,
-    ) -> Result<&mut Self> {
+    ) -> Result<Self> {
         let dots: u8 = ability_row.dots.try_into()?;
 
         match ability_row.name {
@@ -144,51 +144,51 @@ impl CharacterBuilder {
                 let craft_focus = ability_row
                     .subskill
                     .ok_or(eyre!("craft abilities must have a focus"))?;
-                self.with_craft(craft_focus.as_str(), dots);
-                specialty_rows
-                    .into_iter()
-                    .fold(Ok(self), |character_result, specialty_row| {
+                specialty_rows.into_iter().fold(
+                    Ok(self.with_craft(craft_focus.as_str(), dots)),
+                    |character_result, specialty_row| {
                         character_result.and_then(|character| {
                             character
                                 .with_craft_specialty(craft_focus.as_str(), specialty_row.specialty)
                         })
-                    })
+                    },
+                )
             }
             AbilityNamePostgres::MartialArts => {
                 let martial_arts_style = ability_row
                     .subskill
                     .ok_or(eyre!("martial arts abilities must have a style"))?;
-                self.with_martial_arts(martial_arts_style.as_str(), dots);
-                specialty_rows
-                    .into_iter()
-                    .fold(Ok(self), |character_result, specialty_row| {
+                specialty_rows.into_iter().fold(
+                    Ok(self.with_martial_arts(martial_arts_style.as_str(), dots)),
+                    |character_result, specialty_row| {
                         character_result.and_then(|character| {
                             character.with_martial_arts_specialty(
                                 martial_arts_style.as_str(),
                                 specialty_row.specialty,
                             )
                         })
-                    })
+                    },
+                )
             }
             other_ability => {
                 let ability_name = other_ability.try_into()?;
-                self.with_ability(ability_name, dots)?;
-                specialty_rows
-                    .into_iter()
-                    .fold(Ok(self), |character_result, specialty_row| {
+                specialty_rows.into_iter().fold(
+                    Ok(self.with_ability(ability_name, dots)?),
+                    |character_result, specialty_row| {
                         character_result.and_then(|character| {
                             character.with_specialty(ability_name, specialty_row.specialty)
                         })
-                    })
+                    },
+                )
             }
         }
     }
 
     pub fn apply_abilities_and_specialties_rows(
-        &mut self,
+        self,
         abilities_rows: Vec<AbilityRow>,
         specialty_rows: Option<Vec<SpecialtyRow>>,
-    ) -> Result<&mut Self> {
+    ) -> Result<Self> {
         let mut abilities_hashmap =
             abilities_rows
                 .into_iter()
@@ -214,7 +214,7 @@ impl CharacterBuilder {
 
         abilities_hashmap.into_iter().fold(
             Ok(self),
-            |character_result: Result<&mut CharacterBuilder, Report>,
+            |character_result: Result<CharacterBuilder, Report>,
              (_, (ability_row, specialty_rows))| {
                 character_result.and_then(|character| {
                     character.apply_ability_with_specialties_rows(ability_row, specialty_rows)
