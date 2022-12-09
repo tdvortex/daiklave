@@ -22,6 +22,6 @@ CREATE TABLE character_merits (
 );
 
 CREATE TABLE merit_prerequisite_sets (
-    id INTEGER PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     merit_id INTEGER REFERENCES merits(id) ON DELETE CASCADE
 );

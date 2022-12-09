@@ -3,7 +3,7 @@ use sqlx::{query, Postgres, Transaction};
 
 use crate::database::tables::merits::{MeritTemplateInsert, MeritTypePostgres};
 
-async fn _post_merit_templates_transaction(
+async fn post_merit_templates_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     merit_templates: &[MeritTemplateInsert],
 ) -> Result<Vec<i32>> {
@@ -42,61 +42,53 @@ async fn _post_merit_templates_transaction(
     )
 }
 
-// async fn post_merit_prerequisite_sets_transaction(
-//     transaction: &mut Transaction<'_, Postgres>,
-//     merit_prerequisite_sets: HashMap<i32, Vec<HashSet<i32>>>
-// ) -> Result<()> {
+async fn post_merit_prerequisite_sets_transaction(
+    transaction: &mut Transaction<'_, Postgres>,
+    merit_template_ids_repeated: &[i32],
+) -> Result<Vec<i32>> {
+    Ok(query!(
+        "INSERT INTO merit_prerequisite_sets(merit_id)
+        SELECT data.merit_id FROM UNNEST($1::INTEGER[]) AS data(merit_id)
+        RETURNING id",
+        merit_template_ids_repeated
+    )
+    .fetch_all(&mut *transaction)
+    .await?
+    .into_iter()
+    .map(|record| record.id)
+    .collect())
+}
 
-//     let mut groups = Vec::new();
-//     let mut merit_ids = Vec::new();
-//     let mut prerequisite_ids = Vec::new();
+async fn post_merits_details_transaction(
+    transaction: &mut Transaction<'_, Postgres>,
+    merit_details: Vec<(i32, Option<String>)>,
+    character_id: i32,
+) -> Result<Vec<i32>> {
+    let (merit_template_ids, details) = merit_details.into_iter().fold(
+        (Vec::new(), Vec::new()),
+        |(mut ids, mut details), (id, detail)| {
+            ids.push(id);
+            details.push(detail);
+            (ids, details)
+        },
+    );
 
-//     for (merit_id, vec_of_vecs) in merit_prerequisite_sets.into_iter() {
-//         for (group, vec_of_ids) in vec_of_vecs.into_iter().enumerate().take(i32::MAX as usize) {
-//             for id in vec_of_ids.into_iter() {
-//                 groups.push(group as i32);
-//                 merit_ids.push(merit_id);
-//                 prerequisite_ids.push(id);
-//             }
-//         }
-//     }
-
-//     query!(
-//         "INSERT INTO merit_prerequisite_sets(id, merit_id, prerequisite_id)
-//         SELECT
-//             data.id,
-//             data.merit_id,
-//             data.prerequisite_id
-//         FROM UNNEST($1::INTEGER[], $2::INTEGER[], $3::INTEGER[]) as data(id, merit_id, prerequisite_id)",
-//         &groups as &[i32],
-//         &merit_ids as &[i32],
-//         &prerequisite_ids as &[i32]
-//     ).execute(&mut *transaction).await?;
-
-//     Ok(())
-// }
-
-// async fn post_merit_templates_and_prerequisites_transaction(
-//     transaction: &mut Transaction<'_, Postgres>,
-//     merit_templates: &[MeritTemplate]
-// ) -> Result<Vec<i32>> {
-//     let mut merit_template_inserts = Vec::new();
-//     let mut groups_and_prerequisites
-//     let mut prerequisite_sets = Vec::new();
-
-//     for (template_index, merit_template) in merit_templates.into_iter().enumerate() {
-//         merit_template_inserts.push(MeritTemplateInsert {
-//             name: merit_template.name().to_owned(),
-//             dots: merit_template.dots().into(),
-//             merit_type: merit_template.merit_type().into(),
-//             description: merit_template.description().to_owned(),
-//             requires_detail: merit_template.requires_detail(),
-//         });
-
-//         prerequisite_sets.push(merit_template.prerequisites());
-//     }
-
-//     let template_ids = post_merit_templates_transaction(transaction, &merit_template_inserts).await?;
-
-//     Err(eyre!("not yet implemented"))
-// }
+    Ok(query!(
+        "INSERT INTO character_merits(character_id, merit_id, detail)
+        SELECT
+            $1::INTEGER,
+            data.merit_id,
+            data.detail
+        FROM UNNEST($2::INTEGER[], $3::VARCHAR(255)[]) as data(merit_id, detail)
+        RETURNING id
+        ",
+        character_id as i32,
+        &merit_template_ids as &[i32],
+        &details as &[Option<String>]
+    )
+    .fetch_all(&mut *transaction)
+    .await?
+    .into_iter()
+    .map(|record| record.id)
+    .collect())
+}
