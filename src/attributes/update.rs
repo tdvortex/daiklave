@@ -23,7 +23,7 @@ impl Attributes {
 }
 
 impl AttributesDiff {
-    pub async fn save(
+    pub async fn update(
         self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,

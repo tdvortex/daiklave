@@ -1,5 +1,5 @@
-pub mod diff;
-pub mod tables;
+pub mod update;
+pub(crate) mod tables;
 
 use eyre::{eyre, Result};
 use std::iter::{ExactSizeIterator, FusedIterator};
@@ -72,17 +72,17 @@ impl ExactSizeIterator for AttributeNameIter {
 
 impl FusedIterator for AttributeNameIter {}
 
-pub struct Attribute {
+pub(crate) struct Attribute {
     name: AttributeName,
     value: u8,
 }
 
 impl Attribute {
-    pub fn name(&self) -> AttributeName {
+    pub(crate) fn name(&self) -> AttributeName {
         self.name
     }
 
-    pub fn dots(&self) -> u8 {
+    pub(crate) fn dots(&self) -> u8 {
         self.value
     }
 }
@@ -118,7 +118,7 @@ impl Default for Attributes {
 }
 
 impl Attributes {
-    pub fn get(&self, attribute_name: AttributeName) -> Attribute {
+    pub(crate) fn get(&self, attribute_name: AttributeName) -> Attribute {
         Attribute {
             name: attribute_name,
             value: match attribute_name {
@@ -135,7 +135,7 @@ impl Attributes {
         }
     }
 
-    pub fn set(&mut self, attribute_name: AttributeName, value: u8) -> Result<()> {
+    pub(crate) fn set(&mut self, attribute_name: AttributeName, value: u8) -> Result<()> {
         if value < 1 {
             return Err(eyre!("attributes must be 1 or more"));
         }
@@ -156,14 +156,14 @@ impl Attributes {
         Ok(())
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = Attribute> + '_ {
+    pub(crate) fn iter(&self) -> impl Iterator<Item = Attribute> + '_ {
         AttributesIter {
             attributes: self,
             name_iter: AttributeName::iter(),
         }
     }
 
-    pub fn meets_prerequisite(&self, prerequisite: &AttributePrerequisite) -> bool {
+    pub(crate) fn meets_prerequisite(&self, prerequisite: &AttributePrerequisite) -> bool {
         self.get(prerequisite.attribute_name).dots() >= prerequisite.dots
     }
 }
