@@ -1,7 +1,5 @@
-use crate::{
-    character::traits::merits::{Merit, Merits},
-    database::queries::{post_merits_details_transaction, post_new_merits_transaction},
-};
+use super::{Merit, Merits};
+use super::insert::{post_merits_details_transaction, post_new_merits_transaction};
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 use std::collections::HashSet;

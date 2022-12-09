@@ -1,4 +1,7 @@
-use super::prerequisite::PrerequisiteSet;
+pub mod diff;
+pub mod insert;
+pub mod tables;
+use crate::character::traits::prerequisite::PrerequisiteSet;
 use eyre::{eyre, Result};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]

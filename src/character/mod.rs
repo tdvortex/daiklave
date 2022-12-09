@@ -11,7 +11,7 @@ use traits::willpower::Willpower;
 
 use crate::health::{Health, WoundPenalty};
 use crate::intimacies::{Intimacies, Intimacy};
-use self::traits::merits::{Merit, MeritTemplate, Merits};
+use crate::merits::{Merit, MeritTemplate, Merits};
 use self::traits::prerequisite::{
     ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType,
 };

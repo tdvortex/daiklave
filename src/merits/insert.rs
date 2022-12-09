@@ -1,15 +1,16 @@
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 
+use crate::merits::tables::{MeritTemplateInsert, MeritTypePostgres};
 use crate::{
-    character::traits::{merits::Merit, prerequisite::PrerequisiteType},
+    merits::Merit, 
+    character::traits::prerequisite::PrerequisiteType,
     database::tables::{
-        merits::{MeritTemplateInsert, MeritTypePostgres},
         prerequisites::{PrerequisiteInsert, PrerequisiteTypePostgres},
     },
 };
 
-use super::post_prerequisites::post_prerequisites_transaction;
+use crate::database::queries::post_prerequisites::post_prerequisites_transaction;
 
 async fn post_merit_templates_transaction(
     transaction: &mut Transaction<'_, Postgres>,

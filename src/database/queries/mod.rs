@@ -1,12 +1,10 @@
 mod get_character;
 mod post_character;
-mod post_merits;
-mod post_prerequisites;
+pub mod post_prerequisites;
 mod post_weapons;
 mod put_character;
 pub use get_character::get_character;
 pub use post_character::post_character;
-pub(crate) use post_merits::{post_merits_details_transaction, post_new_merits_transaction};
 pub use post_weapons::post_weapons;
 pub(crate) use post_weapons::post_weapons_transaction;
 pub use put_character::put_character;

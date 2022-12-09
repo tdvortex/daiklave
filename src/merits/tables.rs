@@ -5,13 +5,13 @@ use std::collections::HashMap;
 use crate::abilities::AbilityNameNoSubskill;
 use crate::character::{
     traits::{
-        merits::{MeritTemplate, MeritType},
         prerequisite::{ExaltTypePrerequisite, PrerequisiteSet},
     },
     CharacterBuilder,
 };
+use crate::merits::{MeritType, MeritTemplate};
 
-use super::prerequisites::{PrerequisiteRow, PrerequisiteTypePostgres};
+use crate::database::tables::prerequisites::{PrerequisiteRow, PrerequisiteTypePostgres};
 use crate::abilities::tables::AbilityNamePostgres;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]

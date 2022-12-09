@@ -9,9 +9,9 @@ use crate::{
     character::Character,
     health::tables::HealthBoxRow,
     intimacies::tables::IntimacyRow,
+    merits::tables::{MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow},
     database::tables::{
         character::CharacterRow,
-        merits::{MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow},
         players::PlayerRow,
         prerequisites::PrerequisiteRow,
         weapons::{WeaponEquippedRow, WeaponRow},
