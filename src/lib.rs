@@ -1,7 +1,7 @@
 pub(crate) mod abilities;
 pub(crate) mod armor;
 pub(crate) mod attributes;
-pub(crate) mod campaign;
+pub mod campaign;
 pub mod character;
 pub(crate) mod charms;
 pub(crate) mod health;

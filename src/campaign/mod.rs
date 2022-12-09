@@ -1,4 +1,4 @@
-pub mod tables;
+pub(crate) mod tables;
 
 #[derive(Debug)]
 pub struct Campaign {
