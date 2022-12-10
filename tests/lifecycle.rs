@@ -71,7 +71,7 @@ fn lifecycle() {
     assert_eq!(receive_character.experience, initial_character.experience);
 
     let post_insert_character: Character = update_character(&pool, &receive_character).await.unwrap();
-    assert!(receive_character.id().is_some());
+    assert!(post_insert_character.id().is_some());
     assert_eq!(receive_character.player(), post_insert_character.player());
     assert_eq!(receive_character.name, post_insert_character.name);
     assert_eq!(receive_character.concept, post_insert_character.concept);

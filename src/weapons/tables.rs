@@ -314,9 +314,13 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponEquippedRow {
 impl CharacterBuilder {
     pub(crate) fn apply_weapon_rows(
         self,
-        weapon_rows: Vec<WeaponRow>,
+        weapon_rows: Option<Vec<WeaponRow>>,
         weapon_equipped_rows: Option<Vec<WeaponEquippedRow>>,
     ) -> Result<Self> {
+        if weapon_rows.is_none() {
+            return Ok(self);
+        }
+        let weapon_rows = weapon_rows.unwrap();
         let mut weapons_hashmap = HashMap::new();
 
         for weapon_row in weapon_rows.into_iter() {

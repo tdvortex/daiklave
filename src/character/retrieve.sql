@@ -102,7 +102,7 @@ SELECT
     attrs AS "attributes!: Vec<AttributeRow>",
     abils AS "abilities!: Vec<AbilityRow>",
     hboxs AS "health_boxes!: Vec<HealthBoxRow>",
-    weaps AS "weapons_owned!: Vec<WeaponRow>",
+    weaps AS "weapons_owned: Vec<WeaponRow>",
     campaign AS "campaign: CampaignRow",
     specs AS "specialties: Vec<SpecialtyRow>",
     intis AS "intimacies: Vec<IntimacyRow>",
