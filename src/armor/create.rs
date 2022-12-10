@@ -1,18 +1,21 @@
-use crate::armor::tables::ArmorTagPostgres;
 use crate::armor::ArmorItem;
-use eyre::Result;
-use sqlx::{query, PgPool, Postgres, Transaction};
+use crate::{armor::tables::ArmorTagPostgres, custom::DataSource};
+use eyre::{Result, WrapErr};
+use sqlx::{query, Postgres, Transaction};
 
 pub(crate) async fn create_armor_item_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     armor_item: ArmorItem,
+    creator_id: Option<i32>,
 ) -> Result<i32> {
     Ok(query!(
-        "INSERT INTO armor(name, tags, creator_id)
+        "INSERT INTO armor(name, tags, book_title, page_number, creator_id)
         VALUES (
             $1::VARCHAR(255),
             $2::ARMORTAG[],
-            $3::INTEGER
+            $3::VARCHAR(255),
+            $4::SMALLINT,
+            $5::INTEGER
         )
         RETURNING id",
         armor_item.name(),
@@ -21,30 +24,42 @@ pub(crate) async fn create_armor_item_transaction(
             .into_iter()
             .map(|tag| tag.into())
             .collect::<Vec<ArmorTagPostgres>>() as &[ArmorTagPostgres],
-        armor_item.creator_id(),
+        armor_item.data_source().book_title() as Option<&str>,
+        armor_item.data_source().page_number() as Option<i16>,
+        creator_id
     )
     .fetch_one(&mut *transaction)
-    .await?
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "Database error creating armor item with name '{}'",
+            armor_item.name()
+        )
+    })?
     .id)
 }
 
-pub async fn create_armor(pool: &PgPool, armor: Vec<ArmorItem>) -> Result<Vec<i32>> {
-    let mut transaction = pool.begin().await?;
-
-    let ids = post_armor_transaction(&mut transaction, armor).await?;
-
-    transaction.commit().await?;
-
-    Ok(ids)
-}
-
-pub(crate) async fn post_armor_transaction(
+pub(crate) async fn create_armor_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     armor: Vec<ArmorItem>,
+    character_id: i32,
 ) -> Result<Vec<i32>> {
     let mut output = Vec::new();
     for armor_item in armor.into_iter() {
-        output.push(create_armor_item_transaction(transaction, armor_item).await?);
+        if armor_item.data_source() == &DataSource::Custom(None) {
+            output.push(
+                create_armor_item_transaction(transaction, armor_item, Some(character_id))
+                    .await
+                    .wrap_err("Database error creating new custom armor item")?,
+            );
+        } else {
+            let maybe_creator_id = armor_item.data_source().creator_id();
+            output.push(
+                create_armor_item_transaction(transaction, armor_item, maybe_creator_id)
+                    .await
+                    .wrap_err("Database error creating armor item")?,
+            );
+        }
     }
 
     Ok(output)

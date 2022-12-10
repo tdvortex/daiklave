@@ -1,15 +1,16 @@
 pub(crate) mod create;
-pub(crate) mod update;
 pub(crate) mod destroy;
-pub use create::create_armor;
+pub(crate) mod update;
+pub use destroy::destroy_armor;
 use serde::{Deserialize, Serialize};
 pub use update::ArmorDiff;
-pub use destroy::destroy_armor;
 pub(crate) mod tables;
 use std::{collections::HashSet, hash::Hash};
 
 use eyre::{eyre, Result};
 use slab::Slab;
+
+use crate::custom::{BookReference, DataSource};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum ArmorTag {
@@ -31,7 +32,7 @@ pub struct ArmorItem {
     concealable: bool,
     silent: bool,
     special: bool,
-    creator_id: Option<i32>,
+    data_source: DataSource,
 }
 
 impl ArmorItem {
@@ -39,7 +40,7 @@ impl ArmorItem {
         name: String,
         tags: HashSet<ArmorTag>,
         id: Option<i32>,
-        creator_id: Option<i32>,
+        data_source: DataSource,
     ) -> Result<ArmorItem> {
         let mut weight_class = None::<WeightClass>;
         let mut artifact = false;
@@ -87,17 +88,30 @@ impl ArmorItem {
             concealable,
             silent,
             special,
-            creator_id,
+            data_source,
         })
     }
 
-    pub fn create(creator_id: Option<i32>) -> ArmorBuilder {
+    pub fn create_from_book(book_title: String, page_number: i16) -> ArmorBuilder {
         ArmorBuilder {
             id: None,
             name: None,
             weight_class: None,
             tags: HashSet::new(),
-            creator_id,
+            data_source: DataSource::Book(BookReference {
+                book_title,
+                page_number,
+            }),
+        }
+    }
+
+    pub fn create_custom(creator_id: Option<i32>) -> ArmorBuilder {
+        ArmorBuilder {
+            id: None,
+            name: None,
+            weight_class: None,
+            tags: HashSet::new(),
+            data_source: DataSource::Custom(creator_id),
         }
     }
 
@@ -105,8 +119,8 @@ impl ArmorItem {
         self.id
     }
 
-    pub fn creator_id(&self) -> Option<i32> {
-        self.creator_id
+    pub fn data_source(&self) -> &DataSource {
+        &self.data_source
     }
 
     pub fn name(&self) -> &str {
@@ -269,15 +283,10 @@ pub struct ArmorBuilder {
     name: Option<String>,
     weight_class: Option<WeightClass>,
     tags: HashSet<ArmorTag>,
-    creator_id: Option<i32>,
+    data_source: DataSource,
 }
 
 impl ArmorBuilder {
-    pub fn with_id(&mut self, id: i32) -> &mut Self {
-        self.id = Some(id);
-        self
-    }
-
     pub fn with_name(&mut self, name: String) -> &mut Self {
         self.name = Some(name);
         self
@@ -334,6 +343,6 @@ impl ArmorBuilder {
         };
         self.tags.insert(weight_tag);
 
-        ArmorItem::new(self.name.unwrap(), self.tags, self.id, self.creator_id)
+        ArmorItem::new(self.name.unwrap(), self.tags, self.id, self.data_source)
     }
 }

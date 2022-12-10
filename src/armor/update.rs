@@ -1,8 +1,8 @@
-use eyre::Result;
+use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 use std::collections::HashSet;
 
-use super::create::post_armor_transaction;
+use super::create::create_armor_transaction;
 use super::{Armor, ArmorItem};
 
 pub struct ArmorDiff {
@@ -77,7 +77,8 @@ impl ArmorDiff {
             character_id
         )
         .execute(&mut *transaction)
-        .await?;
+        .await
+        .wrap_err("Database error deleting armor owned/worn")?;
 
         let (new_items, mut new_items_equipped) = self.insert_items.into_iter().fold(
             (Vec::new(), Vec::new()),
@@ -88,7 +89,9 @@ impl ArmorDiff {
             },
         );
 
-        let mut new_ids = post_armor_transaction(transaction, new_items).await?;
+        let mut new_ids = create_armor_transaction(transaction, new_items, character_id)
+            .await
+            .wrap_err("Error trying to create new armor items")?;
 
         let (mut ids, mut ids_equipped) = self.owned_items.into_iter().fold(
             (Vec::new(), Vec::new()),
@@ -114,7 +117,8 @@ impl ArmorDiff {
             &ids_equipped as &[bool]
         )
         .execute(&mut *transaction)
-        .await?;
+        .await
+        .wrap_err("Database error trying to armor owned/worn rows")?;
 
         Ok(())
     }

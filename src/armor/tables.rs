@@ -1,10 +1,11 @@
-use eyre::{eyre, Result};
+use eyre::{eyre, Context, ContextCompat, Result};
 use std::collections::HashMap;
 
 use sqlx::postgres::PgHasArrayType;
 
 use crate::armor::{ArmorItem, ArmorTag};
 use crate::character::CharacterBuilder;
+use crate::custom::{BookReference, DataSource};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ARMORTAG", rename_all = "UPPERCASE")]
@@ -57,6 +58,8 @@ pub struct ArmorRow {
     pub id: i32,
     pub name: String,
     pub tags: Vec<ArmorTagPostgres>,
+    pub book_title: Option<String>,
+    pub page_number: Option<i16>,
     pub creator_id: Option<i32>,
 }
 
@@ -74,12 +77,16 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorRow {
         let id = decoder.try_decode::<i32>()?;
         let name = decoder.try_decode::<String>()?;
         let tags = decoder.try_decode::<Vec<ArmorTagPostgres>>()?;
+        let book_title = decoder.try_decode::<Option<String>>()?;
+        let page_number = decoder.try_decode::<Option<i16>>()?;
         let creator_id = decoder.try_decode::<Option<i32>>()?;
 
         Ok(Self {
             id,
             name,
             tags,
+            book_title,
+            page_number,
             creator_id,
         })
     }
@@ -89,11 +96,31 @@ impl TryFrom<ArmorRow> for ArmorItem {
     type Error = eyre::Report;
 
     fn try_from(value: ArmorRow) -> Result<Self, Self::Error> {
+        let data_source = if value.book_title.is_some()
+            && value.page_number.is_some()
+            && value.creator_id.is_none()
+        {
+            DataSource::Book(BookReference {
+                book_title: value.book_title.unwrap(),
+                page_number: value.page_number.unwrap(),
+            })
+        } else if value.book_title.is_none()
+            && value.page_number.is_none()
+            && value.creator_id.is_some()
+        {
+            DataSource::Custom(value.creator_id)
+        } else {
+            return Err(eyre!(
+                "Database error: inconsistent data source for armor item {}",
+                value.id
+            ));
+        };
+
         Self::new(
             value.name,
             value.tags.into_iter().map(|tag| tag.into()).collect(),
             Some(value.id),
-            value.creator_id,
+            data_source,
         )
     }
 }
@@ -103,7 +130,6 @@ pub struct ArmorWornRow {
     pub character_id: i32,
     pub armor_id: i32,
     pub worn: bool,
-    pub creator_id: Option<i32>,
 }
 
 impl sqlx::Type<sqlx::Postgres> for ArmorWornRow {
@@ -120,13 +146,11 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorWornRow {
         let character_id = decoder.try_decode::<i32>()?;
         let armor_id = decoder.try_decode::<i32>()?;
         let worn = decoder.try_decode::<bool>()?;
-        let creator_id = decoder.try_decode::<Option<i32>>()?;
 
         Ok(Self {
             character_id,
             armor_id,
             worn,
-            creator_id,
         })
     }
 }
@@ -141,21 +165,22 @@ impl CharacterBuilder {
             if armor_worn.is_none() {
                 return Ok(self);
             } else {
-                return Err(eyre!("cannot wear armor that is not owned"));
+                return Err(eyre!("Cannot wear armor that is not owned"));
             }
         }
 
         let mut armor_hashmap = HashMap::new();
 
         for armor_row in armor_owned.unwrap().into_iter() {
-            let tags = armor_row.tags.into_iter().map(|tag| tag.into()).collect();
-            let armor_item = ArmorItem::new(
-                armor_row.name,
-                tags,
-                Some(armor_row.id),
-                armor_row.creator_id,
-            )?;
-            armor_hashmap.insert(armor_row.id, (armor_item, false));
+            let armor_item: ArmorItem = armor_row
+                .try_into()
+                .wrap_err("Could not convert armor row to valid item")?;
+            armor_hashmap.insert(
+                armor_item.id().wrap_err_with(|| {
+                    format!("ID missing for armor item name {}", armor_item.name())
+                })?,
+                (armor_item, false),
+            );
         }
 
         if let Some(armor_worn_rows) = armor_worn {
@@ -166,7 +191,7 @@ impl CharacterBuilder {
                             .get_mut(&armor_worn_row.armor_id)
                             .ok_or_else(|| {
                                 eyre!(
-                                    "cannot equip unowned armor item {}",
+                                    "Cannot equip unowned armor item {}",
                                     armor_worn_row.armor_id
                                 )
                             })?;
