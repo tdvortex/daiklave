@@ -90,12 +90,12 @@ pub(crate) async fn create_character_transaction(
         INSERT INTO health_boxes(character_id, position, wound_penalty)
         VALUES
             ($1, 0, 'ZERO'),
-            ($1, 0, 'MINUSONE'),
-            ($1, 0, 'MINUSONE'),
-            ($1, 0, 'MINUSTWO'),
-            ($1, 0, 'MINUSTWO'),
-            ($1, 0, 'MINUSFOUR'),
-            ($1, 0, 'INCAPACITATED')
+            ($1, 1, 'MINUSONE'),
+            ($1, 2, 'MINUSONE'),
+            ($1, 3, 'MINUSTWO'),
+            ($1, 4, 'MINUSTWO'),
+            ($1, 5, 'MINUSFOUR'),
+            ($1, 6, 'INCAPACITATED')
         ",
         character_id
     )

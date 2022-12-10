@@ -296,13 +296,13 @@ impl CharacterBuilder {
     }
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
 pub struct ExperiencePoints {
     pub current: u16,
     pub total: u16,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct CraftingExperience {
     pub _silver: u16,
     pub _gold: u16,
@@ -316,7 +316,7 @@ pub(crate) enum _CraftingExperienceType {
     White,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
 pub struct Willpower {
     pub current: u8,
     pub maximum: u8,

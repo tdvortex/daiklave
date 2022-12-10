@@ -66,7 +66,7 @@ impl CharacterBaseDiff {
     }
 }
 
-pub async fn update_character(pool: &PgPool, character: Character) -> Result<Character> {
+pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Character> {
     let mut transaction = pool.begin().await?;
 
     let old_character = if character.id.is_none() {
