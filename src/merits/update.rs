@@ -1,5 +1,5 @@
-use super::insert::{post_merits_details_transaction, post_new_merits_transaction};
-use super::{Merit, Merits};
+use super::create::{post_merits_details_transaction, create_new_merits_transaction};
+use super::{Merit};
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 use std::collections::HashSet;
@@ -11,7 +11,7 @@ pub struct MeritDiff {
     remove_merit_instances: Vec<i32>,
 }
 
-pub fn compare_merits(old_merits: &Merits, new_merits: &Merits) -> MeritDiff {
+pub fn compare_merits(old_merits: &[Merit], new_merits: &[Merit]) -> MeritDiff {
     let mut diff = MeritDiff::default();
 
     let mut old_merit_instance_ids: HashSet<i32> = old_merits
@@ -38,7 +38,7 @@ pub fn compare_merits(old_merits: &Merits, new_merits: &Merits) -> MeritDiff {
 }
 
 impl MeritDiff {
-    pub async fn save(
+    pub async fn update(
         self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
@@ -50,7 +50,7 @@ impl MeritDiff {
             &self.remove_merit_instances as &[i32]
         ).execute(&mut *transaction).await?;
 
-        post_new_merits_transaction(transaction, self.insert_merit_templates, character_id).await?;
+        create_new_merits_transaction(transaction, self.insert_merit_templates, character_id).await?;
 
         post_merits_details_transaction(transaction, self.insert_merit_instance, character_id)
             .await?;

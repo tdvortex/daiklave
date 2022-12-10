@@ -1,6 +1,7 @@
-pub mod diff;
-pub mod insert;
-pub mod tables;
+pub(crate) mod update;
+pub use update::MeritDiff;
+pub(crate) mod create;
+pub(crate) mod tables;
 use crate::prerequisite::PrerequisiteSet;
 use eyre::{eyre, Result};
 
@@ -65,7 +66,7 @@ pub struct Merit {
 }
 
 impl Merit {
-    pub fn from_template(
+    pub(crate) fn from_template(
         template: MeritTemplate,
         detail: Option<String>,
         id: Option<i32>,
@@ -132,8 +133,6 @@ impl std::fmt::Display for Merit {
         }
     }
 }
-
-pub type Merits = Vec<Merit>;
 
 #[derive(Debug, Default)]
 pub struct MeritTemplateBuilder {

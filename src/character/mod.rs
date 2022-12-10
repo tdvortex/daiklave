@@ -17,7 +17,7 @@ use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
 use crate::health::{Health, WoundPenalty};
 use crate::intimacies::{Intimacy};
-use crate::merits::{Merit, MeritTemplate, Merits};
+use crate::merits::{Merit, MeritTemplate};
 use crate::prerequisite::{ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType};
 use crate::weapons::{EquipHand, Weapon, Weapons};
 
@@ -39,7 +39,7 @@ pub struct Character {
     pub health: Health,
     pub weapons: Weapons,
     pub armor: Armor,
-    pub merits: Merits,
+    pub merits: Vec<Merit>,
 }
 
 impl Character {
@@ -63,7 +63,7 @@ pub struct CharacterBuilder {
     health: Health,
     weapons: Weapons,
     armor: Armor,
-    merits: Merits,
+    merits: Vec<Merit>,
 }
 
 impl CharacterBuilder {

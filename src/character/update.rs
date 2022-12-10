@@ -1,7 +1,7 @@
 use eyre::{eyre, Result};
 use sqlx::{query, Postgres, Transaction, PgPool};
 
-use crate::{character::Character, intimacies::update::compare_intimacies, merits::diff::compare_merits};
+use crate::{character::Character, intimacies::update::compare_intimacies, merits::update::compare_merits};
 
 use super::{create::create_character_transaction, retrieve::retrieve_character_transaction};
 
@@ -119,7 +119,7 @@ pub async fn update_character(pool: &PgPool, character: Character) -> Result<Cha
         .update(&mut transaction, character_id)
         .await?;
     compare_merits(&old_character.merits, &character.merits)
-        .save(&mut transaction, character_id)
+        .update(&mut transaction, character_id)
         .await?;
 
     let character = retrieve_character_transaction(&mut transaction, character_id)

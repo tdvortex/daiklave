@@ -7,7 +7,7 @@ use crate::prerequisite::insert::post_prerequisites_transaction;
 use crate::prerequisite::tables::{PrerequisiteInsert, PrerequisiteTypePostgres};
 use crate::prerequisite::PrerequisiteType;
 
-async fn post_merit_templates_transaction(
+async fn create_merit_templates_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     merit_template_inserts: &[MeritTemplateInsert],
 ) -> Result<Vec<i32>> {
@@ -46,7 +46,7 @@ async fn post_merit_templates_transaction(
     )
 }
 
-async fn post_merit_prerequisite_sets_transaction(
+async fn create_merit_prerequisite_sets_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     merit_template_ids_repeated: &[i32],
 ) -> Result<Vec<i32>> {
@@ -63,7 +63,7 @@ async fn post_merit_prerequisite_sets_transaction(
     .collect())
 }
 
-pub async fn post_merits_details_transaction(
+pub(crate) async fn post_merits_details_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     merit_details: Vec<(i32, Option<String>)>,
     character_id: i32,
@@ -97,7 +97,7 @@ pub async fn post_merits_details_transaction(
     .collect())
 }
 
-pub async fn post_new_merits_transaction(
+pub(crate) async fn create_new_merits_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     new_merits: Vec<Merit>,
     character_id: i32,
@@ -114,7 +114,7 @@ pub async fn post_new_merits_transaction(
         });
     }
     let new_template_ids =
-        post_merit_templates_transaction(transaction, &merit_template_inserts).await?;
+        create_merit_templates_transaction(transaction, &merit_template_inserts).await?;
 
     // Create prerequisite sets for all newly created templates that have them
     let mut merit_template_ids_repeated = Vec::new();
@@ -122,7 +122,7 @@ pub async fn post_new_merits_transaction(
         (0..merit.prerequisites().len()).for_each(|_| merit_template_ids_repeated.push(*merit_id));
     }
     let new_set_ids =
-        post_merit_prerequisite_sets_transaction(transaction, &merit_template_ids_repeated).await?;
+        create_merit_prerequisite_sets_transaction(transaction, &merit_template_ids_repeated).await?;
 
     // Create the prerequisites in those sets and link them
     let mut prerequisites = Vec::new();
@@ -206,3 +206,4 @@ pub async fn post_new_merits_transaction(
 
     Ok(())
 }
+

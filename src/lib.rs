@@ -6,7 +6,7 @@ pub mod character;
 pub(crate) mod charms;
 pub mod health;
 pub mod intimacies;
-pub(crate) mod merits;
+pub mod merits;
 pub mod player;
 pub(crate) mod prerequisite;
 pub mod weapons;
