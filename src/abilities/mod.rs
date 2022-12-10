@@ -1,4 +1,5 @@
-pub mod update;
+pub(crate) mod update;
+pub use update::AbilitiesDiff;
 pub(crate) mod tables;
 use crate::prerequisite::AbilityPrerequisite;
 use eyre::{eyre, Report, Result};

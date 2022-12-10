@@ -1,5 +1,6 @@
-pub mod update;
+pub(crate) mod update;
 pub(crate) mod tables;
+pub use update::AttributesDiff;
 
 use eyre::{eyre, Result};
 use std::iter::{ExactSizeIterator, FusedIterator};

@@ -1,5 +1,6 @@
 
-pub mod update;
+pub(crate) mod update;
+pub use update::WeaponsDiff;
 pub(crate) mod create;
 pub use create::create_weapons;
 pub(crate) mod tables;
