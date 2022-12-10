@@ -8,7 +8,7 @@ use std::iter::{ExactSizeIterator, FusedIterator};
 
 use crate::prerequisite::AttributePrerequisite;
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize, Hash)]
 pub enum AttributeName {
     Strength,
     Dexterity,
@@ -74,6 +74,7 @@ impl ExactSizeIterator for AttributeNameIter {
 
 impl FusedIterator for AttributeNameIter {}
 
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Copy)]
 pub struct Attribute {
     name: AttributeName,
     value: u8,
@@ -89,7 +90,7 @@ impl Attribute {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Copy)]
 pub struct Attributes {
     strength: u8,
     dexterity: u8,

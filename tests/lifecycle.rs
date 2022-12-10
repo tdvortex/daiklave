@@ -1,8 +1,10 @@
+use std::collections::HashMap;
+
 use exalted_3e_gui::{
     character::{ExperiencePoints, Willpower},
     create_player, destroy_player,
     player::Player,
-    update_character, Character,
+    update_character, Character, attributes::AttributeName,
 };
 use postcard::from_bytes;
 use sqlx::postgres::PgPool;
@@ -45,6 +47,15 @@ fn lifecycle() {
             current: 15,
             total: 15,
         })
+        .with_attribute(AttributeName::Strength, 4).unwrap()
+        .with_attribute(AttributeName::Dexterity, 4).unwrap()
+        .with_attribute(AttributeName::Stamina, 3).unwrap()
+        .with_attribute(AttributeName::Charisma, 4).unwrap()
+        .with_attribute(AttributeName::Manipulation, 3).unwrap()
+        .with_attribute(AttributeName::Appearance, 2).unwrap()
+        .with_attribute(AttributeName::Intelligence, 3).unwrap()
+        .with_attribute(AttributeName::Wits, 3).unwrap()
+        .with_attribute(AttributeName::Perception, 1).unwrap()
         .build()
         .unwrap();
     assert!(initial_character.id().is_none());
@@ -69,6 +80,20 @@ fn lifecycle() {
         }
     );
     assert_eq!(initial_character.experience, initial_character.experience);
+    assert_eq!(
+        initial_character.attributes.iter().map(|attr| (attr.name(), attr.dots())).collect::<HashMap::<AttributeName, u8>>(),
+        vec![
+            (AttributeName::Strength, 4), 
+            (AttributeName::Dexterity, 4), 
+            (AttributeName::Stamina, 3), 
+            (AttributeName::Charisma, 4), 
+            (AttributeName::Manipulation, 3), 
+            (AttributeName::Appearance, 2), 
+            (AttributeName::Intelligence, 3), 
+            (AttributeName::Wits, 3), 
+            (AttributeName::Perception, 1)
+            ].into_iter().collect::<HashMap::<AttributeName, u8>>()
+    );
 
     // Client builds, serializes, and sends to server
     let send_bytes = postcard::to_allocvec(&initial_character).unwrap();
@@ -93,6 +118,10 @@ fn lifecycle() {
         receive_character.experience,
         post_insert_character.experience
     );
+    assert_eq!(
+        receive_character.attributes,
+        post_insert_character.attributes
+    );
 
     // Server serializes and sends character to client
     let send_bytes = postcard::to_allocvec(&post_insert_character).unwrap();
@@ -107,6 +136,10 @@ fn lifecycle() {
     assert_eq!(
         fetched_character.experience,
         post_insert_character.experience
+    );
+    assert_eq!(
+        fetched_character.attributes,
+        post_insert_character.attributes
     );
 
     // Client reserializes character and sends to server

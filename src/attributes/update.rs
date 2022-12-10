@@ -12,8 +12,8 @@ impl Attributes {
     pub fn compare_newer(&self, newer: &Self) -> AttributesDiff {
         let mut diff = AttributesDiff::default();
 
-        self.iter().for_each(|attribute| {
-            if attribute.dots() != newer.get(attribute.name()).dots() {
+        newer.iter().for_each(|attribute| {
+            if attribute.dots() != self.get(attribute.name()).dots() {
                 diff.updated_attributes.push(attribute.into());
             }
         });
