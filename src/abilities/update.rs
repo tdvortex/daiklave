@@ -1,6 +1,6 @@
 use crate::abilities::tables::AbilityNamePostgres;
 use crate::abilities::Abilities;
-use eyre::Result;
+use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 
 #[derive(Debug, Default)]
@@ -142,7 +142,7 @@ impl AbilitiesDiff {
             character_id,
             &names_to_remove as &[AbilityNamePostgres],
             &subskills_to_remove as &[Option<String>],
-        ).execute(&mut *transaction).await?;
+        ).execute(&mut *transaction).await.wrap_err("Database error attempting to remove abilities")?;
 
         Ok(())
     }
@@ -180,7 +180,7 @@ impl AbilitiesDiff {
             &names_to_upsert as &[AbilityNamePostgres],
             &dots_to_upsert as &[i16],
             &subskills_to_upsert as &[Option<&str>]
-        ).execute(&mut *transaction).await?;
+        ).execute(&mut *transaction).await.wrap_err("Database error attempting to upsert abilities")?;
 
         Ok(())
     }
@@ -231,7 +231,7 @@ impl AbilitiesDiff {
         &ability_name_with_specialty_to_remove as &[AbilityNamePostgres],
         &ability_subskill_with_specialty_to_remove as &[Option<&str>],
         &specialty_name_to_remove as &[&str]
-        ).execute(&mut *transaction).await?;
+        ).execute(&mut *transaction).await.wrap_err("Database error attempting to remove specialties")?;
 
         Ok(())
     }
@@ -279,7 +279,7 @@ impl AbilitiesDiff {
             &ability_name_with_specialty_to_add as &[AbilityNamePostgres],
             &ability_subskill_with_specialty_to_add as &[Option<&str>],
             &specialty_name_to_add as &[&str],
-        ).execute(&mut *transaction).await?;
+        ).execute(&mut *transaction).await.wrap_err("Database error attempting to insert specialties")?;
 
         Ok(())
     }
@@ -290,19 +290,27 @@ impl AbilitiesDiff {
         character_id: i32,
     ) -> Result<()> {
         if !self.abilities_to_remove.is_empty() {
-            self.remove_abilities(transaction, character_id).await?;
+            self.remove_abilities(transaction, character_id)
+                .await
+                .wrap_err("Error attempting to remove abilities")?;
         }
 
         if !self.abilities_to_upsert.is_empty() {
-            self.upsert_abilities(transaction, character_id).await?;
+            self.upsert_abilities(transaction, character_id)
+                .await
+                .wrap_err("Error attempting to upsert abilities")?;
         }
 
         if !self.specialties_to_remove.is_empty() {
-            self.remove_specialties(transaction, character_id).await?;
+            self.remove_specialties(transaction, character_id)
+                .await
+                .wrap_err("Error attempting to remove specialties")?;
         }
 
         if !self.specialties_to_add.is_empty() {
-            self.add_specialties(transaction, character_id).await?;
+            self.add_specialties(transaction, character_id)
+                .await
+                .wrap_err("Error attempting to add specialties")?;
         }
 
         Ok(())

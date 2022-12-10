@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::abilities::AbilityNameNoSubskill;
 use crate::character::CharacterBuilder;
-use eyre::{eyre, Report, Result};
+use eyre::{eyre, Report, Result, WrapErr};
 use sqlx::postgres::PgHasArrayType;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
@@ -137,13 +137,16 @@ impl CharacterBuilder {
         ability_row: AbilityRow,
         specialty_rows: Vec<SpecialtyRow>,
     ) -> Result<Self> {
-        let dots: u8 = ability_row.dots.try_into()?;
+        let dots: u8 = ability_row
+            .dots
+            .try_into()
+            .wrap_err_with(|| format!("Invalid number of dots: {}", ability_row.dots))?;
 
         match ability_row.name {
             AbilityNamePostgres::Craft => {
                 let craft_focus = ability_row
                     .subskill
-                    .ok_or(eyre!("craft abilities must have a focus"))?;
+                    .ok_or(eyre!("Craft abilities must have a focus"))?;
                 specialty_rows.into_iter().fold(
                     Ok(self.with_craft(craft_focus.as_str(), dots)),
                     |character_result, specialty_row| {
@@ -171,9 +174,16 @@ impl CharacterBuilder {
                 )
             }
             other_ability => {
-                let ability_name = other_ability.try_into()?;
+                let ability_name = other_ability.try_into().wrap_err_with(|| {
+                    format!("Could not decode ability name: {:?}", other_ability)
+                })?;
                 specialty_rows.into_iter().fold(
-                    Ok(self.with_ability(ability_name, dots)?),
+                    Ok(self.with_ability(ability_name, dots).wrap_err_with(|| {
+                        format!(
+                            "Could not set ability name {:?} to have dots {}",
+                            ability_name, dots
+                        )
+                    })?),
                     |character_result, specialty_row| {
                         character_result.and_then(|character| {
                             character.with_specialty(ability_name, specialty_row.specialty)

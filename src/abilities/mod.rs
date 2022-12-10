@@ -642,16 +642,16 @@ impl Abilities {
             AbilityNameNoSubskill::Craft => self
                 .craft
                 .get_mut(subskill.unwrap())
-                .ok_or_else(|| eyre!("cannot have specialties on 0-rated abilities"))?,
+                .ok_or_else(|| eyre!("Cannot have specialties on 0-rated abilities"))?,
             AbilityNameNoSubskill::MartialArts => self
                 .martial_arts
                 .get_mut(subskill.unwrap())
-                .ok_or_else(|| eyre!("cannot have specialties on 0-rated abilities"))?,
+                .ok_or_else(|| eyre!("Cannot have specialties on 0-rated abilities"))?,
         };
 
         match rating_ptr {
             AbilityRating::Zero => {
-                return Err(eyre!("cannot have specialties on 0-rated abilities"));
+                return Err(eyre!("Cannot have specialties on 0-rated abilities"));
             }
             AbilityRating::NonZero(non_zero_rating) => {
                 non_zero_rating.specialties.insert(specialty);
@@ -702,16 +702,16 @@ impl Abilities {
             AbilityNameNoSubskill::Craft => self
                 .craft
                 .get_mut(subskill.unwrap())
-                .ok_or_else(|| eyre!("cannot have specialties on 0-rated abilities"))?,
+                .ok_or_else(|| eyre!("Cannot have specialties on 0-rated abilities"))?,
             AbilityNameNoSubskill::MartialArts => self
                 .martial_arts
                 .get_mut(subskill.unwrap())
-                .ok_or_else(|| eyre!("cannot have specialties on 0-rated abilities"))?,
+                .ok_or_else(|| eyre!("Cannot have specialties on 0-rated abilities"))?,
         };
 
         match rating_ptr {
             AbilityRating::Zero => {
-                return Err(eyre!("cannot have specialties on 0-rated abilities"));
+                return Err(eyre!("Cannot have specialties on 0-rated abilities"));
             }
             AbilityRating::NonZero(non_zero_rating) => {
                 non_zero_rating.specialties.remove(specialty);
