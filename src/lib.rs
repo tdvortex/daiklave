@@ -9,4 +9,4 @@ pub(crate) mod intimacies;
 pub(crate) mod merits;
 pub mod player;
 pub(crate) mod prerequisite;
-pub(crate) mod weapons;
+pub mod weapons;

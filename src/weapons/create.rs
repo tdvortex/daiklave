@@ -4,29 +4,29 @@ use sqlx::{query, PgPool, Postgres, Transaction};
 use crate::weapons::tables::WeaponTagPostgres;
 use crate::weapons::Weapon;
 
-pub async fn post_weapons(pool: &PgPool, weapons: Vec<Weapon>) -> Result<Vec<i32>> {
+pub async fn create_weapons(pool: &PgPool, weapons: Vec<Weapon>) -> Result<Vec<i32>> {
     let mut transaction = pool.begin().await?;
 
-    let ids = post_weapons_transaction(&mut transaction, weapons).await?;
+    let ids = create_weapons_transaction(&mut transaction, weapons).await?;
 
     transaction.commit().await?;
 
     Ok(ids)
 }
 
-pub(crate) async fn post_weapons_transaction(
+pub(crate) async fn create_weapons_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     weapons: Vec<Weapon>,
 ) -> Result<Vec<i32>> {
     let mut output = Vec::new();
     for weapon in weapons.into_iter() {
-        output.push(post_weapon_transaction(transaction, weapon).await?);
+        output.push(create_weapon_transaction(transaction, weapon).await?);
     }
 
     Ok(output)
 }
 
-pub async fn post_weapon_transaction(
+pub(crate) async fn create_weapon_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     weapon: Weapon,
 ) -> Result<i32> {

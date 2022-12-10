@@ -1,6 +1,8 @@
-pub mod diff;
-pub mod insert;
-pub mod tables;
+
+pub mod update;
+pub(crate) mod create;
+pub use create::create_weapons;
+pub(crate) mod tables;
 use std::collections::HashSet;
 
 use eyre::{eyre, Result};
@@ -110,7 +112,7 @@ pub struct Weapon {
 }
 
 impl Weapon {
-    pub fn new(
+    fn new(
         name: String,
         tags: HashSet<WeaponTag>,
         id: Option<i32>,
@@ -349,6 +351,19 @@ impl Weapon {
             other_tags,
             creator_id,
         })
+    }
+
+    pub fn create(creator_id: Option<i32>) -> WeaponBuilder {
+        WeaponBuilder {
+            id: Default::default(),
+            name: Default::default(),
+            two_handed: Default::default(),
+            is_lethal: Default::default(),
+            weight_class_tag: Default::default(),
+            attack_tags: Default::default(),
+            other_tags: Default::default(),
+            creator_id,
+        }
     }
 
     pub fn id(&self) -> Option<i32> {
@@ -608,9 +623,9 @@ impl Weapon {
 }
 
 #[derive(Debug, Default)]
-struct OneHandedWeapon(pub usize);
+struct OneHandedWeapon(pub(crate) usize);
 #[derive(Debug, Default)]
-struct TwoHandedWeapon(pub usize);
+struct TwoHandedWeapon(pub(crate) usize);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum EquipHand {
@@ -828,7 +843,7 @@ impl Weapons {
         self.inventory_mut().try_remove(key).is_some()
     }
 
-    pub fn iter(&self) -> WeaponsIter<'_> {
+    pub fn iter(&self) -> impl Iterator<Item =  (usize, Option<EquipHand>, &Weapon)> {
         WeaponsIter {
             weapons: self,
             slab_iter: self.inventory().iter(),
@@ -836,7 +851,7 @@ impl Weapons {
     }
 }
 
-pub struct WeaponsIter<'a> {
+pub(crate) struct WeaponsIter<'a> {
     weapons: &'a Weapons,
     slab_iter: slab::Iter<'a, Weapon>,
 }
@@ -882,23 +897,6 @@ pub struct WeaponBuilder {
     attack_tags: Vec<WeaponTag>,
     other_tags: Vec<WeaponTag>,
     creator_id: Option<i32>,
-}
-
-pub fn create_book_weapon() -> WeaponBuilder {
-    WeaponBuilder::default()
-}
-
-pub fn create_custom_weapon(_character_id: i32) -> WeaponBuilder {
-    WeaponBuilder {
-        id: Default::default(),
-        name: Default::default(),
-        two_handed: Default::default(),
-        is_lethal: Default::default(),
-        weight_class_tag: Default::default(),
-        attack_tags: Default::default(),
-        other_tags: Default::default(),
-        creator_id: Some(_character_id),
-    }
 }
 
 impl WeaponBuilder {

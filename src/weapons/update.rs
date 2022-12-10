@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 
-use crate::weapons::insert::post_weapons_transaction;
+use crate::weapons::create::create_weapons_transaction;
 use crate::weapons::tables::EquipHandPostgres;
 use crate::weapons::{EquipHand, Weapon, Weapons};
 
@@ -58,7 +58,7 @@ impl Weapons {
 }
 
 impl WeaponsDiff {
-    pub async fn save(
+    pub async fn update(
         self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
@@ -85,7 +85,7 @@ impl WeaponsDiff {
             },
         );
 
-        let created_ids = post_weapons_transaction(transaction, weapons).await?;
+        let created_ids = create_weapons_transaction(transaction, weapons).await?;
 
         let (ids, hands_postgres) = created_ids
             .into_iter()
