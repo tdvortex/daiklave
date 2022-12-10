@@ -27,8 +27,10 @@ impl Health {
             })
             .collect();
 
-        (0..(old_vec.len() - newer.health_boxes().len()))
+        if old_vec.len() > newer.health_boxes.len() {
+            (0..(old_vec.len() - newer.health_boxes().len()))
             .for_each(|_| diff.deleted_boxes.push(old_vec.pop().unwrap().0));
+        }
 
         newer
             .health_boxes()

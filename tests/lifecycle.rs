@@ -5,6 +5,7 @@ use exalted_3e_gui::{
     attributes::AttributeName,
     character::{ExperiencePoints, Willpower},
     create_player, destroy_player,
+    health::{DamageLevel, WoundPenalty},
     intimacies::{Intimacy, IntimacyLevel, IntimacyType},
     player::Player,
     update_character, Character,
@@ -91,10 +92,16 @@ fn check_initial_abilities(abilities: &Abilities) {
     });
 }
 
-
 fn check_intimacies_except_id(left: &Vec<Intimacy>, right: &Vec<Intimacy>) {
-    assert!(left.iter().map(|i| (i.intimacy_level, i.intimacy_type, i.description.as_str())).collect::<HashSet<_>>()
-    == right.iter().map(|i| (i.intimacy_level, i.intimacy_type, i.description.as_str())).collect::<HashSet<_>>())
+    assert!(
+        left.iter()
+            .map(|i| (i.intimacy_level, i.intimacy_type, i.description.as_str()))
+            .collect::<HashSet<_>>()
+            == right
+                .iter()
+                .map(|i| (i.intimacy_level, i.intimacy_type, i.description.as_str()))
+                .collect::<HashSet<_>>()
+    )
 }
 
 #[sqlx::test]
@@ -207,6 +214,19 @@ fn lifecycle() {
                 "Street Vendors (Camaraderie)".to_owned(),
                 None,
             ))
+            .with_wound_penalties(vec![
+                WoundPenalty::Incapacitated,
+                WoundPenalty::MinusFour,
+                WoundPenalty::MinusTwo,
+                WoundPenalty::MinusTwo,
+                WoundPenalty::MinusTwo,
+                WoundPenalty::MinusTwo,
+                WoundPenalty::MinusOne,
+                WoundPenalty::MinusOne,
+                WoundPenalty::MinusOne,
+                WoundPenalty::Zero,
+            ])
+            .with_damage(2, 3, 1)
             .build()
             .unwrap()
     };
@@ -288,7 +308,31 @@ fn lifecycle() {
         .iter()
         .collect()
     );
-    assert!(initial_character.intimacies.iter().all(|i| i.id().is_none()));
+    assert!(initial_character
+        .intimacies
+        .iter()
+        .all(|i| i.id().is_none()));
+    assert_eq!(initial_character.health.damage(), (2, 3, 1));
+    assert_eq!(
+        initial_character
+            .health
+            .health_boxes()
+            .iter()
+            .map(|hbox| { (hbox.wound_penalty(), hbox.damage()) })
+            .collect::<Vec<_>>(),
+        vec![
+            (WoundPenalty::Zero, DamageLevel::Aggravated),
+            (WoundPenalty::MinusOne, DamageLevel::Lethal),
+            (WoundPenalty::MinusOne, DamageLevel::Lethal),
+            (WoundPenalty::MinusOne, DamageLevel::Lethal),
+            (WoundPenalty::MinusTwo, DamageLevel::Bashing),
+            (WoundPenalty::MinusTwo, DamageLevel::Bashing),
+            (WoundPenalty::MinusTwo, DamageLevel::None),
+            (WoundPenalty::MinusTwo, DamageLevel::None),
+            (WoundPenalty::MinusFour, DamageLevel::None),
+            (WoundPenalty::Incapacitated, DamageLevel::None)
+        ]
+    );
 
     // Client builds, serializes, and sends to server
     let send_bytes = postcard::to_allocvec(&initial_character).unwrap();
@@ -303,7 +347,11 @@ fn lifecycle() {
     assert_eq!(receive_character.experience, initial_character.experience);
     check_initial_abilities(&receive_character.abilities);
     check_intimacies_except_id(&receive_character.intimacies, &initial_character.intimacies);
-    assert!(receive_character.intimacies.iter().all(|i| i.id().is_none()));
+    assert!(receive_character
+        .intimacies
+        .iter()
+        .all(|i| i.id().is_none()));
+    assert_eq!(&receive_character.health, &initial_character.health);
 
     // Server inserts character and retrieves after updating
     let post_insert_character: Character =
@@ -322,7 +370,11 @@ fn lifecycle() {
         post_insert_character.attributes
     );
     check_initial_abilities(&post_insert_character.abilities);
-    assert!(post_insert_character.intimacies.iter().all(|i| i.id().is_some()));
+    assert!(post_insert_character
+        .intimacies
+        .iter()
+        .all(|i| i.id().is_some()));
+    assert_eq!(&receive_character.health, &post_insert_character.health);
 
     // Server serializes and sends character to client
     let send_bytes = postcard::to_allocvec(&post_insert_character).unwrap();
@@ -343,12 +395,26 @@ fn lifecycle() {
         post_insert_character.attributes
     );
     check_initial_abilities(&fetched_character.abilities);
-    check_intimacies_except_id(&fetched_character.intimacies, &post_insert_character.intimacies);
-    assert_eq!(
-        fetched_character.intimacies.iter().map(|i| i.id().unwrap()).collect::<HashSet<i32>>(),
-        post_insert_character.intimacies.iter().map(|i| i.id().unwrap()).collect::<HashSet<i32>>(),
+    check_intimacies_except_id(
+        &fetched_character.intimacies,
+        &post_insert_character.intimacies,
     );
+    assert_eq!(
+        fetched_character
+            .intimacies
+            .iter()
+            .map(|i| i.id().unwrap())
+            .collect::<HashSet<i32>>(),
+        post_insert_character
+            .intimacies
+            .iter()
+            .map(|i| i.id().unwrap())
+            .collect::<HashSet<i32>>(),
+    );
+    assert_eq!(&fetched_character.health, &post_insert_character.health);
 
+    // Client runs all getters on the character
+    // Client runs all setters on the character
     // Client reserializes character and sends to server
     // Server deserializes, reconciles, inserts, extracts, and reserializes
     // Client deserializes
@@ -376,6 +442,5 @@ fn lifecycle() {
     .unwrap()
     .is_none());
 
-    // End state: non-custom elements remain in database
     // Clean up database to end test
 }
