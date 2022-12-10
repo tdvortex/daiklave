@@ -1,6 +1,6 @@
-pub mod diff;
-pub mod tables;
-pub type Intimacies = Vec<Intimacy>;
+pub(crate) mod update;
+pub(crate) mod tables;
+pub use update::{compare_intimacies, IntimaciesDiff};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]
 pub enum IntimacyLevel {
@@ -17,8 +17,14 @@ pub enum IntimacyType {
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Intimacy {
-    pub id: Option<i32>,
+    id: Option<i32>,
     pub intimacy_level: IntimacyLevel,
     pub intimacy_type: IntimacyType,
     pub description: String,
+}
+
+impl Intimacy {
+    pub fn id(&self) -> Option<i32> {
+        self.id
+    }
 }

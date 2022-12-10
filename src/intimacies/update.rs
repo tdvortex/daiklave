@@ -5,7 +5,7 @@ use sqlx::{query, Postgres, Transaction};
 
 use crate::{
     intimacies::tables::{IntimacyLevelPostgres, IntimacyTypePostgres},
-    intimacies::{Intimacies, Intimacy},
+    intimacies::{Intimacy},
 };
 
 #[derive(Debug, Default)]
@@ -15,7 +15,7 @@ pub struct IntimaciesDiff {
     deleted_intimacies: Vec<i32>,
 }
 
-pub fn compare_intimacies(older: &Intimacies, newer: &Intimacies) -> IntimaciesDiff {
+pub fn compare_intimacies(older: &[Intimacy], newer: &[Intimacy]) -> IntimaciesDiff {
     let mut diff = IntimaciesDiff::default();
 
     let old_hashmap: HashMap<i32, &Intimacy> = older
@@ -149,7 +149,7 @@ impl IntimaciesDiff {
         Ok(self)
     }
 
-    pub async fn save(
+    pub async fn update(
         self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,

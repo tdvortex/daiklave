@@ -16,7 +16,7 @@ use crate::abilities::{Abilities, AbilityNameNoSubskill};
 use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
 use crate::health::{Health, WoundPenalty};
-use crate::intimacies::{Intimacies, Intimacy};
+use crate::intimacies::{Intimacy};
 use crate::merits::{Merit, MeritTemplate, Merits};
 use crate::prerequisite::{ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType};
 use crate::weapons::{EquipHand, Weapon, Weapons};
@@ -35,7 +35,7 @@ pub struct Character {
     pub experience: ExperiencePoints,
     pub attributes: Attributes,
     pub abilities: Abilities,
-    pub intimacies: Intimacies,
+    pub intimacies: Vec<Intimacy>,
     pub health: Health,
     pub weapons: Weapons,
     pub armor: Armor,
@@ -59,7 +59,7 @@ pub struct CharacterBuilder {
     experience: ExperiencePoints,
     attributes: Attributes,
     abilities: Abilities,
-    intimacies: Intimacies,
+    intimacies: Vec<Intimacy>,
     health: Health,
     weapons: Weapons,
     armor: Armor,
