@@ -14,26 +14,22 @@ impl Character {
     pub fn compare_newer(&self, newer: &Character) -> CharacterBaseDiff {
         let mut diff = CharacterBaseDiff::default();
 
-        if self.name != newer.name {
+        let eq_condition = (self.name.as_str() == newer.name.as_str()) 
+            && (self.concept.as_deref() == newer.concept.as_deref()) 
+            && (self.willpower.current == newer.willpower.current)
+            && (self.willpower.maximum == newer.willpower.maximum)
+            && (self.experience.current.min(i16::MAX as u16) != newer.experience.current.max(i16::MAX as u16))
+            && (self.experience.total.min(i16::MAX as u16) != newer.experience.total.max(i16::MAX as u16));
+
+        if !eq_condition {
             diff = CharacterBaseDiff(Some((
-                newer.name.to_owned(),
-                newer.concept.as_ref().map(String::to_owned),
-                newer.willpower.current.into(),
-                newer.willpower.maximum.into(),
-                // No one should ever have more than 32,767 experience
-                newer
-                    .experience
-                    .current
-                    .min(i16::MAX as u16)
-                    .try_into()
-                    .unwrap(),
-                newer
-                    .experience
-                    .total
-                    .min(i16::MAX as u16)
-                    .try_into()
-                    .unwrap(),
-            )))
+                newer.name.clone(),
+                newer.concept.clone(),
+                newer.willpower.current as i16,
+                newer.willpower.maximum as i16,
+                newer.experience.current.min(i16::MAX as u16).try_into().unwrap(),
+                newer.experience.total.min(i16::MAX as u16).try_into().unwrap()
+            )));
         }
 
         diff
@@ -63,7 +59,7 @@ impl CharacterBaseDiff {
             UPDATE characters
             SET name = $2, concept = $3, current_willpower = $4, max_willpower = $5, current_experience = $6, total_experience = $7
             WHERE id = $1",
-            character_id, name, maybe_concept.as_deref(), current_willpower, maximum_willpower, current_experience, total_experience
+            character_id, name.as_ref() as &str, maybe_concept.as_deref(), current_willpower, maximum_willpower, current_experience, total_experience
         ).execute(&mut *transaction).await?;
 
         Ok(())
