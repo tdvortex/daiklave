@@ -74,17 +74,17 @@ impl ExactSizeIterator for AttributeNameIter {
 
 impl FusedIterator for AttributeNameIter {}
 
-pub(crate) struct Attribute {
+pub struct Attribute {
     name: AttributeName,
     value: u8,
 }
 
 impl Attribute {
-    pub(crate) fn name(&self) -> AttributeName {
+    pub fn name(&self) -> AttributeName {
         self.name
     }
 
-    pub(crate) fn dots(&self) -> u8 {
+    pub fn dots(&self) -> u8 {
         self.value
     }
 }
@@ -120,7 +120,7 @@ impl Default for Attributes {
 }
 
 impl Attributes {
-    pub(crate) fn get(&self, attribute_name: AttributeName) -> Attribute {
+    pub fn get(&self, attribute_name: AttributeName) -> Attribute {
         Attribute {
             name: attribute_name,
             value: match attribute_name {
@@ -137,9 +137,9 @@ impl Attributes {
         }
     }
 
-    pub(crate) fn set(&mut self, attribute_name: AttributeName, value: u8) -> Result<()> {
+    pub fn set(&mut self, attribute_name: AttributeName, value: u8) -> Result<()> {
         if value < 1 {
-            return Err(eyre!("attributes must be 1 or more"));
+            return Err(eyre!("Attributes must be 1 or more"));
         }
 
         let ptr = match attribute_name {
@@ -158,7 +158,7 @@ impl Attributes {
         Ok(())
     }
 
-    pub(crate) fn iter(&self) -> impl Iterator<Item = Attribute> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = Attribute> + '_ {
         AttributesIter {
             attributes: self,
             name_iter: AttributeName::iter(),
