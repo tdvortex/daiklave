@@ -8,5 +8,5 @@ pub mod health;
 pub mod intimacies;
 pub mod merits;
 pub mod player;
-pub(crate) mod prerequisite;
+pub mod prerequisite;
 pub mod weapons;

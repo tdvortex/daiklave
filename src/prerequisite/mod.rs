@@ -1,5 +1,5 @@
-pub mod insert;
-pub mod tables;
+pub(crate) mod create;
+pub(crate) mod tables;
 use std::ops::Deref;
 
 use crate::abilities::AbilityNameNoSubskill;
@@ -21,10 +21,6 @@ pub struct Prerequisite {
 }
 
 impl Prerequisite {
-    pub fn new(prerequisite_type: PrerequisiteType) -> Self {
-        Self { prerequisite_type }
-    }
-
     pub fn prerequisite_type(&self) -> &PrerequisiteType {
         &self.prerequisite_type
     }
@@ -85,7 +81,7 @@ impl Deref for PrerequisiteSet {
 }
 
 impl Character {
-    fn meets_prerequisite(&self, prerequisite: &Prerequisite) -> bool {
+    fn _meets_prerequisite(&self, prerequisite: &Prerequisite) -> bool {
         match prerequisite.deref() {
             PrerequisiteType::Ability(ability_prerequisite) => {
                 self.abilities.meets_prerequisite(ability_prerequisite)
@@ -105,18 +101,18 @@ impl Character {
         }
     }
 
-    fn meets_prerequisite_set(&self, prerequisite_set: &PrerequisiteSet) -> bool {
+    fn _meets_prerequisite_set(&self, prerequisite_set: &PrerequisiteSet) -> bool {
         prerequisite_set.is_empty()
             || prerequisite_set
                 .iter()
-                .all(|prerequisite| self.meets_prerequisite(prerequisite))
+                .all(|prerequisite| self._meets_prerequisite(prerequisite))
     }
 
-    pub fn meets_any_prerequisite_set(&self, prerequisite_sets: &[PrerequisiteSet]) -> bool {
+    pub(crate) fn _meets_any_prerequisite_set(&self, prerequisite_sets: &[PrerequisiteSet]) -> bool {
         prerequisite_sets.is_empty()
             || prerequisite_sets
                 .iter()
-                .any(|prerequisite_set| self.meets_prerequisite_set(prerequisite_set))
+                .any(|prerequisite_set| self._meets_prerequisite_set(prerequisite_set))
     }
 }
 

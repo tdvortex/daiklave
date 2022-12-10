@@ -7,7 +7,7 @@ use crate::prerequisite::tables::{
     PrerequisiteExaltTypePostgres, PrerequisiteInsert, PrerequisiteTypePostgres,
 };
 
-pub async fn post_prerequisites_transaction(
+pub(crate) async fn post_prerequisites_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     prerequisites: &[PrerequisiteInsert],
 ) -> Result<Vec<i32>> {
