@@ -1,10 +1,11 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use exalted_3e_gui::{
     abilities::{Abilities, AbilityNameNoSubskill},
     attributes::AttributeName,
     character::{ExperiencePoints, Willpower},
     create_player, destroy_player,
+    intimacies::{Intimacy, IntimacyLevel, IntimacyType},
     player::Player,
     update_character, Character,
 };
@@ -88,6 +89,12 @@ fn check_initial_abilities(abilities: &Abilities) {
     .for_each(|(ability_name_no_subskill, subskill)| {
         assert!(abilities.get(ability_name_no_subskill, subskill).is_none());
     });
+}
+
+
+fn check_intimacies_except_id(left: &Vec<Intimacy>, right: &Vec<Intimacy>) {
+    assert!(left.iter().map(|i| (i.intimacy_level, i.intimacy_type, i.description.as_str())).collect::<HashSet<_>>()
+    == right.iter().map(|i| (i.intimacy_level, i.intimacy_type, i.description.as_str())).collect::<HashSet<_>>())
 }
 
 #[sqlx::test]
@@ -176,6 +183,30 @@ fn lifecycle() {
                 "Join Battle".to_owned(),
             )
             .unwrap()
+            .with_intimacy(Intimacy::new(
+                IntimacyLevel::Defining,
+                IntimacyType::Principle,
+                "Never stand idle against injustice".to_owned(),
+                None,
+            ))
+            .with_intimacy(Intimacy::new(
+                IntimacyLevel::Major,
+                IntimacyType::Tie,
+                "Ragara Tirnis (Love)".to_owned(),
+                None,
+            ))
+            .with_intimacy(Intimacy::new(
+                IntimacyLevel::Major,
+                IntimacyType::Tie,
+                "Mask of Winters (Revenge)".to_owned(),
+                None,
+            ))
+            .with_intimacy(Intimacy::new(
+                IntimacyLevel::Minor,
+                IntimacyType::Tie,
+                "Street Vendors (Camaraderie)".to_owned(),
+                None,
+            ))
             .build()
             .unwrap()
     };
@@ -223,11 +254,46 @@ fn lifecycle() {
         .collect::<HashMap::<AttributeName, u8>>()
     );
     check_initial_abilities(&initial_character.abilities);
+    assert_eq!(
+        initial_character
+            .intimacies
+            .iter()
+            .collect::<HashSet<&Intimacy>>(),
+        [
+            Intimacy::new(
+                IntimacyLevel::Defining,
+                IntimacyType::Principle,
+                "Never stand idle against injustice".to_owned(),
+                None
+            ),
+            Intimacy::new(
+                IntimacyLevel::Major,
+                IntimacyType::Tie,
+                "Ragara Tirnis (Love)".to_owned(),
+                None
+            ),
+            Intimacy::new(
+                IntimacyLevel::Major,
+                IntimacyType::Tie,
+                "Mask of Winters (Revenge)".to_owned(),
+                None
+            ),
+            Intimacy::new(
+                IntimacyLevel::Minor,
+                IntimacyType::Tie,
+                "Street Vendors (Camaraderie)".to_owned(),
+                None
+            )
+        ]
+        .iter()
+        .collect()
+    );
+    assert!(initial_character.intimacies.iter().all(|i| i.id().is_none()));
 
     // Client builds, serializes, and sends to server
     let send_bytes = postcard::to_allocvec(&initial_character).unwrap();
 
-    // Server deserializes, inserts, then extracts the character
+    // Server deserializes character
     let receive_character: Character = from_bytes(&send_bytes).unwrap();
     assert!(receive_character.id().is_none());
     assert_eq!(receive_character.player(), &receive_player);
@@ -236,7 +302,10 @@ fn lifecycle() {
     assert_eq!(receive_character.willpower, initial_character.willpower);
     assert_eq!(receive_character.experience, initial_character.experience);
     check_initial_abilities(&receive_character.abilities);
+    check_intimacies_except_id(&receive_character.intimacies, &initial_character.intimacies);
+    assert!(receive_character.intimacies.iter().all(|i| i.id().is_none()));
 
+    // Server inserts character and retrieves after updating
     let post_insert_character: Character =
         update_character(&pool, &receive_character).await.unwrap();
     assert!(post_insert_character.id().is_some());
@@ -253,6 +322,7 @@ fn lifecycle() {
         post_insert_character.attributes
     );
     check_initial_abilities(&post_insert_character.abilities);
+    assert!(post_insert_character.intimacies.iter().all(|i| i.id().is_some()));
 
     // Server serializes and sends character to client
     let send_bytes = postcard::to_allocvec(&post_insert_character).unwrap();
@@ -273,6 +343,11 @@ fn lifecycle() {
         post_insert_character.attributes
     );
     check_initial_abilities(&fetched_character.abilities);
+    check_intimacies_except_id(&fetched_character.intimacies, &post_insert_character.intimacies);
+    assert_eq!(
+        fetched_character.intimacies.iter().map(|i| i.id().unwrap()).collect::<HashSet<i32>>(),
+        post_insert_character.intimacies.iter().map(|i| i.id().unwrap()).collect::<HashSet<i32>>(),
+    );
 
     // Client reserializes character and sends to server
     // Server deserializes, reconciles, inserts, extracts, and reserializes

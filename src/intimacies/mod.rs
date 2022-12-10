@@ -16,7 +16,7 @@ pub enum IntimacyType {
     Principle,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub struct Intimacy {
     id: Option<i32>,
     pub intimacy_level: IntimacyLevel,
@@ -25,6 +25,20 @@ pub struct Intimacy {
 }
 
 impl Intimacy {
+    pub fn new(
+        intimacy_level: IntimacyLevel,
+        intimacy_type: IntimacyType,
+        description: String,
+        id: Option<i32>,
+    ) -> Self {
+        Self {
+            id,
+            intimacy_level,
+            intimacy_type,
+            description,
+        }
+    }
+
     pub fn id(&self) -> Option<i32> {
         self.id
     }
