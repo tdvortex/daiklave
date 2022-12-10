@@ -1,5 +1,7 @@
 use serde::{Serialize, Deserialize};
 pub(crate) mod tables;
+pub(crate) mod create;
+pub use create::create_player;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Player {
