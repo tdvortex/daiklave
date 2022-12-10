@@ -287,6 +287,11 @@ pub struct ArmorBuilder {
 }
 
 impl ArmorBuilder {
+    pub(crate) fn with_id(mut self, id: i32) -> Self {
+        self.id = Some(id);
+        self
+    }
+
     pub fn with_name(mut self, name: String) -> Self {
         self.name = Some(name);
         self

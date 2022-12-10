@@ -1,15 +1,14 @@
-use eyre::{eyre, Context, ContextCompat, Result};
+use eyre::{eyre, Context, Result};
 use std::collections::HashMap;
 
 use sqlx::postgres::PgHasArrayType;
 
 use crate::armor::{ArmorItem, ArmorTag};
 use crate::character::CharacterBuilder;
-use crate::custom::{BookReference, DataSource};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
-#[sqlx(type_name = "ARMORTAG", rename_all = "UPPERCASE")]
-pub enum ArmorTagPostgres {
+#[sqlx(type_name = "ARMORTAGTYPE", rename_all = "UPPERCASE")]
+pub enum ArmorTagTypePostgres {
     Artifact,
     Concealable,
     Heavy,
@@ -19,27 +18,27 @@ pub enum ArmorTagPostgres {
     Special,
 }
 
-impl PgHasArrayType for ArmorTagPostgres {
+impl PgHasArrayType for ArmorTagTypePostgres {
     fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_ARMORTAG")
+        sqlx::postgres::PgTypeInfo::with_name("_ARMORTAGTYPE")
     }
 }
 
-impl From<ArmorTagPostgres> for ArmorTag {
-    fn from(tag: ArmorTagPostgres) -> Self {
+impl From<ArmorTagTypePostgres> for ArmorTag {
+    fn from(tag: ArmorTagTypePostgres) -> Self {
         match tag {
-            ArmorTagPostgres::Artifact => Self::Artifact,
-            ArmorTagPostgres::Concealable => Self::Concealable,
-            ArmorTagPostgres::Heavy => Self::Heavy,
-            ArmorTagPostgres::Light => Self::Light,
-            ArmorTagPostgres::Medium => Self::Medium,
-            ArmorTagPostgres::Silent => Self::Silent,
-            ArmorTagPostgres::Special => Self::Special,
+            ArmorTagTypePostgres::Artifact => Self::Artifact,
+            ArmorTagTypePostgres::Concealable => Self::Concealable,
+            ArmorTagTypePostgres::Heavy => Self::Heavy,
+            ArmorTagTypePostgres::Light => Self::Light,
+            ArmorTagTypePostgres::Medium => Self::Medium,
+            ArmorTagTypePostgres::Silent => Self::Silent,
+            ArmorTagTypePostgres::Special => Self::Special,
         }
     }
 }
 
-impl From<ArmorTag> for ArmorTagPostgres {
+impl From<ArmorTag> for ArmorTagTypePostgres {
     fn from(tag: ArmorTag) -> Self {
         match tag {
             ArmorTag::Artifact => Self::Artifact,
@@ -57,7 +56,6 @@ impl From<ArmorTag> for ArmorTagPostgres {
 pub struct ArmorRow {
     pub id: i32,
     pub name: String,
-    pub tags: Vec<ArmorTagPostgres>,
     pub book_title: Option<String>,
     pub page_number: Option<i16>,
     pub creator_id: Option<i32>,
@@ -76,7 +74,6 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorRow {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
         let id = decoder.try_decode::<i32>()?;
         let name = decoder.try_decode::<String>()?;
-        let tags = decoder.try_decode::<Vec<ArmorTagPostgres>>()?;
         let book_title = decoder.try_decode::<Option<String>>()?;
         let page_number = decoder.try_decode::<Option<i16>>()?;
         let creator_id = decoder.try_decode::<Option<i32>>()?;
@@ -84,44 +81,10 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorRow {
         Ok(Self {
             id,
             name,
-            tags,
             book_title,
             page_number,
             creator_id,
         })
-    }
-}
-
-impl TryFrom<ArmorRow> for ArmorItem {
-    type Error = eyre::Report;
-
-    fn try_from(value: ArmorRow) -> Result<Self, Self::Error> {
-        let data_source = if value.book_title.is_some()
-            && value.page_number.is_some()
-            && value.creator_id.is_none()
-        {
-            DataSource::Book(BookReference {
-                book_title: value.book_title.unwrap(),
-                page_number: value.page_number.unwrap(),
-            })
-        } else if value.book_title.is_none()
-            && value.page_number.is_none()
-            && value.creator_id.is_some()
-        {
-            DataSource::Custom(value.creator_id)
-        } else {
-            return Err(eyre!(
-                "Database error: inconsistent data source for armor item {}",
-                value.id
-            ));
-        };
-
-        Self::new(
-            value.name,
-            value.tags.into_iter().map(|tag| tag.into()).collect(),
-            Some(value.id),
-            data_source,
-        )
     }
 }
 
@@ -155,57 +118,112 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorWornRow {
     }
 }
 
+#[derive(Debug)]
+pub struct ArmorTagRow {
+    pub armor_id: i32,
+    pub tag_type: ArmorTagTypePostgres,
+}
+
+impl sqlx::Type<sqlx::Postgres> for ArmorTagRow {
+    fn type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("armor_tags")
+    }
+}
+
+impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorTagRow {
+    fn decode(
+        value: sqlx::postgres::PgValueRef<'r>,
+    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
+        let armor_id = decoder.try_decode::<i32>()?;
+        let tag_type = decoder.try_decode::<ArmorTagTypePostgres>()?;
+
+        Ok(Self { armor_id, tag_type })
+    }
+}
+
 impl CharacterBuilder {
     pub(crate) fn apply_armor_rows(
         self,
         armor_owned: Option<Vec<ArmorRow>>,
+        armor_tags: Option<Vec<ArmorTagRow>>,
         armor_worn: Option<Vec<ArmorWornRow>>,
     ) -> Result<Self> {
-        if armor_owned.is_none() {
-            if armor_worn.is_none() {
-                return Ok(self);
+        if armor_owned.is_none() || armor_worn.is_none() {
+            return Ok(self);
+        }
+
+        let armor_worn = armor_worn.unwrap();
+
+        let mut armor_rows_hashmap = HashMap::new();
+
+        for armor_item in armor_owned.unwrap().into_iter() {
+            armor_rows_hashmap.insert(armor_item.id, (armor_item, Vec::new()));
+        }
+
+        if let Some(tags) = armor_tags {
+            for tag_row in tags.into_iter() {
+                armor_rows_hashmap
+                    .get_mut(&tag_row.armor_id)
+                    .ok_or_else(|| eyre!("No armor item with id {} for tag", tag_row.armor_id))?
+                    .1
+                    .push(tag_row);
+            }
+        }
+
+        let mut armor_items_hashmap = HashMap::new();
+        for (armor_id, (armor_row, armor_tags)) in armor_rows_hashmap.into_iter() {
+            let mut builder = if armor_row.book_title.is_some()
+                && armor_row.page_number.is_some()
+                && armor_row.creator_id.is_none()
+            {
+                ArmorItem::create_from_book(
+                    armor_row.book_title.unwrap(),
+                    armor_row.page_number.unwrap(),
+                )
+            } else if armor_row.book_title.is_none()
+                && armor_row.book_title.is_none()
+                && armor_row.creator_id.is_some()
+            {
+                ArmorItem::create_custom(armor_row.creator_id)
             } else {
-                return Err(eyre!("Cannot wear armor that is not owned"));
+                return Err(eyre!(
+                    "Database error: inconsistent data source for armor item {}",
+                    armor_id
+                ));
+            };
+
+            builder = builder.with_id(armor_id).with_name(armor_row.name);
+
+            for tag_row in armor_tags.into_iter() {
+                builder = builder.with_tag(tag_row.tag_type.into());
             }
+
+            let armor_item = builder
+                .build()
+                .wrap_err_with(|| format!("Failed to build armor item {} from tags", armor_id))?;
+
+            armor_items_hashmap.insert(armor_id, armor_item);
         }
 
-        let mut armor_hashmap = HashMap::new();
-
-        for armor_row in armor_owned.unwrap().into_iter() {
-            let armor_item: ArmorItem = armor_row
-                .try_into()
-                .wrap_err("Could not convert armor row to valid item")?;
-            armor_hashmap.insert(
-                armor_item.id().wrap_err_with(|| {
-                    format!("ID missing for armor item name {}", armor_item.name())
-                })?,
-                (armor_item, false),
-            );
+        for worn_row in armor_worn {
+            let armor_item = armor_items_hashmap
+                .remove(&worn_row.armor_id)
+                .ok_or_else(|| {
+                    eyre!(
+                        "Missing item row {} for character {}",
+                        worn_row.armor_id, worn_row.character_id
+                    )
+                })?;
+            let worn = worn_row.worn;
+            self = self.with_armor(armor_item, worn).wrap_err_with(|| {
+                format!(
+                    "Could not give armor item {} to character {}",
+                    worn_row.armor_id, worn_row.character_id
+                )
+            })?;
         }
 
-        if let Some(armor_worn_rows) = armor_worn {
-            for armor_worn_row in armor_worn_rows.into_iter() {
-                if armor_worn_row.worn {
-                    let (_, worn) =
-                        armor_hashmap
-                            .get_mut(&armor_worn_row.armor_id)
-                            .ok_or_else(|| {
-                                eyre!(
-                                    "Cannot equip unowned armor item {}",
-                                    armor_worn_row.armor_id
-                                )
-                            })?;
-                    *worn = true;
-                }
-            }
-        }
-
-        let mut applied = Ok(self);
-
-        for (_, (armor_item, worn)) in armor_hashmap.into_iter() {
-            applied = applied.and_then(|character| character.with_armor(armor_item, worn));
-        }
-
-        applied
+        Ok(self)
     }
 }

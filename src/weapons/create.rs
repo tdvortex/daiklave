@@ -1,9 +1,9 @@
-use eyre::Context;
 use ::eyre::Result;
+use eyre::Context;
 use sqlx::{query, Postgres, Transaction};
 
 use crate::custom::DataSource;
-use crate::weapons::tables::WeaponTagPostgres;
+use crate::weapons::tables::WeaponTagRow;
 use crate::weapons::Weapon;
 
 pub(crate) async fn create_weapons_transaction(
@@ -58,6 +58,12 @@ pub(crate) async fn create_weapon_transaction(
         creator_id as Option<i32>,
     )
     .fetch_one(&mut *transaction)
-    .await.wrap_err_with(|| format!("Database error when inserting weapon name {}", weapon.name()))?
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "Database error when inserting weapon name {}",
+            weapon.name()
+        )
+    })?
     .id)
 }

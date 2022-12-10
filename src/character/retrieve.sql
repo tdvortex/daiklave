@@ -59,6 +59,14 @@ WITH player_query AS (
         INNER JOIN character_armor ON (characters.id = character_armor.character_id)
         INNER JOIN armor ON (character_armor.armor_id = armor.id)
     WHERE characters.id = $1
+), armor_tags_query AS (
+    SELECT
+        ARRAY_AGG(armor_tags) as armts
+    FROM characters
+        INNER JOIN character_armor ON (characters.id = character_armor.character_id)
+        INNER JOIN armor ON (character_armor.armor_id = armor.id)
+        INNER JOIN armor_tags ON (armor_tags.armor_id = armor.id)
+    WHERE characters.id = $1
 ), armor_worn_query AS (
      SELECT
         ARRAY_AGG(character_armor) as wrars
@@ -108,6 +116,7 @@ SELECT
     intis AS "intimacies: Vec<IntimacyRow>",
     eqwps AS "weapons_equipped: Vec<WeaponEquippedRow>",
     armrs AS "armor_owned: Vec<ArmorRow>",
+    armts AS "armor_tags: Vec<ArmorTagRow>",
     wrars AS "armor_worn: Vec<ArmorWornRow>",
     mrtts AS "merit_templates: Vec<MeritTemplateRow>",
     mrtds AS "merit_details: Vec<MeritDetailRow>",
@@ -124,6 +133,7 @@ FROM characters,
     LEFT JOIN intimacies_query ON (TRUE)
     LEFT JOIN weapons_equipped_query ON (TRUE)
     LEFT JOIN armor_query ON (TRUE)
+    LEFT JOIN armor_tags_query ON (TRUE)
     LEFT JOIN armor_worn_query ON (TRUE)
     LEFT JOIN merit_templates_query ON (TRUE)
     LEFT JOIN merit_details_query ON (TRUE)

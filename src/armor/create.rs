@@ -1,5 +1,5 @@
 use crate::armor::ArmorItem;
-use crate::{armor::tables::ArmorTagPostgres, custom::DataSource};
+use crate::{armor::tables::ArmorTagTypePostgres, custom::DataSource};
 use eyre::{Result, WrapErr};
 use sqlx::{query, Postgres, Transaction};
 
@@ -8,22 +8,16 @@ pub(crate) async fn create_armor_item_transaction(
     armor_item: ArmorItem,
     creator_id: Option<i32>,
 ) -> Result<i32> {
-    Ok(query!(
-        "INSERT INTO armor(name, tags, book_title, page_number, creator_id)
+    let item = query!(
+        "INSERT INTO armor(name, book_title, page_number, creator_id)
         VALUES (
             $1::VARCHAR(255),
-            $2::ARMORTAG[],
-            $3::VARCHAR(255),
-            $4::SMALLINT,
-            $5::INTEGER
+            $2::VARCHAR(255),
+            $3::SMALLINT,
+            $4::INTEGER
         )
-        RETURNING id",
-        armor_item.name(),
-        &armor_item
-            .tags()
-            .into_iter()
-            .map(|tag| tag.into())
-            .collect::<Vec<ArmorTagPostgres>>() as &[ArmorTagPostgres],
+        returning id",
+        armor_item.name() as &str,
         armor_item.data_source().book_title() as Option<&str>,
         armor_item.data_source().page_number() as Option<i16>,
         creator_id
@@ -36,7 +30,28 @@ pub(crate) async fn create_armor_item_transaction(
             armor_item.name()
         )
     })?
-    .id)
+    .id;
+
+    let tags = armor_item
+        .tags()
+        .into_iter()
+        .map(|tag| tag.into())
+        .collect::<Vec<ArmorTagTypePostgres>>();
+
+    query!(
+        "INSERT INTO armor_tags(armor_id, tag_type)
+        SELECT
+            $1::INTEGER as armor_id,
+            data.tag_type
+        FROM UNNEST($2::ARMORTAGTYPE[]) as data(tag_type)",
+        item as i32,
+        &tags as &[ArmorTagTypePostgres]
+    )
+    .execute(&mut *transaction)
+    .await
+    .wrap_err_with(|| format!("Database error creating armor tags for armor item {}", item))?;
+
+    Ok(item)
 }
 
 pub(crate) async fn create_armor_transaction(

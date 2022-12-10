@@ -11,7 +11,9 @@ use exalted_3e_gui::{
     health::{DamageLevel, WoundPenalty},
     intimacies::{Intimacy, IntimacyLevel, IntimacyType},
     player::Player,
-    update_character, Character, weapons::{Weapon, RangeBand, WeaponTag, EquipHand, Weapons, destroy_weapons},
+    update_character,
+    weapons::{destroy_weapons, EquipHand, RangeBand, Weapon, WeaponTag, Weapons},
+    Character,
 };
 use postcard::from_bytes;
 use sqlx::postgres::PgPool;
@@ -159,13 +161,17 @@ fn check_initial_weapons(weapons: &Weapons, should_have_id: bool) {
             "Knife" => {
                 assert!(maybe_hand.is_none());
                 assert!(weapons.get(key).unwrap().id().is_some() == should_have_id);
-                assert_eq!(weapons.get(key).unwrap().tags(), [
-                    WeaponTag::Lethal,
-                    WeaponTag::Melee,
-                    WeaponTag::OneHanded,
-                    WeaponTag::Thrown(RangeBand::Short),
-                    WeaponTag::Light
-                ].into());
+                assert_eq!(
+                    weapons.get(key).unwrap().tags(),
+                    [
+                        WeaponTag::Lethal,
+                        WeaponTag::Melee,
+                        WeaponTag::OneHanded,
+                        WeaponTag::Thrown(RangeBand::Short),
+                        WeaponTag::Light
+                    ]
+                    .into()
+                );
                 assert_eq!(
                     weapons.get(key).unwrap().data_source(),
                     &DataSource::Book(BookReference {
@@ -177,15 +183,19 @@ fn check_initial_weapons(weapons: &Weapons, should_have_id: bool) {
             "Screamer (Red Jade Reaper Daiklave)" => {
                 assert!(maybe_hand == Some(EquipHand::Main));
                 assert!(weapons.get(key).unwrap().id().is_some() == should_have_id);
-                assert_eq!(weapons.get(key).unwrap().tags(), [
-                    WeaponTag::Lethal,
-                    WeaponTag::Melee,
-                    WeaponTag::OneHanded,
-                    WeaponTag::Medium,
-                    WeaponTag::Balanced,
-                    WeaponTag::Artifact,
-                    WeaponTag::MartialArts("Single Point Shining Into Void Style".to_owned())
-                ].into());
+                assert_eq!(
+                    weapons.get(key).unwrap().tags(),
+                    [
+                        WeaponTag::Lethal,
+                        WeaponTag::Melee,
+                        WeaponTag::OneHanded,
+                        WeaponTag::Medium,
+                        WeaponTag::Balanced,
+                        WeaponTag::Artifact,
+                        WeaponTag::MartialArts("Single Point Shining Into Void Style".to_owned())
+                    ]
+                    .into()
+                );
                 if should_have_id {
                     assert!(match weapons.get(key).unwrap().data_source() {
                         DataSource::Book(_) => panic!("should be custom"),
@@ -367,7 +377,11 @@ fn lifecycle() {
                     .as_melee()
                     .with_thrown_range(RangeBand::Short)
                     .dealing_lethal()
-                    .build().unwrap(), None).unwrap()
+                    .build()
+                    .unwrap(),
+                None,
+            )
+            .unwrap()
             .with_weapon(
                 Weapon::create_custom(None)
                     .with_name("Screamer (Red Jade Reaper Daiklave)".to_owned())
@@ -378,7 +392,11 @@ fn lifecycle() {
                     .with_tag(WeaponTag::Balanced)
                     .with_martial_arts("Single Point Shining Into Void Style".to_owned())
                     .dealing_lethal()
-                    .build().unwrap(), Some(EquipHand::Main)).unwrap()
+                    .build()
+                    .unwrap(),
+                Some(EquipHand::Main),
+            )
+            .unwrap()
             .build()
             .unwrap()
     };
@@ -625,11 +643,9 @@ fn lifecycle() {
             .is_none()
     );
 
-    assert!(
-        sqlx::query!("SELECT id FROM weapons WHERE name = 'Knife'")
-            .fetch_optional(&pool)
-            .await
-            .unwrap()
-            .is_none()
-    );
+    assert!(sqlx::query!("SELECT id FROM weapons WHERE name = 'Knife'")
+        .fetch_optional(&pool)
+        .await
+        .unwrap()
+        .is_none());
 }

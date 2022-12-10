@@ -124,46 +124,18 @@ impl From<WeaponTag> for WeaponTagTypePostgres {
     }
 }
 
-#[derive(Debug, sqlx::Type)]
-#[sqlx(type_name = "WEAPONTAG")]
-pub struct WeaponTagPostgres {
+#[derive(Debug)]
+pub struct WeaponTagRow {
+    weapon_id: i32,
     tag_type: WeaponTagTypePostgres,
     max_range: Option<RangeBandPostgres>,
     martial_arts_style: Option<String>,
 }
 
-
-
-impl WeaponTagPostgres {
-    fn from_archery(range: RangeBandPostgres) -> Self {
-        Self {
-            tag_type: WeaponTagTypePostgres::Archery,
-            max_range: Some(range),
-            martial_arts_style: None,
-        }
-    }
-
-    fn from_martial_arts(style: String) -> Self {
-        Self {
-            tag_type: WeaponTagTypePostgres::MartialArts,
-            max_range: None,
-            martial_arts_style: Some(style),
-        }
-    }
-
-    fn from_thrown(range: RangeBandPostgres) -> Self {
-        Self {
-            tag_type: WeaponTagTypePostgres::Thrown,
-            max_range: Some(range),
-            martial_arts_style: None,
-        }
-    }
-}
-
-impl TryFrom<WeaponTagPostgres> for WeaponTag {
+impl TryFrom<WeaponTagRow> for WeaponTag {
     type Error = Report;
 
-    fn try_from(value: WeaponTagPostgres) -> Result<Self, Self::Error> {
+    fn try_from(value: WeaponTagRow) -> Result<Self, Self::Error> {
         match value.tag_type {
             WeaponTagTypePostgres::Archery => match value.max_range {
                 Some(range) => Ok(Self::Archery(range.into())),
@@ -214,27 +186,6 @@ impl TryFrom<WeaponTagPostgres> for WeaponTag {
     }
 }
 
-impl From<WeaponTag> for WeaponTagPostgres {
-    fn from(value: WeaponTag) -> Self {
-        match value {
-            WeaponTag::Archery(range) => Self::from_archery(range.into()),
-            WeaponTag::MartialArts(style) => Self::from_martial_arts(style),
-            WeaponTag::Thrown(range) => Self::from_thrown(range.into()),
-            other => Self {
-                tag_type: other.into(),
-                max_range: None,
-                martial_arts_style: None,
-            },
-        }
-    }
-}
-
-impl PgHasArrayType for WeaponTagPostgres {
-    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_WEAPONTAG")
-    }
-}
-
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "EQUIPHAND", rename_all = "UPPERCASE")]
 pub enum EquipHandPostgres {
@@ -252,7 +203,7 @@ impl PgHasArrayType for EquipHandPostgres {
 pub struct WeaponRow {
     pub id: i32,
     pub name: String,
-    pub tags: Vec<WeaponTagPostgres>,
+    pub tags: Vec<WeaponTagRow>,
     pub book_title: Option<String>,
     pub page_number: Option<i16>,
     pub creator_id: Option<i32>,
@@ -271,7 +222,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponRow {
         let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
         let id = decoder.try_decode::<i32>()?;
         let name = decoder.try_decode::<String>()?;
-        let tags = decoder.try_decode::<Vec<WeaponTagPostgres>>()?;
+        let tags = decoder.try_decode::<Vec<WeaponTagRow>>()?;
         let book_title = decoder.try_decode::<Option<String>>()?;
         let page_number = decoder.try_decode::<Option<i16>>()?;
         let creator_id = decoder.try_decode::<Option<i32>>()?;
@@ -332,7 +283,10 @@ impl CharacterBuilder {
         for weapon_row in weapon_rows.into_iter() {
             let mut tags = HashSet::new();
             for tag in weapon_row.tags {
-                tags.insert(tag.try_into().wrap_err("Error attempting to decode weapon tag")?);
+                tags.insert(
+                    tag.try_into()
+                        .wrap_err("Error attempting to decode weapon tag")?,
+                );
             }
 
             let data_source = match (

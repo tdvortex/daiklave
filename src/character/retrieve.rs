@@ -3,7 +3,7 @@ use sqlx::{PgPool, Postgres, Transaction};
 
 use crate::{
     abilities::tables::{AbilityRow, SpecialtyRow},
-    armor::tables::{ArmorRow, ArmorWornRow},
+    armor::tables::{ArmorRow, ArmorWornRow, ArmorTagRow},
     attributes::tables::AttributeRow,
     campaign::tables::CampaignRow,
     character::tables::CharacterRow,
@@ -29,6 +29,7 @@ struct GetCharacter {
     weapons_owned: Option<Vec<WeaponRow>>,
     weapons_equipped: Option<Vec<WeaponEquippedRow>>,
     armor_owned: Option<Vec<ArmorRow>>,
+    armor_tags: Option<Vec<ArmorTagRow>>,
     armor_worn: Option<Vec<ArmorWornRow>>,
     merit_templates: Option<Vec<MeritTemplateRow>>,
     merit_details: Option<Vec<MeritDetailRow>>,
@@ -96,7 +97,7 @@ impl TryInto<Character> for GetCharacter {
             .apply_health_box_rows(self.health_boxes)
             .apply_weapon_rows(self.weapons_owned, self.weapons_equipped)
             .wrap_err("Could not apply weapon rows")?
-            .apply_armor_rows(self.armor_owned, self.armor_worn)
+            .apply_armor_rows(self.armor_owned, self.armor_tags, self.armor_worn)
             .wrap_err("Could not apply armor rows")?
             .apply_merits_rows(
                 self.merit_templates,
