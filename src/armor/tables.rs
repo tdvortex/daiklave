@@ -144,7 +144,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorTagRow {
 
 impl CharacterBuilder {
     pub(crate) fn apply_armor_rows(
-        self,
+        mut self,
         armor_owned: Option<Vec<ArmorRow>>,
         armor_tags: Option<Vec<ArmorTagRow>>,
         armor_worn: Option<Vec<ArmorWornRow>>,
@@ -212,7 +212,8 @@ impl CharacterBuilder {
                 .ok_or_else(|| {
                     eyre!(
                         "Missing item row {} for character {}",
-                        worn_row.armor_id, worn_row.character_id
+                        worn_row.armor_id,
+                        worn_row.character_id
                     )
                 })?;
             let worn = worn_row.worn;

@@ -3,7 +3,7 @@ use sqlx::{PgPool, Postgres, Transaction};
 
 use crate::{
     abilities::tables::{AbilityRow, SpecialtyRow},
-    armor::tables::{ArmorRow, ArmorWornRow, ArmorTagRow},
+    armor::tables::{ArmorRow, ArmorTagRow, ArmorWornRow},
     attributes::tables::AttributeRow,
     campaign::tables::CampaignRow,
     character::tables::CharacterRow,
@@ -13,7 +13,7 @@ use crate::{
     merits::tables::{MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow},
     player::tables::PlayerRow,
     prerequisite::tables::PrerequisiteRow,
-    weapons::tables::{WeaponEquippedRow, WeaponRow},
+    weapons::tables::{WeaponEquippedRow, WeaponRow, WeaponTagRow},
 };
 
 #[derive(Debug)]
@@ -27,6 +27,7 @@ struct GetCharacter {
     intimacies: Option<Vec<IntimacyRow>>,
     health_boxes: Vec<HealthBoxRow>,
     weapons_owned: Option<Vec<WeaponRow>>,
+    weapon_tags: Option<Vec<WeaponTagRow>>,
     weapons_equipped: Option<Vec<WeaponEquippedRow>>,
     armor_owned: Option<Vec<ArmorRow>>,
     armor_tags: Option<Vec<ArmorTagRow>>,
@@ -95,7 +96,7 @@ impl TryInto<Character> for GetCharacter {
             .wrap_err("Could not apply ability and specialty rows")?
             .apply_intimacy_rows(self.intimacies)
             .apply_health_box_rows(self.health_boxes)
-            .apply_weapon_rows(self.weapons_owned, self.weapons_equipped)
+            .apply_weapon_rows(self.weapons_owned, self.weapon_tags, self.weapons_equipped)
             .wrap_err("Could not apply weapon rows")?
             .apply_armor_rows(self.armor_owned, self.armor_tags, self.armor_worn)
             .wrap_err("Could not apply armor rows")?

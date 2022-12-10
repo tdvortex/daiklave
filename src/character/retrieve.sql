@@ -46,6 +46,14 @@ WITH player_query AS (
         INNER JOIN character_weapons ON (characters.id = character_weapons.character_id)
         INNER JOIN weapons ON (character_weapons.weapon_id = weapons.id)
     WHERE characters.id = $1
+), weapon_tags_query AS (
+     SELECT
+        ARRAY_AGG(weapon_tags) as wepts
+    FROM characters
+        INNER JOIN character_weapons ON (characters.id = character_weapons.character_id)
+        INNER JOIN weapons ON (character_weapons.weapon_id = weapons.id)
+        INNER JOIN weapon_tags ON (weapon_tags.weapon_id = weapons.id)
+    WHERE characters.id = $1
 ), weapons_equipped_query AS (
     SELECT
         ARRAY_AGG(character_weapons) AS eqwps
@@ -110,10 +118,11 @@ SELECT
     attrs AS "attributes!: Vec<AttributeRow>",
     abils AS "abilities!: Vec<AbilityRow>",
     hboxs AS "health_boxes!: Vec<HealthBoxRow>",
-    weaps AS "weapons_owned: Vec<WeaponRow>",
     campaign AS "campaign: CampaignRow",
     specs AS "specialties: Vec<SpecialtyRow>",
     intis AS "intimacies: Vec<IntimacyRow>",
+    weaps AS "weapons_owned: Vec<WeaponRow>",
+    wepts AS "weapon_tags: Vec<WeaponTagRow>",
     eqwps AS "weapons_equipped: Vec<WeaponEquippedRow>",
     armrs AS "armor_owned: Vec<ArmorRow>",
     armts AS "armor_tags: Vec<ArmorTagRow>",
@@ -126,11 +135,12 @@ FROM characters,
     player_query,
     attributes_query,
     abilities_query,
-    health_boxes_query,
-    weapons_query
+    health_boxes_query
     LEFT JOIN campaign_query ON (TRUE)
     LEFT JOIN specialties_query ON (TRUE)
     LEFT JOIN intimacies_query ON (TRUE)
+    LEFT JOIN weapons_query ON (TRUE)
+    LEFT JOIN weapon_tags_query ON (TRUE)
     LEFT JOIN weapons_equipped_query ON (TRUE)
     LEFT JOIN armor_query ON (TRUE)
     LEFT JOIN armor_tags_query ON (TRUE)

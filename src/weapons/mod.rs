@@ -920,6 +920,11 @@ pub struct WeaponBuilder {
 }
 
 impl WeaponBuilder {
+    pub(crate) fn with_id(mut self, id: i32) -> Self {
+        self.id = Some(id);
+        self
+    }
+
     pub fn with_name(mut self, name: String) -> WeaponBuilder {
         self.name = Some(name);
         self

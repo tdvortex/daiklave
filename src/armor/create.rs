@@ -16,7 +16,7 @@ pub(crate) async fn create_armor_item_transaction(
             $3::SMALLINT,
             $4::INTEGER
         )
-        returning id",
+        RETURNING id",
         armor_item.name() as &str,
         armor_item.data_source().book_title() as Option<&str>,
         armor_item.data_source().page_number() as Option<i16>,
