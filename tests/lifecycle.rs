@@ -2,9 +2,12 @@ use std::collections::{HashMap, HashSet};
 
 use exalted_3e_gui::{
     abilities::{Abilities, AbilityNameNoSubskill},
+    armor::{destroy_armor, Armor, ArmorItem, ArmorTag},
     attributes::AttributeName,
     character::{ExperiencePoints, Willpower},
-    create_player, destroy_player,
+    create_player,
+    custom::{BookReference, DataSource},
+    destroy_player,
     health::{DamageLevel, WoundPenalty},
     intimacies::{Intimacy, IntimacyLevel, IntimacyType},
     player::Player,
@@ -102,6 +105,63 @@ fn check_intimacies_except_id(left: &Vec<Intimacy>, right: &Vec<Intimacy>) {
                 .map(|i| (i.intimacy_level, i.intimacy_type, i.description.as_str()))
                 .collect::<HashSet<_>>()
     )
+}
+
+fn check_initial_armor_items(armor: &Armor, should_have_id: bool) {
+    for (key, worn, item) in armor.iter() {
+        match item.name() {
+            "Straw Hat" => {
+                assert!(worn);
+                assert!(armor.get(key).unwrap().id().is_some() == should_have_id);
+                assert_eq!(armor.get(key).unwrap().tags(), [ArmorTag::Light].into());
+                if should_have_id {
+                    assert!(match armor.get(key).unwrap().data_source() {
+                        DataSource::Book(_) => panic!("should be custom"),
+                        DataSource::Custom(None) => panic!("should have custom creator id"),
+                        DataSource::Custom(Some(_)) => true,
+                    });
+                } else {
+                    assert_eq!(
+                        armor.get(key).unwrap().data_source(),
+                        &DataSource::Custom(None)
+                    );
+                }
+            }
+            "Silken Armor" => {
+                assert!(!worn);
+                assert!(armor.get(key).unwrap().id().is_some() == should_have_id);
+                assert_eq!(
+                    armor.get(key).unwrap().tags(),
+                    [
+                        ArmorTag::Light,
+                        ArmorTag::Artifact,
+                        ArmorTag::Silent,
+                        ArmorTag::Special
+                    ]
+                    .into()
+                );
+                assert_eq!(
+                    armor.get(key).unwrap().data_source(),
+                    &DataSource::Book(BookReference {
+                        book_title: "Core Rulebook".to_owned(),
+                        page_number: 600
+                    })
+                );
+            }
+            wrong => panic!("Unknown armor name: {}", wrong),
+        }
+    }
+}
+
+fn validate_deserialization(preserialized: &Character, postserialized: &Character) {
+    assert_eq!(preserialized.id(), postserialized.id());
+    assert_eq!(preserialized.player(), postserialized.player());
+    assert_eq!(preserialized.name, postserialized.name);
+    assert_eq!(preserialized.concept, postserialized.concept);
+    assert_eq!(preserialized.willpower, postserialized.willpower);
+    assert_eq!(preserialized.experience, postserialized.experience);
+    assert_eq!(preserialized.health, postserialized.health);
+    check_intimacies_except_id(&preserialized.intimacies, &postserialized.intimacies);
 }
 
 #[sqlx::test]
@@ -227,6 +287,27 @@ fn lifecycle() {
                 WoundPenalty::Zero,
             ])
             .with_damage(2, 3, 1)
+            .with_armor(
+                ArmorItem::create_from_book("Core Rulebook".to_owned(), 600)
+                    .with_name("Silken Armor".to_owned())
+                    .as_light()
+                    .as_artifact()
+                    .with_tag(ArmorTag::Silent)
+                    .with_tag(ArmorTag::Special)
+                    .build()
+                    .unwrap(),
+                false,
+            )
+            .unwrap()
+            .with_armor(
+                ArmorItem::create_custom(None)
+                    .with_name("Straw Hat".to_owned())
+                    .as_light()
+                    .build()
+                    .unwrap(),
+                true,
+            )
+            .unwrap()
             .build()
             .unwrap()
     };
@@ -333,25 +414,20 @@ fn lifecycle() {
             (WoundPenalty::Incapacitated, DamageLevel::None)
         ]
     );
+    check_initial_armor_items(&initial_character.armor, false);
 
     // Client builds, serializes, and sends to server
     let send_bytes = postcard::to_allocvec(&initial_character).unwrap();
 
     // Server deserializes character
     let receive_character: Character = from_bytes(&send_bytes).unwrap();
-    assert!(receive_character.id().is_none());
-    assert_eq!(receive_character.player(), &receive_player);
-    assert_eq!(receive_character.name, initial_character.name);
-    assert_eq!(receive_character.concept, initial_character.concept);
-    assert_eq!(receive_character.willpower, initial_character.willpower);
-    assert_eq!(receive_character.experience, initial_character.experience);
+    validate_deserialization(&initial_character, &receive_character);
     check_initial_abilities(&receive_character.abilities);
-    check_intimacies_except_id(&receive_character.intimacies, &initial_character.intimacies);
     assert!(receive_character
         .intimacies
         .iter()
         .all(|i| i.id().is_none()));
-    assert_eq!(&receive_character.health, &initial_character.health);
+    check_initial_armor_items(&receive_character.armor, false);
 
     // Server inserts character and retrieves after updating
     let post_insert_character: Character =
@@ -375,30 +451,15 @@ fn lifecycle() {
         .iter()
         .all(|i| i.id().is_some()));
     assert_eq!(&receive_character.health, &post_insert_character.health);
+    check_initial_armor_items(&post_insert_character.armor, true);
 
     // Server serializes and sends character to client
     let send_bytes = postcard::to_allocvec(&post_insert_character).unwrap();
 
     // Client deserializes character and modifies it
     let fetched_character: Character = from_bytes(&send_bytes).unwrap();
-    assert_eq!(fetched_character.id(), post_insert_character.id());
-    assert_eq!(fetched_character.player(), post_insert_character.player());
-    assert_eq!(fetched_character.name, post_insert_character.name);
-    assert_eq!(fetched_character.concept, post_insert_character.concept);
-    assert_eq!(fetched_character.willpower, post_insert_character.willpower);
-    assert_eq!(
-        fetched_character.experience,
-        post_insert_character.experience
-    );
-    assert_eq!(
-        fetched_character.attributes,
-        post_insert_character.attributes
-    );
+    validate_deserialization(&initial_character, &receive_character);
     check_initial_abilities(&fetched_character.abilities);
-    check_intimacies_except_id(
-        &fetched_character.intimacies,
-        &post_insert_character.intimacies,
-    );
     assert_eq!(
         fetched_character
             .intimacies
@@ -411,7 +472,7 @@ fn lifecycle() {
             .map(|i| i.id().unwrap())
             .collect::<HashSet<i32>>(),
     );
-    assert_eq!(&fetched_character.health, &post_insert_character.health);
+    check_initial_armor_items(&fetched_character.armor, true);
 
     // Client runs all getters on the character
     // Client runs all setters on the character
@@ -442,5 +503,33 @@ fn lifecycle() {
     .unwrap()
     .is_none());
 
+    // Book referenced items should still exist
+    let silken_armor_id = sqlx::query!("SELECT id FROM armor WHERE name = 'Silken Armor'")
+        .fetch_optional(&pool)
+        .await
+        .unwrap()
+        .unwrap()
+        .id;
+
+    // Custom items should not
+    assert!(sqlx::query!(
+        "SELECT id FROM armor WHERE creator_id = $1",
+        fetched_character.id().unwrap()
+    )
+    .fetch_optional(&pool)
+    .await
+    .unwrap()
+    .is_none());
+
     // Clean up database to end test
+    destroy_armor(&pool, &[silken_armor_id]).await.unwrap();
+
+    // Confirm database is clean
+    assert!(
+        sqlx::query!("SELECT id FROM armor WHERE name = 'Silken Armor'")
+            .fetch_optional(&pool)
+            .await
+            .unwrap()
+            .is_none()
+    );
 }

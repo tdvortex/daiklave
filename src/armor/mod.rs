@@ -287,32 +287,32 @@ pub struct ArmorBuilder {
 }
 
 impl ArmorBuilder {
-    pub fn with_name(&mut self, name: String) -> &mut Self {
+    pub fn with_name(mut self, name: String) -> Self {
         self.name = Some(name);
         self
     }
 
-    pub fn as_light(&mut self) -> &mut Self {
+    pub fn as_light(mut self) -> Self {
         self.weight_class = Some(WeightClass::Light);
         self
     }
 
-    pub fn as_medium(&mut self) -> &mut Self {
+    pub fn as_medium(mut self) -> Self {
         self.weight_class = Some(WeightClass::Medium);
         self
     }
 
-    pub fn as_heavy(&mut self) -> &mut Self {
+    pub fn as_heavy(mut self) -> Self {
         self.weight_class = Some(WeightClass::Heavy);
         self
     }
 
-    pub fn as_artifact(&mut self) -> &mut Self {
+    pub fn as_artifact(mut self) -> Self {
         self.tags.insert(ArmorTag::Artifact);
         self
     }
 
-    pub fn with_tag(&mut self, tag: ArmorTag) -> &mut Self {
+    pub fn with_tag(mut self, tag: ArmorTag) -> Self {
         match tag {
             ArmorTag::Artifact => self.as_artifact(),
             ArmorTag::Heavy => self.as_heavy(),

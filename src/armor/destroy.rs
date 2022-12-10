@@ -1,7 +1,7 @@
 use eyre::{Context, Result};
 use sqlx::{query, PgPool};
 
-pub async fn destroy_armor(pool: &PgPool, ids: Vec<i32>) -> Result<()> {
+pub async fn destroy_armor(pool: &PgPool, ids: &[i32]) -> Result<()> {
     query!(
         "DELETE FROM armor
         WHERE id IN (SELECT data.id FROM UNNEST($1::INTEGER[]) as data(id))",
