@@ -26,9 +26,9 @@ use crate::weapons::{EquipHand, Weapon, Weapons};
 /// It is also the serialization format to be moved back and forth between client and server.
 #[derive(Debug)]
 pub struct Character {
-    pub id: Option<i32>,
-    pub player: Player,
-    pub campaign: Option<Campaign>,
+    id: Option<i32>,
+    player: Player,
+    campaign: Option<Campaign>,
     pub name: String,
     pub concept: Option<String>,
     pub willpower: Willpower,
@@ -45,6 +45,18 @@ pub struct Character {
 impl Character {
     pub fn create() -> CharacterBuilder {
         CharacterBuilder::default()
+    }
+
+    pub fn id(&self) -> Option<i32> {
+        self.id
+    }
+
+    pub fn player(&self) -> &Player {
+        &self.player
+    }
+
+    pub fn campaign(&self) -> &Option<Campaign> {
+        &self.campaign
     }
 }
 
