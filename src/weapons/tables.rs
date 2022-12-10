@@ -1,8 +1,9 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::character::CharacterBuilder;
+use crate::custom::{BookReference, DataSource};
 use crate::weapons::{EquipHand, RangeBand, Weapon, WeaponTag};
-use eyre::{eyre, Report, Result};
+use eyre::{eyre, Context, Report, Result};
 use sqlx::postgres::PgHasArrayType;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
@@ -250,6 +251,8 @@ pub struct WeaponRow {
     pub id: i32,
     pub name: String,
     pub tags: Vec<WeaponTagPostgres>,
+    pub book_title: Option<String>,
+    pub page_number: Option<i16>,
     pub creator_id: Option<i32>,
 }
 
@@ -267,12 +270,16 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponRow {
         let id = decoder.try_decode::<i32>()?;
         let name = decoder.try_decode::<String>()?;
         let tags = decoder.try_decode::<Vec<WeaponTagPostgres>>()?;
+        let book_title = decoder.try_decode::<Option<String>>()?;
+        let page_number = decoder.try_decode::<Option<i16>>()?;
         let creator_id = decoder.try_decode::<Option<i32>>()?;
 
         Ok(Self {
             id,
             name,
             tags,
+            book_title,
+            page_number,
             creator_id,
         })
     }
@@ -329,12 +336,32 @@ impl CharacterBuilder {
                 tags.insert(tag.try_into()?);
             }
 
-            let weapon = Weapon::new(
-                weapon_row.name,
-                tags,
-                Some(weapon_row.id),
+            let data_source = match (
+                weapon_row.book_title,
+                weapon_row.page_number,
                 weapon_row.creator_id,
-            )?;
+            ) {
+                (Some(title), Some(number), None) => DataSource::Book(BookReference {
+                    book_title: title,
+                    page_number: number,
+                }),
+                (None, None, Some(character_id)) => DataSource::Custom(Some(character_id)),
+                _ => {
+                    return Err(eyre!(
+                        "Database error: weapon id {} has inconsistent data source",
+                        weapon_row.id
+                    ));
+                }
+            };
+
+            let weapon = Weapon::new(weapon_row.name, tags, Some(weapon_row.id), data_source)
+                .wrap_err_with(|| {
+                    eyre!(
+                        "Could not interpret weapon row {} into Weapon",
+                        weapon_row.id
+                    )
+                })?;
+
             weapons_hashmap.insert(weapon_row.id, (weapon, None));
         }
 

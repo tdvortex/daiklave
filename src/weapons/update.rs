@@ -85,7 +85,7 @@ impl WeaponsDiff {
             },
         );
 
-        let created_ids = create_weapons_transaction(transaction, weapons).await?;
+        let created_ids = create_weapons_transaction(transaction, weapons, character_id).await?;
 
         let (ids, hands_postgres) = created_ids
             .into_iter()

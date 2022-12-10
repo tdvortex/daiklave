@@ -1,26 +1,18 @@
 use ::eyre::Result;
-use sqlx::{query, PgPool, Postgres, Transaction};
+use sqlx::{query, Postgres, Transaction};
 
+use crate::custom::DataSource;
 use crate::weapons::tables::WeaponTagPostgres;
 use crate::weapons::Weapon;
-
-pub async fn create_weapons(pool: &PgPool, weapons: Vec<Weapon>) -> Result<Vec<i32>> {
-    let mut transaction = pool.begin().await?;
-
-    let ids = create_weapons_transaction(&mut transaction, weapons).await?;
-
-    transaction.commit().await?;
-
-    Ok(ids)
-}
 
 pub(crate) async fn create_weapons_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     weapons: Vec<Weapon>,
+    character_id: i32,
 ) -> Result<Vec<i32>> {
     let mut output = Vec::new();
     for weapon in weapons.into_iter() {
-        output.push(create_weapon_transaction(transaction, weapon).await?);
+        output.push(create_weapon_transaction(transaction, weapon, character_id).await?);
     }
 
     Ok(output)
@@ -29,13 +21,25 @@ pub(crate) async fn create_weapons_transaction(
 pub(crate) async fn create_weapon_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     weapon: Weapon,
+    character_id: i32,
 ) -> Result<i32> {
+    let (title, number, creator_id) = match weapon.data_source() {
+        DataSource::Custom(None) => (None, None, Some(character_id)),
+        _ => (
+            weapon.data_source.book_title(),
+            weapon.data_source().page_number(),
+            weapon.data_source().creator_id(),
+        ),
+    };
+
     Ok(query!(
-        "INSERT INTO weapons(name, tags, creator_id)
+        "INSERT INTO weapons(name, tags, book_title, page_number, creator_id)
         VALUES (
             $1::VARCHAR(255),
             $2::WEAPONTAG[],
-            $3::INTEGER
+            $3::VARCHAR(255),
+            $4::SMALLINT,
+            $5::INTEGER
         )
         RETURNING id",
         weapon.name(),
@@ -44,7 +48,9 @@ pub(crate) async fn create_weapon_transaction(
             .into_iter()
             .map(|tag| tag.into())
             .collect::<Vec<WeaponTagPostgres>>() as &[WeaponTagPostgres],
-        weapon.creator_id(),
+        title as Option<&str>,
+        number as Option<i16>,
+        creator_id as Option<i32>,
     )
     .fetch_one(&mut *transaction)
     .await?

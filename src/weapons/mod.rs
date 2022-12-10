@@ -2,12 +2,13 @@ pub(crate) mod update;
 use serde::{Deserialize, Serialize};
 pub use update::WeaponsDiff;
 pub(crate) mod create;
-pub use create::create_weapons;
 pub(crate) mod tables;
 use std::collections::HashSet;
 
 use eyre::{eyre, Result};
 use slab::Slab;
+
+use crate::custom::{BookReference, DataSource};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 enum WeightClass {
@@ -109,7 +110,7 @@ pub struct Weapon {
     main_attack_method: MainAttackMethod,
     martial_arts_styles: HashSet<String>,
     other_tags: HashSet<OtherTag>,
-    creator_id: Option<i32>,
+    data_source: DataSource,
 }
 
 impl Weapon {
@@ -117,7 +118,7 @@ impl Weapon {
         name: String,
         tags: HashSet<WeaponTag>,
         id: Option<i32>,
-        creator_id: Option<i32>,
+        data_source: DataSource,
     ) -> Result<Weapon> {
         let mut two_handed = None::<bool>;
         let mut weight_class = None::<WeightClass>;
@@ -350,11 +351,11 @@ impl Weapon {
             main_attack_method,
             martial_arts_styles,
             other_tags,
-            creator_id,
+            data_source,
         })
     }
 
-    pub fn create(creator_id: Option<i32>) -> WeaponBuilder {
+    pub fn create_from_book(book_title: String, page_number: i16) -> WeaponBuilder {
         WeaponBuilder {
             id: Default::default(),
             name: Default::default(),
@@ -363,7 +364,23 @@ impl Weapon {
             weight_class_tag: Default::default(),
             attack_tags: Default::default(),
             other_tags: Default::default(),
-            creator_id,
+            data_source: DataSource::Book(BookReference {
+                book_title,
+                page_number,
+            }),
+        }
+    }
+
+    pub fn create_custom(creator_id: Option<i32>) -> WeaponBuilder {
+        WeaponBuilder {
+            id: Default::default(),
+            name: Default::default(),
+            two_handed: Default::default(),
+            is_lethal: Default::default(),
+            weight_class_tag: Default::default(),
+            attack_tags: Default::default(),
+            other_tags: Default::default(),
+            data_source: DataSource::Custom(creator_id),
         }
     }
 
@@ -371,8 +388,8 @@ impl Weapon {
         self.id
     }
 
-    pub fn creator_id(&self) -> Option<i32> {
-        self.creator_id
+    pub fn data_source(&self) -> &DataSource {
+        &self.data_source
     }
 
     pub fn name(&self) -> &str {
@@ -888,7 +905,7 @@ impl<'a> Iterator for WeaponsIter<'a> {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct WeaponBuilder {
     id: Option<i32>,
     name: Option<String>,
@@ -897,15 +914,10 @@ pub struct WeaponBuilder {
     weight_class_tag: Option<WeaponTag>,
     attack_tags: Vec<WeaponTag>,
     other_tags: Vec<WeaponTag>,
-    creator_id: Option<i32>,
+    data_source: DataSource,
 }
 
 impl WeaponBuilder {
-    pub fn with_id(&mut self, id: i32) -> &mut WeaponBuilder {
-        self.id = Some(id);
-        self
-    }
-
     pub fn with_name(&mut self, name: String) -> &mut WeaponBuilder {
         self.name = Some(name);
         self
@@ -1062,7 +1074,7 @@ impl WeaponBuilder {
             self.name.unwrap(),
             tags.into_iter().collect(),
             self.id,
-            self.creator_id,
+            self.data_source,
         )
     }
 }

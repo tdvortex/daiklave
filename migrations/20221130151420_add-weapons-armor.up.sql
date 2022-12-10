@@ -18,7 +18,12 @@ CREATE TABLE weapons (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     tags WEAPONTAG[] NOT NULL CHECK (ARRAY_LENGTH(tags, 1) > 0),
-    creator_id INTEGER REFERENCES characters(id) ON DELETE CASCADE
+    book_title VARCHAR(255),
+    page_number SMALLINT,
+    creator_id INTEGER REFERENCES characters(id) ON DELETE CASCADE,
+    CHECK 
+        ((book_title IS NOT NULL and page_number IS NOT NULL and creator_id IS NULL) 
+        OR (book_title IS NULL and page_number IS NULL and creator_id IS NOT NULL))
 );
 
 CREATE TYPE ARMORTAG AS ENUM ('ARTIFACT', 'CONCEALABLE', 'HEAVY', 'LIGHT',
