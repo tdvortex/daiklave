@@ -1,6 +1,6 @@
 use postcard::from_bytes;
 use sqlx::postgres::PgPool;
-use exalted_3e_gui::{create_player, destroy_player};
+use exalted_3e_gui::{create_player, destroy_player, player::Player};
 
 #[sqlx::test]
 fn lifecycle() {
@@ -20,7 +20,12 @@ fn lifecycle() {
     assert_eq!(&receive_name.as_str(), &player.name());
 
     // Server serializes player result and sends it back to the client
+    let send_bytes = postcard::to_allocvec(&player).unwrap();
     // Client deserializes and extracts player ID
+    let receive_player: Player = from_bytes(&send_bytes).unwrap();
+    assert_eq!(player_name.as_str(), receive_player.name());
+    assert_eq!(player.id(), receive_player.id());
+
     // Client (in isolation) creates a character and subcomponents
     // Client builds, serializes, and sends to server
     // Server deserializes, inserts, then extracts the character
