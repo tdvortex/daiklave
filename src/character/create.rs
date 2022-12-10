@@ -1,4 +1,4 @@
-use ::eyre::{eyre, Result};
+use ::eyre::{eyre, WrapErr, Result};
 use sqlx::{query, PgPool, Postgres, Transaction};
 
 use crate::character::retrieve::retrieve_character_transaction;
@@ -27,7 +27,7 @@ pub(crate) async fn create_character_transaction(
         RETURNING id
         ",
         player.id()
-    ).fetch_one(&mut *transaction).await?.id;
+    ).fetch_one(&mut *transaction).await.wrap_err_with(|| format!("Initial character insert failed for player id {}", player.id()))?.id;
 
     // Insert attributes
     query!(
@@ -47,7 +47,7 @@ pub(crate) async fn create_character_transaction(
         character_id
     )
     .execute(&mut *transaction)
-    .await?;
+    .await.wrap_err_with(|| format!("New attributes insert failed for character_id {}", character_id))?;
 
     // Insert abilities
     query!(
@@ -82,7 +82,7 @@ pub(crate) async fn create_character_transaction(
         character_id
     )
     .execute(&mut *transaction)
-    .await?;
+    .await.wrap_err_with(|| format!("New abilities insert failed for character_id {}", character_id))?;
 
     // Add health boxes
     query!(
@@ -100,15 +100,13 @@ pub(crate) async fn create_character_transaction(
         character_id
     )
     .execute(&mut *transaction)
-    .await?;
+    .await.wrap_err_with(|| format!("New health boxes insert failed for character_id {}", character_id))?;
 
     // Get the character that was just inserted
-    if let Some(character) = retrieve_character_transaction(transaction, character_id).await? {
-        Ok(character)
-    } else {
-        Err(eyre!(
-            "could not retrieve inserted character with id {}",
+    retrieve_character_transaction(transaction, character_id).await
+        .wrap_err_with(|| format!("Database error retrieving new inserted character with id {}", character_id))?
+        .ok_or_else(|| eyre!(
+            "No results returned retrieving inserted character with id {}",
             character_id
         ))
-    }
 }
