@@ -1,3 +1,4 @@
+use serde::{Serialize, Deserialize};
 pub(crate) mod tables;
 pub(crate) mod update;
 pub use update::AttributesDiff;
@@ -7,7 +8,7 @@ use std::iter::{ExactSizeIterator, FusedIterator};
 
 use crate::prerequisite::AttributePrerequisite;
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub enum AttributeName {
     Strength,
     Dexterity,
@@ -88,7 +89,7 @@ impl Attribute {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Attributes {
     strength: u8,
     dexterity: u8,

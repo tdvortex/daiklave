@@ -9,9 +9,9 @@ pub(crate) mod tables;
 use eyre::{eyre, Result};
 use std::ops::Deref;
 
+use serde::{Serialize, Deserialize};
 use crate::campaign::Campaign;
 use crate::player::Player;
-
 use crate::abilities::{Abilities, AbilityNameNoSubskill};
 use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
@@ -24,7 +24,7 @@ use crate::weapons::{EquipHand, Weapon, Weapons};
 /// The basic Character object, representing a full player character.
 /// This represents the state of a valid character at a given instant of a game.
 /// It is also the serialization format to be moved back and forth between client and server.
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Character {
     id: Option<i32>,
     player: Player,
@@ -296,7 +296,7 @@ impl CharacterBuilder {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct ExperiencePoints {
     pub current: u16,
     pub total: u16,
@@ -316,7 +316,7 @@ pub(crate) enum _CraftingExperienceType {
     White,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Willpower {
     pub current: u8,
     pub maximum: u8,

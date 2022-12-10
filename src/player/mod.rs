@@ -1,6 +1,7 @@
+use serde::{Serialize, Deserialize};
 pub(crate) mod tables;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Player {
     id: i32,
     name: String,

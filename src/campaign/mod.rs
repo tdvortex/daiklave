@@ -1,6 +1,7 @@
+use serde::{Serialize, Deserialize};
 pub(crate) mod tables;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Campaign {
     _id: i32,
     name: String,

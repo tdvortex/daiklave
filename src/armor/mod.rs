@@ -1,6 +1,7 @@
 pub(crate) mod create;
 pub(crate) mod update;
 pub use create::create_armor;
+use serde::{Serialize, Deserialize};
 pub use update::ArmorDiff;
 pub(crate) mod tables;
 use std::{collections::HashSet, hash::Hash};
@@ -19,7 +20,7 @@ pub enum ArmorTag {
     Special,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ArmorItem {
     id: Option<i32>,
     name: String,
@@ -182,7 +183,7 @@ impl ArmorItem {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Armor {
     equipped: Option<usize>,
     owned: Slab<ArmorItem>,
@@ -253,7 +254,7 @@ impl<'a> Iterator for ArmorIter<'a> {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 enum WeightClass {
     Light,
     Medium,

@@ -1,4 +1,5 @@
 pub(crate) mod update;
+use serde::{Serialize, Deserialize};
 pub use update::WeaponsDiff;
 pub(crate) mod create;
 pub use create::create_weapons;
@@ -8,20 +9,20 @@ use std::collections::HashSet;
 use eyre::{eyre, Result};
 use slab::Slab;
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 enum WeightClass {
     Light,
     Medium,
     Heavy,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 enum DamageType {
     Bashing,
     Lethal,
 }
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Clone, Copy)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum RangeBand {
     Close,
     Short,
@@ -30,7 +31,7 @@ pub enum RangeBand {
     Extreme,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 enum OtherTag {
     Artifact,
     Balanced,
@@ -98,7 +99,7 @@ pub enum WeaponTag {
     Worn,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Weapon {
     id: Option<i32>,
     name: String,
@@ -622,9 +623,9 @@ impl Weapon {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 struct OneHandedWeapon(pub(crate) usize);
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 struct TwoHandedWeapon(pub(crate) usize);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -634,7 +635,7 @@ pub enum EquipHand {
     Both,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 enum MainAttackMethod {
     Archery(RangeBand),
     Brawl,
@@ -644,10 +645,10 @@ enum MainAttackMethod {
     ThrownOnly(RangeBand),
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Weapons(WeaponsPrivate);
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 enum WeaponsPrivate {
     NoEquipped(Slab<Weapon>),
     MainHandOnly(OneHandedWeapon, Slab<Weapon>),

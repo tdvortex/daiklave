@@ -1,11 +1,12 @@
 pub(crate) mod update;
+use serde::{Deserialize, Serialize};
 pub use update::MeritDiff;
 pub(crate) mod create;
 pub(crate) mod tables;
 use crate::prerequisite::PrerequisiteSet;
 use eyre::{eyre, Result};
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 pub enum MeritType {
     Innate,
     Supernatural,
@@ -13,7 +14,7 @@ pub enum MeritType {
     Purchased,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MeritTemplate {
     id: Option<i32>,
     name: String,
@@ -58,7 +59,7 @@ impl MeritTemplate {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Merit {
     id: Option<i32>,
     template: MeritTemplate,

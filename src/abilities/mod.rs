@@ -1,3 +1,4 @@
+use serde::{Serialize, Deserialize};
 pub(crate) mod update;
 pub use update::AbilitiesDiff;
 pub(crate) mod tables;
@@ -8,7 +9,7 @@ use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
 use std::iter::FusedIterator;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 enum AbilityRating {
     Zero,
     NonZero(NonZeroAbility),
@@ -20,7 +21,7 @@ impl Default for AbilityRating {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 struct NonZeroAbility {
     value: u8,
     specialties: HashSet<String>,
@@ -28,7 +29,7 @@ struct NonZeroAbility {
 
 /// The name of an ability, excluding any Craft focus areas or Martial Arts styles.
 /// This is useful for most Craft Charms and nonspecific combat merits like Quick Draw.
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 pub enum AbilityNameNoSubskill {
     /// The Archery ability
     Archery,
@@ -305,7 +306,7 @@ impl<'a> std::fmt::Display for AbilityName<'a> {
     }
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Abilities {
     archery: AbilityRating,
     athletics: AbilityRating,
