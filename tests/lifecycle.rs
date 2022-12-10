@@ -1,12 +1,12 @@
 use postcard::from_bytes;
 use sqlx::postgres::PgPool;
-use exalted_3e_gui::create_player;
+use exalted_3e_gui::{create_player, destroy_player};
 
 #[sqlx::test]
 fn lifecycle() {
     dotenvy::dotenv().unwrap();
     let url = dotenvy::var("DATABASE_URL").unwrap();
-    let _pool = PgPool::connect(&url).await.unwrap();
+    let pool = PgPool::connect(&url).await.unwrap();
 
     // User inputs a username, Client serializes it
     let player_name = "Ralph Waldo Emerson".to_owned();
@@ -16,6 +16,8 @@ fn lifecycle() {
     let receive_name: String = from_bytes(&send_bytes).unwrap();
     assert_eq!(receive_name, player_name);
 
+    let player = create_player(&pool, receive_name.clone()).await.unwrap();
+    assert_eq!(&receive_name.as_str(), &player.name());
 
     // Server serializes player result and sends it back to the client
     // Client deserializes and extracts player ID
@@ -29,6 +31,14 @@ fn lifecycle() {
     // Client deserializes
     // Client sends delete player order
     // Server deletes player, sends confirmation
+    destroy_player(&pool, player.id()).await.unwrap();
+
+    // Confirm end state
+    // Player should not exist
+    assert!(sqlx::query!(
+        "SELECT * FROM players WHERE id = $1", player.id()
+    ).fetch_optional(&pool).await.unwrap().is_none());
+
     // End state: non-custom elements remain in database
     // Clean up database to end test
 }
