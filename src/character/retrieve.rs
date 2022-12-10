@@ -6,8 +6,8 @@ use crate::{
     armor::tables::{ArmorRow, ArmorWornRow},
     attributes::tables::AttributeRow,
     campaign::tables::CampaignRow,
-    character::Character,
     character::tables::CharacterRow,
+    character::Character,
     health::tables::HealthBoxRow,
     intimacies::tables::IntimacyRow,
     merits::tables::{MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow},
@@ -49,13 +49,10 @@ pub(crate) async fn retrieve_character_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     character_id: i32,
 ) -> Result<Option<Character>> {
-    let maybe_get_character = sqlx::query_file_as!(
-        GetCharacter,
-        "src/character/retrieve.sql",
-        character_id
-    )
-    .fetch_optional(&mut *transaction)
-    .await?;
+    let maybe_get_character =
+        sqlx::query_file_as!(GetCharacter, "src/character/retrieve.sql", character_id)
+            .fetch_optional(&mut *transaction)
+            .await?;
 
     if let Some(get_character) = maybe_get_character {
         Ok(Some(get_character.try_into()?))

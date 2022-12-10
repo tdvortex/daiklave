@@ -1,5 +1,5 @@
-pub(crate) mod update;
 pub(crate) mod tables;
+pub(crate) mod update;
 pub use update::AttributesDiff;
 
 use eyre::{eyre, Result};

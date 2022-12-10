@@ -1,7 +1,7 @@
-pub(crate) mod update;
 pub(crate) mod create;
-pub use update::ArmorDiff;
+pub(crate) mod update;
 pub use create::create_armor;
+pub use update::ArmorDiff;
 pub(crate) mod tables;
 use std::{collections::HashSet, hash::Hash};
 

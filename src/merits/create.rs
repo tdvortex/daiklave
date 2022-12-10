@@ -122,7 +122,8 @@ pub(crate) async fn create_new_merits_transaction(
         (0..merit.prerequisites().len()).for_each(|_| merit_template_ids_repeated.push(*merit_id));
     }
     let new_set_ids =
-        create_merit_prerequisite_sets_transaction(transaction, &merit_template_ids_repeated).await?;
+        create_merit_prerequisite_sets_transaction(transaction, &merit_template_ids_repeated)
+            .await?;
 
     // Create the prerequisites in those sets and link them
     let mut prerequisites = Vec::new();
@@ -206,4 +207,3 @@ pub(crate) async fn create_new_merits_transaction(
 
     Ok(())
 }
-

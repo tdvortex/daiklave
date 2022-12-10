@@ -1,5 +1,5 @@
-pub(crate) mod update;
 pub(crate) mod tables;
+pub(crate) mod update;
 pub use update::{compare_intimacies, IntimaciesDiff};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy)]

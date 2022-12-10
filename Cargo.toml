@@ -12,6 +12,7 @@ database = []
 [dependencies]
 dotenvy = "0.15.6"
 eyre = "0.6.8"
+serde = {version = "1.0.149", features = ["derive"]}
 slab = "0.4.7"
 sqlx = {version = "0.6", features = ["runtime-tokio-native-tls", "postgres"]}
 tokio = {version = "1.22.0", features = ["macros"]}

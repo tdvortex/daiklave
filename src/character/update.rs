@@ -1,7 +1,9 @@
 use eyre::{eyre, Result};
-use sqlx::{query, Postgres, Transaction, PgPool};
+use sqlx::{query, PgPool, Postgres, Transaction};
 
-use crate::{character::Character, intimacies::update::compare_intimacies, merits::update::compare_merits};
+use crate::{
+    character::Character, intimacies::update::compare_intimacies, merits::update::compare_merits,
+};
 
 use super::{create::create_character_transaction, retrieve::retrieve_character_transaction};
 

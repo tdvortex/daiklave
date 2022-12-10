@@ -108,7 +108,10 @@ impl Character {
                 .all(|prerequisite| self._meets_prerequisite(prerequisite))
     }
 
-    pub(crate) fn _meets_any_prerequisite_set(&self, prerequisite_sets: &[PrerequisiteSet]) -> bool {
+    pub(crate) fn _meets_any_prerequisite_set(
+        &self,
+        prerequisite_sets: &[PrerequisiteSet],
+    ) -> bool {
         prerequisite_sets.is_empty()
             || prerequisite_sets
                 .iter()

@@ -1,5 +1,5 @@
-use super::create::{post_merits_details_transaction, create_new_merits_transaction};
-use super::{Merit};
+use super::create::{create_new_merits_transaction, post_merits_details_transaction};
+use super::Merit;
 use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 use std::collections::HashSet;
@@ -50,7 +50,8 @@ impl MeritDiff {
             &self.remove_merit_instances as &[i32]
         ).execute(&mut *transaction).await?;
 
-        create_new_merits_transaction(transaction, self.insert_merit_templates, character_id).await?;
+        create_new_merits_transaction(transaction, self.insert_merit_templates, character_id)
+            .await?;
 
         post_merits_details_transaction(transaction, self.insert_merit_instance, character_id)
             .await?;

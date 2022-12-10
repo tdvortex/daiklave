@@ -1,4 +1,3 @@
-
 pub(crate) mod update;
 pub use update::WeaponsDiff;
 pub(crate) mod create;
@@ -844,7 +843,7 @@ impl Weapons {
         self.inventory_mut().try_remove(key).is_some()
     }
 
-    pub fn iter(&self) -> impl Iterator<Item =  (usize, Option<EquipHand>, &Weapon)> {
+    pub fn iter(&self) -> impl Iterator<Item = (usize, Option<EquipHand>, &Weapon)> {
         WeaponsIter {
             weapons: self,
             slab_iter: self.inventory().iter(),

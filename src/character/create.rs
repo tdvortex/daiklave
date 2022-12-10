@@ -1,9 +1,9 @@
 use ::eyre::{eyre, Result};
 use sqlx::{query, PgPool, Postgres, Transaction};
 
+use crate::character::retrieve::retrieve_character_transaction;
 use crate::character::Character;
 use crate::player::Player;
-use crate::character::retrieve::retrieve_character_transaction;
 
 pub async fn create_character(pool: &PgPool, player: Player) -> Result<Character> {
     let mut transaction = pool.begin().await?;

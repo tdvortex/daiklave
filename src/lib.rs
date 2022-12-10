@@ -11,4 +11,4 @@ pub mod player;
 pub mod prerequisite;
 pub mod weapons;
 
-pub use character::{Character, create_character, retrieve_character, update_character};
+pub use character::{create_character, retrieve_character, update_character, Character};

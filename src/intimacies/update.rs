@@ -5,7 +5,7 @@ use sqlx::{query, Postgres, Transaction};
 
 use crate::{
     intimacies::tables::{IntimacyLevelPostgres, IntimacyTypePostgres},
-    intimacies::{Intimacy},
+    intimacies::Intimacy,
 };
 
 #[derive(Debug, Default)]
