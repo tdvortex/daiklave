@@ -2,6 +2,8 @@ pub(crate) mod update;
 use serde::{Deserialize, Serialize};
 pub use update::WeaponsDiff;
 pub(crate) mod create;
+pub(crate) mod destroy;
+pub use destroy::destroy_weapons;
 pub(crate) mod tables;
 use std::collections::HashSet;
 
@@ -918,32 +920,32 @@ pub struct WeaponBuilder {
 }
 
 impl WeaponBuilder {
-    pub fn with_name(&mut self, name: String) -> &mut WeaponBuilder {
+    pub fn with_name(mut self, name: String) -> WeaponBuilder {
         self.name = Some(name);
         self
     }
 
-    pub fn dealing_bashing(&mut self) -> &mut WeaponBuilder {
+    pub fn dealing_bashing(mut self) -> WeaponBuilder {
         self.is_lethal = false;
         self
     }
 
-    pub fn dealing_lethal(&mut self) -> &mut WeaponBuilder {
+    pub fn dealing_lethal(mut self) -> WeaponBuilder {
         self.is_lethal = true;
         self
     }
 
-    pub fn as_one_handed(&mut self) -> &mut WeaponBuilder {
+    pub fn as_one_handed(mut self) -> WeaponBuilder {
         self.two_handed = false;
         self
     }
 
-    pub fn as_two_handed(&mut self) -> &mut WeaponBuilder {
+    pub fn as_two_handed(mut self) -> WeaponBuilder {
         self.two_handed = true;
         self
     }
 
-    pub fn as_archery_with_range(&mut self, max_range: RangeBand) -> &mut WeaponBuilder {
+    pub fn as_archery_with_range(mut self, max_range: RangeBand) -> WeaponBuilder {
         self.attack_tags = std::mem::take(&mut self.attack_tags)
             .into_iter()
             .filter_map(|tag| match tag {
@@ -956,7 +958,7 @@ impl WeaponBuilder {
         self
     }
 
-    pub fn as_brawl(&mut self) -> &mut WeaponBuilder {
+    pub fn as_brawl(mut self) -> WeaponBuilder {
         self.attack_tags = std::mem::take(&mut self.attack_tags)
             .into_iter()
             .filter_map(|tag| match tag {
@@ -969,7 +971,7 @@ impl WeaponBuilder {
         self
     }
 
-    pub fn as_melee(&mut self) -> &mut WeaponBuilder {
+    pub fn as_melee(mut self) -> WeaponBuilder {
         self.attack_tags = std::mem::take(&mut self.attack_tags)
             .into_iter()
             .filter_map(|tag| match tag {
@@ -983,7 +985,7 @@ impl WeaponBuilder {
         self
     }
 
-    pub fn with_thrown_range(&mut self, max_range: RangeBand) -> &mut WeaponBuilder {
+    pub fn with_thrown_range(mut self, max_range: RangeBand) -> WeaponBuilder {
         self.attack_tags = std::mem::take(&mut self.attack_tags)
             .into_iter()
             .filter_map(|tag| match tag {
@@ -997,32 +999,32 @@ impl WeaponBuilder {
         self
     }
 
-    pub fn with_martial_arts(&mut self, style: String) -> &mut WeaponBuilder {
+    pub fn with_martial_arts(mut self, style: String) -> WeaponBuilder {
         self.attack_tags.push(WeaponTag::MartialArts(style));
         self
     }
 
-    pub fn as_light(&mut self) -> &mut WeaponBuilder {
+    pub fn as_light(mut self) -> WeaponBuilder {
         self.weight_class_tag = Some(WeaponTag::Light);
         self
     }
 
-    pub fn as_medium(&mut self) -> &mut WeaponBuilder {
+    pub fn as_medium(mut self) -> WeaponBuilder {
         self.weight_class_tag = Some(WeaponTag::Medium);
         self
     }
 
-    pub fn as_heavy(&mut self) -> &mut WeaponBuilder {
+    pub fn as_heavy(mut self) -> WeaponBuilder {
         self.weight_class_tag = Some(WeaponTag::Heavy);
         self
     }
 
-    pub fn as_artifact(&mut self) -> &mut WeaponBuilder {
+    pub fn as_artifact(mut self) -> WeaponBuilder {
         self.other_tags.push(WeaponTag::Artifact);
         self
     }
 
-    pub fn with_tag(&mut self, tag: WeaponTag) -> &mut WeaponBuilder {
+    pub fn with_tag(mut self, tag: WeaponTag) -> WeaponBuilder {
         match tag {
             WeaponTag::Archery(range) => self.as_archery_with_range(range),
             WeaponTag::Artifact => self.as_artifact(),

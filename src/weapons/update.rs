@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use eyre::Result;
+use eyre::{Result, Context};
 use sqlx::{query, Postgres, Transaction};
 
 use crate::weapons::create::create_weapons_transaction;
@@ -74,7 +74,7 @@ impl WeaponsDiff {
             character_id
         )
         .execute(&mut *transaction)
-        .await?;
+        .await.wrap_err_with(|| format!("Could not drop owned weapons for character id {}", character_id))?;
 
         let (hands, weapons) = self.created_weapons.into_iter().fold(
             (Vec::new(), Vec::new()),
@@ -85,7 +85,7 @@ impl WeaponsDiff {
             },
         );
 
-        let created_ids = create_weapons_transaction(transaction, weapons, character_id).await?;
+        let created_ids = create_weapons_transaction(transaction, weapons, character_id).await.wrap_err("Error attempting to create new weapons")?;
 
         let (ids, hands_postgres) = created_ids
             .into_iter()
@@ -131,7 +131,7 @@ impl WeaponsDiff {
             &hands_postgres as &[Option<EquipHandPostgres>],
         )
         .execute(&mut *transaction)
-        .await?;
+        .await.wrap_err("Error when inserting owned weapons")?;
 
         Ok(())
     }

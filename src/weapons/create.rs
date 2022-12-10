@@ -1,3 +1,4 @@
+use eyre::Context;
 use ::eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 
@@ -12,7 +13,11 @@ pub(crate) async fn create_weapons_transaction(
 ) -> Result<Vec<i32>> {
     let mut output = Vec::new();
     for weapon in weapons.into_iter() {
-        output.push(create_weapon_transaction(transaction, weapon, character_id).await?);
+        output.push(
+            create_weapon_transaction(transaction, weapon, character_id)
+                .await
+                .wrap_err("Database error creating new custom weapon")?,
+        );
     }
 
     Ok(output)
@@ -53,6 +58,6 @@ pub(crate) async fn create_weapon_transaction(
         creator_id as Option<i32>,
     )
     .fetch_one(&mut *transaction)
-    .await?
+    .await.wrap_err_with(|| format!("Database error when inserting weapon name {}", weapon.name()))?
     .id)
 }

@@ -132,6 +132,8 @@ pub struct WeaponTagPostgres {
     martial_arts_style: Option<String>,
 }
 
+
+
 impl WeaponTagPostgres {
     fn from_archery(range: RangeBandPostgres) -> Self {
         Self {
@@ -165,7 +167,7 @@ impl TryFrom<WeaponTagPostgres> for WeaponTag {
         match value.tag_type {
             WeaponTagTypePostgres::Archery => match value.max_range {
                 Some(range) => Ok(Self::Archery(range.into())),
-                None => Err(eyre!("archery must have a range band")),
+                None => Err(eyre!("Archery must have a range band")),
             },
             WeaponTagTypePostgres::Artifact => Ok(Self::Artifact),
             WeaponTagTypePostgres::Balanced => Ok(Self::Balanced),
@@ -186,7 +188,7 @@ impl TryFrom<WeaponTagPostgres> for WeaponTag {
             WeaponTagTypePostgres::Light => Ok(Self::Light),
             WeaponTagTypePostgres::MartialArts => match value.martial_arts_style {
                 Some(style) => Ok(Self::MartialArts(style)),
-                None => Err(eyre!("martial arts must have a style")),
+                None => Err(eyre!("Martial arts must have a style")),
             },
             WeaponTagTypePostgres::Medium => Ok(Self::Medium),
             WeaponTagTypePostgres::Melee => Ok(Self::Melee),
@@ -204,7 +206,7 @@ impl TryFrom<WeaponTagPostgres> for WeaponTag {
             WeaponTagTypePostgres::Subtle => Ok(Self::Subtle),
             WeaponTagTypePostgres::Thrown => match value.max_range {
                 Some(range) => Ok(Self::Thrown(range.into())),
-                None => Err(eyre!("thrown must have a range band")),
+                None => Err(eyre!("Thrown must have a range band")),
             },
             WeaponTagTypePostgres::TwoHanded => Ok(Self::TwoHanded),
             WeaponTagTypePostgres::Worn => Ok(Self::Worn),
@@ -290,7 +292,6 @@ pub struct WeaponEquippedRow {
     pub character_id: i32,
     pub weapon_id: i32,
     pub equip_hand: Option<EquipHandPostgres>,
-    pub creator_id: Option<i32>,
 }
 
 impl sqlx::Type<sqlx::Postgres> for WeaponEquippedRow {
@@ -307,13 +308,11 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for WeaponEquippedRow {
         let character_id = decoder.try_decode::<i32>()?;
         let weapon_id = decoder.try_decode::<i32>()?;
         let equip_hand = decoder.try_decode::<Option<EquipHandPostgres>>()?;
-        let creator_id = decoder.try_decode::<Option<i32>>()?;
 
         Ok(Self {
             character_id,
             weapon_id,
             equip_hand,
-            creator_id,
         })
     }
 }
@@ -333,7 +332,7 @@ impl CharacterBuilder {
         for weapon_row in weapon_rows.into_iter() {
             let mut tags = HashSet::new();
             for tag in weapon_row.tags {
-                tags.insert(tag.try_into()?);
+                tags.insert(tag.try_into().wrap_err("Error attempting to decode weapon tag")?);
             }
 
             let data_source = match (
@@ -380,7 +379,7 @@ impl CharacterBuilder {
                 .get_mut(&weapon_equipped_row.weapon_id)
                 .ok_or_else(|| {
                     eyre!(
-                        "cannot equip weapon {} which is not owned",
+                        "Database error: equipped weapon {} is not owned",
                         weapon_equipped_row.weapon_id
                     )
                 })?;
