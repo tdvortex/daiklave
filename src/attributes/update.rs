@@ -1,6 +1,6 @@
 use super::tables::{AttributeNamePostgres, AttributeUpdate};
 use crate::attributes::Attributes;
-use eyre::Result;
+use eyre::{Result, Context};
 use sqlx::{query, Postgres, Transaction};
 
 #[derive(Debug, Default)]
@@ -57,7 +57,7 @@ impl AttributesDiff {
             &updated_attribute_dots as &[i16],
         )
         .execute(&mut *transaction)
-        .await?;
+        .await.wrap_err("Database error attempting to update attribute dots")?;
 
         Ok(())
     }

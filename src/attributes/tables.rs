@@ -1,6 +1,6 @@
 use crate::attributes::{Attribute, AttributeName};
 use crate::character::CharacterBuilder;
-use eyre::Result;
+use eyre::{WrapErr, Result};
 use sqlx::postgres::PgHasArrayType;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
@@ -87,7 +87,7 @@ impl AttributeUpdate {
 impl CharacterBuilder {
     fn apply_attribute_row(self, attribute_row: AttributeRow) -> Result<Self> {
         let attribute_name = attribute_row.name.into();
-        let value = attribute_row.dots.try_into()?;
+        let value = attribute_row.dots.try_into().wrap_err_with(|| format!("Invalid number of dots: {}", attribute_row.dots))?;
 
         self.with_attribute(attribute_name, value)
     }
