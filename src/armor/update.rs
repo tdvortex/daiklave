@@ -2,7 +2,7 @@ use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 use std::collections::HashSet;
 
-use super::insert::post_armor_transaction;
+use super::create::post_armor_transaction;
 use super::{Armor, ArmorItem};
 
 pub struct ArmorDiff {
@@ -61,7 +61,7 @@ impl Armor {
 }
 
 impl ArmorDiff {
-    pub async fn save(
+    pub async fn update(
         self,
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,

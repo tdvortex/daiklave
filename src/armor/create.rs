@@ -3,7 +3,7 @@ use crate::armor::ArmorItem;
 use eyre::Result;
 use sqlx::{query, PgPool, Postgres, Transaction};
 
-pub async fn post_armor_item_transaction(
+pub(crate) async fn create_armor_item_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     armor_item: ArmorItem,
 ) -> Result<i32> {
@@ -28,7 +28,7 @@ pub async fn post_armor_item_transaction(
     .id)
 }
 
-pub async fn post_armor(pool: &PgPool, armor: Vec<ArmorItem>) -> Result<Vec<i32>> {
+pub async fn create_armor(pool: &PgPool, armor: Vec<ArmorItem>) -> Result<Vec<i32>> {
     let mut transaction = pool.begin().await?;
 
     let ids = post_armor_transaction(&mut transaction, armor).await?;
@@ -44,7 +44,7 @@ pub(crate) async fn post_armor_transaction(
 ) -> Result<Vec<i32>> {
     let mut output = Vec::new();
     for armor_item in armor.into_iter() {
-        output.push(post_armor_item_transaction(transaction, armor_item).await?);
+        output.push(create_armor_item_transaction(transaction, armor_item).await?);
     }
 
     Ok(output)

@@ -1,5 +1,5 @@
 pub mod abilities;
-pub(crate) mod armor;
+pub mod armor;
 pub mod attributes;
 pub mod campaign;
 pub mod character;

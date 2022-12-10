@@ -1,6 +1,7 @@
-pub mod diff;
-pub mod insert;
-pub mod tables;
+pub mod update;
+pub(crate) mod create;
+pub use create::create_armor;
+pub(crate) mod tables;
 use std::{collections::HashSet, hash::Hash};
 
 use eyre::{eyre, Result};
@@ -30,7 +31,7 @@ pub struct ArmorItem {
 }
 
 impl ArmorItem {
-    pub fn new(
+    pub(crate) fn new(
         name: String,
         tags: HashSet<ArmorTag>,
         id: Option<i32>,
@@ -84,6 +85,16 @@ impl ArmorItem {
             special,
             creator_id,
         })
+    }
+
+    pub fn create(creator_id: Option<i32>) -> ArmorBuilder {
+        ArmorBuilder {
+            id: None,
+            name: None,
+            weight_class: None,
+            tags: HashSet::new(),
+            creator_id,
+        }
     }
 
     pub fn id(&self) -> Option<i32> {
@@ -248,32 +259,13 @@ enum WeightClass {
     Heavy,
 }
 
+#[derive(Debug)]
 pub struct ArmorBuilder {
     id: Option<i32>,
     name: Option<String>,
     weight_class: Option<WeightClass>,
     tags: HashSet<ArmorTag>,
     creator_id: Option<i32>,
-}
-
-pub fn create_book_armor_item() -> ArmorBuilder {
-    ArmorBuilder {
-        id: None,
-        name: None,
-        weight_class: None,
-        tags: HashSet::new(),
-        creator_id: None,
-    }
-}
-
-pub fn create_custom_armor_item(character_id: i32) -> ArmorBuilder {
-    ArmorBuilder {
-        id: None,
-        name: None,
-        weight_class: None,
-        tags: HashSet::new(),
-        creator_id: Some(character_id),
-    }
 }
 
 impl ArmorBuilder {
