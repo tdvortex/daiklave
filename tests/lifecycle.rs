@@ -1,13 +1,94 @@
 use std::collections::HashMap;
 
 use exalted_3e_gui::{
+    abilities::{Abilities, AbilityNameNoSubskill},
+    attributes::AttributeName,
     character::{ExperiencePoints, Willpower},
     create_player, destroy_player,
     player::Player,
-    update_character, Character, attributes::AttributeName,
+    update_character, Character,
 };
 use postcard::from_bytes;
 use sqlx::postgres::PgPool;
+
+fn check_initial_abilities(abilities: &Abilities) {
+    vec![
+        (AbilityNameNoSubskill::Archery, None, 0, None),
+        (AbilityNameNoSubskill::Athletics, None, 2, None),
+        (AbilityNameNoSubskill::Awareness, None, 4, None),
+        (AbilityNameNoSubskill::Brawl, None, 1, None),
+        (AbilityNameNoSubskill::Bureaucracy, None, 0, None),
+        (
+            AbilityNameNoSubskill::Craft,
+            Some("Weapon Forging"),
+            1,
+            Some(&(["Sharpening Blades".to_owned()].into())),
+        ),
+        (AbilityNameNoSubskill::Dodge, None, 3, None),
+        (AbilityNameNoSubskill::Integrity, None, 2, None),
+        (AbilityNameNoSubskill::Investigation, None, 0, None),
+        (AbilityNameNoSubskill::Larceny, None, 0, None),
+        (AbilityNameNoSubskill::Linguistics, None, 1, None),
+        (AbilityNameNoSubskill::Lore, None, 0, None),
+        (
+            AbilityNameNoSubskill::MartialArts,
+            Some("Single Point Shining Into Void Style"),
+            4,
+            Some(&(["Join Battle".to_owned()].into())),
+        ),
+        (AbilityNameNoSubskill::Medicine, None, 0, None),
+        (AbilityNameNoSubskill::Melee, None, 0, None),
+        (AbilityNameNoSubskill::Occult, None, 0, None),
+        (AbilityNameNoSubskill::Performance, None, 0, None),
+        (AbilityNameNoSubskill::Presence, None, 2, None),
+        (AbilityNameNoSubskill::Resistance, None, 3, None),
+        (AbilityNameNoSubskill::Ride, None, 0, None),
+        (AbilityNameNoSubskill::Sail, None, 0, None),
+        (
+            AbilityNameNoSubskill::Socialize,
+            None,
+            2,
+            Some(&(["Tavern Gossip".to_owned()].into())),
+        ),
+        (AbilityNameNoSubskill::Stealth, None, 0, None),
+        (AbilityNameNoSubskill::Survival, None, 0, None),
+        (AbilityNameNoSubskill::Thrown, None, 0, None),
+        (
+            AbilityNameNoSubskill::War,
+            None,
+            3,
+            Some(&(["While Outnumbered".to_owned()].into())),
+        ),
+    ]
+    .into_iter()
+    .for_each(
+        |(ability_name_no_subskill, subskill, expect_dots, expect_specialties)| {
+            assert_eq!(
+                abilities
+                    .get(ability_name_no_subskill, subskill)
+                    .unwrap()
+                    .dots(),
+                expect_dots
+            );
+            assert_eq!(
+                abilities
+                    .get(ability_name_no_subskill, subskill)
+                    .unwrap()
+                    .specialties(),
+                expect_specialties
+            );
+        },
+    );
+
+    vec![
+        (AbilityNameNoSubskill::Craft, Some("Does Not Exist")),
+        (AbilityNameNoSubskill::MartialArts, Some("Does Not Exist")),
+    ]
+    .into_iter()
+    .for_each(|(ability_name_no_subskill, subskill)| {
+        assert!(abilities.get(ability_name_no_subskill, subskill).is_none());
+    });
+}
 
 #[sqlx::test]
 fn lifecycle() {
@@ -35,29 +116,70 @@ fn lifecycle() {
     assert_eq!(player.id(), receive_player.id());
 
     // Client (in isolation) creates a character and subcomponents
-    let initial_character = Character::create()
-        .with_player(receive_player.clone())
-        .with_name("Test Character Name".to_owned())
-        .with_concept("A character for testing purposes".to_owned())
-        .with_willpower(Willpower {
-            current: 5,
-            maximum: 6,
-        })
-        .with_experience(ExperiencePoints {
-            current: 15,
-            total: 15,
-        })
-        .with_attribute(AttributeName::Strength, 4).unwrap()
-        .with_attribute(AttributeName::Dexterity, 4).unwrap()
-        .with_attribute(AttributeName::Stamina, 3).unwrap()
-        .with_attribute(AttributeName::Charisma, 4).unwrap()
-        .with_attribute(AttributeName::Manipulation, 3).unwrap()
-        .with_attribute(AttributeName::Appearance, 2).unwrap()
-        .with_attribute(AttributeName::Intelligence, 3).unwrap()
-        .with_attribute(AttributeName::Wits, 3).unwrap()
-        .with_attribute(AttributeName::Perception, 1).unwrap()
-        .build()
-        .unwrap();
+    let initial_character = {
+        let mut initial_character = Character::create()
+            .with_player(receive_player.clone())
+            .with_name("Test Character Name".to_owned())
+            .with_concept("A character for testing purposes".to_owned())
+            .with_willpower(Willpower {
+                current: 5,
+                maximum: 6,
+            })
+            .with_experience(ExperiencePoints {
+                current: 15,
+                total: 15,
+            });
+
+        initial_character = vec![
+            (AttributeName::Strength, 4),
+            (AttributeName::Dexterity, 4),
+            (AttributeName::Stamina, 3),
+            (AttributeName::Charisma, 4),
+            (AttributeName::Manipulation, 3),
+            (AttributeName::Appearance, 2),
+            (AttributeName::Intelligence, 3),
+            (AttributeName::Wits, 3),
+        ]
+        .into_iter()
+        .fold(initial_character, |ic, (attribute_name, value)| {
+            ic.with_attribute(attribute_name, value).unwrap()
+        });
+
+        initial_character = vec![
+            (AbilityNameNoSubskill::Awareness, 4),
+            (AbilityNameNoSubskill::War, 3),
+            (AbilityNameNoSubskill::Resistance, 3),
+            (AbilityNameNoSubskill::Dodge, 3),
+            (AbilityNameNoSubskill::Integrity, 2),
+            (AbilityNameNoSubskill::Presence, 2),
+            (AbilityNameNoSubskill::Socialize, 2),
+            (AbilityNameNoSubskill::Athletics, 2),
+            (AbilityNameNoSubskill::Linguistics, 1),
+            (AbilityNameNoSubskill::Brawl, 1),
+        ]
+        .into_iter()
+        .fold(initial_character, |ic, (ability_name_no_subskill, dots)| {
+            ic.with_ability(ability_name_no_subskill, dots).unwrap()
+        });
+
+        initial_character
+            .with_craft("Weapon Forging", 1)
+            .with_martial_arts("Single Point Shining Into Void Style", 4)
+            .with_specialty(AbilityNameNoSubskill::War, "While Outnumbered".to_owned())
+            .unwrap()
+            .with_specialty(AbilityNameNoSubskill::Socialize, "Tavern Gossip".to_owned())
+            .unwrap()
+            .with_craft_specialty("Weapon Forging", "Sharpening Blades".to_owned())
+            .unwrap()
+            .with_martial_arts_specialty(
+                "Single Point Shining Into Void Style",
+                "Join Battle".to_owned(),
+            )
+            .unwrap()
+            .build()
+            .unwrap()
+    };
+
     assert!(initial_character.id().is_none());
     assert_eq!(initial_character.player(), &receive_player);
     assert_eq!(&initial_character.name, "Test Character Name");
@@ -81,19 +203,26 @@ fn lifecycle() {
     );
     assert_eq!(initial_character.experience, initial_character.experience);
     assert_eq!(
-        initial_character.attributes.iter().map(|attr| (attr.name(), attr.dots())).collect::<HashMap::<AttributeName, u8>>(),
+        initial_character
+            .attributes
+            .iter()
+            .map(|attr| (attr.name(), attr.dots()))
+            .collect::<HashMap<AttributeName, u8>>(),
         vec![
-            (AttributeName::Strength, 4), 
-            (AttributeName::Dexterity, 4), 
-            (AttributeName::Stamina, 3), 
-            (AttributeName::Charisma, 4), 
-            (AttributeName::Manipulation, 3), 
-            (AttributeName::Appearance, 2), 
-            (AttributeName::Intelligence, 3), 
-            (AttributeName::Wits, 3), 
+            (AttributeName::Strength, 4),
+            (AttributeName::Dexterity, 4),
+            (AttributeName::Stamina, 3),
+            (AttributeName::Charisma, 4),
+            (AttributeName::Manipulation, 3),
+            (AttributeName::Appearance, 2),
+            (AttributeName::Intelligence, 3),
+            (AttributeName::Wits, 3),
             (AttributeName::Perception, 1)
-            ].into_iter().collect::<HashMap::<AttributeName, u8>>()
+        ]
+        .into_iter()
+        .collect::<HashMap::<AttributeName, u8>>()
     );
+    check_initial_abilities(&initial_character.abilities);
 
     // Client builds, serializes, and sends to server
     let send_bytes = postcard::to_allocvec(&initial_character).unwrap();
@@ -106,6 +235,7 @@ fn lifecycle() {
     assert_eq!(receive_character.concept, initial_character.concept);
     assert_eq!(receive_character.willpower, initial_character.willpower);
     assert_eq!(receive_character.experience, initial_character.experience);
+    check_initial_abilities(&receive_character.abilities);
 
     let post_insert_character: Character =
         update_character(&pool, &receive_character).await.unwrap();
@@ -122,6 +252,7 @@ fn lifecycle() {
         receive_character.attributes,
         post_insert_character.attributes
     );
+    check_initial_abilities(&post_insert_character.abilities);
 
     // Server serializes and sends character to client
     let send_bytes = postcard::to_allocvec(&post_insert_character).unwrap();
@@ -141,6 +272,7 @@ fn lifecycle() {
         fetched_character.attributes,
         post_insert_character.attributes
     );
+    check_initial_abilities(&fetched_character.abilities);
 
     // Client reserializes character and sends to server
     // Server deserializes, reconciles, inserts, extracts, and reserializes

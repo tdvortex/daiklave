@@ -152,35 +152,66 @@ impl AbilitiesDiff {
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
     ) -> Result<()> {
-        let names_to_upsert: Vec<AbilityNamePostgres> = self
-            .abilities_to_upsert
-            .iter()
-            .map(|(ability_name, _, _)| *ability_name)
-            .collect();
+        let (
+            mut craft_and_ma_names_to_upsert,
+            mut craft_and_ma_subskills_to_upsert,
+            mut craft_and_ma_dots_to_upsert,
+            mut other_names_to_update,
+            mut other_dots_to_update,
+        ) = (Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new());
 
-        let subskills_to_upsert: Vec<Option<&str>> = self
-            .abilities_to_upsert
-            .iter()
-            .map(|(_, subskill, _)| subskill.as_ref().map(|s| s.as_str()))
-            .collect();
+        for ability_to_upsert in self.abilities_to_upsert.iter() {
+            match ability_to_upsert.0 {
+                AbilityNamePostgres::Craft => {
+                    craft_and_ma_names_to_upsert.push(AbilityNamePostgres::Craft);
+                    craft_and_ma_subskills_to_upsert.push(ability_to_upsert.1.as_deref());
+                    craft_and_ma_dots_to_upsert.push(ability_to_upsert.2 as i16);
+                }
+                AbilityNamePostgres::MartialArts => {
+                    craft_and_ma_names_to_upsert.push(AbilityNamePostgres::MartialArts);
+                    craft_and_ma_subskills_to_upsert.push(ability_to_upsert.1.as_deref());
+                    craft_and_ma_dots_to_upsert.push(ability_to_upsert.2 as i16);
+                }
+                other_name_postgres => {
+                    other_names_to_update.push(other_name_postgres);
+                    other_dots_to_update.push(ability_to_upsert.2 as i16);
+                }
+            }
+        }
 
-        let dots_to_upsert: Vec<i16> = self
-            .abilities_to_upsert
-            .iter()
-            .map(|(_, _, dots)| *dots as i16)
-            .collect();
+        if !other_names_to_update.is_empty() {
+            query!(
+                "UPDATE abilities
+                SET dots = data.dots
+                FROM UNNEST($2::ABILITYNAME[], $3::SMALLINT[]) as data(name, dots)
+                WHERE abilities.character_id = $1 AND abilities.name = data.name",
+                character_id,
+                &other_names_to_update as &[AbilityNamePostgres],
+                &other_dots_to_update as &[i16]
+            )
+            .execute(&mut *transaction)
+            .await
+            .wrap_err("Database error attempting to update non-Craft, non-MartialArts abilities")?;
+        }
 
-        query!(
-            "INSERT INTO abilities(character_id, name, dots, subskill)
-            SELECT $1::INTEGER as character_id, name, dots, subskill FROM UNNEST($2::ABILITYNAME[], $3::SMALLINT[], $4::VARCHAR(255)[]) as data(name, dots, subskill)
-            ON CONFLICT ON CONSTRAINT unique_abilities
-            DO UPDATE SET dots = EXCLUDED.dots
-            ",
-            character_id,
-            &names_to_upsert as &[AbilityNamePostgres],
-            &dots_to_upsert as &[i16],
-            &subskills_to_upsert as &[Option<&str>]
-        ).execute(&mut *transaction).await.wrap_err("Database error attempting to upsert abilities")?;
+        if !craft_and_ma_names_to_upsert.is_empty() {
+            query!(
+                "INSERT INTO abilities(character_id, name, dots, subskill)
+                SELECT 
+                    $1::INTEGER as character_id, 
+                    name, 
+                    dots, 
+                    subskill 
+                FROM UNNEST($2::ABILITYNAME[], $3::SMALLINT[], $4::VARCHAR(255)[]) as data(name, dots, subskill)
+                ON CONFLICT ON CONSTRAINT unique_abilities
+                DO UPDATE SET dots = EXCLUDED.dots
+                ",
+                character_id,
+                &craft_and_ma_names_to_upsert as &[AbilityNamePostgres],
+                &craft_and_ma_dots_to_upsert as &[i16],
+                &craft_and_ma_subskills_to_upsert as &[Option<&str>]
+            ).execute(&mut *transaction).await.wrap_err("Database error attempting to upsert Craft and Martial Arts abilities")?;
+        }
 
         Ok(())
     }

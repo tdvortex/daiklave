@@ -9,7 +9,7 @@ use std::collections::{HashMap, HashSet};
 use std::fmt::Debug;
 use std::iter::FusedIterator;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 enum AbilityRating {
     Zero,
     NonZero(NonZeroAbility),
@@ -21,7 +21,7 @@ impl Default for AbilityRating {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 struct NonZeroAbility {
     value: u8,
     specialties: HashSet<String>,
@@ -306,7 +306,7 @@ impl<'a> std::fmt::Display for AbilityName<'a> {
     }
 }
 
-#[derive(Default, Debug, Serialize, Deserialize)]
+#[derive(Default, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Abilities {
     archery: AbilityRating,
     athletics: AbilityRating,
@@ -639,19 +639,31 @@ impl Abilities {
             AbilityNameNoSubskill::Survival => &mut self.survival,
             AbilityNameNoSubskill::Thrown => &mut self.thrown,
             AbilityNameNoSubskill::War => &mut self.war,
-            AbilityNameNoSubskill::Craft => self
-                .craft
-                .get_mut(subskill.unwrap())
-                .ok_or_else(|| eyre!("Cannot have specialties on 0-rated abilities"))?,
+            AbilityNameNoSubskill::Craft => {
+                self.craft.get_mut(subskill.unwrap()).ok_or_else(|| {
+                    eyre!(
+                        "Cannot add specialty to zero-rated ability: Craft ({})",
+                        subskill.unwrap()
+                    )
+                })?
+            }
             AbilityNameNoSubskill::MartialArts => self
                 .martial_arts
                 .get_mut(subskill.unwrap())
-                .ok_or_else(|| eyre!("Cannot have specialties on 0-rated abilities"))?,
+                .ok_or_else(|| {
+                    eyre!(
+                        "Cannot add specialty to zero-rated ability: MartialArts ({})",
+                        subskill.unwrap()
+                    )
+                })?,
         };
 
         match rating_ptr {
             AbilityRating::Zero => {
-                return Err(eyre!("Cannot have specialties on 0-rated abilities"));
+                return Err(eyre!(
+                    "Cannot add specialties to 0-rated ability: {:?}",
+                    ability_name_no_subskill
+                ));
             }
             AbilityRating::NonZero(non_zero_rating) => {
                 non_zero_rating.specialties.insert(specialty);
