@@ -1,6 +1,11 @@
+use exalted_3e_gui::{
+    character::{ExperiencePoints, Willpower},
+    create_player, destroy_player,
+    player::Player,
+    update_character, Character,
+};
 use postcard::from_bytes;
 use sqlx::postgres::PgPool;
-use exalted_3e_gui::{create_player, destroy_player, player::Player, Character, character::{Willpower, ExperiencePoints}, update_character};
 
 #[sqlx::test]
 fn lifecycle() {
@@ -11,7 +16,7 @@ fn lifecycle() {
     // User inputs a username, Client serializes it
     let player_name = "Test Player Name".to_owned();
     let send_bytes = postcard::to_allocvec(&player_name).unwrap();
-    
+
     // Server deserializes it and creates a new player
     let receive_name: String = from_bytes(&send_bytes).unwrap();
     assert_eq!(receive_name, player_name);
@@ -41,22 +46,29 @@ fn lifecycle() {
             total: 15,
         })
         .build()
-    .unwrap();
+        .unwrap();
     assert!(initial_character.id().is_none());
     assert_eq!(initial_character.player(), &receive_player);
     assert_eq!(&initial_character.name, "Test Character Name");
-    assert_eq!(initial_character.concept.as_deref(), Some("A character for testing purposes"));
-    assert_eq!(initial_character.willpower, 
+    assert_eq!(
+        initial_character.concept.as_deref(),
+        Some("A character for testing purposes")
+    );
+    assert_eq!(
+        initial_character.willpower,
         Willpower {
-        current: 5,
-        maximum: 6,
-    });
-    assert_eq!(initial_character.experience, 
+            current: 5,
+            maximum: 6,
+        }
+    );
+    assert_eq!(
+        initial_character.experience,
         ExperiencePoints {
             current: 15,
             total: 15,
-    });
-    assert_eq!(initial_character.experience, initial_character.experience);    
+        }
+    );
+    assert_eq!(initial_character.experience, initial_character.experience);
 
     // Client builds, serializes, and sends to server
     let send_bytes = postcard::to_allocvec(&initial_character).unwrap();
@@ -70,13 +82,17 @@ fn lifecycle() {
     assert_eq!(receive_character.willpower, initial_character.willpower);
     assert_eq!(receive_character.experience, initial_character.experience);
 
-    let post_insert_character: Character = update_character(&pool, &receive_character).await.unwrap();
+    let post_insert_character: Character =
+        update_character(&pool, &receive_character).await.unwrap();
     assert!(post_insert_character.id().is_some());
     assert_eq!(receive_character.player(), post_insert_character.player());
     assert_eq!(receive_character.name, post_insert_character.name);
     assert_eq!(receive_character.concept, post_insert_character.concept);
     assert_eq!(receive_character.willpower, post_insert_character.willpower);
-    assert_eq!(receive_character.experience, post_insert_character.experience);
+    assert_eq!(
+        receive_character.experience,
+        post_insert_character.experience
+    );
 
     // Server serializes and sends character to client
     let send_bytes = postcard::to_allocvec(&post_insert_character).unwrap();
@@ -88,7 +104,10 @@ fn lifecycle() {
     assert_eq!(fetched_character.name, post_insert_character.name);
     assert_eq!(fetched_character.concept, post_insert_character.concept);
     assert_eq!(fetched_character.willpower, post_insert_character.willpower);
-    assert_eq!(fetched_character.experience, post_insert_character.experience);
+    assert_eq!(
+        fetched_character.experience,
+        post_insert_character.experience
+    );
 
     // Client reserializes character and sends to server
     // Server deserializes, reconciles, inserts, extracts, and reserializes
@@ -99,14 +118,23 @@ fn lifecycle() {
 
     // Confirm end state
     // Player should not exist
-    assert!(sqlx::query!(
-        "SELECT * FROM players WHERE id = $1", player.id()
-    ).fetch_optional(&pool).await.unwrap().is_none());
+    assert!(
+        sqlx::query!("SELECT * FROM players WHERE id = $1", player.id())
+            .fetch_optional(&pool)
+            .await
+            .unwrap()
+            .is_none()
+    );
 
     // Character should not exist
     assert!(sqlx::query!(
-        "SELECT id FROM characters WHERE id = $1", fetched_character.id().unwrap()
-    ).fetch_optional(&pool).await.unwrap().is_none());
+        "SELECT id FROM characters WHERE id = $1",
+        fetched_character.id().unwrap()
+    )
+    .fetch_optional(&pool)
+    .await
+    .unwrap()
+    .is_none());
 
     // End state: non-custom elements remain in database
     // Clean up database to end test

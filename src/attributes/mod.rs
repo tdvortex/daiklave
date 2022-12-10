@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 pub(crate) mod tables;
 pub(crate) mod update;
 pub use update::AttributesDiff;

@@ -9,17 +9,17 @@ pub(crate) mod tables;
 use eyre::{eyre, Result};
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
-use crate::campaign::Campaign;
-use crate::player::Player;
 use crate::abilities::{Abilities, AbilityNameNoSubskill};
 use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
+use crate::campaign::Campaign;
 use crate::health::{Health, WoundPenalty};
 use crate::intimacies::Intimacy;
 use crate::merits::{Merit, MeritTemplate};
+use crate::player::Player;
 use crate::prerequisite::{ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType};
 use crate::weapons::{EquipHand, Weapon, Weapons};
+use serde::{Deserialize, Serialize};
 
 /// The basic Character object, representing a full player character.
 /// This represents the state of a valid character at a given instant of a game.

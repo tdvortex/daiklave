@@ -1,7 +1,7 @@
 pub(crate) mod create;
 pub(crate) mod update;
 pub use create::create_armor;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 pub use update::ArmorDiff;
 pub(crate) mod tables;
 use std::{collections::HashSet, hash::Hash};

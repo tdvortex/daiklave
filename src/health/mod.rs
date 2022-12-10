@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 pub(crate) mod update;
 pub use update::HealthDiff;
 pub(crate) mod tables;

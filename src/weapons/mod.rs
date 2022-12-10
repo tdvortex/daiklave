@@ -1,5 +1,5 @@
 pub(crate) mod update;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 pub use update::WeaponsDiff;
 pub(crate) mod create;
 pub use create::create_weapons;

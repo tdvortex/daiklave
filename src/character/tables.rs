@@ -72,11 +72,15 @@ impl CharacterBuilder {
             total: character_row.total_experience.try_into()?,
         };
 
-        let applied = self
+        let mut applied = self
             .with_id(character_row.id)
             .with_name(character_row.name)
             .with_willpower(willpower)
             .with_experience(experience);
+
+        if let Some(text) = character_row.concept {
+            applied = applied.with_concept(text);
+        }
 
         Ok(applied)
     }

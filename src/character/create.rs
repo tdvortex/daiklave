@@ -1,4 +1,4 @@
-use ::eyre::{eyre, WrapErr, Result};
+use ::eyre::{eyre, Result, WrapErr};
 use sqlx::{query, PgPool, Postgres, Transaction};
 
 use crate::character::retrieve::retrieve_character_transaction;
@@ -47,7 +47,13 @@ pub(crate) async fn create_character_transaction(
         character_id
     )
     .execute(&mut *transaction)
-    .await.wrap_err_with(|| format!("New attributes insert failed for character_id {}", character_id))?;
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "New attributes insert failed for character_id {}",
+            character_id
+        )
+    })?;
 
     // Insert abilities
     query!(
@@ -82,7 +88,13 @@ pub(crate) async fn create_character_transaction(
         character_id
     )
     .execute(&mut *transaction)
-    .await.wrap_err_with(|| format!("New abilities insert failed for character_id {}", character_id))?;
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "New abilities insert failed for character_id {}",
+            character_id
+        )
+    })?;
 
     // Add health boxes
     query!(
@@ -100,13 +112,27 @@ pub(crate) async fn create_character_transaction(
         character_id
     )
     .execute(&mut *transaction)
-    .await.wrap_err_with(|| format!("New health boxes insert failed for character_id {}", character_id))?;
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "New health boxes insert failed for character_id {}",
+            character_id
+        )
+    })?;
 
     // Get the character that was just inserted
-    retrieve_character_transaction(transaction, character_id).await
-        .wrap_err_with(|| format!("Database error retrieving new inserted character with id {}", character_id))?
-        .ok_or_else(|| eyre!(
-            "No results returned retrieving inserted character with id {}",
-            character_id
-        ))
+    retrieve_character_transaction(transaction, character_id)
+        .await
+        .wrap_err_with(|| {
+            format!(
+                "Database error retrieving new inserted character with id {}",
+                character_id
+            )
+        })?
+        .ok_or_else(|| {
+            eyre!(
+                "No results returned retrieving inserted character with id {}",
+                character_id
+            )
+        })
 }

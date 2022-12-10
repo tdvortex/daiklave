@@ -1,4 +1,4 @@
-use eyre::{WrapErr, Result};
+use eyre::{Result, WrapErr};
 use sqlx::{PgPool, Postgres, Transaction};
 
 use crate::{
@@ -37,11 +37,17 @@ struct GetCharacter {
 }
 
 pub async fn retrieve_character(pool: &PgPool, character_id: i32) -> Result<Option<Character>> {
-    let mut transaction = pool.begin().await.wrap_err("Error attempting to start transaction")?;
+    let mut transaction = pool
+        .begin()
+        .await
+        .wrap_err("Error attempting to start transaction")?;
 
     let maybe_character = retrieve_character_transaction(&mut transaction, character_id).await?;
 
-    transaction.commit().await.wrap_err("Error attempting to commit transaction")?;
+    transaction
+        .commit()
+        .await
+        .wrap_err("Error attempting to commit transaction")?;
     Ok(maybe_character)
 }
 
@@ -52,11 +58,21 @@ pub(crate) async fn retrieve_character_transaction(
     let maybe_get_character =
         sqlx::query_file_as!(GetCharacter, "src/character/retrieve.sql", character_id)
             .fetch_optional(&mut *transaction)
-            .await.wrap_err_with(|| format!("Database error trying to retrieve character with id: {}", character_id))?;
+            .await
+            .wrap_err_with(|| {
+                format!(
+                    "Database error trying to retrieve character with id: {}",
+                    character_id
+                )
+            })?;
 
     if let Some(get_character) = maybe_get_character {
-        Ok(Some(get_character.try_into()
-            .wrap_err_with(|| format!("Error attempting to convert database output to Character for character_id {}", character_id))?))
+        Ok(Some(get_character.try_into().wrap_err_with(|| {
+            format!(
+                "Error attempting to convert database output to Character for character_id {}",
+                character_id
+            )
+        })?))
     } else {
         // Valid query with no character
         Ok(None)
@@ -70,19 +86,25 @@ impl TryInto<Character> for GetCharacter {
         Character::create()
             .apply_player_row(self.player)
             .apply_campaign_row(self.campaign)
-            .apply_character_row(self.character).wrap_err("Could not apply character row")?
-            .apply_attribute_rows(self.attributes).wrap_err("Could not apply attribute rows")?
-            .apply_abilities_and_specialties_rows(self.abilities, self.specialties).wrap_err("Could not apply ability and specialty rows")?
+            .apply_character_row(self.character)
+            .wrap_err("Could not apply character row")?
+            .apply_attribute_rows(self.attributes)
+            .wrap_err("Could not apply attribute rows")?
+            .apply_abilities_and_specialties_rows(self.abilities, self.specialties)
+            .wrap_err("Could not apply ability and specialty rows")?
             .apply_intimacy_rows(self.intimacies)
             .apply_health_box_rows(self.health_boxes)
-            .apply_weapon_rows(self.weapons_owned, self.weapons_equipped).wrap_err("Could not apply weapon rows")?
-            .apply_armor_rows(self.armor_owned, self.armor_worn).wrap_err("Could not apply armor rows")?
+            .apply_weapon_rows(self.weapons_owned, self.weapons_equipped)
+            .wrap_err("Could not apply weapon rows")?
+            .apply_armor_rows(self.armor_owned, self.armor_worn)
+            .wrap_err("Could not apply armor rows")?
             .apply_merits_rows(
                 self.merit_templates,
                 self.merit_details,
                 self.merit_prerequisite_sets,
                 self.merit_prerequisites,
-            ).wrap_err("Could not apply merit rows")?
+            )
+            .wrap_err("Could not apply merit rows")?
             .build()
     }
 }

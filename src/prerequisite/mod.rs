@@ -2,7 +2,7 @@ pub(crate) mod create;
 pub(crate) mod tables;
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::abilities::AbilityNameNoSubskill;
 use crate::attributes::AttributeName;

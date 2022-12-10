@@ -1,5 +1,5 @@
+use eyre::Result;
 use sqlx::{query, PgPool};
-use eyre::{Result};
 
 use super::Player;
 
@@ -10,10 +10,10 @@ pub async fn create_player(pool: &PgPool, name: String) -> Result<Player> {
         RETURNING id
         ",
         &name.as_str() as &str
-    ).fetch_one(pool).await?.id;
+    )
+    .fetch_one(pool)
+    .await?
+    .id;
 
-    Ok(Player{
-        id,
-        name
-    })
+    Ok(Player { id, name })
 }
