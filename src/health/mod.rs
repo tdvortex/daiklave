@@ -1,5 +1,6 @@
-pub mod diff;
-pub mod tables;
+pub(crate) mod update;
+pub use update::HealthDiff;
+pub(crate) mod tables;
 use eyre::Result;
 
 #[derive(Debug)]
@@ -47,7 +48,7 @@ impl HealthBox {
 }
 
 impl Health {
-    pub fn empty() -> Self {
+    pub(crate) fn empty() -> Self {
         Self {
             health_boxes: Vec::new(),
         }

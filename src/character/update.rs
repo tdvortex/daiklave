@@ -103,7 +103,7 @@ pub async fn update_character(pool: &PgPool, character: Character) -> Result<Cha
     old_character
         .health
         .compare_newer(&character.health)
-        .save(&mut transaction, character_id)
+        .update(&mut transaction, character_id)
         .await?;
     compare_intimacies(&old_character.intimacies, &character.intimacies)
         .update(&mut transaction, character_id)
