@@ -20,10 +20,7 @@ pub fn validate_player_serde(player: &Player) {
     assert_eq!(player.name(), receive_player.name());
 }
 
-pub fn validate_modified_character_serde(
-    player: &Player,
-    character: &Character,
-) {
+pub fn validate_modified_character_serde(player: &Player, character: &Character) {
     let send_bytes = postcard::to_allocvec(character).unwrap();
     let receive_character = from_bytes(&send_bytes).unwrap();
     validate_modified_character(player, &receive_character);

@@ -1,4 +1,4 @@
-use crate::abilities::{tables::AbilityNamePostgres};
+use crate::abilities::tables::AbilityNamePostgres;
 use crate::abilities::Abilities;
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};

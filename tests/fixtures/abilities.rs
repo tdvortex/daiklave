@@ -116,19 +116,41 @@ pub fn validate_initial_abilities(abilities: &Abilities) {
 
 pub fn modify_abilities(abilities: &mut Abilities) {
     // Increase a stable ability
-    abilities.set_dots(AbilityNameNoSubskill::Dodge, None, 4).unwrap();
+    abilities
+        .set_dots(AbilityNameNoSubskill::Dodge, None, 4)
+        .unwrap();
     // Decrease a stable ability with specialty to zero
-    abilities.set_dots(AbilityNameNoSubskill::Socialize, None, 0).unwrap();
+    abilities
+        .set_dots(AbilityNameNoSubskill::Socialize, None, 0)
+        .unwrap();
     // Add a new subskilled ability
-    abilities.set_dots(AbilityNameNoSubskill::Craft, Some("Origami"), 1).unwrap();
+    abilities
+        .set_dots(AbilityNameNoSubskill::Craft, Some("Origami"), 1)
+        .unwrap();
     // Increase an existing subskilled ability
-    abilities.set_dots(AbilityNameNoSubskill::MartialArts, Some("Single Point Shining Into Void Style"), 5).unwrap();
+    abilities
+        .set_dots(
+            AbilityNameNoSubskill::MartialArts,
+            Some("Single Point Shining Into Void Style"),
+            5,
+        )
+        .unwrap();
     // Decrease an existing subskilled ability with specialty to zero
-    abilities.set_dots(AbilityNameNoSubskill::Craft, Some("Weapon Forging"), 0).unwrap();
+    abilities
+        .set_dots(AbilityNameNoSubskill::Craft, Some("Weapon Forging"), 0)
+        .unwrap();
     // Add a specialty
-    abilities.add_specialty(AbilityNameNoSubskill::Integrity, None, "Patience".to_owned()).unwrap();
+    abilities
+        .add_specialty(
+            AbilityNameNoSubskill::Integrity,
+            None,
+            "Patience".to_owned(),
+        )
+        .unwrap();
     // Remove a specialty
-    abilities.remove_specialty(AbilityNameNoSubskill::War, None, "While Outnumbered").unwrap();
+    abilities
+        .remove_specialty(AbilityNameNoSubskill::War, None, "While Outnumbered")
+        .unwrap();
 }
 
 pub fn validate_modified_abilities(abilities: &Abilities) {
@@ -138,14 +160,14 @@ pub fn validate_modified_abilities(abilities: &Abilities) {
         (AbilityNameNoSubskill::Awareness, None, 4, None),
         (AbilityNameNoSubskill::Brawl, None, 1, None),
         (AbilityNameNoSubskill::Bureaucracy, None, 0, None),
-        (
-            AbilityNameNoSubskill::Craft,
-            Some("Origami"),
-            1,
-            None,
-        ),
+        (AbilityNameNoSubskill::Craft, Some("Origami"), 1, None),
         (AbilityNameNoSubskill::Dodge, None, 4, None),
-        (AbilityNameNoSubskill::Integrity, None, 2, Some(&(["Patience".to_owned()].into())),),
+        (
+            AbilityNameNoSubskill::Integrity,
+            None,
+            2,
+            Some(&(["Patience".to_owned()].into())),
+        ),
         (AbilityNameNoSubskill::Investigation, None, 0, None),
         (AbilityNameNoSubskill::Larceny, None, 0, None),
         (AbilityNameNoSubskill::Linguistics, None, 1, None),
@@ -164,21 +186,11 @@ pub fn validate_modified_abilities(abilities: &Abilities) {
         (AbilityNameNoSubskill::Resistance, None, 3, None),
         (AbilityNameNoSubskill::Ride, None, 0, None),
         (AbilityNameNoSubskill::Sail, None, 0, None),
-        (
-            AbilityNameNoSubskill::Socialize,
-            None,
-            0,
-            None,
-        ),
+        (AbilityNameNoSubskill::Socialize, None, 0, None),
         (AbilityNameNoSubskill::Stealth, None, 0, None),
         (AbilityNameNoSubskill::Survival, None, 0, None),
         (AbilityNameNoSubskill::Thrown, None, 0, None),
-        (
-            AbilityNameNoSubskill::War,
-            None,
-            3,
-            None,
-        ),
+        (AbilityNameNoSubskill::War, None, 3, None),
     ]
     .into_iter()
     .for_each(

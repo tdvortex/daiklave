@@ -54,10 +54,7 @@ pub fn modify_base_character(character: &mut Character) {
     character.experience.current -= 5;
 }
 
-pub fn validate_modified_base_character(
-    player: &Player,
-    character: &Character,
-) {
+pub fn validate_modified_base_character(player: &Player, character: &Character) {
     assert_eq!(character.player(), player);
     assert_eq!(character.name.as_str(), "Incomparable Wanderer");
     assert!(character.campaign().is_none());
