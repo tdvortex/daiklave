@@ -1,4 +1,4 @@
-use eyre::{eyre, Result, Context};
+use eyre::{eyre, Context, Result};
 use sqlx::postgres::PgHasArrayType;
 use std::collections::HashMap;
 
@@ -282,15 +282,28 @@ impl CharacterBuilder {
 
         if let Some(template_rows) = merit_templates {
             for row in template_rows.into_iter() {
-                let mut builder = if row.book_title.is_some() && row.page_number.is_some() && row.creator_id.is_none() {
-                    MeritTemplate::create_from_book(row.book_title.unwrap(), row.page_number.unwrap())
-                } else if row.book_title.is_none() && row.page_number.is_none() && row.creator_id.is_some() {
+                let mut builder = if row.book_title.is_some()
+                    && row.page_number.is_some()
+                    && row.creator_id.is_none()
+                {
+                    MeritTemplate::create_from_book(
+                        row.book_title.unwrap(),
+                        row.page_number.unwrap(),
+                    )
+                } else if row.book_title.is_none()
+                    && row.page_number.is_none()
+                    && row.creator_id.is_some()
+                {
                     MeritTemplate::create_custom(row.creator_id)
                 } else {
-                    return Err(eyre!("Data source is inconsistent for merit template {}", row.id));
+                    return Err(eyre!(
+                        "Data source is inconsistent for merit template {}",
+                        row.id
+                    ));
                 };
-                
-                builder = builder.with_id(row.id)
+
+                builder = builder
+                    .with_id(row.id)
                     .with_name(row.name)
                     .with_description(row.description)
                     .with_merit_type(row.merit_type.into());
@@ -312,7 +325,14 @@ impl CharacterBuilder {
                     .get(&row.merit_id)
                     .ok_or_else(|| eyre!("missing template definition: {}", row.merit_id))?
                     .clone();
-                self = self.with_merit(template, row.dots.try_into().wrap_err_with(|| format!("Dots overflow {}", row.dots))?, row.detail, Some(row.id))?;
+                self = self.with_merit(
+                    template,
+                    row.dots
+                        .try_into()
+                        .wrap_err_with(|| format!("Dots overflow {}", row.dots))?,
+                    row.detail,
+                    Some(row.id),
+                )?;
             }
         }
 

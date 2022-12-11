@@ -3,7 +3,10 @@ use serde::{Deserialize, Serialize};
 pub use update::MeritDiff;
 pub(crate) mod create;
 pub(crate) mod tables;
-use crate::{prerequisite::PrerequisiteSet, data_source::{DataSource, BookReference}};
+use crate::{
+    data_source::{BookReference, DataSource},
+    prerequisite::PrerequisiteSet,
+};
 use eyre::{eyre, Result};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
@@ -34,7 +37,10 @@ impl MeritTemplate {
             description: Default::default(),
             requires_detail: Default::default(),
             id: Default::default(),
-            data_source: DataSource::Book(BookReference{book_title, page_number}),
+            data_source: DataSource::Book(BookReference {
+                book_title,
+                page_number,
+            }),
         }
     }
 

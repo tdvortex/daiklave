@@ -11,18 +11,16 @@ async fn create_merit_templates_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     merit_template_inserts: &[MeritTemplateInsert],
 ) -> Result<Vec<i32>> {
-    let (names, merit_types, descriptions, requires_details) =
-        merit_template_inserts.iter().fold(
-            (Vec::new(), Vec::new(), Vec::new(), Vec::new()),
-            |(mut names, mut merit_types, mut descriptions, mut requires_details),
-             merit_template| {
-                names.push(merit_template.name.as_str());
-                merit_types.push(merit_template.merit_type);
-                descriptions.push(merit_template.description.as_str());
-                requires_details.push(merit_template.requires_detail);
-                (names, merit_types, descriptions, requires_details)
-            },
-        );
+    let (names, merit_types, descriptions, requires_details) = merit_template_inserts.iter().fold(
+        (Vec::new(), Vec::new(), Vec::new(), Vec::new()),
+        |(mut names, mut merit_types, mut descriptions, mut requires_details), merit_template| {
+            names.push(merit_template.name.as_str());
+            merit_types.push(merit_template.merit_type);
+            descriptions.push(merit_template.description.as_str());
+            requires_details.push(merit_template.requires_detail);
+            (names, merit_types, descriptions, requires_details)
+        },
+    );
 
     Ok(
         query!(

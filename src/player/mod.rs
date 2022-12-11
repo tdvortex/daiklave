@@ -5,16 +5,10 @@ pub(crate) mod tables;
 pub use create::create_player;
 pub use destroy::destroy_player;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Player {
     id: i32,
     name: String,
-}
-
-impl PartialEq for Player {
-    fn eq(&self, other: &Self) -> bool {
-        self.id == other.id
-    }
 }
 
 impl Player {

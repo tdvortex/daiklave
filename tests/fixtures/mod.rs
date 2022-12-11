@@ -1,3 +1,8 @@
+mod abilities;
+mod attributes;
+mod character;
+pub use character::create_initial_base_character;
+
 mod initial_character_definition;
 pub use initial_character_definition::create_initial_character;
 use std::collections::{HashMap, HashSet};
@@ -6,7 +11,6 @@ use exalted_3e_gui::{
     abilities::{Abilities, AbilityNameNoSubskill},
     armor::{destroy_armor, Armor, ArmorTag},
     attributes::AttributeName,
-    character::{ExperiencePoints, Willpower},
     create_player,
     data_source::{BookReference, DataSource},
     destroy_player,
@@ -19,6 +23,8 @@ use exalted_3e_gui::{
 };
 use postcard::from_bytes;
 use sqlx::postgres::PgPool;
+
+use crate::fixtures::character::validate_initial_base_character;
 
 fn check_initial_abilities(abilities: &Abilities) {
     vec![
@@ -254,28 +260,8 @@ fn lifecycle() {
 
     // Client (in isolation) creates a character and subcomponents
     let initial_character = create_initial_character(&receive_player);
+    validate_initial_base_character(&player, &initial_character, false);
 
-    assert!(initial_character.id().is_none());
-    assert_eq!(initial_character.player(), &receive_player);
-    assert_eq!(&initial_character.name, "Test Character Name");
-    assert_eq!(
-        initial_character.concept.as_deref(),
-        Some("A character for testing purposes")
-    );
-    assert_eq!(
-        initial_character.willpower,
-        Willpower {
-            current: 5,
-            maximum: 6,
-        }
-    );
-    assert_eq!(
-        initial_character.experience,
-        ExperiencePoints {
-            current: 15,
-            total: 15,
-        }
-    );
     assert_eq!(initial_character.experience, initial_character.experience);
     assert_eq!(
         initial_character
