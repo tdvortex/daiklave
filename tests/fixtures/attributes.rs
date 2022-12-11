@@ -44,3 +44,33 @@ pub fn validate_initial_attributes(attributes: &Attributes) {
         .collect::<HashMap::<AttributeName, u8>>()
     );
 }
+
+pub fn modify_attributes(attributes: &mut Attributes) {
+    // Increase an attribute
+    attributes.set(AttributeName::Dexterity, 5).unwrap();
+
+    // Decrease an attribute
+    attributes.set(AttributeName::Stamina, 2).unwrap();
+}
+
+pub fn validate_modified_attributes(attributes: &Attributes) {
+    assert_eq!(
+        attributes
+            .iter()
+            .map(|attr| (attr.name(), attr.dots()))
+            .collect::<HashMap<AttributeName, u8>>(),
+        vec![
+            (AttributeName::Strength, 4),
+            (AttributeName::Dexterity, 5),
+            (AttributeName::Stamina, 2),
+            (AttributeName::Charisma, 4),
+            (AttributeName::Manipulation, 3),
+            (AttributeName::Appearance, 2),
+            (AttributeName::Intelligence, 3),
+            (AttributeName::Wits, 3),
+            (AttributeName::Perception, 1)
+        ]
+        .into_iter()
+        .collect::<HashMap::<AttributeName, u8>>()
+    );
+}

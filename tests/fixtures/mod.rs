@@ -18,7 +18,7 @@ use crate::fixtures::{
 use self::{
     abilities::{create_intitial_abilities, validate_initial_abilities, modify_abilities, validate_modified_abilities},
     armor::{create_initial_armor, validate_initial_armor_items},
-    attributes::{create_initial_attributes, validate_initial_attributes},
+    attributes::{create_initial_attributes, validate_initial_attributes, modify_attributes, validate_modified_attributes},
     character::create_initial_base_character,
     health::{create_initial_health, validate_initial_health},
     intimacies::{create_initial_intimacies, validate_initial_intimacies},
@@ -56,6 +56,7 @@ pub fn validate_initial_character(
 
 pub fn modify_character(character: &mut Character) {
     modify_abilities(&mut character.abilities);
+    modify_attributes(&mut character.attributes);
 }
 
 pub fn validate_modified_character(
@@ -63,4 +64,5 @@ pub fn validate_modified_character(
     modified_character: &Character,
 ) {
     validate_modified_abilities(&modified_character.abilities);
+    validate_modified_attributes(&modified_character.attributes);
 }
