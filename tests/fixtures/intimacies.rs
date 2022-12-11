@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use exalted_3e_gui::{
     character::CharacterBuilder,
     intimacies::{Intimacy, IntimacyLevel, IntimacyType},
@@ -32,7 +34,7 @@ pub fn create_initial_intimacies(builder: CharacterBuilder) -> CharacterBuilder 
 }
 
 pub fn validate_initial_intimacies(intimacies: &Vec<Intimacy>, should_have_id: bool) {
-    for (expected, actual) in vec![
+    let expected: HashSet<(IntimacyLevel, IntimacyType, &str)> = [
         (
             IntimacyLevel::Defining,
             IntimacyType::Principle,
@@ -52,15 +54,14 @@ pub fn validate_initial_intimacies(intimacies: &Vec<Intimacy>, should_have_id: b
             IntimacyLevel::Minor,
             IntimacyType::Tie,
             "Street Vendors (Camaraderie)",
-        ),
-    ]
-    .iter()
-    .zip(intimacies.iter())
-    {
+        )
+    ].into();
+
+    assert_eq!(expected.len(), intimacies.len());
+
+    for actual in intimacies.iter() {
         assert_eq!(actual.id().is_some(), should_have_id);
-        assert_eq!(expected.0, actual.intimacy_level);
-        assert_eq!(expected.1, actual.intimacy_type);
-        assert_eq!(expected.2, actual.description);
+        assert!(expected.contains(&(actual.intimacy_level, actual.intimacy_type, actual.description.as_str())));
     }
 }
 
@@ -86,8 +87,7 @@ pub fn modify_intimacies(intimacies: &mut Vec<Intimacy>) {
 }
 
 pub fn validate_modified_intimacies(intimacies: &Vec<Intimacy>) {
-    dbg!(intimacies);
-    for (expected, actual) in vec![
+    let expected: HashSet<(IntimacyLevel, IntimacyType, &str)> = [
         (
             IntimacyLevel::Defining,
             IntimacyType::Principle,
@@ -107,13 +107,12 @@ pub fn validate_modified_intimacies(intimacies: &Vec<Intimacy>) {
             IntimacyLevel::Minor,
             IntimacyType::Principle,
             "Trust leads pain",
-        ),
-    ]
-    .iter()
-    .zip(intimacies.iter())
-    {
-        assert_eq!(expected.0, actual.intimacy_level);
-        assert_eq!(expected.1, actual.intimacy_type);
-        assert_eq!(expected.2, actual.description);
+        )
+    ].into();
+
+    assert_eq!(expected.len(), intimacies.len());
+
+    for actual in intimacies.iter() {
+        assert!(expected.contains(&(actual.intimacy_level, actual.intimacy_type, actual.description.as_str())));
     }
 }
