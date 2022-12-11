@@ -141,7 +141,7 @@ pub fn validate_modified_abilities(abilities: &Abilities) {
         (
             AbilityNameNoSubskill::Craft,
             Some("Origami"),
-            0,
+            1,
             None,
         ),
         (AbilityNameNoSubskill::Dodge, None, 4, None),

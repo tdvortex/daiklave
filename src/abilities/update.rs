@@ -1,4 +1,4 @@
-use crate::abilities::tables::AbilityNamePostgres;
+use crate::abilities::{tables::AbilityNamePostgres};
 use crate::abilities::Abilities;
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
@@ -245,19 +245,20 @@ impl AbilitiesDiff {
             (
                 SELECT
                     abilities.id,
-                    specialties.specialty
-                FROM abilities INNER JOIN specialties ON (specialties.ability_id = abilities.id)
-                WHERE abilities.character_id = $1::INTEGER
-                AND (abilities.name, COALESCE(abilities.subskill, 'NO_SUBSKILL'), specialties.specialty)
-                IN (
-                    SELECT
-                        name,
-                        COALESCE(subskill, 'NO SUBSKILL') AS subskill,
-                        specialty
-                    FROM UNNEST($2::ABILITYNAME[], $3::VARCHAR(255)[], $4::VARCHAR(255)[]) as data(name, subskill, specialty)
-                )
-            )
-        ",
+                    data.specialty
+                FROM
+                    abilities 
+                    INNER JOIN UNNEST($2::ABILITYNAME[], $3::VARCHAR(255)[], $4::VARCHAR(255)[]) AS data(ability_name, ability_subskill, specialty)
+                    ON (abilities.name = data.ability_name AND
+                        CASE
+                            WHEN (abilities.subskill IS NULL AND data.ability_subskill IS NULL) THEN TRUE
+                            WHEN abilities.subskill IS NOT NULL AND data.ability_subskill IS NOT NULL AND abilities.subskill = data.ability_subskill THEN TRUE
+                            ELSE FALSE
+                        END
+                    )
+                    INNER JOIN specialties ON (abilities.id = specialties.ability_id AND specialties.specialty = data.specialty)
+                WHERE abilities.character_id = $1
+            )",
         character_id,
         &ability_name_with_specialty_to_remove as &[AbilityNamePostgres],
         &ability_subskill_with_specialty_to_remove as &[Option<&str>],
