@@ -98,12 +98,11 @@ fn lifecycle() {
         .unwrap()
         .id;
 
-    let knife_id = sqlx::query!("SELECT id FROM weapons WHERE name = 'Knife'")
-        .fetch_optional(&pool)
+    let unarmed_and_knife_ids = sqlx::query!("SELECT id FROM weapons WHERE name = 'Knife' OR name = 'Unarmed'")
+        .fetch_all(&pool)
         .await
-        .unwrap()
-        .unwrap()
-        .id;
+        .unwrap().into_iter().map(|record| record.id).collect::<Vec<i32>>();
+    assert!(unarmed_and_knife_ids.len() == 2);
 
     let merit_ids = sqlx::query!(
         "SELECT id FROM merits WHERE name = 'Martial Artist' OR name = 'Language' OR name = 'Danger Sense'"
@@ -141,7 +140,7 @@ fn lifecycle() {
 
     // Clean up database to end test
     destroy_armor(&pool, &[silken_armor_id]).await.unwrap();
-    destroy_weapons(&pool, &[knife_id]).await.unwrap();
+    destroy_weapons(&pool, &unarmed_and_knife_ids).await.unwrap();
     destroy_merits(&pool, &merit_ids).await.unwrap();
 
     // Confirm database is clean
@@ -153,7 +152,7 @@ fn lifecycle() {
             .is_none()
     );
 
-    assert!(sqlx::query!("SELECT id FROM weapons WHERE name = 'Knife'")
+    assert!(sqlx::query!("SELECT id FROM weapons WHERE name = 'Knife' OR name = 'Unarmed'")
         .fetch_optional(&pool)
         .await
         .unwrap()

@@ -33,7 +33,7 @@ use self::{
     },
     intimacies::{create_initial_intimacies, validate_initial_intimacies, validate_modified_intimacies, modify_intimacies},
     merits::{create_initial_merits, validate_initial_merits},
-    weapons::create_initial_weapons,
+    weapons::{create_initial_weapons, modify_weapons, validate_modified_weapons},
 };
 
 pub fn create_initial_character(player: &Player) -> Character {
@@ -71,6 +71,7 @@ pub fn modify_character(character: &mut Character) {
     modify_health(&mut character.health);
     modify_intimacies(&mut character.intimacies);
     modify_armor(&mut character.armor);
+    modify_weapons(&mut character.weapons);
 }
 
 pub fn validate_modified_character(player: &Player, modified_character: &Character) {
@@ -80,4 +81,5 @@ pub fn validate_modified_character(player: &Player, modified_character: &Charact
     validate_modified_health(&modified_character.health);
     validate_modified_intimacies(&modified_character.intimacies);
     validate_modified_armor_items(&modified_character.armor);
+    validate_modified_weapons(&modified_character.weapons);
 }
