@@ -1,48 +1,20 @@
 use exalted_3e_gui::{
     armor::{ArmorItem, ArmorTag},
     health::WoundPenalty,
-    intimacies::{Intimacy, IntimacyLevel, IntimacyType},
     player::Player,
     weapons::{EquipHand, RangeBand, Weapon, WeaponTag},
     Character,
 };
 
-use super::{create_initial_base_character, attributes::create_attributes, abilities::create_abilities};
-
-
-
-
+use super::{create_initial_base_character, attributes::create_attributes, abilities::create_abilities, intimacies::create_initial_intimacites};
 
 pub fn create_initial_character(player: &Player) -> Character {
     let initial_character = create_initial_base_character(player);
     let initial_character = create_attributes(initial_character);
     let initial_character = create_abilities(initial_character);
+    let initial_character = create_initial_intimacites(initial_character);
 
     initial_character
-        .with_intimacy(Intimacy::new(
-            IntimacyLevel::Defining,
-            IntimacyType::Principle,
-            "Never stand idle against injustice".to_owned(),
-            None,
-        ))
-        .with_intimacy(Intimacy::new(
-            IntimacyLevel::Major,
-            IntimacyType::Tie,
-            "Ragara Tirnis (Love)".to_owned(),
-            None,
-        ))
-        .with_intimacy(Intimacy::new(
-            IntimacyLevel::Major,
-            IntimacyType::Tie,
-            "Mask of Winters (Revenge)".to_owned(),
-            None,
-        ))
-        .with_intimacy(Intimacy::new(
-            IntimacyLevel::Minor,
-            IntimacyType::Tie,
-            "Street Vendors (Camaraderie)".to_owned(),
-            None,
-        ))
         .with_wound_penalties(vec![
             WoundPenalty::Incapacitated,
             WoundPenalty::MinusFour,

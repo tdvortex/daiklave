@@ -1,4 +1,6 @@
 mod fixtures;
 
-#[test]
-fn lifecycle() {}
+#[sqlx::test]
+fn lifecycle() {
+    fixtures::lifecycle().await;
+}

@@ -1,6 +1,10 @@
 mod abilities;
+mod armor;
 mod attributes;
 mod character;
+mod intimacies;
+pub use armor::check_initial_armor_items;
+pub use abilities::check_initial_abilities;
 pub use character::create_initial_base_character;
 
 mod initial_character_definition;
@@ -8,8 +12,7 @@ pub use initial_character_definition::create_initial_character;
 use std::collections::{HashMap, HashSet};
 
 use exalted_3e_gui::{
-    abilities::{Abilities, AbilityNameNoSubskill},
-    armor::{destroy_armor, Armor, ArmorTag},
+    armor::{destroy_armor},
     attributes::AttributeName,
     create_player,
     data_source::{BookReference, DataSource},
@@ -26,85 +29,6 @@ use sqlx::postgres::PgPool;
 
 use crate::fixtures::character::validate_initial_base_character;
 
-fn check_initial_abilities(abilities: &Abilities) {
-    vec![
-        (AbilityNameNoSubskill::Archery, None, 0, None),
-        (AbilityNameNoSubskill::Athletics, None, 2, None),
-        (AbilityNameNoSubskill::Awareness, None, 4, None),
-        (AbilityNameNoSubskill::Brawl, None, 1, None),
-        (AbilityNameNoSubskill::Bureaucracy, None, 0, None),
-        (
-            AbilityNameNoSubskill::Craft,
-            Some("Weapon Forging"),
-            1,
-            Some(&(["Sharpening Blades".to_owned()].into())),
-        ),
-        (AbilityNameNoSubskill::Dodge, None, 3, None),
-        (AbilityNameNoSubskill::Integrity, None, 2, None),
-        (AbilityNameNoSubskill::Investigation, None, 0, None),
-        (AbilityNameNoSubskill::Larceny, None, 0, None),
-        (AbilityNameNoSubskill::Linguistics, None, 1, None),
-        (AbilityNameNoSubskill::Lore, None, 0, None),
-        (
-            AbilityNameNoSubskill::MartialArts,
-            Some("Single Point Shining Into Void Style"),
-            4,
-            Some(&(["Join Battle".to_owned()].into())),
-        ),
-        (AbilityNameNoSubskill::Medicine, None, 0, None),
-        (AbilityNameNoSubskill::Melee, None, 0, None),
-        (AbilityNameNoSubskill::Occult, None, 0, None),
-        (AbilityNameNoSubskill::Performance, None, 0, None),
-        (AbilityNameNoSubskill::Presence, None, 2, None),
-        (AbilityNameNoSubskill::Resistance, None, 3, None),
-        (AbilityNameNoSubskill::Ride, None, 0, None),
-        (AbilityNameNoSubskill::Sail, None, 0, None),
-        (
-            AbilityNameNoSubskill::Socialize,
-            None,
-            2,
-            Some(&(["Tavern Gossip".to_owned()].into())),
-        ),
-        (AbilityNameNoSubskill::Stealth, None, 0, None),
-        (AbilityNameNoSubskill::Survival, None, 0, None),
-        (AbilityNameNoSubskill::Thrown, None, 0, None),
-        (
-            AbilityNameNoSubskill::War,
-            None,
-            3,
-            Some(&(["While Outnumbered".to_owned()].into())),
-        ),
-    ]
-    .into_iter()
-    .for_each(
-        |(ability_name_no_subskill, subskill, expect_dots, expect_specialties)| {
-            assert_eq!(
-                abilities
-                    .get(ability_name_no_subskill, subskill)
-                    .unwrap()
-                    .dots(),
-                expect_dots
-            );
-            assert_eq!(
-                abilities
-                    .get(ability_name_no_subskill, subskill)
-                    .unwrap()
-                    .specialties(),
-                expect_specialties
-            );
-        },
-    );
-
-    vec![
-        (AbilityNameNoSubskill::Craft, Some("Does Not Exist")),
-        (AbilityNameNoSubskill::MartialArts, Some("Does Not Exist")),
-    ]
-    .into_iter()
-    .for_each(|(ability_name_no_subskill, subskill)| {
-        assert!(abilities.get(ability_name_no_subskill, subskill).is_none());
-    });
-}
-
 fn check_intimacies_except_id(left: &Vec<Intimacy>, right: &Vec<Intimacy>) {
     assert!(
         left.iter()
@@ -117,51 +41,7 @@ fn check_intimacies_except_id(left: &Vec<Intimacy>, right: &Vec<Intimacy>) {
     )
 }
 
-fn check_initial_armor_items(armor: &Armor, should_have_id: bool) {
-    for (key, worn, item) in armor.iter() {
-        match item.name() {
-            "Straw Hat" => {
-                assert!(worn);
-                assert!(armor.get(key).unwrap().id().is_some() == should_have_id);
-                assert_eq!(armor.get(key).unwrap().tags(), [ArmorTag::Light].into());
-                if should_have_id {
-                    assert!(match armor.get(key).unwrap().data_source() {
-                        DataSource::Book(_) => panic!("should be custom"),
-                        DataSource::Custom(None) => panic!("should have custom creator id"),
-                        DataSource::Custom(Some(_)) => true,
-                    });
-                } else {
-                    assert_eq!(
-                        armor.get(key).unwrap().data_source(),
-                        &DataSource::Custom(None)
-                    );
-                }
-            }
-            "Silken Armor" => {
-                assert!(!worn);
-                assert!(armor.get(key).unwrap().id().is_some() == should_have_id);
-                assert_eq!(
-                    armor.get(key).unwrap().tags(),
-                    [
-                        ArmorTag::Light,
-                        ArmorTag::Artifact,
-                        ArmorTag::Silent,
-                        ArmorTag::Special
-                    ]
-                    .into()
-                );
-                assert_eq!(
-                    armor.get(key).unwrap().data_source(),
-                    &DataSource::Book(BookReference {
-                        book_title: "Core Rulebook".to_owned(),
-                        page_number: 600
-                    })
-                );
-            }
-            wrong => panic!("Unknown armor name: {}", wrong),
-        }
-    }
-}
+
 
 fn check_initial_weapons(weapons: &Weapons, should_have_id: bool) {
     for (key, maybe_hand, weapon_ref) in weapons.iter() {
@@ -233,8 +113,8 @@ fn validate_deserialization(preserialized: &Character, postserialized: &Characte
     check_intimacies_except_id(&preserialized.intimacies, &postserialized.intimacies);
 }
 
-#[sqlx::test]
-fn lifecycle() {
+
+pub async fn lifecycle() {
     dotenvy::dotenv().unwrap();
     let url = dotenvy::var("DATABASE_URL").unwrap();
     let pool = PgPool::connect(&url).await.unwrap();
