@@ -145,10 +145,6 @@ impl CharacterBuilder {
         if merit_templates.is_none() {
             return Ok(self);
         }
-        dbg!(merit_templates.clone());
-        dbg!(merit_details.clone());
-        dbg!(merit_prerequisite_sets.clone());
-        dbg!(merit_prerequisites.clone());
 
         // Create map from merit prerequisite set id -> Vec<PrerequisiteRow>
         let set_id_to_prerequisite_rows =
@@ -276,55 +272,55 @@ impl CharacterBuilder {
 
         // Build a hashmap from merit id to Vec<PrerequisiteSet>
         let mut merit_id_to_prerequisite_sets = HashMap::new();
-        dbg!(set_id_to_prerequisite_set.clone());
 
         if let Some(rows) = merit_prerequisite_sets {
-            for row in rows.into_iter() {
-                println!(
-                    "Attempting prerequisite set insertion for MeritPrerequisiteSetRow {}",
-                    row.id
-                );
+            for merit_prerequisite_set_row in rows.into_iter() {
                 merit_id_to_prerequisite_sets
-                    .entry(row.id)
+                    .entry(merit_prerequisite_set_row.merit_id)
                     .or_insert_with(Vec::new)
-                    .push(set_id_to_prerequisite_set.remove(&row.id).ok_or_else(|| {
-                        eyre!("Missing prerequisite set definition for set {}", &row.id)
+                    .push(set_id_to_prerequisite_set.remove(&merit_prerequisite_set_row.id).ok_or_else(|| {
+                        eyre!("Missing prerequisite set definition for set {}", &merit_prerequisite_set_row.id)
                     })?)
             }
         }
-
         // Build a hashmap from merit id to merit template
         let mut merit_id_to_merit_template = HashMap::new();
 
         if let Some(template_rows) = merit_templates {
-            for row in template_rows.into_iter() {
-                let mut builder = if row.book_title.is_some()
-                    && row.page_number.is_some()
-                    && row.creator_id.is_none()
+            for merit_template_row in template_rows.into_iter() {
+                let mut builder = if merit_template_row.book_title.is_some()
+                    && merit_template_row.page_number.is_some()
+                    && merit_template_row.creator_id.is_none()
                 {
                     MeritTemplate::create_from_book(
-                        row.book_title.unwrap(),
-                        row.page_number.unwrap(),
+                        merit_template_row.book_title.unwrap(),
+                        merit_template_row.page_number.unwrap(),
                     )
-                } else if row.book_title.is_none()
-                    && row.page_number.is_none()
-                    && row.creator_id.is_some()
+                } else if merit_template_row.book_title.is_none()
+                    && merit_template_row.page_number.is_none()
+                    && merit_template_row.creator_id.is_some()
                 {
-                    MeritTemplate::create_custom(row.creator_id)
+                    MeritTemplate::create_custom(merit_template_row.creator_id)
                 } else {
                     return Err(eyre!(
                         "Data source is inconsistent for merit template {}",
-                        row.id
+                        merit_template_row.id
                     ));
                 };
 
                 builder = builder
-                    .with_id(row.id)
-                    .with_name(row.name)
-                    .with_description(row.description)
-                    .with_merit_type(row.merit_type.into());
+                    .with_id(merit_template_row.id)
+                    .with_name(merit_template_row.name)
+                    .with_description(merit_template_row.description)
+                    .with_merit_type(merit_template_row.merit_type.into());
 
-                if let Some(sets) = merit_id_to_prerequisite_sets.remove(&row.id) {
+                builder = if merit_template_row.requires_detail {
+                    builder.requiring_detail()
+                } else {
+                    builder.not_requiring_detail()
+                };
+
+                if let Some(sets) = merit_id_to_prerequisite_sets.remove(&merit_template_row.id) {
                     for set in sets.into_iter() {
                         builder = builder.with_prerequisite_set(set);
                     }
@@ -333,10 +329,10 @@ impl CharacterBuilder {
                 let template = builder.build().wrap_err_with(|| {
                     format!(
                         "Error attempting to build merit template {} from rows",
-                        row.id
+                        merit_template_row.id
                     )
                 })?;
-                merit_id_to_merit_template.insert(row.id, template);
+                merit_id_to_merit_template.insert(merit_template_row.id, template);
             }
         }
 

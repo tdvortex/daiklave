@@ -226,10 +226,10 @@ impl MeritTemplateBuilder {
             prerequisites: self.prerequisites,
             description: self
                 .description
-                .ok_or_else(|| eyre!("merit must have a description"))?,
+                .ok_or_else(|| eyre!("Merit must have a description"))?,
             requires_detail: self
                 .requires_detail
-                .ok_or_else(|| eyre!("merit must specify if detail is required"))?,
+                .ok_or_else(|| eyre!("Merit must specify if detail is required"))?,
             data_source: self.data_source,
         })
     }
