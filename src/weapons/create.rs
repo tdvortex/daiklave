@@ -2,7 +2,7 @@ use ::eyre::Result;
 use eyre::Context;
 use sqlx::{query, Postgres, Transaction};
 
-use crate::custom::DataSource;
+use crate::data_source::DataSource;
 use crate::weapons::Weapon;
 
 use super::tables::{RangeBandPostgres, WeaponTagTypePostgres};

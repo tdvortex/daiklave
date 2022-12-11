@@ -6,7 +6,7 @@ use exalted_3e_gui::{
     attributes::AttributeName,
     character::{ExperiencePoints, Willpower},
     create_player,
-    custom::{BookReference, DataSource},
+    data_source::{BookReference, DataSource},
     destroy_player,
     health::{DamageLevel, WoundPenalty},
     intimacies::{Intimacy, IntimacyLevel, IntimacyType},

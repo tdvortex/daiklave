@@ -247,10 +247,11 @@ impl CharacterBuilder {
     fn with_merit_ignore_prerequisites(
         mut self,
         template: MeritTemplate,
+        dots: u8,
         detail: Option<String>,
         id: Option<i32>,
     ) -> Result<Self> {
-        let merit = Merit::from_template(template, detail, id)?;
+        let merit = Merit::from_template(template, dots, detail, id)?;
         self.merits.push(merit);
         Ok(self)
     }
@@ -258,11 +259,12 @@ impl CharacterBuilder {
     pub fn with_merit(
         self,
         template: MeritTemplate,
+        dots: u8,
         detail: Option<String>,
         id: Option<i32>,
     ) -> Result<Self> {
         if self.meets_any_prerequisite_set(template.prerequisites()) {
-            self.with_merit_ignore_prerequisites(template, detail, id)
+            self.with_merit_ignore_prerequisites(template, dots, detail, id)
         } else {
             Err(eyre!("prerequisites not met for merit {}", template.name()))
         }

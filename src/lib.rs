@@ -4,7 +4,7 @@ pub mod attributes;
 pub mod campaign;
 pub mod character;
 pub(crate) mod charms;
-pub mod custom;
+pub mod data_source;
 pub mod health;
 pub mod intimacies;
 pub mod merits;

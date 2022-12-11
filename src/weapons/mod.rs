@@ -10,7 +10,7 @@ use std::collections::HashSet;
 use eyre::{eyre, Result};
 use slab::Slab;
 
-use crate::custom::{BookReference, DataSource};
+use crate::data_source::{BookReference, DataSource};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 enum WeightClass {

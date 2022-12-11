@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 pub use update::MeritDiff;
 pub(crate) mod create;
 pub(crate) mod tables;
-use crate::prerequisite::PrerequisiteSet;
+use crate::{prerequisite::PrerequisiteSet, data_source::{DataSource, BookReference}};
 use eyre::{eyre, Result};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
@@ -18,16 +18,36 @@ pub enum MeritType {
 pub struct MeritTemplate {
     id: Option<i32>,
     name: String,
-    dots: u8,
     merit_type: MeritType,
     prerequisites: Vec<PrerequisiteSet>,
     description: String,
     requires_detail: bool,
+    data_source: DataSource,
 }
 
 impl MeritTemplate {
-    pub fn create() -> MeritTemplateBuilder {
-        MeritTemplateBuilder::default()
+    pub fn create_from_book(book_title: String, page_number: i16) -> MeritTemplateBuilder {
+        MeritTemplateBuilder {
+            name: Default::default(),
+            merit_type: Default::default(),
+            prerequisites: Default::default(),
+            description: Default::default(),
+            requires_detail: Default::default(),
+            id: Default::default(),
+            data_source: DataSource::Book(BookReference{book_title, page_number}),
+        }
+    }
+
+    pub fn create_custom(creator_id: Option<i32>) -> MeritTemplateBuilder {
+        MeritTemplateBuilder {
+            name: Default::default(),
+            merit_type: Default::default(),
+            prerequisites: Default::default(),
+            description: Default::default(),
+            requires_detail: Default::default(),
+            id: Default::default(),
+            data_source: DataSource::Custom(creator_id),
+        }
     }
 
     pub fn id(&self) -> Option<i32> {
@@ -36,10 +56,6 @@ impl MeritTemplate {
 
     pub fn name(&self) -> &str {
         self.name.as_str()
-    }
-
-    pub fn dots(&self) -> u8 {
-        self.dots
     }
 
     pub fn merit_type(&self) -> MeritType {
@@ -63,12 +79,14 @@ impl MeritTemplate {
 pub struct Merit {
     id: Option<i32>,
     template: MeritTemplate,
+    dots: u8,
     detail: Option<String>,
 }
 
 impl Merit {
     pub(crate) fn from_template(
         template: MeritTemplate,
+        dots: u8,
         detail: Option<String>,
         id: Option<i32>,
     ) -> Result<Self> {
@@ -76,12 +94,14 @@ impl Merit {
             (false, None) => Ok(Self {
                 id,
                 template,
+                dots,
                 detail: None,
             }),
-            (true, None) => Err(eyre!("merit {} requires detailing", template.name())),
+            (true, None) => Err(eyre!("Missing detail for merit {}", template.name())),
             (_, Some(detail_text)) => Ok(Self {
                 id,
                 template,
+                dots,
                 detail: Some(detail_text),
             }),
         }
@@ -100,7 +120,7 @@ impl Merit {
     }
 
     pub fn dots(&self) -> u8 {
-        self.template.dots()
+        self.dots
     }
 
     pub fn merit_type(&self) -> MeritType {
@@ -135,19 +155,19 @@ impl std::fmt::Display for Merit {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct MeritTemplateBuilder {
     name: Option<String>,
-    dots: Option<u8>,
     merit_type: Option<MeritType>,
     prerequisites: Vec<PrerequisiteSet>,
     description: Option<String>,
     requires_detail: Option<bool>,
     id: Option<i32>,
+    data_source: DataSource,
 }
 
 impl MeritTemplateBuilder {
-    pub fn with_id(mut self, id: i32) -> Self {
+    pub(crate) fn with_id(mut self, id: i32) -> Self {
         self.id = Some(id);
         self
     }
@@ -159,11 +179,6 @@ impl MeritTemplateBuilder {
 
     pub fn with_description(mut self, description: String) -> Self {
         self.description = Some(description);
-        self
-    }
-
-    pub fn with_dots(mut self, dots: u8) -> Self {
-        self.dots = Some(dots);
         self
     }
 
@@ -191,7 +206,6 @@ impl MeritTemplateBuilder {
         Ok(MeritTemplate {
             id: self.id,
             name: self.name.ok_or_else(|| eyre!("merit name is required"))?,
-            dots: self.dots.ok_or_else(|| eyre!("merit dots are required"))?,
             merit_type: self.merit_type.ok_or_else(|| {
                 eyre!("merit must be one of Innate, Purchased, Story, or Supernatural")
             })?,
@@ -202,6 +216,7 @@ impl MeritTemplateBuilder {
             requires_detail: self
                 .requires_detail
                 .ok_or_else(|| eyre!("merit must specify if detail is required"))?,
+            data_source: self.data_source,
         })
     }
 }

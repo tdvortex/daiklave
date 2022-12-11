@@ -11,35 +11,32 @@ async fn create_merit_templates_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     merit_template_inserts: &[MeritTemplateInsert],
 ) -> Result<Vec<i32>> {
-    let (names, dots_vec, merit_types, descriptions, requires_details) =
+    let (names, merit_types, descriptions, requires_details) =
         merit_template_inserts.iter().fold(
-            (Vec::new(), Vec::new(), Vec::new(), Vec::new(), Vec::new()),
-            |(mut names, mut dots_vec, mut merit_types, mut descriptions, mut requires_details),
+            (Vec::new(), Vec::new(), Vec::new(), Vec::new()),
+            |(mut names, mut merit_types, mut descriptions, mut requires_details),
              merit_template| {
                 names.push(merit_template.name.as_str());
-                dots_vec.push(merit_template.dots);
                 merit_types.push(merit_template.merit_type);
                 descriptions.push(merit_template.description.as_str());
                 requires_details.push(merit_template.requires_detail);
-                (names, dots_vec, merit_types, descriptions, requires_details)
+                (names, merit_types, descriptions, requires_details)
             },
         );
 
     Ok(
         query!(
-            "INSERT INTO merits(name, requires_detail, dots, merit_type, description)
+            "INSERT INTO merits(name, requires_detail, merit_type, description)
             SELECT
                 data.name,
                 data.requires_detail,
-                data.dots,
                 data.merit_type,
                 data.description
-            FROM UNNEST($1::VARCHAR(255)[], $2::BOOLEAN[], $3::SMALLINT[], $4::MERITTYPE[], $5::TEXT[]) as data(name, requires_detail, dots, merit_type, description)
+            FROM UNNEST($1::VARCHAR(255)[], $2::BOOLEAN[], $3::MERITTYPE[], $4::TEXT[]) as data(name, requires_detail, merit_type, description)
             RETURNING id
             ",
             &names as &[&str],
             &requires_details as &[bool],
-            &dots_vec as &[i16],
             &merit_types as &[MeritTypePostgres],
             &descriptions as &[&str]
         ).fetch_all(&mut *transaction).await?.into_iter().map(|record| record.id).collect()
@@ -107,7 +104,6 @@ pub(crate) async fn create_new_merits_transaction(
     for merit in new_merits.iter() {
         merit_template_inserts.push(MeritTemplateInsert {
             name: merit.name().to_owned(),
-            dots: merit.dots().into(),
             merit_type: merit.merit_type().into(),
             description: merit.description().into(),
             requires_detail: merit.requires_detail(),

@@ -1,4 +1,4 @@
-use eyre::{eyre, Result};
+use eyre::{eyre, Result, Context};
 use sqlx::postgres::PgHasArrayType;
 use std::collections::HashMap;
 
@@ -47,8 +47,7 @@ impl From<MeritType> for MeritTypePostgres {
     }
 }
 
-#[derive(Debug, sqlx::Type)]
-#[sqlx(type_name = "merits")]
+#[derive(Debug)]
 pub struct MeritTemplateRow {
     pub id: i32,
     pub name: String,
@@ -56,12 +55,49 @@ pub struct MeritTemplateRow {
     pub merit_type: MeritTypePostgres,
     pub description: String,
     pub requires_detail: bool,
+    pub book_title: Option<String>,
+    pub page_number: Option<i16>,
+    pub creator_id: Option<i32>,
+}
+
+impl sqlx::Type<sqlx::Postgres> for MeritTemplateRow {
+    fn type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("merits")
+    }
+}
+
+impl<'r> sqlx::Decode<'r, sqlx::Postgres> for MeritTemplateRow {
+    fn decode(
+        value: sqlx::postgres::PgValueRef<'r>,
+    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
+        let id = decoder.try_decode::<i32>()?;
+        let name = decoder.try_decode::<String>()?;
+        let dots = decoder.try_decode::<i16>()?;
+        let merit_type = decoder.try_decode::<MeritTypePostgres>()?;
+        let description = decoder.try_decode::<String>()?;
+        let requires_detail = decoder.try_decode::<bool>()?;
+        let book_title = decoder.try_decode::<Option<String>>()?;
+        let page_number = decoder.try_decode::<Option<i16>>()?;
+        let creator_id = decoder.try_decode::<Option<i32>>()?;
+
+        Ok(Self {
+            id,
+            name,
+            dots,
+            merit_type,
+            description,
+            requires_detail,
+            book_title,
+            page_number,
+            creator_id,
+        })
+    }
 }
 
 #[derive(Debug)]
 pub struct MeritTemplateInsert {
     pub name: String,
-    pub dots: i16,
     pub merit_type: MeritTypePostgres,
     pub description: String,
     pub requires_detail: bool,
@@ -71,7 +107,6 @@ impl From<MeritTemplate> for MeritTemplateInsert {
     fn from(template: MeritTemplate) -> Self {
         Self {
             name: template.name().to_owned(),
-            dots: template.dots().into(),
             merit_type: template.merit_type().into(),
             description: template.description().to_owned(),
             requires_detail: template.requires_detail(),
@@ -92,6 +127,7 @@ pub struct MeritDetailRow {
     pub id: i32,
     pub character_id: i32,
     pub merit_id: i32,
+    pub dots: i16,
     pub detail: Option<String>,
 }
 
@@ -246,12 +282,18 @@ impl CharacterBuilder {
 
         if let Some(template_rows) = merit_templates {
             for row in template_rows.into_iter() {
-                let mut builder = MeritTemplate::create()
-                    .with_id(row.id)
+                let mut builder = if row.book_title.is_some() && row.page_number.is_some() && row.creator_id.is_none() {
+                    MeritTemplate::create_from_book(row.book_title.unwrap(), row.page_number.unwrap())
+                } else if row.book_title.is_none() && row.page_number.is_none() && row.creator_id.is_some() {
+                    MeritTemplate::create_custom(row.creator_id)
+                } else {
+                    return Err(eyre!("Data source is inconsistent for merit template {}", row.id));
+                };
+                
+                builder = builder.with_id(row.id)
                     .with_name(row.name)
                     .with_description(row.description)
-                    .with_merit_type(row.merit_type.into())
-                    .with_dots(row.dots.try_into()?);
+                    .with_merit_type(row.merit_type.into());
 
                 if let Some(sets) = merit_id_to_prerequisite_sets.remove(&row.id) {
                     for set in sets.into_iter() {
@@ -270,7 +312,7 @@ impl CharacterBuilder {
                     .get(&row.merit_id)
                     .ok_or_else(|| eyre!("missing template definition: {}", row.merit_id))?
                     .clone();
-                self = self.with_merit(template, row.detail, Some(row.id))?;
+                self = self.with_merit(template, row.dots.try_into().wrap_err_with(|| format!("Dots overflow {}", row.dots))?, row.detail, Some(row.id))?;
             }
         }
 

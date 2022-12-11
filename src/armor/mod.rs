@@ -10,7 +10,7 @@ use std::{collections::HashSet, hash::Hash};
 use eyre::{eyre, Result};
 use slab::Slab;
 
-use crate::custom::{BookReference, DataSource};
+use crate::data_source::{BookReference, DataSource};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum ArmorTag {
