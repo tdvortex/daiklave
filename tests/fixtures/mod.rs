@@ -4,23 +4,26 @@ mod attributes;
 mod character;
 mod health;
 mod intimacies;
+mod merits;
 pub mod serde;
 mod weapons;
-use exalted_3e_gui::{ player::Player,Character,};
+use exalted_3e_gui::{player::Player, Character};
 
 pub use self::serde::validate_player_serde;
 
 use crate::fixtures::{
-    character::validate_initial_base_character,
-    weapons::validate_initial_weapons,
+    character::validate_initial_base_character, weapons::validate_initial_weapons,
 };
 
 use self::{
     abilities::{create_intitial_abilities, validate_initial_abilities},
+    armor::{create_initial_armor, validate_initial_armor_items},
     attributes::{create_initial_attributes, validate_initial_attributes},
-    health::{validate_initial_health, create_initial_health},
+    character::create_initial_base_character,
+    health::{create_initial_health, validate_initial_health},
     intimacies::{create_initial_intimacies, validate_initial_intimacies},
-    weapons::create_initial_weapons, character::create_initial_base_character, armor::{create_initial_armor, validate_initial_armor_items},
+    merits::{create_initial_merits, validate_initial_merits},
+    weapons::create_initial_weapons,
 };
 
 pub fn create_initial_character(player: &Player) -> Character {
@@ -31,6 +34,7 @@ pub fn create_initial_character(player: &Player) -> Character {
     builder = create_initial_health(builder);
     builder = create_initial_armor(builder);
     builder = create_initial_weapons(builder);
+    builder = create_initial_merits(builder);
 
     builder.build().unwrap()
 }
@@ -47,4 +51,5 @@ pub fn validate_initial_character(
     validate_initial_health(&initial_character.health);
     validate_initial_armor_items(&initial_character.armor, should_have_id);
     validate_initial_weapons(&initial_character.weapons, should_have_id);
+    validate_initial_merits(&initial_character.merits, should_have_id);
 }

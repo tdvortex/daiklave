@@ -1,4 +1,7 @@
-use exalted_3e_gui::{create_player, player::Player, Character, update_character, destroy_player, armor::destroy_armor, weapons::destroy_weapons};
+use exalted_3e_gui::{
+    armor::destroy_armor, create_player, destroy_player, player::Player, update_character,
+    weapons::destroy_weapons, Character,
+};
 use postcard::from_bytes;
 use sqlx::PgPool;
 
@@ -6,7 +9,7 @@ mod fixtures;
 
 use fixtures::{create_initial_character, validate_initial_character};
 
-use crate::fixtures::{validate_player_serde, serde::validate_initial_character_serde};
+use crate::fixtures::{serde::validate_initial_character_serde, validate_player_serde};
 
 #[sqlx::test]
 fn lifecycle() {

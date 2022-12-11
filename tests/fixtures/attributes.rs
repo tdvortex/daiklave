@@ -15,6 +15,7 @@ pub fn create_initial_attributes(builder: CharacterBuilder) -> CharacterBuilder 
         (AttributeName::Appearance, 2),
         (AttributeName::Intelligence, 3),
         (AttributeName::Wits, 3),
+        (AttributeName::Perception, 1),
     ]
     .into_iter()
     .fold(builder, |ic, (attribute_name, value)| {
