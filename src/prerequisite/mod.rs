@@ -8,7 +8,7 @@ use crate::abilities::AbilityNameNoSubskill;
 use crate::attributes::AttributeName;
 use crate::character::Character;
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub enum PrerequisiteType {
     Ability(AbilityPrerequisite),
     Attribute(AttributePrerequisite),
@@ -17,7 +17,7 @@ pub enum PrerequisiteType {
     ExaltType(ExaltTypePrerequisite),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Prerequisite {
     prerequisite_type: PrerequisiteType,
 }
@@ -36,20 +36,20 @@ impl Deref for Prerequisite {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub struct AbilityPrerequisite {
     pub ability_name: AbilityNameNoSubskill,
     pub subskill: Option<String>,
     pub dots: u8,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 pub struct AttributePrerequisite {
     pub attribute_name: AttributeName,
     pub dots: u8,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 pub enum ExaltTypePrerequisite {
     Solar,
     Lunar,
@@ -58,7 +58,7 @@ pub enum ExaltTypePrerequisite {
     SpiritOrEclipse,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct PrerequisiteSet {
     id: Option<i32>,
     prerequisites: Vec<Prerequisite>,

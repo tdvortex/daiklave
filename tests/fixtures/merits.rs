@@ -172,3 +172,85 @@ pub fn validate_initial_merits(merits: &Vec<Merit>, should_have_id: bool) {
         assert_eq!(expected.6, actual.dots());
     });
 }
+
+pub fn modify_merits(merits: &mut Vec<Merit>) {
+    // Add merit
+    let artifact_template = MeritTemplate::create_from_book("Core Rulebook".to_owned(), 159)
+        .with_name("Artifact".to_owned())
+        .requiring_detail()
+        .with_description("The character owns a magical item—see Chapter Nine for more details.".to_owned())
+        .with_merit_type(MeritType::Story)
+        .build().unwrap();
+
+    let screamer_merit = Merit::from_template(artifact_template, 3, Some("Screamer (Red Jade Reaper Daiklave)".to_owned()), None).unwrap();
+
+    merits.push(screamer_merit);
+
+    // Remove merit
+    merits.remove(1);
+}
+
+pub fn validate_modified_merits(merits: &Vec<Merit>) {
+    [
+        (
+            "Martial Artist",
+            MeritType::Purchased,
+            Some("Single Point Shining Into Void Style"),
+            MARTIAL_ARTIST_DESCRIPTION,
+            true,
+            &vec![PrerequisiteSet::create()
+                .requiring_ability(AbilityNameNoSubskill::Brawl, 1)
+                .build()],
+            4,
+        ),
+        (
+            "Language",
+            MeritType::Purchased,
+            Some("Low Realm(Native), Flametongue, Riverspeak"),
+            LANGUAGE_DESCRIPTION,
+            true,
+            &vec![],
+            2,
+        ),
+        (
+            "Test Custom Merit Template",
+            MeritType::Supernatural,
+            None,
+            "Test Custom Merit Template Description",
+            false,
+            &vec![],
+            1,
+        ),
+        (
+            "Artifact",
+            MeritType::Story,
+            Some("Screamer (Red Jade Reaper Daiklave)"),
+            "The character owns a magical item—see Chapter Nine for more details.",
+            true,
+            &vec![],
+            3,
+        ),
+    ]
+    .into_iter()
+    .zip(merits.iter())
+    .for_each(|(expected, actual)| {
+        assert_eq!(expected.0, actual.name());
+        assert_eq!(expected.1, actual.merit_type());
+        assert_eq!(expected.2, actual.detail());
+        assert_eq!(expected.3, actual.description());
+        assert_eq!(expected.4, actual.requires_detail());
+        assert_eq!(expected.5.len(), actual.prerequisites().len());
+        for (expected_set, actual_set) in expected.5.iter().zip(actual.prerequisites().iter()) {
+            assert_eq!(expected_set.len(), actual_set.len());
+            for (expected_prerequisite, actual_prerequisite) in
+                expected_set.iter().zip(actual_set.iter())
+            {
+                assert_eq!(
+                    expected_prerequisite.prerequisite_type(),
+                    actual_prerequisite.prerequisite_type()
+                );
+            }
+        }
+        assert_eq!(expected.6, actual.dots());
+    });
+}

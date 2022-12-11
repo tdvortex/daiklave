@@ -19,7 +19,7 @@ pub enum MeritType {
     Purchased,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct MeritTemplate {
     id: Option<i32>,
     name: String,
@@ -96,7 +96,7 @@ pub struct Merit {
 }
 
 impl Merit {
-    pub(crate) fn from_template(
+    pub fn from_template(
         template: MeritTemplate,
         dots: u8,
         detail: Option<String>,

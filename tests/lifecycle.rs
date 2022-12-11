@@ -105,10 +105,10 @@ fn lifecycle() {
     assert!(unarmed_and_knife_ids.len() == 2);
 
     let merit_ids = sqlx::query!(
-        "SELECT id FROM merits WHERE name = 'Martial Artist' OR name = 'Language' OR name = 'Danger Sense'"
+        "SELECT id FROM merits WHERE name = 'Martial Artist' OR name = 'Language' OR name = 'Danger Sense' OR name = 'Artifact'"
     ).fetch_all(&pool).await.unwrap().into_iter().map(|record| record.id).collect::<Vec<i32>>();
 
-    assert!(merit_ids.len() == 3);
+    assert!(merit_ids.len() == 4);
 
     // Custom items should not
     assert!(sqlx::query!(
@@ -159,7 +159,7 @@ fn lifecycle() {
         .is_none());
 
     assert!(sqlx::query!(
-        "SELECT id FROM merits WHERE name = 'Martial Artist' OR name = 'Language' OR name = 'Danger Sense'"
+        "SELECT id FROM merits WHERE name = 'Martial Artist' OR name = 'Language' OR name = 'Danger Sense' OR name = 'Artifact'"
     ).fetch_optional(&pool)
         .await
         .unwrap()
