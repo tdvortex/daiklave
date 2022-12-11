@@ -113,3 +113,99 @@ pub fn validate_initial_abilities(abilities: &Abilities) {
         assert!(abilities.get(ability_name_no_subskill, subskill).is_none());
     });
 }
+
+pub fn modify_abilities(abilities: &mut Abilities) {
+    // Increase a stable ability
+    abilities.set_dots(AbilityNameNoSubskill::Dodge, None, 4).unwrap();
+    // Decrease a stable ability with specialty to zero
+    abilities.set_dots(AbilityNameNoSubskill::Socialize, None, 0).unwrap();
+    // Add a new subskilled ability
+    abilities.set_dots(AbilityNameNoSubskill::Craft, Some("Origami"), 1).unwrap();
+    // Increase an existing subskilled ability
+    abilities.set_dots(AbilityNameNoSubskill::MartialArts, Some("Single Point Shining Into Void Style"), 5).unwrap();
+    // Decrease an existing subskilled ability with specialty to zero
+    abilities.set_dots(AbilityNameNoSubskill::Craft, Some("Weapon Forging"), 0).unwrap();
+    // Add a specialty
+    abilities.add_specialty(AbilityNameNoSubskill::Integrity, None, "Patience".to_owned()).unwrap();
+    // Remove a specialty
+    abilities.remove_specialty(AbilityNameNoSubskill::War, None, "While Outnumbered").unwrap();
+}
+
+pub fn validate_modified_abilities(abilities: &Abilities) {
+    vec![
+        (AbilityNameNoSubskill::Archery, None, 0, None),
+        (AbilityNameNoSubskill::Athletics, None, 2, None),
+        (AbilityNameNoSubskill::Awareness, None, 4, None),
+        (AbilityNameNoSubskill::Brawl, None, 1, None),
+        (AbilityNameNoSubskill::Bureaucracy, None, 0, None),
+        (
+            AbilityNameNoSubskill::Craft,
+            Some("Origami"),
+            0,
+            None,
+        ),
+        (AbilityNameNoSubskill::Dodge, None, 4, None),
+        (AbilityNameNoSubskill::Integrity, None, 2, Some(&(["Patience".to_owned()].into())),),
+        (AbilityNameNoSubskill::Investigation, None, 0, None),
+        (AbilityNameNoSubskill::Larceny, None, 0, None),
+        (AbilityNameNoSubskill::Linguistics, None, 1, None),
+        (AbilityNameNoSubskill::Lore, None, 0, None),
+        (
+            AbilityNameNoSubskill::MartialArts,
+            Some("Single Point Shining Into Void Style"),
+            5,
+            Some(&(["Join Battle".to_owned()].into())),
+        ),
+        (AbilityNameNoSubskill::Medicine, None, 0, None),
+        (AbilityNameNoSubskill::Melee, None, 0, None),
+        (AbilityNameNoSubskill::Occult, None, 0, None),
+        (AbilityNameNoSubskill::Performance, None, 0, None),
+        (AbilityNameNoSubskill::Presence, None, 2, None),
+        (AbilityNameNoSubskill::Resistance, None, 3, None),
+        (AbilityNameNoSubskill::Ride, None, 0, None),
+        (AbilityNameNoSubskill::Sail, None, 0, None),
+        (
+            AbilityNameNoSubskill::Socialize,
+            None,
+            0,
+            None,
+        ),
+        (AbilityNameNoSubskill::Stealth, None, 0, None),
+        (AbilityNameNoSubskill::Survival, None, 0, None),
+        (AbilityNameNoSubskill::Thrown, None, 0, None),
+        (
+            AbilityNameNoSubskill::War,
+            None,
+            3,
+            None,
+        ),
+    ]
+    .into_iter()
+    .for_each(
+        |(ability_name_no_subskill, subskill, expect_dots, expect_specialties)| {
+            assert_eq!(
+                abilities
+                    .get(ability_name_no_subskill, subskill)
+                    .unwrap()
+                    .dots(),
+                expect_dots
+            );
+            assert_eq!(
+                abilities
+                    .get(ability_name_no_subskill, subskill)
+                    .unwrap()
+                    .specialties(),
+                expect_specialties
+            );
+        },
+    );
+
+    vec![
+        (AbilityNameNoSubskill::Craft, Some("Weapon Forging")),
+        (AbilityNameNoSubskill::MartialArts, Some("Does Not Exist")),
+    ]
+    .into_iter()
+    .for_each(|(ability_name_no_subskill, subskill)| {
+        assert!(abilities.get(ability_name_no_subskill, subskill).is_none());
+    });
+}

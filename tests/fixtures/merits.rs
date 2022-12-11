@@ -171,4 +171,5 @@ pub fn validate_initial_merits(merits: &Vec<Merit>, should_have_id: bool) {
         }
         assert_eq!(expected.6, actual.dots());
     });
+    println!("Succesfully validated merits");
 }

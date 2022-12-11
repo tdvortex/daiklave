@@ -1,5 +1,5 @@
 use exalted_3e_gui::{
-    armor::destroy_armor, create_player, destroy_player, merits::destroy_merits, player::Player,
+    armor::destroy_armor, create_player, destroy_player, merits::destroy_merits,
     update_character, weapons::destroy_weapons, Character,
 };
 use postcard::from_bytes;
@@ -9,7 +9,7 @@ mod fixtures;
 
 use fixtures::{create_initial_character, validate_initial_character};
 
-use crate::fixtures::{serde::validate_initial_character_serde, validate_player_serde};
+use crate::fixtures::{serde::{validate_initial_character_serde, validate_modified_character_serde}, validate_player_serde, modify_character, validate_modified_character};
 
 #[sqlx::test]
 fn lifecycle() {
@@ -28,7 +28,7 @@ fn lifecycle() {
     assert_eq!(&player_name.as_str(), &player.name());
 
     // Server serializes player result and sends it back to the client
-    let player: Player = validate_player_serde(&player);
+    validate_player_serde(&player);
 
     // Client (in isolation) creates a character and subcomponents
     let character = create_initial_character(&player);
@@ -36,23 +36,28 @@ fn lifecycle() {
 
     // Client builds, serializes, and sends to server
     // Server deserializes character
-    let character = validate_initial_character_serde(&player, &character, false);
+    validate_initial_character_serde(&player, &character, false);
 
     // Server inserts character and retrieves after updating
-    let character: Character = update_character(&pool, &character).await.unwrap();
+    let mut character: Character = update_character(&pool, &character).await.unwrap();
     validate_initial_character(&player, &character, true);
 
     // Server serializes and sends character to client
     // Client deserializes character and modifies it
-    let character = validate_initial_character_serde(&player, &character, true);
+    validate_initial_character_serde(&player, &character, true);
+    modify_character(&mut character);
+    validate_modified_character(&player, &character);
 
-    // Client runs all getters on the character
-    // Client runs all setters on the character
     // Client reserializes character and sends to server
-    // Server deserializes, reconciles, inserts, extracts, and reserializes
+    // Server deserializes, reconciles, inserts, and extracts
+    validate_modified_character_serde(&player, &character);
+    let character = update_character(&pool, &character).await.unwrap();
+
     // Client deserializes
+    validate_modified_character(&player, &character);
+
     // Client sends delete player order
-    // Server deletes player, sends confirmation
+    // Server deletes player
     destroy_player(&pool, player.id()).await.unwrap();
 
     // Confirm end state
