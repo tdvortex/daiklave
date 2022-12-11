@@ -1,6 +1,6 @@
 use super::create::{create_new_merits_transaction, post_merits_details_transaction};
 use super::Merit;
-use eyre::Result;
+use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 use std::collections::HashSet;
 
@@ -48,13 +48,20 @@ impl MeritDiff {
             WHERE character_id = $1::INTEGER AND id IN (SELECT data.id FROM UNNEST($2::INTEGER[]) as data(id))",
             character_id,
             &self.remove_merit_instances as &[i32]
-        ).execute(&mut *transaction).await?;
+        ).execute(&mut *transaction).await.wrap_err("Database error attempting to delete character merits")?;
 
         create_new_merits_transaction(transaction, self.insert_merit_templates, character_id)
-            .await?;
+            .await
+            .wrap_err("Error attempting to create new merits")?;
 
         post_merits_details_transaction(transaction, self.insert_merit_instance, character_id)
-            .await?;
+            .await
+            .wrap_err_with(|| {
+                format!(
+                    "Error attempting to assign merits to character {}",
+                    character_id
+                )
+            })?;
         Ok(())
     }
 }

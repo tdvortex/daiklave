@@ -174,11 +174,12 @@ impl CharacterBuilder {
                         let dots = row
                             .dots
                             .ok_or_else(|| {
-                                eyre!("missing dots level for ability prerequisite {}", row.id)
+                                eyre!("Missing dots level for ability prerequisite {}", row.id)
                             })?
-                            .try_into()?;
+                            .try_into()
+                            .wrap_err("Ability prerequisite dots overflow u8")?;
                         match row.ability_name.ok_or_else(|| {
-                            eyre!("missing ability name for ability prerequisite {}", row.id)
+                            eyre!("Missing ability name for ability prerequisite {}", row.id)
                         })? {
                             AbilityNamePostgres::Craft => {
                                 if let Some(focus) = row.subskill_name {
@@ -210,7 +211,8 @@ impl CharacterBuilder {
                             .ok_or_else(|| {
                                 eyre!("missing dots level for attribute prerequisite {}", row.id)
                             })?
-                            .try_into()?;
+                            .try_into()
+                            .wrap_err("Attribute prerequisite dots overflow u8")?;
                         builder = builder.requiring_attribute(
                             row.attribute_name
                                 .ok_or_else(|| {
@@ -229,7 +231,8 @@ impl CharacterBuilder {
                             .ok_or_else(|| {
                                 eyre!("missing dots level for essence prerequisite {}", row.id)
                             })?
-                            .try_into()?;
+                            .try_into()
+                            .wrap_err("Essence prerequisite dots overflow u8")?;
                         builder = builder.requiring_essence_rating(dots);
                     }
                     PrerequisiteTypePostgres::Charm => {
@@ -314,7 +317,12 @@ impl CharacterBuilder {
                     }
                 }
 
-                let template = builder.build()?;
+                let template = builder.build().wrap_err_with(|| {
+                    format!(
+                        "Error attempting to build merit template {} from rows",
+                        row.id
+                    )
+                })?;
                 merit_id_to_merit_template.insert(row.id, template);
             }
         }
@@ -329,7 +337,7 @@ impl CharacterBuilder {
                     template,
                     row.dots
                         .try_into()
-                        .wrap_err_with(|| format!("Dots overflow {}", row.dots))?,
+                        .wrap_err_with(|| format!("Dots {} overflow u8", row.dots))?,
                     row.detail,
                     Some(row.id),
                 )?;

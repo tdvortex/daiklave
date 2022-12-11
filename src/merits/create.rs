@@ -1,4 +1,4 @@
-use eyre::Result;
+use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 
 use crate::merits::tables::{MeritTemplateInsert, MeritTypePostgres};
@@ -37,7 +37,7 @@ async fn create_merit_templates_transaction(
             &requires_details as &[bool],
             &merit_types as &[MeritTypePostgres],
             &descriptions as &[&str]
-        ).fetch_all(&mut *transaction).await?.into_iter().map(|record| record.id).collect()
+        ).fetch_all(&mut *transaction).await.wrap_err("Database error trying to create new merit templates")?.into_iter().map(|record| record.id).collect()
     )
 }
 
@@ -52,7 +52,8 @@ async fn create_merit_prerequisite_sets_transaction(
         merit_template_ids_repeated
     )
     .fetch_all(&mut *transaction)
-    .await?
+    .await
+    .wrap_err("Database error trying to create new merit prerequisite sets")?
     .into_iter()
     .map(|record| record.id)
     .collect())
@@ -86,7 +87,13 @@ pub(crate) async fn post_merits_details_transaction(
         &details as &[Option<String>]
     )
     .fetch_all(&mut *transaction)
-    .await?
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "Database error attempting to assign merits to character {}",
+            character_id
+        )
+    })?
     .into_iter()
     .map(|record| record.id)
     .collect())
@@ -107,8 +114,9 @@ pub(crate) async fn create_new_merits_transaction(
             requires_detail: merit.requires_detail(),
         });
     }
-    let new_template_ids =
-        create_merit_templates_transaction(transaction, &merit_template_inserts).await?;
+    let new_template_ids = create_merit_templates_transaction(transaction, &merit_template_inserts)
+        .await
+        .wrap_err("Error creating new merit templates")?;
 
     // Create prerequisite sets for all newly created templates that have them
     let mut merit_template_ids_repeated = Vec::new();
@@ -117,7 +125,8 @@ pub(crate) async fn create_new_merits_transaction(
     }
     let new_set_ids =
         create_merit_prerequisite_sets_transaction(transaction, &merit_template_ids_repeated)
-            .await?;
+            .await
+            .wrap_err("Error linking prerequisite sets to merits")?;
 
     // Create the prerequisites in those sets and link them
     let mut prerequisites = Vec::new();
@@ -190,14 +199,23 @@ pub(crate) async fn create_new_merits_transaction(
             }
         }
     }
-    post_prerequisites_transaction(transaction, &prerequisites).await?;
+    post_prerequisites_transaction(transaction, &prerequisites)
+        .await
+        .wrap_err("Error attempting to create prerequisites")?;
 
     // Link those new merits to the character
     let mut merit_details = Vec::new();
     for (merit, merit_id) in new_merits.iter().zip(new_template_ids.iter()) {
         merit_details.push((*merit_id, merit.detail().map(|s| s.to_owned())));
     }
-    post_merits_details_transaction(transaction, merit_details, character_id).await?;
+    post_merits_details_transaction(transaction, merit_details, character_id)
+        .await
+        .wrap_err_with(|| {
+            format!(
+                "Error attempting to specify merit details for character {}",
+                character_id
+            )
+        })?;
 
     Ok(())
 }

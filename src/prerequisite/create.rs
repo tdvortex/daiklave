@@ -1,4 +1,4 @@
-use eyre::Result;
+use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 
 use crate::abilities::tables::AbilityNamePostgres;
@@ -92,5 +92,5 @@ pub(crate) async fn post_prerequisites_transaction(
         &dots_vec as &[Option<i16>],
         &prerequisite_charm_ids as &[Option<i32>],
         &prerequisite_exalt_types as &[Option<PrerequisiteExaltTypePostgres>]
-    ).fetch_all(&mut *transaction).await?.into_iter().map(|record| record.id).collect())
+    ).fetch_all(&mut *transaction).await.wrap_err("Database error attempting to create new prerequisites")?.into_iter().map(|record| record.id).collect())
 }
