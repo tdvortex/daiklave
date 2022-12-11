@@ -15,7 +15,7 @@ CREATE TYPE PREREQUISITEEXALTTYPE AS ENUM (
 );
 
 CREATE TABLE prerequisites (
-    id INTEGER PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     merit_prerequisite_set_id INTEGER REFERENCES merit_prerequisite_sets(id) ON DELETE CASCADE,
     charm_prerequisite_set_id INTEGER REFERENCES charm_prerequisite_sets(id) ON DELETE CASCADE,
     prerequisite_type PREREQUISITETYPE NOT NULL,

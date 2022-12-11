@@ -105,29 +105,32 @@ async fn create_merit_prerequisite_sets_transaction(
 
 pub(crate) async fn post_merits_details_transaction(
     transaction: &mut Transaction<'_, Postgres>,
-    merit_details: Vec<(i32, Option<String>)>,
+    merit_details: Vec<(i32, i16, Option<String>)>,
     character_id: i32,
 ) -> Result<Vec<i32>> {
-    let (merit_template_ids, details) = merit_details.into_iter().fold(
-        (Vec::new(), Vec::new()),
-        |(mut ids, mut details), (id, detail)| {
+    let (merit_template_ids, dots_vec, details) = merit_details.into_iter().fold(
+        (Vec::new(), Vec::new(), Vec::new()),
+        |(mut ids, mut dots_vec, mut details), (id, dots, detail)| {
             ids.push(id);
+            dots_vec.push(dots);
             details.push(detail);
-            (ids, details)
+            (ids, dots_vec, details)
         },
     );
 
     Ok(query!(
-        "INSERT INTO character_merits(character_id, merit_id, detail)
+        "INSERT INTO character_merits(character_id, merit_id, dots, detail)
         SELECT
             $1::INTEGER,
             data.merit_id,
+            data.dots,
             data.detail
-        FROM UNNEST($2::INTEGER[], $3::VARCHAR(255)[]) as data(merit_id, detail)
+        FROM UNNEST($2::INTEGER[], $3::SMALLINT[], $4::VARCHAR(255)[]) as data(merit_id, dots, detail)
         RETURNING id
         ",
         character_id as i32,
         &merit_template_ids as &[i32],
+        &dots_vec as &[i16],
         &details as &[Option<String>]
     )
     .fetch_all(&mut *transaction)
@@ -259,7 +262,7 @@ pub(crate) async fn create_new_merits_transaction(
     // Link those new merits to the character
     let mut merit_details = Vec::new();
     for (merit, merit_id) in new_merits.iter().zip(new_template_ids.iter()) {
-        merit_details.push((*merit_id, merit.detail().map(|s| s.to_owned())));
+        merit_details.push((*merit_id, merit.dots() as i16, merit.detail().map(|s| s.to_owned())));
     }
     post_merits_details_transaction(transaction, merit_details, character_id)
         .await

@@ -7,7 +7,7 @@ use std::collections::HashSet;
 #[derive(Debug, Default)]
 pub struct MeritDiff {
     insert_merit_templates: Vec<Merit>,
-    insert_merit_instance: Vec<(i32, Option<String>)>,
+    insert_merit_instance: Vec<(i32, i16, Option<String>)>,
     remove_merit_instances: Vec<i32>,
 }
 
@@ -25,6 +25,7 @@ pub fn compare_merits(old_merits: &[Merit], new_merits: &[Merit]) -> MeritDiff {
         } else if merit.instance_id().is_none() {
             diff.insert_merit_instance.push((
                 merit.template_id().unwrap(),
+                merit.dots() as i16,
                 merit.detail().map(|s| s.to_owned()),
             ))
         } else {
