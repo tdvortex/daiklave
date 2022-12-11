@@ -79,6 +79,10 @@ impl MeritTemplate {
     pub fn requires_detail(&self) -> bool {
         self.requires_detail
     }
+
+    pub fn data_source(&self) -> &DataSource {
+        &self.data_source
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -147,6 +151,10 @@ impl Merit {
 
     pub fn detail(&self) -> Option<&str> {
         self.detail.as_deref()
+    }
+
+    pub fn data_source(&self) -> &DataSource {
+        self.template.data_source()
     }
 }
 

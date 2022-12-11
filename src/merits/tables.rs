@@ -101,6 +101,9 @@ pub struct MeritTemplateInsert {
     pub merit_type: MeritTypePostgres,
     pub description: String,
     pub requires_detail: bool,
+    pub book_title: Option<String>,
+    pub page_number: Option<i16>,
+    pub creator_id: Option<i32>,
 }
 
 impl From<MeritTemplate> for MeritTemplateInsert {
@@ -110,6 +113,9 @@ impl From<MeritTemplate> for MeritTemplateInsert {
             merit_type: template.merit_type().into(),
             description: template.description().to_owned(),
             requires_detail: template.requires_detail(),
+            book_title: template.data_source().book_title().map(|s| s.to_owned()),
+            page_number: template.data_source().page_number(),
+            creator_id: template.data_source().creator_id(),
         }
     }
 }

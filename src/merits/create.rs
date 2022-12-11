@@ -1,6 +1,7 @@
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 
+use crate::data_source::DataSource;
 use crate::merits::tables::{MeritTemplateInsert, MeritTypePostgres};
 use crate::merits::Merit;
 use crate::prerequisite::create::post_prerequisites_transaction;
@@ -11,32 +12,75 @@ async fn create_merit_templates_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     merit_template_inserts: &[MeritTemplateInsert],
 ) -> Result<Vec<i32>> {
-    let (names, merit_types, descriptions, requires_details) = merit_template_inserts.iter().fold(
-        (Vec::new(), Vec::new(), Vec::new(), Vec::new()),
-        |(mut names, mut merit_types, mut descriptions, mut requires_details), merit_template| {
+    let (
+        names,
+        merit_types,
+        descriptions,
+        requires_details,
+        book_titles,
+        page_numbers,
+        creator_ids,
+    ) = merit_template_inserts.iter().fold(
+        (
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+            Vec::new(),
+        ),
+        |(
+            mut names,
+            mut merit_types,
+            mut descriptions,
+            mut requires_details,
+            mut book_titles,
+            mut page_numbers,
+            mut creator_ids,
+        ),
+         merit_template| {
             names.push(merit_template.name.as_str());
             merit_types.push(merit_template.merit_type);
             descriptions.push(merit_template.description.as_str());
             requires_details.push(merit_template.requires_detail);
-            (names, merit_types, descriptions, requires_details)
+            book_titles.push(merit_template.book_title.clone());
+            page_numbers.push(merit_template.page_number);
+            creator_ids.push(merit_template.creator_id);
+            (
+                names,
+                merit_types,
+                descriptions,
+                requires_details,
+                book_titles,
+                page_numbers,
+                creator_ids,
+            )
         },
     );
 
     Ok(
         query!(
-            "INSERT INTO merits(name, requires_detail, merit_type, description)
+            "INSERT INTO merits(name, requires_detail, merit_type, description, book_title, page_number, creator_id)
             SELECT
                 data.name,
                 data.requires_detail,
                 data.merit_type,
-                data.description
-            FROM UNNEST($1::VARCHAR(255)[], $2::BOOLEAN[], $3::MERITTYPE[], $4::TEXT[]) as data(name, requires_detail, merit_type, description)
+                data.description,
+                data.book_title,
+                data.page_number,
+                data.creator_id
+            FROM UNNEST($1::VARCHAR(255)[], $2::BOOLEAN[], $3::MERITTYPE[], $4::TEXT[], $5::VARCHAR(255)[], $6::SMALLINT[], $7::INTEGER[]) 
+                AS data(name, requires_detail, merit_type, description, book_title, page_number, creator_id)
             RETURNING id
             ",
             &names as &[&str],
             &requires_details as &[bool],
             &merit_types as &[MeritTypePostgres],
-            &descriptions as &[&str]
+            &descriptions as &[&str],
+            &book_titles as &[Option<String>],
+            &page_numbers as &[Option<i16>],
+            &creator_ids as &[Option<i32>]
         ).fetch_all(&mut *transaction).await.wrap_err("Database error trying to create new merit templates")?.into_iter().map(|record| record.id).collect()
     )
 }
@@ -107,11 +151,20 @@ pub(crate) async fn create_new_merits_transaction(
     // Create base merit templates and get their ids
     let mut merit_template_inserts = Vec::new();
     for merit in new_merits.iter() {
+        let creator_id = if let DataSource::Book(_) = merit.data_source() {
+            None
+        } else {
+            Some(character_id)
+        };
+
         merit_template_inserts.push(MeritTemplateInsert {
             name: merit.name().to_owned(),
             merit_type: merit.merit_type().into(),
             description: merit.description().into(),
             requires_detail: merit.requires_detail(),
+            book_title: merit.data_source().book_title().map(|s| s.to_owned()),
+            page_number: merit.data_source().page_number(),
+            creator_id,
         });
     }
     let new_template_ids = create_merit_templates_transaction(transaction, &merit_template_inserts)
