@@ -2,32 +2,55 @@ mod abilities;
 mod armor;
 mod attributes;
 mod character;
+mod health;
 mod intimacies;
-pub use armor::check_initial_armor_items;
-pub use abilities::check_initial_abilities;
+mod weapons;
+pub use armor::{create_initial_armor, validate_initial_armor_items};
+pub use abilities::validate_initial_abilities;
 pub use character::create_initial_base_character;
+pub use health::create_initial_health;
 
-mod initial_character_definition;
-pub use initial_character_definition::create_initial_character;
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashSet};
 
 use exalted_3e_gui::{
     armor::{destroy_armor},
-    attributes::AttributeName,
     create_player,
-    data_source::{BookReference, DataSource},
     destroy_player,
-    health::{DamageLevel, WoundPenalty},
     intimacies::{Intimacy, IntimacyLevel, IntimacyType},
     player::Player,
     update_character,
-    weapons::{destroy_weapons, EquipHand, RangeBand, WeaponTag, Weapons},
+    weapons::{destroy_weapons},
     Character,
 };
 use postcard::from_bytes;
 use sqlx::postgres::PgPool;
 
-use crate::fixtures::character::validate_initial_base_character;
+use crate::fixtures::{character::validate_initial_base_character, weapons::validate_initial_weapons};
+
+use self::{attributes::{create_initial_attributes, validate_initial_attributes}, abilities::create_intitial_abilities, intimacies::{create_initial_intimacies, validate_initial_intimacies}, weapons::create_initial_weapons, health::validate_initial_health};
+
+pub fn create_initial_character(player: &Player) -> Character {
+    let mut builder = create_initial_base_character(player);
+    builder = create_initial_attributes(builder);
+    builder = create_intitial_abilities(builder);
+    builder = create_initial_intimacies(builder);
+    builder = create_initial_health(builder);
+    builder = create_initial_armor(builder);
+    builder = create_initial_weapons(builder);
+
+    builder.build().unwrap()
+}
+
+pub fn validate_initial_character(player: &Player, initial_character: &Character, should_have_id: bool) {
+    validate_initial_base_character(player, initial_character, should_have_id);
+    validate_initial_attributes(&initial_character.attributes);
+    validate_initial_abilities(&initial_character.abilities);
+    validate_initial_intimacies(&initial_character.intimacies, should_have_id);
+    validate_initial_health(&initial_character.health);
+    validate_initial_armor_items(&initial_character.armor, should_have_id);
+    validate_initial_weapons(&initial_character.weapons, should_have_id);
+}
+
 
 fn check_intimacies_except_id(left: &Vec<Intimacy>, right: &Vec<Intimacy>) {
     assert!(
@@ -43,64 +66,7 @@ fn check_intimacies_except_id(left: &Vec<Intimacy>, right: &Vec<Intimacy>) {
 
 
 
-fn check_initial_weapons(weapons: &Weapons, should_have_id: bool) {
-    for (key, maybe_hand, weapon_ref) in weapons.iter() {
-        match weapon_ref.name() {
-            "Knife" => {
-                assert!(maybe_hand.is_none());
-                assert!(weapons.get(key).unwrap().id().is_some() == should_have_id);
-                assert_eq!(
-                    weapons.get(key).unwrap().tags(),
-                    [
-                        WeaponTag::Lethal,
-                        WeaponTag::Melee,
-                        WeaponTag::OneHanded,
-                        WeaponTag::Thrown(RangeBand::Short),
-                        WeaponTag::Light
-                    ]
-                    .into()
-                );
-                assert_eq!(
-                    weapons.get(key).unwrap().data_source(),
-                    &DataSource::Book(BookReference {
-                        book_title: "Core Rulebook".to_owned(),
-                        page_number: 581,
-                    })
-                );
-            }
-            "Screamer (Red Jade Reaper Daiklave)" => {
-                assert!(maybe_hand == Some(EquipHand::Main));
-                assert!(weapons.get(key).unwrap().id().is_some() == should_have_id);
-                assert_eq!(
-                    weapons.get(key).unwrap().tags(),
-                    [
-                        WeaponTag::Lethal,
-                        WeaponTag::Melee,
-                        WeaponTag::OneHanded,
-                        WeaponTag::Medium,
-                        WeaponTag::Balanced,
-                        WeaponTag::Artifact,
-                        WeaponTag::MartialArts("Single Point Shining Into Void Style".to_owned())
-                    ]
-                    .into()
-                );
-                if should_have_id {
-                    assert!(match weapons.get(key).unwrap().data_source() {
-                        DataSource::Book(_) => panic!("should be custom"),
-                        DataSource::Custom(None) => panic!("should have custom creator id"),
-                        DataSource::Custom(Some(_)) => true,
-                    });
-                } else {
-                    assert_eq!(
-                        weapons.get(key).unwrap().data_source(),
-                        &DataSource::Custom(None)
-                    );
-                }
-            }
-            wrong => panic!("Unknown armor name: {}", wrong),
-        }
-    }
-}
+
 
 fn validate_deserialization(preserialized: &Character, postserialized: &Character) {
     assert_eq!(preserialized.id(), postserialized.id());
@@ -140,30 +106,8 @@ pub async fn lifecycle() {
 
     // Client (in isolation) creates a character and subcomponents
     let initial_character = create_initial_character(&receive_player);
-    validate_initial_base_character(&player, &initial_character, false);
+    validate_initial_character(&player, &initial_character, false);
 
-    assert_eq!(initial_character.experience, initial_character.experience);
-    assert_eq!(
-        initial_character
-            .attributes
-            .iter()
-            .map(|attr| (attr.name(), attr.dots()))
-            .collect::<HashMap<AttributeName, u8>>(),
-        vec![
-            (AttributeName::Strength, 4),
-            (AttributeName::Dexterity, 4),
-            (AttributeName::Stamina, 3),
-            (AttributeName::Charisma, 4),
-            (AttributeName::Manipulation, 3),
-            (AttributeName::Appearance, 2),
-            (AttributeName::Intelligence, 3),
-            (AttributeName::Wits, 3),
-            (AttributeName::Perception, 1)
-        ]
-        .into_iter()
-        .collect::<HashMap::<AttributeName, u8>>()
-    );
-    check_initial_abilities(&initial_character.abilities);
     assert_eq!(
         initial_character
             .intimacies
@@ -202,29 +146,9 @@ pub async fn lifecycle() {
         .intimacies
         .iter()
         .all(|i| i.id().is_none()));
-    assert_eq!(initial_character.health.damage(), (2, 3, 1));
-    assert_eq!(
-        initial_character
-            .health
-            .health_boxes()
-            .iter()
-            .map(|hbox| { (hbox.wound_penalty(), hbox.damage()) })
-            .collect::<Vec<_>>(),
-        vec![
-            (WoundPenalty::Zero, DamageLevel::Aggravated),
-            (WoundPenalty::MinusOne, DamageLevel::Lethal),
-            (WoundPenalty::MinusOne, DamageLevel::Lethal),
-            (WoundPenalty::MinusOne, DamageLevel::Lethal),
-            (WoundPenalty::MinusTwo, DamageLevel::Bashing),
-            (WoundPenalty::MinusTwo, DamageLevel::Bashing),
-            (WoundPenalty::MinusTwo, DamageLevel::None),
-            (WoundPenalty::MinusTwo, DamageLevel::None),
-            (WoundPenalty::MinusFour, DamageLevel::None),
-            (WoundPenalty::Incapacitated, DamageLevel::None)
-        ]
-    );
-    check_initial_armor_items(&initial_character.armor, false);
-    check_initial_weapons(&initial_character.weapons, false);
+
+    validate_initial_armor_items(&initial_character.armor, false);
+    validate_initial_weapons(&initial_character.weapons, false);
 
     // Client builds, serializes, and sends to server
     let send_bytes = postcard::to_allocvec(&initial_character).unwrap();
@@ -232,13 +156,13 @@ pub async fn lifecycle() {
     // Server deserializes character
     let receive_character: Character = from_bytes(&send_bytes).unwrap();
     validate_deserialization(&initial_character, &receive_character);
-    check_initial_abilities(&receive_character.abilities);
+    validate_initial_abilities(&receive_character.abilities);
     assert!(receive_character
         .intimacies
         .iter()
         .all(|i| i.id().is_none()));
-    check_initial_armor_items(&receive_character.armor, false);
-    check_initial_weapons(&receive_character.weapons, false);
+    validate_initial_armor_items(&receive_character.armor, false);
+    validate_initial_weapons(&receive_character.weapons, false);
 
     // Server inserts character and retrieves after updating
     let post_insert_character: Character =
@@ -256,14 +180,14 @@ pub async fn lifecycle() {
         receive_character.attributes,
         post_insert_character.attributes
     );
-    check_initial_abilities(&post_insert_character.abilities);
+    validate_initial_abilities(&post_insert_character.abilities);
     assert!(post_insert_character
         .intimacies
         .iter()
         .all(|i| i.id().is_some()));
     assert_eq!(&receive_character.health, &post_insert_character.health);
-    check_initial_armor_items(&post_insert_character.armor, true);
-    check_initial_weapons(&post_insert_character.weapons, true);
+    validate_initial_armor_items(&post_insert_character.armor, true);
+    validate_initial_weapons(&post_insert_character.weapons, true);
 
     // Server serializes and sends character to client
     let send_bytes = postcard::to_allocvec(&post_insert_character).unwrap();
@@ -271,7 +195,7 @@ pub async fn lifecycle() {
     // Client deserializes character and modifies it
     let fetched_character: Character = from_bytes(&send_bytes).unwrap();
     validate_deserialization(&initial_character, &receive_character);
-    check_initial_abilities(&fetched_character.abilities);
+    validate_initial_abilities(&fetched_character.abilities);
     assert_eq!(
         fetched_character
             .intimacies
@@ -284,8 +208,8 @@ pub async fn lifecycle() {
             .map(|i| i.id().unwrap())
             .collect::<HashSet<i32>>(),
     );
-    check_initial_armor_items(&fetched_character.armor, true);
-    check_initial_weapons(&fetched_character.weapons, true);
+    validate_initial_armor_items(&fetched_character.armor, true);
+    validate_initial_weapons(&fetched_character.weapons, true);
 
     // Client runs all getters on the character
     // Client runs all setters on the character

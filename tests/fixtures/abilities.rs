@@ -1,6 +1,6 @@
 use exalted_3e_gui::{character::CharacterBuilder, abilities::{AbilityNameNoSubskill, Abilities}};
 
-pub fn create_abilities(builder: CharacterBuilder) -> CharacterBuilder {
+pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder {
     vec![
         (AbilityNameNoSubskill::Awareness, 4),
         (AbilityNameNoSubskill::War, 3),
@@ -32,7 +32,7 @@ pub fn create_abilities(builder: CharacterBuilder) -> CharacterBuilder {
     .unwrap()
 }
 
-pub fn check_initial_abilities(abilities: &Abilities) {
+pub fn validate_initial_abilities(abilities: &Abilities) {
     vec![
         (AbilityNameNoSubskill::Archery, None, 0, None),
         (AbilityNameNoSubskill::Athletics, None, 2, None),
