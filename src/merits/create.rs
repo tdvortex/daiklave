@@ -185,76 +185,82 @@ pub(crate) async fn create_new_merits_transaction(
             .wrap_err("Error linking prerequisite sets to merits")?;
 
     // Create the prerequisites in those sets and link them
-    let mut prerequisites = Vec::new();
-    for merit in new_merits.iter() {
-        for (set, set_id) in merit.prerequisites().iter().zip(new_set_ids.iter()) {
-            let merit_prerequisite_set_id = Some(*set_id);
-            let charm_prerequisite_set_id = None;
+    let prerequisites = new_merits
+        .iter()
+        .flat_map(|new_merit| new_merit.prerequisites())
+        .zip(new_set_ids.iter())
+        .fold(
+            Vec::new(),
+            |mut prerequisites, (prerequisite_set, set_id)| {
+                let merit_prerequisite_set_id = Some(*set_id);
+                let charm_prerequisite_set_id = None;
 
-            for prerequisite in set.iter() {
-                prerequisites.push(match prerequisite.prerequisite_type() {
-                    PrerequisiteType::Ability(ability_prerequisite) => PrerequisiteInsert {
-                        merit_prerequisite_set_id,
-                        charm_prerequisite_set_id,
-                        prerequisite_type: PrerequisiteTypePostgres::Ability,
-                        ability_name: Some(ability_prerequisite.ability_name.into()),
-                        subskill_name: ability_prerequisite
-                            .subskill
-                            .as_deref()
-                            .map(|s| s.to_owned()),
-                        attribute_name: None,
-                        dots: Some(ability_prerequisite.dots.into()),
-                        charm_id: None,
-                        exalt_type: None,
-                    },
-                    PrerequisiteType::Attribute(attribute_prerequisite) => PrerequisiteInsert {
-                        merit_prerequisite_set_id,
-                        charm_prerequisite_set_id,
-                        prerequisite_type: PrerequisiteTypePostgres::Attribute,
-                        ability_name: None,
-                        subskill_name: None,
-                        attribute_name: Some(attribute_prerequisite.attribute_name.into()),
-                        dots: Some(attribute_prerequisite.dots.into()),
-                        charm_id: None,
-                        exalt_type: None,
-                    },
-                    PrerequisiteType::Essence(dots) => PrerequisiteInsert {
-                        merit_prerequisite_set_id,
-                        charm_prerequisite_set_id,
-                        prerequisite_type: PrerequisiteTypePostgres::Essence,
-                        ability_name: None,
-                        subskill_name: None,
-                        attribute_name: None,
-                        dots: Some((*dots).into()),
-                        charm_id: None,
-                        exalt_type: None,
-                    },
-                    PrerequisiteType::Charm(charm_id) => PrerequisiteInsert {
-                        merit_prerequisite_set_id,
-                        charm_prerequisite_set_id,
-                        prerequisite_type: PrerequisiteTypePostgres::Charm,
-                        ability_name: None,
-                        subskill_name: None,
-                        attribute_name: None,
-                        dots: None,
-                        charm_id: Some(*charm_id),
-                        exalt_type: None,
-                    },
-                    PrerequisiteType::ExaltType(exalt_type) => PrerequisiteInsert {
-                        merit_prerequisite_set_id,
-                        charm_prerequisite_set_id,
-                        prerequisite_type: PrerequisiteTypePostgres::ExaltType,
-                        ability_name: None,
-                        subskill_name: None,
-                        attribute_name: None,
-                        dots: None,
-                        charm_id: None,
-                        exalt_type: Some((*exalt_type).into()),
-                    },
-                });
-            }
-        }
-    }
+                for prerequisite in prerequisite_set.iter() {
+                    prerequisites.push(match prerequisite.prerequisite_type() {
+                        PrerequisiteType::Ability(ability_prerequisite) => PrerequisiteInsert {
+                            merit_prerequisite_set_id,
+                            charm_prerequisite_set_id,
+                            prerequisite_type: PrerequisiteTypePostgres::Ability,
+                            ability_name: Some(ability_prerequisite.ability_name.into()),
+                            subskill_name: ability_prerequisite
+                                .subskill
+                                .as_deref()
+                                .map(|s| s.to_owned()),
+                            attribute_name: None,
+                            dots: Some(ability_prerequisite.dots.into()),
+                            charm_id: None,
+                            exalt_type: None,
+                        },
+                        PrerequisiteType::Attribute(attribute_prerequisite) => PrerequisiteInsert {
+                            merit_prerequisite_set_id,
+                            charm_prerequisite_set_id,
+                            prerequisite_type: PrerequisiteTypePostgres::Attribute,
+                            ability_name: None,
+                            subskill_name: None,
+                            attribute_name: Some(attribute_prerequisite.attribute_name.into()),
+                            dots: Some(attribute_prerequisite.dots.into()),
+                            charm_id: None,
+                            exalt_type: None,
+                        },
+                        PrerequisiteType::Essence(dots) => PrerequisiteInsert {
+                            merit_prerequisite_set_id,
+                            charm_prerequisite_set_id,
+                            prerequisite_type: PrerequisiteTypePostgres::Essence,
+                            ability_name: None,
+                            subskill_name: None,
+                            attribute_name: None,
+                            dots: Some((*dots).into()),
+                            charm_id: None,
+                            exalt_type: None,
+                        },
+                        PrerequisiteType::Charm(charm_id) => PrerequisiteInsert {
+                            merit_prerequisite_set_id,
+                            charm_prerequisite_set_id,
+                            prerequisite_type: PrerequisiteTypePostgres::Charm,
+                            ability_name: None,
+                            subskill_name: None,
+                            attribute_name: None,
+                            dots: None,
+                            charm_id: Some(*charm_id),
+                            exalt_type: None,
+                        },
+                        PrerequisiteType::ExaltType(exalt_type) => PrerequisiteInsert {
+                            merit_prerequisite_set_id,
+                            charm_prerequisite_set_id,
+                            prerequisite_type: PrerequisiteTypePostgres::ExaltType,
+                            ability_name: None,
+                            subskill_name: None,
+                            attribute_name: None,
+                            dots: None,
+                            charm_id: None,
+                            exalt_type: Some((*exalt_type).into()),
+                        },
+                    });
+                }
+                prerequisites
+            },
+        );
+
     post_prerequisites_transaction(transaction, &prerequisites)
         .await
         .wrap_err("Error attempting to create prerequisites")?;
@@ -262,7 +268,11 @@ pub(crate) async fn create_new_merits_transaction(
     // Link those new merits to the character
     let mut merit_details = Vec::new();
     for (merit, merit_id) in new_merits.iter().zip(new_template_ids.iter()) {
-        merit_details.push((*merit_id, merit.dots() as i16, merit.detail().map(|s| s.to_owned())));
+        merit_details.push((
+            *merit_id,
+            merit.dots() as i16,
+            merit.detail().map(|s| s.to_owned()),
+        ));
     }
     post_merits_details_transaction(transaction, merit_details, character_id)
         .await

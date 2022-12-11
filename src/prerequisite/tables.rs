@@ -61,7 +61,7 @@ impl From<ExaltTypePrerequisite> for PrerequisiteExaltTypePostgres {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PrerequisiteRow {
     pub id: i32,
     pub merit_prerequisite_set_id: Option<i32>,

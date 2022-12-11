@@ -47,7 +47,7 @@ impl From<MeritType> for MeritTypePostgres {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct MeritTemplateRow {
     pub id: i32,
     pub name: String,
@@ -117,14 +117,14 @@ impl From<MeritTemplate> for MeritTemplateInsert {
     }
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "merit_prerequisite_sets")]
 pub struct MeritPrerequisiteSetRow {
     pub id: i32,
     pub merit_id: i32,
 }
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, Clone, sqlx::Type)]
 #[sqlx(type_name = "character_merits")]
 pub struct MeritDetailRow {
     pub id: i32,
@@ -145,6 +145,11 @@ impl CharacterBuilder {
         if merit_templates.is_none() {
             return Ok(self);
         }
+        dbg!(merit_templates.clone());
+        dbg!(merit_details.clone());
+        dbg!(merit_prerequisite_sets.clone());
+        dbg!(merit_prerequisites.clone());
+
         // Create map from merit prerequisite set id -> Vec<PrerequisiteRow>
         let set_id_to_prerequisite_rows =
             merit_prerequisites.map_or(HashMap::new(), |vec_of_rows| {
@@ -212,7 +217,7 @@ impl CharacterBuilder {
                         let dots = row
                             .dots
                             .ok_or_else(|| {
-                                eyre!("missing dots level for attribute prerequisite {}", row.id)
+                                eyre!("Missing dots level for attribute prerequisite {}", row.id)
                             })?
                             .try_into()
                             .wrap_err("Attribute prerequisite dots overflow u8")?;
@@ -220,7 +225,7 @@ impl CharacterBuilder {
                             row.attribute_name
                                 .ok_or_else(|| {
                                     eyre!(
-                                        "missing ability name for attribute prerequisite {}",
+                                        "Missing ability name for attribute prerequisite {}",
                                         row.id
                                     )
                                 })?
@@ -232,7 +237,7 @@ impl CharacterBuilder {
                         let dots = row
                             .dots
                             .ok_or_else(|| {
-                                eyre!("missing dots level for essence prerequisite {}", row.id)
+                                eyre!("Missing dots level for essence prerequisite {}", row.id)
                             })?
                             .try_into()
                             .wrap_err("Essence prerequisite dots overflow u8")?;
@@ -241,14 +246,14 @@ impl CharacterBuilder {
                     PrerequisiteTypePostgres::Charm => {
                         builder =
                             builder.requiring_charm(row.charm_prerequisite_set_id.ok_or_else(
-                                || eyre!("missing charm id for charm prerequisite {}", row.id),
+                                || eyre!("Missing charm id for charm prerequisite {}", row.id),
                             )?);
                     }
                     PrerequisiteTypePostgres::ExaltType => {
                         let exalt_type: ExaltTypePrerequisite = row
                             .prerequisite_exalt_type
                             .ok_or_else(|| {
-                                eyre!("missing exalt type for exalt type prerquisite {}", row.id)
+                                eyre!("Missing exalt type for exalt type prerquisite {}", row.id)
                             })?
                             .into();
                         builder = match exalt_type {
@@ -271,14 +276,19 @@ impl CharacterBuilder {
 
         // Build a hashmap from merit id to Vec<PrerequisiteSet>
         let mut merit_id_to_prerequisite_sets = HashMap::new();
+        dbg!(set_id_to_prerequisite_set.clone());
 
         if let Some(rows) = merit_prerequisite_sets {
             for row in rows.into_iter() {
+                println!(
+                    "Attempting prerequisite set insertion for MeritPrerequisiteSetRow {}",
+                    row.id
+                );
                 merit_id_to_prerequisite_sets
                     .entry(row.id)
                     .or_insert_with(Vec::new)
                     .push(set_id_to_prerequisite_set.remove(&row.id).ok_or_else(|| {
-                        eyre!("Missing prerequisite set definition for set {}", row.id)
+                        eyre!("Missing prerequisite set definition for set {}", &row.id)
                     })?)
             }
         }

@@ -93,7 +93,7 @@ WITH player_query AS (
         ARRAY_AGG(character_merits) AS mrtds
     FROM characters 
         INNER JOIN character_merits ON (characters.id = character_merits.character_id)
-    WHERE characters.id = $1 AND character_merits.detail IS NOT NULL
+    WHERE characters.id = $1
 ), merit_prerequisite_sets_query AS (
     SELECT
         ARRAY_AGG(merit_prerequisite_sets) AS mprss

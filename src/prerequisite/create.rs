@@ -11,6 +11,8 @@ pub(crate) async fn post_prerequisites_transaction(
     transaction: &mut Transaction<'_, Postgres>,
     prerequisites: &[PrerequisiteInsert],
 ) -> Result<Vec<i32>> {
+    dbg!(prerequisites);
+
     let (
         merit_prerequisite_ids,
         charm_prerequisite_ids,

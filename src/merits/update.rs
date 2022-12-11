@@ -44,12 +44,14 @@ impl MeritDiff {
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
     ) -> Result<()> {
-        query!(
-            "DELETE FROM character_merits
-            WHERE character_id = $1::INTEGER AND id IN (SELECT data.id FROM UNNEST($2::INTEGER[]) as data(id))",
-            character_id,
-            &self.remove_merit_instances as &[i32]
-        ).execute(&mut *transaction).await.wrap_err("Database error attempting to delete character merits")?;
+        if !self.remove_merit_instances.is_empty() {
+            query!(
+                "DELETE FROM character_merits
+                WHERE character_id = $1::INTEGER AND id IN (SELECT data.id FROM UNNEST($2::INTEGER[]) as data(id))",
+                character_id,
+                &self.remove_merit_instances as &[i32]
+            ).execute(&mut *transaction).await.wrap_err("Database error attempting to delete character merits")?;
+        }
 
         create_new_merits_transaction(transaction, self.insert_merit_templates, character_id)
             .await
