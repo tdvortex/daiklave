@@ -19,7 +19,7 @@ use self::{
     abilities::{create_intitial_abilities, validate_initial_abilities, modify_abilities, validate_modified_abilities},
     armor::{create_initial_armor, validate_initial_armor_items},
     attributes::{create_initial_attributes, validate_initial_attributes, modify_attributes, validate_modified_attributes},
-    character::create_initial_base_character,
+    character::{create_initial_base_character, modify_base_character, validate_modified_base_character},
     health::{create_initial_health, validate_initial_health, modify_health, validate_modified_health},
     intimacies::{create_initial_intimacies, validate_initial_intimacies},
     merits::{create_initial_merits, validate_initial_merits},
@@ -55,15 +55,17 @@ pub fn validate_initial_character(
 }
 
 pub fn modify_character(character: &mut Character) {
+    modify_base_character(character);
     modify_abilities(&mut character.abilities);
     modify_attributes(&mut character.attributes);
     modify_health(&mut character.health);
 }
 
 pub fn validate_modified_character(
-    _player: &Player,
+    player: &Player,
     modified_character: &Character,
 ) {
+    validate_modified_base_character(&player, &modified_character);
     validate_modified_abilities(&modified_character.abilities);
     validate_modified_attributes(&modified_character.attributes);
     validate_modified_health(&modified_character.health);
