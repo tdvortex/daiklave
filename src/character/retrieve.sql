@@ -59,7 +59,7 @@ WITH player_query AS (
         ARRAY_AGG(character_weapons) AS eqwps
     FROM characters
         INNER JOIN character_weapons ON (character_weapons.character_id = characters.id)
-    WHERE characters.id = $1 AND character_weapons.equip_hand IS NOT NULL
+    WHERE characters.id = $1
 ), armor_query AS (
      SELECT
         ARRAY_AGG(armor) as armrs
@@ -75,12 +75,12 @@ WITH player_query AS (
         INNER JOIN armor ON (character_armor.armor_id = armor.id)
         INNER JOIN armor_tags ON (armor_tags.armor_id = armor.id)
     WHERE characters.id = $1
-), armor_worn_query AS (
+), character_armor_query AS (
      SELECT
         ARRAY_AGG(character_armor) as wrars
     FROM characters
         INNER JOIN character_armor ON (characters.id = character_armor.character_id)
-    WHERE characters.id = $1 AND character_armor.worn
+    WHERE characters.id = $1
 ), merit_templates_query AS (
     SELECT
         ARRAY_AGG(merits) AS mrtts
@@ -144,7 +144,7 @@ FROM characters,
     LEFT JOIN weapons_equipped_query ON (TRUE)
     LEFT JOIN armor_query ON (TRUE)
     LEFT JOIN armor_tags_query ON (TRUE)
-    LEFT JOIN armor_worn_query ON (TRUE)
+    LEFT JOIN character_armor_query ON (TRUE)
     LEFT JOIN merit_templates_query ON (TRUE)
     LEFT JOIN merit_details_query ON (TRUE)
     LEFT JOIN merit_prerequisite_sets_query ON (TRUE)
