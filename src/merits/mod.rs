@@ -2,6 +2,8 @@ pub(crate) mod update;
 use serde::{Deserialize, Serialize};
 pub use update::MeritDiff;
 pub(crate) mod create;
+pub(crate) mod destroy;
+pub use destroy::destroy_merits;
 pub(crate) mod tables;
 use crate::{
     data_source::{BookReference, DataSource},

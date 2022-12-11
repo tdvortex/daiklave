@@ -1,6 +1,6 @@
 use exalted_3e_gui::{
-    armor::destroy_armor, create_player, destroy_player, player::Player, update_character,
-    weapons::destroy_weapons, Character,
+    armor::destroy_armor, create_player, destroy_player, merits::destroy_merits, player::Player,
+    update_character, weapons::destroy_weapons, Character,
 };
 use postcard::from_bytes;
 use sqlx::PgPool;
@@ -90,6 +90,12 @@ fn lifecycle() {
         .unwrap()
         .id;
 
+    let merit_ids = sqlx::query!(
+        "SELECT id FROM merits WHERE name = 'Martial Artist' OR name = 'Language' OR name = 'Danger Sense'"
+    ).fetch_all(&pool).await.unwrap().into_iter().map(|record| record.id).collect::<Vec<i32>>();
+
+    assert!(merit_ids.len() == 3);
+
     // Custom items should not
     assert!(sqlx::query!(
         "SELECT id FROM armor WHERE creator_id = $1",
@@ -109,9 +115,19 @@ fn lifecycle() {
     .unwrap()
     .is_none());
 
+    assert!(sqlx::query!(
+        "SELECT id FROM merits WHERE creator_id = $1",
+        character.id().unwrap()
+    )
+    .fetch_optional(&pool)
+    .await
+    .unwrap()
+    .is_none());
+
     // Clean up database to end test
     destroy_armor(&pool, &[silken_armor_id]).await.unwrap();
     destroy_weapons(&pool, &[knife_id]).await.unwrap();
+    destroy_merits(&pool, &merit_ids).await.unwrap();
 
     // Confirm database is clean
     assert!(
@@ -124,6 +140,13 @@ fn lifecycle() {
 
     assert!(sqlx::query!("SELECT id FROM weapons WHERE name = 'Knife'")
         .fetch_optional(&pool)
+        .await
+        .unwrap()
+        .is_none());
+
+    assert!(sqlx::query!(
+        "SELECT id FROM merits WHERE name = 'Martial Artist' OR name = 'Language' OR name = 'Danger Sense'"
+    ).fetch_optional(&pool)
         .await
         .unwrap()
         .is_none());

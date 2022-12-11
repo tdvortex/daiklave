@@ -278,9 +278,16 @@ impl CharacterBuilder {
                 merit_id_to_prerequisite_sets
                     .entry(merit_prerequisite_set_row.merit_id)
                     .or_insert_with(Vec::new)
-                    .push(set_id_to_prerequisite_set.remove(&merit_prerequisite_set_row.id).ok_or_else(|| {
-                        eyre!("Missing prerequisite set definition for set {}", &merit_prerequisite_set_row.id)
-                    })?)
+                    .push(
+                        set_id_to_prerequisite_set
+                            .remove(&merit_prerequisite_set_row.id)
+                            .ok_or_else(|| {
+                                eyre!(
+                                    "Missing prerequisite set definition for set {}",
+                                    &merit_prerequisite_set_row.id
+                                )
+                            })?,
+                    )
             }
         }
         // Build a hashmap from merit id to merit template
