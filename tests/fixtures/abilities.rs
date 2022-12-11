@@ -1,4 +1,7 @@
-use exalted_3e_gui::{character::CharacterBuilder, abilities::{AbilityNameNoSubskill, Abilities}};
+use exalted_3e_gui::{
+    abilities::{Abilities, AbilityNameNoSubskill},
+    character::CharacterBuilder,
+};
 
 pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder {
     vec![

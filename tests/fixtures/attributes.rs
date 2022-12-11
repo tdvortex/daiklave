@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use exalted_3e_gui::{character::CharacterBuilder, attributes::{AttributeName, Attributes}};
+use exalted_3e_gui::{
+    attributes::{AttributeName, Attributes},
+    character::CharacterBuilder,
+};
 
 pub fn create_initial_attributes(builder: CharacterBuilder) -> CharacterBuilder {
     vec![

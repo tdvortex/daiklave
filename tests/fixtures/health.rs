@@ -1,20 +1,23 @@
-use exalted_3e_gui::{character::CharacterBuilder, health::{WoundPenalty, Health, DamageLevel}};
+use exalted_3e_gui::{
+    character::CharacterBuilder,
+    health::{DamageLevel, Health, WoundPenalty},
+};
 
 pub fn create_initial_health(builder: CharacterBuilder) -> CharacterBuilder {
     builder
-    .with_wound_penalties(vec![
-        WoundPenalty::Incapacitated,
-        WoundPenalty::MinusFour,
-        WoundPenalty::MinusTwo,
-        WoundPenalty::MinusTwo,
-        WoundPenalty::MinusTwo,
-        WoundPenalty::MinusTwo,
-        WoundPenalty::MinusOne,
-        WoundPenalty::MinusOne,
-        WoundPenalty::MinusOne,
-        WoundPenalty::Zero,
-    ])
-    .with_damage(2, 3, 1)
+        .with_wound_penalties(vec![
+            WoundPenalty::Incapacitated,
+            WoundPenalty::MinusFour,
+            WoundPenalty::MinusTwo,
+            WoundPenalty::MinusTwo,
+            WoundPenalty::MinusTwo,
+            WoundPenalty::MinusTwo,
+            WoundPenalty::MinusOne,
+            WoundPenalty::MinusOne,
+            WoundPenalty::MinusOne,
+            WoundPenalty::Zero,
+        ])
+        .with_damage(2, 3, 1)
 }
 
 pub fn validate_initial_health(health: &Health) {

@@ -1,28 +1,32 @@
-use exalted_3e_gui::{armor::{Armor, ArmorTag, ArmorItem}, data_source::{DataSource, BookReference}, character::CharacterBuilder};
+use exalted_3e_gui::{
+    armor::{Armor, ArmorItem, ArmorTag},
+    character::CharacterBuilder,
+    data_source::{BookReference, DataSource},
+};
 
 pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {
     builder
-    .with_armor(
-        ArmorItem::create_from_book("Core Rulebook".to_owned(), 600)
-            .with_name("Silken Armor".to_owned())
-            .as_light()
-            .as_artifact()
-            .with_tag(ArmorTag::Silent)
-            .with_tag(ArmorTag::Special)
-            .build()
-            .unwrap(),
-        false,
-    )
-    .unwrap()
-    .with_armor(
-        ArmorItem::create_custom(None)
-            .with_name("Straw Hat".to_owned())
-            .as_light()
-            .build()
-            .unwrap(),
-        true,
-    )
-    .unwrap()
+        .with_armor(
+            ArmorItem::create_from_book("Core Rulebook".to_owned(), 600)
+                .with_name("Silken Armor".to_owned())
+                .as_light()
+                .as_artifact()
+                .with_tag(ArmorTag::Silent)
+                .with_tag(ArmorTag::Special)
+                .build()
+                .unwrap(),
+            false,
+        )
+        .unwrap()
+        .with_armor(
+            ArmorItem::create_custom(None)
+                .with_name("Straw Hat".to_owned())
+                .as_light()
+                .build()
+                .unwrap(),
+            true,
+        )
+        .unwrap()
 }
 
 pub fn validate_initial_armor_items(armor: &Armor, should_have_id: bool) {

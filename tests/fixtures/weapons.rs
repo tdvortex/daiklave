@@ -1,35 +1,39 @@
-use exalted_3e_gui::{character::CharacterBuilder, weapons::{Weapon, RangeBand, WeaponTag, EquipHand, Weapons}, data_source::{BookReference, DataSource}};
+use exalted_3e_gui::{
+    character::CharacterBuilder,
+    data_source::{BookReference, DataSource},
+    weapons::{EquipHand, RangeBand, Weapon, WeaponTag, Weapons},
+};
 
 pub fn create_initial_weapons(builder: CharacterBuilder) -> CharacterBuilder {
     builder
-    .with_weapon(
-        Weapon::create_from_book("Core Rulebook".to_owned(), 581)
-            .with_name("Knife".to_owned())
-            .as_light()
-            .as_one_handed()
-            .as_melee()
-            .with_thrown_range(RangeBand::Short)
-            .dealing_lethal()
-            .build()
-            .unwrap(),
-        None,
-    )
-    .unwrap()
-    .with_weapon(
-        Weapon::create_custom(None)
-            .with_name("Screamer (Red Jade Reaper Daiklave)".to_owned())
-            .as_artifact()
-            .as_medium()
-            .as_one_handed()
-            .as_melee()
-            .with_tag(WeaponTag::Balanced)
-            .with_martial_arts("Single Point Shining Into Void Style".to_owned())
-            .dealing_lethal()
-            .build()
-            .unwrap(),
-        Some(EquipHand::Main),
-    )
-    .unwrap()
+        .with_weapon(
+            Weapon::create_from_book("Core Rulebook".to_owned(), 581)
+                .with_name("Knife".to_owned())
+                .as_light()
+                .as_one_handed()
+                .as_melee()
+                .with_thrown_range(RangeBand::Short)
+                .dealing_lethal()
+                .build()
+                .unwrap(),
+            None,
+        )
+        .unwrap()
+        .with_weapon(
+            Weapon::create_custom(None)
+                .with_name("Screamer (Red Jade Reaper Daiklave)".to_owned())
+                .as_artifact()
+                .as_medium()
+                .as_one_handed()
+                .as_melee()
+                .with_tag(WeaponTag::Balanced)
+                .with_martial_arts("Single Point Shining Into Void Style".to_owned())
+                .dealing_lethal()
+                .build()
+                .unwrap(),
+            Some(EquipHand::Main),
+        )
+        .unwrap()
 }
 
 pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
