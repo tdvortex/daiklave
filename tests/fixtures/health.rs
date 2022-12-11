@@ -41,3 +41,34 @@ pub fn validate_initial_health(health: &Health) {
         ]
     );
 }
+
+pub fn modify_health(health: &mut Health) {
+    // Add health box
+    health.add_health_box(WoundPenalty::Zero);
+    // Remove health box
+    health.remove_health_box(WoundPenalty::MinusTwo).unwrap();
+    // Heal damage
+    health.heal_all_damage();
+}
+
+pub fn validate_modified_health(health: &Health) {
+    assert_eq!(
+        health
+            .health_boxes()
+            .iter()
+            .map(|hbox| { (hbox.wound_penalty(), hbox.damage()) })
+            .collect::<Vec<_>>(),
+        vec![
+            (WoundPenalty::Zero, DamageLevel::None),
+            (WoundPenalty::Zero, DamageLevel::None),
+            (WoundPenalty::MinusOne, DamageLevel::None),
+            (WoundPenalty::MinusOne, DamageLevel::None),
+            (WoundPenalty::MinusOne, DamageLevel::None),
+            (WoundPenalty::MinusTwo, DamageLevel::None),
+            (WoundPenalty::MinusTwo, DamageLevel::None),
+            (WoundPenalty::MinusTwo, DamageLevel::None),
+            (WoundPenalty::MinusFour, DamageLevel::None),
+            (WoundPenalty::Incapacitated, DamageLevel::None)
+        ]
+    );
+}
