@@ -106,9 +106,10 @@ impl CharacterBuilder {
     }
 
     pub fn meets_any_prerequisite_set(&self, prerequisite_sets: &[PrerequisiteSet]) -> bool {
-        prerequisite_sets
-            .iter()
-            .any(|prerequisite_set| self.meets_prerequisite_set(prerequisite_set))
+        prerequisite_sets.is_empty()
+            || prerequisite_sets
+                .iter()
+                .any(|prerequisite_set| self.meets_prerequisite_set(prerequisite_set))
     }
 
     pub fn with_id(mut self, id: i32) -> Self {
