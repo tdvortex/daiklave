@@ -21,6 +21,12 @@ fn lifecycle() {
     let url = dotenvy::var("DATABASE_URL").unwrap();
     let pool = PgPool::connect(&url).await.unwrap();
 
+    // Setup: clean database
+    sqlx::query!("DELETE FROM players").execute(&pool).await.unwrap();
+    sqlx::query!("DELETE FROM armor").execute(&pool).await.unwrap();
+    sqlx::query!("DELETE FROM merits").execute(&pool).await.unwrap();
+    sqlx::query!("DELETE FROM weapons").execute(&pool).await.unwrap();
+
     // User inputs a username, Client serializes it
     let player_name = "Test Player Name".to_owned();
     let send_bytes = postcard::to_allocvec(&player_name).unwrap();
@@ -140,7 +146,7 @@ fn lifecycle() {
 
     // Confirm database is clean
     assert!(
-        sqlx::query!("SELECT id FROM armor WHERE name = 'Silken Armor'")
+        sqlx::query!("SELECT id FROM armor WHERE name = 'Silken Armor' OR name = 'Stolen Guard''s Armor'")
             .fetch_optional(&pool)
             .await
             .unwrap()
