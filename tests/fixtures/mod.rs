@@ -20,7 +20,10 @@ use self::{
         create_intitial_abilities, modify_abilities, validate_initial_abilities,
         validate_modified_abilities,
     },
-    armor::{create_initial_armor, validate_initial_armor_items, modify_armor, validate_modified_armor_items},
+    armor::{
+        create_initial_armor, modify_armor, validate_initial_armor_items,
+        validate_modified_armor_items,
+    },
     attributes::{
         create_initial_attributes, modify_attributes, validate_initial_attributes,
         validate_modified_attributes,
@@ -31,8 +34,13 @@ use self::{
     health::{
         create_initial_health, modify_health, validate_initial_health, validate_modified_health,
     },
-    intimacies::{create_initial_intimacies, validate_initial_intimacies, validate_modified_intimacies, modify_intimacies},
-    merits::{create_initial_merits, validate_initial_merits, modify_merits, validate_modified_merits},
+    intimacies::{
+        create_initial_intimacies, modify_intimacies, validate_initial_intimacies,
+        validate_modified_intimacies,
+    },
+    merits::{
+        create_initial_merits, modify_merits, validate_initial_merits, validate_modified_merits,
+    },
     weapons::{create_initial_weapons, modify_weapons, validate_modified_weapons},
 };
 

@@ -84,16 +84,29 @@ pub fn modify_armor(armor: &mut Armor) {
     armor.unequip_armor_item();
 
     // Remove an item
-    let straw_hat_key = armor.iter().find(|(_, _, item)| item.name() == "Straw Hat").unwrap().0;
+    let straw_hat_key = armor
+        .iter()
+        .find(|(_, _, item)| item.name() == "Straw Hat")
+        .unwrap()
+        .0;
     armor.remove_armor_item(straw_hat_key).unwrap();
 
     // Equip an item
-    let silken_armor_key = armor.iter().find(|(_, _, item)| item.name() == "Silken Armor").unwrap().0;
+    let silken_armor_key = armor
+        .iter()
+        .find(|(_, _, item)| item.name() == "Silken Armor")
+        .unwrap()
+        .0;
     armor.equip_armor_item(silken_armor_key).unwrap();
 
     // Add an item
-    armor.add_armor_item(ArmorItem::create_custom(None).as_medium().with_name("Stolen Guard's Breastplate".to_owned()).build().unwrap());
-
+    armor.add_armor_item(
+        ArmorItem::create_custom(None)
+            .as_medium()
+            .with_name("Stolen Guard's Breastplate".to_owned())
+            .build()
+            .unwrap(),
+    );
 }
 
 pub fn validate_modified_armor_items(armor: &Armor) {

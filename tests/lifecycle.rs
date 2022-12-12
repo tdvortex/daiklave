@@ -22,10 +22,22 @@ fn lifecycle() {
     let pool = PgPool::connect(&url).await.unwrap();
 
     // Setup: clean database
-    sqlx::query!("DELETE FROM players").execute(&pool).await.unwrap();
-    sqlx::query!("DELETE FROM armor").execute(&pool).await.unwrap();
-    sqlx::query!("DELETE FROM merits").execute(&pool).await.unwrap();
-    sqlx::query!("DELETE FROM weapons").execute(&pool).await.unwrap();
+    sqlx::query!("DELETE FROM players")
+        .execute(&pool)
+        .await
+        .unwrap();
+    sqlx::query!("DELETE FROM armor")
+        .execute(&pool)
+        .await
+        .unwrap();
+    sqlx::query!("DELETE FROM merits")
+        .execute(&pool)
+        .await
+        .unwrap();
+    sqlx::query!("DELETE FROM weapons")
+        .execute(&pool)
+        .await
+        .unwrap();
 
     // User inputs a username, Client serializes it
     let player_name = "Test Player Name".to_owned();
@@ -98,10 +110,14 @@ fn lifecycle() {
         .unwrap()
         .id;
 
-    let unarmed_and_knife_ids = sqlx::query!("SELECT id FROM weapons WHERE name = 'Knife' OR name = 'Unarmed'")
-        .fetch_all(&pool)
-        .await
-        .unwrap().into_iter().map(|record| record.id).collect::<Vec<i32>>();
+    let unarmed_and_knife_ids =
+        sqlx::query!("SELECT id FROM weapons WHERE name = 'Knife' OR name = 'Unarmed'")
+            .fetch_all(&pool)
+            .await
+            .unwrap()
+            .into_iter()
+            .map(|record| record.id)
+            .collect::<Vec<i32>>();
     assert!(unarmed_and_knife_ids.len() == 2);
 
     let merit_ids = sqlx::query!(
@@ -140,23 +156,27 @@ fn lifecycle() {
 
     // Clean up database to end test
     destroy_armor(&pool, &[silken_armor_id]).await.unwrap();
-    destroy_weapons(&pool, &unarmed_and_knife_ids).await.unwrap();
+    destroy_weapons(&pool, &unarmed_and_knife_ids)
+        .await
+        .unwrap();
     destroy_merits(&pool, &merit_ids).await.unwrap();
 
     // Confirm database is clean
+    assert!(sqlx::query!(
+        "SELECT id FROM armor WHERE name = 'Silken Armor' OR name = 'Stolen Guard''s Armor'"
+    )
+    .fetch_optional(&pool)
+    .await
+    .unwrap()
+    .is_none());
+
     assert!(
-        sqlx::query!("SELECT id FROM armor WHERE name = 'Silken Armor' OR name = 'Stolen Guard''s Armor'")
+        sqlx::query!("SELECT id FROM weapons WHERE name = 'Knife' OR name = 'Unarmed'")
             .fetch_optional(&pool)
             .await
             .unwrap()
             .is_none()
     );
-
-    assert!(sqlx::query!("SELECT id FROM weapons WHERE name = 'Knife' OR name = 'Unarmed'")
-        .fetch_optional(&pool)
-        .await
-        .unwrap()
-        .is_none());
 
     assert!(sqlx::query!(
         "SELECT id FROM merits WHERE name = 'Martial Artist' OR name = 'Language' OR name = 'Danger Sense' OR name = 'Artifact'"

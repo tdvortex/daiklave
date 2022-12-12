@@ -178,11 +178,20 @@ pub fn modify_merits(merits: &mut Vec<Merit>) {
     let artifact_template = MeritTemplate::create_from_book("Core Rulebook".to_owned(), 159)
         .with_name("Artifact".to_owned())
         .requiring_detail()
-        .with_description("The character owns a magical item—see Chapter Nine for more details.".to_owned())
+        .with_description(
+            "The character owns a magical item—see Chapter Nine for more details.".to_owned(),
+        )
         .with_merit_type(MeritType::Story)
-        .build().unwrap();
+        .build()
+        .unwrap();
 
-    let screamer_merit = Merit::from_template(artifact_template, 3, Some("Screamer (Red Jade Reaper Daiklave)".to_owned()), None).unwrap();
+    let screamer_merit = Merit::from_template(
+        artifact_template,
+        3,
+        Some("Screamer (Red Jade Reaper Daiklave)".to_owned()),
+        None,
+    )
+    .unwrap();
 
     merits.push(screamer_merit);
 

@@ -24,7 +24,7 @@ use serde::{Deserialize, Serialize};
 /// The basic Character object, representing a full player character.
 /// This represents the state of a valid character at a given instant of a game.
 /// It is also the serialization format to be moved back and forth between client and server.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Character {
     id: Option<i32>,
     player: Player,

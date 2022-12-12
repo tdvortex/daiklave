@@ -5,12 +5,14 @@ pub(crate) mod create;
 pub(crate) mod destroy;
 pub use destroy::destroy_weapons;
 pub(crate) mod tables;
-use std::collections::HashSet;
+use std::{collections::HashSet};
+use std::hash::Hash;
 
 use eyre::{eyre, Result};
 use slab::Slab;
 
 use crate::data_source::{BookReference, DataSource};
+use crate::slab_eq;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 enum WeightClass {
@@ -102,7 +104,7 @@ pub enum WeaponTag {
     Worn,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Weapon {
     id: Option<i32>,
     name: String,
@@ -664,7 +666,7 @@ enum MainAttackMethod {
     ThrownOnly(RangeBand),
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Weapons(WeaponsPrivate);
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -680,6 +682,63 @@ enum WeaponsPrivate {
 impl Default for WeaponsPrivate {
     fn default() -> Self {
         Self::NoEquipped(Slab::default())
+    }
+}
+
+impl PartialEq for WeaponsPrivate {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (WeaponsPrivate::NoEquipped(self_slab), WeaponsPrivate::NoEquipped(other_slab)) => {
+                slab_eq(self_slab, other_slab)
+            }
+            (
+                WeaponsPrivate::MainHandOnly(self_equipped_key, self_slab),
+                WeaponsPrivate::MainHandOnly(other_equipped_key, other_slab),
+            )
+            | (
+                WeaponsPrivate::OffHandOnly(self_equipped_key, self_slab),
+                WeaponsPrivate::OffHandOnly(other_equipped_key, other_slab),
+            )
+            | (
+                WeaponsPrivate::Paired(self_equipped_key, self_slab),
+                WeaponsPrivate::Paired(other_equipped_key, other_slab),
+            ) => {
+                if self_slab.get(self_equipped_key.0) != other_slab.get(other_equipped_key.0) {
+                    return false;
+                }
+                slab_eq(self_slab, other_slab)
+            }
+            (
+                WeaponsPrivate::TwoHanded(self_equipped_key, self_slab),
+                WeaponsPrivate::TwoHanded(other_equipped_key, other_slab),
+            ) => {
+                if self_slab.get(self_equipped_key.0) != other_slab.get(other_equipped_key.0) {
+                    return false;
+                }
+                slab_eq(self_slab, other_slab)
+            }
+            (
+                WeaponsPrivate::TwoDifferent(
+                    self_main_equipped_key,
+                    self_off_equipped_key,
+                    self_slab,
+                ),
+                WeaponsPrivate::TwoDifferent(
+                    other_main_equipped_key,
+                    other_off_equipped_key,
+                    other_slab,
+                ),
+            ) => {
+                if self_slab.get(self_main_equipped_key.0) != other_slab.get(other_main_equipped_key.0) {
+                    return false;
+                }
+                if self_slab.get(self_off_equipped_key.0) != other_slab.get(other_off_equipped_key.0) {
+                    return false;
+                }
+                slab_eq(self_slab, other_slab)
+            }
+            (_, _) => false,
+        }
     }
 }
 

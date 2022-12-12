@@ -54,26 +54,30 @@ pub fn validate_initial_intimacies(intimacies: &Vec<Intimacy>, should_have_id: b
             IntimacyLevel::Minor,
             IntimacyType::Tie,
             "Street Vendors (Camaraderie)",
-        )
-    ].into();
+        ),
+    ]
+    .into();
 
     assert_eq!(expected.len(), intimacies.len());
 
     for actual in intimacies.iter() {
         assert_eq!(actual.id().is_some(), should_have_id);
-        assert!(expected.contains(&(actual.intimacy_level, actual.intimacy_type, actual.description.as_str())));
+        assert!(expected.contains(&(
+            actual.intimacy_level,
+            actual.intimacy_type,
+            actual.description.as_str()
+        )));
     }
 }
 
 pub fn modify_intimacies(intimacies: &mut Vec<Intimacy>) {
-
     let mut remove_index = None;
 
     for (index, i_ptr) in intimacies.iter_mut().enumerate() {
         if i_ptr.description.as_str() == "Street Vendors (Camaraderie)" {
             remove_index = Some(index);
         } else if i_ptr.description.as_str() == "Ragara Tirnis (Love)" {
-                // Modify an intimacy
+            // Modify an intimacy
             i_ptr.description = "Ragara Tirnis (Broken Heart)".to_owned();
             i_ptr.intimacy_level = IntimacyLevel::Defining;
         }
@@ -83,7 +87,12 @@ pub fn modify_intimacies(intimacies: &mut Vec<Intimacy>) {
     intimacies.remove(remove_index.unwrap());
 
     // Add an intimacy
-    intimacies.push(Intimacy::new(IntimacyLevel::Minor, IntimacyType::Principle, "Trust leads pain".to_owned(), None));
+    intimacies.push(Intimacy::new(
+        IntimacyLevel::Minor,
+        IntimacyType::Principle,
+        "Trust leads pain".to_owned(),
+        None,
+    ));
 }
 
 pub fn validate_modified_intimacies(intimacies: &Vec<Intimacy>) {
@@ -107,12 +116,17 @@ pub fn validate_modified_intimacies(intimacies: &Vec<Intimacy>) {
             IntimacyLevel::Minor,
             IntimacyType::Principle,
             "Trust leads pain",
-        )
-    ].into();
+        ),
+    ]
+    .into();
 
     assert_eq!(expected.len(), intimacies.len());
 
     for actual in intimacies.iter() {
-        assert!(expected.contains(&(actual.intimacy_level, actual.intimacy_type, actual.description.as_str())));
+        assert!(expected.contains(&(
+            actual.intimacy_level,
+            actual.intimacy_type,
+            actual.description.as_str()
+        )));
     }
 }
