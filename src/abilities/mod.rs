@@ -537,7 +537,6 @@ impl Abilities {
                     }
                 });
 
-
             if let Some(index) = focus_index {
                 if dots == 0 {
                     self.craft.remove(index);
@@ -552,7 +551,7 @@ impl Abilities {
                         specialties: Vec::new(),
                     }),
                 ));
-                self.craft.sort_by(|a, b| a.0.cmp(&b.0));    
+                self.craft.sort_by(|a, b| a.0.cmp(&b.0));
             }
 
             return Ok(());
@@ -574,7 +573,9 @@ impl Abilities {
             if let Some(index) = style_index {
                 if dots == 0 {
                     self.martial_arts.remove(index);
-                } else if let AbilityRating::NonZero(non_zero_ability) = &mut self.martial_arts[index].1 {
+                } else if let AbilityRating::NonZero(non_zero_ability) =
+                    &mut self.martial_arts[index].1
+                {
                     non_zero_ability.value = dots;
                 }
             } else if dots > 0 {
@@ -585,7 +586,7 @@ impl Abilities {
                         specialties: Vec::new(),
                     }),
                 ));
-                self.martial_arts.sort_by(|a, b| a.0.cmp(&b.0));    
+                self.martial_arts.sort_by(|a, b| a.0.cmp(&b.0));
             }
             return Ok(());
         }

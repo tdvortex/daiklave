@@ -359,7 +359,7 @@ impl Weapon {
         })
     }
 
-    pub fn create_from_book(book_title: String, page_number: i16) -> WeaponBuilder {
+    pub fn from_book(book_title: String, page_number: i16) -> WeaponBuilder {
         WeaponBuilder {
             id: Default::default(),
             name: Default::default(),
@@ -375,7 +375,7 @@ impl Weapon {
         }
     }
 
-    pub fn create_custom(creator_id: Option<i32>) -> WeaponBuilder {
+    pub fn custom(creator_id: Option<i32>) -> WeaponBuilder {
         WeaponBuilder {
             id: Default::default(),
             name: Default::default(),

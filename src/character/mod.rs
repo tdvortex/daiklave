@@ -43,7 +43,7 @@ pub struct Character {
 }
 
 impl Character {
-    pub fn create() -> CharacterBuilder {
+    pub fn builder() -> CharacterBuilder {
         CharacterBuilder::default()
     }
 

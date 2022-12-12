@@ -5,7 +5,7 @@ use exalted_3e_gui::{
 };
 
 pub fn create_initial_base_character(player: &Player) -> CharacterBuilder {
-    Character::create()
+    Character::builder()
         .with_player(player.clone())
         .with_name("Test Character Name".to_owned())
         .with_concept("A character for testing purposes".to_owned())

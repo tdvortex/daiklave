@@ -299,7 +299,7 @@ impl CharacterBuilder {
                     && merit_template_row.page_number.is_some()
                     && merit_template_row.creator_id.is_none()
                 {
-                    MeritTemplate::create_from_book(
+                    MeritTemplate::from_book(
                         merit_template_row.book_title.unwrap(),
                         merit_template_row.page_number.unwrap(),
                     )
@@ -307,7 +307,7 @@ impl CharacterBuilder {
                     && merit_template_row.page_number.is_none()
                     && merit_template_row.creator_id.is_some()
                 {
-                    MeritTemplate::create_custom(merit_template_row.creator_id)
+                    MeritTemplate::custom(merit_template_row.creator_id)
                 } else {
                     return Err(eyre!(
                         "Data source is inconsistent for merit template {}",

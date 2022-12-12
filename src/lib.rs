@@ -52,7 +52,7 @@ pub(crate) fn slab_eq<T: PartialEq + Eq + Hash>(self_slab: &Slab<T>, other_slab:
                 if index == occupied - 1 {
                     self_refs[index] = None;
                 } else {
-                    self_refs[index] = std::mem::take(&mut self_refs[occupied-1]);
+                    self_refs[index] = std::mem::take(&mut self_refs[occupied - 1]);
                 }
                 occupied -= 1;
             } else {

@@ -31,7 +31,7 @@ pub struct MeritTemplate {
 }
 
 impl MeritTemplate {
-    pub fn create_from_book(book_title: String, page_number: i16) -> MeritTemplateBuilder {
+    pub fn from_book(book_title: String, page_number: i16) -> MeritTemplateBuilder {
         MeritTemplateBuilder {
             name: Default::default(),
             merit_type: Default::default(),
@@ -46,7 +46,7 @@ impl MeritTemplate {
         }
     }
 
-    pub fn create_custom(creator_id: Option<i32>) -> MeritTemplateBuilder {
+    pub fn custom(creator_id: Option<i32>) -> MeritTemplateBuilder {
         MeritTemplateBuilder {
             name: Default::default(),
             merit_type: Default::default(),

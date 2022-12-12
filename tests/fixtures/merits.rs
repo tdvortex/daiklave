@@ -30,7 +30,7 @@ Each purchase grants the character fluency in one \
     ethnic groups spread around Creation's rim.";
 
 pub fn create_initial_merits(builder: CharacterBuilder) -> CharacterBuilder {
-    let martial_artist_template = MeritTemplate::create_from_book("Core Rulebook".to_owned(), 163)
+    let martial_artist_template = MeritTemplate::from_book("Core Rulebook".to_owned(), 163)
         .with_name("Martial Artist".to_owned())
         .with_merit_type(MeritType::Purchased)
         .with_description(MARTIAL_ARTIST_DESCRIPTION.to_owned())
@@ -43,7 +43,7 @@ pub fn create_initial_merits(builder: CharacterBuilder) -> CharacterBuilder {
         .build()
         .unwrap();
 
-    let danger_sense_template = MeritTemplate::create_from_book("Core Rulebook".to_owned(), 160)
+    let danger_sense_template = MeritTemplate::from_book("Core Rulebook".to_owned(), 160)
         .with_name("Danger Sense".to_owned())
         .with_merit_type(MeritType::Innate)
         .with_description(DANGER_SENSE_DESCRIPTION.to_owned())
@@ -61,7 +61,7 @@ pub fn create_initial_merits(builder: CharacterBuilder) -> CharacterBuilder {
         .build()
         .unwrap();
 
-    let language_template = MeritTemplate::create_from_book("Core Rulebook".to_owned(), 162)
+    let language_template = MeritTemplate::from_book("Core Rulebook".to_owned(), 162)
         .with_name("Language".to_owned())
         .with_merit_type(MeritType::Purchased)
         .with_description(LANGUAGE_DESCRIPTION.to_owned())
@@ -69,7 +69,7 @@ pub fn create_initial_merits(builder: CharacterBuilder) -> CharacterBuilder {
         .build()
         .unwrap();
 
-    let custom_template = MeritTemplate::create_custom(None)
+    let custom_template = MeritTemplate::custom(None)
         .with_name("Test Custom Merit Template".to_owned())
         .with_merit_type(MeritType::Supernatural)
         .with_description("Test Custom Merit Template Description".to_owned())
@@ -175,7 +175,7 @@ pub fn validate_initial_merits(merits: &Vec<Merit>, should_have_id: bool) {
 
 pub fn modify_merits(merits: &mut Vec<Merit>) {
     // Add merit
-    let artifact_template = MeritTemplate::create_from_book("Core Rulebook".to_owned(), 159)
+    let artifact_template = MeritTemplate::from_book("Core Rulebook".to_owned(), 159)
         .with_name("Artifact".to_owned())
         .requiring_detail()
         .with_description(

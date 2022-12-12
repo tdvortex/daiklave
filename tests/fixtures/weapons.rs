@@ -7,7 +7,7 @@ use exalted_3e_gui::{
 pub fn create_initial_weapons(builder: CharacterBuilder) -> CharacterBuilder {
     builder
         .with_weapon(
-            Weapon::create_from_book("Core Rulebook".to_owned(), 581)
+            Weapon::from_book("Core Rulebook".to_owned(), 581)
                 .with_name("Knife".to_owned())
                 .as_light()
                 .as_one_handed()
@@ -20,7 +20,7 @@ pub fn create_initial_weapons(builder: CharacterBuilder) -> CharacterBuilder {
         )
         .unwrap()
         .with_weapon(
-            Weapon::create_custom(None)
+            Weapon::custom(None)
                 .with_name("Screamer (Red Jade Reaper Daiklave)".to_owned())
                 .as_artifact()
                 .as_medium()
@@ -101,7 +101,7 @@ pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
 pub fn modify_weapons(weapons: &mut Weapons) {
     // Add weapon
     let unarmed_key = weapons.add_weapon(
-        Weapon::create_from_book("Core Rulebook".to_owned(), 582)
+        Weapon::from_book("Core Rulebook".to_owned(), 582)
             .with_name("Unarmed".to_owned())
             .as_brawl()
             .as_light()

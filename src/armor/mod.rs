@@ -10,7 +10,10 @@ use std::{collections::HashSet, hash::Hash};
 use eyre::{eyre, Result};
 use slab::Slab;
 
-use crate::{data_source::{BookReference, DataSource}, slab_eq};
+use crate::{
+    data_source::{BookReference, DataSource},
+    slab_eq,
+};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum ArmorTag {
@@ -92,7 +95,7 @@ impl ArmorItem {
         })
     }
 
-    pub fn create_from_book(book_title: String, page_number: i16) -> ArmorBuilder {
+    pub fn from_book(book_title: String, page_number: i16) -> ArmorBuilder {
         ArmorBuilder {
             id: None,
             name: None,
@@ -105,7 +108,7 @@ impl ArmorItem {
         }
     }
 
-    pub fn create_custom(creator_id: Option<i32>) -> ArmorBuilder {
+    pub fn custom(creator_id: Option<i32>) -> ArmorBuilder {
         ArmorBuilder {
             id: None,
             name: None,
@@ -258,7 +261,10 @@ impl PartialEq for Armor {
             return false;
         }
 
-        if self.equipped.is_some() && self.get(self.equipped.unwrap()).unwrap() != other.get(other.equipped.unwrap()).unwrap() {
+        if self.equipped.is_some()
+            && self.get(self.equipped.unwrap()).unwrap()
+                != other.get(other.equipped.unwrap()).unwrap()
+        {
             return false;
         }
 

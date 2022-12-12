@@ -415,7 +415,7 @@ impl CharacterBuilder {
                 && weapon_row.page_number.is_some()
                 && weapon_row.creator_id.is_none()
             {
-                Weapon::create_from_book(
+                Weapon::from_book(
                     weapon_row.book_title.unwrap(),
                     weapon_row.page_number.unwrap(),
                 )
@@ -423,7 +423,7 @@ impl CharacterBuilder {
                 && weapon_row.page_number.is_none()
                 && weapon_row.creator_id.is_some()
             {
-                Weapon::create_custom(weapon_row.creator_id)
+                Weapon::custom(weapon_row.creator_id)
             } else {
                 return Err(eyre!(
                     "Database error: inconsistent data source for weapon {}",

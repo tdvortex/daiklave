@@ -7,7 +7,7 @@ use exalted_3e_gui::{
 pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {
     builder
         .with_armor(
-            ArmorItem::create_from_book("Core Rulebook".to_owned(), 600)
+            ArmorItem::from_book("Core Rulebook".to_owned(), 600)
                 .with_name("Silken Armor".to_owned())
                 .as_light()
                 .as_artifact()
@@ -19,7 +19,7 @@ pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {
         )
         .unwrap()
         .with_armor(
-            ArmorItem::create_custom(None)
+            ArmorItem::custom(None)
                 .with_name("Straw Hat".to_owned())
                 .as_light()
                 .build()
@@ -101,7 +101,7 @@ pub fn modify_armor(armor: &mut Armor) {
 
     // Add an item
     armor.add_armor_item(
-        ArmorItem::create_custom(None)
+        ArmorItem::custom(None)
             .as_medium()
             .with_name("Stolen Guard's Breastplate".to_owned())
             .build()

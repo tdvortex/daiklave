@@ -177,7 +177,7 @@ impl CharacterBuilder {
                 && armor_row.page_number.is_some()
                 && armor_row.creator_id.is_none()
             {
-                ArmorItem::create_from_book(
+                ArmorItem::from_book(
                     armor_row.book_title.unwrap(),
                     armor_row.page_number.unwrap(),
                 )
@@ -185,7 +185,7 @@ impl CharacterBuilder {
                 && armor_row.book_title.is_none()
                 && armor_row.creator_id.is_some()
             {
-                ArmorItem::create_custom(armor_row.creator_id)
+                ArmorItem::custom(armor_row.creator_id)
             } else {
                 return Err(eyre!(
                     "Database error: inconsistent data source for armor item {}",
