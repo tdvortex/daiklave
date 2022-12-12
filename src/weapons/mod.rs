@@ -666,10 +666,10 @@ enum MainAttackMethod {
     ThrownOnly(RangeBand),
 }
 
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Hash)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Weapons(WeaponsPrivate);
 
-#[derive(Debug, Serialize, Deserialize, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 enum WeaponsPrivate {
     NoEquipped(Slab<Weapon>),
     MainHandOnly(OneHandedWeapon, Slab<Weapon>),

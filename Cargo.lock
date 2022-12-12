@@ -228,7 +228,6 @@ dependencies = [
  "serde",
  "slab",
  "sqlx",
- "tinyvec",
  "tokio",
 ]
 

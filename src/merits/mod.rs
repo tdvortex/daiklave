@@ -87,7 +87,7 @@ impl MeritTemplate {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Merit {
     id: Option<i32>,
     template: MeritTemplate,

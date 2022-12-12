@@ -16,5 +16,4 @@ postcard = {version = "1.0.2", features = ["alloc"]}
 serde = {version = "1.0.149", features = ["derive"]}
 slab = {version = "0.4.7", features = ["serde"]}
 sqlx = {version = "0.6", features = ["runtime-tokio-native-tls", "postgres"]}
-tinyvec = {version = "1.6.0", features = ["alloc"]}
 tokio = {version = "1.22.0", features = ["macros"]}

@@ -10,7 +10,7 @@ use std::{collections::HashSet, hash::Hash};
 use eyre::{eyre, Result};
 use slab::Slab;
 
-use crate::data_source::{BookReference, DataSource};
+use crate::{data_source::{BookReference, DataSource}, slab_eq};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum ArmorTag {
@@ -23,7 +23,7 @@ pub enum ArmorTag {
     Special,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ArmorItem {
     id: Option<i32>,
     name: String,
@@ -199,7 +199,7 @@ impl ArmorItem {
     }
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Armor {
     equipped: Option<usize>,
     owned: Slab<ArmorItem>,
@@ -251,6 +251,22 @@ impl Armor {
         self.equipped = None;
     }
 }
+
+impl PartialEq for Armor {
+    fn eq(&self, other: &Self) -> bool {
+        if self.equipped.is_some() != other.equipped.is_some() {
+            return false;
+        }
+
+        if self.equipped.is_some() && self.get(self.equipped.unwrap()).unwrap() != other.get(other.equipped.unwrap()).unwrap() {
+            return false;
+        }
+
+        slab_eq(&self.owned, &other.owned)
+    }
+}
+
+impl Eq for Armor {}
 
 struct ArmorIter<'a> {
     armor: &'a Armor,
