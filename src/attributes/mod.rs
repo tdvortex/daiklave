@@ -90,7 +90,7 @@ impl Attribute {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Copy, Hash)]
 pub struct Attributes {
     strength: u8,
     dexterity: u8,

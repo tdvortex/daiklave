@@ -5,7 +5,7 @@ pub(crate) mod tables;
 pub use create::create_player;
 pub use destroy::destroy_player;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Player {
     id: i32,
     name: String,

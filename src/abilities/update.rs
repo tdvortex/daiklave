@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::abilities::tables::AbilityNamePostgres;
 use crate::abilities::Abilities;
 use eyre::{Context, Result};
@@ -53,22 +55,24 @@ impl Abilities {
                             ));
                         }
                         (Some(old), Some(new)) => {
-                            diff.specialties_to_remove.extend(old.difference(new).map(
-                                |specialty| {
+                            let old_set = old.iter().map(|s| s.as_str()).collect::<HashSet<&str>>();
+                            let new_set = new.iter().map(|s| s.as_str()).collect::<HashSet<&str>>();
+
+                            diff.specialties_to_remove
+                                .extend(old_set.difference(&new_set).map(|specialty| {
                                     (
                                         old_ability.name().without_subskill().into(),
                                         old_ability.name().subskill().map(|s| s.to_owned()),
-                                        specialty.clone(),
+                                        (*specialty).to_owned(),
                                     )
-                                },
-                            ));
+                                }));
 
                             diff.specialties_to_add
-                                .extend(new.difference(old).map(|specialty| {
+                                .extend(new_set.difference(&old_set).map(|specialty| {
                                     (
                                         old_ability.name().without_subskill().into(),
                                         old_ability.name().subskill().map(|s| s.to_owned()),
-                                        specialty.clone(),
+                                        (*specialty).to_owned(),
                                     )
                                 }));
                         }

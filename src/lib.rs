@@ -11,7 +11,7 @@ pub mod merits;
 pub mod player;
 pub mod prerequisite;
 pub mod weapons;
-use std::{hash::Hash, collections::HashSet};
+use std::{collections::HashSet, hash::Hash};
 
 pub use character::{retrieve_character, update_character, Character};
 pub use player::{create_player, destroy_player};

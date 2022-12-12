@@ -4,7 +4,7 @@ pub use update::HealthDiff;
 pub(crate) mod tables;
 use eyre::Result;
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Health {
     health_boxes: Vec<HealthBox>,
 }
@@ -25,7 +25,7 @@ impl Default for Health {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy)]
 pub struct HealthBox {
     wound_penalty: WoundPenalty,
     damage: DamageLevel,
@@ -143,7 +143,7 @@ impl Health {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize)]
 pub enum WoundPenalty {
     Zero,
     MinusOne,
@@ -152,7 +152,7 @@ pub enum WoundPenalty {
     Incapacitated,
 }
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize)]
 pub enum DamageLevel {
     None,
     Bashing,

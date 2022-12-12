@@ -5,7 +5,7 @@ pub(crate) mod create;
 pub(crate) mod destroy;
 pub use destroy::destroy_weapons;
 pub(crate) mod tables;
-use std::{collections::HashSet};
+use std::collections::HashSet;
 use std::hash::Hash;
 
 use eyre::{eyre, Result};
@@ -36,7 +36,7 @@ pub enum RangeBand {
     Extreme,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord)]
 enum OtherTag {
     Artifact,
     Balanced,
@@ -112,8 +112,8 @@ pub struct Weapon {
     is_two_handed: bool,
     damage_type: DamageType,
     main_attack_method: MainAttackMethod,
-    martial_arts_styles: HashSet<String>,
-    other_tags: HashSet<OtherTag>,
+    martial_arts_styles: Vec<String>,
+    other_tags: Vec<OtherTag>,
     data_source: DataSource,
 }
 
@@ -131,8 +131,8 @@ impl Weapon {
         let mut thrown = None::<RangeBand>;
         let mut brawl = false;
         let mut melee = false;
-        let mut martial_arts_styles = HashSet::<String>::new();
-        let mut other_tags = HashSet::<OtherTag>::new();
+        let mut martial_arts_styles = Vec::<String>::new();
+        let mut other_tags = Vec::<OtherTag>::new();
 
         for tag in tags {
             match tag {
@@ -144,10 +144,10 @@ impl Weapon {
                     }
                 }
                 WeaponTag::Artifact => {
-                    other_tags.insert(OtherTag::Artifact);
+                    other_tags.push(OtherTag::Artifact);
                 }
                 WeaponTag::Balanced => {
-                    other_tags.insert(OtherTag::Balanced);
+                    other_tags.push(OtherTag::Balanced);
                 }
                 WeaponTag::Bashing => {
                     if let Some(other_type) = damage_type {
@@ -161,31 +161,31 @@ impl Weapon {
                     brawl = true;
                 }
                 WeaponTag::Chopping => {
-                    other_tags.insert(OtherTag::Chopping);
+                    other_tags.push(OtherTag::Chopping);
                 }
                 WeaponTag::Concealable => {
-                    other_tags.insert(OtherTag::Concealable);
+                    other_tags.push(OtherTag::Concealable);
                 }
                 WeaponTag::Crossbow => {
-                    other_tags.insert(OtherTag::Crossbow);
+                    other_tags.push(OtherTag::Crossbow);
                 }
                 WeaponTag::Cutting => {
-                    other_tags.insert(OtherTag::Cutting);
+                    other_tags.push(OtherTag::Cutting);
                 }
                 WeaponTag::Disarming => {
-                    other_tags.insert(OtherTag::Disarming);
+                    other_tags.push(OtherTag::Disarming);
                 }
                 WeaponTag::Exceptional => {
-                    other_tags.insert(OtherTag::Exceptional);
+                    other_tags.push(OtherTag::Exceptional);
                 }
                 WeaponTag::Flame => {
-                    other_tags.insert(OtherTag::Flame);
+                    other_tags.push(OtherTag::Flame);
                 }
                 WeaponTag::Flexible => {
-                    other_tags.insert(OtherTag::Flexible);
+                    other_tags.push(OtherTag::Flexible);
                 }
                 WeaponTag::Grappling => {
-                    other_tags.insert(OtherTag::Grappling);
+                    other_tags.push(OtherTag::Grappling);
                 }
                 WeaponTag::Heavy => {
                     if let Some(other_class) = weight_class {
@@ -198,7 +198,7 @@ impl Weapon {
                     weight_class = Some(WeightClass::Heavy);
                 }
                 WeaponTag::Improvised => {
-                    other_tags.insert(OtherTag::Improvised);
+                    other_tags.push(OtherTag::Improvised);
                 }
                 WeaponTag::Lethal => {
                     if let Some(other_type) = damage_type {
@@ -219,7 +219,7 @@ impl Weapon {
                     weight_class = Some(WeightClass::Light);
                 }
                 WeaponTag::MartialArts(style) => {
-                    martial_arts_styles.insert(style);
+                    martial_arts_styles.push(style);
                 }
                 WeaponTag::Medium => {
                     if let Some(other_class) = weight_class {
@@ -235,7 +235,7 @@ impl Weapon {
                     melee = true;
                 }
                 WeaponTag::Mounted => {
-                    other_tags.insert(OtherTag::Mounted);
+                    other_tags.push(OtherTag::Mounted);
                 }
                 WeaponTag::OneHanded => {
                     if let Some(two) = two_handed {
@@ -248,34 +248,34 @@ impl Weapon {
                     two_handed = Some(false);
                 }
                 WeaponTag::Natural => {
-                    other_tags.insert(OtherTag::Natural);
+                    other_tags.push(OtherTag::Natural);
                 }
                 WeaponTag::Piercing => {
-                    other_tags.insert(OtherTag::Piercing);
+                    other_tags.push(OtherTag::Piercing);
                 }
                 WeaponTag::Poisonable => {
-                    other_tags.insert(OtherTag::Poisonable);
+                    other_tags.push(OtherTag::Poisonable);
                 }
                 WeaponTag::Powerful => {
-                    other_tags.insert(OtherTag::Powerful);
+                    other_tags.push(OtherTag::Powerful);
                 }
                 WeaponTag::Reaching => {
-                    other_tags.insert(OtherTag::Reaching);
+                    other_tags.push(OtherTag::Reaching);
                 }
                 WeaponTag::Shield => {
-                    other_tags.insert(OtherTag::Shield);
+                    other_tags.push(OtherTag::Shield);
                 }
                 WeaponTag::Slow => {
-                    other_tags.insert(OtherTag::Slow);
+                    other_tags.push(OtherTag::Slow);
                 }
                 WeaponTag::Smashing => {
-                    other_tags.insert(OtherTag::Smashing);
+                    other_tags.push(OtherTag::Smashing);
                 }
                 WeaponTag::Special => {
-                    other_tags.insert(OtherTag::Special);
+                    other_tags.push(OtherTag::Special);
                 }
                 WeaponTag::Subtle => {
-                    other_tags.insert(OtherTag::Subtle);
+                    other_tags.push(OtherTag::Subtle);
                 }
                 WeaponTag::Thrown(range) => {
                     if let Some(old_range) = thrown {
@@ -295,7 +295,7 @@ impl Weapon {
                     two_handed = Some(true);
                 }
                 WeaponTag::Worn => {
-                    other_tags.insert(OtherTag::Worn);
+                    other_tags.push(OtherTag::Worn);
                 }
             }
         }
@@ -644,12 +644,12 @@ impl Weapon {
     }
 }
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
 struct OneHandedWeapon(pub(crate) usize);
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
 struct TwoHandedWeapon(pub(crate) usize);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum EquipHand {
     Main,
     Off,
@@ -666,10 +666,10 @@ enum MainAttackMethod {
     ThrownOnly(RangeBand),
 }
 
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Hash)]
 pub struct Weapons(WeaponsPrivate);
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Hash)]
 enum WeaponsPrivate {
     NoEquipped(Slab<Weapon>),
     MainHandOnly(OneHandedWeapon, Slab<Weapon>),
@@ -729,10 +729,14 @@ impl PartialEq for WeaponsPrivate {
                     other_slab,
                 ),
             ) => {
-                if self_slab.get(self_main_equipped_key.0) != other_slab.get(other_main_equipped_key.0) {
+                if self_slab.get(self_main_equipped_key.0)
+                    != other_slab.get(other_main_equipped_key.0)
+                {
                     return false;
                 }
-                if self_slab.get(self_off_equipped_key.0) != other_slab.get(other_off_equipped_key.0) {
+                if self_slab.get(self_off_equipped_key.0)
+                    != other_slab.get(other_off_equipped_key.0)
+                {
                     return false;
                 }
                 slab_eq(self_slab, other_slab)
@@ -741,6 +745,8 @@ impl PartialEq for WeaponsPrivate {
         }
     }
 }
+
+impl Eq for WeaponsPrivate {}
 
 impl Weapons {
     fn inventory(&self) -> &Slab<Weapon> {

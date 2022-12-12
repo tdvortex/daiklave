@@ -24,7 +24,7 @@ use serde::{Deserialize, Serialize};
 /// The basic Character object, representing a full player character.
 /// This represents the state of a valid character at a given instant of a game.
 /// It is also the serialization format to be moved back and forth between client and server.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Hash)]
 pub struct Character {
     id: Option<i32>,
     player: Player,
@@ -299,7 +299,7 @@ impl CharacterBuilder {
     }
 }
 
-#[derive(Debug, Default, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ExperiencePoints {
     pub current: u16,
     pub total: u16,
@@ -319,7 +319,7 @@ pub(crate) enum _CraftingExperienceType {
     White,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Willpower {
     pub current: u8,
     pub maximum: u8,
