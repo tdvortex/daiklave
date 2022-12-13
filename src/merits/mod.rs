@@ -1,4 +1,6 @@
 pub(crate) mod update;
+use std::ops::{Deref, DerefMut};
+
 use serde::{Deserialize, Serialize};
 pub use update::MeritDiff;
 pub(crate) mod create;
@@ -257,5 +259,28 @@ impl MeritTemplateBuilder {
                 .ok_or_else(|| eyre!("Merit must specify if detail is required"))?,
             data_source: self.data_source,
         })
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Merits(Vec<Merit>);
+
+impl Merits {
+    pub fn new(merits: Vec<Merit>) -> Self {
+        Self(merits)
+    }
+}
+
+impl Deref for Merits {
+    type Target = Vec<Merit>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Merits {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }

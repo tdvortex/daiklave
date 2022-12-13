@@ -16,7 +16,9 @@ use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
 use crate::campaign::Campaign;
 use crate::health::{Health, WoundPenalty};
+use crate::intimacies::Intimacies;
 use crate::intimacies::Intimacy;
+use crate::merits::Merits;
 use crate::merits::{Merit, MeritTemplate};
 use crate::player::Player;
 use crate::prerequisite::{ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType};
@@ -37,11 +39,11 @@ pub struct Character {
     pub experience: ExperiencePoints,
     pub attributes: Attributes,
     pub abilities: Abilities,
-    pub intimacies: Vec<Intimacy>,
+    pub intimacies: Intimacies,
     pub health: Health,
     pub weapons: Weapons,
     pub armor: Armor,
-    pub merits: Vec<Merit>,
+    pub merits: Merits,
 }
 
 impl Character {
@@ -245,7 +247,7 @@ impl CharacterBuilder {
         self
     }
 
-    fn with_merit_ignore_prerequisites(
+    pub(crate) fn with_merit_ignore_prerequisites(
         mut self,
         template: MeritTemplate,
         dots: u8,
@@ -290,11 +292,11 @@ impl CharacterBuilder {
             experience: self.experience,
             attributes: self.attributes,
             abilities: self.abilities,
-            intimacies: self.intimacies,
+            intimacies: Intimacies::new(self.intimacies),
             health: self.health,
             weapons: self.weapons,
             armor: self.armor,
-            merits: self.merits,
+            merits: Merits::new(self.merits),
         })
     }
 }

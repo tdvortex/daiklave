@@ -349,7 +349,7 @@ impl CharacterBuilder {
                     .get(&row.merit_id)
                     .ok_or_else(|| eyre!("missing template definition: {}", row.merit_id))?
                     .clone();
-                self = self.with_merit(
+                self = self.with_merit_ignore_prerequisites(
                     template,
                     row.dots
                         .try_into()
