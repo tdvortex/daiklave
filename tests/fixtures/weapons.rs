@@ -46,14 +46,13 @@ pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
                 assert!(weapons.get_by_index(key).unwrap().1.id().is_some() == should_have_id);
                 assert_eq!(
                     weapons.get_by_index(key).unwrap().1.tags(),
-                    [
+                    vec![
                         WeaponTag::Lethal,
+                        WeaponTag::Light,
                         WeaponTag::Melee,
                         WeaponTag::OneHanded,
                         WeaponTag::Thrown(RangeBand::Short),
-                        WeaponTag::Light
                     ]
-                    .into()
                 );
                 assert_eq!(
                     weapons.get_by_index(key).unwrap().1.data_source(),
@@ -68,16 +67,15 @@ pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
                 assert!(weapons.get_by_index(key).unwrap().1.id().is_some() == should_have_id);
                 assert_eq!(
                     weapons.get_by_index(key).unwrap().1.tags(),
-                    [
+                    vec![
+                        WeaponTag::Artifact,
+                        WeaponTag::Balanced,
                         WeaponTag::Lethal,
+                        WeaponTag::MartialArts("Single Point Shining Into Void Style".to_owned()),
+                        WeaponTag::Medium,
                         WeaponTag::Melee,
                         WeaponTag::OneHanded,
-                        WeaponTag::Medium,
-                        WeaponTag::Balanced,
-                        WeaponTag::Artifact,
-                        WeaponTag::MartialArts("Single Point Shining Into Void Style".to_owned())
                     ]
-                    .into()
                 );
                 if should_have_id {
                     assert!(match weapons.get_by_index(key).unwrap().1.data_source() {
@@ -137,15 +135,14 @@ pub fn validate_modified_weapons(weapons: &Weapons) {
                 assert!(maybe_hand == Some(EquipHand::Both));
                 assert_eq!(
                     weapons.get_by_index(key).unwrap().1.tags(),
-                    [
+                    vec![
                         WeaponTag::Bashing,
                         WeaponTag::Brawl,
-                        WeaponTag::OneHanded,
-                        WeaponTag::Light,
                         WeaponTag::Grappling,
+                        WeaponTag::Light,
                         WeaponTag::Natural,
+                        WeaponTag::OneHanded,
                     ]
-                    .into()
                 );
                 assert_eq!(
                     weapons.get_by_index(key).unwrap().1.data_source(),
@@ -159,16 +156,15 @@ pub fn validate_modified_weapons(weapons: &Weapons) {
                 assert!(maybe_hand == None);
                 assert_eq!(
                     weapons.get_by_index(key).unwrap().1.tags(),
-                    [
+                    vec![
+                        WeaponTag::Artifact,
+                        WeaponTag::Balanced,
                         WeaponTag::Lethal,
+                        WeaponTag::MartialArts("Single Point Shining Into Void Style".to_owned()),
+                        WeaponTag::Medium,
                         WeaponTag::Melee,
                         WeaponTag::OneHanded,
-                        WeaponTag::Medium,
-                        WeaponTag::Balanced,
-                        WeaponTag::Artifact,
-                        WeaponTag::MartialArts("Single Point Shining Into Void Style".to_owned())
                     ]
-                    .into()
                 );
             }
             wrong => panic!("Unknown armor name: {}", wrong),

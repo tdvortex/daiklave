@@ -36,18 +36,14 @@ pub struct ArmorItem {
 
 impl PartialEq for ArmorItem {
     fn eq(&self, other: &Self) -> bool {
-        if self.id.is_some() && other.id.is_some() {
-            self.id == other.id
-        } else if self.id.is_none() && other.id.is_none() {
-            self.weight_class == other.weight_class
-                && self.artifact == other.artifact
-                && self.concealable == other.concealable
-                && self.silent == other.silent
-                && self.special == other.special
-                && self.data_source == other.data_source
-        } else {
-            false
-        }
+        self.id == other.id
+            && (self.id.is_some()
+                || (self.weight_class == other.weight_class
+                    && self.artifact == other.artifact
+                    && self.concealable == other.concealable
+                    && self.silent == other.silent
+                    && self.special == other.special
+                    && self.data_source == other.data_source))
     }
 }
 

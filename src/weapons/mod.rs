@@ -62,7 +62,7 @@ enum OtherTag {
     Worn,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum WeaponTag {
     Archery(RangeBand),
     Artifact,
@@ -86,8 +86,8 @@ pub enum WeaponTag {
     Medium,
     Melee,
     Mounted,
-    OneHanded,
     Natural,
+    OneHanded,
     Piercing,
     Poisonable,
     Powerful,
@@ -102,7 +102,7 @@ pub enum WeaponTag {
     Worn,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, Eq)]
 pub struct Weapon {
     id: Option<i32>,
     name: String,
@@ -113,6 +113,21 @@ pub struct Weapon {
     martial_arts_styles: Vec<String>,
     other_tags: Vec<OtherTag>,
     data_source: DataSource,
+}
+
+impl PartialEq for Weapon {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+            && (self.id.is_some()
+                || (self.name == other.name
+                    && self.weight_class == other.weight_class
+                    && self.is_two_handed == other.is_two_handed
+                    && self.damage_type == other.damage_type
+                    && self.main_attack_method == other.main_attack_method
+                    && self.martial_arts_styles == other.martial_arts_styles
+                    && self.other_tags == other.other_tags
+                    && self.data_source == other.data_source))
+    }
 }
 
 impl Weapon {
@@ -344,6 +359,8 @@ impl Weapon {
             (None, None, false, false, true) => MainAttackMethod::MartialArtsOnly,
         };
 
+        other_tags.sort();
+
         Ok(Weapon {
             id,
             name,
@@ -555,57 +572,57 @@ impl Weapon {
         }
     }
 
-    pub fn tags(&self) -> HashSet<WeaponTag> {
-        let mut output = HashSet::<WeaponTag>::new();
+    pub fn tags(&self) -> Vec<WeaponTag> {
+        let mut output = Vec::<WeaponTag>::new();
 
         if self.is_two_handed {
-            output.insert(WeaponTag::TwoHanded);
+            output.push(WeaponTag::TwoHanded);
         } else {
-            output.insert(WeaponTag::OneHanded);
+            output.push(WeaponTag::OneHanded);
         }
 
         let details = self;
         match details.weight_class {
             WeightClass::Light => {
-                output.insert(WeaponTag::Light);
+                output.push(WeaponTag::Light);
             }
             WeightClass::Medium => {
-                output.insert(WeaponTag::Medium);
+                output.push(WeaponTag::Medium);
             }
             WeightClass::Heavy => {
-                output.insert(WeaponTag::Heavy);
+                output.push(WeaponTag::Heavy);
             }
         }
         match details.damage_type {
             DamageType::Bashing => {
-                output.insert(WeaponTag::Bashing);
+                output.push(WeaponTag::Bashing);
             }
             DamageType::Lethal => {
-                output.insert(WeaponTag::Lethal);
+                output.push(WeaponTag::Lethal);
             }
         }
         match details.main_attack_method {
             MainAttackMethod::Archery(range) => {
-                output.insert(WeaponTag::Archery(range));
+                output.push(WeaponTag::Archery(range));
             }
             MainAttackMethod::Brawl => {
-                output.insert(WeaponTag::Brawl);
+                output.push(WeaponTag::Brawl);
             }
             MainAttackMethod::Melee => {
-                output.insert(WeaponTag::Melee);
+                output.push(WeaponTag::Melee);
             }
             MainAttackMethod::MeleeAndThrown(range) => {
-                output.insert(WeaponTag::Melee);
-                output.insert(WeaponTag::Thrown(range));
+                output.push(WeaponTag::Melee);
+                output.push(WeaponTag::Thrown(range));
             }
             MainAttackMethod::MartialArtsOnly => {}
             MainAttackMethod::ThrownOnly(range) => {
-                output.insert(WeaponTag::Thrown(range));
+                output.push(WeaponTag::Thrown(range));
             }
         }
 
         for style in details.martial_arts_styles.iter() {
-            output.insert(WeaponTag::MartialArts(style.clone()));
+            output.push(WeaponTag::MartialArts(style.clone()));
         }
 
         for other_tag in &details.other_tags {
@@ -635,17 +652,13 @@ impl Weapon {
                 OtherTag::Subtle => WeaponTag::Subtle,
                 OtherTag::Worn => WeaponTag::Worn,
             };
-            output.insert(tag);
+            output.push(tag);
         }
 
+        output.sort();
         output
     }
 }
-
-#[derive(Debug, Default, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
-struct OneHandedWeapon(pub(crate) usize);
-#[derive(Debug, Default, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
-struct TwoHandedWeapon(pub(crate) usize);
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum EquipHand {
