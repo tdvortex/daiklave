@@ -226,7 +226,6 @@ dependencies = [
  "eyre",
  "postcard",
  "serde",
- "slab",
  "sqlx",
  "tokio",
 ]
@@ -911,16 +910,6 @@ dependencies = [
  "cfg-if",
  "cpufeatures",
  "digest",
-]
-
-[[package]]
-name = "slab"
-version = "0.4.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4614a76b2a8be0058caa9dbbaf66d988527d86d003c11a94fbd335d7661edcef"
-dependencies = [
- "autocfg",
- "serde",
 ]
 
 [[package]]

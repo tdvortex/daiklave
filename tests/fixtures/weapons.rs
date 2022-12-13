@@ -38,14 +38,14 @@ pub fn create_initial_weapons(builder: CharacterBuilder) -> CharacterBuilder {
 
 pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
     let mut count = 0;
-    for (key, maybe_hand, weapon_ref) in weapons.iter() {
+    for (key, weapon_ref, maybe_hand) in weapons.iter() {
         count += 1;
         match weapon_ref.name() {
             "Knife" => {
                 assert!(maybe_hand.is_none());
-                assert!(weapons.get(key).unwrap().id().is_some() == should_have_id);
+                assert!(weapons.get_by_index(key).unwrap().1.id().is_some() == should_have_id);
                 assert_eq!(
-                    weapons.get(key).unwrap().tags(),
+                    weapons.get_by_index(key).unwrap().1.tags(),
                     [
                         WeaponTag::Lethal,
                         WeaponTag::Melee,
@@ -56,7 +56,7 @@ pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
                     .into()
                 );
                 assert_eq!(
-                    weapons.get(key).unwrap().data_source(),
+                    weapons.get_by_index(key).unwrap().1.data_source(),
                     &DataSource::Book(BookReference {
                         book_title: "Core Rulebook".to_owned(),
                         page_number: 581,
@@ -65,9 +65,9 @@ pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
             }
             "Screamer (Red Jade Reaper Daiklave)" => {
                 assert!(maybe_hand == Some(EquipHand::Main));
-                assert!(weapons.get(key).unwrap().id().is_some() == should_have_id);
+                assert!(weapons.get_by_index(key).unwrap().1.id().is_some() == should_have_id);
                 assert_eq!(
-                    weapons.get(key).unwrap().tags(),
+                    weapons.get_by_index(key).unwrap().1.tags(),
                     [
                         WeaponTag::Lethal,
                         WeaponTag::Melee,
@@ -80,14 +80,14 @@ pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
                     .into()
                 );
                 if should_have_id {
-                    assert!(match weapons.get(key).unwrap().data_source() {
+                    assert!(match weapons.get_by_index(key).unwrap().1.data_source() {
                         DataSource::Book(_) => panic!("should be custom"),
                         DataSource::Custom(None) => panic!("should have custom creator id"),
                         DataSource::Custom(Some(_)) => true,
                     });
                 } else {
                     assert_eq!(
-                        weapons.get(key).unwrap().data_source(),
+                        weapons.get_by_index(key).unwrap().1.data_source(),
                         &DataSource::Custom(None)
                     );
                 }
@@ -99,6 +99,14 @@ pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
 }
 
 pub fn modify_weapons(weapons: &mut Weapons) {
+    // Remove weapon
+    let knife_id = weapons
+        .iter()
+        .find(|(_, weapon, _)| weapon.name() == "Knife")
+        .unwrap()
+        .0;
+    weapons.remove_weapon(knife_id).unwrap();
+
     // Add weapon
     let unarmed_key = weapons.add_weapon(
         Weapon::from_book("Core Rulebook".to_owned(), 582)
@@ -113,14 +121,6 @@ pub fn modify_weapons(weapons: &mut Weapons) {
             .unwrap(),
     );
 
-    // Remove weapon
-    let knife_id = weapons
-        .iter()
-        .find(|(_, _, weapon)| weapon.name() == "Knife")
-        .unwrap()
-        .0;
-    weapons.remove_weapon(knife_id);
-
     // Unequip weapon
     weapons.unequip(EquipHand::Main);
 
@@ -130,13 +130,13 @@ pub fn modify_weapons(weapons: &mut Weapons) {
 
 pub fn validate_modified_weapons(weapons: &Weapons) {
     let mut count = 0;
-    for (key, maybe_hand, weapon_ref) in weapons.iter() {
+    for (key, weapon_ref, maybe_hand) in weapons.iter() {
         count += 1;
         match weapon_ref.name() {
             "Unarmed" => {
                 assert!(maybe_hand == Some(EquipHand::Both));
                 assert_eq!(
-                    weapons.get(key).unwrap().tags(),
+                    weapons.get_by_index(key).unwrap().1.tags(),
                     [
                         WeaponTag::Bashing,
                         WeaponTag::Brawl,
@@ -148,7 +148,7 @@ pub fn validate_modified_weapons(weapons: &Weapons) {
                     .into()
                 );
                 assert_eq!(
-                    weapons.get(key).unwrap().data_source(),
+                    weapons.get_by_index(key).unwrap().1.data_source(),
                     &DataSource::Book(BookReference {
                         book_title: "Core Rulebook".to_owned(),
                         page_number: 582,
@@ -158,7 +158,7 @@ pub fn validate_modified_weapons(weapons: &Weapons) {
             "Screamer (Red Jade Reaper Daiklave)" => {
                 assert!(maybe_hand == None);
                 assert_eq!(
-                    weapons.get(key).unwrap().tags(),
+                    weapons.get_by_index(key).unwrap().1.tags(),
                     [
                         WeaponTag::Lethal,
                         WeaponTag::Melee,

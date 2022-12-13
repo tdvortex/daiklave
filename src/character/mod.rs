@@ -238,7 +238,10 @@ impl CharacterBuilder {
     }
 
     pub fn with_armor(mut self, armor_item: ArmorItem, worn: bool) -> Self {
-        self.armor.add_armor_item(armor_item, worn);
+        let index = self.armor.add_armor_item(armor_item);
+        if worn {
+            self.armor.equip_armor_item(index).unwrap();
+        }
         self
     }
 

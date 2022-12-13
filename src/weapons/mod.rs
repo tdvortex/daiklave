@@ -5,14 +5,12 @@ pub(crate) mod create;
 pub(crate) mod destroy;
 pub use destroy::destroy_weapons;
 pub(crate) mod tables;
-use std::collections::HashSet;
 use std::hash::Hash;
+use std::{cmp::Ordering, collections::HashSet};
 
 use eyre::{eyre, Result};
-use slab::Slab;
 
 use crate::data_source::{BookReference, DataSource};
-use crate::slab_eq;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 enum WeightClass {
@@ -667,307 +665,119 @@ enum MainAttackMethod {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
-pub struct Weapons(WeaponsPrivate);
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-enum WeaponsPrivate {
-    NoEquipped(Slab<Weapon>),
-    MainHandOnly(OneHandedWeapon, Slab<Weapon>),
-    OffHandOnly(OneHandedWeapon, Slab<Weapon>),
-    Paired(OneHandedWeapon, Slab<Weapon>),
-    TwoDifferent(OneHandedWeapon, OneHandedWeapon, Slab<Weapon>),
-    TwoHanded(TwoHandedWeapon, Slab<Weapon>),
+pub struct Weapons {
+    inventory: Vec<(Weapon, Option<EquipHand>)>,
 }
-
-impl Default for WeaponsPrivate {
-    fn default() -> Self {
-        Self::NoEquipped(Slab::default())
-    }
-}
-
-impl PartialEq for WeaponsPrivate {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (WeaponsPrivate::NoEquipped(self_slab), WeaponsPrivate::NoEquipped(other_slab)) => {
-                slab_eq(self_slab, other_slab)
-            }
-            (
-                WeaponsPrivate::MainHandOnly(self_equipped_key, self_slab),
-                WeaponsPrivate::MainHandOnly(other_equipped_key, other_slab),
-            )
-            | (
-                WeaponsPrivate::OffHandOnly(self_equipped_key, self_slab),
-                WeaponsPrivate::OffHandOnly(other_equipped_key, other_slab),
-            )
-            | (
-                WeaponsPrivate::Paired(self_equipped_key, self_slab),
-                WeaponsPrivate::Paired(other_equipped_key, other_slab),
-            ) => {
-                if self_slab.get(self_equipped_key.0) != other_slab.get(other_equipped_key.0) {
-                    return false;
-                }
-                slab_eq(self_slab, other_slab)
-            }
-            (
-                WeaponsPrivate::TwoHanded(self_equipped_key, self_slab),
-                WeaponsPrivate::TwoHanded(other_equipped_key, other_slab),
-            ) => {
-                if self_slab.get(self_equipped_key.0) != other_slab.get(other_equipped_key.0) {
-                    return false;
-                }
-                slab_eq(self_slab, other_slab)
-            }
-            (
-                WeaponsPrivate::TwoDifferent(
-                    self_main_equipped_key,
-                    self_off_equipped_key,
-                    self_slab,
-                ),
-                WeaponsPrivate::TwoDifferent(
-                    other_main_equipped_key,
-                    other_off_equipped_key,
-                    other_slab,
-                ),
-            ) => {
-                if self_slab.get(self_main_equipped_key.0)
-                    != other_slab.get(other_main_equipped_key.0)
-                {
-                    return false;
-                }
-                if self_slab.get(self_off_equipped_key.0)
-                    != other_slab.get(other_off_equipped_key.0)
-                {
-                    return false;
-                }
-                slab_eq(self_slab, other_slab)
-            }
-            (_, _) => false,
-        }
-    }
-}
-
-impl Eq for WeaponsPrivate {}
 
 impl Weapons {
-    fn inventory(&self) -> &Slab<Weapon> {
-        match &self.0 {
-            WeaponsPrivate::NoEquipped(slab)
-            | WeaponsPrivate::MainHandOnly(_, slab)
-            | WeaponsPrivate::OffHandOnly(_, slab)
-            | WeaponsPrivate::Paired(_, slab)
-            | WeaponsPrivate::TwoDifferent(_, _, slab)
-            | WeaponsPrivate::TwoHanded(_, slab) => slab,
+    pub fn get_by_ref(&self, weapon: &Weapon) -> Option<(usize, &Weapon, Option<EquipHand>)> {
+        self.inventory
+            .iter()
+            .enumerate()
+            .find_map(|(index, (weapon_ref, maybe_equip_hand))| {
+                if weapon_ref == weapon {
+                    Some((index, weapon_ref, *maybe_equip_hand))
+                } else {
+                    None
+                }
+            })
+    }
+
+    fn get_by_index_unchecked(&self, index: usize) -> (usize, &Weapon, Option<EquipHand>) {
+        let (weapon_ref, maybe_equip_hand) = &self.inventory[index];
+        (index, weapon_ref, *maybe_equip_hand)
+    }
+
+    pub fn get_by_index(&self, index: usize) -> Option<(usize, &Weapon, Option<EquipHand>)> {
+        if index >= self.inventory.len() {
+            None
+        } else {
+            Some(self.get_by_index_unchecked(index))
         }
     }
 
-    fn inventory_mut(&mut self) -> &mut Slab<Weapon> {
-        match &mut self.0 {
-            WeaponsPrivate::NoEquipped(slab)
-            | WeaponsPrivate::MainHandOnly(_, slab)
-            | WeaponsPrivate::OffHandOnly(_, slab)
-            | WeaponsPrivate::Paired(_, slab)
-            | WeaponsPrivate::TwoDifferent(_, _, slab)
-            | WeaponsPrivate::TwoHanded(_, slab) => slab,
-        }
-    }
-
-    fn equipped_keys(&self) -> (Option<usize>, Option<usize>) {
-        match &self.0 {
-            WeaponsPrivate::NoEquipped(_) => (None, None),
-            WeaponsPrivate::MainHandOnly(weapon, _) => (Some(weapon.0), None),
-            WeaponsPrivate::OffHandOnly(weapon, _) => (None, Some(weapon.0)),
-            WeaponsPrivate::Paired(weapon, _) => (Some(weapon.0), Some(weapon.0)),
-            WeaponsPrivate::TwoDifferent(main_weapon, off_weapon, _) => {
-                (Some(main_weapon.0), Some(off_weapon.0))
-            }
-            WeaponsPrivate::TwoHanded(weapon, _) => (Some(weapon.0), Some(weapon.0)),
-        }
-    }
-
-    pub fn get(&self, key: usize) -> Result<&Weapon> {
-        self.inventory()
-            .get(key)
-            .ok_or_else(|| eyre!("weapon {} not found", key))
+    pub fn iter(&self) -> impl Iterator<Item = (usize, &Weapon, Option<EquipHand>)> {
+        (0..self.inventory.len()).map(|index| self.get_by_index(index).unwrap())
     }
 
     pub fn add_weapon(&mut self, weapon: Weapon) -> usize {
-        self.inventory_mut().insert(weapon)
+        let insert_index = self
+            .inventory
+            .binary_search_by(|(inventory_weapon, hand)| {
+                if inventory_weapon == &weapon {
+                    if hand.is_none() {
+                        Ordering::Equal
+                    } else {
+                        Ordering::Less
+                    }
+                } else {
+                    inventory_weapon.name().cmp(weapon.name())
+                }
+            })
+            .map_or_else(|i| i, |i| i);
+        self.inventory.insert(insert_index, (weapon, None));
+        insert_index
     }
 
-    pub fn equip(&mut self, key: usize, hand: EquipHand) -> Result<()> {
-        if !self.inventory().contains(key) {
-            return Err(eyre!("weapon {} not found", key));
-        }
-
-        if self.inventory().get(key).unwrap().is_two_handed {
-            *self = Weapons(WeaponsPrivate::TwoHanded(
-                TwoHandedWeapon(key),
-                std::mem::take(self.inventory_mut()),
-            ));
+    pub fn remove_weapon(&mut self, index: usize) -> Result<(Weapon, Option<EquipHand>)> {
+        if index >= self.inventory.len() {
+            Err(eyre!("Weapon index {} not found", index))
         } else {
-            *self = match (std::mem::take(&mut self.0), hand) {
-                (WeaponsPrivate::NoEquipped(slab), EquipHand::Main)
-                | (WeaponsPrivate::MainHandOnly(_, slab), EquipHand::Main)
-                | (WeaponsPrivate::TwoHanded(_, slab), EquipHand::Main) => {
-                    Weapons(WeaponsPrivate::MainHandOnly(OneHandedWeapon(key), slab))
-                }
-                (WeaponsPrivate::NoEquipped(slab), EquipHand::Off)
-                | (WeaponsPrivate::OffHandOnly(_, slab), EquipHand::Off)
-                | (WeaponsPrivate::TwoHanded(_, slab), EquipHand::Off) => {
-                    Weapons(WeaponsPrivate::OffHandOnly(OneHandedWeapon(key), slab))
-                }
-                (WeaponsPrivate::NoEquipped(slab), EquipHand::Both) => {
-                    Weapons(WeaponsPrivate::Paired(OneHandedWeapon(key), slab))
-                }
-                (WeaponsPrivate::MainHandOnly(main_weapon, slab), EquipHand::Off)
-                | (WeaponsPrivate::Paired(main_weapon, slab), EquipHand::Off)
-                | (WeaponsPrivate::TwoDifferent(main_weapon, _, slab), EquipHand::Off) => {
-                    if main_weapon.0 == key {
-                        Weapons(WeaponsPrivate::Paired(main_weapon, slab))
-                    } else {
-                        Weapons(WeaponsPrivate::TwoDifferent(
-                            main_weapon,
-                            OneHandedWeapon(key),
-                            slab,
-                        ))
-                    }
-                }
-                (WeaponsPrivate::OffHandOnly(off_weapon, slab), EquipHand::Main)
-                | (WeaponsPrivate::Paired(off_weapon, slab), EquipHand::Main)
-                | (WeaponsPrivate::TwoDifferent(_, off_weapon, slab), EquipHand::Main) => {
-                    if off_weapon.0 == key {
-                        Weapons(WeaponsPrivate::Paired(off_weapon, slab))
-                    } else {
-                        Weapons(WeaponsPrivate::TwoDifferent(
-                            OneHandedWeapon(key),
-                            off_weapon,
-                            slab,
-                        ))
-                    }
-                }
-                (WeaponsPrivate::MainHandOnly(_, slab), EquipHand::Both)
-                | (WeaponsPrivate::Paired(_, slab), EquipHand::Both)
-                | (WeaponsPrivate::OffHandOnly(_, slab), EquipHand::Both)
-                | (WeaponsPrivate::TwoDifferent(_, _, slab), EquipHand::Both)
-                | (WeaponsPrivate::TwoHanded(_, slab), EquipHand::Both) => {
-                    Weapons(WeaponsPrivate::Paired(OneHandedWeapon(key), slab))
-                }
-            };
+            Ok(self.inventory.remove(index))
         }
-        Ok(())
     }
 
     fn unequip_main(&mut self) {
-        match &mut self.0 {
-            WeaponsPrivate::NoEquipped(_) | WeaponsPrivate::OffHandOnly(_, _) => { /* do nothing */
-            }
-            WeaponsPrivate::MainHandOnly(_, slab) | WeaponsPrivate::TwoHanded(_, slab) => {
-                *self = Weapons(WeaponsPrivate::NoEquipped(std::mem::take(slab)));
-            }
-            WeaponsPrivate::Paired(weapon, slab)
-            | WeaponsPrivate::TwoDifferent(_, weapon, slab) => {
-                *self = Weapons(WeaponsPrivate::OffHandOnly(
-                    std::mem::take(weapon),
-                    std::mem::take(slab),
-                ));
-            }
-        }
+        self.inventory
+            .iter_mut()
+            .for_each(|(weapon, maybe_equip_hand)| {
+                match (weapon.is_two_handed(), std::mem::take(maybe_equip_hand)) {
+                    (false, Some(EquipHand::Both)) => *maybe_equip_hand = Some(EquipHand::Off),
+                    (false, Some(EquipHand::Main)) | (true, _) => {
+                        *maybe_equip_hand = None;
+                    }
+                    (false, Some(EquipHand::Off)) | (_, None) => {}
+                };
+            });
     }
 
     fn unequip_off(&mut self) {
-        match &mut self.0 {
-            WeaponsPrivate::NoEquipped(_) | WeaponsPrivate::OffHandOnly(_, _) => { /* do nothing */
-            }
-            WeaponsPrivate::MainHandOnly(_, slab) | WeaponsPrivate::TwoHanded(_, slab) => {
-                *self = Weapons(WeaponsPrivate::NoEquipped(std::mem::take(slab)));
-            }
-            WeaponsPrivate::Paired(weapon, slab)
-            | WeaponsPrivate::TwoDifferent(_, weapon, slab) => {
-                *self = Weapons(WeaponsPrivate::OffHandOnly(
-                    std::mem::take(weapon),
-                    std::mem::take(slab),
-                ));
-            }
-        }
+        self.inventory
+            .iter_mut()
+            .for_each(|(weapon, maybe_equip_hand)| {
+                match (weapon.is_two_handed(), std::mem::take(maybe_equip_hand)) {
+                    (false, Some(EquipHand::Both)) => *maybe_equip_hand = Some(EquipHand::Main),
+                    (false, Some(EquipHand::Off)) | (true, _) => {
+                        *maybe_equip_hand = None;
+                    }
+                    (false, Some(EquipHand::Main)) | (_, None) => {}
+                };
+            });
+    }
+
+    fn unequip_both(&mut self) {
+        self.inventory.iter_mut().for_each(|(_, maybe_equip_hand)| {
+            *maybe_equip_hand = None;
+        });
     }
 
     pub fn unequip(&mut self, hand: EquipHand) {
         match hand {
             EquipHand::Main => self.unequip_main(),
             EquipHand::Off => self.unequip_off(),
-            EquipHand::Both => {
-                self.unequip_main();
-                self.unequip_off();
-            }
+            EquipHand::Both => self.unequip_both(),
         }
     }
 
-    pub fn remove_weapon(&mut self, key: usize) -> bool {
-        match self.equipped_keys() {
-            (None, None) => { /* do nothing */ }
-            (None, Some(off_key)) => {
-                if off_key == key {
-                    self.unequip_off();
-                }
-            }
-            (Some(main_key), None) => {
-                if main_key == key {
-                    self.unequip_main();
-                }
-            }
-            (Some(main_key), Some(off_key)) => {
-                if main_key == key {
-                    self.unequip_main();
-                }
-                if off_key == key {
-                    self.unequip_off();
-                }
-            }
-        }
-
-        self.inventory_mut().try_remove(key).is_some()
-    }
-
-    pub fn iter(&self) -> impl Iterator<Item = (usize, Option<EquipHand>, &Weapon)> {
-        WeaponsIter {
-            weapons: self,
-            slab_iter: self.inventory().iter(),
-        }
-    }
-}
-
-pub(crate) struct WeaponsIter<'a> {
-    weapons: &'a Weapons,
-    slab_iter: slab::Iter<'a, Weapon>,
-}
-
-impl<'a> Iterator for WeaponsIter<'a> {
-    type Item = (usize, Option<EquipHand>, &'a Weapon);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let (key, weapon) = self.slab_iter.next()?;
-        match self.weapons.equipped_keys() {
-            (None, None) => Some((key, None, weapon)),
-            (None, Some(equipped_key)) => {
-                if key == equipped_key {
-                    Some((key, Some(EquipHand::Off), weapon))
-                } else {
-                    Some((key, None, weapon))
-                }
-            }
-            (Some(equipped_key), None) => {
-                if key == equipped_key {
-                    Some((key, Some(EquipHand::Main), weapon))
-                } else {
-                    Some((key, None, weapon))
-                }
-            }
-            (Some(main_key), Some(off_key)) => match (main_key == key, off_key == key) {
-                (true, true) => Some((key, Some(EquipHand::Both), weapon)),
-                (true, false) => Some((key, Some(EquipHand::Main), weapon)),
-                (false, true) => Some((key, Some(EquipHand::Off), weapon)),
-                (false, false) => Some((key, None, weapon)),
-            },
+    pub fn equip(&mut self, index: usize, hand: EquipHand) -> Result<()> {
+        if index >= self.inventory.len() {
+            Err(eyre!("Weapon index {} not found", index))
+        } else if self.inventory[index].0.is_two_handed() && hand != EquipHand::Both {
+            Err(eyre!("Weapon index {} requires two hands to wield", index))
+        } else {
+            self.unequip(hand);
+            self.inventory[index].1 = Some(hand);
+            Ok(())
         }
     }
 }

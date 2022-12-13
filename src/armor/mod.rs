@@ -22,7 +22,7 @@ pub enum ArmorTag {
     Special,
 }
 
-#[derive(Debug, Clone, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 pub struct ArmorItem {
     id: Option<i32>,
     name: String,
@@ -215,7 +215,7 @@ impl ArmorItem {
     }
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Armor {
     inventory: Vec<(ArmorItem, bool)>,
 }
@@ -239,13 +239,13 @@ impl Armor {
             .map(|(item, worn)| (index, item, *worn))
     }
 
-    pub fn add_armor_item(&mut self, armor_item: ArmorItem, worn: bool) {
-        if worn {
-            self.unequip_armor_item();
-        }
-        self.inventory.push((armor_item, worn));
-        self.inventory.sort_by(|a, b| a.0.name().cmp(b.0.name()));
-        self.inventory.dedup_by(|(a, _), (b, _)| a == b);
+    pub fn add_armor_item(&mut self, armor_item: ArmorItem) -> usize {
+        let insert_index = self
+            .inventory
+            .binary_search_by(|(inventory_item, _)| inventory_item.name().cmp(&armor_item.name))
+            .map_or_else(|i| i, |i| i);
+        self.inventory.insert(insert_index, (armor_item, false));
+        insert_index
     }
 
     pub fn remove_armor_item(&mut self, index: usize) -> Result<(ArmorItem, bool)> {

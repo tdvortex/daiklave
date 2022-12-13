@@ -10,6 +10,5 @@ CREATE TABLE character_weapons (
 CREATE TABLE character_armor (
     character_id INTEGER NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
     armor_id INTEGER NOT NULL REFERENCES armor(id) ON DELETE CASCADE,
-    worn BOOLEAN NOT NULL,
-    PRIMARY KEY (character_id, armor_id)
+    worn BOOLEAN NOT NULL
 );

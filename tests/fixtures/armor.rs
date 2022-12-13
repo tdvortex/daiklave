@@ -100,14 +100,13 @@ pub fn modify_armor(armor: &mut Armor) {
         .0;
     armor.equip_armor_item(silken_armor_key).unwrap();
 
-    // Add an item (not equipped)
+    // Add an item
     armor.add_armor_item(
         ArmorItem::custom(None)
             .as_medium()
             .with_name("Stolen Guard's Breastplate".to_owned())
             .build()
             .unwrap(),
-        false,
     );
 }
 

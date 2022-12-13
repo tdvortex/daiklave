@@ -20,7 +20,7 @@ impl Weapons {
         let mut created_weapons = Vec::new();
         let mut new_owned_weapons = HashMap::new();
 
-        for (_, maybe_equip_hand, weapon) in newer.iter() {
+        for (_, weapon, maybe_equip_hand) in newer.iter() {
             if let Some(id) = weapon.id() {
                 new_owned_weapons.insert(id, maybe_equip_hand);
             } else {
@@ -32,7 +32,7 @@ impl Weapons {
         if noop {
             let mut old_owned_weapons = HashMap::new();
 
-            for (_, maybe_equip_hand, weapon) in self.iter() {
+            for (_, weapon, maybe_equip_hand) in self.iter() {
                 if let Some(id) = weapon.id() {
                     old_owned_weapons.insert(id, maybe_equip_hand);
                 }
