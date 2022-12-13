@@ -15,6 +15,7 @@ use crate::abilities::{Abilities, AbilityNameNoSubskill};
 use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
 use crate::campaign::Campaign;
+use crate::exalt_type::ExaltType;
 use crate::health::{Health, WoundPenalty};
 use crate::intimacies::Intimacies;
 use crate::intimacies::Intimacy;
@@ -44,6 +45,7 @@ pub struct Character {
     pub weapons: Weapons,
     pub armor: Armor,
     pub merits: Merits,
+    pub exalt_type: ExaltType,
 }
 
 impl Character {
@@ -80,6 +82,7 @@ pub struct CharacterBuilder {
     weapons: Weapons,
     armor: Armor,
     merits: Vec<Merit>,
+    exalt_type: Option<ExaltType>,
 }
 
 impl CharacterBuilder {
@@ -282,6 +285,12 @@ impl CharacterBuilder {
             return Err(eyre!("name must be specified"));
         }
 
+        let exalt_type = if let Some(exalt) = self.exalt_type {
+            exalt
+        } else {
+            ExaltType::Mortal
+        };
+
         Ok(Character {
             id: self.id,
             player: self.player.unwrap(),
@@ -297,6 +306,7 @@ impl CharacterBuilder {
             weapons: self.weapons,
             armor: self.armor,
             merits: Merits::new(self.merits),
+            exalt_type
         })
     }
 }
