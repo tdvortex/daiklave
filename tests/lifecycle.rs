@@ -1,6 +1,6 @@
 use exalted_3e_gui::{
     armor::destroy_armor, create_player, destroy_player, merits::destroy_merits, update_character,
-    weapons::destroy_weapons, Character,
+    weapons::destroy_weapons, Character, character::destroy_character,
 };
 use postcard::from_bytes;
 use sqlx::PgPool;
@@ -78,23 +78,41 @@ fn lifecycle() {
     // Client deserializes
     validate_modified_character(&player, &character);
 
-    // Client sends delete player order
-    // Server deletes player
-    destroy_player(&pool, player.id()).await.unwrap();
-
-    // Confirm end state
-    // Player should not exist
-    assert!(
-        sqlx::query!("SELECT * FROM players WHERE id = $1", player.id())
-            .fetch_optional(&pool)
-            .await
-            .unwrap()
-            .is_none()
-    );
+    // Client sends delete character order
+    // Server deletes character
+    destroy_character(&pool, character.id().unwrap()).await.unwrap();
 
     // Character should not exist
     assert!(sqlx::query!(
         "SELECT id FROM characters WHERE id = $1",
+        character.id().unwrap()
+    )
+    .fetch_optional(&pool)
+    .await
+    .unwrap()
+    .is_none());
+
+    // Custom items should not exist
+    assert!(sqlx::query!(
+        "SELECT id FROM armor WHERE creator_id = $1",
+        character.id().unwrap()
+    )
+    .fetch_optional(&pool)
+    .await
+    .unwrap()
+    .is_none());
+
+    assert!(sqlx::query!(
+        "SELECT id FROM weapons WHERE creator_id = $1",
+        character.id().unwrap()
+    )
+    .fetch_optional(&pool)
+    .await
+    .unwrap()
+    .is_none());
+
+    assert!(sqlx::query!(
+        "SELECT id FROM merits WHERE creator_id = $1",
         character.id().unwrap()
     )
     .fetch_optional(&pool)
@@ -126,33 +144,18 @@ fn lifecycle() {
 
     assert!(merit_ids.len() == 4);
 
-    // Custom items should not
-    assert!(sqlx::query!(
-        "SELECT id FROM armor WHERE creator_id = $1",
-        character.id().unwrap()
-    )
-    .fetch_optional(&pool)
-    .await
-    .unwrap()
-    .is_none());
+    // Client sends delete player order
+    // Server deletes player
+    destroy_player(&pool, player.id()).await.unwrap();
 
-    assert!(sqlx::query!(
-        "SELECT id FROM weapons WHERE creator_id = $1",
-        character.id().unwrap()
-    )
-    .fetch_optional(&pool)
-    .await
-    .unwrap()
-    .is_none());
-
-    assert!(sqlx::query!(
-        "SELECT id FROM merits WHERE creator_id = $1",
-        character.id().unwrap()
-    )
-    .fetch_optional(&pool)
-    .await
-    .unwrap()
-    .is_none());
+    // Player should not exist
+    assert!(
+        sqlx::query!("SELECT * FROM players WHERE id = $1", player.id())
+            .fetch_optional(&pool)
+            .await
+            .unwrap()
+            .is_none()
+    );
 
     // Clean up database to end test
     destroy_armor(&pool, &[silken_armor_id]).await.unwrap();
