@@ -19,7 +19,7 @@ pub enum MeritType {
     Purchased,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 pub struct MeritTemplate {
     id: Option<i32>,
     name: String,
@@ -28,6 +28,19 @@ pub struct MeritTemplate {
     description: String,
     requires_detail: bool,
     data_source: DataSource,
+}
+
+impl PartialEq for MeritTemplate {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+            && (self.id.is_some()
+                || (self.name == other.name
+                    && self.merit_type == other.merit_type
+                    && self.prerequisites == other.prerequisites
+                    && self.description == other.description
+                    && self.requires_detail == other.requires_detail
+                    && self.data_source == other.data_source))
+    }
 }
 
 impl MeritTemplate {
@@ -87,12 +100,22 @@ impl MeritTemplate {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 pub struct Merit {
     id: Option<i32>,
     template: MeritTemplate,
     dots: u8,
     detail: Option<String>,
+}
+
+impl PartialEq for Merit {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+            && (self.id.is_some()
+                || (self.template == other.template
+                    && self.dots == other.dots
+                    && self.detail == other.detail))
+    }
 }
 
 impl Merit {
