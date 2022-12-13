@@ -1,6 +1,6 @@
 use exalted_3e_gui::{
-    armor::destroy_armor, create_player, destroy_player, merits::destroy_merits, update_character,
-    weapons::destroy_weapons, Character, character::destroy_character,
+    armor::destroy_armor, character::destroy_character, create_player, destroy_player,
+    merits::destroy_merits, update_character, weapons::destroy_weapons, Character,
 };
 use postcard::from_bytes;
 use sqlx::PgPool;
@@ -80,7 +80,9 @@ fn lifecycle() {
 
     // Client sends delete character order
     // Server deletes character
-    destroy_character(&pool, character.id().unwrap()).await.unwrap();
+    destroy_character(&pool, character.id().unwrap())
+        .await
+        .unwrap();
 
     // Character should not exist
     assert!(sqlx::query!(

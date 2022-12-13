@@ -17,7 +17,6 @@ pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {
                 .unwrap(),
             false,
         )
-        .unwrap()
         .with_armor(
             ArmorItem::custom(None)
                 .with_name("Straw Hat".to_owned())
@@ -26,37 +25,39 @@ pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {
                 .unwrap(),
             true,
         )
-        .unwrap()
 }
 
 pub fn validate_initial_armor_items(armor: &Armor, should_have_id: bool) {
     let mut count = 0;
 
-    for (key, worn, item) in armor.iter() {
+    for (key, item, worn) in armor.iter() {
         count += 1;
         match item.name() {
             "Straw Hat" => {
                 assert!(worn);
-                assert!(armor.get(key).unwrap().id().is_some() == should_have_id);
-                assert_eq!(armor.get(key).unwrap().tags(), [ArmorTag::Light].into());
+                assert!(armor.get_by_index(key).unwrap().1.id().is_some() == should_have_id);
+                assert_eq!(
+                    armor.get_by_index(key).unwrap().1.tags(),
+                    [ArmorTag::Light].into()
+                );
                 if should_have_id {
-                    assert!(match armor.get(key).unwrap().data_source() {
+                    assert!(match armor.get_by_index(key).unwrap().1.data_source() {
                         DataSource::Book(_) => panic!("should be custom"),
                         DataSource::Custom(None) => panic!("should have custom creator id"),
                         DataSource::Custom(Some(_)) => true,
                     });
                 } else {
                     assert_eq!(
-                        armor.get(key).unwrap().data_source(),
+                        armor.get_by_index(key).unwrap().1.data_source(),
                         &DataSource::Custom(None)
                     );
                 }
             }
             "Silken Armor" => {
                 assert!(!worn);
-                assert!(armor.get(key).unwrap().id().is_some() == should_have_id);
+                assert!(armor.get_by_index(key).unwrap().1.id().is_some() == should_have_id);
                 assert_eq!(
-                    armor.get(key).unwrap().tags(),
+                    armor.get_by_index(key).unwrap().1.tags(),
                     [
                         ArmorTag::Light,
                         ArmorTag::Artifact,
@@ -66,7 +67,7 @@ pub fn validate_initial_armor_items(armor: &Armor, should_have_id: bool) {
                     .into()
                 );
                 assert_eq!(
-                    armor.get(key).unwrap().data_source(),
+                    armor.get_by_index(key).unwrap().1.data_source(),
                     &DataSource::Book(BookReference {
                         book_title: "Core Rulebook".to_owned(),
                         page_number: 600
@@ -86,7 +87,7 @@ pub fn modify_armor(armor: &mut Armor) {
     // Remove an item
     let straw_hat_key = armor
         .iter()
-        .find(|(_, _, item)| item.name() == "Straw Hat")
+        .find(|(_, item, _)| item.name() == "Straw Hat")
         .unwrap()
         .0;
     armor.remove_armor_item(straw_hat_key).unwrap();
@@ -94,34 +95,38 @@ pub fn modify_armor(armor: &mut Armor) {
     // Equip an item
     let silken_armor_key = armor
         .iter()
-        .find(|(_, _, item)| item.name() == "Silken Armor")
+        .find(|(_, item, _)| item.name() == "Silken Armor")
         .unwrap()
         .0;
     armor.equip_armor_item(silken_armor_key).unwrap();
 
-    // Add an item
+    // Add an item (not equipped)
     armor.add_armor_item(
         ArmorItem::custom(None)
             .as_medium()
             .with_name("Stolen Guard's Breastplate".to_owned())
             .build()
             .unwrap(),
+        false,
     );
 }
 
 pub fn validate_modified_armor_items(armor: &Armor) {
     let mut count = 0;
-    for (key, worn, item) in armor.iter() {
+    for (key, item, worn) in armor.iter() {
         count += 1;
         match item.name() {
             "Stolen Guard's Breastplate" => {
                 assert!(!worn);
-                assert_eq!(armor.get(key).unwrap().tags(), [ArmorTag::Medium].into());
+                assert_eq!(
+                    armor.get_by_index(key).unwrap().1.tags(),
+                    [ArmorTag::Medium].into()
+                );
             }
             "Silken Armor" => {
                 assert!(worn);
                 assert_eq!(
-                    armor.get(key).unwrap().tags(),
+                    armor.get_by_index(key).unwrap().1.tags(),
                     [
                         ArmorTag::Light,
                         ArmorTag::Artifact,
@@ -131,7 +136,7 @@ pub fn validate_modified_armor_items(armor: &Armor) {
                     .into()
                 );
                 assert_eq!(
-                    armor.get(key).unwrap().data_source(),
+                    armor.get_by_index(key).unwrap().1.data_source(),
                     &DataSource::Book(BookReference {
                         book_title: "Core Rulebook".to_owned(),
                         page_number: 600

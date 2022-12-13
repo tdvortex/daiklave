@@ -13,7 +13,7 @@ pub mod prerequisite;
 pub mod weapons;
 use std::{collections::HashSet, hash::Hash};
 
-pub use character::{retrieve_character, update_character, destroy_character, Character};
+pub use character::{destroy_character, retrieve_character, update_character, Character};
 pub use player::{create_player, destroy_player};
 use slab::Slab;
 

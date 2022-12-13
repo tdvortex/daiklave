@@ -217,12 +217,7 @@ impl CharacterBuilder {
                     )
                 })?;
             let worn = worn_row.worn;
-            self = self.with_armor(armor_item, worn).wrap_err_with(|| {
-                format!(
-                    "Could not give armor item {} to character {}",
-                    worn_row.armor_id, worn_row.character_id
-                )
-            })?;
+            self = self.with_armor(armor_item, worn);
         }
 
         Ok(self)

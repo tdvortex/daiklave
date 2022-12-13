@@ -24,7 +24,7 @@ impl Armor {
         let mut new_owned_set = HashSet::new();
         let mut worn_item = None;
 
-        for (_, worn, armor_item) in newer.iter() {
+        for (_, armor_item, worn) in newer.iter() {
             if let Some(id) = armor_item.id() {
                 new_owned_set.insert(id);
                 if worn {
@@ -38,7 +38,7 @@ impl Armor {
 
         let mut old_owned_set = HashSet::new();
 
-        for (_, worn, armor_item) in self.iter() {
+        for (_, armor_item, worn) in self.iter() {
             if let Some(old_id) = armor_item.id() {
                 old_owned_set.insert(old_id);
                 if diff.noop && worn && Some(old_id) != worn_item {

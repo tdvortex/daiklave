@@ -8,12 +8,8 @@ pub(crate) mod tables;
 use std::{collections::HashSet, hash::Hash};
 
 use eyre::{eyre, Result};
-use slab::Slab;
 
-use crate::{
-    data_source::{BookReference, DataSource},
-    slab_eq,
-};
+use crate::data_source::{BookReference, DataSource};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum ArmorTag {
@@ -202,93 +198,62 @@ impl ArmorItem {
     }
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Armor {
-    equipped: Option<usize>,
-    owned: Slab<ArmorItem>,
+    inventory: Vec<(ArmorItem, bool)>,
 }
 
 impl Armor {
-    pub fn iter(&self) -> impl Iterator<Item = (usize, bool, &ArmorItem)> {
-        ArmorIter {
-            armor: self,
-            items_iter: self.owned.iter(),
+    pub fn iter(&self) -> impl Iterator<Item = (usize, &ArmorItem, bool)> {
+        self.inventory
+            .iter()
+            .enumerate()
+            .map(|(index, (item, worn))| (index, item, *worn))
+    }
+
+    pub fn get_by_ref(&self, item: &ArmorItem) -> Option<(usize, &ArmorItem, bool)> {
+        self.iter()
+            .find(|&(_, inventory_item, _)| inventory_item == item)
+    }
+
+    pub fn get_by_index(&self, index: usize) -> Option<(usize, &ArmorItem, bool)> {
+        self.inventory
+            .get(index)
+            .map(|(item, worn)| (index, item, *worn))
+    }
+
+    pub fn add_armor_item(&mut self, armor_item: ArmorItem, worn: bool) {
+        if worn {
+            self.unequip_armor_item();
+        }
+        self.inventory.push((armor_item, worn));
+        self.inventory.sort_by(|a, b| a.0.name().cmp(b.0.name()));
+    }
+
+    pub fn remove_armor_item(&mut self, index: usize) -> Result<(ArmorItem, bool)> {
+        if self.inventory.len() <= index {
+            Err(eyre!("armor item {} not found", index))
+        } else {
+            Ok(self.inventory.remove(index))
         }
     }
 
-    pub fn get(&self, key: usize) -> Result<&ArmorItem> {
-        self.owned
-            .get(key)
-            .ok_or_else(|| eyre!("armor item {} not found", key))
-    }
-
-    pub fn add_armor_item(&mut self, armor_item: ArmorItem) -> usize {
-        self.owned.insert(armor_item)
-    }
-
-    pub fn remove_armor_item(&mut self, key: usize) -> Result<()> {
-        if !self.owned.contains(key) {
-            Err(eyre!("armor item {} not found", key))
+    pub fn equip_armor_item(&mut self, index: usize) -> Result<()> {
+        if self.inventory.len() <= index {
+            Err(eyre!("armor item {} not found", index))
         } else {
-            if let Some(worn) = &self.equipped {
-                if *worn == key {
-                    self.unequip_armor_item();
-                }
-            }
-
-            self.owned.remove(key);
-            Ok(())
-        }
-    }
-
-    pub fn equip_armor_item(&mut self, key: usize) -> Result<()> {
-        if !self.owned.contains(key) {
-            Err(eyre!("armor item {} not found", key))
-        } else {
-            self.equipped = Some(key);
+            self.inventory
+                .iter_mut()
+                .enumerate()
+                .for_each(|(inventory_index, (_, worn))| *worn = inventory_index == index);
             Ok(())
         }
     }
 
     pub fn unequip_armor_item(&mut self) {
-        self.equipped = None;
-    }
-}
-
-impl PartialEq for Armor {
-    fn eq(&self, other: &Self) -> bool {
-        if self.equipped.is_some() != other.equipped.is_some() {
-            return false;
-        }
-
-        if self.equipped.is_some()
-            && self.get(self.equipped.unwrap()).unwrap()
-                != other.get(other.equipped.unwrap()).unwrap()
-        {
-            return false;
-        }
-
-        slab_eq(&self.owned, &other.owned)
-    }
-}
-
-impl Eq for Armor {}
-
-struct ArmorIter<'a> {
-    armor: &'a Armor,
-    items_iter: slab::Iter<'a, ArmorItem>,
-}
-
-impl<'a> Iterator for ArmorIter<'a> {
-    type Item = (usize, bool, &'a ArmorItem);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let (key, item) = self.items_iter.next()?;
-        let equipped = self
-            .armor
-            .equipped
-            .map_or(false, |equipped| equipped == key);
-        Some((key, equipped, item))
+        self.inventory
+            .iter_mut()
+            .for_each(|(_, worn)| *worn = false);
     }
 }
 

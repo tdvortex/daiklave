@@ -1,11 +1,11 @@
 pub(crate) mod create;
+pub(crate) mod destroy;
 pub(crate) mod retrieve;
 pub(crate) mod update;
-pub(crate) mod destroy;
 pub use create::create_character;
+pub use destroy::destroy_character;
 pub use retrieve::retrieve_character;
 pub use update::update_character;
-pub use destroy::destroy_character;
 pub use update::CharacterBaseDiff;
 pub(crate) mod tables;
 use eyre::{eyre, Result};
@@ -237,14 +237,9 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    pub fn with_armor(mut self, armor_item: ArmorItem, worn: bool) -> Result<Self> {
-        let key = self.armor.add_armor_item(armor_item);
-
-        if worn {
-            self.armor.equip_armor_item(key)?;
-        }
-
-        Ok(self)
+    pub fn with_armor(mut self, armor_item: ArmorItem, worn: bool) -> Self {
+        self.armor.add_armor_item(armor_item, worn);
+        self
     }
 
     fn with_merit_ignore_prerequisites(
