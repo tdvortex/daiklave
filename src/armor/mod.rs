@@ -22,7 +22,7 @@ pub enum ArmorTag {
     Special,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, Hash, Serialize, Deserialize)]
 pub struct ArmorItem {
     id: Option<i32>,
     name: String,
@@ -32,6 +32,23 @@ pub struct ArmorItem {
     silent: bool,
     special: bool,
     data_source: DataSource,
+}
+
+impl PartialEq for ArmorItem {
+    fn eq(&self, other: &Self) -> bool {
+        if self.id.is_some() && other.id.is_some() {
+            self.id == other.id
+        } else if self.id.is_none() && other.id.is_none() {
+            self.weight_class == other.weight_class
+                && self.artifact == other.artifact
+                && self.concealable == other.concealable
+                && self.silent == other.silent
+                && self.special == other.special
+                && self.data_source == other.data_source
+        } else {
+            false
+        }
+    }
 }
 
 impl ArmorItem {
@@ -228,6 +245,7 @@ impl Armor {
         }
         self.inventory.push((armor_item, worn));
         self.inventory.sort_by(|a, b| a.0.name().cmp(b.0.name()));
+        self.inventory.dedup_by(|(a, _), (b, _)| a == b);
     }
 
     pub fn remove_armor_item(&mut self, index: usize) -> Result<(ArmorItem, bool)> {
