@@ -30,7 +30,7 @@ impl From<EclipseAbility> for AbilityNameNoSubskill {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct EclipseTraits(EclipseAbility, Vec<EclipseAbility>);
+pub struct EclipseTraits(EclipseAbility, [EclipseAbility; 4]);
 
 impl EclipseTraits {
     pub fn builder() -> EclipseTraitsBuilder {
@@ -41,12 +41,19 @@ impl EclipseTraits {
         self.0.into()
     }
 
-    pub fn caste_abilities(&self) -> Vec<AbilityNameNoSubskill> {
+    pub fn caste_abilities(&self) -> [AbilityNameNoSubskill; 5] {
         self.1
             .iter()
             .map(|eclipse_ability| (*eclipse_ability).into())
             .chain(std::iter::once(self.0.into()))
-            .collect()
+            .enumerate()
+            .fold(
+                [AbilityNameNoSubskill::Archery; 5],
+                |mut arr, (index, ability)| {
+                    arr[index] = ability;
+                    arr
+                },
+            )
     }
 
     pub fn has_supernal_ability(&self, ability: AbilityNameNoSubskill) -> bool {
@@ -88,7 +95,16 @@ impl EclipseTraitsBuilder {
             if self.caste_abilities.len() != 4 {
                 Err(eyre!("Must have exactly 5 caste abilities"))
             } else {
-                Ok(EclipseTraits(ability, self.caste_abilities))
+                Ok(EclipseTraits(
+                    ability,
+                    self.caste_abilities.into_iter().enumerate().fold(
+                        [EclipseAbility::Bureaucracy; 4],
+                        |mut arr, (index, ability)| {
+                            arr[index] = ability;
+                            arr
+                        },
+                    ),
+                ))
             }
         } else {
             Err(eyre!("Must specify a supernal ability"))

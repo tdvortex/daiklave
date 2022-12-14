@@ -30,7 +30,7 @@ impl From<ZenithAbility> for AbilityNameNoSubskill {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct ZenithTraits(ZenithAbility, Vec<ZenithAbility>);
+pub struct ZenithTraits(ZenithAbility, [ZenithAbility; 4]);
 
 impl ZenithTraits {
     pub fn builder() -> ZenithTraitsBuilder {
@@ -41,12 +41,19 @@ impl ZenithTraits {
         self.0.into()
     }
 
-    pub fn caste_abilities(&self) -> Vec<AbilityNameNoSubskill> {
+    pub fn caste_abilities(&self) -> [AbilityNameNoSubskill; 5] {
         self.1
             .iter()
             .map(|zenith_ability| (*zenith_ability).into())
             .chain(std::iter::once(self.0.into()))
-            .collect()
+            .enumerate()
+            .fold(
+                [AbilityNameNoSubskill::Archery; 5],
+                |mut arr, (index, ability)| {
+                    arr[index] = ability;
+                    arr
+                },
+            )
     }
 
     pub fn has_supernal_ability(&self, ability: AbilityNameNoSubskill) -> bool {
@@ -88,7 +95,16 @@ impl ZenithTraitsBuilder {
             if self.caste_abilities.len() != 4 {
                 Err(eyre!("Must have exactly 5 caste abilities"))
             } else {
-                Ok(ZenithTraits(ability, self.caste_abilities))
+                Ok(ZenithTraits(
+                    ability,
+                    self.caste_abilities.into_iter().enumerate().fold(
+                        [ZenithAbility::Athletics; 4],
+                        |mut arr, (index, ability)| {
+                            arr[index] = ability;
+                            arr
+                        },
+                    ),
+                ))
             }
         } else {
             Err(eyre!("Must specify a supernal ability"))

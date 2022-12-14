@@ -6,56 +6,74 @@ mod zenith;
 
 pub use self::{
     dawn::{DawnAbility, DawnTraits, DawnTraitsBuilder},
+    eclipse::{EclipseAbility, EclipseTraits, EclipseTraitsBuilder},
+    night::{NightAbility, NightTraits, NightTraitsBuilder},
     twilight::{TwilightAbility, TwilightTraits, TwilightTraitsBuilder},
     zenith::{ZenithAbility, ZenithTraits, ZenithTraitsBuilder},
-    night::{NightAbility, NightTraits, NightTraitsBuilder},
-    eclipse::{EclipseAbility, EclipseTraits, EclipseTraitsBuilder},
 };
 
 use crate::{abilities::AbilityNameNoSubskill, essence::Essence, limit::Limit};
 use eyre::{eyre, Result};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SolarTraits {
     pub essence: Essence,
     pub limit: Limit,
     caste: SolarCaste,
-    favored_abilities: Vec<AbilityNameNoSubskill>,
+    favored_abilities: [AbilityNameNoSubskill; 5],
 }
 
 impl SolarTraits {
+    /// Brawl and MartialArts are different supernal abilities for Dawn castes.
     pub fn supernal_ability(&self) -> AbilityNameNoSubskill {
         self.caste.supernal_ability()
     }
 
+    /// Brawl and MartialArts are different supernal abilities for Dawn castes.
     pub fn has_supernal_ability(&self, ability: AbilityNameNoSubskill) -> bool {
         self.caste.has_supernal_ability(ability)
     }
 
-    pub fn caste_abilities(&self) -> Vec<AbilityNameNoSubskill> {
+    /// Brawl implies Brawl/MartialArts here.
+    pub fn caste_abilities(&self) -> [AbilityNameNoSubskill; 5] {
         self.caste.caste_abilities()
     }
 
-    pub fn favored_abilities(&self) -> Vec<AbilityNameNoSubskill> {
+    /// Brawl implies Brawl/MartialArts here.
+    pub fn favored_abilities(&self) -> [AbilityNameNoSubskill; 5] {
         self.favored_abilities.clone()
     }
 
-    pub fn caste_and_favored_abilities(&self) -> Vec<AbilityNameNoSubskill> {
-        let mut output = self.caste_abilities();
-        output.extend(self.favored_abilities().into_iter());
+    /// Brawl implies Brawl/MartialArts.
+    pub fn caste_and_favored_abilities(&self) -> [AbilityNameNoSubskill; 10] {
+        let mut output: [AbilityNameNoSubskill; 10] =
+            [self.caste_abilities(), self.favored_abilities()]
+                .into_iter()
+                .flat_map(|arr| arr.into_iter())
+                .enumerate()
+                .fold(
+                    [AbilityNameNoSubskill::Archery; 10],
+                    |mut arr, (index, ability)| {
+                        arr[index] = ability;
+                        arr
+                    },
+                );
         output.sort();
         output
     }
 
+    /// Returns true for MartialArts if Brawl is a caste ability.
     pub fn has_caste_ability(&self, ability: AbilityNameNoSubskill) -> bool {
         self.caste.has_caste_ability(ability)
     }
 
+    /// Returns true for MartialArts if Brawl is a favored ability.
     pub fn has_favored_ability(&self, ability: AbilityNameNoSubskill) -> bool {
         self.favored_abilities.contains(&ability)
     }
 
+    /// Returns true for MartialArts if Brawl is a caste or favored ability.
     pub fn has_caste_or_favored_ability(&self, ability: AbilityNameNoSubskill) -> bool {
         self.has_favored_ability(ability) || self.has_caste_ability(ability)
     }
@@ -81,7 +99,7 @@ impl SolarCaste {
         }
     }
 
-    fn caste_abilities(&self) -> Vec<AbilityNameNoSubskill> {
+    fn caste_abilities(&self) -> [AbilityNameNoSubskill; 5] {
         match &self {
             SolarCaste::Dawn(traits) => traits.caste_abilities(),
             SolarCaste::Zenith(traits) => traits.caste_abilities(),
@@ -91,6 +109,7 @@ impl SolarCaste {
         }
     }
 
+    /// Brawl and MartialArts are considered different supernal abilities
     fn has_supernal_ability(&self, ability: AbilityNameNoSubskill) -> bool {
         match &self {
             SolarCaste::Dawn(traits) => traits.has_supernal_ability(ability),
@@ -158,9 +177,15 @@ impl SolarTraitsBuilder {
         self
     }
 
-    pub fn with_favored_ability(mut self, ability: AbilityNameNoSubskill) -> Self {
-        self.favored.push(ability);
-        self   
+    pub fn with_favored_ability(mut self, ability: AbilityNameNoSubskill) -> Result<Self> {
+        if ability == AbilityNameNoSubskill::MartialArts {
+            Err(eyre!(
+                "Martial Arts cannot be chosen as a favored ability; it comes for free with Brawl"
+            ))
+        } else {
+            self.favored.push(ability);
+            Ok(self)
+        }
     }
 
     pub fn build(mut self) -> Result<SolarTraits> {
@@ -177,15 +202,24 @@ impl SolarTraitsBuilder {
         let caste = self.caste.unwrap();
         let caste_abilities = caste.caste_abilities();
 
-        self.favored.retain(|ability| !caste_abilities.contains(&ability));
+        self.favored
+            .retain(|ability| !caste_abilities.contains(&ability));
         if self.favored.len() != 5 {
             Err(eyre!("Solars must have a total of 10 caste and favored abilities (not counting Martial Arts)"))
         } else {
+            let favored_abilities = self.favored.into_iter().enumerate().fold(
+                [AbilityNameNoSubskill::Archery; 5],
+                |mut arr, (index, ability)| {
+                    arr[index] = ability;
+                    arr
+                },
+            );
+
             Ok(SolarTraits {
                 essence: self.essence,
                 limit: self.limit.unwrap(),
                 caste,
-                favored_abilities: self.favored
+                favored_abilities,
             })
         }
     }

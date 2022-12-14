@@ -30,30 +30,12 @@ impl From<DawnAbility> for AbilityNameNoSubskill {
     }
 }
 
-impl TryFrom<AbilityNameNoSubskill> for DawnAbility {
-    type Error = eyre::Report;
-
-    fn try_from(value: AbilityNameNoSubskill) -> Result<Self, Self::Error> {
-        match value {
-            AbilityNameNoSubskill::Archery => Ok(Self::Archery),
-            AbilityNameNoSubskill::Awareness => Ok(Self::Awareness),
-            AbilityNameNoSubskill::Brawl => Ok(Self::Brawl),
-            AbilityNameNoSubskill::Dodge => Ok(Self::Dodge),
-            AbilityNameNoSubskill::Melee => Ok(Self::Melee),
-            AbilityNameNoSubskill::Resistance => Ok(Self::Resistance),
-            AbilityNameNoSubskill::Thrown => Ok(Self::Thrown),
-            AbilityNameNoSubskill::War => Ok(Self::War),
-            _ => Err(eyre!("Not a Dawn ability")),
-        }
-    }
-}
-
 /// Dawn Solars can't choose MartialArts as a caste ability, but can choose it
 /// as their Supernal if and only if Brawl is one of their five caste abilities
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum DawnTraits {
-    MartialArtsSupernal(Vec<DawnAbility>),
-    NotMartialArtsSupernal(DawnAbility, Vec<DawnAbility>),
+    MartialArtsSupernal([DawnAbility; 4]),
+    NotMartialArtsSupernal(DawnAbility, [DawnAbility; 4]),
 }
 
 impl DawnTraits {
@@ -68,19 +50,32 @@ impl DawnTraits {
         }
     }
 
-    pub fn caste_abilities(&self) -> Vec<AbilityNameNoSubskill> {
-        let mut output: Vec<AbilityNameNoSubskill> = match self {
+    pub fn caste_abilities(&self) -> [AbilityNameNoSubskill; 5] {
+        let mut output: [AbilityNameNoSubskill; 5] = match self {
             DawnTraits::MartialArtsSupernal(list) => list
                 .iter()
                 .map(|dawn_ability| (*dawn_ability).into())
                 .chain(std::iter::once(AbilityNameNoSubskill::Brawl))
-                .chain(std::iter::once(AbilityNameNoSubskill::MartialArts))
-                .collect(),
+                .enumerate()
+                .fold(
+                    [AbilityNameNoSubskill::Archery; 5],
+                    |mut arr, (index, ability)| {
+                        arr[index] = ability;
+                        arr
+                    },
+                ),
             DawnTraits::NotMartialArtsSupernal(supernal, list) => list
                 .iter()
                 .map(|dawn_ability| (*dawn_ability).into())
                 .chain(std::iter::once((*supernal).into()))
-                .collect(),
+                .enumerate()
+                .fold(
+                    [AbilityNameNoSubskill::Archery; 5],
+                    |mut arr, (index, ability)| {
+                        arr[index] = ability;
+                        arr
+                    },
+                ),
         };
 
         output.sort();
@@ -159,11 +154,25 @@ impl DawnTraitsBuilder {
         }
 
         if self.is_martial_arts_supernal {
-            Ok(DawnTraits::MartialArtsSupernal(self.caste_abilities))
+            Ok(DawnTraits::MartialArtsSupernal(
+                self.caste_abilities.into_iter().enumerate().fold(
+                    [DawnAbility::Archery; 4],
+                    |mut arr, (index, ability)| {
+                        arr[index] = ability;
+                        arr
+                    },
+                ),
+            ))
         } else {
             Ok(DawnTraits::NotMartialArtsSupernal(
                 self.supernal_ability.unwrap(),
-                self.caste_abilities,
+                self.caste_abilities.into_iter().enumerate().fold(
+                    [DawnAbility::Archery; 4],
+                    |mut arr, (index, ability)| {
+                        arr[index] = ability;
+                        arr
+                    },
+                ),
             ))
         }
     }
