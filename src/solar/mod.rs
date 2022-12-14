@@ -13,7 +13,7 @@ pub use self::{
 };
 
 use crate::{abilities::AbilityNameNoSubskill, essence::Essence, limit::Limit};
-use eyre::Result;
+use eyre::{eyre, Result};
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -26,43 +26,38 @@ pub struct SolarTraits {
 
 impl SolarTraits {
     pub fn supernal_ability(&self) -> AbilityNameNoSubskill {
-        match &self.caste {
-            SolarCaste::Dawn(traits) => traits.supernal_ability(),
-            SolarCaste::Zenith(traits) => traits.supernal_ability(),
-            SolarCaste::Twilight(traits) => traits.supernal_ability(),
-            SolarCaste::Night(traits) => traits.supernal_ability(),
-            SolarCaste::Eclipse(traits) => traits.supernal_ability(),
-        }
-    }
-
-    pub fn caste_abilities(&self) -> Vec<AbilityNameNoSubskill> {
-        match &self.caste {
-            SolarCaste::Dawn(traits) => traits.caste_abilities(),
-            SolarCaste::Zenith(traits) => traits.caste_abilities(),
-            SolarCaste::Twilight(traits) => traits.caste_abilities(),
-            SolarCaste::Night(traits) => traits.caste_abilities(),
-            SolarCaste::Eclipse(traits) => traits.caste_abilities(),
-        }
+        self.caste.supernal_ability()
     }
 
     pub fn has_supernal_ability(&self, ability: AbilityNameNoSubskill) -> bool {
-        match &self.caste {
-            SolarCaste::Dawn(traits) => traits.has_supernal_ability(ability),
-            SolarCaste::Zenith(traits) => traits.has_supernal_ability(ability),
-            SolarCaste::Twilight(traits) => traits.has_supernal_ability(ability),
-            SolarCaste::Night(traits) => traits.has_supernal_ability(ability),
-            SolarCaste::Eclipse(traits) => traits.has_supernal_ability(ability),
-        }
+        self.caste.has_supernal_ability(ability)
+    }
+
+    pub fn caste_abilities(&self) -> Vec<AbilityNameNoSubskill> {
+        self.caste.caste_abilities()
+    }
+
+    pub fn favored_abilities(&self) -> Vec<AbilityNameNoSubskill> {
+        self.favored_abilities.clone()
+    }
+
+    pub fn caste_and_favored_abilities(&self) -> Vec<AbilityNameNoSubskill> {
+        let mut output = self.caste_abilities();
+        output.extend(self.favored_abilities().into_iter());
+        output.sort();
+        output
     }
 
     pub fn has_caste_ability(&self, ability: AbilityNameNoSubskill) -> bool {
-        match &self.caste {
-            SolarCaste::Dawn(traits) => traits.has_caste_ability(ability),
-            SolarCaste::Zenith(traits) => traits.has_caste_ability(ability),
-            SolarCaste::Twilight(traits) => traits.has_caste_ability(ability),
-            SolarCaste::Night(traits) => traits.has_caste_ability(ability),
-            SolarCaste::Eclipse(traits) => traits.has_caste_ability(ability),
-        }
+        self.caste.has_caste_ability(ability)
+    }
+
+    pub fn has_favored_ability(&self, ability: AbilityNameNoSubskill) -> bool {
+        self.favored_abilities.contains(&ability)
+    }
+
+    pub fn has_caste_or_favored_ability(&self, ability: AbilityNameNoSubskill) -> bool {
+        self.has_favored_ability(ability) || self.has_caste_ability(ability)
     }
 }
 
@@ -73,6 +68,48 @@ pub enum SolarCaste {
     Twilight(TwilightTraits),
     Night(NightTraits),
     Eclipse(EclipseTraits),
+}
+
+impl SolarCaste {
+    fn supernal_ability(&self) -> AbilityNameNoSubskill {
+        match &self {
+            SolarCaste::Dawn(traits) => traits.supernal_ability(),
+            SolarCaste::Zenith(traits) => traits.supernal_ability(),
+            SolarCaste::Twilight(traits) => traits.supernal_ability(),
+            SolarCaste::Night(traits) => traits.supernal_ability(),
+            SolarCaste::Eclipse(traits) => traits.supernal_ability(),
+        }
+    }
+
+    fn caste_abilities(&self) -> Vec<AbilityNameNoSubskill> {
+        match &self {
+            SolarCaste::Dawn(traits) => traits.caste_abilities(),
+            SolarCaste::Zenith(traits) => traits.caste_abilities(),
+            SolarCaste::Twilight(traits) => traits.caste_abilities(),
+            SolarCaste::Night(traits) => traits.caste_abilities(),
+            SolarCaste::Eclipse(traits) => traits.caste_abilities(),
+        }
+    }
+
+    fn has_supernal_ability(&self, ability: AbilityNameNoSubskill) -> bool {
+        match &self {
+            SolarCaste::Dawn(traits) => traits.has_supernal_ability(ability),
+            SolarCaste::Zenith(traits) => traits.has_supernal_ability(ability),
+            SolarCaste::Twilight(traits) => traits.has_supernal_ability(ability),
+            SolarCaste::Night(traits) => traits.has_supernal_ability(ability),
+            SolarCaste::Eclipse(traits) => traits.has_supernal_ability(ability),
+        }
+    }
+
+    fn has_caste_ability(&self, ability: AbilityNameNoSubskill) -> bool {
+        match &self {
+            SolarCaste::Dawn(traits) => traits.has_caste_ability(ability),
+            SolarCaste::Zenith(traits) => traits.has_caste_ability(ability),
+            SolarCaste::Twilight(traits) => traits.has_caste_ability(ability),
+            SolarCaste::Night(traits) => traits.has_caste_ability(ability),
+            SolarCaste::Eclipse(traits) => traits.has_caste_ability(ability),
+        }
+    }
 }
 
 pub struct SolarTraitsBuilder {
@@ -121,7 +158,35 @@ impl SolarTraitsBuilder {
         self
     }
 
-    pub fn with_favored_ability(mut self, ability: AbilityNameNoSubskill) -> Result<Self> {
-        todo!()
+    pub fn with_favored_ability(mut self, ability: AbilityNameNoSubskill) -> Self {
+        self.favored.push(ability);
+        self   
+    }
+
+    pub fn build(mut self) -> Result<SolarTraits> {
+        if self.caste.is_none() {
+            return Err(eyre!("Solars must have a caste"));
+        }
+
+        if self.limit.is_none() {
+            return Err(eyre!("Solars must have a limit trigger"));
+        }
+
+        self.favored.sort();
+        self.favored.dedup();
+        let caste = self.caste.unwrap();
+        let caste_abilities = caste.caste_abilities();
+
+        self.favored.retain(|ability| !caste_abilities.contains(&ability));
+        if self.favored.len() != 5 {
+            Err(eyre!("Solars must have a total of 10 caste and favored abilities (not counting Martial Arts)"))
+        } else {
+            Ok(SolarTraits {
+                essence: self.essence,
+                limit: self.limit.unwrap(),
+                caste,
+                favored_abilities: self.favored
+            })
+        }
     }
 }
