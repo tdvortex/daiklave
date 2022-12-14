@@ -1,5 +1,5 @@
 use eyre::{eyre, Result};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Copy, Serialize, Deserialize)]
 pub struct Essence {
@@ -11,9 +11,9 @@ pub struct Essence {
 impl Essence {
     pub fn custom(rating: u8, peripheral: MotePool, personal: MotePool) -> Self {
         Self {
-            rating, 
+            rating,
             peripheral,
-            personal
+            personal,
         }
     }
 
@@ -70,7 +70,11 @@ impl MotePool {
 
     pub fn spend(&mut self, motes: u8) -> Result<()> {
         if motes > self.available {
-            Err(eyre!("Cannot spend {} motes, only {} available", motes, self.available))
+            Err(eyre!(
+                "Cannot spend {} motes, only {} available",
+                motes,
+                self.available
+            ))
         } else {
             self.available -= motes;
             self.spent += motes;
@@ -80,7 +84,11 @@ impl MotePool {
 
     pub fn commit(&mut self, motes: u8) -> Result<()> {
         if motes > self.available {
-            Err(eyre!("Cannot commit {} motes, only {} available", motes, self.available))
+            Err(eyre!(
+                "Cannot commit {} motes, only {} available",
+                motes,
+                self.available
+            ))
         } else {
             self.available -= motes;
             self.committed += motes;
@@ -90,7 +98,11 @@ impl MotePool {
 
     pub fn uncommit(&mut self, motes: u8) -> Result<()> {
         if motes > self.committed {
-            Err(eyre!("Cannot uncommit {} motes, only {} committed", motes, self.committed))
+            Err(eyre!(
+                "Cannot uncommit {} motes, only {} committed",
+                motes,
+                self.committed
+            ))
         } else {
             self.available += motes;
             self.committed -= motes;

@@ -18,7 +18,7 @@ pub enum IntimacyType {
     Principle,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize,)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub struct Intimacies(Vec<Intimacy>);
 
 impl Intimacies {
@@ -41,7 +41,7 @@ impl DerefMut for Intimacies {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize,)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub struct Intimacy {
     id: Option<i32>,
     pub intimacy_level: IntimacyLevel,

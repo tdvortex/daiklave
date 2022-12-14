@@ -306,7 +306,7 @@ impl CharacterBuilder {
             weapons: self.weapons,
             armor: self.armor,
             merits: Merits::new(self.merits),
-            exalt_type
+            exalt_type,
         })
     }
 }
