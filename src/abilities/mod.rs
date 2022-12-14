@@ -27,7 +27,7 @@ struct NonZeroAbility {
 
 /// The name of an ability, excluding any Craft focus areas or Martial Arts styles.
 /// This is useful for most Craft Charms and nonspecific combat merits like Quick Draw.
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord)]
 pub enum AbilityNameNoSubskill {
     /// The Archery ability
     Archery,

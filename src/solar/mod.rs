@@ -31,6 +31,39 @@ pub enum DawnAbility {
     War,
 }
 
+impl From<DawnAbility> for AbilityNameNoSubskill {
+    fn from(dawn_ability: DawnAbility) -> Self {
+        match dawn_ability {
+            DawnAbility::Archery => Self::Archery,
+            DawnAbility::Awareness => Self::Awareness,
+            DawnAbility::Brawl => Self::Brawl,
+            DawnAbility::Dodge => Self::Dodge,
+            DawnAbility::Melee => Self::Melee,
+            DawnAbility::Resistance => Self::Resistance,
+            DawnAbility::Thrown => Self::Thrown,
+            DawnAbility::War => Self::War,
+        }
+    }
+}
+
+impl TryFrom<AbilityNameNoSubskill> for DawnAbility {
+    type Error = eyre::Report;
+
+    fn try_from(value: AbilityNameNoSubskill) -> Result<Self, Self::Error> {
+        match value {
+            AbilityNameNoSubskill::Archery => Ok(Self::Archery),
+            AbilityNameNoSubskill::Awareness => Ok(Self::Awareness),
+            AbilityNameNoSubskill::Brawl => Ok(Self::Brawl),
+            AbilityNameNoSubskill::Dodge => Ok(Self::Dodge),
+            AbilityNameNoSubskill::Melee => Ok(Self::Melee),
+            AbilityNameNoSubskill::Resistance => Ok(Self::Resistance),
+            AbilityNameNoSubskill::Thrown => Ok(Self::Thrown),
+            AbilityNameNoSubskill::War => Ok(Self::War),
+            _ => Err(eyre!("Not a Dawn ability")),
+        }
+    }
+}
+
 /// Dawn Solars can't choose MartialArts as a caste ability, but can choose it
 /// as their Supernal if and only if Brawl is one of their five caste abilities
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -42,6 +75,31 @@ pub enum DawnTraits {
 impl DawnTraits {
     pub fn builder() -> DawnTraitsBuilder {
         DawnTraitsBuilder::default()
+    }
+
+    fn supernal_ability(&self) -> AbilityNameNoSubskill {
+        match self {
+            DawnTraits::MartialArtsSupernal(_) => AbilityNameNoSubskill::MartialArts,
+            DawnTraits::NotMartialArtsSupernal(dawn_ability, _) => (*dawn_ability).into(),
+        }
+    }
+
+    fn caste_abilities(&self) -> Vec<AbilityNameNoSubskill> {
+        let mut output: Vec<AbilityNameNoSubskill> = match self {
+            DawnTraits::MartialArtsSupernal(list) => list.iter().map(|dawn_ability| (*dawn_ability).into()).chain(std::iter::once(AbilityNameNoSubskill::Brawl)).chain(std::iter::once(AbilityNameNoSubskill::MartialArts)).collect(),
+            DawnTraits::NotMartialArtsSupernal(supernal, list) => list.iter().map(|dawn_ability| (*dawn_ability).into()).chain(std::iter::once((*supernal).into())).collect(),
+        };
+
+        output.sort();
+        output
+    }
+
+    fn is_supernal(&self, ability: AbilityNameNoSubskill) -> bool {
+        self.supernal_ability() == ability
+    }
+
+    fn is_caste(&self, ability: AbilityNameNoSubskill) -> bool {
+        self.is_supernal(ability) || self.caste_abilities().into_iter().find(|a| *a == ability).is_some()
     }
 }
 
@@ -326,5 +384,61 @@ impl EclipseTraitsBuilder {
         } else {
             Err(eyre!("Must specify a supernal ability"))
         }
+    }
+}
+
+pub enum SolarCasteBuilder {
+    Dawn(DawnTraitsBuilder),
+    Zenith(ZenithTraitsBuilder),
+    Twilight(TwilightTraitsBuilder),
+    Night(NightTraitsBuilder),
+    Eclipse(EclipseTraitsBuilder),
+}
+
+pub struct SolarTraitsBuilder {
+    essence: Essence,
+    limit: Option<Limit>,
+    caste: Option<SolarCaste>, 
+    favored: Vec<AbilityNameNoSubskill>,
+}
+
+impl SolarTraitsBuilder {
+    pub fn with_essence_rating(mut self, rating: u8) -> Result<Self> {
+        self.essence = Essence::solar(rating)?;
+        Ok(self)
+    }
+
+    pub fn with_limit(mut self, limit_trigger: String, track: u8) -> Self {
+        self.limit = Some(Limit { track, limit_trigger});
+        self
+    }
+
+    pub fn as_dawn(mut self, dawn_traits: DawnTraits) -> Self {
+        self.caste = Some(SolarCaste::Dawn(dawn_traits));
+        self
+    }
+
+    pub fn as_zenith(mut self, zenith_traits: ZenithTraits) -> Self {
+        self.caste = Some(SolarCaste::Zenith(zenith_traits));
+        self
+    }
+
+    pub fn as_twilight(mut self, twilight_traits: TwilightTraits) -> Self {
+        self.caste = Some(SolarCaste::Twilight(twilight_traits));
+        self
+    }
+
+    pub fn as_night(mut self, night_traits: NightTraits) -> Self {
+        self.caste = Some(SolarCaste::Night(night_traits));
+        self
+    }
+
+    pub fn as_eclipse(mut self, eclipse_traits: EclipseTraits) -> Self {
+        self.caste = Some(SolarCaste::Eclipse(eclipse_traits));
+        self
+    }
+
+    pub fn with_favored_ability(mut self, ability: AbilityNameNoSubskill) -> Result<Self> {
+        todo!()
     }
 }
