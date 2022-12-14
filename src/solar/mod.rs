@@ -1,8 +1,10 @@
 use serde::{Serialize, Deserialize};
 
-use crate::essence::Essence;
+use crate::{essence::Essence, limit::Limit};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SolarTraits {
-    essence: Essence,
+    pub essence: Essence,
+    pub limit: Limit,
 }
+

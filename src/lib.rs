@@ -9,6 +9,7 @@ pub mod essence;
 pub mod exalt_type;
 pub mod health;
 pub mod intimacies;
+pub mod limit;
 pub mod merits;
 pub mod player;
 pub mod prerequisite;
