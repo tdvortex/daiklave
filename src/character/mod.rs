@@ -49,7 +49,7 @@ pub struct Character {
     pub merits: Merits,
     pub exalt_type: ExaltType,
     pub sorcery: Option<SorcererTraits>,
-    pub martial_arts: Vec<MartialArtistTraits>,
+    pub martial_arts_styles: MartialArtistTraits,
 }
 
 impl Character {
@@ -88,7 +88,7 @@ pub struct CharacterBuilder {
     merits: Vec<Merit>,
     exalt_type: Option<ExaltType>,
     sorcery: Option<SorcererTraits>,
-    martial_arts: Vec<MartialArtistTraits>,
+    martial_arts_styles: MartialArtistTraits,
 }
 
 impl CharacterBuilder {
@@ -314,7 +314,7 @@ impl CharacterBuilder {
             merits: Merits::new(self.merits),
             exalt_type,
             sorcery: self.sorcery,
-            martial_arts: self.martial_arts,
+            martial_arts_styles: self.martial_arts_styles,
         })
     }
 }
