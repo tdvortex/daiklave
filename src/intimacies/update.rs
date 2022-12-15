@@ -4,6 +4,7 @@ use eyre::Result;
 use sqlx::{query, Postgres, Transaction};
 
 use crate::{
+    id::Id,
     intimacies::tables::{IntimacyLevelPostgres, IntimacyTypePostgres},
     intimacies::Intimacy,
 };
@@ -21,15 +22,18 @@ pub fn compare_intimacies(older: &[Intimacy], newer: &[Intimacy]) -> IntimaciesD
     let old_hashmap: HashMap<i32, &Intimacy> = older
         .iter()
         .filter_map(|intimacy| {
-            let id = intimacy.id?;
-            Some((id, intimacy))
+            if let Id::Database(id) = intimacy.id() {
+                Some((id, intimacy))
+            } else {
+                None
+            }
         })
         .collect();
 
     let new_hashmap: HashMap<i32, &Intimacy> = newer
         .iter()
         .filter_map(|intimacy| {
-            if let Some(id) = intimacy.id {
+            if let Id::Database(id) = intimacy.id() {
                 Some((id, intimacy))
             } else {
                 diff.new_intimacies.push(intimacy.clone());
@@ -126,10 +130,12 @@ impl IntimaciesDiff {
         let mut levels: Vec<IntimacyLevelPostgres> = Vec::new();
         let mut descriptions: Vec<&str> = Vec::new();
         for intimacy in self.updated_intimacies.iter() {
-            ids.push(intimacy.id.unwrap());
-            types.push(intimacy.intimacy_type.into());
-            levels.push(intimacy.intimacy_level.into());
-            descriptions.push(intimacy.description.as_str());
+            if let Id::Database(id) = intimacy.id() {
+                ids.push(id);
+                types.push(intimacy.intimacy_type.into());
+                levels.push(intimacy.intimacy_level.into());
+                descriptions.push(intimacy.description.as_str());
+            }
         }
 
         query!(

@@ -2,8 +2,9 @@ use exalted_3e_gui::{
     abilities::AbilityNameNoSubskill,
     attributes::AttributeName,
     character::CharacterBuilder,
+    id::Id,
     merits::{Merit, MeritTemplate, MeritType},
-    prerequisite::PrerequisiteSet, id::Id,
+    prerequisite::PrerequisiteSet,
 };
 
 const MARTIAL_ARTIST_DESCRIPTION: &str = "\

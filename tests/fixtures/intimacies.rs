@@ -2,6 +2,7 @@ use std::collections::HashSet;
 
 use exalted_3e_gui::{
     character::CharacterBuilder,
+    id::Id,
     intimacies::{Intimacy, IntimacyLevel, IntimacyType},
 };
 
@@ -11,25 +12,25 @@ pub fn create_initial_intimacies(builder: CharacterBuilder) -> CharacterBuilder 
             IntimacyLevel::Defining,
             IntimacyType::Principle,
             "Never stand idle against injustice".to_owned(),
-            None,
+            Id::Placeholder(0),
         ))
         .with_intimacy(Intimacy::new(
             IntimacyLevel::Major,
             IntimacyType::Tie,
             "Ragara Tirnis (Love)".to_owned(),
-            None,
+            Id::Placeholder(1),
         ))
         .with_intimacy(Intimacy::new(
             IntimacyLevel::Major,
             IntimacyType::Tie,
             "Mask of Winters (Revenge)".to_owned(),
-            None,
+            Id::Placeholder(2),
         ))
         .with_intimacy(Intimacy::new(
             IntimacyLevel::Minor,
             IntimacyType::Tie,
             "Street Vendors (Camaraderie)".to_owned(),
-            None,
+            Id::Placeholder(3),
         ))
 }
 
@@ -61,7 +62,7 @@ pub fn validate_initial_intimacies(intimacies: &Vec<Intimacy>, should_have_id: b
     assert_eq!(expected.len(), intimacies.len());
 
     for actual in intimacies.iter() {
-        assert_eq!(actual.id().is_some(), should_have_id);
+        assert_eq!(!actual.id().is_placeholder(), should_have_id);
         assert!(expected.contains(&(
             actual.intimacy_level,
             actual.intimacy_type,
@@ -91,7 +92,7 @@ pub fn modify_intimacies(intimacies: &mut Vec<Intimacy>) {
         IntimacyLevel::Minor,
         IntimacyType::Principle,
         "Trust leads pain".to_owned(),
-        None,
+        Id::Placeholder(4),
     ));
 }
 

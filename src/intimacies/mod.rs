@@ -5,6 +5,8 @@ pub(crate) mod tables;
 pub(crate) mod update;
 pub use update::{compare_intimacies, IntimaciesDiff};
 
+use crate::id::Id;
+
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone, Copy, Deserialize, Serialize)]
 pub enum IntimacyLevel {
     Minor,
@@ -43,7 +45,7 @@ impl DerefMut for Intimacies {
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub struct Intimacy {
-    id: Option<i32>,
+    id: Id,
     pub intimacy_level: IntimacyLevel,
     pub intimacy_type: IntimacyType,
     pub description: String,
@@ -54,7 +56,7 @@ impl Intimacy {
         intimacy_level: IntimacyLevel,
         intimacy_type: IntimacyType,
         description: String,
-        id: Option<i32>,
+        id: Id,
     ) -> Self {
         Self {
             id,
@@ -64,7 +66,7 @@ impl Intimacy {
         }
     }
 
-    pub fn id(&self) -> Option<i32> {
+    pub fn id(&self) -> Id {
         self.id
     }
 }

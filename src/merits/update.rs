@@ -18,10 +18,12 @@ pub fn compare_merits(old_merits: &[Merit], new_merits: &[Merit]) -> MeritDiff {
 
     let mut old_merit_instance_ids: HashSet<i32> = old_merits
         .iter()
-        .filter_map(|merit| if let Id::Database(id) = merit.instance_id() {
-            Some(id)
-        } else {
-            None
+        .filter_map(|merit| {
+            if let Id::Database(id) = merit.instance_id() {
+                Some(id)
+            } else {
+                None
+            }
         })
         .collect();
 

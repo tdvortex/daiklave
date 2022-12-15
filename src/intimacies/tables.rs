@@ -1,6 +1,7 @@
 use sqlx::postgres::PgHasArrayType;
 
 use crate::character::CharacterBuilder;
+use crate::id::Id;
 use crate::intimacies::{Intimacy, IntimacyLevel, IntimacyType};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
@@ -89,7 +90,7 @@ impl CharacterBuilder {
         if let Some(rows) = intimacy_rows {
             rows.into_iter().fold(self, |s, intimacy_row| {
                 s.with_intimacy(Intimacy {
-                    id: Some(intimacy_row.id),
+                    id: Id::Database(intimacy_row.id),
                     intimacy_level: intimacy_row.level.into(),
                     intimacy_type: intimacy_row.intimacy_type.into(),
                     description: intimacy_row.description,

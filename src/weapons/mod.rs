@@ -105,7 +105,7 @@ pub enum WeaponTag {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Eq)]
 pub struct Weapon {
-    id: Option<i32>,
+    id: Id,
     name: String,
     weight_class: WeightClass,
     is_two_handed: bool,
@@ -119,15 +119,6 @@ pub struct Weapon {
 impl PartialEq for Weapon {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
-            && (self.id.is_some()
-                || (self.name == other.name
-                    && self.weight_class == other.weight_class
-                    && self.is_two_handed == other.is_two_handed
-                    && self.damage_type == other.damage_type
-                    && self.main_attack_method == other.main_attack_method
-                    && self.martial_arts_styles == other.martial_arts_styles
-                    && self.other_tags == other.other_tags
-                    && self.data_source == other.data_source))
     }
 }
 
@@ -135,7 +126,7 @@ impl Weapon {
     fn new(
         name: String,
         tags: HashSet<WeaponTag>,
-        id: Option<i32>,
+        id: Id,
         data_source: DataSource,
     ) -> Result<Weapon> {
         let mut two_handed = None::<bool>;
@@ -375,9 +366,9 @@ impl Weapon {
         })
     }
 
-    pub fn from_book(book_title: String, page_number: i16) -> WeaponBuilder {
+    pub fn from_book(id: Id, book_title: String, page_number: i16) -> WeaponBuilder {
         WeaponBuilder {
-            id: Default::default(),
+            id,
             name: Default::default(),
             two_handed: Default::default(),
             is_lethal: Default::default(),
@@ -391,9 +382,9 @@ impl Weapon {
         }
     }
 
-    pub fn custom(creator_id: Id) -> WeaponBuilder {
+    pub fn custom(id: Id, creator_id: Id) -> WeaponBuilder {
         WeaponBuilder {
-            id: Default::default(),
+            id,
             name: Default::default(),
             two_handed: Default::default(),
             is_lethal: Default::default(),
@@ -404,7 +395,7 @@ impl Weapon {
         }
     }
 
-    pub fn id(&self) -> Option<i32> {
+    pub fn id(&self) -> Id {
         self.id
     }
 
@@ -798,7 +789,7 @@ impl Weapons {
 
 #[derive(Debug)]
 pub struct WeaponBuilder {
-    id: Option<i32>,
+    id: Id,
     name: Option<String>,
     two_handed: bool,
     is_lethal: bool,
@@ -809,8 +800,8 @@ pub struct WeaponBuilder {
 }
 
 impl WeaponBuilder {
-    pub(crate) fn with_id(mut self, id: i32) -> Self {
-        self.id = Some(id);
+    pub(crate) fn with_database_id(mut self, id: i32) -> Self {
+        self.id = Id::Database(id);
         self
     }
 

@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{abilities::AbilityNameNoSubskill, attributes::AttributeName, data_source::DataSource};
+use crate::{
+    abilities::AbilityNameNoSubskill, attributes::AttributeName, data_source::DataSource, id::Id,
+};
 
 pub mod tables;
 
@@ -61,7 +63,7 @@ pub enum CharmCostType {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 struct CharmTraits {
-    id: Option<i32>,
+    id: Id,
     data_source: DataSource,
     name: String,
     summary: Option<String>,

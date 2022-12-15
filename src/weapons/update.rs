@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 
+use crate::id::Id;
 use crate::weapons::create::create_weapons_transaction;
 use crate::weapons::tables::EquipHandPostgres;
 use crate::weapons::{EquipHand, Weapon, Weapons};
@@ -21,7 +22,7 @@ impl Weapons {
         let mut new_owned_weapons = HashMap::new();
 
         for (_, weapon, maybe_equip_hand) in newer.iter() {
-            if let Some(id) = weapon.id() {
+            if let Id::Database(id) = weapon.id() {
                 new_owned_weapons.insert(id, maybe_equip_hand);
             } else {
                 noop = false;
@@ -33,7 +34,7 @@ impl Weapons {
             let mut old_owned_weapons = HashMap::new();
 
             for (_, weapon, maybe_equip_hand) in self.iter() {
-                if let Some(id) = weapon.id() {
+                if let Id::Database(id) = weapon.id() {
                     old_owned_weapons.insert(id, maybe_equip_hand);
                 }
             }

@@ -1,10 +1,10 @@
-use crate::{charms::MartialArtsCharm, data_source::DataSource};
+use crate::{charms::MartialArtsCharm, data_source::DataSource, id::Id};
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 pub struct MartialArtsStyle {
-    id: Option<i32>,
+    id: Id,
     name: String,
     description: Option<String>,
     data_source: DataSource,
@@ -13,10 +13,6 @@ pub struct MartialArtsStyle {
 impl PartialEq for MartialArtsStyle {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
-            && (self.id.is_some()
-                || (self.name == other.name
-                    && self.description == other.description
-                    && self.data_source == other.data_source))
     }
 }
 

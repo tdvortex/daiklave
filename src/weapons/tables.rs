@@ -417,6 +417,7 @@ impl CharacterBuilder {
                 && weapon_row.creator_id.is_none()
             {
                 Weapon::from_book(
+                    Id::Database(weapon_id),
                     weapon_row.book_title.unwrap(),
                     weapon_row.page_number.unwrap(),
                 )
@@ -424,7 +425,10 @@ impl CharacterBuilder {
                 && weapon_row.page_number.is_none()
                 && weapon_row.creator_id.is_some()
             {
-                Weapon::custom(Id::Database(weapon_row.creator_id.unwrap()))
+                Weapon::custom(
+                    Id::Database(weapon_id),
+                    Id::Database(weapon_row.creator_id.unwrap()),
+                )
             } else {
                 return Err(eyre!(
                     "Database error: inconsistent data source for weapon {}",
@@ -432,7 +436,9 @@ impl CharacterBuilder {
                 ));
             };
 
-            builder = builder.with_id(weapon_id).with_name(weapon_row.name);
+            builder = builder
+                .with_database_id(weapon_id)
+                .with_name(weapon_row.name);
 
             for tag in tags.into_iter() {
                 builder = builder.with_tag(tag);

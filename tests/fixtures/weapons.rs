@@ -9,7 +9,7 @@ pub fn create_initial_weapons(builder: CharacterBuilder) -> CharacterBuilder {
     let character_placeholder_id = builder.id();
     builder
         .with_weapon(
-            Weapon::from_book("Core Rulebook".to_owned(), 581)
+            Weapon::from_book(Id::Placeholder(0), "Core Rulebook".to_owned(), 581)
                 .with_name("Knife".to_owned())
                 .as_light()
                 .as_one_handed()
@@ -22,7 +22,7 @@ pub fn create_initial_weapons(builder: CharacterBuilder) -> CharacterBuilder {
         )
         .unwrap()
         .with_weapon(
-            Weapon::custom(character_placeholder_id)
+            Weapon::custom(Id::Placeholder(1), character_placeholder_id)
                 .with_name("Screamer (Red Jade Reaper Daiklave)".to_owned())
                 .as_artifact()
                 .as_medium()
@@ -45,7 +45,9 @@ pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
         match weapon_ref.name() {
             "Knife" => {
                 assert!(maybe_hand.is_none());
-                assert!(weapons.get_by_index(key).unwrap().1.id().is_some() == should_have_id);
+                assert!(
+                    weapons.get_by_index(key).unwrap().1.id().is_placeholder() != should_have_id
+                );
                 assert_eq!(
                     weapons.get_by_index(key).unwrap().1.tags(),
                     vec![
@@ -66,7 +68,9 @@ pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
             }
             "Screamer (Red Jade Reaper Daiklave)" => {
                 assert!(maybe_hand == Some(EquipHand::Main));
-                assert!(weapons.get_by_index(key).unwrap().1.id().is_some() == should_have_id);
+                assert!(
+                    weapons.get_by_index(key).unwrap().1.id().is_placeholder() != should_have_id
+                );
                 assert_eq!(
                     weapons.get_by_index(key).unwrap().1.tags(),
                     vec![
@@ -112,7 +116,7 @@ pub fn modify_weapons(weapons: &mut Weapons) {
 
     // Add weapon
     let unarmed_key = weapons.add_weapon(
-        Weapon::from_book("Core Rulebook".to_owned(), 582)
+        Weapon::from_book(Id::Placeholder(2), "Core Rulebook".to_owned(), 582)
             .with_name("Unarmed".to_owned())
             .as_brawl()
             .as_light()
