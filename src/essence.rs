@@ -104,7 +104,7 @@ impl MotePool {
                 self.committed
             ))
         } else {
-            self.available += motes;
+            self.spent += motes;
             self.committed -= motes;
             Ok(())
         }
