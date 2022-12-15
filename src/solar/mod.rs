@@ -12,7 +12,7 @@ pub use self::{
     zenith::{ZenithAbility, ZenithTraits, ZenithTraitsBuilder},
 };
 
-use crate::{abilities::AbilityNameNoSubskill, essence::Essence, limit::Limit};
+use crate::{abilities::AbilityNameNoSubskill, essence::Essence, limit::Limit, anima::AnimaLevel};
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
 
@@ -20,6 +20,7 @@ use serde::{Deserialize, Serialize};
 pub struct SolarTraits {
     pub essence: Essence,
     pub limit: Limit,
+    pub anima: AnimaLevel,
     caste: SolarCaste,
     favored_abilities: [AbilityNameNoSubskill; 5],
 }
@@ -134,6 +135,7 @@ impl SolarCaste {
 pub struct SolarTraitsBuilder {
     essence: Essence,
     limit: Option<Limit>,
+    anima: AnimaLevel,
     caste: Option<SolarCaste>,
     favored: Vec<AbilityNameNoSubskill>,
 }
@@ -149,6 +151,11 @@ impl SolarTraitsBuilder {
             track,
             limit_trigger,
         });
+        self
+    }
+
+    pub fn with_anima_level(mut self, anima_level: AnimaLevel) -> Self {
+        self.anima = anima_level;
         self
     }
 
@@ -218,6 +225,7 @@ impl SolarTraitsBuilder {
             Ok(SolarTraits {
                 essence: self.essence,
                 limit: self.limit.unwrap(),
+                anima: self.anima,
                 caste,
                 favored_abilities,
             })

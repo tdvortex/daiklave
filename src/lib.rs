@@ -1,4 +1,5 @@
 pub mod abilities;
+pub mod anima;
 pub mod armor;
 pub mod attributes;
 pub mod campaign;
