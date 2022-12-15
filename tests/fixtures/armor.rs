@@ -2,9 +2,11 @@ use exalted_3e_gui::{
     armor::{Armor, ArmorItem, ArmorTag},
     character::CharacterBuilder,
     data_source::{BookReference, DataSource},
+    id::Id,
 };
 
 pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {
+    let character_placeholder_id = builder.id();
     builder
         .with_armor(
             ArmorItem::from_book(0, "Core Rulebook".to_owned(), 600)
@@ -18,7 +20,7 @@ pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {
             false,
         )
         .with_armor(
-            ArmorItem::custom(1, None)
+            ArmorItem::custom(1, character_placeholder_id)
                 .with_name("Straw Hat".to_owned())
                 .as_light()
                 .build()
@@ -43,14 +45,12 @@ pub fn validate_initial_armor_items(armor: &Armor, should_have_id: bool) {
                 if should_have_id {
                     assert!(match armor.get_by_index(key).unwrap().1.data_source() {
                         DataSource::Book(_) => panic!("should be custom"),
-                        DataSource::Custom(None) => panic!("should have custom creator id"),
-                        DataSource::Custom(Some(_)) => true,
+                        DataSource::Custom(Id::Placeholder(_)) =>
+                            panic!("should have creator id in database"),
+                        DataSource::Custom(Id::Database(_)) => true,
                     });
                 } else {
-                    assert_eq!(
-                        armor.get_by_index(key).unwrap().1.data_source(),
-                        &DataSource::Custom(None)
-                    );
+                    assert!(armor.get_by_index(key).unwrap().1.data_source().is_custom());
                 }
             }
             "Silken Armor" => {
@@ -80,7 +80,7 @@ pub fn validate_initial_armor_items(armor: &Armor, should_have_id: bool) {
     assert!(count == 2);
 }
 
-pub fn modify_armor(armor: &mut Armor) {
+pub fn modify_armor(character_database_id: i32, armor: &mut Armor) {
     // Unequip an item
     armor.unequip_armor_item();
 
@@ -102,7 +102,7 @@ pub fn modify_armor(armor: &mut Armor) {
 
     // Add an item
     armor.add_armor_item(
-        ArmorItem::custom(2, None)
+        ArmorItem::custom(2, Id::Database(character_database_id))
             .as_medium()
             .with_name("Stolen Guard's Breastplate".to_owned())
             .build()

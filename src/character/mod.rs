@@ -96,6 +96,10 @@ pub struct CharacterBuilder {
 }
 
 impl CharacterBuilder {
+    pub fn id(&self) -> Id {
+        self.id
+    }
+
     fn meets_prerequisite(&self, prerequisite: &Prerequisite) -> bool {
         match prerequisite.deref() {
             PrerequisiteType::Ability(ability_prerequisite) => {

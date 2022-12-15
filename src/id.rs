@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 /// A unique identifier for a particular resource.
 ///
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 pub enum Id {
     Database(i32),
     Placeholder(i32),

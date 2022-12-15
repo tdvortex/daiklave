@@ -55,7 +55,7 @@ impl MeritTemplate {
         }
     }
 
-    pub fn custom(creator_id: Option<i32>) -> MeritTemplateBuilder {
+    pub fn custom(creator_id: Id) -> MeritTemplateBuilder {
         MeritTemplateBuilder {
             name: Default::default(),
             merit_type: Default::default(),

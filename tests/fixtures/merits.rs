@@ -30,6 +30,7 @@ Each purchase grants the character fluency in one \
     ethnic groups spread around Creation's rim.";
 
 pub fn create_initial_merits(builder: CharacterBuilder) -> CharacterBuilder {
+    let character_id_placeholder = builder.id();
     let martial_artist_template = MeritTemplate::from_book("Core Rulebook".to_owned(), 163)
         .with_name("Martial Artist".to_owned())
         .with_merit_type(MeritType::Purchased)
@@ -69,7 +70,7 @@ pub fn create_initial_merits(builder: CharacterBuilder) -> CharacterBuilder {
         .build()
         .unwrap();
 
-    let custom_template = MeritTemplate::custom(None)
+    let custom_template = MeritTemplate::custom(character_id_placeholder)
         .with_name("Test Custom Merit Template".to_owned())
         .with_merit_type(MeritType::Supernatural)
         .with_description("Test Custom Merit Template Description".to_owned())

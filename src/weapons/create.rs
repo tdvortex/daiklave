@@ -15,18 +15,17 @@ pub(crate) async fn create_weapons_transaction(
 ) -> Result<Vec<i32>> {
     let mut output = Vec::new();
     for weapon in weapons.into_iter() {
-        if weapon.data_source() == &DataSource::Custom(None) {
+        if let DataSource::Custom(_) = weapon.data_source() {
             output.push(
                 create_weapon_transaction(transaction, weapon, Some(character_id))
                     .await
                     .wrap_err("Database error creating new custom weapon")?,
             );
         } else {
-            let maybe_creator_id = weapon.data_source().creator_id();
             output.push(
-                create_weapon_transaction(transaction, weapon, maybe_creator_id)
+                create_weapon_transaction(transaction, weapon, None)
                     .await
-                    .wrap_err("Database error creating weapon")?,
+                    .wrap_err("Database error creating new book referenced weapon")?,
             );
         }
     }

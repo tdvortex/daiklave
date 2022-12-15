@@ -1,10 +1,12 @@
 use exalted_3e_gui::{
     character::CharacterBuilder,
     data_source::{BookReference, DataSource},
+    id::Id,
     weapons::{EquipHand, RangeBand, Weapon, WeaponTag, Weapons},
 };
 
 pub fn create_initial_weapons(builder: CharacterBuilder) -> CharacterBuilder {
+    let character_placeholder_id = builder.id();
     builder
         .with_weapon(
             Weapon::from_book("Core Rulebook".to_owned(), 581)
@@ -20,7 +22,7 @@ pub fn create_initial_weapons(builder: CharacterBuilder) -> CharacterBuilder {
         )
         .unwrap()
         .with_weapon(
-            Weapon::custom(None)
+            Weapon::custom(character_placeholder_id)
                 .with_name("Screamer (Red Jade Reaper Daiklave)".to_owned())
                 .as_artifact()
                 .as_medium()
@@ -80,14 +82,17 @@ pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
                 if should_have_id {
                     assert!(match weapons.get_by_index(key).unwrap().1.data_source() {
                         DataSource::Book(_) => panic!("should be custom"),
-                        DataSource::Custom(None) => panic!("should have custom creator id"),
-                        DataSource::Custom(Some(_)) => true,
+                        DataSource::Custom(Id::Placeholder(_)) =>
+                            panic!("should have creator id in database"),
+                        DataSource::Custom(Id::Database(_)) => true,
                     });
                 } else {
-                    assert_eq!(
-                        weapons.get_by_index(key).unwrap().1.data_source(),
-                        &DataSource::Custom(None)
-                    );
+                    assert!(weapons
+                        .get_by_index(key)
+                        .unwrap()
+                        .1
+                        .data_source()
+                        .is_custom());
                 }
             }
             wrong => panic!("Unknown armor name: {}", wrong),

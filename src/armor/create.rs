@@ -61,18 +61,17 @@ pub(crate) async fn create_armor_transaction(
 ) -> Result<Vec<i32>> {
     let mut output = Vec::new();
     for armor_item in armor.into_iter() {
-        if armor_item.data_source() == &DataSource::Custom(None) {
+        if let DataSource::Custom(_) = armor_item.data_source {
             output.push(
                 create_armor_item_transaction(transaction, armor_item, Some(character_id))
                     .await
-                    .wrap_err("Database error creating new custom armor item")?,
+                    .wrap_err("Database error creating custom armor item")?,
             );
         } else {
-            let maybe_creator_id = armor_item.data_source().creator_id();
             output.push(
-                create_armor_item_transaction(transaction, armor_item, maybe_creator_id)
+                create_armor_item_transaction(transaction, armor_item, None)
                     .await
-                    .wrap_err("Database error creating armor item")?,
+                    .wrap_err("Database error creating book referenced armor item")?,
             );
         }
     }

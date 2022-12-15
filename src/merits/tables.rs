@@ -4,6 +4,7 @@ use std::collections::HashMap;
 
 use crate::abilities::AbilityNameNoSubskill;
 use crate::character::CharacterBuilder;
+use crate::id::Id;
 use crate::merits::{MeritTemplate, MeritType};
 use crate::prerequisite::{ExaltTypePrerequisite, PrerequisiteSet};
 
@@ -105,6 +106,13 @@ pub struct MeritTemplateInsert {
 
 impl From<MeritTemplate> for MeritTemplateInsert {
     fn from(template: MeritTemplate) -> Self {
+        let nulled_creator_id = template.data_source().creator_id().and_then(|id| {
+            if id.is_placeholder() {
+                None
+            } else {
+                Some(*id)
+            }
+        });
         Self {
             name: template.name().to_owned(),
             merit_type: template.merit_type().into(),
@@ -112,7 +120,7 @@ impl From<MeritTemplate> for MeritTemplateInsert {
             requires_detail: template.requires_detail(),
             book_title: template.data_source().book_title().map(|s| s.to_owned()),
             page_number: template.data_source().page_number(),
-            creator_id: template.data_source().creator_id(),
+            creator_id: nulled_creator_id,
         }
     }
 }
@@ -307,7 +315,7 @@ impl CharacterBuilder {
                     && merit_template_row.page_number.is_none()
                     && merit_template_row.creator_id.is_some()
                 {
-                    MeritTemplate::custom(merit_template_row.creator_id)
+                    MeritTemplate::custom(Id::Database(merit_template_row.creator_id.unwrap()))
                 } else {
                     return Err(eyre!(
                         "Data source is inconsistent for merit template {}",

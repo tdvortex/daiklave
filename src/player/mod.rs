@@ -13,7 +13,10 @@ pub struct Player {
 
 impl Player {
     pub fn new(id: i32, name: String) -> Self {
-        Self { database_id: id, name }
+        Self {
+            database_id: id,
+            name,
+        }
     }
 
     pub fn id(&self) -> i32 {

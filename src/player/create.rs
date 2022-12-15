@@ -15,5 +15,8 @@ pub async fn create_player(pool: &PgPool, name: String) -> Result<Player> {
     .await?
     .id;
 
-    Ok(Player { database_id: id, name })
+    Ok(Player {
+        database_id: id,
+        name,
+    })
 }

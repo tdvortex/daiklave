@@ -9,7 +9,10 @@ use std::{collections::HashSet, hash::Hash};
 
 use eyre::{eyre, Result};
 
-use crate::{data_source::{BookReference, DataSource}, id::Id};
+use crate::{
+    data_source::{BookReference, DataSource},
+    id::Id,
+};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum ArmorTag {
@@ -110,7 +113,7 @@ impl ArmorItem {
         }
     }
 
-    pub fn custom(placeholder_id: i32, creator_id: Option<i32>) -> ArmorBuilder {
+    pub fn custom(placeholder_id: i32, creator_id: Id) -> ArmorBuilder {
         ArmorBuilder {
             id: Id::Placeholder(placeholder_id),
             name: None,

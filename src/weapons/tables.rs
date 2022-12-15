@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::character::CharacterBuilder;
+use crate::id::Id;
 use crate::weapons::{EquipHand, RangeBand, Weapon, WeaponTag};
 use eyre::{eyre, Context, Report, Result};
 use sqlx::postgres::PgHasArrayType;
@@ -423,7 +424,7 @@ impl CharacterBuilder {
                 && weapon_row.page_number.is_none()
                 && weapon_row.creator_id.is_some()
             {
-                Weapon::custom(weapon_row.creator_id)
+                Weapon::custom(Id::Database(weapon_row.creator_id.unwrap()))
             } else {
                 return Err(eyre!(
                     "Database error: inconsistent data source for weapon {}",
