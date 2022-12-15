@@ -7,17 +7,17 @@ pub use destroy::destroy_player;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Player {
-    id: i32,
+    database_id: i32,
     name: String,
 }
 
 impl Player {
     pub fn new(id: i32, name: String) -> Self {
-        Self { id, name }
+        Self { database_id: id, name }
     }
 
     pub fn id(&self) -> i32 {
-        self.id
+        self.database_id
     }
 
     pub fn name(&self) -> &str {
