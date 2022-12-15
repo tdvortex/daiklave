@@ -9,7 +9,7 @@ use std::{collections::HashSet, hash::Hash};
 
 use eyre::{eyre, Result};
 
-use crate::data_source::{BookReference, DataSource};
+use crate::{data_source::{BookReference, DataSource}, id::Id};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum ArmorTag {
@@ -24,7 +24,7 @@ pub enum ArmorTag {
 
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 pub struct ArmorItem {
-    id: Option<i32>,
+    id: Id,
     name: String,
     weight_class: WeightClass,
     artifact: bool,
@@ -37,13 +37,6 @@ pub struct ArmorItem {
 impl PartialEq for ArmorItem {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
-            && (self.id.is_some()
-                || (self.weight_class == other.weight_class
-                    && self.artifact == other.artifact
-                    && self.concealable == other.concealable
-                    && self.silent == other.silent
-                    && self.special == other.special
-                    && self.data_source == other.data_source))
     }
 }
 
@@ -51,7 +44,7 @@ impl ArmorItem {
     pub(crate) fn new(
         name: String,
         tags: HashSet<ArmorTag>,
-        id: Option<i32>,
+        id: Id,
         data_source: DataSource,
     ) -> Result<ArmorItem> {
         let mut weight_class = None::<WeightClass>;
@@ -104,9 +97,9 @@ impl ArmorItem {
         })
     }
 
-    pub fn from_book(book_title: String, page_number: i16) -> ArmorBuilder {
+    pub fn from_book(placeholder_id: i32, book_title: String, page_number: i16) -> ArmorBuilder {
         ArmorBuilder {
-            id: None,
+            id: Id::Placeholder(placeholder_id),
             name: None,
             weight_class: None,
             tags: HashSet::new(),
@@ -117,9 +110,9 @@ impl ArmorItem {
         }
     }
 
-    pub fn custom(creator_id: Option<i32>) -> ArmorBuilder {
+    pub fn custom(placeholder_id: i32, creator_id: Option<i32>) -> ArmorBuilder {
         ArmorBuilder {
-            id: None,
+            id: Id::Placeholder(placeholder_id),
             name: None,
             weight_class: None,
             tags: HashSet::new(),
@@ -127,7 +120,7 @@ impl ArmorItem {
         }
     }
 
-    pub fn id(&self) -> Option<i32> {
+    pub fn id(&self) -> Id {
         self.id
     }
 
@@ -280,7 +273,7 @@ enum WeightClass {
 
 #[derive(Debug)]
 pub struct ArmorBuilder {
-    id: Option<i32>,
+    id: Id,
     name: Option<String>,
     weight_class: Option<WeightClass>,
     tags: HashSet<ArmorTag>,
@@ -288,8 +281,8 @@ pub struct ArmorBuilder {
 }
 
 impl ArmorBuilder {
-    pub(crate) fn with_id(mut self, id: i32) -> Self {
-        self.id = Some(id);
+    pub(crate) fn with_database_id(mut self, id: i32) -> Self {
+        self.id = Id::Database(id);
         self
     }
 

@@ -7,7 +7,7 @@ use exalted_3e_gui::{
 pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {
     builder
         .with_armor(
-            ArmorItem::from_book("Core Rulebook".to_owned(), 600)
+            ArmorItem::from_book(0, "Core Rulebook".to_owned(), 600)
                 .with_name("Silken Armor".to_owned())
                 .as_light()
                 .as_artifact()
@@ -18,7 +18,7 @@ pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {
             false,
         )
         .with_armor(
-            ArmorItem::custom(None)
+            ArmorItem::custom(1, None)
                 .with_name("Straw Hat".to_owned())
                 .as_light()
                 .build()
@@ -35,7 +35,7 @@ pub fn validate_initial_armor_items(armor: &Armor, should_have_id: bool) {
         match item.name() {
             "Straw Hat" => {
                 assert!(worn);
-                assert!(armor.get_by_index(key).unwrap().1.id().is_some() == should_have_id);
+                assert!(armor.get_by_index(key).unwrap().1.id().is_placeholder() != should_have_id);
                 assert_eq!(
                     armor.get_by_index(key).unwrap().1.tags(),
                     [ArmorTag::Light].into()
@@ -55,7 +55,7 @@ pub fn validate_initial_armor_items(armor: &Armor, should_have_id: bool) {
             }
             "Silken Armor" => {
                 assert!(!worn);
-                assert!(armor.get_by_index(key).unwrap().1.id().is_some() == should_have_id);
+                assert!(armor.get_by_index(key).unwrap().1.id().is_placeholder() != should_have_id);
                 assert_eq!(
                     armor.get_by_index(key).unwrap().1.tags(),
                     [
@@ -102,7 +102,7 @@ pub fn modify_armor(armor: &mut Armor) {
 
     // Add an item
     armor.add_armor_item(
-        ArmorItem::custom(None)
+        ArmorItem::custom(2, None)
             .as_medium()
             .with_name("Stolen Guard's Breastplate".to_owned())
             .build()

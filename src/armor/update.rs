@@ -2,6 +2,8 @@ use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 use std::collections::HashSet;
 
+use crate::id::Id;
+
 use super::create::create_armor_transaction;
 use super::{Armor, ArmorItem};
 
@@ -25,7 +27,7 @@ impl Armor {
         let mut worn_item = None;
 
         for (_, armor_item, worn) in newer.iter() {
-            if let Some(id) = armor_item.id() {
+            if let Id::Database(id) = armor_item.id() {
                 new_owned_set.insert(id);
                 if worn {
                     worn_item = Some(id);
@@ -39,7 +41,7 @@ impl Armor {
         let mut old_owned_set = HashSet::new();
 
         for (_, armor_item, worn) in self.iter() {
-            if let Some(old_id) = armor_item.id() {
+            if let Id::Database(old_id) = armor_item.id() {
                 old_owned_set.insert(old_id);
                 if diff.noop && worn && Some(old_id) != worn_item {
                     diff.noop = false;

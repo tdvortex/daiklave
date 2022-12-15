@@ -178,6 +178,7 @@ impl CharacterBuilder {
                 && armor_row.creator_id.is_none()
             {
                 ArmorItem::from_book(
+                    armor_id,
                     armor_row.book_title.unwrap(),
                     armor_row.page_number.unwrap(),
                 )
@@ -185,7 +186,7 @@ impl CharacterBuilder {
                 && armor_row.book_title.is_none()
                 && armor_row.creator_id.is_some()
             {
-                ArmorItem::custom(armor_row.creator_id)
+                ArmorItem::custom(armor_id, armor_row.creator_id)
             } else {
                 return Err(eyre!(
                     "Database error: inconsistent data source for armor item {}",
@@ -193,7 +194,7 @@ impl CharacterBuilder {
                 ));
             };
 
-            builder = builder.with_id(armor_id).with_name(armor_row.name);
+            builder = builder.with_database_id(armor_id).with_name(armor_row.name);
 
             for tag_row in armor_tags.into_iter() {
                 builder = builder.with_tag(tag_row.tag_type.into());
