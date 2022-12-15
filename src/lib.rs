@@ -15,6 +15,7 @@ pub mod merits;
 pub mod player;
 pub mod prerequisite;
 pub mod solar;
+pub mod sorcery;
 pub mod weapons;
 
 pub use character::{destroy_character, retrieve_character, update_character, Character};
