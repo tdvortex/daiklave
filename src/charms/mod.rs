@@ -79,7 +79,7 @@ pub struct SolarCharm {
     traits: CharmTraits,
 }
 
-pub struct LunarCharm {
+pub struct _LunarCharm {
     /// If None, implies Universal Charm
     action_type: CharmActionType,
     attribute: Option<AttributeName>,
@@ -88,7 +88,7 @@ pub struct LunarCharm {
     traits: CharmTraits,
 }
 
-pub struct DragonBloodedCharm {
+pub struct _DragonBloodedCharm {
     action_type: CharmActionType,
     ability: AbilityNameNoSubskill,
     ability_requirement: u8,
