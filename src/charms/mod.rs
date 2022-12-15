@@ -104,6 +104,7 @@ pub struct MartialArtsCharm {
     traits: CharmTraits,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Spell {
     traits: CharmTraits,
 }

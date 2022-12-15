@@ -23,6 +23,7 @@ use crate::merits::Merits;
 use crate::merits::{Merit, MeritTemplate};
 use crate::player::Player;
 use crate::prerequisite::{ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType};
+use crate::sorcery::SorcererTraits;
 use crate::weapons::{EquipHand, Weapon, Weapons};
 use serde::{Deserialize, Serialize};
 
@@ -46,6 +47,7 @@ pub struct Character {
     pub armor: Armor,
     pub merits: Merits,
     pub exalt_type: ExaltType,
+    pub sorcery: Option<SorcererTraits>,
 }
 
 impl Character {
@@ -83,6 +85,7 @@ pub struct CharacterBuilder {
     armor: Armor,
     merits: Vec<Merit>,
     exalt_type: Option<ExaltType>,
+    sorcery: Option<SorcererTraits>,
 }
 
 impl CharacterBuilder {
@@ -307,6 +310,7 @@ impl CharacterBuilder {
             armor: self.armor,
             merits: Merits::new(self.merits),
             exalt_type,
+            sorcery: self.sorcery,
         })
     }
 }
