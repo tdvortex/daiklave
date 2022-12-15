@@ -269,7 +269,7 @@ impl CharacterBuilder {
         template: MeritTemplate,
         dots: u8,
         detail: Option<String>,
-        id: Option<i32>,
+        id: Id,
     ) -> Result<Self> {
         let merit = Merit::from_template(template, dots, detail, id)?;
         self.merits.push(merit);
@@ -281,7 +281,7 @@ impl CharacterBuilder {
         template: MeritTemplate,
         dots: u8,
         detail: Option<String>,
-        id: Option<i32>,
+        id: Id,
     ) -> Result<Self> {
         if self.meets_any_prerequisite_set(template.prerequisites()) {
             self.with_merit_ignore_prerequisites(template, dots, detail, id)

@@ -98,7 +98,7 @@ impl MeritTemplate {
 
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 pub struct Merit {
-    id: Option<i32>,
+    id: Id,
     template: MeritTemplate,
     dots: u8,
     detail: Option<String>,
@@ -107,10 +107,6 @@ pub struct Merit {
 impl PartialEq for Merit {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
-            && (self.id.is_some()
-                || (self.template == other.template
-                    && self.dots == other.dots
-                    && self.detail == other.detail))
     }
 }
 
@@ -119,7 +115,7 @@ impl Merit {
         template: MeritTemplate,
         dots: u8,
         detail: Option<String>,
-        id: Option<i32>,
+        id: Id,
     ) -> Result<Self> {
         match (template.requires_detail(), detail) {
             (false, None) => Ok(Self {
@@ -138,7 +134,7 @@ impl Merit {
         }
     }
 
-    pub fn instance_id(&self) -> Option<i32> {
+    pub fn instance_id(&self) -> Id {
         self.id
     }
 

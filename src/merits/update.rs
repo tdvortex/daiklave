@@ -1,3 +1,5 @@
+use crate::id::Id;
+
 use super::create::{create_new_merits_transaction, post_merits_details_transaction};
 use super::Merit;
 use eyre::{Context, Result};
@@ -16,20 +18,24 @@ pub fn compare_merits(old_merits: &[Merit], new_merits: &[Merit]) -> MeritDiff {
 
     let mut old_merit_instance_ids: HashSet<i32> = old_merits
         .iter()
-        .filter_map(|merit| merit.instance_id())
+        .filter_map(|merit| if let Id::Database(id) = merit.instance_id() {
+            Some(id)
+        } else {
+            None
+        })
         .collect();
 
     for merit in new_merits.iter() {
         if merit.template_id().is_placeholder() {
             diff.insert_merit_templates.push(merit.clone())
-        } else if merit.instance_id().is_none() {
+        } else if merit.instance_id().is_placeholder() {
             diff.insert_merit_instance.push((
                 *merit.template_id(),
                 merit.dots() as i16,
                 merit.detail().map(|s| s.to_owned()),
             ))
         } else {
-            old_merit_instance_ids.remove(merit.instance_id().as_ref().unwrap());
+            old_merit_instance_ids.remove(&*merit.instance_id());
         }
     }
 

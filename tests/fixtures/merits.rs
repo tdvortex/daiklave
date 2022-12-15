@@ -3,7 +3,7 @@ use exalted_3e_gui::{
     attributes::AttributeName,
     character::CharacterBuilder,
     merits::{Merit, MeritTemplate, MeritType},
-    prerequisite::PrerequisiteSet,
+    prerequisite::PrerequisiteSet, id::Id,
 };
 
 const MARTIAL_ARTIST_DESCRIPTION: &str = "\
@@ -83,19 +83,19 @@ pub fn create_initial_merits(builder: CharacterBuilder) -> CharacterBuilder {
             martial_artist_template,
             4,
             Some("Single Point Shining Into Void Style".to_owned()),
-            None,
+            Id::Placeholder(0),
         )
         .unwrap()
-        .with_merit(danger_sense_template, 3, None, None)
+        .with_merit(danger_sense_template, 3, None, Id::Placeholder(1))
         .unwrap()
         .with_merit(
             language_template,
             2,
             Some("Low Realm(Native), Flametongue, Riverspeak".to_owned()),
-            None,
+            Id::Placeholder(2),
         )
         .unwrap()
-        .with_merit(custom_template, 1, None, None)
+        .with_merit(custom_template, 1, None, Id::Placeholder(3))
         .unwrap()
 }
 
@@ -150,7 +150,7 @@ pub fn validate_initial_merits(merits: &Vec<Merit>, should_have_id: bool) {
     .into_iter()
     .zip(merits.iter())
     .for_each(|(expected, actual)| {
-        assert_eq!(actual.instance_id().is_some(), should_have_id);
+        assert_eq!(!actual.instance_id().is_placeholder(), should_have_id);
         assert_eq!(!actual.template_id().is_placeholder(), should_have_id);
         assert_eq!(expected.0, actual.name());
         assert_eq!(expected.1, actual.merit_type());
@@ -190,7 +190,7 @@ pub fn modify_merits(merits: &mut Vec<Merit>) {
         artifact_template,
         3,
         Some("Screamer (Red Jade Reaper Daiklave)".to_owned()),
-        None,
+        Id::Placeholder(4),
     )
     .unwrap();
 

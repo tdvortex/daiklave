@@ -363,7 +363,7 @@ impl CharacterBuilder {
                         .try_into()
                         .wrap_err_with(|| format!("Dots {} overflow u8", row.dots))?,
                     row.detail,
-                    Some(row.id),
+                    Id::Database(row.id),
                 )?;
             }
         }
