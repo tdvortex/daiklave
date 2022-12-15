@@ -19,6 +19,7 @@ use crate::exalt_type::ExaltType;
 use crate::health::{Health, WoundPenalty};
 use crate::intimacies::Intimacies;
 use crate::intimacies::Intimacy;
+use crate::martial_arts::MartialArtistTraits;
 use crate::merits::Merits;
 use crate::merits::{Merit, MeritTemplate};
 use crate::player::Player;
@@ -48,6 +49,7 @@ pub struct Character {
     pub merits: Merits,
     pub exalt_type: ExaltType,
     pub sorcery: Option<SorcererTraits>,
+    pub martial_arts: Vec<MartialArtistTraits>,
 }
 
 impl Character {
@@ -86,6 +88,7 @@ pub struct CharacterBuilder {
     merits: Vec<Merit>,
     exalt_type: Option<ExaltType>,
     sorcery: Option<SorcererTraits>,
+    martial_arts: Vec<MartialArtistTraits>,
 }
 
 impl CharacterBuilder {
@@ -311,6 +314,7 @@ impl CharacterBuilder {
             merits: Merits::new(self.merits),
             exalt_type,
             sorcery: self.sorcery,
+            martial_arts: self.martial_arts,
         })
     }
 }

@@ -96,6 +96,7 @@ pub struct DragonBloodedCharm {
     traits: CharmTraits,
 }
 
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct MartialArtsCharm {
     action_type: CharmActionType,
     style: String,
