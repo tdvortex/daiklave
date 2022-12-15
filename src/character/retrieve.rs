@@ -85,7 +85,7 @@ impl TryInto<Character> for GetCharacter {
     type Error = eyre::Report;
 
     fn try_into(self) -> Result<Character, Self::Error> {
-        Character::builder()
+        Character::builder(self.character.id)
             .apply_player_row(self.player)
             .apply_campaign_row(self.campaign)
             .apply_character_row(self.character)

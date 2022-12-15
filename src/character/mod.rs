@@ -17,6 +17,7 @@ use crate::attributes::{AttributeName, Attributes};
 use crate::campaign::Campaign;
 use crate::exalt_type::ExaltType;
 use crate::health::{Health, WoundPenalty};
+use crate::id::Id;
 use crate::intimacies::Intimacies;
 use crate::intimacies::Intimacy;
 use crate::martial_arts::MartialArtistTraits;
@@ -33,7 +34,7 @@ use serde::{Deserialize, Serialize};
 /// It is also the serialization format to be moved back and forth between client and server.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct Character {
-    id: Option<i32>,
+    id: Id,
     player: Player,
     campaign: Option<Campaign>,
     pub name: String,
@@ -53,11 +54,14 @@ pub struct Character {
 }
 
 impl Character {
-    pub fn builder() -> CharacterBuilder {
-        CharacterBuilder::default()
+    pub fn builder(placeholder_id: i32) -> CharacterBuilder {
+        CharacterBuilder {
+            id: Id::Placeholder(placeholder_id),
+            ..Default::default()
+        }
     }
 
-    pub fn id(&self) -> Option<i32> {
+    pub fn id(&self) -> Id {
         self.id
     }
 
@@ -72,7 +76,7 @@ impl Character {
 
 #[derive(Debug, Default)]
 pub struct CharacterBuilder {
-    id: Option<i32>,
+    id: Id,
     player: Option<Player>,
     campaign: Option<Campaign>,
     name: Option<String>,
@@ -125,8 +129,8 @@ impl CharacterBuilder {
                 .any(|prerequisite_set| self.meets_prerequisite_set(prerequisite_set))
     }
 
-    pub fn with_id(mut self, id: i32) -> Self {
-        self.id = Some(id);
+    pub fn with_database_id(mut self, id: i32) -> Self {
+        self.id = Id::Database(id);
         self
     }
 

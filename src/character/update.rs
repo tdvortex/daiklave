@@ -81,30 +81,32 @@ impl CharacterBaseDiff {
 pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Character> {
     let mut transaction = pool.begin().await.wrap_err("Failed to start transaction")?;
 
-    let old_character = if character.id.is_none() {
+    let old_character = if character.id.is_placeholder() {
         create_character_transaction(&mut transaction, character.player.clone())
             .await
             .wrap_err_with(|| {
                 format!("Failed to create initial character from: {:#?}", character)
             })?
     } else {
-        retrieve_character_transaction(&mut transaction, character.id.unwrap())
+        retrieve_character_transaction(&mut transaction, *character.id)
             .await
             .wrap_err_with(|| {
                 format!(
                     "Database error on retrieving pre-update character_id: {}",
-                    character.id.unwrap()
+                    *character.id
                 )
             })?
-            .ok_or_else(|| eyre!("No character found with id {}", character.id.unwrap()))?
+            .ok_or_else(|| eyre!("No character found with id {}", *character.id))?
     };
 
-    let character_id = old_character.id.ok_or_else(|| {
-        eyre!(
+    let character_id = if old_character.id.is_placeholder() {
+        return Err(eyre!(
             "Missing character id for character with name {}",
             old_character.name
-        )
-    })?;
+        ));
+    } else {
+        *old_character.id
+    };
 
     old_character
         .abilities

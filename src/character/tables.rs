@@ -73,7 +73,7 @@ impl CharacterBuilder {
         };
 
         let mut applied = self
-            .with_id(character_row.id)
+            .with_database_id(character_row.id)
             .with_name(character_row.name)
             .with_willpower(willpower)
             .with_experience(experience);
