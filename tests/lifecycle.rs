@@ -80,24 +80,21 @@ fn lifecycle() {
 
     // Client sends delete character order
     // Server deletes character
-    destroy_character(&pool, character.id().unwrap())
-        .await
-        .unwrap();
+    destroy_character(&pool, *character.id()).await.unwrap();
 
     // Character should not exist
-    assert!(sqlx::query!(
-        "SELECT id FROM characters WHERE id = $1",
-        character.id().unwrap()
-    )
-    .fetch_optional(&pool)
-    .await
-    .unwrap()
-    .is_none());
+    assert!(
+        sqlx::query!("SELECT id FROM characters WHERE id = $1", *character.id())
+            .fetch_optional(&pool)
+            .await
+            .unwrap()
+            .is_none()
+    );
 
     // Custom items should not exist
     assert!(sqlx::query!(
         "SELECT id FROM armor WHERE creator_id = $1",
-        character.id().unwrap()
+        *character.id()
     )
     .fetch_optional(&pool)
     .await
@@ -106,7 +103,7 @@ fn lifecycle() {
 
     assert!(sqlx::query!(
         "SELECT id FROM weapons WHERE creator_id = $1",
-        character.id().unwrap()
+        *character.id()
     )
     .fetch_optional(&pool)
     .await
@@ -115,7 +112,7 @@ fn lifecycle() {
 
     assert!(sqlx::query!(
         "SELECT id FROM merits WHERE creator_id = $1",
-        character.id().unwrap()
+        *character.id()
     )
     .fetch_optional(&pool)
     .await

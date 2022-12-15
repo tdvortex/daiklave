@@ -20,11 +20,11 @@ pub fn compare_merits(old_merits: &[Merit], new_merits: &[Merit]) -> MeritDiff {
         .collect();
 
     for merit in new_merits.iter() {
-        if merit.template_id().is_none() {
+        if merit.template_id().is_placeholder() {
             diff.insert_merit_templates.push(merit.clone())
         } else if merit.instance_id().is_none() {
             diff.insert_merit_instance.push((
-                merit.template_id().unwrap(),
+                *merit.template_id(),
                 merit.dots() as i16,
                 merit.detail().map(|s| s.to_owned()),
             ))

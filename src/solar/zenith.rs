@@ -62,11 +62,7 @@ impl ZenithTraits {
 
     pub fn has_caste_ability(&self, ability: AbilityNameNoSubskill) -> bool {
         self.has_supernal_ability(ability)
-            || self
-                .caste_abilities()
-                .into_iter()
-                .find(|a| *a == ability)
-                .is_some()
+            || self.caste_abilities().into_iter().any(|a| a == ability)
     }
 }
 

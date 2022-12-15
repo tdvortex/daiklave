@@ -1,9 +1,9 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// A unique identifier for a particular resource.
-/// 
+///
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub enum Id {
     Database(i32),
@@ -15,7 +15,7 @@ impl Deref for Id {
 
     fn deref(&self) -> &Self::Target {
         match self {
-            Self::Database(i) | Self::Placeholder(i) => &i,
+            Self::Database(i) | Self::Placeholder(i) => i,
         }
     }
 }
@@ -28,9 +28,6 @@ impl Default for Id {
 
 impl Id {
     pub fn is_placeholder(&self) -> bool {
-        match self {
-            Self::Placeholder(_) => true,
-            _ => false,
-        }
+        matches!(self, Self::Placeholder(_))
     }
 }

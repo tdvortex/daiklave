@@ -316,7 +316,7 @@ impl CharacterBuilder {
                 };
 
                 builder = builder
-                    .with_id(merit_template_row.id)
+                    .with_database_id(merit_template_row.id)
                     .with_name(merit_template_row.name)
                     .with_description(merit_template_row.description)
                     .with_merit_type(merit_template_row.merit_type.into());

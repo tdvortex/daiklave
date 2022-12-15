@@ -18,7 +18,7 @@ impl Essence {
     }
 
     pub fn solar(rating: u8) -> Result<Self> {
-        if 1 <= rating && rating <= 5 {
+        if (1..=5).contains(&rating) {
             Ok(Self {
                 rating,
                 peripheral: MotePool::new(rating * 7 + 26),
@@ -57,7 +57,7 @@ impl MotePool {
     }
 
     pub fn recover_all(&mut self) {
-        self.available = self.available + self.spent;
+        self.available += self.spent;
         self.spent = 0;
     }
 

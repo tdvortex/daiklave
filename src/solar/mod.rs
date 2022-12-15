@@ -47,7 +47,7 @@ impl SolarTraits {
 
     /// Brawl implies Brawl/MartialArts here.
     pub fn favored_abilities(&self) -> [AbilityNameNoSubskill; 5] {
-        self.favored_abilities.clone()
+        self.favored_abilities
     }
 
     /// Brawl implies Brawl/MartialArts.
@@ -220,7 +220,7 @@ impl SolarTraitsBuilder {
         let caste_abilities = caste.caste_abilities();
 
         self.favored
-            .retain(|ability| !caste_abilities.contains(&ability));
+            .retain(|ability| !caste_abilities.contains(ability));
         if self.favored.len() != 5 {
             Err(eyre!("Solars must have a total of 10 caste and favored abilities (not counting Martial Arts)"))
         } else {

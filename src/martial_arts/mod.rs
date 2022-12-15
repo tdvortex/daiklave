@@ -32,18 +32,7 @@ pub struct MartialArtistTraits(Vec<MartialArtistDetails>);
 
 impl MartialArtistTraits {
     pub fn add_style(&mut self, style: MartialArtsStyle, dots: u8) -> Result<()> {
-        if self
-            .0
-            .iter()
-            .find_map(|details| {
-                if details.style == style {
-                    Some(details)
-                } else {
-                    None
-                }
-            })
-            .is_some()
-        {
+        if self.0.iter().any(|details| details.style == style) {
             Err(eyre!("Style {} already known", style.name))
         } else {
             self.0.push(MartialArtistDetails {

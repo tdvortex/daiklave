@@ -5,7 +5,7 @@ use exalted_3e_gui::{
 };
 
 pub fn create_initial_base_character(player: &Player) -> CharacterBuilder {
-    Character::builder()
+    Character::builder(0)
         .with_player(player.clone())
         .with_name("Test Character Name".to_owned())
         .with_concept("A character for testing purposes".to_owned())
@@ -24,7 +24,7 @@ pub fn validate_initial_base_character(
     character: &Character,
     should_have_id: bool,
 ) {
-    assert_eq!(character.id().is_some(), should_have_id);
+    assert_eq!(!character.id().is_placeholder(), should_have_id);
     assert_eq!(character.player(), player);
     assert_eq!(character.name.as_str(), "Test Character Name");
     assert!(character.campaign().is_none());

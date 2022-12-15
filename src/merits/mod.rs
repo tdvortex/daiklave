@@ -9,6 +9,7 @@ pub use destroy::destroy_merits;
 pub(crate) mod tables;
 use crate::{
     data_source::{BookReference, DataSource},
+    id::Id,
     prerequisite::PrerequisiteSet,
 };
 use eyre::{eyre, Result};
@@ -23,7 +24,7 @@ pub enum MeritType {
 
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 pub struct MeritTemplate {
-    id: Option<i32>,
+    id: Id,
     name: String,
     merit_type: MeritType,
     prerequisites: Vec<PrerequisiteSet>,
@@ -35,13 +36,6 @@ pub struct MeritTemplate {
 impl PartialEq for MeritTemplate {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
-            && (self.id.is_some()
-                || (self.name == other.name
-                    && self.merit_type == other.merit_type
-                    && self.prerequisites == other.prerequisites
-                    && self.description == other.description
-                    && self.requires_detail == other.requires_detail
-                    && self.data_source == other.data_source))
     }
 }
 
@@ -73,7 +67,7 @@ impl MeritTemplate {
         }
     }
 
-    pub fn id(&self) -> Option<i32> {
+    pub fn id(&self) -> Id {
         self.id
     }
 
@@ -148,7 +142,7 @@ impl Merit {
         self.id
     }
 
-    pub fn template_id(&self) -> Option<i32> {
+    pub fn template_id(&self) -> Id {
         self.template.id()
     }
 
@@ -203,13 +197,13 @@ pub struct MeritTemplateBuilder {
     prerequisites: Vec<PrerequisiteSet>,
     description: Option<String>,
     requires_detail: Option<bool>,
-    id: Option<i32>,
+    id: Id,
     data_source: DataSource,
 }
 
 impl MeritTemplateBuilder {
-    pub(crate) fn with_id(mut self, id: i32) -> Self {
-        self.id = Some(id);
+    pub(crate) fn with_database_id(mut self, id: i32) -> Self {
+        self.id = Id::Database(id);
         self
     }
 

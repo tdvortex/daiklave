@@ -150,7 +150,7 @@ pub fn validate_initial_merits(merits: &Vec<Merit>, should_have_id: bool) {
     .zip(merits.iter())
     .for_each(|(expected, actual)| {
         assert_eq!(actual.instance_id().is_some(), should_have_id);
-        assert_eq!(actual.template_id().is_some(), should_have_id);
+        assert_eq!(!actual.template_id().is_placeholder(), should_have_id);
         assert_eq!(expected.0, actual.name());
         assert_eq!(expected.1, actual.merit_type());
         assert_eq!(expected.2, actual.detail());
