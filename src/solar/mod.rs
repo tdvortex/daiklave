@@ -12,7 +12,10 @@ pub use self::{
     zenith::{ZenithAbility, ZenithTraits, ZenithTraitsBuilder},
 };
 
-use crate::{abilities::AbilityNameNoSubskill, essence::Essence, limit::Limit, anima::AnimaLevel};
+use crate::{
+    abilities::AbilityNameNoSubskill, anima::AnimaLevel, charms::SolarCharm, essence::Essence,
+    limit::Limit,
+};
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
 
@@ -23,6 +26,7 @@ pub struct SolarTraits {
     pub anima: AnimaLevel,
     caste: SolarCaste,
     favored_abilities: [AbilityNameNoSubskill; 5],
+    solar_charms: Vec<SolarCharm>,
 }
 
 impl SolarTraits {
@@ -138,6 +142,7 @@ pub struct SolarTraitsBuilder {
     anima: AnimaLevel,
     caste: Option<SolarCaste>,
     favored: Vec<AbilityNameNoSubskill>,
+    solar_charms: Vec<SolarCharm>,
 }
 
 impl SolarTraitsBuilder {
@@ -195,6 +200,11 @@ impl SolarTraitsBuilder {
         }
     }
 
+    pub fn with_solar_charm_unchecked(mut self, charm: SolarCharm) -> Self {
+        self.solar_charms.push(charm);
+        self
+    }
+
     pub fn build(mut self) -> Result<SolarTraits> {
         if self.caste.is_none() {
             return Err(eyre!("Solars must have a caste"));
@@ -228,6 +238,7 @@ impl SolarTraitsBuilder {
                 anima: self.anima,
                 caste,
                 favored_abilities,
+                solar_charms: self.solar_charms,
             })
         }
     }
