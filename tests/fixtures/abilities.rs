@@ -1,6 +1,6 @@
 use exalted_3e_gui::{
-    abilities::{Abilities, AbilityNameNoSubskill},
-    character::CharacterBuilder,
+    abilities::{AbilityNameNoSubskill},
+    character::CharacterBuilder, Character,
 };
 
 pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder {
@@ -35,7 +35,7 @@ pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder 
     .unwrap()
 }
 
-pub fn validate_initial_abilities(abilities: &Abilities) {
+pub fn validate_initial_abilities(character: &Character) {
     vec![
         (AbilityNameNoSubskill::Archery, None, 0, None),
         (AbilityNameNoSubskill::Athletics, None, 2, None),
@@ -88,15 +88,13 @@ pub fn validate_initial_abilities(abilities: &Abilities) {
     .for_each(
         |(ability_name_no_subskill, subskill, expect_dots, expect_specialties)| {
             assert_eq!(
-                abilities
-                    .get(ability_name_no_subskill, subskill)
+                character.get_ability(ability_name_no_subskill, subskill)
                     .unwrap()
                     .dots(),
                 expect_dots
             );
             assert_eq!(
-                abilities
-                    .get(ability_name_no_subskill, subskill)
+                character.get_ability(ability_name_no_subskill, subskill)
                     .unwrap()
                     .specialties(),
                 expect_specialties
@@ -110,50 +108,48 @@ pub fn validate_initial_abilities(abilities: &Abilities) {
     ]
     .into_iter()
     .for_each(|(ability_name_no_subskill, subskill)| {
-        assert!(abilities.get(ability_name_no_subskill, subskill).is_none());
+        assert!(character.get_ability(ability_name_no_subskill, subskill).is_none());
     });
 }
 
-pub fn modify_abilities(abilities: &mut Abilities) {
+pub fn modify_abilities(character: &mut Character) {
     // Increase a stable ability
-    abilities
-        .set_dots(AbilityNameNoSubskill::Dodge, None, 4)
+    character
+        .set_ability_dots(AbilityNameNoSubskill::Dodge, None, 4)
         .unwrap();
     // Decrease a stable ability with specialty to zero
-    abilities
-        .set_dots(AbilityNameNoSubskill::Socialize, None, 0)
+    character
+        .set_ability_dots(AbilityNameNoSubskill::Socialize, None, 0)
         .unwrap();
     // Add a new subskilled ability
-    abilities
-        .set_dots(AbilityNameNoSubskill::Craft, Some("Origami"), 1)
+    character
+        .set_ability_dots(AbilityNameNoSubskill::Craft, Some("Origami"), 1)
         .unwrap();
     // Increase an existing subskilled ability
-    abilities
-        .set_dots(
+    character
+        .set_ability_dots(
             AbilityNameNoSubskill::MartialArts,
             Some("Single Point Shining Into Void Style"),
             5,
         )
         .unwrap();
     // Decrease an existing subskilled ability with specialty to zero
-    abilities
-        .set_dots(AbilityNameNoSubskill::Craft, Some("Weapon Forging"), 0)
+    character
+        .set_ability_dots(AbilityNameNoSubskill::Craft, Some("Weapon Forging"), 0)
         .unwrap();
     // Add a specialty
-    abilities
-        .add_specialty(
+    character.add_specialty(
             AbilityNameNoSubskill::Integrity,
             None,
             "Patience".to_owned(),
         )
         .unwrap();
     // Remove a specialty
-    abilities
-        .remove_specialty(AbilityNameNoSubskill::War, None, "While Outnumbered")
+    character.remove_specialty(AbilityNameNoSubskill::War, None, "While Outnumbered")
         .unwrap();
 }
 
-pub fn validate_modified_abilities(abilities: &Abilities) {
+pub fn validate_modified_abilities(character: &Character) {
     vec![
         (AbilityNameNoSubskill::Archery, None, 0, None),
         (AbilityNameNoSubskill::Athletics, None, 2, None),
@@ -196,15 +192,13 @@ pub fn validate_modified_abilities(abilities: &Abilities) {
     .for_each(
         |(ability_name_no_subskill, subskill, expect_dots, expect_specialties)| {
             assert_eq!(
-                abilities
-                    .get(ability_name_no_subskill, subskill)
+                character.get_ability(ability_name_no_subskill, subskill)
                     .unwrap()
                     .dots(),
                 expect_dots
             );
             assert_eq!(
-                abilities
-                    .get(ability_name_no_subskill, subskill)
+                character.get_ability(ability_name_no_subskill, subskill)
                     .unwrap()
                     .specialties(),
                 expect_specialties
@@ -218,6 +212,6 @@ pub fn validate_modified_abilities(abilities: &Abilities) {
     ]
     .into_iter()
     .for_each(|(ability_name_no_subskill, subskill)| {
-        assert!(abilities.get(ability_name_no_subskill, subskill).is_none());
+        assert!(character.get_ability(ability_name_no_subskill, subskill).is_none());
     });
 }

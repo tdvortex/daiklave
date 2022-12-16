@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::abilities::AbilityNameNoSubskill;
 use crate::attributes::AttributeName;
-use crate::character::Character;
 use crate::id::Id;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
@@ -80,45 +79,6 @@ impl Deref for PrerequisiteSet {
 
     fn deref(&self) -> &Self::Target {
         &self.prerequisites
-    }
-}
-
-impl Character {
-    fn _meets_prerequisite(&self, prerequisite: &Prerequisite) -> bool {
-        match prerequisite.deref() {
-            PrerequisiteType::Ability(ability_prerequisite) => {
-                self.abilities.meets_prerequisite(ability_prerequisite)
-            }
-            PrerequisiteType::Attribute(attribute_prerequisite) => {
-                self.attributes.meets_prerequisite(attribute_prerequisite)
-            }
-            PrerequisiteType::Essence(_) => false,
-            PrerequisiteType::Charm(_) => false,
-            PrerequisiteType::ExaltType(exalt_type) => match exalt_type {
-                ExaltTypePrerequisite::Solar => false,
-                ExaltTypePrerequisite::Lunar => false,
-                ExaltTypePrerequisite::DragonBlooded => false,
-                ExaltTypePrerequisite::Spirit => false,
-                ExaltTypePrerequisite::SpiritOrEclipse => false,
-            },
-        }
-    }
-
-    fn _meets_prerequisite_set(&self, prerequisite_set: &PrerequisiteSet) -> bool {
-        prerequisite_set.is_empty()
-            || prerequisite_set
-                .iter()
-                .all(|prerequisite| self._meets_prerequisite(prerequisite))
-    }
-
-    pub(crate) fn _meets_any_prerequisite_set(
-        &self,
-        prerequisite_sets: &[PrerequisiteSet],
-    ) -> bool {
-        prerequisite_sets.is_empty()
-            || prerequisite_sets
-                .iter()
-                .any(|prerequisite_set| self._meets_prerequisite_set(prerequisite_set))
     }
 }
 

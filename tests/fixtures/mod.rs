@@ -64,7 +64,7 @@ pub fn validate_initial_character(
 ) {
     validate_initial_base_character(player, initial_character, should_have_id);
     validate_initial_attributes(&initial_character.attributes);
-    validate_initial_abilities(&initial_character.abilities);
+    validate_initial_abilities(initial_character);
     validate_initial_intimacies(&initial_character.intimacies, should_have_id);
     validate_initial_health(&initial_character.health);
     validate_initial_armor_items(&initial_character.armor, should_have_id);
@@ -74,7 +74,7 @@ pub fn validate_initial_character(
 
 pub fn modify_character(character: &mut Character) {
     modify_base_character(character);
-    modify_abilities(&mut character.abilities);
+    modify_abilities(character);
     modify_attributes(&mut character.attributes);
     modify_health(&mut character.health);
     modify_intimacies(&mut character.intimacies);
@@ -85,7 +85,7 @@ pub fn modify_character(character: &mut Character) {
 
 pub fn validate_modified_character(player: &Player, modified_character: &Character) {
     validate_modified_base_character(&player, &modified_character);
-    validate_modified_abilities(&modified_character.abilities);
+    validate_modified_abilities(modified_character);
     validate_modified_attributes(&modified_character.attributes);
     validate_modified_health(&modified_character.health);
     validate_modified_intimacies(&modified_character.intimacies);

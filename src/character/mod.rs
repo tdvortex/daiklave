@@ -11,6 +11,7 @@ pub(crate) mod tables;
 use eyre::{eyre, Result};
 use std::ops::Deref;
 
+use crate::abilities::Ability;
 use crate::abilities::{Abilities, AbilityNameNoSubskill};
 use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
@@ -42,7 +43,7 @@ pub struct Character {
     pub willpower: Willpower,
     pub experience: ExperiencePoints,
     pub attributes: Attributes,
-    pub abilities: Abilities,
+    abilities: Abilities,
     pub intimacies: Intimacies,
     pub health: Health,
     pub weapons: Weapons,
@@ -71,6 +72,22 @@ impl Character {
 
     pub fn campaign(&self) -> &Option<Campaign> {
         &self.campaign
+    }
+
+    pub fn get_ability(&self, ability_name: AbilityNameNoSubskill, subskill: Option<&str>) -> Option<Ability> {
+        self.abilities.get(ability_name, subskill)
+    }
+
+    pub fn set_ability_dots(&mut self, ability_name: AbilityNameNoSubskill, subskill: Option<&str>, dots: u8) -> Result<()> {
+        self.abilities.set_dots(ability_name, subskill, dots)
+    }
+
+    pub fn add_specialty(&mut self, ability_name: AbilityNameNoSubskill, subskill: Option<&str>, specialty: String) -> Result<()> {
+        self.abilities.add_specialty(ability_name, subskill, specialty)
+    }
+
+    pub fn remove_specialty(&mut self, ability_name: AbilityNameNoSubskill, subskill: Option<&str>, specialty: &str) -> Result<()> {
+        self.abilities.remove_specialty(ability_name, subskill, specialty)
     }
 }
 
