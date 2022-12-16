@@ -158,20 +158,7 @@ impl CharacterBuilder {
                 )
             }
             AbilityNamePostgres::MartialArts => {
-                let martial_arts_style = ability_row
-                    .subskill
-                    .ok_or(eyre!("martial arts abilities must have a style"))?;
-                specialty_rows.into_iter().fold(
-                    self.with_martial_arts(martial_arts_style.as_str(), dots),
-                    |character_result, specialty_row| {
-                        character_result.and_then(|character| {
-                            character.with_martial_arts_specialty(
-                                martial_arts_style.as_str(),
-                                specialty_row.specialty,
-                            )
-                        })
-                    },
-                )
+                return Err(eyre!("Martial Arts need a different method"));
             }
             other_ability => {
                 let ability_name = other_ability.try_into().wrap_err_with(|| {

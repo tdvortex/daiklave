@@ -207,7 +207,7 @@ impl PartialEq for MartialArtsCharm {
 }
 
 impl MartialArtsCharm {
-    fn from_book(id: Id, book_title: String, page_number: i16) -> MartialArtsCharmBuilder {
+    pub fn from_book(id: Id, book_title: String, page_number: i16) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {
             action_type: None,
             martial_arts_requirement: None,
@@ -216,7 +216,7 @@ impl MartialArtsCharm {
         }
     }
 
-    fn custom(id: Id, creator_id: Id) -> MartialArtsCharmBuilder {
+    pub fn custom(id: Id, creator_id: Id) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {
             action_type: None,
             martial_arts_requirement: None,
@@ -226,7 +226,7 @@ impl MartialArtsCharm {
     }
 }
 
-struct MartialArtsCharmBuilder {
+pub struct MartialArtsCharmBuilder {
     action_type: Option<CharmActionType>,
     martial_arts_requirement: Option<u8>,
     essence_requirement: Option<u8>,

@@ -1,6 +1,30 @@
-use exalted_3e_gui::{abilities::AbilityNameNoSubskill, character::CharacterBuilder, Character};
+use exalted_3e_gui::{abilities::AbilityNameNoSubskill, character::CharacterBuilder, Character, martial_arts::MartialArtsStyle, id::Id};
+
+const SINGLE_POINT_STYLE_DESCRIPTION: &str = "Single Point Shining Into the Void is a sword style that \
+    emphasizes blinding speed and deadly-perfect finishing \
+    moves. Students learn to draw their blade as though it \
+    were an extension of their own body, transitioning \
+    effortlessly from the draw to a strike or parry. When a \
+    master duels a lesser swordsman, the fight often ends in \
+    a single stroke, the blade sheathed almost in the same \
+    instant it's drawn. When faced against a foe who matches \
+    her in skill, the Single Point stylist fights with swift blows \
+    and an almost meditative focus, seeking the single moment \
+    of weakness in her foe's defenses that will allow her to \
+    slash through him entirely. \n\
+    Single Point Shining Into the Void Weapons: This style \
+    uses slashing swords and their artifact equivalents, reaper \
+    daiklaves, delivering lightning-fast attacks from the draw. \
+    It cannot be used unarmed. \n \
+    Armor: This style is compatible with light and medium
+    armor.";
 
 pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder {
+    let single_point_shining_into_the_void_style = MartialArtsStyle::from_book(Id::Placeholder(0), "Core Rulebook".to_owned(), 434)
+        .with_name("Single Point Shining Into the Void Style".to_owned())
+        .with_description(SINGLE_POINT_STYLE_DESCRIPTION.to_owned()).build().unwrap();
+
+
     vec![
         (AbilityNameNoSubskill::Awareness, 4),
         (AbilityNameNoSubskill::War, 3),
@@ -18,7 +42,7 @@ pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder 
         ic.with_ability(ability_name_no_subskill, dots).unwrap()
     })
     .with_craft("Weapon Forging", 1)
-    .with_martial_arts("Single Point Shining Into Void Style", 4)
+    .with_martial_arts(single_point_shining_into_the_void_style, 4).unwrap()
     .with_specialty(AbilityNameNoSubskill::War, "While Outnumbered".to_owned())
     .unwrap()
     .with_specialty(AbilityNameNoSubskill::Socialize, "Tavern Gossip".to_owned())
@@ -26,7 +50,7 @@ pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder 
     .with_craft_specialty("Weapon Forging", "Sharpening Blades".to_owned())
     .unwrap()
     .with_martial_arts_specialty(
-        "Single Point Shining Into Void Style",
+        "Single Point Shining Into the Void Style",
         "Join Battle".to_owned(),
     )
     .unwrap()
@@ -53,7 +77,7 @@ pub fn validate_initial_abilities(character: &Character) {
         (AbilityNameNoSubskill::Lore, None, 0, None),
         (
             AbilityNameNoSubskill::MartialArts,
-            Some("Single Point Shining Into Void Style"),
+            Some("Single Point Shining Into the Void Style"),
             4,
             Some(&(["Join Battle".to_owned()].into())),
         ),
@@ -130,7 +154,7 @@ pub fn modify_abilities(character: &mut Character) {
     character
         .set_ability_dots(
             AbilityNameNoSubskill::MartialArts,
-            Some("Single Point Shining Into Void Style"),
+            Some("Single Point Shining Into the Void Style"),
             5,
         )
         .unwrap();
@@ -173,7 +197,7 @@ pub fn validate_modified_abilities(character: &Character) {
         (AbilityNameNoSubskill::Lore, None, 0, None),
         (
             AbilityNameNoSubskill::MartialArts,
-            Some("Single Point Shining Into Void Style"),
+            Some("Single Point Shining Into the Void Style"),
             5,
             Some(&(["Join Battle".to_owned()].into())),
         ),

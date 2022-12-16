@@ -9,7 +9,7 @@ use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
-pub(crate) struct MartialArtsStyle {
+pub struct MartialArtsStyle {
     id: Id,
     name: String,
     description: String,
