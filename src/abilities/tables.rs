@@ -162,7 +162,7 @@ impl CharacterBuilder {
                     .subskill
                     .ok_or(eyre!("martial arts abilities must have a style"))?;
                 specialty_rows.into_iter().fold(
-                    Ok(self.with_martial_arts(martial_arts_style.as_str(), dots)),
+                    self.with_martial_arts(martial_arts_style.as_str(), dots),
                     |character_result, specialty_row| {
                         character_result.and_then(|character| {
                             character.with_martial_arts_specialty(

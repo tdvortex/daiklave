@@ -1,7 +1,4 @@
-use exalted_3e_gui::{
-    abilities::{AbilityNameNoSubskill},
-    character::CharacterBuilder, Character,
-};
+use exalted_3e_gui::{abilities::AbilityNameNoSubskill, character::CharacterBuilder, Character};
 
 pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder {
     vec![
@@ -88,13 +85,15 @@ pub fn validate_initial_abilities(character: &Character) {
     .for_each(
         |(ability_name_no_subskill, subskill, expect_dots, expect_specialties)| {
             assert_eq!(
-                character.get_ability(ability_name_no_subskill, subskill)
+                character
+                    .get_ability(ability_name_no_subskill, subskill)
                     .unwrap()
                     .dots(),
                 expect_dots
             );
             assert_eq!(
-                character.get_ability(ability_name_no_subskill, subskill)
+                character
+                    .get_ability(ability_name_no_subskill, subskill)
                     .unwrap()
                     .specialties(),
                 expect_specialties
@@ -108,7 +107,9 @@ pub fn validate_initial_abilities(character: &Character) {
     ]
     .into_iter()
     .for_each(|(ability_name_no_subskill, subskill)| {
-        assert!(character.get_ability(ability_name_no_subskill, subskill).is_none());
+        assert!(character
+            .get_ability(ability_name_no_subskill, subskill)
+            .is_none());
     });
 }
 
@@ -138,14 +139,16 @@ pub fn modify_abilities(character: &mut Character) {
         .set_ability_dots(AbilityNameNoSubskill::Craft, Some("Weapon Forging"), 0)
         .unwrap();
     // Add a specialty
-    character.add_specialty(
+    character
+        .add_specialty(
             AbilityNameNoSubskill::Integrity,
             None,
             "Patience".to_owned(),
         )
         .unwrap();
     // Remove a specialty
-    character.remove_specialty(AbilityNameNoSubskill::War, None, "While Outnumbered")
+    character
+        .remove_specialty(AbilityNameNoSubskill::War, None, "While Outnumbered")
         .unwrap();
 }
 
@@ -192,13 +195,15 @@ pub fn validate_modified_abilities(character: &Character) {
     .for_each(
         |(ability_name_no_subskill, subskill, expect_dots, expect_specialties)| {
             assert_eq!(
-                character.get_ability(ability_name_no_subskill, subskill)
+                character
+                    .get_ability(ability_name_no_subskill, subskill)
                     .unwrap()
                     .dots(),
                 expect_dots
             );
             assert_eq!(
-                character.get_ability(ability_name_no_subskill, subskill)
+                character
+                    .get_ability(ability_name_no_subskill, subskill)
                     .unwrap()
                     .specialties(),
                 expect_specialties
@@ -212,6 +217,8 @@ pub fn validate_modified_abilities(character: &Character) {
     ]
     .into_iter()
     .for_each(|(ability_name_no_subskill, subskill)| {
-        assert!(character.get_ability(ability_name_no_subskill, subskill).is_none());
+        assert!(character
+            .get_ability(ability_name_no_subskill, subskill)
+            .is_none());
     });
 }

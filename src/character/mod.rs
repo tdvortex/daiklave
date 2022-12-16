@@ -22,6 +22,7 @@ use crate::id::Id;
 use crate::intimacies::Intimacies;
 use crate::intimacies::Intimacy;
 use crate::martial_arts::MartialArtistTraits;
+use crate::martial_arts::MartialArtsStyle;
 use crate::merits::Merits;
 use crate::merits::{Merit, MeritTemplate};
 use crate::player::Player;
@@ -74,26 +75,66 @@ impl Character {
         &self.campaign
     }
 
-    pub fn get_ability(&self, ability_name: AbilityNameNoSubskill, subskill: Option<&str>) -> Option<Ability> {
+    pub fn get_ability(
+        &self,
+        ability_name: AbilityNameNoSubskill,
+        subskill: Option<&str>,
+    ) -> Option<Ability> {
         if ability_name == AbilityNameNoSubskill::MartialArts {
-            let style = subskill?;
-
-            self.martial_arts_styles.0.iter().find(|&details| details.style().name() == style).map(|d| d.as_ability())
+            self.martial_arts_styles.get_ability(subskill?)
         } else {
             self.abilities.get(ability_name, subskill)
         }
     }
 
-    pub fn set_ability_dots(&mut self, ability_name: AbilityNameNoSubskill, subskill: Option<&str>, dots: u8) -> Result<()> {
-        self.abilities.set_dots(ability_name, subskill, dots)
+    pub fn set_ability_dots(
+        &mut self,
+        ability_name: AbilityNameNoSubskill,
+        subskill: Option<&str>,
+        dots: u8,
+    ) -> Result<()> {
+        if ability_name == AbilityNameNoSubskill::MartialArts {
+            self.martial_arts_styles.set_dots(
+                subskill.ok_or_else(|| eyre!("Martial Arts must specify a style to set dots"))?,
+                dots,
+            )
+        } else {
+            self.abilities.set_dots(ability_name, subskill, dots)
+        }
     }
 
-    pub fn add_specialty(&mut self, ability_name: AbilityNameNoSubskill, subskill: Option<&str>, specialty: String) -> Result<()> {
-        self.abilities.add_specialty(ability_name, subskill, specialty)
+    pub fn add_specialty(
+        &mut self,
+        ability_name: AbilityNameNoSubskill,
+        subskill: Option<&str>,
+        specialty: String,
+    ) -> Result<()> {
+        if ability_name == AbilityNameNoSubskill::MartialArts {
+            self.martial_arts_styles.add_specialty(
+                subskill.ok_or_else(|| eyre!("Martial Arts must specify a style to set dots"))?,
+                specialty,
+            )
+        } else {
+            self.abilities
+                .add_specialty(ability_name, subskill, specialty)
+        }
     }
 
-    pub fn remove_specialty(&mut self, ability_name: AbilityNameNoSubskill, subskill: Option<&str>, specialty: &str) -> Result<()> {
-        self.abilities.remove_specialty(ability_name, subskill, specialty)
+    pub fn remove_specialty(
+        &mut self,
+        ability_name: AbilityNameNoSubskill,
+        subskill: Option<&str>,
+        specialty: &str,
+    ) -> Result<()> {
+        if ability_name == AbilityNameNoSubskill::MartialArts {
+            self.martial_arts_styles.remove_specialty(
+                subskill.ok_or_else(|| eyre!("Martial Arts must specify a style to set dots"))?,
+                specialty,
+            )
+        } else {
+            self.abilities
+                .remove_specialty(ability_name, subskill, specialty)
+        }
     }
 }
 
@@ -208,15 +249,9 @@ impl CharacterBuilder {
         self
     }
 
-    pub fn with_martial_arts(mut self, martial_arts_style: &str, value: u8) -> Self {
-        self.abilities
-            .set_dots(
-                AbilityNameNoSubskill::MartialArts,
-                Some(martial_arts_style),
-                value,
-            )
-            .unwrap();
-        self
+    pub fn with_martial_arts(mut self, style: MartialArtsStyle, dots: u8) -> Result<Self> {
+        self.martial_arts_styles.add_style(style, dots)?;
+        Ok(self)
     }
 
     pub fn with_specialty(
@@ -237,14 +272,10 @@ impl CharacterBuilder {
 
     pub fn with_martial_arts_specialty(
         mut self,
-        martial_arts_style: &str,
+        style_name: &str,
         specialty: String,
     ) -> Result<Self> {
-        self.abilities.add_specialty(
-            AbilityNameNoSubskill::MartialArts,
-            Some(martial_arts_style),
-            specialty,
-        )?;
+        self.martial_arts_styles.add_specialty(style_name, specialty)?;
         Ok(self)
     }
 

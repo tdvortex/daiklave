@@ -20,6 +20,63 @@ impl Default for AbilityRating {
     }
 }
 
+impl AbilityRating {
+    pub fn dots(&self) -> u8 {
+        match self {
+            AbilityRating::Zero => 0,
+            AbilityRating::NonZero(non_zero_ability) => non_zero_ability.dots,
+        }
+    }
+
+    pub fn set_dots(&mut self, dots: u8) {
+        if self.dots() != dots {
+            if dots == 0 {
+                *self = AbilityRating::Zero;
+            } else if self.dots() == 0 {
+                *self = AbilityRating::NonZero(NonZeroAbility {
+                    dots,
+                    specialties: Vec::new(),
+                });
+            } else if let Self::NonZero(non_zero_ability) = self {
+                non_zero_ability.dots = dots;
+            }
+        }
+    }
+
+    pub fn add_specialty(&mut self, specialty: String) -> Result<()> {
+        if let AbilityRating::NonZero(non_zero_ability) = self {
+            if non_zero_ability.specialties.contains(&specialty) {
+                Err(eyre!("Specialty {} already exists", specialty))
+            } else {
+                non_zero_ability.specialties.push(specialty);
+                non_zero_ability.specialties.sort();
+                Ok(())
+            }
+        } else {
+            Err(eyre!("Cannot add specialty to zero-rated abilities"))
+        }
+    }
+
+    pub fn remove_specialty(&mut self, specialty: &str) -> Result<()> {
+        if let AbilityRating::NonZero(non_zero_ability) = self {
+            let index = non_zero_ability
+                .specialties
+                .iter()
+                .enumerate()
+                .find(|(_, s)| s.as_str() == specialty);
+
+            if let Some((i, _)) = index {
+                non_zero_ability.specialties.remove(i);
+                Ok(())
+            } else {
+                Err(eyre!("Specialty {} not found", specialty))
+            }
+        } else {
+            Err(eyre!("Cannot add specialty to zero-rated abilities"))
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub(crate) struct NonZeroAbility {
     pub dots: u8,
@@ -547,7 +604,9 @@ impl Abilities {
         }
 
         if ability_name_no_subskill == AbilityNameNoSubskill::MartialArts {
-            return Err(eyre!("Add martial arts to MartialArtist, not Abilities"));
+            return Err(eyre!(
+                "Add martial arts dots to MartialArtist, not Abilities"
+            ));
         }
 
         let ptr = match ability_name_no_subskill {
@@ -579,21 +638,7 @@ impl Abilities {
             AbilityNameNoSubskill::MartialArts => unreachable!(),
         };
 
-        if dots == 0 {
-            *ptr = AbilityRating::Zero;
-        } else {
-            match ptr {
-                AbilityRating::Zero => {
-                    *ptr = AbilityRating::NonZero(NonZeroAbility {
-                        dots,
-                        specialties: Vec::new(),
-                    });
-                }
-                AbilityRating::NonZero(non_zero_ability) => {
-                    non_zero_ability.dots = dots;
-                }
-            }
-        }
+        ptr.set_dots(dots);
         Ok(())
     }
 
@@ -652,25 +697,13 @@ impl Abilities {
                     )
                 })?,
             AbilityNameNoSubskill::MartialArts => {
-                return Err(eyre!("Add martial arts to MartialArtist, not Abilities"));
+                return Err(eyre!(
+                    "Add martial arts specialties to MartialArtist, not Abilities"
+                ));
             }
         };
 
-        match rating_ptr {
-            AbilityRating::Zero => {
-                return Err(eyre!(
-                    "Cannot add specialties to 0-rated ability: {:?}",
-                    ability_name_no_subskill
-                ));
-            }
-            AbilityRating::NonZero(non_zero_rating) => {
-                non_zero_rating.specialties.push(specialty);
-                non_zero_rating.specialties.sort();
-                non_zero_rating.specialties.dedup();
-            }
-        }
-
-        Ok(())
+        rating_ptr.add_specialty(specialty)
     }
 
     pub fn remove_specialty(
@@ -728,36 +761,13 @@ impl Abilities {
                     )
                 })?,
             AbilityNameNoSubskill::MartialArts => {
-                return Err(eyre!("Add martial arts to MartialArtist, not Abilities"));
+                return Err(eyre!(
+                    "Remove martial arts specialties from MartialArtist, not Abilities"
+                ));
             }
         };
 
-        match rating_ptr {
-            AbilityRating::Zero => {
-                return Err(eyre!("Cannot have specialties on 0-rated abilities"));
-            }
-            AbilityRating::NonZero(non_zero_rating) => {
-                let specialty_index =
-                    non_zero_rating
-                        .specialties
-                        .iter()
-                        .enumerate()
-                        .find_map(|(index, name)| {
-                            if name.as_str() == specialty {
-                                Some(index)
-                            } else {
-                                None
-                            }
-                        });
-                if let Some(index) = specialty_index {
-                    non_zero_rating.specialties.remove(index);
-                } else {
-                    return Err(eyre!("Specialty {} not found", specialty));
-                }
-            }
-        }
-
-        Ok(())
+        rating_ptr.remove_specialty(specialty)
     }
 
     fn craft_iter(&self) -> impl Iterator<Item = Ability> {
@@ -803,9 +813,7 @@ impl Abilities {
                     false
                 }
             }
-            (AbilityNameNoSubskill::MartialArts, None) => {
-                false
-            }
+            (AbilityNameNoSubskill::MartialArts, None) => false,
             (other_ability, _) => {
                 self.get(other_ability, None).unwrap().dots() >= prerequisite.dots
             }
@@ -837,9 +845,7 @@ impl<'a> Iterator for AbilityNamesIter<'a> {
                 self.on_craft = true;
                 self.next()
             }
-            Some(AbilityNameNoSubskill::MartialArts) => {
-                self.next()
-            }
+            Some(AbilityNameNoSubskill::MartialArts) => self.next(),
             Some(other_name) => Some(other_name.try_into().unwrap()),
         }
     }
