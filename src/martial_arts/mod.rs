@@ -1,3 +1,4 @@
+mod tables;
 use crate::{
     abilities::{Ability, AbilityName, AbilityRating, NonZeroAbility},
     charms::MartialArtsCharm,
