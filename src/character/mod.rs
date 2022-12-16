@@ -275,7 +275,8 @@ impl CharacterBuilder {
         style_name: &str,
         specialty: String,
     ) -> Result<Self> {
-        self.martial_arts_styles.add_specialty(style_name, specialty)?;
+        self.martial_arts_styles
+            .add_specialty(style_name, specialty)?;
         Ok(self)
     }
 
