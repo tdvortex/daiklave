@@ -51,7 +51,7 @@ pub struct Character {
     pub merits: Merits,
     pub exalt_type: ExaltType,
     pub sorcery: Option<SorcererTraits>,
-    pub martial_arts_styles: MartialArtistTraits,
+    martial_arts_styles: MartialArtistTraits,
 }
 
 impl Character {
@@ -75,7 +75,13 @@ impl Character {
     }
 
     pub fn get_ability(&self, ability_name: AbilityNameNoSubskill, subskill: Option<&str>) -> Option<Ability> {
-        self.abilities.get(ability_name, subskill)
+        if ability_name == AbilityNameNoSubskill::MartialArts {
+            let style = subskill?;
+
+            self.martial_arts_styles.0.iter().find(|&details| details.style().name() == style).map(|d| d.as_ability())
+        } else {
+            self.abilities.get(ability_name, subskill)
+        }
     }
 
     pub fn set_ability_dots(&mut self, ability_name: AbilityNameNoSubskill, subskill: Option<&str>, dots: u8) -> Result<()> {

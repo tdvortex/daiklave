@@ -8,7 +8,8 @@ use std::fmt::Debug;
 use std::iter::FusedIterator;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
-enum AbilityRating {
+
+pub(crate) enum AbilityRating {
     Zero,
     NonZero(NonZeroAbility),
 }
@@ -20,9 +21,9 @@ impl Default for AbilityRating {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
-struct NonZeroAbility {
-    value: u8,
-    specialties: Vec<String>,
+pub(crate) struct NonZeroAbility {
+    pub dots: u8,
+    pub specialties: Vec<String>,
 }
 
 /// The name of an ability, excluding any Craft focus areas or Martial Arts styles.
@@ -318,7 +319,6 @@ pub struct Abilities {
     larcency: AbilityRating,
     linguistics: AbilityRating,
     lore: AbilityRating,
-    martial_arts: Vec<(String, AbilityRating)>,
     medicine: AbilityRating,
     melee: AbilityRating,
     occult: AbilityRating,
@@ -335,8 +335,8 @@ pub struct Abilities {
 }
 
 pub struct Ability<'a> {
-    name: AbilityName<'a>,
-    rating: &'a AbilityRating,
+    pub(crate) name: AbilityName<'a>,
+    pub(crate) rating: &'a AbilityRating,
 }
 
 impl<'a> Ability<'a> {
@@ -347,7 +347,7 @@ impl<'a> Ability<'a> {
     pub fn dots(&self) -> u8 {
         match &self.rating {
             AbilityRating::Zero => 0,
-            AbilityRating::NonZero(non_zero_ability) => non_zero_ability.value,
+            AbilityRating::NonZero(non_zero_ability) => non_zero_ability.dots,
         }
     }
 
@@ -394,18 +394,7 @@ impl Abilities {
         }
 
         if ability_name_no_subskill == AbilityNameNoSubskill::MartialArts {
-            let (style, rating) = self.martial_arts.iter().find_map(|(style, rating)| {
-                if Some(style.as_str()) == subskill {
-                    Some((style.as_str(), rating))
-                } else {
-                    None
-                }
-            })?;
-
-            return Some(Ability {
-                name: AbilityName::MartialArts(style),
-                rating,
-            });
+            return None;
         }
 
         match ability_name_no_subskill {
@@ -541,13 +530,13 @@ impl Abilities {
                 if dots == 0 {
                     self.craft.remove(index);
                 } else if let AbilityRating::NonZero(non_zero_ability) = &mut self.craft[index].1 {
-                    non_zero_ability.value = dots;
+                    non_zero_ability.dots = dots;
                 }
             } else if dots > 0 {
                 self.craft.push((
                     subskill.unwrap().to_owned(),
                     AbilityRating::NonZero(NonZeroAbility {
-                        value: dots,
+                        dots,
                         specialties: Vec::new(),
                     }),
                 ));
@@ -558,37 +547,7 @@ impl Abilities {
         }
 
         if ability_name_no_subskill == AbilityNameNoSubskill::MartialArts {
-            let style_index =
-                self.martial_arts
-                    .iter()
-                    .enumerate()
-                    .find_map(|(index, (style, _))| {
-                        if Some(style.as_str()) == subskill {
-                            Some(index)
-                        } else {
-                            None
-                        }
-                    });
-
-            if let Some(index) = style_index {
-                if dots == 0 {
-                    self.martial_arts.remove(index);
-                } else if let AbilityRating::NonZero(non_zero_ability) =
-                    &mut self.martial_arts[index].1
-                {
-                    non_zero_ability.value = dots;
-                }
-            } else if dots > 0 {
-                self.martial_arts.push((
-                    subskill.unwrap().to_owned(),
-                    AbilityRating::NonZero(NonZeroAbility {
-                        value: dots,
-                        specialties: Vec::new(),
-                    }),
-                ));
-                self.martial_arts.sort_by(|a, b| a.0.cmp(&b.0));
-            }
-            return Ok(());
+            return Err(eyre!("Add martial arts to MartialArtist, not Abilities"));
         }
 
         let ptr = match ability_name_no_subskill {
@@ -626,12 +585,12 @@ impl Abilities {
             match ptr {
                 AbilityRating::Zero => {
                     *ptr = AbilityRating::NonZero(NonZeroAbility {
-                        value: dots,
+                        dots,
                         specialties: Vec::new(),
                     });
                 }
                 AbilityRating::NonZero(non_zero_ability) => {
-                    non_zero_ability.value = dots;
+                    non_zero_ability.dots = dots;
                 }
             }
         }
@@ -692,22 +651,9 @@ impl Abilities {
                         subskill.unwrap()
                     )
                 })?,
-            AbilityNameNoSubskill::MartialArts => self
-                .martial_arts
-                .iter_mut()
-                .find_map(|(style, rating)| {
-                    if Some(style.as_str()) == subskill {
-                        Some(rating)
-                    } else {
-                        None
-                    }
-                })
-                .ok_or_else(|| {
-                    eyre!(
-                        "Cannot add specialty to zero-rated ability: MartialArts ({})",
-                        subskill.unwrap()
-                    )
-                })?,
+            AbilityNameNoSubskill::MartialArts => {
+                return Err(eyre!("Add martial arts to MartialArtist, not Abilities"));
+            }
         };
 
         match rating_ptr {
@@ -781,22 +727,9 @@ impl Abilities {
                         subskill.unwrap()
                     )
                 })?,
-            AbilityNameNoSubskill::MartialArts => self
-                .martial_arts
-                .iter_mut()
-                .find_map(|(style, rating)| {
-                    if Some(style.as_str()) == subskill {
-                        Some(rating)
-                    } else {
-                        None
-                    }
-                })
-                .ok_or_else(|| {
-                    eyre!(
-                        "Cannot have specialties on 0-rated ability: MartialArts ({})",
-                        subskill.unwrap()
-                    )
-                })?,
+            AbilityNameNoSubskill::MartialArts => {
+                return Err(eyre!("Add martial arts to MartialArtist, not Abilities"));
+            }
         };
 
         match rating_ptr {
@@ -833,19 +766,11 @@ impl Abilities {
         }
     }
 
-    fn martial_arts_iter(&self) -> impl Iterator<Item = Ability> {
-        MartialArtsIter {
-            martial_arts_iter: self.martial_arts.iter(),
-        }
-    }
-
     fn ability_names_iter(&self) -> AbilityNamesIter {
         AbilityNamesIter {
             ability_name_no_focus_iter: AbilityNameNoSubskill::iter(),
             on_craft: false,
             craft_iter: self.craft.iter(),
-            on_martial_arts: false,
-            martial_arts_iter: self.martial_arts.iter(),
         }
     }
 
@@ -878,9 +803,9 @@ impl Abilities {
                     false
                 }
             }
-            (AbilityNameNoSubskill::MartialArts, None) => self
-                .martial_arts_iter()
-                .any(|martial_arts_ability| martial_arts_ability.dots() >= prerequisite.dots),
+            (AbilityNameNoSubskill::MartialArts, None) => {
+                false
+            }
             (other_ability, _) => {
                 self.get(other_ability, None).unwrap().dots() >= prerequisite.dots
             }
@@ -892,8 +817,6 @@ struct AbilityNamesIter<'a> {
     ability_name_no_focus_iter: AbilityNameNoFocusIter,
     on_craft: bool,
     craft_iter: std::slice::Iter<'a, (String, AbilityRating)>,
-    on_martial_arts: bool,
-    martial_arts_iter: std::slice::Iter<'a, (String, AbilityRating)>,
 }
 
 impl<'a> Iterator for AbilityNamesIter<'a> {
@@ -908,14 +831,6 @@ impl<'a> Iterator for AbilityNamesIter<'a> {
             }
         }
 
-        if self.on_martial_arts {
-            if let Some((style, _)) = self.martial_arts_iter.next() {
-                return Some(AbilityName::MartialArts(style.as_str()));
-            } else {
-                self.on_martial_arts = false;
-            }
-        }
-
         match self.ability_name_no_focus_iter.next() {
             None => None,
             Some(AbilityNameNoSubskill::Craft) => {
@@ -923,7 +838,6 @@ impl<'a> Iterator for AbilityNamesIter<'a> {
                 self.next()
             }
             Some(AbilityNameNoSubskill::MartialArts) => {
-                self.on_martial_arts = true;
                 self.next()
             }
             Some(other_name) => Some(other_name.try_into().unwrap()),
