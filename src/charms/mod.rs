@@ -64,7 +64,7 @@ pub enum CharmCostType {
     SorcerousMotes,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 struct CharmTraits {
     id: Id,
     data_source: DataSource,
@@ -73,6 +73,12 @@ struct CharmTraits {
     duration: String,
     keywords: Vec<CharmKeyword>,
     description: String,
+}
+
+impl PartialEq for CharmTraits {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
 }
 
 impl CharmTraits {
@@ -186,12 +192,18 @@ pub struct _DragonBloodedCharm {
     traits: CharmTraits,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, Eq, Clone)]
 pub struct MartialArtsCharm {
     action_type: CharmActionType,
     martial_arts_requirement: u8,
     essence_requirement: u8,
     traits: CharmTraits,
+}
+
+impl PartialEq for MartialArtsCharm {
+    fn eq(&self, other: &Self) -> bool {
+        self.traits == other.traits
+    }
 }
 
 impl MartialArtsCharm {
