@@ -32,46 +32,49 @@ Each purchase grants the character fluency in one \
 
 pub fn create_initial_merits(builder: CharacterBuilder) -> CharacterBuilder {
     let character_id_placeholder = builder.id();
-    let martial_artist_template = MeritTemplate::from_book("Core Rulebook".to_owned(), 163)
-        .with_name("Martial Artist".to_owned())
-        .with_merit_type(MeritType::Purchased)
-        .with_description(MARTIAL_ARTIST_DESCRIPTION.to_owned())
-        .requiring_detail()
-        .with_prerequisite_set(
-            PrerequisiteSet::create()
-                .requiring_ability(AbilityNameNoSubskill::Brawl, 1)
-                .build(),
-        )
-        .build()
-        .unwrap();
+    let martial_artist_template =
+        MeritTemplate::from_book(Id::Placeholder(0), "Core Rulebook".to_owned(), 163)
+            .with_name("Martial Artist".to_owned())
+            .with_merit_type(MeritType::Purchased)
+            .with_description(MARTIAL_ARTIST_DESCRIPTION.to_owned())
+            .requiring_detail()
+            .with_prerequisite_set(
+                PrerequisiteSet::create()
+                    .requiring_ability(AbilityNameNoSubskill::Brawl, 1)
+                    .build(),
+            )
+            .build()
+            .unwrap();
 
-    let danger_sense_template = MeritTemplate::from_book("Core Rulebook".to_owned(), 160)
-        .with_name("Danger Sense".to_owned())
-        .with_merit_type(MeritType::Innate)
-        .with_description(DANGER_SENSE_DESCRIPTION.to_owned())
-        .not_requiring_detail()
-        .with_prerequisite_set(
-            PrerequisiteSet::create()
-                .requiring_attribute(AttributeName::Perception, 3)
-                .build(),
-        )
-        .with_prerequisite_set(
-            PrerequisiteSet::create()
-                .requiring_ability(AbilityNameNoSubskill::Awareness, 3)
-                .build(),
-        )
-        .build()
-        .unwrap();
+    let danger_sense_template =
+        MeritTemplate::from_book(Id::Placeholder(1), "Core Rulebook".to_owned(), 160)
+            .with_name("Danger Sense".to_owned())
+            .with_merit_type(MeritType::Innate)
+            .with_description(DANGER_SENSE_DESCRIPTION.to_owned())
+            .not_requiring_detail()
+            .with_prerequisite_set(
+                PrerequisiteSet::create()
+                    .requiring_attribute(AttributeName::Perception, 3)
+                    .build(),
+            )
+            .with_prerequisite_set(
+                PrerequisiteSet::create()
+                    .requiring_ability(AbilityNameNoSubskill::Awareness, 3)
+                    .build(),
+            )
+            .build()
+            .unwrap();
 
-    let language_template = MeritTemplate::from_book("Core Rulebook".to_owned(), 162)
-        .with_name("Language".to_owned())
-        .with_merit_type(MeritType::Purchased)
-        .with_description(LANGUAGE_DESCRIPTION.to_owned())
-        .requiring_detail()
-        .build()
-        .unwrap();
+    let language_template =
+        MeritTemplate::from_book(Id::Placeholder(2), "Core Rulebook".to_owned(), 162)
+            .with_name("Language".to_owned())
+            .with_merit_type(MeritType::Purchased)
+            .with_description(LANGUAGE_DESCRIPTION.to_owned())
+            .requiring_detail()
+            .build()
+            .unwrap();
 
-    let custom_template = MeritTemplate::custom(character_id_placeholder)
+    let custom_template = MeritTemplate::custom(Id::Placeholder(3), character_id_placeholder)
         .with_name("Test Custom Merit Template".to_owned())
         .with_merit_type(MeritType::Supernatural)
         .with_description("Test Custom Merit Template Description".to_owned())
@@ -160,7 +163,7 @@ pub fn validate_initial_merits(merits: &Vec<Merit>, should_have_id: bool) {
         assert_eq!(expected.4, actual.requires_detail());
         assert_eq!(expected.5.len(), actual.prerequisites().len());
         for (expected_set, actual_set) in expected.5.iter().zip(actual.prerequisites().iter()) {
-            assert_eq!(actual_set.id().is_some(), should_have_id);
+            assert_eq!(!actual_set.id().is_placeholder(), should_have_id);
             assert_eq!(expected_set.len(), actual_set.len());
             for (expected_prerequisite, actual_prerequisite) in
                 expected_set.iter().zip(actual_set.iter())
@@ -177,15 +180,16 @@ pub fn validate_initial_merits(merits: &Vec<Merit>, should_have_id: bool) {
 
 pub fn modify_merits(merits: &mut Vec<Merit>) {
     // Add merit
-    let artifact_template = MeritTemplate::from_book("Core Rulebook".to_owned(), 159)
-        .with_name("Artifact".to_owned())
-        .requiring_detail()
-        .with_description(
-            "The character owns a magical item—see Chapter Nine for more details.".to_owned(),
-        )
-        .with_merit_type(MeritType::Story)
-        .build()
-        .unwrap();
+    let artifact_template =
+        MeritTemplate::from_book(Id::Placeholder(4), "Core Rulebook".to_owned(), 159)
+            .with_name("Artifact".to_owned())
+            .requiring_detail()
+            .with_description(
+                "The character owns a magical item—see Chapter Nine for more details.".to_owned(),
+            )
+            .with_merit_type(MeritType::Story)
+            .build()
+            .unwrap();
 
     let screamer_merit = Merit::from_template(
         artifact_template,

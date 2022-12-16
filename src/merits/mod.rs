@@ -40,14 +40,14 @@ impl PartialEq for MeritTemplate {
 }
 
 impl MeritTemplate {
-    pub fn from_book(book_title: String, page_number: i16) -> MeritTemplateBuilder {
+    pub fn from_book(id: Id, book_title: String, page_number: i16) -> MeritTemplateBuilder {
         MeritTemplateBuilder {
             name: Default::default(),
             merit_type: Default::default(),
             prerequisites: Default::default(),
             description: Default::default(),
             requires_detail: Default::default(),
-            id: Default::default(),
+            id,
             data_source: DataSource::Book(BookReference {
                 book_title,
                 page_number,
@@ -55,14 +55,14 @@ impl MeritTemplate {
         }
     }
 
-    pub fn custom(creator_id: Id) -> MeritTemplateBuilder {
+    pub fn custom(id: Id, creator_id: Id) -> MeritTemplateBuilder {
         MeritTemplateBuilder {
             name: Default::default(),
             merit_type: Default::default(),
             prerequisites: Default::default(),
             description: Default::default(),
             requires_detail: Default::default(),
-            id: Default::default(),
+            id,
             data_source: DataSource::Custom(creator_id),
         }
     }

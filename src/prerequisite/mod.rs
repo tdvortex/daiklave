@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::abilities::AbilityNameNoSubskill;
 use crate::attributes::AttributeName;
 use crate::character::Character;
+use crate::id::Id;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub enum PrerequisiteType {
@@ -60,7 +61,7 @@ pub enum ExaltTypePrerequisite {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct PrerequisiteSet {
-    id: Option<i32>,
+    id: Id,
     prerequisites: Vec<Prerequisite>,
 }
 
@@ -69,7 +70,7 @@ impl PrerequisiteSet {
         PrerequisiteSetBuilder::default()
     }
 
-    pub fn id(&self) -> Option<i32> {
+    pub fn id(&self) -> Id {
         self.id
     }
 }
@@ -123,13 +124,13 @@ impl Character {
 
 #[derive(Debug, Default)]
 pub struct PrerequisiteSetBuilder {
-    id: Option<i32>,
+    id: Id,
     prerequisites: Vec<Prerequisite>,
 }
 
 impl PrerequisiteSetBuilder {
-    pub fn with_id(mut self, id: i32) -> Self {
-        self.id = Some(id);
+    pub fn with_database_id(mut self, id: i32) -> Self {
+        self.id = Id::Database(id);
         self
     }
 

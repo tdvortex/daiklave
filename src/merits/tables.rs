@@ -179,7 +179,7 @@ impl CharacterBuilder {
         let mut set_id_to_prerequisite_set = HashMap::new();
 
         for (set_id, vec_of_rows) in set_id_to_prerequisite_rows.into_iter() {
-            let mut builder = PrerequisiteSet::create().with_id(set_id);
+            let mut builder = PrerequisiteSet::create().with_database_id(set_id);
             for row in vec_of_rows.into_iter() {
                 match row.prerequisite_type {
                     PrerequisiteTypePostgres::Ability => {
@@ -308,6 +308,7 @@ impl CharacterBuilder {
                     && merit_template_row.creator_id.is_none()
                 {
                     MeritTemplate::from_book(
+                        Id::Database(merit_template_row.id),
                         merit_template_row.book_title.unwrap(),
                         merit_template_row.page_number.unwrap(),
                     )
@@ -315,7 +316,10 @@ impl CharacterBuilder {
                     && merit_template_row.page_number.is_none()
                     && merit_template_row.creator_id.is_some()
                 {
-                    MeritTemplate::custom(Id::Database(merit_template_row.creator_id.unwrap()))
+                    MeritTemplate::custom(
+                        Id::Database(merit_template_row.id),
+                        Id::Database(merit_template_row.creator_id.unwrap()),
+                    )
                 } else {
                     return Err(eyre!(
                         "Data source is inconsistent for merit template {}",
