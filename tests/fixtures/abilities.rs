@@ -118,6 +118,8 @@ pub fn validate_initial_abilities(character: &Character) {
                 } else {
                     None
                 }).unwrap()
+            } else if ability_name_no_subskill == AbilityNameNoSubskill::Craft {
+                character.get_craft_ability(subskill.unwrap()).unwrap()
             } else {
                 character.get_ability(ability_name_no_subskill.try_into().unwrap())
             };
@@ -126,7 +128,7 @@ pub fn validate_initial_abilities(character: &Character) {
         },
     );
 
-    assert!(character.get_ability(AbilityNameNoSubskill::Craft, Some("Does Not Exist")).is_none());
+    assert!(character.get_craft_ability("Does Not Exist").is_none());
     assert!(character.martial_arts_iter().find(|(style, _, _)| style.name() == "Does Not Exist").is_none());
 }
 
@@ -214,6 +216,8 @@ pub fn validate_modified_abilities(character: &Character) {
                 } else {
                     None
                 }).unwrap()
+            } else if ability_name_no_subskill == AbilityNameNoSubskill::Craft {
+                character.get_craft_ability(subskill.unwrap()).unwrap()
             } else {
                 character.get_ability(ability_name_no_subskill.try_into().unwrap())
             };
@@ -222,6 +226,6 @@ pub fn validate_modified_abilities(character: &Character) {
         },
     );
 
-    assert!(character.get_ability(AbilityNameNoSubskill::Craft, Some("Weapon Forging")).is_none());
+    assert!(character.get_craft_ability("Weapon Forging").is_none());
     assert!(character.martial_arts_iter().find(|(style, _, _)| style.name() == "Does Not Exist").is_none());
 }
