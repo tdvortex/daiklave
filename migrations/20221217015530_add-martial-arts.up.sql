@@ -18,9 +18,10 @@ CREATE TABLE character_martial_arts (
 );
 
 CREATE TABLE character_martial_arts_specialties (
-    character_id INTEGER REFERENCES characters(id) ON DELETE CASCADE,
-    style_id INTEGER REFERENCES martial_arts_styles(id) ON DELETE CASCADE,
+    character_id INTEGER,
+    style_id INTEGER,
     specialty VARCHAR(255),
+    FOREIGN KEY (character_id, style_id) REFERENCES character_martial_arts(character_id, style_id) ON DELETE CASCADE,
     PRIMARY KEY (character_id, style_id, specialty)
 );
 
