@@ -119,7 +119,7 @@ impl MartialArtistDetails {
 pub(crate) struct MartialArtistTraits(Vec<MartialArtistDetails>);
 
 impl MartialArtistTraits {
-    pub fn _get_ability(&self, style_id: Id) -> Option<Ability> {
+    pub fn get_ability(&self, style_id: Id) -> Option<Ability> {
         self.0
             .iter()
             .find(|&details| details.style().id() == style_id)
@@ -167,7 +167,7 @@ impl MartialArtistTraits {
             .rating)
     }
 
-    pub fn _set_dots(&mut self, style_id: Id, dots: u8) -> Result<()> {
+    pub fn set_dots(&mut self, style_id: Id, dots: u8) -> Result<()> {
         self.get_rating_mut(style_id)?.set_dots(dots);
         Ok(())
     }

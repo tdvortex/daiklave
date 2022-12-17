@@ -88,6 +88,17 @@ impl Character {
         }
     }
 
+    pub fn get_martial_arts_ability(
+        &self,
+        style_id: Id,
+    ) -> Option<Ability> {
+        self.martial_arts_styles.get_ability(style_id)
+    }
+
+    pub fn martial_arts_iter(&self) -> impl Iterator<Item = (&MartialArtsStyle, Ability, &Vec<MartialArtsCharm>)> + '_ {
+        self.martial_arts_styles.iter()
+    }
+
     pub fn set_ability_dots(
         &mut self,
         ability_name: AbilityNameNoSubskill,
@@ -99,6 +110,14 @@ impl Character {
         } else {
             self.abilities.set_dots(ability_name, subskill, dots)
         }
+    }
+
+    pub fn set_martial_arts_ability_dots(
+        &mut self,
+        style_id: Id,
+        dots: u8,
+    ) -> Result<()> {
+        self.martial_arts_styles.set_dots(style_id, dots)
     }
 
     pub fn add_specialty(
