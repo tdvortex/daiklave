@@ -1,3 +1,4 @@
+pub(crate) mod create;
 mod tables;
 mod update;
 use crate::{
@@ -51,6 +52,14 @@ impl MartialArtsStyle {
 
     pub fn name(&self) -> &str {
         self.name.as_str()
+    }
+
+    pub fn description(&self) -> &str {
+        self.description.as_str()
+    }
+
+    pub fn data_source(&self) -> &DataSource {
+        &self.data_source
     }
 }
 
@@ -121,8 +130,12 @@ impl MartialArtistTraits {
         self.0.iter().map(|details| details.style.id())
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = (&MartialArtsStyle, Ability, &Vec<MartialArtsCharm>)> {
-        self.0.iter().map(|details| (details.style(), details.as_ability(), &details.charms))
+    pub fn iter(
+        &self,
+    ) -> impl Iterator<Item = (&MartialArtsStyle, Ability, &Vec<MartialArtsCharm>)> {
+        self.0
+            .iter()
+            .map(|details| (details.style(), details.as_ability(), &details.charms))
     }
 
     pub fn add_style(&mut self, style: MartialArtsStyle, dots: u8) -> Result<()> {

@@ -2,8 +2,8 @@ CREATE TABLE martial_arts_styles (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
-    book_name VARCHAR(255),
-    page_number SMALLINT CHECK(page_number >= 0)
+    book_title VARCHAR(255),
+    page_number SMALLINT CHECK(page_number >= 0),
     creator_id INTEGER REFERENCES characters(id) ON DELETE CASCADE,
     CHECK 
         ((book_title IS NOT NULL and page_number IS NOT NULL and creator_id IS NULL) 
@@ -26,7 +26,7 @@ CREATE TABLE character_martial_arts_specialties (
 
 CREATE TABLE martial_arts_charms (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    style_id INTEGER REFERENCES martial_arts_styles(id) NOT NULL ON DELETE CASCADE,
+    style_id INTEGER NOT NULL REFERENCES martial_arts_styles(id) ON DELETE CASCADE,
     ability_dots_required SMALLINT NOT NULL CHECK(ability_dots_required >= 0 AND ability_dots_required <= 255),
     essence_dots_required SMALLINT NOT NULL CHECK(essence_dots_required >= 0 AND essence_dots_required <= 255),
     name VARCHAR(255) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE martial_arts_charms (
     action_type CHARMACTIONTYPE NOT NULL,
     duration VARCHAR(255) NOT NULL,
     book_title VARCHAR(255),
-    page_number SMALLINT CHECK(page_number >= 0)
+    page_number SMALLINT CHECK(page_number >= 0),
     creator_id INTEGER REFERENCES characters(id) ON DELETE CASCADE,
     CHECK 
         ((book_title IS NOT NULL and page_number IS NOT NULL and creator_id IS NULL) 
