@@ -116,7 +116,7 @@ impl CraftDiff {
             (Vec::new(), Vec::new()),
             |(mut upserted_foci, mut upserted_dots), (focus, dots)| {
                 upserted_foci.push(focus);
-                upserted_dots.push(dots);
+                upserted_dots.push(dots as i16);
                 (upserted_foci, upserted_dots)
             },
         );
@@ -132,7 +132,7 @@ impl CraftDiff {
             ",
             character_id,
             &upserted_foci as &[String],
-            &upserted_dots as &[u8]
+            &upserted_dots as &[i16]
         )
         .execute(&mut *transaction)
         .await

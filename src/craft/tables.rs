@@ -2,12 +2,16 @@ use eyre::{Result, WrapErr};
 
 use crate::character::CharacterBuilder;
 
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "craft_abilities")]
 pub(crate) struct CraftAbilityRow {
     character_id: i32,
     focus: String,
     dots: i16,
 }
 
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "craft_ability_specialties")]
 pub(crate) struct CraftAbilitySpecialtyRow {
     character_id: i32,
     focus: String,

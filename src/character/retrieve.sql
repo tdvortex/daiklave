@@ -11,140 +11,120 @@ WITH player_query AS (
 ), attributes_query AS (
     SELECT
         ARRAY_AGG(attributes) AS attrs
-    FROM characters
-        INNER JOIN attributes ON (attributes.character_id = characters.id)
-    WHERE characters.id = $1
+    FROM attributes
+    WHERE attributes.character_id = $1
 ), abilities_query AS (
     SELECT
         ARRAY_AGG(abilities) AS abils
-    FROM characters
-        INNER JOIN abilities ON (abilities.character_id = characters.id)
-    WHERE characters.id = $1
+    FROM abilities
+    WHERE abilities.character_id = $1
 ), specialties_query AS (
     SELECT
         ARRAY_AGG(specialties) AS specs
-    FROM characters
-        INNER JOIN abilities ON (abilities.character_id = characters.id)
-        INNER JOIN specialties ON (specialties.ability_id = abilities.id)
-    WHERE characters.id = $1
+    FROM abilities INNER JOIN specialties ON (specialties.ability_id = abilities.id)
+    WHERE abilities.character_id = $1
 ), intimacies_query AS (
     SELECT
         ARRAY_AGG(intimacies) AS intis
-    FROM characters
-        INNER JOIN intimacies ON (intimacies.character_id = characters.id)
-    WHERE characters.id = $1
+    FROM intimacies
+    WHERE intimacies.character_id = $1
 ), health_boxes_query AS (
     SELECT
         ARRAY_AGG(health_boxes) AS hboxs
-    FROM characters
-        INNER JOIN health_boxes ON (health_boxes.character_id = characters.id)
-    WHERE characters.id = $1
+    FROM health_boxes
+    WHERE health_boxes.character_id = $1
 ), weapons_query AS (
      SELECT
         ARRAY_AGG(weapons) as weaps
-    FROM characters
-        INNER JOIN character_weapons ON (characters.id = character_weapons.character_id)
+    FROM character_weapons
         INNER JOIN weapons ON (character_weapons.weapon_id = weapons.id)
-    WHERE characters.id = $1
+    WHERE character_weapons.character_id = $1
 ), weapon_tags_query AS (
      SELECT
         ARRAY_AGG(weapon_tags) as wepts
-    FROM characters
-        INNER JOIN character_weapons ON (characters.id = character_weapons.character_id)
+    FROM character_weapons
         INNER JOIN weapons ON (character_weapons.weapon_id = weapons.id)
         INNER JOIN weapon_tags ON (weapon_tags.weapon_id = weapons.id)
-    WHERE characters.id = $1
+    WHERE character_weapons.character_id = $1
 ), weapons_equipped_query AS (
     SELECT
         ARRAY_AGG(character_weapons) AS eqwps
-    FROM characters
-        INNER JOIN character_weapons ON (character_weapons.character_id = characters.id)
-    WHERE characters.id = $1
+    FROM character_weapons
+    WHERE character_weapons.character_id = $1
 ), armor_query AS (
      SELECT
         ARRAY_AGG(armor) as armrs
-    FROM characters
-        INNER JOIN character_armor ON (characters.id = character_armor.character_id)
-        INNER JOIN armor ON (character_armor.armor_id = armor.id)
-    WHERE characters.id = $1
+    FROM character_armor INNER JOIN armor ON (character_armor.armor_id = armor.id)
+    WHERE character_armor.character_id = $1
 ), armor_tags_query AS (
     SELECT
         ARRAY_AGG(armor_tags) as armts
-    FROM characters
-        INNER JOIN character_armor ON (characters.id = character_armor.character_id)
+    FROM character_armor 
         INNER JOIN armor ON (character_armor.armor_id = armor.id)
         INNER JOIN armor_tags ON (armor_tags.armor_id = armor.id)
-    WHERE characters.id = $1
+    WHERE character_armor.character_id = $1
 ), character_armor_query AS (
      SELECT
         ARRAY_AGG(character_armor) as wrars
-    FROM characters
-        INNER JOIN character_armor ON (characters.id = character_armor.character_id)
-    WHERE characters.id = $1
+    FROM character_armor
+    WHERE character_armor.character_id = $1
 ), merit_templates_query AS (
     SELECT
         ARRAY_AGG(merits) AS mrtts
-    FROM characters 
-        INNER JOIN character_merits ON (characters.id = character_merits.character_id)
-        INNER JOIN merits ON (merits.id = character_merits.merit_id)
-    WHERE characters.id = $1
+    FROM character_merits INNER JOIN merits ON (merits.id = character_merits.merit_id)
+    WHERE character_merits.character_id = $1
 ), merit_details_query AS (
     SELECT
         ARRAY_AGG(character_merits) AS mrtds
-    FROM characters 
-        INNER JOIN character_merits ON (characters.id = character_merits.character_id)
-    WHERE characters.id = $1
+    FROM character_merits
+    WHERE character_merits.character_id = $1
 ), merit_prerequisite_sets_query AS (
     SELECT
         ARRAY_AGG(merit_prerequisite_sets) AS mprss
-    FROM characters
-        INNER JOIN character_merits ON (characters.id = character_merits.character_id)
-        INNER JOIN merits ON (merits.id = character_merits.merit_id)
-        INNER JOIN merit_prerequisite_sets ON (merit_prerequisite_sets.merit_id = merits.id)
-    WHERE characters.id = $1
+    FROM character_merits INNER JOIN merit_prerequisite_sets ON (merit_prerequisite_sets.merit_id = character_merits.merit_id)
+    WHERE character_merits.character_id = $1
 ), merit_prerequisites_query AS (
     SELECT
         ARRAY_AGG(prerequisites) AS meprs
-    FROM characters
-        INNER JOIN character_merits ON (characters.id = character_merits.character_id)
-        INNER JOIN merits ON (merits.id = character_merits.merit_id)
-        INNER JOIN merit_prerequisite_sets ON (merit_prerequisite_sets.merit_id = merits.id)
+    FROM character_merits 
+        INNER JOIN merit_prerequisite_sets ON (merit_prerequisite_sets.merit_id = character_merits.merit_id)
         INNER JOIN prerequisites ON (prerequisites.merit_prerequisite_set_id = merit_prerequisite_sets.id)
-    WHERE characters.id = $1
+    WHERE character_merits.character_id = $1
 ), martial_arts_styles_query AS (
     SELECT
         ARRAY_AGG(martial_arts_styles) as masts
-    FROM characters
-        INNER JOIN character_martial_arts ON (characters.id = character_martial_arts.character_id)
-        INNER JOIN martial_arts_styles ON (character_martial_arts.style_id = martial_arts_styles.id)
-    WHERE characters.id = $1
+    FROM character_martial_arts INNER JOIN martial_arts_styles ON (character_martial_arts.style_id = martial_arts_styles.id)
+    WHERE character_martial_arts.character_id = $1
 ), character_martial_arts_query AS (
     SELECT
         ARRAY_AGG(character_martial_arts) as chmas
-    FROM characters
-        INNER JOIN character_martial_arts ON (characters.id = character_martial_arts.character_id)
-    WHERE characters.id = $1
+    FROM character_martial_arts
+    WHERE character_martial_arts.character_id = $1
 ), character_martial_arts_specialties AS (
     SELECT
         ARRAY_AGG(character_martial_arts_specialties) as cmass
-    FROM characters
-        INNER JOIN character_martial_arts ON (characters.id = character_martial_arts.character_id)
-        INNER JOIN character_martial_arts_specialties ON (character_martial_arts_specialties.character_id = characters.id AND character_martial_arts_specialties.style_id = character_martial_arts.style_id)
-    WHERE characters.id = $1
+    FROM character_martial_arts_specialties
+    WHERE character_martial_arts_specialties.character_id = $1
 ), martial_arts_charms_query AS (
     SELECT
         ARRAY_AGG(martial_arts_charms) as machs
-    FROM characters
-        INNER JOIN character_martial_arts_charms ON (character_martial_arts_charms.character_id = characters.id)
-        INNER JOIN martial_arts_charms ON (character_martial_arts_charms.charm_id = martial_arts_charms.id)
-    WHERE characters.id = $1
+    FROM character_martial_arts_charms INNER JOIN martial_arts_charms ON (character_martial_arts_charms.charm_id = martial_arts_charms.id)
+    WHERE character_martial_arts_charms.character_id = $1
 ), martial_arts_charms_keywords_query AS (
     SELECT
         ARRAY_AGG(martial_arts_charms_keywords) as makws
-    FROM characters
-        INNER JOIN character_martial_arts_charms ON (character_martial_arts_charms.character_id = characters.id)
-        INNER JOIN martial_arts_charms_keywords ON (character_martial_arts_charms.charm_id = martial_arts_charms_keywords.charm_id)
-    WHERE characters.id = $1
+    FROM character_martial_arts_charms INNER JOIN martial_arts_charms_keywords ON (character_martial_arts_charms.charm_id = martial_arts_charms_keywords.charm_id)
+    WHERE character_martial_arts_charms.character_id = $1
+), craft_abilities_query AS (
+    SELECT
+        ARRAY_AGG(craft_abilities) as cftas
+    FROM craft_abilities
+    WHERE craft_abilities.character_id = $1
+), craft_specialties_query AS (
+    SELECT
+        ARRAY_AGG(craft_ability_specialties) as cftss
+    FROM craft_ability_specialties
+    WHERE craft_ability_specialties.character_id = $1
 )
 SELECT
     characters AS "character!: CharacterRow",
@@ -169,7 +149,9 @@ SELECT
     chmas AS "character_martial_arts_styles: Vec<CharacterMartialArtsRow>",
     cmass AS "martial_arts_specialties: Vec<CharacterMartialArtsSpecialtyRow>",
     machs AS "martial_arts_charms: Vec<MartialArtsCharmRow>",
-    makws AS "martial_arts_charm_keywords: Vec<MartialArtsCharmKeywordRow>"
+    makws AS "martial_arts_charm_keywords: Vec<MartialArtsCharmKeywordRow>",
+    cftas AS "craft_abilities: Vec<CraftAbilityRow>",
+    cftss AS "craft_specialties: Vec<CraftAbilitySpecialtyRow>"
 FROM characters,
     player_query,
     attributes_query,
@@ -193,4 +175,6 @@ FROM characters,
     LEFT JOIN character_martial_arts_specialties ON (TRUE)
     LEFT JOIN martial_arts_charms_query ON (TRUE)
     LEFT JOIN martial_arts_charms_keywords_query ON (TRUE)
+    LEFT JOIN craft_abilities_query ON (TRUE)
+    LEFT JOIN craft_specialties_query ON (TRUE)
 WHERE characters.id = $1;

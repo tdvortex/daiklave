@@ -8,6 +8,7 @@ use crate::{
     campaign::tables::CampaignRow,
     character::tables::CharacterRow,
     character::Character,
+    craft::tables::{CraftAbilityRow, CraftAbilitySpecialtyRow},
     health::tables::HealthBoxRow,
     intimacies::tables::IntimacyRow,
     martial_arts::tables::{
@@ -19,11 +20,7 @@ use crate::{
     prerequisite::tables::PrerequisiteRow,
     weapons::tables::{WeaponEquippedRow, WeaponRow, WeaponTagRow},
 };
-// masts AS "martial_arts_styles: Vec<MartialArtsStyleRow>",
-// chmas AS "character_martial_arts_styles: Vec<CharacterMartialArtsRow>",
-// cmass AS "martial_arts_specialties: Vec<CharacterMartialArtsSpecialtyRow>",
-// machs AS "martial_arts_charms: Vec<MartialArtsCharmRow>",
-// makws AS "martial_arts_charm_keywords: Vec<MartialArtsCharmKeywordRow>"
+
 #[derive(Debug)]
 struct GetCharacter {
     character: CharacterRow,
@@ -49,6 +46,8 @@ struct GetCharacter {
     martial_arts_specialties: Option<Vec<CharacterMartialArtsSpecialtyRow>>,
     martial_arts_charms: Option<Vec<MartialArtsCharmRow>>,
     martial_arts_charm_keywords: Option<Vec<MartialArtsCharmKeywordRow>>,
+    craft_abilities: Option<Vec<CraftAbilityRow>>,
+    craft_specialties: Option<Vec<CraftAbilitySpecialtyRow>>,
 }
 
 pub async fn retrieve_character(pool: &PgPool, character_id: i32) -> Result<Option<Character>> {
@@ -107,6 +106,8 @@ impl TryInto<Character> for GetCharacter {
             .wrap_err("Could not apply attribute rows")?
             .apply_abilities_and_specialties_rows(self.abilities, self.specialties)
             .wrap_err("Could not apply ability and specialty rows")?
+            .apply_craft(self.craft_abilities, self.craft_specialties)
+            .wrap_err("Could not apply craft rows")?
             .apply_intimacy_rows(self.intimacies)
             .apply_health_box_rows(self.health_boxes)
             .apply_weapon_rows(self.weapons_owned, self.weapon_tags, self.weapons_equipped)
