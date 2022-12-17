@@ -1,4 +1,5 @@
 mod tables;
+mod update;
 use crate::abilities::{AbilityRating, NonZeroAbility, Ability, AbilityName};
 use eyre::{eyre, Result};
 use serde::{Serialize, Deserialize};
@@ -7,6 +8,14 @@ use serde::{Serialize, Deserialize};
 pub(crate) struct CraftAbilities(Vec<(String, AbilityRating)>);
 
 impl CraftAbilities {
+    pub(crate) fn get_rating(&self, focus: &str) -> Option<&AbilityRating> {
+        self.0.iter().find_map(|(known_focus, rating)| if known_focus.as_str() == focus {
+            Some(rating)
+        } else {
+            None
+        })
+    }
+
     fn get_rating_mut(&mut self, focus: &str) -> Option<&mut AbilityRating> {
         self.0.iter_mut().find_map(|(known_focus, rating)| if known_focus.as_str() == focus {
             Some(rating)
