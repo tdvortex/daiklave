@@ -1,4 +1,5 @@
 mod tables;
+mod update;
 use crate::{
     abilities::{Ability, AbilityName, AbilityRating, NonZeroAbility},
     charms::MartialArtsCharm,
@@ -109,11 +110,19 @@ impl MartialArtistDetails {
 pub(crate) struct MartialArtistTraits(Vec<MartialArtistDetails>);
 
 impl MartialArtistTraits {
-    pub fn get_ability(&self, style_name: &str) -> Option<Ability> {
+    pub fn get_ability(&self, style_id: Id) -> Option<Ability> {
         self.0
             .iter()
-            .find(|&details| details.style().name() == style_name)
+            .find(|&details| details.style().id() == style_id)
             .map(|d| d.as_ability())
+    }
+
+    fn style_ids_iter(&self) -> impl Iterator<Item = Id> + '_ {
+        self.0.iter().map(|details| details.style.id())
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = (&MartialArtsStyle, Ability, &Vec<MartialArtsCharm>)> {
+        self.0.iter().map(|details| (details.style(), details.as_ability(), &details.charms))
     }
 
     pub fn add_style(&mut self, style: MartialArtsStyle, dots: u8) -> Result<()> {

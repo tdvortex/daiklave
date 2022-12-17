@@ -82,7 +82,7 @@ impl Character {
         subskill: Option<&str>,
     ) -> Option<Ability> {
         if ability_name == AbilityNameNoSubskill::MartialArts {
-            self.martial_arts_styles.get_ability(subskill?)
+            None
         } else {
             self.abilities.get(ability_name, subskill)
         }
