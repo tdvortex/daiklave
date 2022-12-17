@@ -1,3 +1,4 @@
+mod tables;
 use crate::abilities::{AbilityRating, NonZeroAbility, Ability, AbilityName};
 use eyre::{eyre, Result};
 use serde::{Serialize, Deserialize};
@@ -54,3 +55,4 @@ impl CraftAbilities {
     }
 
 }
+
