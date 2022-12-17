@@ -1,4 +1,4 @@
-use eyre::{Result, WrapErr};
+use eyre::{eyre, Result, WrapErr};
 use sqlx::{query, Postgres, Transaction};
 use std::collections::HashMap;
 
@@ -17,7 +17,7 @@ pub struct MartialArtsDiff {
         Option<Vec<String>>,
         Vec<MartialArtsCharm>,
     )>,
-    modified_style: Vec<(Id, u8, Option<Vec<String>>, Vec<MartialArtsCharm>)>,
+    modified_styles: Vec<(Id, u8, Option<Vec<String>>, Vec<MartialArtsCharm>)>,
 }
 
 impl MartialArtistTraits {
@@ -25,7 +25,7 @@ impl MartialArtistTraits {
         let mut diff = MartialArtsDiff {
             removed_styles: Vec::new(),
             added_styles: Vec::new(),
-            modified_style: Vec::new(),
+            modified_styles: Vec::new(),
         };
         let mut old_hashmap: HashMap<Id, (&MartialArtsStyle, Ability, &Vec<MartialArtsCharm>)> =
             self.iter()
@@ -49,7 +49,7 @@ impl MartialArtistTraits {
                     || ability.specialties() != old_ability.specialties()
                     || vec_ptr != old_vec_ptr
                 {
-                    diff.modified_style.push((
+                    diff.modified_styles.push((
                         style_ptr.id(),
                         ability.dots(),
                         ability.specialties().map(|v| v.clone()),
@@ -134,6 +134,48 @@ async fn upsert_character_styles(
     Ok(())
 }
 
+async fn upsert_character_charms(
+    transaction: &mut Transaction<'_, Postgres>,
+    character_id: i32,
+    style_charms: &Vec<MartialArtsCharm>,
+) -> Result<()> {
+    let mut charm_database_ids: Vec<i32> = Vec::new();
+
+    for charm in style_charms.iter() {
+        if let Id::Database(id) = charm.id() {
+            charm_database_ids.push(id);
+        } else {
+            let id = if let DataSource::Custom(_) = charm.data_source() {
+                create_martial_arts_charm_transaction(transaction, charm, Some(character_id))
+                    .await?
+            } else {
+                create_martial_arts_charm_transaction(transaction, charm, None).await?
+            };
+            charm_database_ids.push(id)
+        }
+    }
+
+    query!(
+        "INSERT INTO character_martial_arts_charms(character_id, charm_id)
+        SELECT
+            $1::INTEGER as character_id,
+            data.charm_id as charm_id
+        FROM UNNEST($2::INTEGER[]) as data(charm_id)",
+        character_id,
+        &charm_database_ids as &[i32]
+    )
+    .execute(&mut *transaction)
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "Database error adding martial arts charms for character {}",
+            character_id
+        )
+    })?;
+
+    Ok(())
+}
+
 impl MartialArtsDiff {
     async fn remove_character_styles(
         &self,
@@ -191,46 +233,68 @@ impl MartialArtsDiff {
             .wrap_err("Error attemping to upsert character styles")?;
 
             if !style_charms.is_empty() {
-                let mut charm_database_ids: Vec<i32> = Vec::new();
-
-                for charm in style_charms.iter() {
-                    if let Id::Database(id) = charm.id() {
-                        charm_database_ids.push(id);
-                    } else {
-                        let id = if let DataSource::Custom(_) = style.data_source() {
-                            create_martial_arts_charm_transaction(
-                                transaction,
-                                charm,
-                                Some(character_id),
-                            )
-                            .await?
-                        } else {
-                            create_martial_arts_charm_transaction(transaction, charm, None).await?
-                        };
-                        charm_database_ids.push(id)
-                    }
-                }
-
-                query!(
-                    "INSERT INTO character_martial_arts_charms(character_id, charm_id)
-                    SELECT
-                        $1::INTEGER as character_id,
-                        data.charm_id as charm_id
-                    FROM UNNEST($2::INTEGER[]) as data(charm_id)",
-                    character_id,
-                    &charm_database_ids as &[i32]
-                )
-                .execute(&mut *transaction)
-                .await
-                .wrap_err_with(|| {
-                    format!(
-                        "Database error adding martial arts charms for character {}",
-                        character_id
-                    )
-                })?;
+                upsert_character_charms(transaction, character_id, style_charms).await?;
             }
         }
 
+        Ok(())
+    }
+
+    async fn update_character_styles(
+        &self,
+        transaction: &mut Transaction<'_, Postgres>,
+        character_id: i32,
+    ) -> Result<()> {
+        for (style_id, style_dots, maybe_specialties, style_charms) in self.modified_styles.iter() {
+            if style_id.is_placeholder() {
+                return Err(eyre!("Cannot update a style with a placeholder value"));
+            }
+
+            upsert_character_styles(
+                transaction,
+                character_id,
+                **style_id,
+                *style_dots,
+                maybe_specialties.as_ref(),
+            )
+            .await?;
+
+            query!(
+                "DELETE FROM character_martial_arts_charms
+                WHERE character_id = $1",
+                character_id
+            )
+            .execute(&mut *transaction)
+            .await
+            .wrap_err_with(|| {
+                format!(
+                    "Database error removing martial arts charms for character {}",
+                    character_id
+                )
+            })?;
+
+            if !style_charms.is_empty() {
+                upsert_character_charms(transaction, character_id, style_charms).await?;
+            }
+        }
+
+        Ok(())
+    }
+
+    pub async fn update(
+        self,
+        transaction: &mut Transaction<'_, Postgres>,
+        character_id: i32,
+    ) -> Result<()> {
+        self.remove_character_styles(transaction, character_id)
+            .await
+            .wrap_err("Error removing character martial arts styles")?;
+        self.add_styles_to_character(transaction, character_id)
+            .await
+            .wrap_err("Error adding character martial arts styles")?;
+        self.update_character_styles(transaction, character_id)
+            .await
+            .wrap_err("Error updating character martial arts styles")?;
         Ok(())
     }
 }

@@ -151,6 +151,12 @@ pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Ch
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating merits")?;
+    old_character
+        .martial_arts_styles
+        .compare_newer(&character.martial_arts_styles)
+        .update(&mut transaction, character_id)
+        .await
+        .wrap_err("Error when updating martial arts")?;
 
     let character = retrieve_character_transaction(&mut transaction, character_id)
         .await
