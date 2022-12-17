@@ -100,21 +100,10 @@ impl Character {
 
     pub fn set_ability_dots(
         &mut self,
-        ability_name: AbilityNameNoSubskill,
-        subskill: Option<&str>,
+        ability_name: AbilityNameVanilla,
         dots: u8,
-    ) -> Result<()> {
-        if ability_name == AbilityNameNoSubskill::MartialArts {
-            Err(eyre!("TODO: fix this"))
-        } else if ability_name == AbilityNameNoSubskill::Craft {
-            self.set_craft_ability_dots(
-                subskill.ok_or_else(|| eyre!("Craft must specify a focus"))?,
-                dots,
-            );
-            Ok(())
-        } else {
-            self.abilities.set_dots(ability_name, subskill, dots)
-        }
+    ) {
+        self.abilities.set_dots(ability_name, dots);
     }
 
     pub fn set_craft_ability_dots(&mut self, focus: &str, dots: u8) {
@@ -127,16 +116,10 @@ impl Character {
 
     pub fn add_specialty(
         &mut self,
-        ability_name: AbilityNameNoSubskill,
-        subskill: Option<&str>,
+        ability_name: AbilityNameVanilla,
         specialty: String,
     ) -> Result<()> {
-        if ability_name == AbilityNameNoSubskill::MartialArts {
-            Err(eyre!("TODO: fix this"))
-        } else {
-            self.abilities
-                .add_specialty(ability_name, subskill, specialty)
-        }
+        self.abilities.add_specialty(ability_name, specialty)
     }
 
     pub fn add_craft_specialty(&mut self, focus: &str, specialty: String) -> Result<()> {
@@ -238,9 +221,9 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    pub fn with_ability(mut self, ability_name: AbilityNameNoSubskill, dots: u8) -> Result<Self> {
-        self.abilities.set_dots(ability_name, None, dots)?;
-        Ok(self)
+    pub fn with_ability(mut self, ability_name: AbilityNameVanilla, dots: u8) -> Self {
+        self.abilities.set_dots(ability_name, dots);
+        self
     }
 
     pub fn with_craft(mut self, craft_focus: &str, dots: u8) -> Self {
@@ -255,11 +238,10 @@ impl CharacterBuilder {
 
     pub fn with_specialty(
         mut self,
-        ability_name: AbilityNameNoSubskill,
+        ability_name: AbilityNameVanilla,
         specialty: String,
     ) -> Result<Self> {
-        self.abilities
-            .add_specialty(ability_name, None, specialty)?;
+        self.abilities.add_specialty(ability_name, specialty)?;
         Ok(self)
     }
 

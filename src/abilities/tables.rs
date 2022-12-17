@@ -1,8 +1,6 @@
-use std::collections::HashMap;
-
 use crate::abilities::AbilityNameNoSubskill;
 use crate::character::CharacterBuilder;
-use eyre::{eyre, Report, Result, WrapErr};
+use eyre::{Result, WrapErr};
 use sqlx::postgres::PgHasArrayType;
 
 use super::AbilityNameVanilla;
@@ -158,71 +156,21 @@ impl PgHasArrayType for SpecialtyRow {
 }
 
 impl CharacterBuilder {
-    fn apply_ability_with_specialties_rows(
-        self,
-        ability_row: AbilityRow,
-        specialty_rows: Vec<SpecialtyRow>,
-    ) -> Result<Self> {
-        let dots: u8 = ability_row
-            .dots
-            .try_into()
-            .wrap_err_with(|| format!("Invalid number of dots: {}", ability_row.dots))?;
-
-
-        let ability_name = ability_row.name.try_into().wrap_err_with(|| {
-            format!("Could not decode ability name: {:?}", ability_row.name)
-        })?;
-        specialty_rows.into_iter().fold(
-            Ok(self.with_ability(ability_name, dots).wrap_err_with(|| {
-                format!(
-                    "Could not set ability name {:?} to have dots {}",
-                    ability_name, dots
-                )
-            })?),
-            |character_result, specialty_row| {
-                character_result.and_then(|character| {
-                    character.with_specialty(ability_name, specialty_row.specialty)
-                })
-            },
-        )
-    }
-
     pub(crate) fn apply_abilities_and_specialties_rows(
-        self,
+        mut self,
         abilities_rows: Vec<AbilityRow>,
         specialty_rows: Option<Vec<SpecialtyRow>>,
     ) -> Result<Self> {
-        let mut abilities_hashmap =
-            abilities_rows
-                .into_iter()
-                .fold(HashMap::new(), |mut map, ability| {
-                    map.insert(ability.id, (ability, Vec::<SpecialtyRow>::new()));
-                    map
-                });
+        for row in abilities_rows.into_iter() {
+            self = self.with_ability(row.name.into(), row.dots.try_into().wrap_err_with(|| format!("Invalid number of dots: {}", row.dots))?);
+        }
 
-        if let Some(specialties) = specialty_rows {
-            specialties.into_iter().fold(
-                Ok(&mut abilities_hashmap),
-                |map: Result<&mut HashMap<i32, (AbilityRow, Vec<SpecialtyRow>)>, eyre::Report>,
-                 specialty: SpecialtyRow| {
-                    map.and_then(|m| {
-                        m.get_mut(&specialty.ability_id)
-                            .ok_or_else(|| eyre!("ability {} not found", specialty.ability_id))
-                            .map(|tup| tup.1.push(specialty))?;
-                        Ok(m)
-                    })
-                },
-            )?;
-        };
+        if let Some(rows) = specialty_rows {
+            for row in rows.into_iter() {
+                self = self.with_specialty(row.name.into(), row.specialty)?;
+            }
+        }
 
-        abilities_hashmap.into_iter().fold(
-            Ok(self),
-            |character_result: Result<CharacterBuilder, Report>,
-             (_, (ability_row, specialty_rows))| {
-                character_result.and_then(|character| {
-                    character.apply_ability_with_specialties_rows(ability_row, specialty_rows)
-                })
-            },
-        )
+        Ok(self)
     }
 }

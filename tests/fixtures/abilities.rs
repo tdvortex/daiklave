@@ -1,5 +1,5 @@
 use exalted_3e_gui::{
-    abilities::AbilityNameNoSubskill, character::CharacterBuilder, id::Id,
+    abilities::{AbilityNameNoSubskill, AbilityNameVanilla}, character::CharacterBuilder, id::Id,
     martial_arts::MartialArtsStyle, Character,
 };
 
@@ -32,27 +32,27 @@ pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder 
             .unwrap();
 
     vec![
-        (AbilityNameNoSubskill::Awareness, 4),
-        (AbilityNameNoSubskill::War, 3),
-        (AbilityNameNoSubskill::Resistance, 3),
-        (AbilityNameNoSubskill::Dodge, 3),
-        (AbilityNameNoSubskill::Integrity, 2),
-        (AbilityNameNoSubskill::Presence, 2),
-        (AbilityNameNoSubskill::Socialize, 2),
-        (AbilityNameNoSubskill::Athletics, 2),
-        (AbilityNameNoSubskill::Linguistics, 1),
-        (AbilityNameNoSubskill::Brawl, 1),
+        (AbilityNameVanilla::Awareness, 4),
+        (AbilityNameVanilla::War, 3),
+        (AbilityNameVanilla::Resistance, 3),
+        (AbilityNameVanilla::Dodge, 3),
+        (AbilityNameVanilla::Integrity, 2),
+        (AbilityNameVanilla::Presence, 2),
+        (AbilityNameVanilla::Socialize, 2),
+        (AbilityNameVanilla::Athletics, 2),
+        (AbilityNameVanilla::Linguistics, 1),
+        (AbilityNameVanilla::Brawl, 1),
     ]
     .into_iter()
     .fold(builder, |ic, (ability_name_no_subskill, dots)| {
-        ic.with_ability(ability_name_no_subskill, dots).unwrap()
+        ic.with_ability(ability_name_no_subskill, dots)
     })
     .with_craft("Weapon Forging", 1)
     .with_martial_arts_style(single_point_shining_into_the_void_style, 4)
     .unwrap()
-    .with_specialty(AbilityNameNoSubskill::War, "While Outnumbered".to_owned())
+    .with_specialty(AbilityNameVanilla::War, "While Outnumbered".to_owned())
     .unwrap()
-    .with_specialty(AbilityNameNoSubskill::Socialize, "Tavern Gossip".to_owned())
+    .with_specialty(AbilityNameVanilla::Socialize, "Tavern Gossip".to_owned())
     .unwrap()
     .with_craft_specialty("Weapon Forging", "Sharpening Blades".to_owned())
     .unwrap()
@@ -143,16 +143,12 @@ pub fn validate_initial_abilities(character: &Character) {
 pub fn modify_abilities(character: &mut Character) {
     // Increase a stable ability
     character
-        .set_ability_dots(AbilityNameNoSubskill::Dodge, None, 4)
-        .unwrap();
+        .set_ability_dots(AbilityNameVanilla::Dodge, 4);
     // Decrease a stable ability with specialty to zero
     character
-        .set_ability_dots(AbilityNameNoSubskill::Socialize, None, 0)
-        .unwrap();
+        .set_ability_dots(AbilityNameVanilla::Socialize, 0);
     // Add a new subskilled ability
-    character
-        .set_ability_dots(AbilityNameNoSubskill::Craft, Some("Origami"), 1)
-        .unwrap();
+    character.set_craft_ability_dots("Origami", 1);
     // Increase an existing subskilled ability
     let single_point_style_id = character
         .martial_arts_iter()
@@ -169,14 +165,11 @@ pub fn modify_abilities(character: &mut Character) {
         .unwrap();
 
     // Decrease an existing subskilled ability with specialty to zero
-    character
-        .set_ability_dots(AbilityNameNoSubskill::Craft, Some("Weapon Forging"), 0)
-        .unwrap();
+    character.set_craft_ability_dots("Weapon Forging", 0);
     // Add a specialty
     character
         .add_specialty(
-            AbilityNameNoSubskill::Integrity,
-            None,
+            AbilityNameVanilla::Integrity,
             "Patience".to_owned(),
         )
         .unwrap();

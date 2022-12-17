@@ -374,148 +374,69 @@ impl Abilities {
 
     pub fn set_dots(
         &mut self,
-        ability_name_no_subskill: AbilityNameNoSubskill,
-        subskill: Option<&str>,
+        ability_name: AbilityNameVanilla,
         dots: u8,
-    ) -> Result<()> {
-        if subskill.is_none()
-            && (ability_name_no_subskill == AbilityNameNoSubskill::Craft
-                || ability_name_no_subskill == AbilityNameNoSubskill::MartialArts)
-        {
-            return Err(eyre!("must specify a subskill for Craft or Martial arts"));
-        }
-
-        if ability_name_no_subskill == AbilityNameNoSubskill::Craft {
-            let focus_index = self
-                .craft
-                .iter()
-                .enumerate()
-                .find_map(|(index, (focus, _))| {
-                    if Some(focus.as_str()) == subskill {
-                        Some(index)
-                    } else {
-                        None
-                    }
-                });
-
-            if let Some(index) = focus_index {
-                if dots == 0 {
-                    self.craft.remove(index);
-                } else if let AbilityRating::NonZero(non_zero_ability) = &mut self.craft[index].1 {
-                    non_zero_ability.dots = dots;
-                }
-            } else if dots > 0 {
-                self.craft.push((
-                    subskill.unwrap().to_owned(),
-                    AbilityRating::NonZero(NonZeroAbility {
-                        dots,
-                        specialties: Vec::new(),
-                    }),
-                ));
-                self.craft.sort_by(|a, b| a.0.cmp(&b.0));
-            }
-
-            return Ok(());
-        }
-
-        if ability_name_no_subskill == AbilityNameNoSubskill::MartialArts {
-            return Err(eyre!(
-                "Add martial arts dots to MartialArtist, not Abilities"
-            ));
-        }
-
-        let ptr = match ability_name_no_subskill {
-            AbilityNameNoSubskill::Archery => &mut self.archery,
-            AbilityNameNoSubskill::Athletics => &mut self.athletics,
-            AbilityNameNoSubskill::Awareness => &mut self.awareness,
-            AbilityNameNoSubskill::Brawl => &mut self.brawl,
-            AbilityNameNoSubskill::Bureaucracy => &mut self.bureaucracy,
-            AbilityNameNoSubskill::Dodge => &mut self.dodge,
-            AbilityNameNoSubskill::Integrity => &mut self.integrity,
-            AbilityNameNoSubskill::Investigation => &mut self.investigation,
-            AbilityNameNoSubskill::Larceny => &mut self.larcency,
-            AbilityNameNoSubskill::Linguistics => &mut self.linguistics,
-            AbilityNameNoSubskill::Lore => &mut self.lore,
-            AbilityNameNoSubskill::Medicine => &mut self.medicine,
-            AbilityNameNoSubskill::Melee => &mut self.melee,
-            AbilityNameNoSubskill::Occult => &mut self.occult,
-            AbilityNameNoSubskill::Performance => &mut self.performance,
-            AbilityNameNoSubskill::Presence => &mut self.presence,
-            AbilityNameNoSubskill::Resistance => &mut self.resistance,
-            AbilityNameNoSubskill::Ride => &mut self.ride,
-            AbilityNameNoSubskill::Sail => &mut self.sail,
-            AbilityNameNoSubskill::Socialize => &mut self.socialize,
-            AbilityNameNoSubskill::Stealth => &mut self.stealth,
-            AbilityNameNoSubskill::Survival => &mut self.survival,
-            AbilityNameNoSubskill::Thrown => &mut self.thrown,
-            AbilityNameNoSubskill::War => &mut self.war,
-            AbilityNameNoSubskill::Craft => unreachable!(),
-            AbilityNameNoSubskill::MartialArts => unreachable!(),
+    ) {
+        let ptr = match ability_name {
+            AbilityNameVanilla::Archery => &mut self.archery,
+            AbilityNameVanilla::Athletics => &mut self.athletics,
+            AbilityNameVanilla::Awareness => &mut self.awareness,
+            AbilityNameVanilla::Brawl => &mut self.brawl,
+            AbilityNameVanilla::Bureaucracy => &mut self.bureaucracy,
+            AbilityNameVanilla::Dodge => &mut self.dodge,
+            AbilityNameVanilla::Integrity => &mut self.integrity,
+            AbilityNameVanilla::Investigation => &mut self.investigation,
+            AbilityNameVanilla::Larceny => &mut self.larcency,
+            AbilityNameVanilla::Linguistics => &mut self.linguistics,
+            AbilityNameVanilla::Lore => &mut self.lore,
+            AbilityNameVanilla::Medicine => &mut self.medicine,
+            AbilityNameVanilla::Melee => &mut self.melee,
+            AbilityNameVanilla::Occult => &mut self.occult,
+            AbilityNameVanilla::Performance => &mut self.performance,
+            AbilityNameVanilla::Presence => &mut self.presence,
+            AbilityNameVanilla::Resistance => &mut self.resistance,
+            AbilityNameVanilla::Ride => &mut self.ride,
+            AbilityNameVanilla::Sail => &mut self.sail,
+            AbilityNameVanilla::Socialize => &mut self.socialize,
+            AbilityNameVanilla::Stealth => &mut self.stealth,
+            AbilityNameVanilla::Survival => &mut self.survival,
+            AbilityNameVanilla::Thrown => &mut self.thrown,
+            AbilityNameVanilla::War => &mut self.war,
         };
 
         ptr.set_dots(dots);
-        Ok(())
     }
 
     pub fn add_specialty(
         &mut self,
-        ability_name_no_subskill: AbilityNameNoSubskill,
-        subskill: Option<&str>,
+        ability_name: AbilityNameVanilla,
         specialty: String,
     ) -> Result<()> {
-        if subskill.is_none()
-            && (ability_name_no_subskill == AbilityNameNoSubskill::Craft
-                || ability_name_no_subskill == AbilityNameNoSubskill::MartialArts)
-        {
-            return Err(eyre!("must specify a subskill for Craft or Martial arts"));
-        }
-
-        let rating_ptr = match ability_name_no_subskill {
-            AbilityNameNoSubskill::Archery => &mut self.archery,
-            AbilityNameNoSubskill::Athletics => &mut self.athletics,
-            AbilityNameNoSubskill::Awareness => &mut self.awareness,
-            AbilityNameNoSubskill::Brawl => &mut self.brawl,
-            AbilityNameNoSubskill::Bureaucracy => &mut self.bureaucracy,
-            AbilityNameNoSubskill::Dodge => &mut self.dodge,
-            AbilityNameNoSubskill::Integrity => &mut self.integrity,
-            AbilityNameNoSubskill::Investigation => &mut self.investigation,
-            AbilityNameNoSubskill::Larceny => &mut self.larcency,
-            AbilityNameNoSubskill::Linguistics => &mut self.linguistics,
-            AbilityNameNoSubskill::Lore => &mut self.lore,
-            AbilityNameNoSubskill::Medicine => &mut self.medicine,
-            AbilityNameNoSubskill::Melee => &mut self.melee,
-            AbilityNameNoSubskill::Occult => &mut self.occult,
-            AbilityNameNoSubskill::Performance => &mut self.performance,
-            AbilityNameNoSubskill::Presence => &mut self.presence,
-            AbilityNameNoSubskill::Resistance => &mut self.resistance,
-            AbilityNameNoSubskill::Ride => &mut self.ride,
-            AbilityNameNoSubskill::Sail => &mut self.sail,
-            AbilityNameNoSubskill::Socialize => &mut self.socialize,
-            AbilityNameNoSubskill::Stealth => &mut self.stealth,
-            AbilityNameNoSubskill::Survival => &mut self.survival,
-            AbilityNameNoSubskill::Thrown => &mut self.thrown,
-            AbilityNameNoSubskill::War => &mut self.war,
-            AbilityNameNoSubskill::Craft => self
-                .craft
-                .iter_mut()
-                .find_map(|(focus, rating)| {
-                    if Some(focus.as_str()) == subskill {
-                        Some(rating)
-                    } else {
-                        None
-                    }
-                })
-                .ok_or_else(|| {
-                    eyre!(
-                        "Cannot add specialty to zero-rated ability: Craft ({})",
-                        subskill.unwrap()
-                    )
-                })?,
-            AbilityNameNoSubskill::MartialArts => {
-                return Err(eyre!(
-                    "Add martial arts specialties to MartialArtist, not Abilities"
-                ));
-            }
+        let rating_ptr = match ability_name {
+            AbilityNameVanilla::Archery => &mut self.archery,
+            AbilityNameVanilla::Athletics => &mut self.athletics,
+            AbilityNameVanilla::Awareness => &mut self.awareness,
+            AbilityNameVanilla::Brawl => &mut self.brawl,
+            AbilityNameVanilla::Bureaucracy => &mut self.bureaucracy,
+            AbilityNameVanilla::Dodge => &mut self.dodge,
+            AbilityNameVanilla::Integrity => &mut self.integrity,
+            AbilityNameVanilla::Investigation => &mut self.investigation,
+            AbilityNameVanilla::Larceny => &mut self.larcency,
+            AbilityNameVanilla::Linguistics => &mut self.linguistics,
+            AbilityNameVanilla::Lore => &mut self.lore,
+            AbilityNameVanilla::Medicine => &mut self.medicine,
+            AbilityNameVanilla::Melee => &mut self.melee,
+            AbilityNameVanilla::Occult => &mut self.occult,
+            AbilityNameVanilla::Performance => &mut self.performance,
+            AbilityNameVanilla::Presence => &mut self.presence,
+            AbilityNameVanilla::Resistance => &mut self.resistance,
+            AbilityNameVanilla::Ride => &mut self.ride,
+            AbilityNameVanilla::Sail => &mut self.sail,
+            AbilityNameVanilla::Socialize => &mut self.socialize,
+            AbilityNameVanilla::Stealth => &mut self.stealth,
+            AbilityNameVanilla::Survival => &mut self.survival,
+            AbilityNameVanilla::Thrown => &mut self.thrown,
+            AbilityNameVanilla::War => &mut self.war,
         };
 
         rating_ptr.add_specialty(specialty)

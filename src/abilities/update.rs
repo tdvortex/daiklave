@@ -122,19 +122,15 @@ impl AbilitiesDiff {
 
         query!("
             DELETE FROM specialties
-            WHERE (specialties.ability_id, specialties.specialty) IN
+            WHERE (specialties.character_id, specialties.ability_name, specialties.specialty) IN
             (
                 SELECT
-                    abilities.id,
-                    data.specialty
-                FROM
-                    abilities 
-                    INNER JOIN UNNEST($2::ABILITYNAME[], $3::VARCHAR(255)[]) AS data(ability_name, specialty)
-                    ON (abilities.name = data.ability_name)
-                    INNER JOIN specialties ON (abilities.id = specialties.ability_id AND specialties.specialty = data.specialty)
-                WHERE abilities.character_id = $1
+                    $1::INTEGER as character_id,
+                    data.ability_name as ability_name,
+                    data.specialty as specialty
+                FROM UNNEST($2::ABILITYNAME[], $3::VARCHAR(255)[]) AS data(ability_name, specialty)
             )",
-        character_id,
+        character_id as i32,
         &ability_name_with_specialty_to_remove as &[AbilityNamePostgres],
         &specialty_name_to_remove as &[&str]
         ).execute(&mut *transaction).await.wrap_err("Database error attempting to remove specialties")?;
@@ -163,16 +159,10 @@ impl AbilitiesDiff {
             r#"
             INSERT INTO specialties
             SELECT
-                abilities.id,
-                added.specialty
-            FROM abilities INNER JOIN (
-                SELECT 
-                    name, 
-                    specialty
-                FROM UNNEST($2::ABILITYNAME[], $3::VARCHAR(255)[]) AS data(name, specialty)
-            ) AS added 
-            ON (abilities.name = added.name)
-            WHERE abilities.character_id = $1::INTEGER
+                $1::INTEGER as character_id,
+                data.name as name,
+                data.specialty as specialty
+            FROM UNNEST($2::ABILITYNAME[], $3::VARCHAR(255)[]) AS data(name, specialty)
             "#,
             character_id as i32,
             &ability_name_with_specialty_to_add as &[AbilityNamePostgres],
