@@ -9,14 +9,15 @@ pub use update::update_character;
 pub use update::CharacterBaseDiff;
 pub(crate) mod tables;
 use eyre::{eyre, Result};
-use std::ops::Deref;
 
 use crate::abilities::Ability;
+use crate::abilities::AbilityName;
 use crate::abilities::{Abilities, AbilityNameNoSubskill};
 use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
 use crate::campaign::Campaign;
 use crate::charms::MartialArtsCharm;
+use crate::craft::CraftAbilities;
 use crate::exalt_type::ExaltType;
 use crate::health::{Health, WoundPenalty};
 use crate::id::Id;
@@ -27,7 +28,6 @@ use crate::martial_arts::MartialArtsStyle;
 use crate::merits::Merits;
 use crate::merits::{Merit, MeritTemplate};
 use crate::player::Player;
-use crate::prerequisite::{ExaltTypePrerequisite, Prerequisite, PrerequisiteSet, PrerequisiteType};
 use crate::sorcery::SorcererTraits;
 use crate::weapons::{EquipHand, Weapon, Weapons};
 use serde::{Deserialize, Serialize};
@@ -53,6 +53,7 @@ pub struct Character {
     pub merits: Merits,
     pub exalt_type: ExaltType,
     pub sorcery: Option<SorcererTraits>,
+    craft_abilities: CraftAbilities,
     martial_arts_styles: MartialArtistTraits,
 }
 
@@ -88,6 +89,13 @@ impl Character {
         }
     }
 
+    pub fn get_craft_ability(
+        &self,
+        focus: &str
+    ) -> Option<Ability> {
+        self.craft_abilities.iter().find(|a| *a.name() == AbilityName::Craft(focus))
+    }
+
     pub fn get_martial_arts_ability(
         &self,
         style_id: Id,
@@ -107,9 +115,21 @@ impl Character {
     ) -> Result<()> {
         if ability_name == AbilityNameNoSubskill::MartialArts {
             Err(eyre!("TODO: fix this"))
-        } else {
+        } else if ability_name == AbilityNameNoSubskill::Craft {
+            self.set_craft_ability_dots(subskill.ok_or_else(|| eyre!("Craft must specify a focus"))?, dots);
+            Ok(())
+        }
+        else {
             self.abilities.set_dots(ability_name, subskill, dots)
         }
+    }
+
+    pub fn set_craft_ability_dots(
+        &mut self,
+        focus: &str,
+        dots: u8
+    ) {
+        self.craft_abilities.set_dots(focus, dots);
     }
 
     pub fn set_martial_arts_ability_dots(
@@ -134,6 +154,22 @@ impl Character {
         }
     }
 
+    pub fn add_craft_specialty(
+        &mut self,
+        focus: &str,
+        specialty: String,
+    ) -> Result<()> {
+        self.craft_abilities.add_specialty(focus, specialty)
+    }
+
+    pub fn add_martial_arts_specialty(
+        &mut self,
+        style_id: Id,
+        specialty: String
+    ) -> Result<()> {
+        self.martial_arts_styles.add_specialty(style_id, specialty)
+    }
+
     pub fn remove_specialty(
         &mut self,
         ability_name: AbilityNameNoSubskill,
@@ -146,6 +182,22 @@ impl Character {
             self.abilities
                 .remove_specialty(ability_name, subskill, specialty)
         }
+    }
+
+    pub fn remove_craft_specialty(
+        &mut self,
+        focus: &str,
+        specialty: &str
+    ) -> Result<()> {
+        self.craft_abilities.remove_specialty(focus, specialty)
+    }
+
+    pub fn remove_martial_arts_specialty(
+        &mut self,
+        style_id: Id,
+        specialty: &str
+    ) -> Result<()> {
+        self.martial_arts_styles.remove_specialty(style_id, specialty)
     }
 }
 
@@ -167,45 +219,13 @@ pub struct CharacterBuilder {
     merits: Vec<Merit>,
     exalt_type: Option<ExaltType>,
     sorcery: Option<SorcererTraits>,
+    craft_abilities: CraftAbilities,
     martial_arts_styles: MartialArtistTraits,
 }
 
 impl CharacterBuilder {
     pub fn id(&self) -> Id {
         self.id
-    }
-
-    fn meets_prerequisite(&self, prerequisite: &Prerequisite) -> bool {
-        match prerequisite.deref() {
-            PrerequisiteType::Ability(ability_prerequisite) => {
-                self.abilities.meets_prerequisite(ability_prerequisite)
-            }
-            PrerequisiteType::Attribute(attribute_prerequisite) => {
-                self.attributes.meets_prerequisite(attribute_prerequisite)
-            }
-            PrerequisiteType::Essence(_) => false,
-            PrerequisiteType::Charm(_) => false,
-            PrerequisiteType::ExaltType(exalt_type) => match exalt_type {
-                ExaltTypePrerequisite::Solar => false,
-                ExaltTypePrerequisite::Lunar => false,
-                ExaltTypePrerequisite::DragonBlooded => false,
-                ExaltTypePrerequisite::Spirit => false,
-                ExaltTypePrerequisite::SpiritOrEclipse => false,
-            },
-        }
-    }
-
-    fn meets_prerequisite_set(&self, prerequisite_set: &PrerequisiteSet) -> bool {
-        prerequisite_set
-            .iter()
-            .all(|prerequisite| self.meets_prerequisite(prerequisite))
-    }
-
-    pub fn meets_any_prerequisite_set(&self, prerequisite_sets: &[PrerequisiteSet]) -> bool {
-        prerequisite_sets.is_empty()
-            || prerequisite_sets
-                .iter()
-                .any(|prerequisite_set| self.meets_prerequisite_set(prerequisite_set))
     }
 
     pub fn with_database_id(mut self, id: i32) -> Self {
@@ -248,15 +268,13 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    pub fn with_ability(mut self, ability_name: AbilityNameNoSubskill, value: u8) -> Result<Self> {
-        self.abilities.set_dots(ability_name, None, value)?;
+    pub fn with_ability(mut self, ability_name: AbilityNameNoSubskill, dots: u8) -> Result<Self> {
+        self.abilities.set_dots(ability_name, None, dots)?;
         Ok(self)
     }
 
-    pub fn with_craft(mut self, craft_focus: &str, value: u8) -> Self {
-        self.abilities
-            .set_dots(AbilityNameNoSubskill::Craft, Some(craft_focus), value)
-            .unwrap();
+    pub fn with_craft(mut self, craft_focus: &str, dots: u8) -> Self {
+        self.craft_abilities.set_dots(craft_focus, dots);
         self
     }
 
@@ -276,8 +294,7 @@ impl CharacterBuilder {
     }
 
     pub fn with_craft_specialty(mut self, craft_focus: &str, specialty: String) -> Result<Self> {
-        self.abilities
-            .add_specialty(AbilityNameNoSubskill::Craft, Some(craft_focus), specialty)?;
+        self.craft_abilities.add_specialty(craft_focus, specialty)?;
         Ok(self)
     }
 
@@ -389,6 +406,7 @@ impl CharacterBuilder {
             merits: Merits::new(self.merits),
             exalt_type,
             sorcery: self.sorcery,
+            craft_abilities: self.craft_abilities,
             martial_arts_styles: self.martial_arts_styles,
         })
     }

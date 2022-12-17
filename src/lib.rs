@@ -5,6 +5,7 @@ pub mod attributes;
 pub mod campaign;
 pub mod character;
 pub(crate) mod charms;
+pub(crate) mod craft;
 pub mod data_source;
 pub mod essence;
 pub mod exalt_type;

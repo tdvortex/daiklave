@@ -2,10 +2,11 @@ use serde::{Deserialize, Serialize};
 pub(crate) mod update;
 pub use update::AbilitiesDiff;
 pub(crate) mod tables;
-use crate::prerequisite::AbilityPrerequisite;
 use eyre::{eyre, Report, Result};
 use std::fmt::Debug;
 use std::iter::FusedIterator;
+mod enums;
+pub use enums::{AbilityNameNoSubskill, AbilityName, AbilityNameVanilla};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 
@@ -25,6 +26,19 @@ impl AbilityRating {
         match self {
             AbilityRating::Zero => 0,
             AbilityRating::NonZero(non_zero_ability) => non_zero_ability.dots,
+        }
+    }
+
+    pub fn specialties(&self) -> Option<&Vec<String>> {
+        match self {
+            AbilityRating::Zero => None,
+            AbilityRating::NonZero(non_zero_ability) => {
+                if non_zero_ability.specialties.is_empty() {
+                    None
+                } else {
+                    Some(&non_zero_ability.specialties)
+                }
+            }
         }
     }
 
@@ -83,107 +97,47 @@ pub(crate) struct NonZeroAbility {
     pub specialties: Vec<String>,
 }
 
-/// The name of an ability, excluding any Craft focus areas or Martial Arts styles.
-/// This is useful for most Craft Charms and nonspecific combat merits like Quick Draw.
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord)]
-pub enum AbilityNameNoSubskill {
-    /// The Archery ability
-    Archery,
-    /// The Athletics ability
-    Athletics,
-    /// The Awareness ability
-    Awareness,
-    /// The Brawl ability
-    Brawl,
-    /// The Bureaucracy ability
-    Bureaucracy,
-    /// The Craft ability, irrespective of focus area
-    Craft,
-    /// The Dodge ability
-    Dodge,
-    /// The Integrity ability
-    Integrity,
-    /// The Investigation ability
-    Investigation,
-    /// The Larceny ability
-    Larceny,
-    /// The Linguistics ability
-    Linguistics,
-    /// The Lore ability
-    Lore,
-    /// The MartialArts ability, irrespective of style
-    MartialArts,
-    /// The Medicine ability
-    Medicine,
-    /// The Melee ability
-    Melee,
-    /// The Occult ability
-    Occult,
-    /// The Performance ability
-    Performance,
-    /// The Presence ability
-    Presence,
-    /// The Resistance ability
-    Resistance,
-    /// The Ride ability
-    Ride,
-    /// The Sail ability
-    Sail,
-    /// The Socialize ability
-    Socialize,
-    /// The Stealth ability
-    Stealth,
-    /// The Survival ability
-    Survival,
-    /// The Thrown ability
-    Thrown,
-    /// The War ability
-    War,
-}
-
-impl AbilityNameNoSubskill {
-    fn iter() -> AbilityNameNoFocusIter {
-        AbilityNameNoFocusIter {
-            next_ability_name: Some(AbilityNameNoSubskill::Archery),
+impl AbilityNameVanilla {
+    fn iter() -> AbilityNameVanillaIter {
+        AbilityNameVanillaIter {
+            next_ability_name: Some(AbilityNameVanilla::Archery),
         }
     }
 }
 
-struct AbilityNameNoFocusIter {
-    next_ability_name: Option<AbilityNameNoSubskill>,
+struct AbilityNameVanillaIter {
+    next_ability_name: Option<AbilityNameVanilla>,
 }
 
-impl Iterator for AbilityNameNoFocusIter {
-    type Item = AbilityNameNoSubskill;
+impl Iterator for AbilityNameVanillaIter {
+    type Item = AbilityNameVanilla;
 
     fn next(&mut self) -> Option<Self::Item> {
         let next = match self.next_ability_name {
-            Some(AbilityNameNoSubskill::Archery) => Some(AbilityNameNoSubskill::Athletics),
-            Some(AbilityNameNoSubskill::Athletics) => Some(AbilityNameNoSubskill::Awareness),
-            Some(AbilityNameNoSubskill::Awareness) => Some(AbilityNameNoSubskill::Brawl),
-            Some(AbilityNameNoSubskill::Brawl) => Some(AbilityNameNoSubskill::Bureaucracy),
-            Some(AbilityNameNoSubskill::Bureaucracy) => Some(AbilityNameNoSubskill::Craft),
-            Some(AbilityNameNoSubskill::Craft) => Some(AbilityNameNoSubskill::Dodge),
-            Some(AbilityNameNoSubskill::Dodge) => Some(AbilityNameNoSubskill::Integrity),
-            Some(AbilityNameNoSubskill::Integrity) => Some(AbilityNameNoSubskill::Investigation),
-            Some(AbilityNameNoSubskill::Investigation) => Some(AbilityNameNoSubskill::Larceny),
-            Some(AbilityNameNoSubskill::Larceny) => Some(AbilityNameNoSubskill::Linguistics),
-            Some(AbilityNameNoSubskill::Linguistics) => Some(AbilityNameNoSubskill::Lore),
-            Some(AbilityNameNoSubskill::Lore) => Some(AbilityNameNoSubskill::MartialArts),
-            Some(AbilityNameNoSubskill::MartialArts) => Some(AbilityNameNoSubskill::Medicine),
-            Some(AbilityNameNoSubskill::Medicine) => Some(AbilityNameNoSubskill::Melee),
-            Some(AbilityNameNoSubskill::Melee) => Some(AbilityNameNoSubskill::Occult),
-            Some(AbilityNameNoSubskill::Occult) => Some(AbilityNameNoSubskill::Performance),
-            Some(AbilityNameNoSubskill::Performance) => Some(AbilityNameNoSubskill::Presence),
-            Some(AbilityNameNoSubskill::Presence) => Some(AbilityNameNoSubskill::Resistance),
-            Some(AbilityNameNoSubskill::Resistance) => Some(AbilityNameNoSubskill::Ride),
-            Some(AbilityNameNoSubskill::Ride) => Some(AbilityNameNoSubskill::Sail),
-            Some(AbilityNameNoSubskill::Sail) => Some(AbilityNameNoSubskill::Socialize),
-            Some(AbilityNameNoSubskill::Socialize) => Some(AbilityNameNoSubskill::Stealth),
-            Some(AbilityNameNoSubskill::Stealth) => Some(AbilityNameNoSubskill::Survival),
-            Some(AbilityNameNoSubskill::Survival) => Some(AbilityNameNoSubskill::Thrown),
-            Some(AbilityNameNoSubskill::Thrown) => Some(AbilityNameNoSubskill::War),
-            Some(AbilityNameNoSubskill::War) => None,
+            Some(AbilityNameVanilla::Archery) => Some(AbilityNameVanilla::Athletics),
+            Some(AbilityNameVanilla::Athletics) => Some(AbilityNameVanilla::Awareness),
+            Some(AbilityNameVanilla::Awareness) => Some(AbilityNameVanilla::Brawl),
+            Some(AbilityNameVanilla::Brawl) => Some(AbilityNameVanilla::Bureaucracy),
+            Some(AbilityNameVanilla::Bureaucracy) => Some(AbilityNameVanilla::Dodge),
+            Some(AbilityNameVanilla::Dodge) => Some(AbilityNameVanilla::Integrity),
+            Some(AbilityNameVanilla::Integrity) => Some(AbilityNameVanilla::Investigation),
+            Some(AbilityNameVanilla::Investigation) => Some(AbilityNameVanilla::Larceny),
+            Some(AbilityNameVanilla::Larceny) => Some(AbilityNameVanilla::Linguistics),
+            Some(AbilityNameVanilla::Linguistics) => Some(AbilityNameVanilla::Lore),
+            Some(AbilityNameVanilla::Lore) => Some(AbilityNameVanilla::Medicine),
+            Some(AbilityNameVanilla::Medicine) => Some(AbilityNameVanilla::Melee),
+            Some(AbilityNameVanilla::Melee) => Some(AbilityNameVanilla::Occult),
+            Some(AbilityNameVanilla::Occult) => Some(AbilityNameVanilla::Performance),
+            Some(AbilityNameVanilla::Performance) => Some(AbilityNameVanilla::Presence),
+            Some(AbilityNameVanilla::Presence) => Some(AbilityNameVanilla::Resistance),
+            Some(AbilityNameVanilla::Resistance) => Some(AbilityNameVanilla::Ride),
+            Some(AbilityNameVanilla::Ride) => Some(AbilityNameVanilla::Sail),
+            Some(AbilityNameVanilla::Sail) => Some(AbilityNameVanilla::Socialize),
+            Some(AbilityNameVanilla::Socialize) => Some(AbilityNameVanilla::Stealth),
+            Some(AbilityNameVanilla::Stealth) => Some(AbilityNameVanilla::Survival),
+            Some(AbilityNameVanilla::Survival) => Some(AbilityNameVanilla::Thrown),
+            Some(AbilityNameVanilla::Thrown) => Some(AbilityNameVanilla::War),
+            Some(AbilityNameVanilla::War) => None,
             None => None,
         };
         let out = self.next_ability_name;
@@ -192,66 +146,9 @@ impl Iterator for AbilityNameNoFocusIter {
     }
 }
 
-impl FusedIterator for AbilityNameNoFocusIter {}
+impl FusedIterator for AbilityNameVanillaIter {}
 
-/// The name of an Ability, including a specific Craft focus area or Martial Arts style if appropriate.
-/// This is useful for querying a specific ability's dots (e.g. Craft(Masonry) vs Craft(Basketweaving))
-/// or for specific Charm requirements (like most Martial Arts style Charms).
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub enum AbilityName<'a> {
-    /// The Archery ability
-    Archery,
-    /// The Athletics ability
-    Athletics,
-    /// The Awareness ability
-    Awareness,
-    /// The Brawl ability
-    Brawl,
-    /// The Bureaucracy ability
-    Bureaucracy,
-    /// The Craft ability, augmented with a specific focus area (such as Craft("Artifacts"))
-    Craft(&'a str),
-    /// The Dodge ability
-    Dodge,
-    /// The Integrity ability
-    Integrity,
-    /// The Investigation ability
-    Investigation,
-    /// The Larceny ability
-    Larceny,
-    /// The Linguistics ability
-    Linguistics,
-    /// The Lore ability
-    Lore,
-    /// The MartialArts ability, augmented with a specific style (such as MartialArts("Crane Style"))
-    MartialArts(&'a str),
-    /// The Medicine ability
-    Medicine,
-    /// The Melee ability
-    Melee,
-    /// The Occult ability
-    Occult,
-    /// The Performance ability
-    Performance,
-    /// The Presence ability
-    Presence,
-    /// The Resistance ability
-    Resistance,
-    /// The Ride ability
-    Ride,
-    /// The Sail ability
-    Sail,
-    /// The Socialize ability
-    Socialize,
-    /// The Stealth ability
-    Stealth,
-    /// The Survival ability
-    Survival,
-    /// The Thrown ability
-    Thrown,
-    /// The War ability
-    War,
-}
+
 
 impl<'a> AbilityName<'a> {
     pub fn subskill(&self) -> Option<&str> {
@@ -402,23 +299,11 @@ impl<'a> Ability<'a> {
     }
 
     pub fn dots(&self) -> u8 {
-        match &self.rating {
-            AbilityRating::Zero => 0,
-            AbilityRating::NonZero(non_zero_ability) => non_zero_ability.dots,
-        }
+        self.rating.dots()
     }
 
     pub fn specialties(&self) -> Option<&Vec<String>> {
-        match &self.rating {
-            AbilityRating::Zero => None,
-            AbilityRating::NonZero(non_zero_rating) => {
-                if non_zero_rating.specialties.is_empty() {
-                    None
-                } else {
-                    Some(&non_zero_rating.specialties)
-                }
-            }
-        }
+        self.rating.specialties()
     }
 }
 
@@ -768,140 +653,5 @@ impl Abilities {
         };
 
         rating_ptr.remove_specialty(specialty)
-    }
-
-    fn craft_iter(&self) -> impl Iterator<Item = Ability> {
-        CraftIter {
-            craft_iter: self.craft.iter(),
-        }
-    }
-
-    fn ability_names_iter(&self) -> AbilityNamesIter {
-        AbilityNamesIter {
-            ability_name_no_focus_iter: AbilityNameNoSubskill::iter(),
-            on_craft: false,
-            craft_iter: self.craft.iter(),
-        }
-    }
-
-    pub fn iter(&self) -> impl Iterator<Item = Ability> {
-        AbilitiesIter {
-            abilities: self,
-            ability_names_iter: self.ability_names_iter(),
-        }
-    }
-
-    pub fn meets_prerequisite(&self, prerequisite: &AbilityPrerequisite) -> bool {
-        match (prerequisite.ability_name, &prerequisite.subskill) {
-            (AbilityNameNoSubskill::Craft, Some(focus)) => {
-                if let Some(ability) = self.get(AbilityNameNoSubskill::Craft, Some(focus.as_str()))
-                {
-                    ability.dots() >= prerequisite.dots
-                } else {
-                    false
-                }
-            }
-            (AbilityNameNoSubskill::Craft, None) => self
-                .craft_iter()
-                .any(|craft_ability| craft_ability.dots() >= prerequisite.dots),
-            (AbilityNameNoSubskill::MartialArts, Some(style)) => {
-                if let Some(ability) =
-                    self.get(AbilityNameNoSubskill::MartialArts, Some(style.as_str()))
-                {
-                    ability.dots() >= prerequisite.dots
-                } else {
-                    false
-                }
-            }
-            (AbilityNameNoSubskill::MartialArts, None) => false,
-            (other_ability, _) => {
-                self.get(other_ability, None).unwrap().dots() >= prerequisite.dots
-            }
-        }
-    }
-}
-
-struct AbilityNamesIter<'a> {
-    ability_name_no_focus_iter: AbilityNameNoFocusIter,
-    on_craft: bool,
-    craft_iter: std::slice::Iter<'a, (String, AbilityRating)>,
-}
-
-impl<'a> Iterator for AbilityNamesIter<'a> {
-    type Item = AbilityName<'a>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.on_craft {
-            if let Some((focus, _)) = self.craft_iter.next() {
-                return Some(AbilityName::Craft(focus.as_str()));
-            } else {
-                self.on_craft = false;
-            }
-        }
-
-        match self.ability_name_no_focus_iter.next() {
-            None => None,
-            Some(AbilityNameNoSubskill::Craft) => {
-                self.on_craft = true;
-                self.next()
-            }
-            Some(AbilityNameNoSubskill::MartialArts) => self.next(),
-            Some(other_name) => Some(other_name.try_into().unwrap()),
-        }
-    }
-}
-
-struct AbilitiesIter<'a> {
-    abilities: &'a Abilities,
-    ability_names_iter: AbilityNamesIter<'a>,
-}
-
-impl<'a> Iterator for AbilitiesIter<'a> {
-    type Item = Ability<'a>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let ability_name = self.ability_names_iter.next()?;
-        self.abilities
-            .get(ability_name.without_subskill(), ability_name.subskill())
-    }
-}
-
-impl<'a> FusedIterator for AbilitiesIter<'a> {}
-
-struct CraftIter<'a> {
-    craft_iter: std::slice::Iter<'a, (String, AbilityRating)>,
-}
-
-impl<'a> Iterator for CraftIter<'a> {
-    type Item = Ability<'a>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if let Some((focus, rating)) = self.craft_iter.next() {
-            Some(Ability {
-                name: AbilityName::Craft(focus.as_str()),
-                rating,
-            })
-        } else {
-            None
-        }
-    }
-}
-
-struct MartialArtsIter<'a> {
-    martial_arts_iter: std::slice::Iter<'a, (String, AbilityRating)>,
-}
-
-impl<'a> Iterator for MartialArtsIter<'a> {
-    type Item = Ability<'a>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if let Some((style, rating)) = self.martial_arts_iter.next() {
-            Some(Ability {
-                name: AbilityName::MartialArts(style.as_str()),
-                rating,
-            })
-        } else {
-            None
-        }
     }
 }

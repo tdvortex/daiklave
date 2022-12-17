@@ -176,7 +176,7 @@ impl MartialArtistTraits {
         self.get_rating_mut(style_id)?.add_specialty(specialty)
     }
 
-    pub fn _remove_specialty(&mut self, style_id: Id, specialty: &str) -> Result<()> {
+    pub fn remove_specialty(&mut self, style_id: Id, specialty: &str) -> Result<()> {
         self.get_rating_mut(style_id)?.remove_specialty(specialty)
     }
 
