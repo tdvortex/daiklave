@@ -184,7 +184,8 @@ impl MartialArtistTraits {
         self.get_rating_mut(style_id)?.remove_specialty(specialty)
     }
 
-    pub fn add_charm(&mut self, style_id: Id, charm: MartialArtsCharm) -> Result<()> {
+    pub fn add_charm(&mut self, charm: MartialArtsCharm) -> Result<()> {
+        let style_id = charm.style_id();
         let charms = &mut self
             .0
             .iter_mut()

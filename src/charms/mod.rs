@@ -222,6 +222,7 @@ pub struct _DragonBloodedCharm {
 
 #[derive(Debug, Serialize, Deserialize, Eq, Clone)]
 pub struct MartialArtsCharm {
+    style_id: Id,
     action_type: CharmActionType,
     martial_arts_requirement: u8,
     essence_requirement: u8,
@@ -237,6 +238,7 @@ impl PartialEq for MartialArtsCharm {
 impl MartialArtsCharm {
     pub fn from_book(id: Id, book_title: String, page_number: i16) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {
+            style_id: None,
             action_type: None,
             martial_arts_requirement: None,
             essence_requirement: None,
@@ -246,6 +248,7 @@ impl MartialArtsCharm {
 
     pub fn custom(id: Id, creator_id: Id) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {
+            style_id: None,
             action_type: None,
             martial_arts_requirement: None,
             essence_requirement: None,
@@ -255,6 +258,10 @@ impl MartialArtsCharm {
 
     pub fn id(&self) -> Id {
         self.traits.id()
+    }
+
+    pub fn style_id(&self) -> Id {
+        self.style_id
     }
 
     pub fn data_source(&self) -> &DataSource {
@@ -283,6 +290,7 @@ impl MartialArtsCharm {
 }
 
 pub struct MartialArtsCharmBuilder {
+    style_id: Option<Id>,
     action_type: Option<CharmActionType>,
     martial_arts_requirement: Option<u8>,
     essence_requirement: Option<u8>,
@@ -290,6 +298,11 @@ pub struct MartialArtsCharmBuilder {
 }
 
 impl MartialArtsCharmBuilder {
+    pub fn for_martial_arts_style(mut self, style_id: Id) -> Self {
+        self.style_id = Some(style_id);
+        self
+    }
+
     pub fn with_name(mut self, name: String) -> Self {
         self.traits = self.traits.with_name(name);
         self
@@ -332,6 +345,7 @@ impl MartialArtsCharmBuilder {
 
     pub fn build(self) -> Result<MartialArtsCharm> {
         Ok(MartialArtsCharm {
+            style_id: self.style_id.ok_or_else(|| eyre!("Martial Arts style required for Martial Arts charms"))?,
             action_type: self
                 .action_type
                 .ok_or_else(|| eyre!("Action type required for Martial Arts charms"))?,

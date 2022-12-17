@@ -156,7 +156,7 @@ impl CharacterBuilder {
         }
 
         // Construct charms except for keywords
-        let mut charm_builder_map: HashMap<i32, (i32, MartialArtsCharmBuilder)>;
+        let mut charm_builder_map: HashMap<i32, MartialArtsCharmBuilder>;
         if let Some(rows) = charm_rows {
             charm_builder_map = HashMap::new();
             for row in rows.into_iter() {
@@ -195,6 +195,7 @@ impl CharacterBuilder {
                 })?;
 
                 builder = builder
+                    .for_martial_arts_style(Id::Database(row.style_id))
                     .with_name(row.name)
                     .with_action_type(row.action_type.into())
                     .with_description(row.description)
@@ -206,9 +207,7 @@ impl CharacterBuilder {
                     builder = builder.with_summary(summary);
                 }
 
-                let style_id = row.style_id;
-
-                charm_builder_map.insert(row.id, (style_id, builder));
+                charm_builder_map.insert(row.id, builder);
             }
         } else {
             return Ok(self);
@@ -226,7 +225,7 @@ impl CharacterBuilder {
             }
         }
 
-        for (charm_id, (style_id, mut charm_builder)) in charm_builder_map.into_iter() {
+        for (charm_id, mut charm_builder) in charm_builder_map.into_iter() {
             if let Some(keywords) = charm_keyword_map.remove(&Id::Database(charm_id)) {
                 for keyword in keywords.into_iter() {
                     charm_builder = charm_builder.with_keyword(keyword);
@@ -234,7 +233,7 @@ impl CharacterBuilder {
             }
             let charm = charm_builder.build()?;
 
-            self = self.with_martial_arts_charm(Id::Database(style_id), charm)?;
+            self = self.with_martial_arts_charm(charm)?;
         }
 
         Ok(self)

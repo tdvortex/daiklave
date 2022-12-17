@@ -335,10 +335,9 @@ impl CharacterBuilder {
 
     pub fn with_martial_arts_charm(
         mut self,
-        style_id: Id,
         charm: MartialArtsCharm,
     ) -> Result<Self> {
-        self.martial_arts_styles.add_charm(style_id, charm)?;
+        self.martial_arts_styles.add_charm(charm)?;
         Ok(self)
     }
 
