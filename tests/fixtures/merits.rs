@@ -1,5 +1,5 @@
 use exalted_3e_gui::{
-    abilities::{AbilityNameVanilla},
+    abilities::AbilityNameVanilla,
     attributes::AttributeName,
     character::CharacterBuilder,
     id::Id,

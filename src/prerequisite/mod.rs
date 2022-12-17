@@ -4,7 +4,7 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::abilities::{AbilityNameVanilla};
+use crate::abilities::AbilityNameVanilla;
 use crate::attributes::AttributeName;
 use crate::id::Id;
 
@@ -94,11 +94,7 @@ impl PrerequisiteSetBuilder {
         self
     }
 
-    pub fn requiring_ability(
-        mut self,
-        ability_name: AbilityNameVanilla,
-        dots: u8,
-    ) -> Self {
+    pub fn requiring_ability(mut self, ability_name: AbilityNameVanilla, dots: u8) -> Self {
         self.prerequisites.push(Prerequisite {
             prerequisite_type: PrerequisiteType::Ability(AbilityPrerequisite {
                 ability_name,

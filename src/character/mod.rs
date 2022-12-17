@@ -98,11 +98,7 @@ impl Character {
         self.martial_arts_styles.iter()
     }
 
-    pub fn set_ability_dots(
-        &mut self,
-        ability_name: AbilityNameVanilla,
-        dots: u8,
-    ) {
+    pub fn set_ability_dots(&mut self, ability_name: AbilityNameVanilla, dots: u8) {
         self.abilities.set_dots(ability_name, dots);
     }
 

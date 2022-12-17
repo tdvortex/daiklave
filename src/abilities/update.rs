@@ -5,7 +5,7 @@ use crate::abilities::Abilities;
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 
-use super::{AbilityNameVanilla};
+use super::AbilityNameVanilla;
 
 #[derive(Debug, Default)]
 pub struct AbilitiesDiff {
@@ -48,7 +48,7 @@ impl Abilities {
                     let mut old_set: HashSet<&str> =
                         old_specialties.iter().map(|s| s.as_str()).collect();
 
-                    for specialty in new_specialties.into_iter() {
+                    for specialty in new_specialties.iter() {
                         if !old_set.remove(specialty.as_str()) {
                             diff.specialties_to_add.push((
                                 new_ability.name().without_subskill().try_into().unwrap(),
@@ -76,12 +76,11 @@ impl AbilitiesDiff {
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
     ) -> Result<()> {
-        let (mut names_to_update, mut dots_to_update) = (Vec::<AbilityNamePostgres>::new(), Vec::new());
+        let (mut names_to_update, mut dots_to_update) =
+            (Vec::<AbilityNamePostgres>::new(), Vec::new());
 
         for (name_vanilla, dots) in self.abilities_to_modify.iter() {
-            names_to_update.push(
-                (*name_vanilla).into(),
-            );
+            names_to_update.push((*name_vanilla).into());
             dots_to_update.push((*dots).into());
         }
 
@@ -120,7 +119,8 @@ impl AbilitiesDiff {
             .map(|(_, specialty)| specialty.as_str())
             .collect();
 
-        query!("
+        query!(
+            "
             DELETE FROM specialties
             WHERE (specialties.character_id, specialties.ability_name, specialties.specialty) IN
             (
@@ -130,10 +130,13 @@ impl AbilitiesDiff {
                     data.specialty as specialty
                 FROM UNNEST($2::ABILITYNAME[], $3::VARCHAR(255)[]) AS data(ability_name, specialty)
             )",
-        character_id as i32,
-        &ability_name_with_specialty_to_remove as &[AbilityNamePostgres],
-        &specialty_name_to_remove as &[&str]
-        ).execute(&mut *transaction).await.wrap_err("Database error attempting to remove specialties")?;
+            character_id as i32,
+            &ability_name_with_specialty_to_remove as &[AbilityNamePostgres],
+            &specialty_name_to_remove as &[&str]
+        )
+        .execute(&mut *transaction)
+        .await
+        .wrap_err("Database error attempting to remove specialties")?;
 
         Ok(())
     }

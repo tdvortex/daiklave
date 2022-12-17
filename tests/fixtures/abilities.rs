@@ -1,6 +1,9 @@
 use exalted_3e_gui::{
-    abilities::{AbilityNameNoSubskill, AbilityNameVanilla}, character::CharacterBuilder, id::Id,
-    martial_arts::MartialArtsStyle, Character,
+    abilities::{AbilityNameNoSubskill, AbilityNameVanilla},
+    character::CharacterBuilder,
+    id::Id,
+    martial_arts::MartialArtsStyle,
+    Character,
 };
 
 const SINGLE_POINT_STYLE_DESCRIPTION: &str =
@@ -142,11 +145,9 @@ pub fn validate_initial_abilities(character: &Character) {
 
 pub fn modify_abilities(character: &mut Character) {
     // Increase a stable ability
-    character
-        .set_ability_dots(AbilityNameVanilla::Dodge, 4);
+    character.set_ability_dots(AbilityNameVanilla::Dodge, 4);
     // Decrease a stable ability with specialty to zero
-    character
-        .set_ability_dots(AbilityNameVanilla::Socialize, 0);
+    character.set_ability_dots(AbilityNameVanilla::Socialize, 0);
     // Add a new subskilled ability
     character.set_craft_ability_dots("Origami", 1);
     // Increase an existing subskilled ability
@@ -168,10 +169,7 @@ pub fn modify_abilities(character: &mut Character) {
     character.set_craft_ability_dots("Weapon Forging", 0);
     // Add a specialty
     character
-        .add_specialty(
-            AbilityNameVanilla::Integrity,
-            "Patience".to_owned(),
-        )
+        .add_specialty(AbilityNameVanilla::Integrity, "Patience".to_owned())
         .unwrap();
     // Remove a specialty
     character

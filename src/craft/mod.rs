@@ -67,12 +67,10 @@ impl CraftAbilities {
                     }
                 })
                 .map(|delete_index| self.0.remove(delete_index));
+        } else if let Some(rating) = self.get_rating_mut(focus) {
+            rating.set_dots(dots);
         } else {
-            if let Some(rating) = self.get_rating_mut(focus) {
-                rating.set_dots(dots);
-            } else {
-                self.add_focus(focus.to_owned(), dots).unwrap()
-            }
+            self.add_focus(focus.to_owned(), dots).unwrap()
         }
     }
 

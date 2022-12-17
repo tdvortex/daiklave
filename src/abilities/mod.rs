@@ -372,11 +372,7 @@ impl Abilities {
         }
     }
 
-    pub fn set_dots(
-        &mut self,
-        ability_name: AbilityNameVanilla,
-        dots: u8,
-    ) {
+    pub fn set_dots(&mut self, ability_name: AbilityNameVanilla, dots: u8) {
         let ptr = match ability_name {
             AbilityNameVanilla::Archery => &mut self.archery,
             AbilityNameVanilla::Athletics => &mut self.athletics,

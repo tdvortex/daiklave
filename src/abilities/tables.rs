@@ -162,7 +162,12 @@ impl CharacterBuilder {
         specialty_rows: Option<Vec<SpecialtyRow>>,
     ) -> Result<Self> {
         for row in abilities_rows.into_iter() {
-            self = self.with_ability(row.name.into(), row.dots.try_into().wrap_err_with(|| format!("Invalid number of dots: {}", row.dots))?);
+            self = self.with_ability(
+                row.name.into(),
+                row.dots
+                    .try_into()
+                    .wrap_err_with(|| format!("Invalid number of dots: {}", row.dots))?,
+            );
         }
 
         if let Some(rows) = specialty_rows {
