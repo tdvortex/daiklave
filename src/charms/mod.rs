@@ -108,6 +108,34 @@ impl CharmTraits {
             description: None,
         }
     }
+
+    fn id(&self) -> Id {
+        self.id
+    }
+
+    fn data_source(&self) -> &DataSource {
+        &self.data_source
+    }
+
+    fn name(&self) -> &str {
+        self.name.as_str()
+    }
+
+    fn summary(&self) -> Option<&str> {
+        self.summary.as_deref()
+    }
+
+    fn duration(&self) -> &str {
+        self.duration.as_str()
+    }
+
+    fn keywords(&self) -> &Vec<CharmKeyword> {
+        &self.keywords
+    }
+
+    fn description(&self) -> &str {
+        self.description.as_str()
+    }
 }
 
 struct CharmTraitsBuilder {
@@ -224,6 +252,34 @@ impl MartialArtsCharm {
             traits: CharmTraits::custom(id, creator_id),
         }
     }
+
+    pub fn id(&self) -> Id {
+        self.traits.id()
+    }
+
+    pub fn data_source(&self) -> &DataSource {
+        self.traits.data_source()
+    }
+
+    pub fn name(&self) -> &str {
+        self.traits.name()
+    }
+
+    pub fn summary(&self) -> Option<&str> {
+        self.traits.summary()
+    }
+
+    pub fn duration(&self) -> &str {
+        self.traits.duration()
+    }
+
+    pub fn keywords(&self) -> &Vec<CharmKeyword> {
+        self.traits.keywords()
+    }
+
+    pub fn description(&self) -> &str {
+        self.traits.description()
+    }
 }
 
 pub struct MartialArtsCharmBuilder {
@@ -274,7 +330,7 @@ impl MartialArtsCharmBuilder {
         self
     }
 
-    pub fn build(mut self) -> Result<MartialArtsCharm> {
+    pub fn build(self) -> Result<MartialArtsCharm> {
         Ok(MartialArtsCharm {
             action_type: self
                 .action_type

@@ -1,6 +1,10 @@
-use exalted_3e_gui::{abilities::AbilityNameNoSubskill, character::CharacterBuilder, Character, martial_arts::MartialArtsStyle, id::Id};
+use exalted_3e_gui::{
+    abilities::AbilityNameNoSubskill, character::CharacterBuilder, id::Id,
+    martial_arts::MartialArtsStyle, Character,
+};
 
-const SINGLE_POINT_STYLE_DESCRIPTION: &str = "Single Point Shining Into the Void is a sword style that \
+const SINGLE_POINT_STYLE_DESCRIPTION: &str =
+    "Single Point Shining Into the Void is a sword style that \
     emphasizes blinding speed and deadly-perfect finishing \
     moves. Students learn to draw their blade as though it \
     were an extension of their own body, transitioning \
@@ -20,10 +24,12 @@ const SINGLE_POINT_STYLE_DESCRIPTION: &str = "Single Point Shining Into the Void
     armor.";
 
 pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder {
-    let single_point_shining_into_the_void_style = MartialArtsStyle::from_book(Id::Placeholder(0), "Core Rulebook".to_owned(), 434)
-        .with_name("Single Point Shining Into the Void Style".to_owned())
-        .with_description(SINGLE_POINT_STYLE_DESCRIPTION.to_owned()).build().unwrap();
-
+    let single_point_shining_into_the_void_style =
+        MartialArtsStyle::from_book(Id::Placeholder(0), "Core Rulebook".to_owned(), 434)
+            .with_name("Single Point Shining Into the Void Style".to_owned())
+            .with_description(SINGLE_POINT_STYLE_DESCRIPTION.to_owned())
+            .build()
+            .unwrap();
 
     vec![
         (AbilityNameNoSubskill::Awareness, 4),
@@ -42,17 +48,15 @@ pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder 
         ic.with_ability(ability_name_no_subskill, dots).unwrap()
     })
     .with_craft("Weapon Forging", 1)
-    .with_martial_arts(single_point_shining_into_the_void_style, 4).unwrap()
+    .with_martial_arts_style(single_point_shining_into_the_void_style, 4)
+    .unwrap()
     .with_specialty(AbilityNameNoSubskill::War, "While Outnumbered".to_owned())
     .unwrap()
     .with_specialty(AbilityNameNoSubskill::Socialize, "Tavern Gossip".to_owned())
     .unwrap()
     .with_craft_specialty("Weapon Forging", "Sharpening Blades".to_owned())
     .unwrap()
-    .with_martial_arts_specialty(
-        "Single Point Shining Into the Void Style",
-        "Join Battle".to_owned(),
-    )
+    .with_martial_arts_specialty(Id::Placeholder(0), "Join Battle".to_owned())
     .unwrap()
 }
 

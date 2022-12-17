@@ -16,6 +16,7 @@ use crate::abilities::{Abilities, AbilityNameNoSubskill};
 use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
 use crate::campaign::Campaign;
+use crate::charms::MartialArtsCharm;
 use crate::exalt_type::ExaltType;
 use crate::health::{Health, WoundPenalty};
 use crate::id::Id;
@@ -94,10 +95,7 @@ impl Character {
         dots: u8,
     ) -> Result<()> {
         if ability_name == AbilityNameNoSubskill::MartialArts {
-            self.martial_arts_styles.set_dots(
-                subskill.ok_or_else(|| eyre!("Martial Arts must specify a style to set dots"))?,
-                dots,
-            )
+            return Err(eyre!("TODO: fix this"));
         } else {
             self.abilities.set_dots(ability_name, subskill, dots)
         }
@@ -110,10 +108,7 @@ impl Character {
         specialty: String,
     ) -> Result<()> {
         if ability_name == AbilityNameNoSubskill::MartialArts {
-            self.martial_arts_styles.add_specialty(
-                subskill.ok_or_else(|| eyre!("Martial Arts must specify a style to set dots"))?,
-                specialty,
-            )
+            return Err(eyre!("TODO: fix this"));
         } else {
             self.abilities
                 .add_specialty(ability_name, subskill, specialty)
@@ -127,10 +122,7 @@ impl Character {
         specialty: &str,
     ) -> Result<()> {
         if ability_name == AbilityNameNoSubskill::MartialArts {
-            self.martial_arts_styles.remove_specialty(
-                subskill.ok_or_else(|| eyre!("Martial Arts must specify a style to set dots"))?,
-                specialty,
-            )
+            return Err(eyre!("TODO: fix this"));
         } else {
             self.abilities
                 .remove_specialty(ability_name, subskill, specialty)
@@ -249,7 +241,7 @@ impl CharacterBuilder {
         self
     }
 
-    pub fn with_martial_arts(mut self, style: MartialArtsStyle, dots: u8) -> Result<Self> {
+    pub fn with_martial_arts_style(mut self, style: MartialArtsStyle, dots: u8) -> Result<Self> {
         self.martial_arts_styles.add_style(style, dots)?;
         Ok(self)
     }
@@ -270,13 +262,9 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    pub fn with_martial_arts_specialty(
-        mut self,
-        style_name: &str,
-        specialty: String,
-    ) -> Result<Self> {
+    pub fn with_martial_arts_specialty(mut self, style_id: Id, specialty: String) -> Result<Self> {
         self.martial_arts_styles
-            .add_specialty(style_name, specialty)?;
+            .add_specialty(style_id, specialty)?;
         Ok(self)
     }
 
@@ -343,6 +331,15 @@ impl CharacterBuilder {
         } else {
             Err(eyre!("prerequisites not met for merit {}", template.name()))
         }
+    }
+
+    pub fn with_martial_arts_charm(
+        mut self,
+        style_id: Id,
+        charm: MartialArtsCharm,
+    ) -> Result<Self> {
+        self.martial_arts_styles.add_charm(style_id, charm)?;
+        Ok(self)
     }
 
     pub fn build(self) -> Result<Character> {

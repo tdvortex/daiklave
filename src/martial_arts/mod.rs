@@ -44,6 +44,10 @@ impl MartialArtsStyle {
         }
     }
 
+    pub fn id(&self) -> Id {
+        self.id
+    }
+
     pub fn name(&self) -> &str {
         self.name.as_str()
     }
@@ -136,25 +140,39 @@ impl MartialArtistTraits {
         }
     }
 
-    fn get_rating_mut(&mut self, style_name: &str) -> Result<&mut AbilityRating> {
+    fn get_rating_mut(&mut self, style_id: Id) -> Result<&mut AbilityRating> {
         Ok(&mut self
             .0
             .iter_mut()
-            .find(|details| details.style().name() == style_name)
-            .ok_or_else(|| eyre!("Martial Arts style {} not found", style_name))?
+            .find(|details| details.style().id() == style_id)
+            .ok_or_else(|| eyre!("Martial Arts style {} not found", *style_id))?
             .rating)
     }
 
-    pub fn set_dots(&mut self, style_name: &str, dots: u8) -> Result<()> {
-        self.get_rating_mut(style_name)?.set_dots(dots);
+    pub fn set_dots(&mut self, style_id: Id, dots: u8) -> Result<()> {
+        self.get_rating_mut(style_id)?.set_dots(dots);
         Ok(())
     }
 
-    pub fn add_specialty(&mut self, style_name: &str, specialty: String) -> Result<()> {
-        self.get_rating_mut(style_name)?.add_specialty(specialty)
+    pub fn add_specialty(&mut self, style_id: Id, specialty: String) -> Result<()> {
+        self.get_rating_mut(style_id)?.add_specialty(specialty)
     }
 
-    pub fn remove_specialty(&mut self, style_name: &str, specialty: &str) -> Result<()> {
-        self.get_rating_mut(style_name)?.remove_specialty(specialty)
+    pub fn remove_specialty(&mut self, style_id: Id, specialty: &str) -> Result<()> {
+        self.get_rating_mut(style_id)?.remove_specialty(specialty)
+    }
+
+    pub fn add_charm(&mut self, style_id: Id, charm: MartialArtsCharm) -> Result<()> {
+        let charms = &mut self
+            .0
+            .iter_mut()
+            .find(|details| details.style().id() == style_id)
+            .ok_or_else(|| eyre!("Martial Arts style {} not found", *style_id))?
+            .charms;
+
+        charms.push(charm);
+        charms.sort_by(|a, b| a.name().cmp(b.name()));
+        charms.dedup();
+        Ok(())
     }
 }

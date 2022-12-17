@@ -1,5 +1,7 @@
 use sqlx::postgres::PgHasArrayType;
 
+use super::{CharmActionType, CharmKeyword};
+
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "CHARMCOST")]
 pub struct CharmCostPostgres {
@@ -44,17 +46,37 @@ pub enum CharmKeywordPostgres {
     WrittenOnly,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
-#[sqlx(type_name = "CHARMDURATIONTYPE", rename_all = "UPPERCASE")]
-pub enum CharmDurationTypePostgres {
-    Instant,
-    Tick,
-    Turn,
-    Round,
-    Scene,
-    Indefinite,
-    Permanent,
-    Special,
+impl From<CharmKeywordPostgres> for CharmKeyword {
+    fn from(keyword_pg: CharmKeywordPostgres) -> Self {
+        match keyword_pg {
+            CharmKeywordPostgres::Air => Self::Air,
+            CharmKeywordPostgres::Aggravated => Self::Aggravated,
+            CharmKeywordPostgres::Archetype => Self::Archetype,
+            CharmKeywordPostgres::Aura => Self::Aura,
+            CharmKeywordPostgres::Balanced => Self::Balanced,
+            CharmKeywordPostgres::Bridge => Self::Bridge,
+            CharmKeywordPostgres::Clash => Self::Clash,
+            CharmKeywordPostgres::Counterattack => Self::Counterattack,
+            CharmKeywordPostgres::DecisiveOnly => Self::DecisiveOnly,
+            CharmKeywordPostgres::Dual => Self::Dual,
+            CharmKeywordPostgres::Excellency => Self::Excellency,
+            CharmKeywordPostgres::Fire => Self::Fire,
+            CharmKeywordPostgres::Earth => Self::Earth,
+            CharmKeywordPostgres::Mute => Self::Mute,
+            CharmKeywordPostgres::Pilot => Self::Pilot,
+            CharmKeywordPostgres::Protean => Self::Protean,
+            CharmKeywordPostgres::Psyche => Self::Psyche,
+            CharmKeywordPostgres::Perilous => Self::Perilous,
+            CharmKeywordPostgres::Salient => Self::Salient,
+            CharmKeywordPostgres::Signature => Self::Signature,
+            CharmKeywordPostgres::Stackable => Self::Stackable,
+            CharmKeywordPostgres::Uniform => Self::Uniform,
+            CharmKeywordPostgres::Water => Self::Water,
+            CharmKeywordPostgres::WitheringOnly => Self::WitheringOnly,
+            CharmKeywordPostgres::Wood => Self::Wood,
+            CharmKeywordPostgres::WrittenOnly => Self::WrittenOnly,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
@@ -64,6 +86,17 @@ pub enum CharmActionTypePostgres {
     Supplemental,
     Reflexive,
     Permanent,
+}
+
+impl From<CharmActionTypePostgres> for CharmActionType {
+    fn from(value: CharmActionTypePostgres) -> Self {
+        match value {
+            CharmActionTypePostgres::Simple => Self::Simple,
+            CharmActionTypePostgres::Supplemental => Self::Supplemental,
+            CharmActionTypePostgres::Reflexive => Self::Reflexive,
+            CharmActionTypePostgres::Permanent => Self::Permanent,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
@@ -90,7 +123,7 @@ pub struct CharmRow {
     pub costs: Vec<CharmCostPostgres>,
     pub action_type: CharmActionTypePostgres,
     pub keywords: Vec<CharmKeywordPostgres>,
-    pub duration: CharmDurationTypePostgres,
+    pub duration: String,
     pub special_duration: Option<String>,
     pub book_name: Option<String>,
     pub page_number: Option<i32>,
