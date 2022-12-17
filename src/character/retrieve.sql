@@ -111,6 +111,40 @@ WITH player_query AS (
         INNER JOIN merit_prerequisite_sets ON (merit_prerequisite_sets.merit_id = merits.id)
         INNER JOIN prerequisites ON (prerequisites.merit_prerequisite_set_id = merit_prerequisite_sets.id)
     WHERE characters.id = $1
+), martial_arts_styles_query AS (
+    SELECT
+        ARRAY_AGG(martial_arts_styles) as masts
+    FROM characters
+        INNER JOIN character_martial_arts ON (characters.id = character_martial_arts.character_id)
+        INNER JOIN martial_arts_styles ON (character_martial_arts.style_id = martial_arts_styles.id)
+    WHERE characters.id = $1
+), character_martial_arts_query AS (
+    SELECT
+        ARRAY_AGG(character_martial_arts) as chmas
+    FROM characters
+        INNER JOIN character_martial_arts ON (characters.id = character_martial_arts.character_id)
+    WHERE characters.id = $1
+), character_martial_arts_specialties AS (
+    SELECT
+        ARRAY_AGG(character_martial_arts_specialties) as cmass
+    FROM characters
+        INNER JOIN character_martial_arts ON (characters.id = character_martial_arts.character_id)
+        INNER JOIN character_martial_arts_specialties ON (character_martial_arts_specialties.character_id = characters.id AND character_martial_arts_specialties.style_id = character_martial_arts.style_id)
+    WHERE characters.id = $1
+), martial_arts_charms_query AS (
+    SELECT
+        ARRAY_AGG(martial_arts_charms) as machs
+    FROM characters
+        INNER JOIN character_martial_arts_charms ON (character_martial_arts_charms.character_id = characters.id)
+        INNER JOIN martial_arts_charms ON (character_martial_arts_charms.charm_id = martial_arts_charms.id)
+    WHERE characters.id = $1
+), martial_arts_charms_keywords_query AS (
+    SELECT
+        ARRAY_AGG(martial_arts_charms_keywords) as makws
+    FROM characters
+        INNER JOIN character_martial_arts_charms ON (character_martial_arts_charms.character_id = characters.id)
+        INNER JOIN martial_arts_charms_keywords ON (character_martial_arts_charms.charm_id = martial_arts_charms_keywords.charm_id)
+    WHERE characters.id = $1
 )
 SELECT
     characters AS "character!: CharacterRow",
@@ -130,7 +164,12 @@ SELECT
     mrtts AS "merit_templates: Vec<MeritTemplateRow>",
     mrtds AS "merit_details: Vec<MeritDetailRow>",
     mprss AS "merit_prerequisite_sets: Vec<MeritPrerequisiteSetRow>",
-    meprs AS "merit_prerequisites:  Vec<PrerequisiteRow>"
+    meprs AS "merit_prerequisites:  Vec<PrerequisiteRow>",
+    masts AS "martial_arts_styles: Vec<MartialArtsStyleRow>",
+    chmas AS "character_martial_arts_styles: Vec<CharacterMartialArtsRow>",
+    cmass AS "martial_arts_specialties: Vec<CharacterMartialArtsSpecialtyRow>",
+    machs AS "martial_arts_charms: Vec<MartialArtsCharmRow>",
+    makws AS "martial_arts_charm_keywords: Vec<MartialArtsCharmKeywordRow>"
 FROM characters,
     player_query,
     attributes_query,
@@ -149,4 +188,9 @@ FROM characters,
     LEFT JOIN merit_details_query ON (TRUE)
     LEFT JOIN merit_prerequisite_sets_query ON (TRUE)
     LEFT JOIN merit_prerequisites_query ON (TRUE)
+    LEFT JOIN martial_arts_styles_query ON (TRUE)
+    LEFT JOIN character_martial_arts_query ON (TRUE)
+    LEFT JOIN character_martial_arts_specialties ON (TRUE)
+    LEFT JOIN martial_arts_charms_query ON (TRUE)
+    LEFT JOIN martial_arts_charms_keywords_query ON (TRUE)
 WHERE characters.id = $1;

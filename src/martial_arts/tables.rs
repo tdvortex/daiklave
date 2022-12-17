@@ -10,28 +10,61 @@ use eyre::{eyre, Context, Result};
 use std::collections::HashMap;
 
 use super::MartialArtsStyle;
-
+#[derive(Debug)]
 pub(crate) struct MartialArtsStyleRow {
     id: i32,
     name: String,
     description: String,
-    book_name: Option<String>,
+    book_title: Option<String>,
     page_number: Option<i16>,
     creator_id: Option<i32>,
 }
 
+impl sqlx::Type<sqlx::Postgres> for MartialArtsStyleRow {
+    fn type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("martial_arts_styles")
+    }
+}
+
+impl<'r> sqlx::Decode<'r, sqlx::Postgres> for MartialArtsStyleRow {
+    fn decode(
+        value: sqlx::postgres::PgValueRef<'r>,
+    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
+        let id = decoder.try_decode::<i32>()?;
+        let name = decoder.try_decode::<String>()?;
+        let description = decoder.try_decode::<String>()?;
+        let book_title = decoder.try_decode::<Option<String>>()?;
+        let page_number = decoder.try_decode::<Option<i16>>()?;
+        let creator_id = decoder.try_decode::<Option<i32>>()?;
+
+        Ok(Self {
+            id,
+            name,
+            description,
+            book_title,
+            page_number,
+            creator_id,
+        })
+    }
+}
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "character_martial_arts")]
 pub(crate) struct CharacterMartialArtsRow {
     character_id: i32,
     style_id: i32,
     dots: i16,
 }
 
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "character_martial_arts_specialties")]
 pub(crate) struct CharacterMartialArtsSpecialtyRow {
     character_id: i32,
     style_id: i32,
     specialty: String,
 }
-
+#[derive(Debug)]
 pub(crate) struct MartialArtsCharmRow {
     id: i32,
     style_id: i32,
@@ -42,19 +75,57 @@ pub(crate) struct MartialArtsCharmRow {
     description: String,
     action_type: CharmActionTypePostgres,
     duration: String,
-    book_name: Option<String>,
+    book_title: Option<String>,
     page_number: Option<i16>,
     creator_id: Option<i32>,
 }
 
+impl sqlx::Type<sqlx::Postgres> for MartialArtsCharmRow {
+    fn type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("martial_arts_charms")
+    }
+}
+
+impl<'r> sqlx::Decode<'r, sqlx::Postgres> for MartialArtsCharmRow {
+    fn decode(
+        value: sqlx::postgres::PgValueRef<'r>,
+    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
+        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
+        let id = decoder.try_decode::<i32>()?;
+        let style_id = decoder.try_decode::<i32>()?;
+        let ability_dots_required = decoder.try_decode::<i16>()?;
+        let essence_dots_required = decoder.try_decode::<i16>()?;
+        let name = decoder.try_decode::<String>()?;
+        let summary = decoder.try_decode::<Option<String>>()?;
+        let description = decoder.try_decode::<String>()?;
+        let action_type = decoder.try_decode::<CharmActionTypePostgres>()?;
+        let duration = decoder.try_decode::<String>()?;
+        let book_title = decoder.try_decode::<Option<String>>()?;
+        let page_number = decoder.try_decode::<Option<i16>>()?;
+        let creator_id = decoder.try_decode::<Option<i32>>()?;
+
+        Ok(Self {
+            id,
+            style_id,
+            ability_dots_required,
+            essence_dots_required,
+            name,
+            summary,
+            description,
+            action_type,
+            duration,
+            book_title,
+            page_number,
+            creator_id,
+        })
+    }
+}
+
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "martial_arts_charms_keywords")]
 pub(crate) struct MartialArtsCharmKeywordRow {
     charm_id: i32,
     charm_keyword: CharmKeywordPostgres,
-}
-
-pub(crate) struct MartialArtsStyleWeaponRow {
-    style_id: i32,
-    weapon_id: i32,
 }
 
 impl CharacterBuilder {
@@ -63,7 +134,7 @@ impl CharacterBuilder {
         style_rows: Option<Vec<MartialArtsStyleRow>>,
         character_style_rows: Option<Vec<CharacterMartialArtsRow>>,
         specialty_rows: Option<Vec<CharacterMartialArtsSpecialtyRow>>,
-        charm_rows: Option<Vec<MartialArtsCharmRow>>,
+        martial_arts_charm_rows: Option<Vec<MartialArtsCharmRow>>,
         charm_keyword_rows: Option<Vec<MartialArtsCharmKeywordRow>>,
     ) -> Result<Self> {
         if character_style_rows.is_none() {
@@ -81,16 +152,16 @@ impl CharacterBuilder {
                 .into_iter()
                 .fold(Ok(HashMap::new()), |result_map, row| {
                     result_map.and_then(|mut map| {
-                        let builder = if row.book_name.is_some()
+                        let builder = if row.book_title.is_some()
                             && row.page_number.is_some()
                             && row.creator_id.is_none()
                         {
                             MartialArtsStyle::from_book(
                                 Id::Database(row.id),
-                                row.book_name.unwrap(),
+                                row.book_title.unwrap(),
                                 row.page_number.unwrap(),
                             )
-                        } else if row.book_name.is_none()
+                        } else if row.book_title.is_none()
                             && row.page_number.is_none()
                             && row.creator_id.is_some()
                         {
@@ -150,26 +221,26 @@ impl CharacterBuilder {
                 })
             })?;
 
-        if charm_rows.is_none() {
+        if martial_arts_charm_rows.is_none() {
             // No charms to build or apply
             return Ok(self);
         }
 
         // Construct charms except for keywords
         let mut charm_builder_map: HashMap<i32, MartialArtsCharmBuilder>;
-        if let Some(rows) = charm_rows {
+        if let Some(rows) = martial_arts_charm_rows {
             charm_builder_map = HashMap::new();
             for row in rows.into_iter() {
-                let mut builder = if row.book_name.is_some()
+                let mut builder = if row.book_title.is_some()
                     && row.page_number.is_some()
                     && row.creator_id.is_none()
                 {
                     MartialArtsCharm::from_book(
                         Id::Database(row.id),
-                        row.book_name.unwrap(),
+                        row.book_title.unwrap(),
                         row.page_number.unwrap(),
                     )
-                } else if row.book_name.is_none()
+                } else if row.book_title.is_none()
                     && row.page_number.is_none()
                     && row.creator_id.is_some()
                 {

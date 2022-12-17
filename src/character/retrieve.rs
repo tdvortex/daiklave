@@ -10,12 +10,20 @@ use crate::{
     character::Character,
     health::tables::HealthBoxRow,
     intimacies::tables::IntimacyRow,
+    martial_arts::tables::{
+        CharacterMartialArtsRow, CharacterMartialArtsSpecialtyRow, MartialArtsCharmKeywordRow,
+        MartialArtsCharmRow, MartialArtsStyleRow,
+    },
     merits::tables::{MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow},
     player::tables::PlayerRow,
     prerequisite::tables::PrerequisiteRow,
     weapons::tables::{WeaponEquippedRow, WeaponRow, WeaponTagRow},
 };
-
+// masts AS "martial_arts_styles: Vec<MartialArtsStyleRow>",
+// chmas AS "character_martial_arts_styles: Vec<CharacterMartialArtsRow>",
+// cmass AS "martial_arts_specialties: Vec<CharacterMartialArtsSpecialtyRow>",
+// machs AS "martial_arts_charms: Vec<MartialArtsCharmRow>",
+// makws AS "martial_arts_charm_keywords: Vec<MartialArtsCharmKeywordRow>"
 #[derive(Debug)]
 struct GetCharacter {
     character: CharacterRow,
@@ -36,6 +44,11 @@ struct GetCharacter {
     merit_details: Option<Vec<MeritDetailRow>>,
     merit_prerequisite_sets: Option<Vec<MeritPrerequisiteSetRow>>,
     merit_prerequisites: Option<Vec<PrerequisiteRow>>,
+    martial_arts_styles: Option<Vec<MartialArtsStyleRow>>,
+    character_martial_arts_styles: Option<Vec<CharacterMartialArtsRow>>,
+    martial_arts_specialties: Option<Vec<CharacterMartialArtsSpecialtyRow>>,
+    martial_arts_charms: Option<Vec<MartialArtsCharmRow>>,
+    martial_arts_charm_keywords: Option<Vec<MartialArtsCharmKeywordRow>>,
 }
 
 pub async fn retrieve_character(pool: &PgPool, character_id: i32) -> Result<Option<Character>> {
@@ -107,6 +120,14 @@ impl TryInto<Character> for GetCharacter {
                 self.merit_prerequisites,
             )
             .wrap_err("Could not apply merit rows")?
+            .apply_martial_arts(
+                self.martial_arts_styles,
+                self.character_martial_arts_styles,
+                self.martial_arts_specialties,
+                self.martial_arts_charms,
+                self.martial_arts_charm_keywords,
+            )
+            .wrap_err("Could not apply martial arts rows")?
             .build()
     }
 }

@@ -1,5 +1,5 @@
 pub(crate) mod create;
-mod tables;
+pub(crate) mod tables;
 mod update;
 use crate::{
     abilities::{Ability, AbilityName, AbilityRating, NonZeroAbility},
@@ -119,15 +119,11 @@ impl MartialArtistDetails {
 pub(crate) struct MartialArtistTraits(Vec<MartialArtistDetails>);
 
 impl MartialArtistTraits {
-    pub fn get_ability(&self, style_id: Id) -> Option<Ability> {
+    pub fn _get_ability(&self, style_id: Id) -> Option<Ability> {
         self.0
             .iter()
             .find(|&details| details.style().id() == style_id)
             .map(|d| d.as_ability())
-    }
-
-    fn style_ids_iter(&self) -> impl Iterator<Item = Id> + '_ {
-        self.0.iter().map(|details| details.style.id())
     }
 
     pub fn iter(
@@ -171,7 +167,7 @@ impl MartialArtistTraits {
             .rating)
     }
 
-    pub fn set_dots(&mut self, style_id: Id, dots: u8) -> Result<()> {
+    pub fn _set_dots(&mut self, style_id: Id, dots: u8) -> Result<()> {
         self.get_rating_mut(style_id)?.set_dots(dots);
         Ok(())
     }
@@ -180,7 +176,7 @@ impl MartialArtistTraits {
         self.get_rating_mut(style_id)?.add_specialty(specialty)
     }
 
-    pub fn remove_specialty(&mut self, style_id: Id, specialty: &str) -> Result<()> {
+    pub fn _remove_specialty(&mut self, style_id: Id, specialty: &str) -> Result<()> {
         self.get_rating_mut(style_id)?.remove_specialty(specialty)
     }
 

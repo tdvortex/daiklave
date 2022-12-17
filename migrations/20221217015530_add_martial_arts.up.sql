@@ -42,6 +42,12 @@ CREATE TABLE martial_arts_charms (
         OR (book_title IS NULL and page_number IS NULL and creator_id IS NOT NULL))
 );
 
+CREATE TABLE martial_arts_charms_keywords (
+    charm_id INTEGER REFERENCES martial_arts_charms(id) ON DELETE CASCADE,
+    keyword CHARMKEYWORD,
+    PRIMARY KEY (charm_id, keyword)
+);
+
 CREATE TABLE character_martial_arts_charms (
     character_id INTEGER REFERENCES characters(id) ON DELETE CASCADE,
     charm_id INTEGER REFERENCES martial_arts_charms(id) ON DELETE CASCADE,
