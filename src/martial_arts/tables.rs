@@ -2,7 +2,7 @@ use crate::{
     character::CharacterBuilder,
     charms::{
         tables::{CharmActionTypePostgres, CharmKeywordPostgres},
-        MartialArtsCharm, MartialArtsCharmBuilder,
+        CharmKeyword, MartialArtsCharm, MartialArtsCharmBuilder,
     },
     id::Id,
 };
@@ -285,13 +285,13 @@ impl CharacterBuilder {
         }
 
         // Group charm keywords
-        let mut charm_keyword_map = HashMap::new();
+        let mut charm_keyword_map: HashMap<Id, Vec<CharmKeyword>> = HashMap::new();
         if let Some(rows) = charm_keyword_rows {
             for row in rows.into_iter() {
                 let id = Id::Database(row.charm_id);
                 charm_keyword_map
                     .entry(id)
-                    .or_insert(Vec::new())
+                    .or_default()
                     .push(row.charm_keyword.into());
             }
         }

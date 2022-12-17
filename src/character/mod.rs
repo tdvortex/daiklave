@@ -95,7 +95,7 @@ impl Character {
         dots: u8,
     ) -> Result<()> {
         if ability_name == AbilityNameNoSubskill::MartialArts {
-            return Err(eyre!("TODO: fix this"));
+            Err(eyre!("TODO: fix this"))
         } else {
             self.abilities.set_dots(ability_name, subskill, dots)
         }
@@ -108,7 +108,7 @@ impl Character {
         specialty: String,
     ) -> Result<()> {
         if ability_name == AbilityNameNoSubskill::MartialArts {
-            return Err(eyre!("TODO: fix this"));
+            Err(eyre!("TODO: fix this"))
         } else {
             self.abilities
                 .add_specialty(ability_name, subskill, specialty)
@@ -122,7 +122,7 @@ impl Character {
         specialty: &str,
     ) -> Result<()> {
         if ability_name == AbilityNameNoSubskill::MartialArts {
-            return Err(eyre!("TODO: fix this"));
+            Err(eyre!("TODO: fix this"))
         } else {
             self.abilities
                 .remove_specialty(ability_name, subskill, specialty)

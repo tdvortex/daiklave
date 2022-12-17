@@ -9,15 +9,18 @@ use super::{
     MartialArtistTraits, MartialArtsStyle,
 };
 
+type AddedStyle = (
+    MartialArtsStyle,
+    u8,
+    Option<Vec<String>>,
+    Vec<MartialArtsCharm>,
+);
+type ModifiedStyle = (Id, u8, Option<Vec<String>>, Vec<MartialArtsCharm>);
+
 pub struct MartialArtsDiff {
     removed_styles: Vec<Id>,
-    added_styles: Vec<(
-        MartialArtsStyle,
-        u8,
-        Option<Vec<String>>,
-        Vec<MartialArtsCharm>,
-    )>,
-    modified_styles: Vec<(Id, u8, Option<Vec<String>>, Vec<MartialArtsCharm>)>,
+    added_styles: Vec<AddedStyle>,
+    modified_styles: Vec<ModifiedStyle>,
 }
 
 impl MartialArtistTraits {
@@ -39,7 +42,7 @@ impl MartialArtistTraits {
                 diff.added_styles.push((
                     style_ptr.clone(),
                     ability.dots(),
-                    ability.specialties().map(|v| v.clone()),
+                    ability.specialties().cloned(),
                     vec_ptr.clone(),
                 ));
             } else {
@@ -52,7 +55,7 @@ impl MartialArtistTraits {
                     diff.modified_styles.push((
                         style_ptr.id(),
                         ability.dots(),
-                        ability.specialties().map(|v| v.clone()),
+                        ability.specialties().cloned(),
                         vec_ptr.clone(),
                     ));
                 }
@@ -137,7 +140,7 @@ async fn upsert_character_styles(
 async fn upsert_character_charms(
     transaction: &mut Transaction<'_, Postgres>,
     character_id: i32,
-    style_charms: &Vec<MartialArtsCharm>,
+    style_charms: &[MartialArtsCharm],
 ) -> Result<()> {
     let mut charm_database_ids: Vec<i32> = Vec::new();
 
@@ -213,13 +216,11 @@ impl MartialArtsDiff {
         for (style, style_dots, maybe_specialties, style_charms) in self.added_styles.iter() {
             let style_database_id = if let Id::Database(id) = style.id() {
                 id
+            } else if let DataSource::Custom(_) = style.data_source() {
+                create_martial_arts_style_transaction(transaction, style, Some(character_id))
+                    .await?
             } else {
-                if let DataSource::Custom(_) = style.data_source() {
-                    create_martial_arts_style_transaction(transaction, style, Some(character_id))
-                        .await?
-                } else {
-                    create_martial_arts_style_transaction(transaction, style, None).await?
-                }
+                create_martial_arts_style_transaction(transaction, style, None).await?
             };
 
             upsert_character_styles(

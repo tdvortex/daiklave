@@ -157,9 +157,7 @@ impl CharacterBuilder {
                     },
                 )
             }
-            AbilityNamePostgres::MartialArts => {
-                return Err(eyre!("Martial Arts need a different method"));
-            }
+            AbilityNamePostgres::MartialArts => Err(eyre!("Martial Arts need a different method")),
             other_ability => {
                 let ability_name = other_ability.try_into().wrap_err_with(|| {
                     format!("Could not decode ability name: {:?}", other_ability)
