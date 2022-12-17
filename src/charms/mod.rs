@@ -287,6 +287,18 @@ impl MartialArtsCharm {
     pub fn description(&self) -> &str {
         self.traits.description()
     }
+
+    pub fn martial_arts_requirement(&self) -> u8 {
+        self.martial_arts_requirement
+    }
+
+    pub fn essence_requirement(&self) -> u8 {
+        self.essence_requirement
+    }
+
+    pub fn action_type(&self) -> CharmActionType {
+        self.action_type
+    }
 }
 
 pub struct MartialArtsCharmBuilder {

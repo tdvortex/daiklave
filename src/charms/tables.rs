@@ -99,6 +99,17 @@ impl From<CharmActionTypePostgres> for CharmActionType {
     }
 }
 
+impl From<CharmActionType> for CharmActionTypePostgres {
+    fn from(value: CharmActionType) -> Self {
+        match value {
+            CharmActionType::Simple => Self::Simple,
+            CharmActionType::Supplemental => Self::Supplemental,
+            CharmActionType::Reflexive => Self::Reflexive,
+            CharmActionType::Permanent => Self::Permanent,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "CHARMCOSTTYPE", rename_all = "UPPERCASE")]
 pub enum CharmCostTypePostgres {
