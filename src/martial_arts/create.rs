@@ -1,12 +1,12 @@
-use crate::charms::MartialArtsCharm;
-use crate::charms::tables::CharmActionTypePostgres;
 use super::MartialArtsStyle;
+use crate::charms::tables::CharmActionTypePostgres;
+use crate::charms::MartialArtsCharm;
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 
 pub(crate) async fn create_martial_arts_style_transaction(
     transaction: &mut Transaction<'_, Postgres>,
-    style: MartialArtsStyle,
+    style: &MartialArtsStyle,
     creator_id: Option<i32>,
 ) -> Result<i32> {
     query!(
@@ -19,12 +19,21 @@ pub(crate) async fn create_martial_arts_style_transaction(
         style.data_source().book_title(),
         style.data_source().page_number(),
         creator_id
-    ).fetch_one(&mut *transaction).await.wrap_err_with(|| format!("Database error attempting to insert martial arts style {}", style.name())).map(|record| record.id)
+    )
+    .fetch_one(&mut *transaction)
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "Database error attempting to insert martial arts style {}",
+            style.name()
+        )
+    })
+    .map(|record| record.id)
 }
 
 pub(crate) async fn create_martial_arts_charm_transaction(
     transaction: &mut Transaction<'_, Postgres>,
-    charm: MartialArtsCharm,
+    charm: &MartialArtsCharm,
     creator_id: Option<i32>,
 ) -> Result<i32> {
     if !charm.id().is_placeholder() {

@@ -357,7 +357,9 @@ impl MartialArtsCharmBuilder {
 
     pub fn build(self) -> Result<MartialArtsCharm> {
         Ok(MartialArtsCharm {
-            style_id: self.style_id.ok_or_else(|| eyre!("Martial Arts style required for Martial Arts charms"))?,
+            style_id: self
+                .style_id
+                .ok_or_else(|| eyre!("Martial Arts style required for Martial Arts charms"))?,
             action_type: self
                 .action_type
                 .ok_or_else(|| eyre!("Action type required for Martial Arts charms"))?,
