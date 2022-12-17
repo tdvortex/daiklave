@@ -2,10 +2,10 @@ use serde::{Deserialize, Serialize};
 pub(crate) mod update;
 pub use update::AbilitiesDiff;
 pub(crate) mod tables;
-use eyre::{eyre, Report, Result};
+use eyre::{eyre, Result};
 use std::fmt::Debug;
 use std::iter::FusedIterator;
-mod enums;
+pub(crate) mod enums;
 pub use enums::{AbilityNameNoSubskill, AbilityName, AbilityNameVanilla};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
@@ -191,40 +191,7 @@ impl<'a> AbilityName<'a> {
     }
 }
 
-impl<'a> TryFrom<AbilityNameNoSubskill> for AbilityName<'a> {
-    type Error = Report;
 
-    fn try_from(value: AbilityNameNoSubskill) -> Result<Self, Self::Error> {
-        match value {
-            AbilityNameNoSubskill::Archery => Ok(AbilityName::Archery),
-            AbilityNameNoSubskill::Athletics => Ok(AbilityName::Athletics),
-            AbilityNameNoSubskill::Awareness => Ok(AbilityName::Awareness),
-            AbilityNameNoSubskill::Brawl => Ok(AbilityName::Brawl),
-            AbilityNameNoSubskill::Bureaucracy => Ok(AbilityName::Bureaucracy),
-            AbilityNameNoSubskill::Craft => Err(eyre!("craft ability requires focus")),
-            AbilityNameNoSubskill::Dodge => Ok(AbilityName::Dodge),
-            AbilityNameNoSubskill::Integrity => Ok(AbilityName::Integrity),
-            AbilityNameNoSubskill::Investigation => Ok(AbilityName::Investigation),
-            AbilityNameNoSubskill::Larceny => Ok(AbilityName::Larceny),
-            AbilityNameNoSubskill::Linguistics => Ok(AbilityName::Linguistics),
-            AbilityNameNoSubskill::Lore => Ok(AbilityName::Lore),
-            AbilityNameNoSubskill::MartialArts => Err(eyre!("martial arts ability requires style")),
-            AbilityNameNoSubskill::Medicine => Ok(AbilityName::Medicine),
-            AbilityNameNoSubskill::Melee => Ok(AbilityName::Melee),
-            AbilityNameNoSubskill::Occult => Ok(AbilityName::Occult),
-            AbilityNameNoSubskill::Performance => Ok(AbilityName::Performance),
-            AbilityNameNoSubskill::Presence => Ok(AbilityName::Presence),
-            AbilityNameNoSubskill::Resistance => Ok(AbilityName::Resistance),
-            AbilityNameNoSubskill::Ride => Ok(AbilityName::Ride),
-            AbilityNameNoSubskill::Sail => Ok(AbilityName::Sail),
-            AbilityNameNoSubskill::Socialize => Ok(AbilityName::Socialize),
-            AbilityNameNoSubskill::Stealth => Ok(AbilityName::Stealth),
-            AbilityNameNoSubskill::Survival => Ok(AbilityName::Survival),
-            AbilityNameNoSubskill::Thrown => Ok(AbilityName::Thrown),
-            AbilityNameNoSubskill::War => Ok(AbilityName::War),
-        }
-    }
-}
 
 impl<'a> std::fmt::Display for AbilityName<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -310,135 +277,106 @@ impl<'a> Ability<'a> {
 impl Abilities {
     pub fn get(
         &self,
-        ability_name_no_subskill: AbilityNameNoSubskill,
-        subskill: Option<&str>,
-    ) -> Option<Ability> {
-        if subskill.is_none()
-            && (ability_name_no_subskill == AbilityNameNoSubskill::Craft
-                || ability_name_no_subskill == AbilityNameNoSubskill::MartialArts)
-        {
-            return None;
-        }
+        ability_name_vanilla: AbilityNameVanilla,
+    ) -> Ability {
 
-        if ability_name_no_subskill == AbilityNameNoSubskill::Craft {
-            let (focus, rating) = self.craft.iter().find_map(|(focus, rating)| {
-                if Some(focus.as_str()) == subskill {
-                    Some((focus.as_str(), rating))
-                } else {
-                    None
-                }
-            })?;
-
-            return Some(Ability {
-                name: AbilityName::Craft(focus),
-                rating,
-            });
-        }
-
-        if ability_name_no_subskill == AbilityNameNoSubskill::MartialArts {
-            return None;
-        }
-
-        match ability_name_no_subskill {
-            AbilityNameNoSubskill::Archery => Some(Ability {
+        match ability_name_vanilla {
+            AbilityNameVanilla::Archery => Ability {
                 name: AbilityName::Archery,
                 rating: &self.archery,
-            }),
-            AbilityNameNoSubskill::Athletics => Some(Ability {
+            },
+            AbilityNameVanilla::Athletics => Ability {
                 name: AbilityName::Athletics,
                 rating: &self.athletics,
-            }),
-            AbilityNameNoSubskill::Awareness => Some(Ability {
+            },
+            AbilityNameVanilla::Awareness => Ability {
                 name: AbilityName::Awareness,
                 rating: &self.awareness,
-            }),
-            AbilityNameNoSubskill::Brawl => Some(Ability {
+            },
+            AbilityNameVanilla::Brawl => Ability {
                 name: AbilityName::Brawl,
                 rating: &self.brawl,
-            }),
-            AbilityNameNoSubskill::Bureaucracy => Some(Ability {
+            },
+            AbilityNameVanilla::Bureaucracy => Ability {
                 name: AbilityName::Bureaucracy,
                 rating: &self.bureaucracy,
-            }),
-            AbilityNameNoSubskill::Dodge => Some(Ability {
+            },
+            AbilityNameVanilla::Dodge => Ability {
                 name: AbilityName::Dodge,
                 rating: &self.dodge,
-            }),
-            AbilityNameNoSubskill::Integrity => Some(Ability {
+            },
+            AbilityNameVanilla::Integrity => Ability {
                 name: AbilityName::Integrity,
                 rating: &self.integrity,
-            }),
-            AbilityNameNoSubskill::Investigation => Some(Ability {
+            },
+            AbilityNameVanilla::Investigation => Ability {
                 name: AbilityName::Investigation,
                 rating: &self.investigation,
-            }),
-            AbilityNameNoSubskill::Larceny => Some(Ability {
+            },
+            AbilityNameVanilla::Larceny => Ability {
                 name: AbilityName::Larceny,
                 rating: &self.larcency,
-            }),
-            AbilityNameNoSubskill::Linguistics => Some(Ability {
+            },
+            AbilityNameVanilla::Linguistics => Ability {
                 name: AbilityName::Linguistics,
                 rating: &self.linguistics,
-            }),
-            AbilityNameNoSubskill::Lore => Some(Ability {
+            },
+            AbilityNameVanilla::Lore => Ability {
                 name: AbilityName::Lore,
                 rating: &self.lore,
-            }),
-            AbilityNameNoSubskill::Medicine => Some(Ability {
+            },
+            AbilityNameVanilla::Medicine => Ability {
                 name: AbilityName::Medicine,
                 rating: &self.medicine,
-            }),
-            AbilityNameNoSubskill::Melee => Some(Ability {
+            },
+            AbilityNameVanilla::Melee => Ability {
                 name: AbilityName::Melee,
                 rating: &self.melee,
-            }),
-            AbilityNameNoSubskill::Occult => Some(Ability {
+            },
+            AbilityNameVanilla::Occult => Ability {
                 name: AbilityName::Occult,
                 rating: &self.occult,
-            }),
-            AbilityNameNoSubskill::Performance => Some(Ability {
+            },
+            AbilityNameVanilla::Performance => Ability {
                 name: AbilityName::Performance,
                 rating: &self.performance,
-            }),
-            AbilityNameNoSubskill::Presence => Some(Ability {
+            },
+            AbilityNameVanilla::Presence => Ability {
                 name: AbilityName::Presence,
                 rating: &self.presence,
-            }),
-            AbilityNameNoSubskill::Resistance => Some(Ability {
+            },
+            AbilityNameVanilla::Resistance => Ability {
                 name: AbilityName::Resistance,
                 rating: &self.resistance,
-            }),
-            AbilityNameNoSubskill::Ride => Some(Ability {
+            },
+            AbilityNameVanilla::Ride => Ability {
                 name: AbilityName::Ride,
                 rating: &self.ride,
-            }),
-            AbilityNameNoSubskill::Sail => Some(Ability {
+            },
+            AbilityNameVanilla::Sail => Ability {
                 name: AbilityName::Sail,
                 rating: &self.sail,
-            }),
-            AbilityNameNoSubskill::Socialize => Some(Ability {
+            },
+            AbilityNameVanilla::Socialize => Ability {
                 name: AbilityName::Socialize,
                 rating: &self.socialize,
-            }),
-            AbilityNameNoSubskill::Stealth => Some(Ability {
+            },
+            AbilityNameVanilla::Stealth => Ability {
                 name: AbilityName::Stealth,
                 rating: &self.stealth,
-            }),
-            AbilityNameNoSubskill::Survival => Some(Ability {
+            },
+            AbilityNameVanilla::Survival => Ability {
                 name: AbilityName::Survival,
                 rating: &self.survival,
-            }),
-            AbilityNameNoSubskill::Thrown => Some(Ability {
+            },
+            AbilityNameVanilla::Thrown => Ability {
                 name: AbilityName::Thrown,
                 rating: &self.thrown,
-            }),
-            AbilityNameNoSubskill::War => Some(Ability {
+            },
+            AbilityNameVanilla::War => Ability {
                 name: AbilityName::War,
                 rating: &self.war,
-            }),
-            // Covered by guard clauses above
-            AbilityNameNoSubskill::Craft => unreachable!(),
-            AbilityNameNoSubskill::MartialArts => unreachable!(),
+            },
         }
     }
 
@@ -653,5 +591,27 @@ impl Abilities {
         };
 
         rating_ptr.remove_specialty(specialty)
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = Ability> + '_ {
+        AbilitiesVanillaIter {
+            abilities: self,
+            vanilla_names_iter: AbilityNameVanilla::iter(),
+        }
+    }
+}
+
+struct AbilitiesVanillaIter<'a> {
+    abilities: &'a Abilities,
+    vanilla_names_iter: AbilityNameVanillaIter,
+}
+
+impl<'a> Iterator for AbilitiesVanillaIter<'a> {
+    type Item = Ability<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let name = self.vanilla_names_iter.next()?;
+
+        Some(self.abilities.get(name))
     }
 }

@@ -12,6 +12,7 @@ use eyre::{eyre, Result};
 
 use crate::abilities::Ability;
 use crate::abilities::AbilityName;
+use crate::abilities::AbilityNameVanilla;
 use crate::abilities::{Abilities, AbilityNameNoSubskill};
 use crate::armor::{Armor, ArmorItem};
 use crate::attributes::{AttributeName, Attributes};
@@ -79,14 +80,9 @@ impl Character {
 
     pub fn get_ability(
         &self,
-        ability_name: AbilityNameNoSubskill,
-        subskill: Option<&str>,
-    ) -> Option<Ability> {
-        if ability_name == AbilityNameNoSubskill::MartialArts {
-            None
-        } else {
-            self.abilities.get(ability_name, subskill)
-        }
+        ability_name_vanilla: AbilityNameVanilla,
+    ) -> Ability {
+        self.abilities.get(ability_name_vanilla)
     }
 
     pub fn get_craft_ability(
@@ -343,7 +339,7 @@ impl CharacterBuilder {
         self
     }
 
-    pub(crate) fn with_merit_ignore_prerequisites(
+    pub fn with_merit_ignore_prerequisites(
         mut self,
         template: MeritTemplate,
         dots: u8,
@@ -353,20 +349,6 @@ impl CharacterBuilder {
         let merit = Merit::from_template(template, dots, detail, id)?;
         self.merits.push(merit);
         Ok(self)
-    }
-
-    pub fn with_merit(
-        self,
-        template: MeritTemplate,
-        dots: u8,
-        detail: Option<String>,
-        id: Id,
-    ) -> Result<Self> {
-        if self.meets_any_prerequisite_set(template.prerequisites()) {
-            self.with_merit_ignore_prerequisites(template, dots, detail, id)
-        } else {
-            Err(eyre!("prerequisites not met for merit {}", template.name()))
-        }
     }
 
     pub fn with_martial_arts_charm(mut self, charm: MartialArtsCharm) -> Result<Self> {

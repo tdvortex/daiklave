@@ -6,8 +6,6 @@ pub use update::AttributesDiff;
 use eyre::{eyre, Result};
 use std::iter::{ExactSizeIterator, FusedIterator};
 
-use crate::prerequisite::AttributePrerequisite;
-
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize, Hash)]
 pub enum AttributeName {
     Strength,
@@ -164,10 +162,6 @@ impl Attributes {
             attributes: self,
             name_iter: AttributeName::iter(),
         }
-    }
-
-    pub(crate) fn meets_prerequisite(&self, prerequisite: &AttributePrerequisite) -> bool {
-        self.get(prerequisite.attribute_name).dots() >= prerequisite.dots
     }
 }
 

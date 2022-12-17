@@ -119,7 +119,7 @@ pub fn validate_initial_abilities(character: &Character) {
                     None
                 }).unwrap()
             } else {
-                character.get_ability(ability_name_no_subskill, subskill).unwrap()
+                character.get_ability(ability_name_no_subskill.try_into().unwrap())
             };
             assert_eq!(ability.dots(), expect_dots);
             assert_eq!(ability.specialties(), expect_specialties);
@@ -215,21 +215,13 @@ pub fn validate_modified_abilities(character: &Character) {
                     None
                 }).unwrap()
             } else {
-                character.get_ability(ability_name_no_subskill, subskill).unwrap()
+                character.get_ability(ability_name_no_subskill.try_into().unwrap())
             };
             assert_eq!(ability.dots(), expect_dots);
             assert_eq!(ability.specialties(), expect_specialties);
         },
     );
 
-    vec![
-        (AbilityNameNoSubskill::Craft, Some("Weapon Forging")),
-        (AbilityNameNoSubskill::MartialArts, Some("Does Not Exist")),
-    ]
-    .into_iter()
-    .for_each(|(ability_name_no_subskill, subskill)| {
-        assert!(character
-            .get_ability(ability_name_no_subskill, subskill)
-            .is_none());
-    });
+    assert!(character.get_ability(AbilityNameNoSubskill::Craft, Some("Weapon Forging")).is_none());
+    assert!(character.martial_arts_iter().find(|(style, _, _)| style.name() == "Does Not Exist").is_none());
 }

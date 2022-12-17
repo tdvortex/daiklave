@@ -83,23 +83,23 @@ pub fn create_initial_merits(builder: CharacterBuilder) -> CharacterBuilder {
         .unwrap();
 
     builder
-        .with_merit(
+        .with_merit_ignore_prerequisites(
             martial_artist_template,
             4,
             Some("Single Point Shining Into Void Style".to_owned()),
             Id::Placeholder(0),
         )
         .unwrap()
-        .with_merit(danger_sense_template, 3, None, Id::Placeholder(1))
+        .with_merit_ignore_prerequisites(danger_sense_template, 3, None, Id::Placeholder(1))
         .unwrap()
-        .with_merit(
+        .with_merit_ignore_prerequisites(
             language_template,
             2,
             Some("Low Realm(Native), Flametongue, Riverspeak".to_owned()),
             Id::Placeholder(2),
         )
         .unwrap()
-        .with_merit(custom_template, 1, None, Id::Placeholder(3))
+        .with_merit_ignore_prerequisites(custom_template, 1, None, Id::Placeholder(3))
         .unwrap()
 }
 
