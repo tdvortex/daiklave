@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 pub(crate) mod update;
-pub use update::AbilitiesDiff;
 pub(crate) mod tables;
 use eyre::{eyre, Result};
 use std::fmt::Debug;
@@ -223,7 +222,7 @@ impl<'a> std::fmt::Display for AbilityName<'a> {
 }
 
 #[derive(Default, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]
-pub struct Abilities {
+pub(crate) struct Abilities {
     archery: AbilityRating,
     athletics: AbilityRating,
     awareness: AbilityRating,

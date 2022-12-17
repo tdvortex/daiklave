@@ -8,7 +8,7 @@ use sqlx::{query, Postgres, Transaction};
 use super::AbilityNameVanilla;
 
 #[derive(Debug, Default)]
-pub struct AbilitiesDiff {
+pub(crate) struct AbilitiesDiff {
     abilities_to_modify: Vec<(AbilityNameVanilla, u8)>,
     specialties_to_add: Vec<(AbilityNameVanilla, String)>,
     specialties_to_remove: Vec<(AbilityNameVanilla, String)>,
