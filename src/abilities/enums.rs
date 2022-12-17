@@ -1,5 +1,5 @@
-use serde::{Serialize, Deserialize};
 use eyre::eyre;
+use serde::{Deserialize, Serialize};
 
 // The name of an ability, excluding any Craft focus areas or Martial Arts styles.
 /// This is useful for most Craft Charms and nonspecific combat merits like Quick Draw.
@@ -118,7 +118,6 @@ pub enum AbilityName<'a> {
     War,
 }
 
-
 // The name of any non-Craft, non-Martial Arts ability.
 /// This is used to identify all ability ratings that must exist for a character.
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord)]
@@ -172,7 +171,6 @@ pub enum AbilityNameVanilla {
     /// The War ability
     War,
 }
-
 
 impl From<AbilityName<'_>> for AbilityNameNoSubskill {
     fn from(value: AbilityName) -> Self {

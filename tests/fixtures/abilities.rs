@@ -113,11 +113,16 @@ pub fn validate_initial_abilities(character: &Character) {
     .for_each(
         |(ability_name_no_subskill, subskill, expect_dots, expect_specialties)| {
             let ability = if ability_name_no_subskill == AbilityNameNoSubskill::MartialArts {
-                character.martial_arts_iter().find_map(|(style, ability, _)| if Some(style.name()) == subskill {
-                    Some(ability)
-                } else {
-                    None
-                }).unwrap()
+                character
+                    .martial_arts_iter()
+                    .find_map(|(style, ability, _)| {
+                        if Some(style.name()) == subskill {
+                            Some(ability)
+                        } else {
+                            None
+                        }
+                    })
+                    .unwrap()
             } else if ability_name_no_subskill == AbilityNameNoSubskill::Craft {
                 character.get_craft_ability(subskill.unwrap()).unwrap()
             } else {
@@ -129,7 +134,10 @@ pub fn validate_initial_abilities(character: &Character) {
     );
 
     assert!(character.get_craft_ability("Does Not Exist").is_none());
-    assert!(character.martial_arts_iter().find(|(style, _, _)| style.name() == "Does Not Exist").is_none());
+    assert!(character
+        .martial_arts_iter()
+        .find(|(style, _, _)| style.name() == "Does Not Exist")
+        .is_none());
 }
 
 pub fn modify_abilities(character: &mut Character) {
@@ -146,9 +154,19 @@ pub fn modify_abilities(character: &mut Character) {
         .set_ability_dots(AbilityNameNoSubskill::Craft, Some("Origami"), 1)
         .unwrap();
     // Increase an existing subskilled ability
-    let single_point_style_id = character.martial_arts_iter().find_map(|(style, _, _)| if style.name() == "Single Point Shining Into the Void Style" {Some(style.id())} else {None}).unwrap();
-    character.set_martial_arts_ability_dots(single_point_style_id, 5).unwrap();
-
+    let single_point_style_id = character
+        .martial_arts_iter()
+        .find_map(|(style, _, _)| {
+            if style.name() == "Single Point Shining Into the Void Style" {
+                Some(style.id())
+            } else {
+                None
+            }
+        })
+        .unwrap();
+    character
+        .set_martial_arts_ability_dots(single_point_style_id, 5)
+        .unwrap();
 
     // Decrease an existing subskilled ability with specialty to zero
     character
@@ -211,11 +229,16 @@ pub fn validate_modified_abilities(character: &Character) {
     .for_each(
         |(ability_name_no_subskill, subskill, expect_dots, expect_specialties)| {
             let ability = if ability_name_no_subskill == AbilityNameNoSubskill::MartialArts {
-                character.martial_arts_iter().find_map(|(style, ability, _)| if Some(style.name()) == subskill {
-                    Some(ability)
-                } else {
-                    None
-                }).unwrap()
+                character
+                    .martial_arts_iter()
+                    .find_map(|(style, ability, _)| {
+                        if Some(style.name()) == subskill {
+                            Some(ability)
+                        } else {
+                            None
+                        }
+                    })
+                    .unwrap()
             } else if ability_name_no_subskill == AbilityNameNoSubskill::Craft {
                 character.get_craft_ability(subskill.unwrap()).unwrap()
             } else {
@@ -227,5 +250,8 @@ pub fn validate_modified_abilities(character: &Character) {
     );
 
     assert!(character.get_craft_ability("Weapon Forging").is_none());
-    assert!(character.martial_arts_iter().find(|(style, _, _)| style.name() == "Does Not Exist").is_none());
+    assert!(character
+        .martial_arts_iter()
+        .find(|(style, _, _)| style.name() == "Does Not Exist")
+        .is_none());
 }

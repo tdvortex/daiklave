@@ -6,7 +6,7 @@ use eyre::{eyre, Result};
 use std::fmt::Debug;
 use std::iter::FusedIterator;
 pub(crate) mod enums;
-pub use enums::{AbilityNameNoSubskill, AbilityName, AbilityNameVanilla};
+pub use enums::{AbilityName, AbilityNameNoSubskill, AbilityNameVanilla};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 
@@ -148,8 +148,6 @@ impl Iterator for AbilityNameVanillaIter {
 
 impl FusedIterator for AbilityNameVanillaIter {}
 
-
-
 impl<'a> AbilityName<'a> {
     pub fn subskill(&self) -> Option<&str> {
         match self {
@@ -190,8 +188,6 @@ impl<'a> AbilityName<'a> {
         }
     }
 }
-
-
 
 impl<'a> std::fmt::Display for AbilityName<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -275,11 +271,7 @@ impl<'a> Ability<'a> {
 }
 
 impl Abilities {
-    pub fn get(
-        &self,
-        ability_name_vanilla: AbilityNameVanilla,
-    ) -> Ability {
-
+    pub fn get(&self, ability_name_vanilla: AbilityNameVanilla) -> Ability {
         match ability_name_vanilla {
             AbilityNameVanilla::Archery => Ability {
                 name: AbilityName::Archery,

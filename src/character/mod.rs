@@ -78,28 +78,23 @@ impl Character {
         &self.campaign
     }
 
-    pub fn get_ability(
-        &self,
-        ability_name_vanilla: AbilityNameVanilla,
-    ) -> Ability {
+    pub fn get_ability(&self, ability_name_vanilla: AbilityNameVanilla) -> Ability {
         self.abilities.get(ability_name_vanilla)
     }
 
-    pub fn get_craft_ability(
-        &self,
-        focus: &str
-    ) -> Option<Ability> {
-        self.craft_abilities.iter().find(|a| *a.name() == AbilityName::Craft(focus))
+    pub fn get_craft_ability(&self, focus: &str) -> Option<Ability> {
+        self.craft_abilities
+            .iter()
+            .find(|a| *a.name() == AbilityName::Craft(focus))
     }
 
-    pub fn get_martial_arts_ability(
-        &self,
-        style_id: Id,
-    ) -> Option<Ability> {
+    pub fn get_martial_arts_ability(&self, style_id: Id) -> Option<Ability> {
         self.martial_arts_styles.get_ability(style_id)
     }
 
-    pub fn martial_arts_iter(&self) -> impl Iterator<Item = (&MartialArtsStyle, Ability, &Vec<MartialArtsCharm>)> + '_ {
+    pub fn martial_arts_iter(
+        &self,
+    ) -> impl Iterator<Item = (&MartialArtsStyle, Ability, &Vec<MartialArtsCharm>)> + '_ {
         self.martial_arts_styles.iter()
     }
 
@@ -112,27 +107,21 @@ impl Character {
         if ability_name == AbilityNameNoSubskill::MartialArts {
             Err(eyre!("TODO: fix this"))
         } else if ability_name == AbilityNameNoSubskill::Craft {
-            self.set_craft_ability_dots(subskill.ok_or_else(|| eyre!("Craft must specify a focus"))?, dots);
+            self.set_craft_ability_dots(
+                subskill.ok_or_else(|| eyre!("Craft must specify a focus"))?,
+                dots,
+            );
             Ok(())
-        }
-        else {
+        } else {
             self.abilities.set_dots(ability_name, subskill, dots)
         }
     }
 
-    pub fn set_craft_ability_dots(
-        &mut self,
-        focus: &str,
-        dots: u8
-    ) {
+    pub fn set_craft_ability_dots(&mut self, focus: &str, dots: u8) {
         self.craft_abilities.set_dots(focus, dots);
     }
 
-    pub fn set_martial_arts_ability_dots(
-        &mut self,
-        style_id: Id,
-        dots: u8,
-    ) -> Result<()> {
+    pub fn set_martial_arts_ability_dots(&mut self, style_id: Id, dots: u8) -> Result<()> {
         self.martial_arts_styles.set_dots(style_id, dots)
     }
 
@@ -150,19 +139,11 @@ impl Character {
         }
     }
 
-    pub fn add_craft_specialty(
-        &mut self,
-        focus: &str,
-        specialty: String,
-    ) -> Result<()> {
+    pub fn add_craft_specialty(&mut self, focus: &str, specialty: String) -> Result<()> {
         self.craft_abilities.add_specialty(focus, specialty)
     }
 
-    pub fn add_martial_arts_specialty(
-        &mut self,
-        style_id: Id,
-        specialty: String
-    ) -> Result<()> {
+    pub fn add_martial_arts_specialty(&mut self, style_id: Id, specialty: String) -> Result<()> {
         self.martial_arts_styles.add_specialty(style_id, specialty)
     }
 
@@ -180,20 +161,13 @@ impl Character {
         }
     }
 
-    pub fn remove_craft_specialty(
-        &mut self,
-        focus: &str,
-        specialty: &str
-    ) -> Result<()> {
+    pub fn remove_craft_specialty(&mut self, focus: &str, specialty: &str) -> Result<()> {
         self.craft_abilities.remove_specialty(focus, specialty)
     }
 
-    pub fn remove_martial_arts_specialty(
-        &mut self,
-        style_id: Id,
-        specialty: &str
-    ) -> Result<()> {
-        self.martial_arts_styles.remove_specialty(style_id, specialty)
+    pub fn remove_martial_arts_specialty(&mut self, style_id: Id, specialty: &str) -> Result<()> {
+        self.martial_arts_styles
+            .remove_specialty(style_id, specialty)
     }
 }
 

@@ -5,7 +5,7 @@ use crate::abilities::Abilities;
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 
-use super::{AbilityNameVanilla, AbilityNameNoSubskill};
+use super::{AbilityNameNoSubskill, AbilityNameVanilla};
 
 #[derive(Debug, Default)]
 pub struct AbilitiesDiff {
@@ -17,35 +17,51 @@ pub struct AbilitiesDiff {
 impl Abilities {
     pub fn compare_newer(&self, newer: &Self) -> AbilitiesDiff {
         let mut diff = AbilitiesDiff::default();
-        
+
         for (old_ability, new_ability) in self.iter().zip(newer.iter()) {
             if old_ability.dots() != new_ability.dots() {
-                diff.abilities_to_modify.push((old_ability.name().without_subskill().try_into().unwrap(), new_ability.dots()));
+                diff.abilities_to_modify.push((
+                    old_ability.name().without_subskill().try_into().unwrap(),
+                    new_ability.dots(),
+                ));
             }
 
             match (old_ability.specialties(), new_ability.specialties()) {
-                (None, None) => {},
+                (None, None) => {}
                 (None, Some(added)) => {
                     for specialty in added.clone().into_iter() {
-                        diff.specialties_to_add.push((new_ability.name().without_subskill().try_into().unwrap(), specialty));
+                        diff.specialties_to_add.push((
+                            new_ability.name().without_subskill().try_into().unwrap(),
+                            specialty,
+                        ));
                     }
                 }
                 (Some(removed), None) => {
                     for specialty in removed.clone().into_iter() {
-                        diff.specialties_to_remove.push((old_ability.name().without_subskill().try_into().unwrap(), specialty));
+                        diff.specialties_to_remove.push((
+                            old_ability.name().without_subskill().try_into().unwrap(),
+                            specialty,
+                        ));
                     }
                 }
                 (Some(old_specialties), Some(new_specialties)) => {
-                    let mut old_set: HashSet<&str> = old_specialties.iter().map(|s| s.as_str()).collect();
+                    let mut old_set: HashSet<&str> =
+                        old_specialties.iter().map(|s| s.as_str()).collect();
 
                     for specialty in new_specialties.into_iter() {
                         if !old_set.remove(specialty.as_str()) {
-                            diff.specialties_to_add.push((new_ability.name().without_subskill().try_into().unwrap(), specialty.clone()));
+                            diff.specialties_to_add.push((
+                                new_ability.name().without_subskill().try_into().unwrap(),
+                                specialty.clone(),
+                            ));
                         }
                     }
 
                     for specialty in old_set.into_iter() {
-                        diff.specialties_to_remove.push((old_ability.name().without_subskill().try_into().unwrap(), specialty.to_owned()));
+                        diff.specialties_to_remove.push((
+                            old_ability.name().without_subskill().try_into().unwrap(),
+                            specialty.to_owned(),
+                        ));
                     }
                 }
             }
@@ -60,13 +76,12 @@ impl AbilitiesDiff {
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
     ) -> Result<()> {
-        let (
-            mut names_to_update,
-            mut dots_to_update,
-        ) = (Vec::new(), Vec::new());
+        let (mut names_to_update, mut dots_to_update) = (Vec::new(), Vec::new());
 
         for (name_vanilla, dots) in self.abilities_to_modify.iter() {
-            names_to_update.push(<AbilityNameVanilla as Into<AbilityNameNoSubskill>>::into(*name_vanilla).into());
+            names_to_update.push(
+                <AbilityNameVanilla as Into<AbilityNameNoSubskill>>::into(*name_vanilla).into(),
+            );
             dots_to_update.push((*dots).into());
         }
 
@@ -96,7 +111,9 @@ impl AbilitiesDiff {
         let ability_name_with_specialty_to_remove: Vec<AbilityNamePostgres> = self
             .specialties_to_remove
             .iter()
-            .map(|(ability_name, _)| <AbilityNameVanilla as Into<AbilityNameNoSubskill>>::into(*ability_name).into())
+            .map(|(ability_name, _)| {
+                <AbilityNameVanilla as Into<AbilityNameNoSubskill>>::into(*ability_name).into()
+            })
             .collect();
 
         let specialty_name_to_remove: Vec<&str> = self
@@ -135,7 +152,9 @@ impl AbilitiesDiff {
         let ability_name_with_specialty_to_add: Vec<AbilityNamePostgres> = self
             .specialties_to_add
             .iter()
-            .map(|(ability_name, _)| <AbilityNameVanilla as Into<AbilityNameNoSubskill>>::into(*ability_name).into())
+            .map(|(ability_name, _)| {
+                <AbilityNameVanilla as Into<AbilityNameNoSubskill>>::into(*ability_name).into()
+            })
             .collect();
 
         let specialty_name_to_add: Vec<&str> = self
@@ -162,7 +181,10 @@ impl AbilitiesDiff {
             character_id as i32,
             &ability_name_with_specialty_to_add as &[AbilityNamePostgres],
             &specialty_name_to_add as &[&str],
-        ).execute(&mut *transaction).await.wrap_err("Database error attempting to insert specialties")?;
+        )
+        .execute(&mut *transaction)
+        .await
+        .wrap_err("Database error attempting to insert specialties")?;
 
         Ok(())
     }

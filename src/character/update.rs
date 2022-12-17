@@ -115,6 +115,12 @@ pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Ch
         .await
         .wrap_err("Error when updating abilities")?;
     old_character
+        .craft_abilities
+        .compare_newer(&character.craft_abilities)
+        .update(&mut transaction, character_id)
+        .await
+        .wrap_err("Error when updating craft abilities")?;
+    old_character
         .attributes
         .compare_newer(&character.attributes)
         .update(&mut transaction, character_id)

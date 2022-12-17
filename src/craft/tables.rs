@@ -1,4 +1,4 @@
-use eyre::{WrapErr, Result};
+use eyre::{Result, WrapErr};
 
 use crate::character::CharacterBuilder;
 
@@ -25,7 +25,12 @@ impl CharacterBuilder {
         }
 
         for row in craft_ability_rows.unwrap().into_iter() {
-            self = self.with_craft(&row.focus.as_str(), row.dots.try_into().wrap_err_with(|| format!("Invalid number of dots: {}", row.dots))?);
+            self = self.with_craft(
+                &row.focus.as_str(),
+                row.dots
+                    .try_into()
+                    .wrap_err_with(|| format!("Invalid number of dots: {}", row.dots))?,
+            );
         }
 
         if let Some(rows) = specialty_rows {
