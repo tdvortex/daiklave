@@ -1,4 +1,4 @@
-use eyre::{Context, Result};
+use eyre::{WrapErr, Result};
 use sqlx::{query, Postgres, Transaction};
 use std::collections::HashSet;
 

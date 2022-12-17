@@ -1,4 +1,6 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap};
+use eyre::{WrapErr, Result};
+use sqlx::{Transaction, Postgres, query};
 
 use crate::{abilities::Ability, charms::MartialArtsCharm, id::Id};
 
@@ -61,3 +63,22 @@ impl MartialArtistTraits {
         diff
     }
 }
+
+impl MartialArtsDiff {
+    async fn remove_character_styles(
+        self,
+        transaction: &mut Transaction<'_, Postgres>,
+        character_id: i32
+    ) -> Result<()> {
+        let removed_ids: Vec<i32> = self.removed_styles.iter().filter_map(|id| if !id.is_placeholder() {Some(**id)} else {None}).collect();
+
+        query!(
+            "DELETE FROM character_martial_arts
+            WHERE character_id = $1 AND style_id IN (SELECT data.style_id FROM UNNEST($2::INTEGER[]) as data(style_id))",
+            character_id as i32,
+            &removed_ids as &[i32]
+        ).execute(&mut *transaction).await.wrap_err_with(|| format!("Database error removing martial arts styles from character {}", character_id))?;
+        Ok(())
+    }
+}
+
