@@ -2,13 +2,11 @@ use eyre::{eyre, Context, Result};
 use sqlx::postgres::PgHasArrayType;
 use std::collections::HashMap;
 
-use crate::abilities::AbilityNameNoSubskill;
 use crate::character::CharacterBuilder;
 use crate::id::Id;
 use crate::merits::{MeritTemplate, MeritType};
 use crate::prerequisite::{ExaltTypePrerequisite, PrerequisiteSet};
 
-use crate::abilities::tables::AbilityNamePostgres;
 use crate::prerequisite::tables::{PrerequisiteRow, PrerequisiteTypePostgres};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
@@ -190,32 +188,11 @@ impl CharacterBuilder {
                             })?
                             .try_into()
                             .wrap_err("Ability prerequisite dots overflow u8")?;
-                        match row.ability_name.ok_or_else(|| {
+
+                        let ability_name = row.ability_name.ok_or_else(|| {
                             eyre!("Missing ability name for ability prerequisite {}", row.id)
-                        })? {
-                            AbilityNamePostgres::Craft => {
-                                if let Some(focus) = row.subskill_name {
-                                    builder = builder.requiring_craft_focus(focus, dots);
-                                } else {
-                                    builder = builder
-                                        .requiring_ability(AbilityNameNoSubskill::Craft, dots);
-                                }
-                            }
-                            AbilityNamePostgres::MartialArts => {
-                                if let Some(style) = row.subskill_name {
-                                    builder = builder.requiring_martial_arts_style(style, dots);
-                                } else {
-                                    builder = builder.requiring_ability(
-                                        AbilityNameNoSubskill::MartialArts,
-                                        dots,
-                                    );
-                                }
-                            }
-                            other_ability_name => {
-                                builder =
-                                    builder.requiring_ability(other_ability_name.into(), dots);
-                            }
-                        }
+                        })?;
+                        builder = builder.requiring_ability(ability_name.into(), dots);
                     }
                     PrerequisiteTypePostgres::Attribute => {
                         let dots = row

@@ -5,7 +5,7 @@ use crate::abilities::Abilities;
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 
-use super::{AbilityNameNoSubskill, AbilityNameVanilla};
+use super::{AbilityNameVanilla};
 
 #[derive(Debug, Default)]
 pub struct AbilitiesDiff {
@@ -76,11 +76,11 @@ impl AbilitiesDiff {
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
     ) -> Result<()> {
-        let (mut names_to_update, mut dots_to_update) = (Vec::new(), Vec::new());
+        let (mut names_to_update, mut dots_to_update) = (Vec::<AbilityNamePostgres>::new(), Vec::new());
 
         for (name_vanilla, dots) in self.abilities_to_modify.iter() {
             names_to_update.push(
-                <AbilityNameVanilla as Into<AbilityNameNoSubskill>>::into(*name_vanilla).into(),
+                (*name_vanilla).into(),
             );
             dots_to_update.push((*dots).into());
         }
@@ -111,9 +111,7 @@ impl AbilitiesDiff {
         let ability_name_with_specialty_to_remove: Vec<AbilityNamePostgres> = self
             .specialties_to_remove
             .iter()
-            .map(|(ability_name, _)| {
-                <AbilityNameVanilla as Into<AbilityNameNoSubskill>>::into(*ability_name).into()
-            })
+            .map(|(ability_name, _)| (*ability_name).into())
             .collect();
 
         let specialty_name_to_remove: Vec<&str> = self
@@ -152,9 +150,7 @@ impl AbilitiesDiff {
         let ability_name_with_specialty_to_add: Vec<AbilityNamePostgres> = self
             .specialties_to_add
             .iter()
-            .map(|(ability_name, _)| {
-                <AbilityNameVanilla as Into<AbilityNameNoSubskill>>::into(*ability_name).into()
-            })
+            .map(|(ability_name, _)| (*ability_name).into())
             .collect();
 
         let specialty_name_to_add: Vec<&str> = self

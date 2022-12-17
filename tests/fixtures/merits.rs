@@ -1,5 +1,5 @@
 use exalted_3e_gui::{
-    abilities::AbilityNameNoSubskill,
+    abilities::{AbilityNameVanilla},
     attributes::AttributeName,
     character::CharacterBuilder,
     id::Id,
@@ -40,7 +40,7 @@ pub fn create_initial_merits(builder: CharacterBuilder) -> CharacterBuilder {
             .requiring_detail()
             .with_prerequisite_set(
                 PrerequisiteSet::create()
-                    .requiring_ability(AbilityNameNoSubskill::Brawl, 1)
+                    .requiring_ability(AbilityNameVanilla::Brawl, 1)
                     .build(),
             )
             .build()
@@ -59,7 +59,7 @@ pub fn create_initial_merits(builder: CharacterBuilder) -> CharacterBuilder {
             )
             .with_prerequisite_set(
                 PrerequisiteSet::create()
-                    .requiring_ability(AbilityNameNoSubskill::Awareness, 3)
+                    .requiring_ability(AbilityNameVanilla::Awareness, 3)
                     .build(),
             )
             .build()
@@ -112,7 +112,7 @@ pub fn validate_initial_merits(merits: &Vec<Merit>, should_have_id: bool) {
             MARTIAL_ARTIST_DESCRIPTION,
             true,
             &vec![PrerequisiteSet::create()
-                .requiring_ability(AbilityNameNoSubskill::Brawl, 1)
+                .requiring_ability(AbilityNameVanilla::Brawl, 1)
                 .build()],
             4,
         ),
@@ -127,7 +127,7 @@ pub fn validate_initial_merits(merits: &Vec<Merit>, should_have_id: bool) {
                     .requiring_attribute(AttributeName::Perception, 3)
                     .build(),
                 PrerequisiteSet::create()
-                    .requiring_ability(AbilityNameNoSubskill::Awareness, 3)
+                    .requiring_ability(AbilityNameVanilla::Awareness, 3)
                     .build(),
             ],
             3,
@@ -214,7 +214,7 @@ pub fn validate_modified_merits(merits: &Vec<Merit>) {
             MARTIAL_ARTIST_DESCRIPTION,
             true,
             &vec![PrerequisiteSet::create()
-                .requiring_ability(AbilityNameNoSubskill::Brawl, 1)
+                .requiring_ability(AbilityNameVanilla::Brawl, 1)
                 .build()],
             4,
         ),

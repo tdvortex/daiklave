@@ -21,8 +21,8 @@ WITH player_query AS (
 ), specialties_query AS (
     SELECT
         ARRAY_AGG(specialties) AS specs
-    FROM abilities INNER JOIN specialties ON (specialties.ability_id = abilities.id)
-    WHERE abilities.character_id = $1
+    FROM specialties
+    WHERE specialties.character_id = $1
 ), intimacies_query AS (
     SELECT
         ARRAY_AGG(intimacies) AS intis

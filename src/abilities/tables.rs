@@ -5,6 +5,8 @@ use crate::character::CharacterBuilder;
 use eyre::{eyre, Report, Result, WrapErr};
 use sqlx::postgres::PgHasArrayType;
 
+use super::AbilityNameVanilla;
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ABILITYNAME", rename_all = "UPPERCASE")]
 pub enum AbilityNamePostgres {
@@ -13,14 +15,12 @@ pub enum AbilityNamePostgres {
     Awareness,
     Brawl,
     Bureaucracy,
-    Craft,
     Dodge,
     Integrity,
     Investigation,
     Larceny,
     Linguistics,
     Lore,
-    MartialArts,
     Medicine,
     Melee,
     Occult,
@@ -50,14 +50,12 @@ impl From<AbilityNamePostgres> for AbilityNameNoSubskill {
             AbilityNamePostgres::Awareness => Self::Awareness,
             AbilityNamePostgres::Brawl => Self::Brawl,
             AbilityNamePostgres::Bureaucracy => Self::Bureaucracy,
-            AbilityNamePostgres::Craft => Self::Craft,
             AbilityNamePostgres::Dodge => Self::Dodge,
             AbilityNamePostgres::Integrity => Self::Integrity,
             AbilityNamePostgres::Investigation => Self::Investigation,
             AbilityNamePostgres::Larceny => Self::Larceny,
             AbilityNamePostgres::Linguistics => Self::Linguistics,
             AbilityNamePostgres::Lore => Self::Lore,
-            AbilityNamePostgres::MartialArts => Self::MartialArts,
             AbilityNamePostgres::Medicine => Self::Medicine,
             AbilityNamePostgres::Melee => Self::Melee,
             AbilityNamePostgres::Occult => Self::Occult,
@@ -75,35 +73,64 @@ impl From<AbilityNamePostgres> for AbilityNameNoSubskill {
     }
 }
 
-impl From<AbilityNameNoSubskill> for AbilityNamePostgres {
-    fn from(ability_name: AbilityNameNoSubskill) -> Self {
+impl From<AbilityNamePostgres> for AbilityNameVanilla {
+    fn from(ability_name_postgres: AbilityNamePostgres) -> Self {
+        match ability_name_postgres {
+            AbilityNamePostgres::Archery => Self::Archery,
+            AbilityNamePostgres::Athletics => Self::Athletics,
+            AbilityNamePostgres::Awareness => Self::Awareness,
+            AbilityNamePostgres::Brawl => Self::Brawl,
+            AbilityNamePostgres::Bureaucracy => Self::Bureaucracy,
+            AbilityNamePostgres::Dodge => Self::Dodge,
+            AbilityNamePostgres::Integrity => Self::Integrity,
+            AbilityNamePostgres::Investigation => Self::Investigation,
+            AbilityNamePostgres::Larceny => Self::Larceny,
+            AbilityNamePostgres::Linguistics => Self::Linguistics,
+            AbilityNamePostgres::Lore => Self::Lore,
+            AbilityNamePostgres::Medicine => Self::Medicine,
+            AbilityNamePostgres::Melee => Self::Melee,
+            AbilityNamePostgres::Occult => Self::Occult,
+            AbilityNamePostgres::Performance => Self::Performance,
+            AbilityNamePostgres::Presence => Self::Presence,
+            AbilityNamePostgres::Resistance => Self::Resistance,
+            AbilityNamePostgres::Ride => Self::Ride,
+            AbilityNamePostgres::Sail => Self::Sail,
+            AbilityNamePostgres::Socialize => Self::Socialize,
+            AbilityNamePostgres::Stealth => Self::Stealth,
+            AbilityNamePostgres::Survival => Self::Survival,
+            AbilityNamePostgres::Thrown => Self::Thrown,
+            AbilityNamePostgres::War => Self::War,
+        }
+    }
+}
+
+impl From<AbilityNameVanilla> for AbilityNamePostgres {
+    fn from(ability_name: AbilityNameVanilla) -> Self {
         match ability_name {
-            AbilityNameNoSubskill::Archery => Self::Archery,
-            AbilityNameNoSubskill::Athletics => Self::Athletics,
-            AbilityNameNoSubskill::Awareness => Self::Awareness,
-            AbilityNameNoSubskill::Brawl => Self::Brawl,
-            AbilityNameNoSubskill::Bureaucracy => Self::Bureaucracy,
-            AbilityNameNoSubskill::Craft => Self::Craft,
-            AbilityNameNoSubskill::Dodge => Self::Dodge,
-            AbilityNameNoSubskill::Integrity => Self::Integrity,
-            AbilityNameNoSubskill::Investigation => Self::Investigation,
-            AbilityNameNoSubskill::Larceny => Self::Larceny,
-            AbilityNameNoSubskill::Linguistics => Self::Linguistics,
-            AbilityNameNoSubskill::Lore => Self::Lore,
-            AbilityNameNoSubskill::MartialArts => Self::MartialArts,
-            AbilityNameNoSubskill::Medicine => Self::Medicine,
-            AbilityNameNoSubskill::Melee => Self::Melee,
-            AbilityNameNoSubskill::Occult => Self::Occult,
-            AbilityNameNoSubskill::Performance => Self::Performance,
-            AbilityNameNoSubskill::Presence => Self::Presence,
-            AbilityNameNoSubskill::Resistance => Self::Resistance,
-            AbilityNameNoSubskill::Ride => Self::Ride,
-            AbilityNameNoSubskill::Sail => Self::Sail,
-            AbilityNameNoSubskill::Socialize => Self::Socialize,
-            AbilityNameNoSubskill::Stealth => Self::Stealth,
-            AbilityNameNoSubskill::Survival => Self::Survival,
-            AbilityNameNoSubskill::Thrown => Self::Thrown,
-            AbilityNameNoSubskill::War => Self::War,
+            AbilityNameVanilla::Archery => Self::Archery,
+            AbilityNameVanilla::Athletics => Self::Athletics,
+            AbilityNameVanilla::Awareness => Self::Awareness,
+            AbilityNameVanilla::Brawl => Self::Brawl,
+            AbilityNameVanilla::Bureaucracy => Self::Bureaucracy,
+            AbilityNameVanilla::Dodge => Self::Dodge,
+            AbilityNameVanilla::Integrity => Self::Integrity,
+            AbilityNameVanilla::Investigation => Self::Investigation,
+            AbilityNameVanilla::Larceny => Self::Larceny,
+            AbilityNameVanilla::Linguistics => Self::Linguistics,
+            AbilityNameVanilla::Lore => Self::Lore,
+            AbilityNameVanilla::Medicine => Self::Medicine,
+            AbilityNameVanilla::Melee => Self::Melee,
+            AbilityNameVanilla::Occult => Self::Occult,
+            AbilityNameVanilla::Performance => Self::Performance,
+            AbilityNameVanilla::Presence => Self::Presence,
+            AbilityNameVanilla::Resistance => Self::Resistance,
+            AbilityNameVanilla::Ride => Self::Ride,
+            AbilityNameVanilla::Sail => Self::Sail,
+            AbilityNameVanilla::Socialize => Self::Socialize,
+            AbilityNameVanilla::Stealth => Self::Stealth,
+            AbilityNameVanilla::Survival => Self::Survival,
+            AbilityNameVanilla::Thrown => Self::Thrown,
+            AbilityNameVanilla::War => Self::War,
         }
     }
 }
@@ -111,17 +138,16 @@ impl From<AbilityNameNoSubskill> for AbilityNamePostgres {
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "abilities")]
 pub struct AbilityRow {
-    pub id: i32,
     pub character_id: i32,
     pub name: AbilityNamePostgres,
     pub dots: i16,
-    pub subskill: Option<String>,
 }
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "specialties")]
 pub struct SpecialtyRow {
-    pub ability_id: i32,
+    pub character_id: i32,
+    pub name: AbilityNamePostgres,
     pub specialty: String,
 }
 
@@ -142,41 +168,23 @@ impl CharacterBuilder {
             .try_into()
             .wrap_err_with(|| format!("Invalid number of dots: {}", ability_row.dots))?;
 
-        match ability_row.name {
-            AbilityNamePostgres::Craft => {
-                let craft_focus = ability_row
-                    .subskill
-                    .ok_or(eyre!("Craft abilities must have a focus"))?;
-                specialty_rows.into_iter().fold(
-                    Ok(self.with_craft(craft_focus.as_str(), dots)),
-                    |character_result, specialty_row| {
-                        character_result.and_then(|character| {
-                            character
-                                .with_craft_specialty(craft_focus.as_str(), specialty_row.specialty)
-                        })
-                    },
+
+        let ability_name = ability_row.name.try_into().wrap_err_with(|| {
+            format!("Could not decode ability name: {:?}", ability_row.name)
+        })?;
+        specialty_rows.into_iter().fold(
+            Ok(self.with_ability(ability_name, dots).wrap_err_with(|| {
+                format!(
+                    "Could not set ability name {:?} to have dots {}",
+                    ability_name, dots
                 )
-            }
-            AbilityNamePostgres::MartialArts => Err(eyre!("Martial Arts need a different method")),
-            other_ability => {
-                let ability_name = other_ability.try_into().wrap_err_with(|| {
-                    format!("Could not decode ability name: {:?}", other_ability)
-                })?;
-                specialty_rows.into_iter().fold(
-                    Ok(self.with_ability(ability_name, dots).wrap_err_with(|| {
-                        format!(
-                            "Could not set ability name {:?} to have dots {}",
-                            ability_name, dots
-                        )
-                    })?),
-                    |character_result, specialty_row| {
-                        character_result.and_then(|character| {
-                            character.with_specialty(ability_name, specialty_row.specialty)
-                        })
-                    },
-                )
-            }
-        }
+            })?),
+            |character_result, specialty_row| {
+                character_result.and_then(|character| {
+                    character.with_specialty(ability_name, specialty_row.specialty)
+                })
+            },
+        )
     }
 
     pub(crate) fn apply_abilities_and_specialties_rows(

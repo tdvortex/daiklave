@@ -4,7 +4,7 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::abilities::AbilityNameNoSubskill;
+use crate::abilities::{AbilityNameVanilla};
 use crate::attributes::AttributeName;
 use crate::id::Id;
 
@@ -38,7 +38,7 @@ impl Deref for Prerequisite {
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub struct AbilityPrerequisite {
-    pub ability_name: AbilityNameNoSubskill,
+    pub ability_name: AbilityNameVanilla,
     pub subskill: Option<String>,
     pub dots: u8,
 }
@@ -96,35 +96,13 @@ impl PrerequisiteSetBuilder {
 
     pub fn requiring_ability(
         mut self,
-        ability_name_no_subskill: AbilityNameNoSubskill,
+        ability_name: AbilityNameVanilla,
         dots: u8,
     ) -> Self {
         self.prerequisites.push(Prerequisite {
             prerequisite_type: PrerequisiteType::Ability(AbilityPrerequisite {
-                ability_name: ability_name_no_subskill,
+                ability_name,
                 subskill: None,
-                dots,
-            }),
-        });
-        self
-    }
-
-    pub fn requiring_craft_focus(mut self, focus: String, dots: u8) -> Self {
-        self.prerequisites.push(Prerequisite {
-            prerequisite_type: PrerequisiteType::Ability(AbilityPrerequisite {
-                ability_name: AbilityNameNoSubskill::Craft,
-                subskill: Some(focus),
-                dots,
-            }),
-        });
-        self
-    }
-
-    pub fn requiring_martial_arts_style(mut self, style: String, dots: u8) -> Self {
-        self.prerequisites.push(Prerequisite {
-            prerequisite_type: PrerequisiteType::Ability(AbilityPrerequisite {
-                ability_name: AbilityNameNoSubskill::MartialArts,
-                subskill: Some(style),
                 dots,
             }),
         });
