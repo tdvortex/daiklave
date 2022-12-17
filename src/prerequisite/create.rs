@@ -1,7 +1,7 @@
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 
-use crate::abilities::tables::AbilityNamePostgres;
+use crate::abilities::tables::AbilityNameVanillaPostgres;
 use crate::attributes::tables::AttributeNamePostgres;
 use crate::prerequisite::tables::{
     PrerequisiteExaltTypePostgres, PrerequisiteInsert, PrerequisiteTypePostgres,
@@ -80,13 +80,13 @@ pub(crate) async fn post_prerequisites_transaction(
             data.dots,
             data.charm_id,
             data.prerequisite_exalt_type
-        FROM UNNEST($1::INTEGER[], $2::INTEGER[], $3::PREREQUISITETYPE[], $4::ABILITYNAME[], $5::VARCHAR(255)[], $6::ATTRIBUTENAME[], $7::SMALLINT[], $8::INTEGER[], $9::PREREQUISITEEXALTTYPE[])
+        FROM UNNEST($1::INTEGER[], $2::INTEGER[], $3::PREREQUISITETYPE[], $4::ABILITYNAMEVANILLA[], $5::VARCHAR(255)[], $6::ATTRIBUTENAME[], $7::SMALLINT[], $8::INTEGER[], $9::PREREQUISITEEXALTTYPE[])
             AS data(merit_prerequisite_set_id, charm_prerequisite_set_id, prerequisite_type, ability_name, subskill_name, attribute_name, dots, charm_id, prerequisite_exalt_type)
         RETURNING id",
         &merit_prerequisite_ids as &[Option<i32>],
         &charm_prerequisite_ids as &[Option<i32>],
         &prerequisite_types as &[PrerequisiteTypePostgres],
-        &ability_names as &[Option<AbilityNamePostgres>],
+        &ability_names as &[Option<AbilityNameVanillaPostgres>],
         &subskill_names as &[Option<&str>],
         &attribute_names as &[Option<AttributeNamePostgres>],
         &dots_vec as &[Option<i16>],

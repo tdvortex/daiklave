@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::abilities::tables::AbilityNamePostgres;
+use crate::abilities::tables::AbilityNameVanillaPostgres;
 use crate::abilities::Abilities;
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
@@ -77,7 +77,7 @@ impl AbilitiesDiff {
         character_id: i32,
     ) -> Result<()> {
         let (mut names_to_update, mut dots_to_update) =
-            (Vec::<AbilityNamePostgres>::new(), Vec::new());
+            (Vec::<AbilityNameVanillaPostgres>::new(), Vec::new());
 
         for (name_vanilla, dots) in self.abilities_to_modify.iter() {
             names_to_update.push((*name_vanilla).into());
@@ -88,10 +88,10 @@ impl AbilitiesDiff {
             query!(
                 "UPDATE abilities
                 SET dots = data.dots
-                FROM UNNEST($2::ABILITYNAME[], $3::SMALLINT[]) as data(name, dots)
+                FROM UNNEST($2::ABILITYNAMEVANILLA[], $3::SMALLINT[]) as data(name, dots)
                 WHERE abilities.character_id = $1 AND abilities.name = data.name",
                 character_id,
-                &names_to_update as &[AbilityNamePostgres],
+                &names_to_update as &[AbilityNameVanillaPostgres],
                 &dots_to_update as &[i16]
             )
             .execute(&mut *transaction)
@@ -107,7 +107,7 @@ impl AbilitiesDiff {
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
     ) -> Result<()> {
-        let ability_name_with_specialty_to_remove: Vec<AbilityNamePostgres> = self
+        let ability_name_with_specialty_to_remove: Vec<AbilityNameVanillaPostgres> = self
             .specialties_to_remove
             .iter()
             .map(|(ability_name, _)| (*ability_name).into())
@@ -128,10 +128,10 @@ impl AbilitiesDiff {
                     $1::INTEGER as character_id,
                     data.ability_name as ability_name,
                     data.specialty as specialty
-                FROM UNNEST($2::ABILITYNAME[], $3::VARCHAR(255)[]) AS data(ability_name, specialty)
+                FROM UNNEST($2::ABILITYNAMEVANILLA[], $3::VARCHAR(255)[]) AS data(ability_name, specialty)
             )",
             character_id as i32,
-            &ability_name_with_specialty_to_remove as &[AbilityNamePostgres],
+            &ability_name_with_specialty_to_remove as &[AbilityNameVanillaPostgres],
             &specialty_name_to_remove as &[&str]
         )
         .execute(&mut *transaction)
@@ -146,7 +146,7 @@ impl AbilitiesDiff {
         transaction: &mut Transaction<'_, Postgres>,
         character_id: i32,
     ) -> Result<()> {
-        let ability_name_with_specialty_to_add: Vec<AbilityNamePostgres> = self
+        let ability_name_with_specialty_to_add: Vec<AbilityNameVanillaPostgres> = self
             .specialties_to_add
             .iter()
             .map(|(ability_name, _)| (*ability_name).into())
@@ -165,10 +165,10 @@ impl AbilitiesDiff {
                 $1::INTEGER as character_id,
                 data.name as name,
                 data.specialty as specialty
-            FROM UNNEST($2::ABILITYNAME[], $3::VARCHAR(255)[]) AS data(name, specialty)
+            FROM UNNEST($2::ABILITYNAMEVANILLA[], $3::VARCHAR(255)[]) AS data(name, specialty)
             "#,
             character_id as i32,
-            &ability_name_with_specialty_to_add as &[AbilityNamePostgres],
+            &ability_name_with_specialty_to_add as &[AbilityNameVanillaPostgres],
             &specialty_name_to_add as &[&str],
         )
         .execute(&mut *transaction)

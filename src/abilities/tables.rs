@@ -6,8 +6,8 @@ use sqlx::postgres::PgHasArrayType;
 use super::AbilityNameVanilla;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
-#[sqlx(type_name = "ABILITYNAME", rename_all = "UPPERCASE")]
-pub enum AbilityNamePostgres {
+#[sqlx(type_name = "ABILITYNAMEVANILLA", rename_all = "UPPERCASE")]
+pub enum AbilityNameVanillaPostgres {
     Archery,
     Athletics,
     Awareness,
@@ -34,75 +34,75 @@ pub enum AbilityNamePostgres {
     War,
 }
 
-impl PgHasArrayType for AbilityNamePostgres {
+impl PgHasArrayType for AbilityNameVanillaPostgres {
     fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_ABILITYNAME")
+        sqlx::postgres::PgTypeInfo::with_name("_ABILITYNAMEVANILLA")
     }
 }
 
-impl From<AbilityNamePostgres> for AbilityNameNoSubskill {
-    fn from(ability_name_postgres: AbilityNamePostgres) -> Self {
+impl From<AbilityNameVanillaPostgres> for AbilityNameNoSubskill {
+    fn from(ability_name_postgres: AbilityNameVanillaPostgres) -> Self {
         match ability_name_postgres {
-            AbilityNamePostgres::Archery => Self::Archery,
-            AbilityNamePostgres::Athletics => Self::Athletics,
-            AbilityNamePostgres::Awareness => Self::Awareness,
-            AbilityNamePostgres::Brawl => Self::Brawl,
-            AbilityNamePostgres::Bureaucracy => Self::Bureaucracy,
-            AbilityNamePostgres::Dodge => Self::Dodge,
-            AbilityNamePostgres::Integrity => Self::Integrity,
-            AbilityNamePostgres::Investigation => Self::Investigation,
-            AbilityNamePostgres::Larceny => Self::Larceny,
-            AbilityNamePostgres::Linguistics => Self::Linguistics,
-            AbilityNamePostgres::Lore => Self::Lore,
-            AbilityNamePostgres::Medicine => Self::Medicine,
-            AbilityNamePostgres::Melee => Self::Melee,
-            AbilityNamePostgres::Occult => Self::Occult,
-            AbilityNamePostgres::Performance => Self::Performance,
-            AbilityNamePostgres::Presence => Self::Presence,
-            AbilityNamePostgres::Resistance => Self::Resistance,
-            AbilityNamePostgres::Ride => Self::Ride,
-            AbilityNamePostgres::Sail => Self::Sail,
-            AbilityNamePostgres::Socialize => Self::Socialize,
-            AbilityNamePostgres::Stealth => Self::Stealth,
-            AbilityNamePostgres::Survival => Self::Survival,
-            AbilityNamePostgres::Thrown => Self::Thrown,
-            AbilityNamePostgres::War => Self::War,
+            AbilityNameVanillaPostgres::Archery => Self::Archery,
+            AbilityNameVanillaPostgres::Athletics => Self::Athletics,
+            AbilityNameVanillaPostgres::Awareness => Self::Awareness,
+            AbilityNameVanillaPostgres::Brawl => Self::Brawl,
+            AbilityNameVanillaPostgres::Bureaucracy => Self::Bureaucracy,
+            AbilityNameVanillaPostgres::Dodge => Self::Dodge,
+            AbilityNameVanillaPostgres::Integrity => Self::Integrity,
+            AbilityNameVanillaPostgres::Investigation => Self::Investigation,
+            AbilityNameVanillaPostgres::Larceny => Self::Larceny,
+            AbilityNameVanillaPostgres::Linguistics => Self::Linguistics,
+            AbilityNameVanillaPostgres::Lore => Self::Lore,
+            AbilityNameVanillaPostgres::Medicine => Self::Medicine,
+            AbilityNameVanillaPostgres::Melee => Self::Melee,
+            AbilityNameVanillaPostgres::Occult => Self::Occult,
+            AbilityNameVanillaPostgres::Performance => Self::Performance,
+            AbilityNameVanillaPostgres::Presence => Self::Presence,
+            AbilityNameVanillaPostgres::Resistance => Self::Resistance,
+            AbilityNameVanillaPostgres::Ride => Self::Ride,
+            AbilityNameVanillaPostgres::Sail => Self::Sail,
+            AbilityNameVanillaPostgres::Socialize => Self::Socialize,
+            AbilityNameVanillaPostgres::Stealth => Self::Stealth,
+            AbilityNameVanillaPostgres::Survival => Self::Survival,
+            AbilityNameVanillaPostgres::Thrown => Self::Thrown,
+            AbilityNameVanillaPostgres::War => Self::War,
         }
     }
 }
 
-impl From<AbilityNamePostgres> for AbilityNameVanilla {
-    fn from(ability_name_postgres: AbilityNamePostgres) -> Self {
+impl From<AbilityNameVanillaPostgres> for AbilityNameVanilla {
+    fn from(ability_name_postgres: AbilityNameVanillaPostgres) -> Self {
         match ability_name_postgres {
-            AbilityNamePostgres::Archery => Self::Archery,
-            AbilityNamePostgres::Athletics => Self::Athletics,
-            AbilityNamePostgres::Awareness => Self::Awareness,
-            AbilityNamePostgres::Brawl => Self::Brawl,
-            AbilityNamePostgres::Bureaucracy => Self::Bureaucracy,
-            AbilityNamePostgres::Dodge => Self::Dodge,
-            AbilityNamePostgres::Integrity => Self::Integrity,
-            AbilityNamePostgres::Investigation => Self::Investigation,
-            AbilityNamePostgres::Larceny => Self::Larceny,
-            AbilityNamePostgres::Linguistics => Self::Linguistics,
-            AbilityNamePostgres::Lore => Self::Lore,
-            AbilityNamePostgres::Medicine => Self::Medicine,
-            AbilityNamePostgres::Melee => Self::Melee,
-            AbilityNamePostgres::Occult => Self::Occult,
-            AbilityNamePostgres::Performance => Self::Performance,
-            AbilityNamePostgres::Presence => Self::Presence,
-            AbilityNamePostgres::Resistance => Self::Resistance,
-            AbilityNamePostgres::Ride => Self::Ride,
-            AbilityNamePostgres::Sail => Self::Sail,
-            AbilityNamePostgres::Socialize => Self::Socialize,
-            AbilityNamePostgres::Stealth => Self::Stealth,
-            AbilityNamePostgres::Survival => Self::Survival,
-            AbilityNamePostgres::Thrown => Self::Thrown,
-            AbilityNamePostgres::War => Self::War,
+            AbilityNameVanillaPostgres::Archery => Self::Archery,
+            AbilityNameVanillaPostgres::Athletics => Self::Athletics,
+            AbilityNameVanillaPostgres::Awareness => Self::Awareness,
+            AbilityNameVanillaPostgres::Brawl => Self::Brawl,
+            AbilityNameVanillaPostgres::Bureaucracy => Self::Bureaucracy,
+            AbilityNameVanillaPostgres::Dodge => Self::Dodge,
+            AbilityNameVanillaPostgres::Integrity => Self::Integrity,
+            AbilityNameVanillaPostgres::Investigation => Self::Investigation,
+            AbilityNameVanillaPostgres::Larceny => Self::Larceny,
+            AbilityNameVanillaPostgres::Linguistics => Self::Linguistics,
+            AbilityNameVanillaPostgres::Lore => Self::Lore,
+            AbilityNameVanillaPostgres::Medicine => Self::Medicine,
+            AbilityNameVanillaPostgres::Melee => Self::Melee,
+            AbilityNameVanillaPostgres::Occult => Self::Occult,
+            AbilityNameVanillaPostgres::Performance => Self::Performance,
+            AbilityNameVanillaPostgres::Presence => Self::Presence,
+            AbilityNameVanillaPostgres::Resistance => Self::Resistance,
+            AbilityNameVanillaPostgres::Ride => Self::Ride,
+            AbilityNameVanillaPostgres::Sail => Self::Sail,
+            AbilityNameVanillaPostgres::Socialize => Self::Socialize,
+            AbilityNameVanillaPostgres::Stealth => Self::Stealth,
+            AbilityNameVanillaPostgres::Survival => Self::Survival,
+            AbilityNameVanillaPostgres::Thrown => Self::Thrown,
+            AbilityNameVanillaPostgres::War => Self::War,
         }
     }
 }
 
-impl From<AbilityNameVanilla> for AbilityNamePostgres {
+impl From<AbilityNameVanilla> for AbilityNameVanillaPostgres {
     fn from(ability_name: AbilityNameVanilla) -> Self {
         match ability_name {
             AbilityNameVanilla::Archery => Self::Archery,
@@ -137,7 +137,7 @@ impl From<AbilityNameVanilla> for AbilityNamePostgres {
 #[sqlx(type_name = "abilities")]
 pub struct AbilityRow {
     pub character_id: i32,
-    pub name: AbilityNamePostgres,
+    pub name: AbilityNameVanillaPostgres,
     pub dots: i16,
 }
 
@@ -145,7 +145,7 @@ pub struct AbilityRow {
 #[sqlx(type_name = "specialties")]
 pub struct SpecialtyRow {
     pub character_id: i32,
-    pub name: AbilityNamePostgres,
+    pub name: AbilityNameVanillaPostgres,
     pub specialty: String,
 }
 

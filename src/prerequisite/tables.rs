@@ -2,7 +2,7 @@ use crate::prerequisite::ExaltTypePrerequisite;
 use eyre::Result;
 use sqlx::postgres::PgHasArrayType;
 
-use crate::abilities::tables::AbilityNamePostgres;
+use crate::abilities::tables::AbilityNameVanillaPostgres;
 use crate::attributes::tables::AttributeNamePostgres;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
@@ -67,7 +67,7 @@ pub struct PrerequisiteRow {
     pub merit_prerequisite_set_id: Option<i32>,
     pub charm_prerequisite_set_id: Option<i32>,
     pub prerequisite_type: PrerequisiteTypePostgres,
-    pub ability_name: Option<AbilityNamePostgres>,
+    pub ability_name: Option<AbilityNameVanillaPostgres>,
     pub subskill_name: Option<String>,
     pub attribute_name: Option<AttributeNamePostgres>,
     pub dots: Option<i16>,
@@ -80,7 +80,7 @@ pub struct PrerequisiteInsert {
     pub merit_prerequisite_set_id: Option<i32>,
     pub charm_prerequisite_set_id: Option<i32>,
     pub prerequisite_type: PrerequisiteTypePostgres,
-    pub ability_name: Option<AbilityNamePostgres>,
+    pub ability_name: Option<AbilityNameVanillaPostgres>,
     pub subskill_name: Option<String>,
     pub attribute_name: Option<AttributeNamePostgres>,
     pub dots: Option<i16>,
@@ -103,7 +103,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for PrerequisiteRow {
         let merit_prerequisite_set_id = decoder.try_decode::<Option<i32>>()?;
         let charm_prerequisite_set_id = decoder.try_decode::<Option<i32>>()?;
         let prerequisite_type = decoder.try_decode::<PrerequisiteTypePostgres>()?;
-        let ability_name = decoder.try_decode::<Option<AbilityNamePostgres>>()?;
+        let ability_name = decoder.try_decode::<Option<AbilityNameVanillaPostgres>>()?;
         let subskill_name = decoder.try_decode::<Option<String>>()?;
         let attribute_name = decoder.try_decode::<Option<AttributeNamePostgres>>()?;
         let dots = decoder.try_decode::<Option<i16>>()?;

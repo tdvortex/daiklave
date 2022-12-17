@@ -19,7 +19,7 @@ CREATE TABLE prerequisites (
     merit_prerequisite_set_id INTEGER REFERENCES merit_prerequisite_sets(id) ON DELETE CASCADE,
     charm_prerequisite_set_id INTEGER REFERENCES charm_prerequisite_sets(id) ON DELETE CASCADE,
     prerequisite_type PREREQUISITETYPE NOT NULL,
-    ability_name ABILITYNAME,
+    ability_name ABILITYNAMEVANILLA,
     subskill_name VARCHAR(255),
     attribute_name ATTRIBUTENAME,
     dots SMALLINT CHECK (dots >= 0),
