@@ -476,3 +476,58 @@ impl Spell {
         self.traits.description()
     }
 }
+
+pub struct SpellBuilder {
+    level: Option<SpellLevel>,
+    traits: CharmTraitsBuilder,
+}
+
+impl SpellBuilder {
+    pub fn with_spell_level(mut self, spell_level: SpellLevel) -> Self {
+        self.level = Some(spell_level);
+        self
+    }
+
+    pub fn with_name(mut self, name: String) -> Self {
+        self.traits = self.traits.with_name(name);
+        self
+    }
+
+    pub fn with_summary(mut self, summary: String) -> Self {
+        self.traits = self.traits.with_summary(summary);
+        self
+    }
+
+    pub fn with_description(mut self, description: String) -> Self {
+        self.traits = self.traits.with_description(description);
+        self
+    }
+
+    pub fn with_duration(mut self, duration: String) -> Self {
+        self.traits = self.traits.with_duration(duration);
+        self
+    }
+
+    pub fn with_keyword(mut self, keyword: CharmKeyword) -> Self {
+        self.traits = self.traits.with_keyword(keyword);
+        self
+    }
+
+    pub fn with_cost(mut self, cost: CharmCostType, amount: u8) -> Self {
+        self.traits = self.traits.with_cost(cost, amount);
+        self
+    }
+
+    pub fn build(self) -> Result<Spell> {
+        if self.level.is_none() {
+            Err(eyre!("Spell level (Terrestrial, Celestial, Solar) is required"))
+        } else {
+            let traits = self.traits.build()?;
+
+            Ok(Spell {
+                circle: self.level.unwrap(),
+                traits,
+            })
+        }
+    }
+}
