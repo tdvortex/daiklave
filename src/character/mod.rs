@@ -52,12 +52,16 @@ pub struct Character {
     pub weapons: Weapons,
     pub armor: Armor,
     pub merits: Merits,
-    pub exalt_type: ExaltType,
+    exalt_type: ExaltType,
     craft_abilities: CraftAbilities,
     martial_arts_styles: MartialArtistTraits,
 }
 
 impl Character {
+    pub fn blank(placeholder_id: i32, player: Player) -> Character {
+        Character::builder(placeholder_id).with_name("New Character".to_owned()).with_player(player).build().expect("Default CharacterBuilder should be valid")
+    }
+
     pub fn builder(placeholder_id: i32) -> CharacterBuilder {
         CharacterBuilder {
             id: Id::Placeholder(placeholder_id),
@@ -183,6 +187,11 @@ pub struct CharacterBuilder {
 impl CharacterBuilder {
     pub fn id(&self) -> Id {
         self.id
+    }
+
+    pub fn with_placeholder_id(mut self, id: i32) -> Self {
+        self.id = Id::Placeholder(id);
+        self
     }
 
     pub fn with_database_id(mut self, id: i32) -> Self {
@@ -347,6 +356,7 @@ impl CharacterBuilder {
     }
 }
 
+// TODO: refactor to current + spent with total() method
 #[derive(Debug, Default, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct ExperiencePoints {
     pub current: u16,
