@@ -4,9 +4,8 @@ use crate::{
     armor::{Armor, ArmorItem},
     attributes::{AttributeName, Attributes},
     campaign::Campaign,
-    charms::MartialArtsCharm,
     craft::CraftAbilities,
-    exalt_type::ExaltType,
+    exalt_type::{ExaltTypeBuilder},
     health::{Health, WoundPenalty},
     id::Id,
     intimacies::{Intimacies, Intimacy},
@@ -14,7 +13,7 @@ use crate::{
     merits::{Merit, MeritTemplate, Merits},
     player::Player,
     weapons::{EquipHand, Weapon, Weapons},
-    Character,
+    Character, charms::MartialArtsCharm,
 };
 use eyre::Result;
 
@@ -34,7 +33,7 @@ pub struct CharacterBuilder {
     weapons: Weapons,
     armor: Armor,
     merits: Vec<Merit>,
-    exalt_type: ExaltType,
+    exalt_type: ExaltTypeBuilder,
     craft_abilities: CraftAbilities,
     martial_arts_styles: MartialArtistTraits,
 }
@@ -175,13 +174,14 @@ impl CharacterBuilder {
         Ok(self)
     }
 
+    // TODO: fix this
     pub fn with_martial_arts_charm(mut self, charm: MartialArtsCharm) -> Result<Self> {
         self.martial_arts_styles.add_charm(charm)?;
         Ok(self)
     }
 
-    pub fn build(self) -> Character {
-        Character {
+    pub fn build(self) -> Result<Character> {
+        Ok(Character {
             id: self.id,
             player: self.player,
             campaign: self.campaign,
@@ -196,9 +196,9 @@ impl CharacterBuilder {
             weapons: self.weapons,
             armor: self.armor,
             merits: Merits::new(self.merits),
-            exalt_type: self.exalt_type,
+            exalt_type: self.exalt_type.build()?,
             craft_abilities: self.craft_abilities,
             martial_arts_styles: self.martial_arts_styles,
-        }
+        })
     }
 }

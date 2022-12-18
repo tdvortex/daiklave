@@ -47,7 +47,8 @@ impl ExaltType {
     }
 }
 
-struct MortalBuilder {
+#[derive(Debug, Default)]
+pub struct MortalBuilder {
     sorcerer_level: MortalSorcererLevel,
 }
 
@@ -84,9 +85,16 @@ impl MortalBuilder {
     }
 }
 
-enum ExaltTypeBuilder {
+#[derive(Debug)]
+pub(crate) enum ExaltTypeBuilder {
     Mortal(MortalBuilder),
     Solar(SolarTraitsBuilder),
+}
+
+impl Default for ExaltTypeBuilder {
+    fn default() -> Self {
+        Self::Mortal(MortalBuilder::default())
+    }
 }
 
 impl ExaltTypeBuilder {

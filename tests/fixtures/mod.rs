@@ -54,7 +54,7 @@ pub fn create_initial_character(player: &Player) -> Character {
     builder = create_initial_weapons(builder);
     builder = create_initial_merits(builder);
 
-    builder.build()
+    builder.build().unwrap()
 }
 
 pub fn validate_initial_character(

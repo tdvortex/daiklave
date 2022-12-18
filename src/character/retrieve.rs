@@ -100,7 +100,7 @@ impl TryInto<Character> for GetCharacter {
     type Error = eyre::Report;
 
     fn try_into(self) -> Result<Character, Self::Error> {
-        Ok(Character::builder(self.character.id, self.player.into())
+        Character::builder(self.character.id, self.player.into())
             .apply_campaign_row(self.campaign)
             .apply_character_row(self.character)
             .wrap_err("Could not apply character row")?
@@ -133,6 +133,6 @@ impl TryInto<Character> for GetCharacter {
                 charm_tree_rows: self.martial_arts_charm_tree,
             })
             .wrap_err("Could not apply martial arts rows")?
-            .build())
+            .build()
     }
 }

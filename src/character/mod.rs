@@ -59,7 +59,7 @@ pub struct Character {
 
 impl Character {
     pub fn blank(placeholder_id: i32, player: Player) -> Character {
-        Character::builder(placeholder_id, player).build()
+        Character::builder(placeholder_id, player).build().expect("Default CharacterBuilder should not error")
     }
 
     pub fn builder(placeholder_id: i32, player: Player) -> CharacterBuilder {

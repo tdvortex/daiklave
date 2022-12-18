@@ -173,6 +173,7 @@ impl SolarCaste {
     }
 }
 
+#[derive(Debug)]
 pub struct SolarTraitsBuilder {
     essence: Essence,
     limit: Option<Limit>,
