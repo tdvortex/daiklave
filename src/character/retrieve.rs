@@ -13,7 +13,7 @@ use crate::{
     intimacies::tables::IntimacyRow,
     martial_arts::tables::{
         CharacterMartialArtsRow, CharacterMartialArtsSpecialtyRow, MartialArtsCharmKeywordRow,
-        MartialArtsCharmRow, MartialArtsStyleRow,
+        MartialArtsCharmRow, MartialArtsStyleRow, MartialArtsCharmCostRow,
     },
     merits::tables::{MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow},
     player::tables::PlayerRow,
@@ -46,6 +46,7 @@ struct GetCharacter {
     martial_arts_specialties: Option<Vec<CharacterMartialArtsSpecialtyRow>>,
     martial_arts_charms: Option<Vec<MartialArtsCharmRow>>,
     martial_arts_charm_keywords: Option<Vec<MartialArtsCharmKeywordRow>>,
+    martial_arts_charms_costs: Option<Vec<MartialArtsCharmCostRow>>,
     craft_abilities: Option<Vec<CraftAbilityRow>>,
     craft_specialties: Option<Vec<CraftAbilitySpecialtyRow>>,
 }
@@ -127,6 +128,7 @@ impl TryInto<Character> for GetCharacter {
                 self.martial_arts_specialties,
                 self.martial_arts_charms,
                 self.martial_arts_charm_keywords,
+                self.martial_arts_charms_costs,
             )
             .wrap_err("Could not apply martial arts rows")?
             .build()

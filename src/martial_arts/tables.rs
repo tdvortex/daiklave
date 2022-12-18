@@ -1,7 +1,7 @@
 use crate::{
     character::CharacterBuilder,
     charms::{
-        tables::{CharmActionTypePostgres, CharmKeywordPostgres},
+        tables::{CharmActionTypePostgres, CharmKeywordPostgres, CharmCostTypePostgres},
         CharmKeyword, MartialArtsCharm, MartialArtsCharmBuilder,
     },
     id::Id,
@@ -128,6 +128,14 @@ pub(crate) struct MartialArtsCharmKeywordRow {
     charm_keyword: CharmKeywordPostgres,
 }
 
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "martial_arts_charms_costs")]
+pub(crate) struct MartialArtsCharmCostRow {
+    charm_id: i32,
+    cost: CharmCostTypePostgres,
+    amount: i16,
+}
+
 impl CharacterBuilder {
     pub(crate) fn apply_martial_arts(
         mut self,
@@ -136,6 +144,7 @@ impl CharacterBuilder {
         specialty_rows: Option<Vec<CharacterMartialArtsSpecialtyRow>>,
         martial_arts_charm_rows: Option<Vec<MartialArtsCharmRow>>,
         charm_keyword_rows: Option<Vec<MartialArtsCharmKeywordRow>>,
+        charm_cost_rows: Option<Vec<MartialArtsCharmCostRow>>,
     ) -> Result<Self> {
         if character_style_rows.is_none() {
             return Ok(self);
