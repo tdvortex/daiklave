@@ -29,7 +29,6 @@ use crate::martial_arts::MartialArtsStyle;
 use crate::merits::Merits;
 use crate::merits::{Merit, MeritTemplate};
 use crate::player::Player;
-use crate::sorcery::SorcererTraits;
 use crate::weapons::{EquipHand, Weapon, Weapons};
 use serde::{Deserialize, Serialize};
 
@@ -53,7 +52,6 @@ pub struct Character {
     pub armor: Armor,
     pub merits: Merits,
     pub exalt_type: ExaltType,
-    pub sorcery: Option<SorcererTraits>,
     craft_abilities: CraftAbilities,
     martial_arts_styles: MartialArtistTraits,
 }
@@ -166,8 +164,7 @@ pub struct CharacterBuilder {
     weapons: Weapons,
     armor: Armor,
     merits: Vec<Merit>,
-    exalt_type: Option<ExaltType>,
-    sorcery: Option<SorcererTraits>,
+    exalt_type: ExaltType,
     craft_abilities: CraftAbilities,
     martial_arts_styles: MartialArtistTraits,
 }
@@ -317,12 +314,6 @@ impl CharacterBuilder {
             return Err(eyre!("name must be specified"));
         }
 
-        let exalt_type = if let Some(exalt) = self.exalt_type {
-            exalt
-        } else {
-            ExaltType::Mortal
-        };
-
         Ok(Character {
             id: self.id,
             player: self.player.unwrap(),
@@ -338,8 +329,7 @@ impl CharacterBuilder {
             weapons: self.weapons,
             armor: self.armor,
             merits: Merits::new(self.merits),
-            exalt_type,
-            sorcery: self.sorcery,
+            exalt_type: self.exalt_type,
             craft_abilities: self.craft_abilities,
             martial_arts_styles: self.martial_arts_styles,
         })

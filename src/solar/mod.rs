@@ -14,7 +14,7 @@ pub use self::{
 
 use crate::{
     abilities::AbilityNameNoSubskill, anima::AnimaLevel, charms::SolarCharm, essence::Essence,
-    limit::Limit,
+    limit::Limit, sorcery::SolarSorcererLevel,
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -26,6 +26,7 @@ pub struct SolarTraits {
     pub anima: AnimaLevel,
     caste: SolarCaste,
     favored_abilities: [AbilityNameNoSubskill; 5],
+    sorcery_level: SolarSorcererLevel,
     solar_charms: Vec<SolarCharm>,
 }
 
@@ -142,6 +143,7 @@ pub struct SolarTraitsBuilder {
     anima: AnimaLevel,
     caste: Option<SolarCaste>,
     favored: Vec<AbilityNameNoSubskill>,
+    sorcery_level: SolarSorcererLevel,
     solar_charms: Vec<SolarCharm>,
 }
 
@@ -238,6 +240,7 @@ impl SolarTraitsBuilder {
                 anima: self.anima,
                 caste,
                 favored_abilities,
+                sorcery_level: self.sorcery_level,
                 solar_charms: self.solar_charms,
             })
         }

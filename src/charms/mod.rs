@@ -3,6 +3,7 @@ use crate::{
     attributes::AttributeName,
     data_source::{BookReference, DataSource},
     id::Id,
+    sorcery::SpellLevel,
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -221,6 +222,14 @@ impl CharmTraitsBuilder {
     }
 }
 
+pub struct _DragonBloodedCharm {
+    action_type: CharmActionType,
+    ability: AbilityNameNoSubskill,
+    ability_requirement: u8,
+    essence_requirement: u8,
+    traits: CharmTraits,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SolarCharm {
     action_type: CharmActionType,
@@ -228,21 +237,13 @@ pub struct SolarCharm {
     ability_requirement: u8,
     essence_requirement: u8,
     traits: CharmTraits,
+    prerequisite_charms: Vec<Id>,
 }
 
 pub struct _LunarCharm {
-    /// If None, implies Universal Charm
     action_type: CharmActionType,
     attribute: Option<AttributeName>,
     attribute_requirement: u8,
-    essence_requirement: u8,
-    traits: CharmTraits,
-}
-
-pub struct _DragonBloodedCharm {
-    action_type: CharmActionType,
-    ability: AbilityNameNoSubskill,
-    ability_requirement: u8,
     essence_requirement: u8,
     traits: CharmTraits,
 }
@@ -426,7 +427,52 @@ impl MartialArtsCharmBuilder {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 pub struct Spell {
+    circle: SpellLevel,
     traits: CharmTraits,
+}
+
+impl PartialEq for Spell {
+    fn eq(&self, other: &Self) -> bool {
+        self.traits == other.traits
+    }
+}
+
+impl Spell {
+    pub fn circle(&self) -> SpellLevel {
+        self.circle
+    }
+
+    pub fn id(&self) -> Id {
+        self.traits.id()
+    }
+
+    pub fn data_source(&self) -> &DataSource {
+        self.traits.data_source()
+    }
+
+    pub fn name(&self) -> &str {
+        self.traits.name()
+    }
+
+    pub fn summary(&self) -> Option<&str> {
+        self.traits.summary()
+    }
+
+    pub fn duration(&self) -> &str {
+        self.traits.duration()
+    }
+
+    pub fn keywords(&self) -> &Vec<CharmKeyword> {
+        self.traits.keywords()
+    }
+
+    pub fn costs(&self) -> &Vec<(CharmCostType, u8)> {
+        self.traits.costs()
+    }
+
+    pub fn description(&self) -> &str {
+        self.traits.description()
+    }
 }
