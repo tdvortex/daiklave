@@ -1,3 +1,3 @@
 [workspace]
 
-members = ["daiklave-core",]
+members = ["daiklave-core", "daiklave-postgres"]
