@@ -38,6 +38,8 @@ impl TryFrom<Spell> for CelestialCircleSpell {
         }
     }
 }
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 struct SolarCircleSpell(pub Spell);
 
 impl TryFrom<Spell> for SolarCircleSpell {
@@ -53,7 +55,7 @@ impl TryFrom<Spell> for SolarCircleSpell {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-struct ShapingRitual {
+pub struct ShapingRitual {
     id: Id,
     name: String,
     description: String,
@@ -70,7 +72,7 @@ impl ShapingRitual {
     }
 }
 
-struct ShapingRitualBuilder {
+pub struct ShapingRitualBuilder {
     id: Id,
     data_source: DataSource,
     name: Option<String>,
@@ -116,6 +118,53 @@ pub struct TerrestrialCircleTraits {
     other_spells: Vec<TerrestrialCircleSpell>,
 }
 
+impl TerrestrialCircleTraits {
+    pub fn new(shaping_ritual: ShapingRitual, control_spell: Spell) -> Result<TerrestrialCircleTraits> {
+        Ok(TerrestrialCircleTraits {
+            shaping_ritual,
+            control_spell: control_spell.try_into()?,
+            other_spells: Vec::new(),
+        })
+    }
+
+    pub fn add_spell(&mut self, spell: Spell) -> Result<()> {
+        if spell == self.control_spell.0 {
+            return Ok(());
+        }
+
+        let terrestrial_spell = spell.try_into()?;
+        self.other_spells.push(terrestrial_spell);
+        self.other_spells.sort_by(|a, b| a.0.name().cmp(b.0.name()));
+        self.other_spells.dedup();
+        Ok(())
+    }
+
+    pub fn remove_spell(&mut self, spell_id: Id) -> Result<()> {
+        if self.control_spell.0.id() == spell_id {
+            return Err(eyre!("Cannot remove control spell"));
+        }
+
+        self.other_spells.retain(|terrestrial| terrestrial.0.id() != spell_id);
+        Ok(())
+    }
+
+    pub fn swap_control_spell(&mut self, new_control_spell_id: Id) -> Result<()> {
+        let remove_index = self.other_spells.iter().enumerate().find_map(|(index, terrestrial)| if terrestrial.0.id() == new_control_spell_id {
+            Some(index)
+        } else {
+            None
+        }).ok_or_else(|| eyre!("Spell id {} is not known", *new_control_spell_id))?;
+
+        let mut swap_spell = self.other_spells.remove(remove_index);
+        std::mem::swap(&mut self.control_spell, &mut swap_spell);
+        self.add_spell(swap_spell.0)
+    }
+
+    pub fn swap_shaping_ritual(&mut self, new_shaping_ritual: ShapingRitual) {
+        self.shaping_ritual = new_shaping_ritual;
+    }
+}
+
 impl Sorcerer for TerrestrialCircleTraits {
     fn shaping_rituals(&self) -> Option<Vec<&ShapingRitual>> {
         Some(vec![&self.shaping_ritual])
@@ -140,6 +189,53 @@ pub struct CelestialCircleTraits {
     other_spells: Vec<CelestialCircleSpell>,
 }
 
+impl CelestialCircleTraits {
+    pub fn new(shaping_ritual: ShapingRitual, control_spell: Spell) -> Result<CelestialCircleTraits> {
+        Ok(CelestialCircleTraits {
+            shaping_ritual,
+            control_spell: control_spell.try_into()?,
+            other_spells: Vec::new(),
+        })
+    }
+
+    pub fn add_spell(&mut self, spell: Spell) -> Result<()> {
+        if spell == self.control_spell.0 {
+            return Ok(());
+        }
+
+        let celestial_spell = spell.try_into()?;
+        self.other_spells.push(celestial_spell);
+        self.other_spells.sort_by(|a, b| a.0.name().cmp(b.0.name()));
+        self.other_spells.dedup();
+        Ok(())
+    }
+
+    pub fn remove_spell(&mut self, spell_id: Id) -> Result<()> {
+        if self.control_spell.0.id() == spell_id {
+            return Err(eyre!("Cannot remove control spell"));
+        }
+
+        self.other_spells.retain(|celestial| celestial.0.id() != spell_id);
+        Ok(())
+    }
+
+    pub fn swap_control_spell(&mut self, new_control_spell_id: Id) -> Result<()> {
+        let remove_index = self.other_spells.iter().enumerate().find_map(|(index, celestial)| if celestial.0.id() == new_control_spell_id {
+            Some(index)
+        } else {
+            None
+        }).ok_or_else(|| eyre!("Spell id {} is not known", *new_control_spell_id))?;
+
+        let mut swap_spell = self.other_spells.remove(remove_index);
+        std::mem::swap(&mut self.control_spell, &mut swap_spell);
+        self.add_spell(swap_spell.0)
+    }
+
+    pub fn swap_shaping_ritual(&mut self, new_shaping_ritual: ShapingRitual) {
+        self.shaping_ritual = new_shaping_ritual;
+    }
+}
+
 impl Sorcerer for CelestialCircleTraits {
     fn shaping_rituals(&self) -> Option<Vec<&ShapingRitual>> {
         Some(vec![&self.shaping_ritual])
@@ -160,8 +256,55 @@ impl Sorcerer for CelestialCircleTraits {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SolarCircleTraits {
     shaping_ritual: ShapingRitual,
-    control_spell: CelestialCircleSpell,
-    other_spells: Vec<CelestialCircleSpell>,
+    control_spell: SolarCircleSpell,
+    other_spells: Vec<SolarCircleSpell>,
+}
+
+impl SolarCircleTraits {
+    pub fn new(shaping_ritual: ShapingRitual, control_spell: Spell) -> Result<SolarCircleTraits> {
+        Ok(SolarCircleTraits {
+            shaping_ritual,
+            control_spell: control_spell.try_into()?,
+            other_spells: Vec::new(),
+        })
+    }
+
+    pub fn add_spell(&mut self, spell: Spell) -> Result<()> {
+        if spell == self.control_spell.0 {
+            return Ok(());
+        }
+
+        let solar_spell = spell.try_into()?;
+        self.other_spells.push(solar_spell);
+        self.other_spells.sort_by(|a, b| a.0.name().cmp(b.0.name()));
+        self.other_spells.dedup();
+        Ok(())
+    }
+
+    pub fn remove_spell(&mut self, spell_id: Id) -> Result<()> {
+        if self.control_spell.0.id() == spell_id {
+            return Err(eyre!("Cannot remove control spell"));
+        }
+
+        self.other_spells.retain(|solar| solar.0.id() != spell_id);
+        Ok(())
+    }
+
+    pub fn swap_control_spell(&mut self, new_control_spell_id: Id) -> Result<()> {
+        let remove_index = self.other_spells.iter().enumerate().find_map(|(index, solar)| if solar.0.id() == new_control_spell_id {
+            Some(index)
+        } else {
+            None
+        }).ok_or_else(|| eyre!("Spell id {} is not known", *new_control_spell_id))?;
+
+        let mut swap_spell = self.other_spells.remove(remove_index);
+        std::mem::swap(&mut self.control_spell, &mut swap_spell);
+        self.add_spell(swap_spell.0)
+    }
+
+    pub fn swap_shaping_ritual(&mut self, new_shaping_ritual: ShapingRitual) {
+        self.shaping_ritual = new_shaping_ritual;
+    }
 }
 
 impl Sorcerer for SolarCircleTraits {
