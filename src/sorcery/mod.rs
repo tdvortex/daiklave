@@ -1,4 +1,8 @@
-use crate::{charms::Spell, data_source::{DataSource, BookReference}, id::Id};
+use crate::{
+    charms::Spell,
+    data_source::{BookReference, DataSource},
+    id::Id,
+};
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
 
@@ -64,11 +68,24 @@ pub struct ShapingRitual {
 
 impl ShapingRitual {
     pub fn from_book(id: Id, book_title: String, page_number: i16) -> ShapingRitualBuilder {
-        ShapingRitualBuilder { id, data_source: DataSource::Book(BookReference{book_title, page_number}), name: None, description: None }
+        ShapingRitualBuilder {
+            id,
+            data_source: DataSource::Book(BookReference {
+                book_title,
+                page_number,
+            }),
+            name: None,
+            description: None,
+        }
     }
 
     pub fn custom(id: Id, creator_id: Id) -> ShapingRitualBuilder {
-        ShapingRitualBuilder { id, data_source: DataSource::Custom(creator_id), name: None, description: None }
+        ShapingRitualBuilder {
+            id,
+            data_source: DataSource::Custom(creator_id),
+            name: None,
+            description: None,
+        }
     }
 }
 
@@ -96,11 +113,11 @@ impl ShapingRitualBuilder {
         } else if self.description.is_none() {
             Err(eyre!("Shaping ritual description is required"))
         } else {
-            Ok(ShapingRitual{
+            Ok(ShapingRitual {
                 id: self.id,
                 name: self.name.unwrap(),
                 description: self.description.unwrap(),
-                data_source: self.data_source
+                data_source: self.data_source,
             })
         }
     }
@@ -119,7 +136,10 @@ pub struct TerrestrialCircleTraits {
 }
 
 impl TerrestrialCircleTraits {
-    pub fn new(shaping_ritual: ShapingRitual, control_spell: Spell) -> Result<TerrestrialCircleTraits> {
+    pub fn new(
+        shaping_ritual: ShapingRitual,
+        control_spell: Spell,
+    ) -> Result<TerrestrialCircleTraits> {
         Ok(TerrestrialCircleTraits {
             shaping_ritual,
             control_spell: control_spell.try_into()?,
@@ -144,7 +164,8 @@ impl TerrestrialCircleTraits {
             return Err(eyre!("Cannot remove control spell"));
         }
 
-        self.other_spells.retain(|terrestrial| terrestrial.0.id() != spell_id);
+        self.other_spells
+            .retain(|terrestrial| terrestrial.0.id() != spell_id);
         Ok(())
     }
 
@@ -153,11 +174,18 @@ impl TerrestrialCircleTraits {
             return Ok(());
         }
 
-        let remove_index = self.other_spells.iter().enumerate().find_map(|(index, terrestrial)| if terrestrial.0.id() == new_control_spell_id {
-            Some(index)
-        } else {
-            None
-        }).ok_or_else(|| eyre!("Spell id {} is not known", *new_control_spell_id))?;
+        let remove_index = self
+            .other_spells
+            .iter()
+            .enumerate()
+            .find_map(|(index, terrestrial)| {
+                if terrestrial.0.id() == new_control_spell_id {
+                    Some(index)
+                } else {
+                    None
+                }
+            })
+            .ok_or_else(|| eyre!("Spell id {} is not known", *new_control_spell_id))?;
 
         let mut swap_spell = self.other_spells.remove(remove_index);
         std::mem::swap(&mut self.control_spell, &mut swap_spell);
@@ -194,7 +222,10 @@ pub struct CelestialCircleTraits {
 }
 
 impl CelestialCircleTraits {
-    pub fn new(shaping_ritual: ShapingRitual, control_spell: Spell) -> Result<CelestialCircleTraits> {
+    pub fn new(
+        shaping_ritual: ShapingRitual,
+        control_spell: Spell,
+    ) -> Result<CelestialCircleTraits> {
         Ok(CelestialCircleTraits {
             shaping_ritual,
             control_spell: control_spell.try_into()?,
@@ -219,7 +250,8 @@ impl CelestialCircleTraits {
             return Err(eyre!("Cannot remove control spell"));
         }
 
-        self.other_spells.retain(|celestial| celestial.0.id() != spell_id);
+        self.other_spells
+            .retain(|celestial| celestial.0.id() != spell_id);
         Ok(())
     }
 
@@ -227,11 +259,18 @@ impl CelestialCircleTraits {
         if self.control_spell.0.id() == new_control_spell_id {
             return Ok(());
         }
-        let remove_index = self.other_spells.iter().enumerate().find_map(|(index, celestial)| if celestial.0.id() == new_control_spell_id {
-            Some(index)
-        } else {
-            None
-        }).ok_or_else(|| eyre!("Spell id {} is not known", *new_control_spell_id))?;
+        let remove_index = self
+            .other_spells
+            .iter()
+            .enumerate()
+            .find_map(|(index, celestial)| {
+                if celestial.0.id() == new_control_spell_id {
+                    Some(index)
+                } else {
+                    None
+                }
+            })
+            .ok_or_else(|| eyre!("Spell id {} is not known", *new_control_spell_id))?;
 
         let mut swap_spell = self.other_spells.remove(remove_index);
         std::mem::swap(&mut self.control_spell, &mut swap_spell);
@@ -301,12 +340,19 @@ impl SolarCircleTraits {
         if self.control_spell.0.id() == new_control_spell_id {
             return Ok(());
         }
-        
-        let remove_index = self.other_spells.iter().enumerate().find_map(|(index, solar)| if solar.0.id() == new_control_spell_id {
-            Some(index)
-        } else {
-            None
-        }).ok_or_else(|| eyre!("Spell id {} is not known", *new_control_spell_id))?;
+
+        let remove_index = self
+            .other_spells
+            .iter()
+            .enumerate()
+            .find_map(|(index, solar)| {
+                if solar.0.id() == new_control_spell_id {
+                    Some(index)
+                } else {
+                    None
+                }
+            })
+            .ok_or_else(|| eyre!("Spell id {} is not known", *new_control_spell_id))?;
 
         let mut swap_spell = self.other_spells.remove(remove_index);
         std::mem::swap(&mut self.control_spell, &mut swap_spell);
@@ -345,7 +391,7 @@ impl MortalSorcererLevel {
     pub fn add_spell(&mut self, spell: Spell) -> Result<()> {
         match (&spell.circle(), self) {
             (_, MortalSorcererLevel::None) => Err(eyre!("Not a sorcerer, cannot learn spells")),
-            (SpellLevel::Terrestrial, MortalSorcererLevel::Terrestrial(terrestrial_traits))  => {
+            (SpellLevel::Terrestrial, MortalSorcererLevel::Terrestrial(terrestrial_traits)) => {
                 terrestrial_traits.add_spell(spell)
             }
             (_, _) => Err(eyre!("Spell is too high level to be learned")),
@@ -387,8 +433,8 @@ impl LunarSorcererLevel {
     pub fn _add_spell(&mut self, spell: Spell) -> Result<()> {
         match (&spell.circle(), self) {
             (_, LunarSorcererLevel::None) => Err(eyre!("Not a sorcerer, cannot learn spells")),
-            (SpellLevel::Terrestrial, LunarSorcererLevel::_Terrestrial(terrestrial_traits)) 
-            | (SpellLevel::Terrestrial, LunarSorcererLevel::_Celestial(terrestrial_traits, _))=> {
+            (SpellLevel::Terrestrial, LunarSorcererLevel::_Terrestrial(terrestrial_traits))
+            | (SpellLevel::Terrestrial, LunarSorcererLevel::_Celestial(terrestrial_traits, _)) => {
                 terrestrial_traits.add_spell(spell)
             }
             (SpellLevel::Celestial, LunarSorcererLevel::_Celestial(_, celestial_traits)) => {
@@ -451,10 +497,13 @@ enum DragonBloodedSorcererLevel {
 impl DragonBloodedSorcererLevel {
     pub fn _add_spell(&mut self, spell: Spell) -> Result<()> {
         match (&spell.circle(), self) {
-            (_, DragonBloodedSorcererLevel::None) => Err(eyre!("Not a sorcerer, cannot learn spells")),
-            (SpellLevel::Terrestrial, DragonBloodedSorcererLevel::_Terrestrial(terrestrial_traits))  => {
-                terrestrial_traits.add_spell(spell)
+            (_, DragonBloodedSorcererLevel::None) => {
+                Err(eyre!("Not a sorcerer, cannot learn spells"))
             }
+            (
+                SpellLevel::Terrestrial,
+                DragonBloodedSorcererLevel::_Terrestrial(terrestrial_traits),
+            ) => terrestrial_traits.add_spell(spell),
             (_, _) => Err(eyre!("Spell is too high level to be learned")),
         }
     }
@@ -502,7 +551,7 @@ impl SolarSorcererLevel {
     pub fn add_spell(&mut self, spell: Spell) -> Result<()> {
         match (&spell.circle(), self) {
             (_, SolarSorcererLevel::None) => Err(eyre!("Not a sorcerer, cannot learn spells")),
-            (SpellLevel::Terrestrial, SolarSorcererLevel::Terrestrial(terrestrial_traits)) 
+            (SpellLevel::Terrestrial, SolarSorcererLevel::Terrestrial(terrestrial_traits))
             | (SpellLevel::Terrestrial, SolarSorcererLevel::Celestial(terrestrial_traits, _))
             | (SpellLevel::Terrestrial, SolarSorcererLevel::Solar(terrestrial_traits, _, _)) => {
                 terrestrial_traits.add_spell(spell)

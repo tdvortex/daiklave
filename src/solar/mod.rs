@@ -13,8 +13,15 @@ pub use self::{
 };
 
 use crate::{
-    abilities::AbilityNameNoSubskill, anima::AnimaLevel, charms::{SolarCharm, Spell}, essence::Essence,
-    limit::Limit, sorcery::{SolarSorcererLevel, Sorcerer, ShapingRitual, TerrestrialCircleTraits, CelestialCircleTraits, SolarCircleTraits},
+    abilities::AbilityNameNoSubskill,
+    anima::AnimaLevel,
+    charms::{SolarCharm, Spell},
+    essence::Essence,
+    limit::Limit,
+    sorcery::{
+        CelestialCircleTraits, ShapingRitual, SolarCircleTraits, SolarSorcererLevel, Sorcerer,
+        TerrestrialCircleTraits,
+    },
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -221,10 +228,17 @@ impl SolarTraitsBuilder {
         self
     }
 
-    pub fn with_terrestrial_circle_sorcery(mut self, shaping_ritual: ShapingRitual, control_spell: Spell) -> Result<Self> {
+    pub fn with_terrestrial_circle_sorcery(
+        mut self,
+        shaping_ritual: ShapingRitual,
+        control_spell: Spell,
+    ) -> Result<Self> {
         match &mut self.sorcery_level {
             SolarSorcererLevel::None => {
-                self.sorcery_level = SolarSorcererLevel::Terrestrial(TerrestrialCircleTraits::new(shaping_ritual, control_spell)?);
+                self.sorcery_level = SolarSorcererLevel::Terrestrial(TerrestrialCircleTraits::new(
+                    shaping_ritual,
+                    control_spell,
+                )?);
             }
             SolarSorcererLevel::Terrestrial(terrestrial_traits)
             | SolarSorcererLevel::Celestial(terrestrial_traits, _)
@@ -239,14 +253,23 @@ impl SolarTraitsBuilder {
         Ok(self)
     }
 
-    pub fn with_celestial_circle_sorcery(mut self, shaping_ritual: ShapingRitual, control_spell: Spell) -> Result<Self> {
+    pub fn with_celestial_circle_sorcery(
+        mut self,
+        shaping_ritual: ShapingRitual,
+        control_spell: Spell,
+    ) -> Result<Self> {
         match &mut self.sorcery_level {
-            SolarSorcererLevel::None => Err(eyre!("Must be a Terrestrial sorcerer before becoming Celestial")),
+            SolarSorcererLevel::None => Err(eyre!(
+                "Must be a Terrestrial sorcerer before becoming Celestial"
+            )),
             SolarSorcererLevel::Terrestrial(terrestrial_traits) => {
-                self.sorcery_level = SolarSorcererLevel::Celestial(terrestrial_traits.clone(), CelestialCircleTraits::new(shaping_ritual, control_spell)?);
+                self.sorcery_level = SolarSorcererLevel::Celestial(
+                    terrestrial_traits.clone(),
+                    CelestialCircleTraits::new(shaping_ritual, control_spell)?,
+                );
                 Ok(self)
             }
-            SolarSorcererLevel::Celestial(_, celestial_traits) 
+            SolarSorcererLevel::Celestial(_, celestial_traits)
             | SolarSorcererLevel::Solar(_, celestial_traits, _) => {
                 celestial_traits.swap_shaping_ritual(shaping_ritual);
                 let id = control_spell.id();
@@ -257,11 +280,21 @@ impl SolarTraitsBuilder {
         }
     }
 
-    pub fn with_solar_circle_sorcery(mut self, shaping_ritual: ShapingRitual, control_spell: Spell) -> Result<Self> {
+    pub fn with_solar_circle_sorcery(
+        mut self,
+        shaping_ritual: ShapingRitual,
+        control_spell: Spell,
+    ) -> Result<Self> {
         match &mut self.sorcery_level {
-            SolarSorcererLevel::None | SolarSorcererLevel::Terrestrial(_) => Err(eyre!("Must be Terrestial and Celestial before becoming Solar sorcerer")),
+            SolarSorcererLevel::None | SolarSorcererLevel::Terrestrial(_) => Err(eyre!(
+                "Must be Terrestial and Celestial before becoming Solar sorcerer"
+            )),
             SolarSorcererLevel::Celestial(terrestrial_traits, celestial_traits) => {
-                self.sorcery_level = SolarSorcererLevel::Solar(terrestrial_traits.clone(), celestial_traits.clone(), SolarCircleTraits::new(shaping_ritual, control_spell)?);
+                self.sorcery_level = SolarSorcererLevel::Solar(
+                    terrestrial_traits.clone(),
+                    celestial_traits.clone(),
+                    SolarCircleTraits::new(shaping_ritual, control_spell)?,
+                );
                 Ok(self)
             }
             SolarSorcererLevel::Solar(_, _, solar_traits) => {

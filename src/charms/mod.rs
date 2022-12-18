@@ -534,7 +534,9 @@ impl SpellBuilder {
 
     pub fn build(self) -> Result<Spell> {
         if self.level.is_none() {
-            Err(eyre!("Spell level (Terrestrial, Celestial, Solar) is required"))
+            Err(eyre!(
+                "Spell level (Terrestrial, Celestial, Solar) is required"
+            ))
         } else {
             let traits = self.traits.build()?;
 
