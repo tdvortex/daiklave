@@ -118,8 +118,9 @@ pub enum AbilityName<'a> {
     War,
 }
 
-// The name of any non-Craft, non-Martial Arts ability.
-/// This is used to identify all ability ratings that must exist for a character.
+/// This is used to identify all ability ratings that must exist for a 
+/// character. This means it specifically excludes all Craft abilities and
+/// MartialArts styles.
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord)]
 pub enum AbilityNameVanilla {
     /// The Archery ability

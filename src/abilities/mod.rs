@@ -148,6 +148,8 @@ impl Iterator for AbilityNameVanillaIter {
 impl FusedIterator for AbilityNameVanillaIter {}
 
 impl<'a> AbilityName<'a> {
+    /// Returns None for 'vanilla' abilities, Some(focus) for Craft, and
+    /// Some(style_name) for MartialArts.
     pub fn subskill(&self) -> Option<&str> {
         match self {
             AbilityName::Craft(focus) => Some(*focus),
@@ -156,6 +158,8 @@ impl<'a> AbilityName<'a> {
         }
     }
 
+    /// Returns the name of the ability only, without any associated Craft
+    /// focus or Martial Arts style.
     pub fn without_subskill(&self) -> AbilityNameNoSubskill {
         match self {
             AbilityName::Archery => AbilityNameNoSubskill::Archery,
@@ -250,20 +254,27 @@ pub(crate) struct Abilities {
     war: AbilityRating,
 }
 
+/// A read-only reference to a specific character ability, such as Brawl or
+/// MartialArts(Tiger Style), including its dot rating and specialties.
 pub struct Ability<'a> {
     pub(crate) name: AbilityName<'a>,
     pub(crate) rating: &'a AbilityRating,
 }
 
 impl<'a> Ability<'a> {
+    /// Returns the name of the ability, with any Craft focus or Martial Arts
+    /// style name if applicable.
     pub fn name(&self) -> &AbilityName {
         &self.name
     }
 
+    /// Returns the dot rating of the ability, typically 0 to 5.
     pub fn dots(&self) -> u8 {
         self.rating.dots()
     }
 
+    /// If the ability has any specialties, returns Some with a reference to
+    /// a Vec containing them.
     pub fn specialties(&self) -> Option<&Vec<String>> {
         self.rating.specialties()
     }
