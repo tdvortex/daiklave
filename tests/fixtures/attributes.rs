@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use exalted_3e_gui::{
+use daiklave::{
     attributes::{AttributeName, Attributes},
     character::CharacterBuilder,
 };

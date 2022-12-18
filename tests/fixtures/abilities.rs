@@ -1,4 +1,4 @@
-use exalted_3e_gui::{
+use daiklave::{
     abilities::{AbilityNameNoSubskill, AbilityNameVanilla},
     character::CharacterBuilder,
     id::Id,

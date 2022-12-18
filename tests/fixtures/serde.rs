@@ -1,4 +1,4 @@
-use exalted_3e_gui::{player::Player, Character};
+use daiklave::{player::Player, Character};
 use postcard::from_bytes;
 
 use super::{validate_initial_character, validate_modified_character};

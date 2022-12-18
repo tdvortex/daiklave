@@ -1,4 +1,4 @@
-use exalted_3e_gui::{
+use daiklave::{
     abilities::AbilityNameVanilla,
     attributes::AttributeName,
     character::CharacterBuilder,

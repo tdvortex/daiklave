@@ -1,4 +1,4 @@
-use exalted_3e_gui::{
+use daiklave::{
     armor::{Armor, ArmorItem, ArmorTag},
     character::CharacterBuilder,
     data_source::{BookReference, DataSource},

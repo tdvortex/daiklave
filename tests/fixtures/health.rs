@@ -1,4 +1,4 @@
-use exalted_3e_gui::{
+use daiklave::{
     character::CharacterBuilder,
     health::{DamageLevel, Health, WoundPenalty},
 };

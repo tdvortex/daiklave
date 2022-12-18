@@ -7,7 +7,7 @@ mod intimacies;
 mod merits;
 pub mod serde;
 mod weapons;
-use exalted_3e_gui::{player::Player, Character};
+use daiklave::{player::Player, Character};
 
 pub use self::serde::validate_player_serde;
 

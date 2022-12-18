@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use exalted_3e_gui::{
+use daiklave::{
     character::CharacterBuilder,
     id::Id,
     intimacies::{Intimacy, IntimacyLevel, IntimacyType},

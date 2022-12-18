@@ -1,4 +1,4 @@
-use exalted_3e_gui::{
+use daiklave::{
     armor::destroy_armor, character::destroy_character, create_player, destroy_player,
     merits::destroy_merits, update_character, weapons::destroy_weapons, Character,
 };
