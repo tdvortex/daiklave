@@ -149,6 +149,10 @@ impl TerrestrialCircleTraits {
     }
 
     pub fn swap_control_spell(&mut self, new_control_spell_id: Id) -> Result<()> {
+        if self.control_spell.0.id() == new_control_spell_id {
+            return Ok(());
+        }
+
         let remove_index = self.other_spells.iter().enumerate().find_map(|(index, terrestrial)| if terrestrial.0.id() == new_control_spell_id {
             Some(index)
         } else {
@@ -220,6 +224,9 @@ impl CelestialCircleTraits {
     }
 
     pub fn swap_control_spell(&mut self, new_control_spell_id: Id) -> Result<()> {
+        if self.control_spell.0.id() == new_control_spell_id {
+            return Ok(());
+        }
         let remove_index = self.other_spells.iter().enumerate().find_map(|(index, celestial)| if celestial.0.id() == new_control_spell_id {
             Some(index)
         } else {
@@ -291,6 +298,10 @@ impl SolarCircleTraits {
     }
 
     pub fn swap_control_spell(&mut self, new_control_spell_id: Id) -> Result<()> {
+        if self.control_spell.0.id() == new_control_spell_id {
+            return Ok(());
+        }
+        
         let remove_index = self.other_spells.iter().enumerate().find_map(|(index, solar)| if solar.0.id() == new_control_spell_id {
             Some(index)
         } else {

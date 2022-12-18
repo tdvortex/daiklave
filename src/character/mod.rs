@@ -29,6 +29,7 @@ use crate::martial_arts::MartialArtsStyle;
 use crate::merits::Merits;
 use crate::merits::{Merit, MeritTemplate};
 use crate::player::Player;
+use crate::sorcery::Sorcerer;
 use crate::weapons::{EquipHand, Weapon, Weapons};
 use serde::{Deserialize, Serialize};
 
@@ -145,6 +146,16 @@ impl Character {
     pub fn remove_martial_arts_specialty(&mut self, style_id: Id, specialty: &str) -> Result<()> {
         self.martial_arts_styles
             .remove_specialty(style_id, specialty)
+    }
+}
+
+impl Sorcerer for Character {
+    fn shaping_rituals(&self) -> Option<Vec<&crate::sorcery::ShapingRitual>> {
+        self.exalt_type.shaping_rituals()
+    }
+
+    fn spells(&self) -> Option<Vec<(&crate::charms::Spell, bool)>> {
+        self.exalt_type.spells()
     }
 }
 
