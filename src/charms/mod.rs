@@ -254,6 +254,7 @@ pub struct MartialArtsCharm {
     martial_arts_requirement: u8,
     essence_requirement: u8,
     traits: CharmTraits,
+    prerequisite_charms: Vec<Id>,
 }
 
 impl PartialEq for MartialArtsCharm {
@@ -270,6 +271,7 @@ impl MartialArtsCharm {
             martial_arts_requirement: None,
             essence_requirement: None,
             traits: CharmTraits::from_book(id, book_title, page_number),
+            prerequisite_charms: Vec::new(),
         }
     }
 
@@ -280,6 +282,7 @@ impl MartialArtsCharm {
             martial_arts_requirement: None,
             essence_requirement: None,
             traits: CharmTraits::custom(id, creator_id),
+            prerequisite_charms: Vec::new(),
         }
     }
 
@@ -330,6 +333,10 @@ impl MartialArtsCharm {
     pub fn costs(&self) -> &Vec<(CharmCostType, u8)> {
         self.traits.costs()
     }
+
+    pub fn prerequisite_charm_ids(&self) -> &Vec<Id> {
+        &self.prerequisite_charms
+    }
 }
 
 pub struct MartialArtsCharmBuilder {
@@ -338,6 +345,7 @@ pub struct MartialArtsCharmBuilder {
     martial_arts_requirement: Option<u8>,
     essence_requirement: Option<u8>,
     traits: CharmTraitsBuilder,
+    prerequisite_charms: Vec<Id>,
 }
 
 impl MartialArtsCharmBuilder {
@@ -391,6 +399,13 @@ impl MartialArtsCharmBuilder {
         self
     }
 
+    pub fn with_charm_prerequisite(mut self, martial_arts_charm_id: Id) -> Self {
+        self.prerequisite_charms.push(martial_arts_charm_id);
+        self.prerequisite_charms.sort();
+        self.prerequisite_charms.dedup();
+        self
+    }
+
     pub fn build(self) -> Result<MartialArtsCharm> {
         Ok(MartialArtsCharm {
             style_id: self
@@ -406,6 +421,7 @@ impl MartialArtsCharmBuilder {
                 .essence_requirement
                 .ok_or_else(|| eyre!("Essence dots level required for Martial Arts charms"))?,
             traits: self.traits.build()?,
+            prerequisite_charms: self.prerequisite_charms,
         })
     }
 }

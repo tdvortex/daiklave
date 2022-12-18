@@ -136,67 +136,75 @@ pub(crate) struct MartialArtsCharmCostRow {
     amount: i16,
 }
 
+#[derive(Debug, sqlx::Type)]
+#[sqlx(type_name = "martial_arts_charm_tree")]
+pub(crate) struct MartialArtsCharmTreeRow {
+    child_id: i32,
+    parent_id: i32,
+}
+
+pub(crate) struct AllMartialArtsRows {
+    pub style_rows: Option<Vec<MartialArtsStyleRow>>,
+    pub character_style_rows: Option<Vec<CharacterMartialArtsRow>>,
+    pub specialty_rows: Option<Vec<CharacterMartialArtsSpecialtyRow>>,
+    pub martial_arts_charm_rows: Option<Vec<MartialArtsCharmRow>>,
+    pub charm_keyword_rows: Option<Vec<MartialArtsCharmKeywordRow>>,
+    pub charm_cost_rows: Option<Vec<MartialArtsCharmCostRow>>,
+    pub charm_tree_rows: Option<Vec<MartialArtsCharmTreeRow>>,
+}
+
 impl CharacterBuilder {
-    pub(crate) fn apply_martial_arts(
-        mut self,
-        style_rows: Option<Vec<MartialArtsStyleRow>>,
-        character_style_rows: Option<Vec<CharacterMartialArtsRow>>,
-        specialty_rows: Option<Vec<CharacterMartialArtsSpecialtyRow>>,
-        martial_arts_charm_rows: Option<Vec<MartialArtsCharmRow>>,
-        charm_keyword_rows: Option<Vec<MartialArtsCharmKeywordRow>>,
-        charm_cost_rows: Option<Vec<MartialArtsCharmCostRow>>,
-    ) -> Result<Self> {
-        if character_style_rows.is_none() {
+    pub(crate) fn apply_martial_arts(mut self, all_rows: AllMartialArtsRows) -> Result<Self> {
+        if all_rows.character_style_rows.is_none() {
             return Ok(self);
         }
 
-        if style_rows.is_none() {
+        if all_rows.style_rows.is_none() {
             return Err(eyre!("No styles available to apply to character"));
         }
 
         // Construct styles from style rows, leave space for specialties
-        let mut style_map =
-            style_rows
-                .unwrap()
-                .into_iter()
-                .fold(Ok(HashMap::new()), |result_map, row| {
-                    result_map.and_then(|mut map| {
-                        let builder = if row.book_title.is_some()
-                            && row.page_number.is_some()
-                            && row.creator_id.is_none()
-                        {
-                            MartialArtsStyle::from_book(
-                                Id::Database(row.id),
-                                row.book_title.unwrap(),
-                                row.page_number.unwrap(),
-                            )
-                        } else if row.book_title.is_none()
-                            && row.page_number.is_none()
-                            && row.creator_id.is_some()
-                        {
-                            MartialArtsStyle::custom(
-                                Id::Database(row.id),
-                                Id::Database(row.creator_id.unwrap()),
-                            )
-                        } else {
-                            return Err(eyre!(
-                        "Database error: inconsistent data source for martial arts style {}",
-                        row.id
-                    ));
-                        };
+        let mut style_map = all_rows.style_rows.unwrap().into_iter().fold(
+            Ok(HashMap::new()),
+            |result_map, row| {
+                result_map.and_then(|mut map| {
+                    let builder = if row.book_title.is_some()
+                        && row.page_number.is_some()
+                        && row.creator_id.is_none()
+                    {
+                        MartialArtsStyle::from_book(
+                            Id::Database(row.id),
+                            row.book_title.unwrap(),
+                            row.page_number.unwrap(),
+                        )
+                    } else if row.book_title.is_none()
+                        && row.page_number.is_none()
+                        && row.creator_id.is_some()
+                    {
+                        MartialArtsStyle::custom(
+                            Id::Database(row.id),
+                            Id::Database(row.creator_id.unwrap()),
+                        )
+                    } else {
+                        return Err(eyre!(
+                            "Database error: inconsistent data source for martial arts style {}",
+                            row.id
+                        ));
+                    };
 
-                        let style = builder
-                            .with_name(row.name)
-                            .with_description(row.description)
-                            .build()?;
+                    let style = builder
+                        .with_name(row.name)
+                        .with_description(row.description)
+                        .build()?;
 
-                        map.insert(style.id, (style, Vec::new()));
-                        Ok(map)
-                    })
-                })?;
+                    map.insert(style.id, (style, Vec::new()));
+                    Ok(map)
+                })
+            },
+        )?;
 
         // Construct character's specialties for styles
-        if let Some(rows) = specialty_rows {
+        if let Some(rows) = all_rows.specialty_rows {
             for row in rows.into_iter() {
                 if let Some(ptr) = style_map.get_mut(&Id::Database(row.style_id)) {
                     ptr.1.push(row.specialty);
@@ -207,10 +215,9 @@ impl CharacterBuilder {
         }
 
         // Apply styles and specialties to character
-        self = character_style_rows
-            .unwrap()
-            .into_iter()
-            .fold(Ok(self), |result_self, row| {
+        self = all_rows.character_style_rows.unwrap().into_iter().fold(
+            Ok(self),
+            |result_self, row| {
                 let (style, specialties) = style_map
                     .remove(&Id::Database(row.style_id))
                     .ok_or_else(|| eyre!("Style {} not found", row.style_id))?;
@@ -228,16 +235,17 @@ impl CharacterBuilder {
                         },
                     )
                 })
-            })?;
+            },
+        )?;
 
-        if martial_arts_charm_rows.is_none() {
+        if all_rows.martial_arts_charm_rows.is_none() {
             // No charms to build or apply
             return Ok(self);
         }
 
         // Construct charms except for keywords and costs
         let mut charm_builder_map: HashMap<i32, MartialArtsCharmBuilder>;
-        if let Some(rows) = martial_arts_charm_rows {
+        if let Some(rows) = all_rows.martial_arts_charm_rows {
             charm_builder_map = HashMap::new();
             for row in rows.into_iter() {
                 let mut builder = if row.book_title.is_some()
@@ -295,7 +303,7 @@ impl CharacterBuilder {
 
         // Group charm keywords
         let mut charm_keyword_map: HashMap<Id, Vec<CharmKeyword>> = HashMap::new();
-        if let Some(rows) = charm_keyword_rows {
+        if let Some(rows) = all_rows.charm_keyword_rows {
             for row in rows.into_iter() {
                 let id = Id::Database(row.charm_id);
                 charm_keyword_map
@@ -307,7 +315,7 @@ impl CharacterBuilder {
 
         // Group charm costs
         let mut charm_costs_map: HashMap<Id, Vec<(CharmCostType, u8)>> = HashMap::new();
-        if let Some(rows) = charm_cost_rows {
+        if let Some(rows) = all_rows.charm_cost_rows {
             for row in rows.into_iter() {
                 let id = Id::Database(row.charm_id);
                 charm_costs_map.entry(id).or_default().push((
@@ -316,6 +324,20 @@ impl CharacterBuilder {
                         .try_into()
                         .wrap_err_with(|| format!("Invalid cost amount: {}", row.amount))?,
                 ));
+            }
+        }
+
+        // Group charm prerequisites
+        let mut charm_prerequisites_map: HashMap<Id, Vec<Id>> = HashMap::new();
+        if let Some(rows) = all_rows.charm_tree_rows {
+            for row in rows.into_iter() {
+                let child_id = Id::Database(row.child_id);
+                let parent_id = Id::Database(row.parent_id);
+
+                charm_prerequisites_map
+                    .entry(child_id)
+                    .or_default()
+                    .push(parent_id);
             }
         }
 
@@ -331,6 +353,13 @@ impl CharacterBuilder {
                     charm_builder = charm_builder.with_cost(cost_type, amount);
                 }
             }
+
+            if let Some(prerequisites) = charm_prerequisites_map.remove(&Id::Database(charm_id)) {
+                for prerequisite_id in prerequisites.into_iter() {
+                    charm_builder = charm_builder.with_charm_prerequisite(prerequisite_id);
+                }
+            }
+
             let charm = charm_builder.build()?;
 
             self = self.with_martial_arts_charm(charm)?;

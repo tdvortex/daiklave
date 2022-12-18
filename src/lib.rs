@@ -3,19 +3,18 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
-
-/// Defines the Interface for accessing character abilities (aka skills) and 
+/// Defines the Interface for accessing character abilities (aka skills) and
 /// specialties.
 pub mod abilities;
 
 /// Defines the AnimaLevel enum.
 pub mod anima;
 
-/// Defines constructors and types for individual armor pieces (ArmorItem), 
+/// Defines constructors and types for individual armor pieces (ArmorItem),
 /// as well as the interface to own and equip them.
 pub mod armor;
 
-/// Defines the interface for character attributes (Strength, Intelligence, 
+/// Defines the interface for character attributes (Strength, Intelligence,
 /// etc.).
 pub mod attributes;
 
@@ -31,7 +30,7 @@ pub mod character;
 pub(crate) mod charms;
 pub(crate) mod craft;
 
-/// Defines a DataSource field, allowing for resources (Merits, Charms, 
+/// Defines a DataSource field, allowing for resources (Merits, Charms,
 /// Weapons, etc.) to be specified from either an official sourcebook
 /// or with a custom creator Id.
 pub mod data_source;
@@ -57,7 +56,7 @@ pub mod intimacies;
 /// Defines the Limit track for Celestial Exalted (Solars and Lunars).
 pub mod limit;
 
-/// Defines the configuration related to Martial Arts, including 
+/// Defines the configuration related to Martial Arts, including
 /// MartialArtsStyles, the MartialArts ability, and MartialArtsCharms.
 pub mod martial_arts;
 

@@ -118,7 +118,7 @@ pub enum AbilityName<'a> {
     War,
 }
 
-/// This is used to identify all ability ratings that must exist for a 
+/// This is used to identify all ability ratings that must exist for a
 /// character. This means it specifically excludes all Craft abilities and
 /// MartialArts styles.
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord)]

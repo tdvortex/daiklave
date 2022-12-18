@@ -120,6 +120,11 @@ WITH player_query AS (
         ARRAY_AGG(martial_arts_charms_costs) as macos
     FROM character_martial_arts_charms INNER JOIN martial_arts_charms_costs ON (character_martial_arts_charms.charm_id = martial_arts_charms_costs.charm_id)
     WHERE character_martial_arts_charms.character_id = $1
+), martial_arts_charm_tree_query AS (
+    SELECT
+        ARRAY_AGG(martial_arts_charm_tree) as matre
+    FROM character_martial_arts_charms INNER JOIN martial_arts_charm_tree ON (character_martial_arts_charms.charm_id = martial_arts_charm_tree.child_id)
+    WHERE character_martial_arts_charms.character_id = $1
 ), craft_abilities_query AS (
     SELECT
         ARRAY_AGG(craft_abilities) as cftas
@@ -156,6 +161,7 @@ SELECT
     machs AS "martial_arts_charms: Vec<MartialArtsCharmRow>",
     makws AS "martial_arts_charm_keywords: Vec<MartialArtsCharmKeywordRow>",
     macos AS "martial_arts_charms_costs: Vec<MartialArtsCharmCostRow>",
+    matre as "martial_arts_charm_tree: Vec<MartialArtsCharmTreeRow>",
     cftas AS "craft_abilities: Vec<CraftAbilityRow>",
     cftss AS "craft_specialties: Vec<CraftAbilitySpecialtyRow>"
 FROM characters,
@@ -182,6 +188,7 @@ FROM characters,
     LEFT JOIN martial_arts_charms_query ON (TRUE)
     LEFT JOIN martial_arts_charms_keywords_query ON (TRUE)
     LEFT JOIN martial_arts_charms_costs_query ON (TRUE)
+    LEFT JOIN martial_arts_charm_tree_query ON (TRUE)
     LEFT JOIN craft_abilities_query ON (TRUE)
     LEFT JOIN craft_specialties_query ON (TRUE)
 WHERE characters.id = $1;

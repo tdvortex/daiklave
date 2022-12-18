@@ -12,8 +12,9 @@ use crate::{
     health::tables::HealthBoxRow,
     intimacies::tables::IntimacyRow,
     martial_arts::tables::{
-        CharacterMartialArtsRow, CharacterMartialArtsSpecialtyRow, MartialArtsCharmCostRow,
-        MartialArtsCharmKeywordRow, MartialArtsCharmRow, MartialArtsStyleRow,
+        AllMartialArtsRows, CharacterMartialArtsRow, CharacterMartialArtsSpecialtyRow,
+        MartialArtsCharmCostRow, MartialArtsCharmKeywordRow, MartialArtsCharmRow,
+        MartialArtsCharmTreeRow, MartialArtsStyleRow,
     },
     merits::tables::{MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow},
     player::tables::PlayerRow,
@@ -47,6 +48,7 @@ struct GetCharacter {
     martial_arts_charms: Option<Vec<MartialArtsCharmRow>>,
     martial_arts_charm_keywords: Option<Vec<MartialArtsCharmKeywordRow>>,
     martial_arts_charms_costs: Option<Vec<MartialArtsCharmCostRow>>,
+    martial_arts_charm_tree: Option<Vec<MartialArtsCharmTreeRow>>,
     craft_abilities: Option<Vec<CraftAbilityRow>>,
     craft_specialties: Option<Vec<CraftAbilitySpecialtyRow>>,
 }
@@ -122,14 +124,15 @@ impl TryInto<Character> for GetCharacter {
                 self.merit_prerequisites,
             )
             .wrap_err("Could not apply merit rows")?
-            .apply_martial_arts(
-                self.martial_arts_styles,
-                self.character_martial_arts_styles,
-                self.martial_arts_specialties,
-                self.martial_arts_charms,
-                self.martial_arts_charm_keywords,
-                self.martial_arts_charms_costs,
-            )
+            .apply_martial_arts(AllMartialArtsRows {
+                style_rows: self.martial_arts_styles,
+                character_style_rows: self.character_martial_arts_styles,
+                specialty_rows: self.martial_arts_specialties,
+                martial_arts_charm_rows: self.martial_arts_charms,
+                charm_keyword_rows: self.martial_arts_charm_keywords,
+                charm_cost_rows: self.martial_arts_charms_costs,
+                charm_tree_rows: self.martial_arts_charm_tree,
+            })
             .wrap_err("Could not apply martial arts rows")?
             .build()
     }

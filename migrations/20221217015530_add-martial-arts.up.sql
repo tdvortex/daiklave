@@ -56,6 +56,12 @@ CREATE TABLE martial_arts_charms_costs (
     PRIMARY KEY (charm_id, cost_type)
 );
 
+CREATE TABLE martial_arts_charm_tree (
+    child_id INTEGER REFERENCES martial_arts_charms(id),
+    parent_id INTEGER REFERENCES martial_arts_charms(id),
+    PRIMARY KEY (child_id, parent_id)
+);
+
 CREATE TABLE character_martial_arts_charms (
     character_id INTEGER REFERENCES characters(id) ON DELETE CASCADE,
     charm_id INTEGER REFERENCES martial_arts_charms(id) ON DELETE CASCADE,

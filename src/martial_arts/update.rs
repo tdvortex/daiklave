@@ -5,7 +5,10 @@ use std::collections::HashMap;
 use crate::{abilities::Ability, charms::MartialArtsCharm, data_source::DataSource, id::Id};
 
 use super::{
-    create::{create_martial_arts_charm_transaction, create_martial_arts_style_transaction},
+    create::{
+        create_martial_arts_charm_transaction, create_martial_arts_charm_tree,
+        create_martial_arts_style_transaction,
+    },
     MartialArtistTraits, MartialArtsStyle,
 };
 
@@ -144,18 +147,55 @@ async fn upsert_character_charms(
 ) -> Result<()> {
     let mut charm_database_ids: Vec<i32> = Vec::new();
 
+    let mut placeholder_to_database_map = HashMap::new();
     for charm in style_charms.iter() {
         if let Id::Database(id) = charm.id() {
             charm_database_ids.push(id);
         } else {
+            let placeholder = charm.id();
             let id = if let DataSource::Custom(_) = charm.data_source() {
                 create_martial_arts_charm_transaction(transaction, charm, Some(character_id))
-                    .await?
+                    .await
+                    .wrap_err("Error attempting to create book referenced martial arts charm")?
             } else {
-                create_martial_arts_charm_transaction(transaction, charm, None).await?
+                create_martial_arts_charm_transaction(transaction, charm, None)
+                    .await
+                    .wrap_err("Error attempting to create custom martial arts charm")?
             };
+            placeholder_to_database_map.insert(placeholder, Id::Database(id));
             charm_database_ids.push(id)
         }
+    }
+
+    let mut prerequisite_pairs = Vec::new();
+    for charm in style_charms.iter() {
+        if charm.id().is_placeholder() {
+            let child_id = **placeholder_to_database_map
+                .get(&charm.id())
+                .ok_or_else(|| {
+                    eyre!(
+                        "Martial arts charm placeholder id {} not successfully inserted",
+                        *charm.id()
+                    )
+                })?;
+
+            for pre in charm.prerequisite_charm_ids().iter() {
+                if let Id::Database(id) = pre {
+                    prerequisite_pairs.push((child_id, *id));
+                } else {
+                    let parent_id = **placeholder_to_database_map.get(pre).ok_or_else(|| {
+                        eyre!("Unknown martial arts charm placeholder id {}", **pre)
+                    })?;
+                    prerequisite_pairs.push((child_id, parent_id));
+                }
+            }
+        }
+    }
+
+    if !prerequisite_pairs.is_empty() {
+        create_martial_arts_charm_tree(transaction, &prerequisite_pairs)
+            .await
+            .wrap_err("Error attempting to create martial arts charm prerequisites tree")?;
     }
 
     query!(

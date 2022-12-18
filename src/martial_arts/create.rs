@@ -1,5 +1,5 @@
 use super::MartialArtsStyle;
-use crate::charms::tables::{CharmActionTypePostgres, CharmKeywordPostgres, CharmCostTypePostgres};
+use crate::charms::tables::{CharmActionTypePostgres, CharmCostTypePostgres, CharmKeywordPostgres};
 use crate::charms::MartialArtsCharm;
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
@@ -59,7 +59,11 @@ pub(crate) async fn create_martial_arts_charm_transaction(
         creator_id
     ).fetch_one(&mut *transaction).await.wrap_err_with(|| format!("Database error attempting to insert martial arts charm {}", charm.name())).map(|record| record.id)?;
 
-    let charm_keywords_pg: Vec<CharmKeywordPostgres> = charm.keywords().iter().map(|keyword| (*keyword).into()).collect();
+    let charm_keywords_pg: Vec<CharmKeywordPostgres> = charm
+        .keywords()
+        .iter()
+        .map(|keyword| (*keyword).into())
+        .collect();
 
     query!(
         "INSERT INTO martial_arts_charms_keywords(charm_id, keyword)
@@ -69,13 +73,24 @@ pub(crate) async fn create_martial_arts_charm_transaction(
         FROM UNNEST($2::CHARMKEYWORD[]) as data(keyword)",
         charm_id as i32,
         &charm_keywords_pg as &[CharmKeywordPostgres]
-    ).execute(&mut *transaction).await.wrap_err_with(|| format!("Database error attempting to insert keywords for martial arts charm {}", charm.name()))?;
+    )
+    .execute(&mut *transaction)
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "Database error attempting to insert keywords for martial arts charm {}",
+            charm.name()
+        )
+    })?;
 
-    let (cost_types_pg, cost_amounts_i16) = charm.costs().iter().fold((Vec::<CharmCostTypePostgres>::new(), Vec::<i16>::new()), |(mut cost_types_pg, mut cost_amounts_i16), (cost_type, amount)| {
-        cost_types_pg.push((*cost_type).into());
-        cost_amounts_i16.push((*amount).into());
-        (cost_types_pg, cost_amounts_i16)
-    });
+    let (cost_types_pg, cost_amounts_i16) = charm.costs().iter().fold(
+        (Vec::<CharmCostTypePostgres>::new(), Vec::<i16>::new()),
+        |(mut cost_types_pg, mut cost_amounts_i16), (cost_type, amount)| {
+            cost_types_pg.push((*cost_type).into());
+            cost_amounts_i16.push((*amount).into());
+            (cost_types_pg, cost_amounts_i16)
+        },
+    );
 
     query!(
         "INSERT INTO martial_arts_charms_costs(charm_id, cost_type, amount)
@@ -87,7 +102,44 @@ pub(crate) async fn create_martial_arts_charm_transaction(
         charm_id as i32,
         &cost_types_pg as &[CharmCostTypePostgres],
         &cost_amounts_i16 as &[i16]
-    ).execute(&mut *transaction).await.wrap_err_with(|| format!("Database error attempting to insert activation costs for martial arts charm {}", charm.name()))?;
+    )
+    .execute(&mut *transaction)
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "Database error attempting to insert activation costs for martial arts charm {}",
+            charm.name()
+        )
+    })?;
 
     Ok(charm_id)
+}
+
+pub(crate) async fn create_martial_arts_charm_tree(
+    transaction: &mut Transaction<'_, Postgres>,
+    child_parent_pairs: &[(i32, i32)],
+) -> Result<()> {
+    let (child_ids, parent_ids) = child_parent_pairs.iter().fold(
+        (Vec::new(), Vec::new()),
+        |(mut child_ids, mut parent_ids), (child_id, parent_id)| {
+            child_ids.push(*child_id);
+            parent_ids.push(*parent_id);
+            (child_ids, parent_ids)
+        },
+    );
+
+    query!(
+        "INSERT INTO martial_arts_charm_tree(child_id, parent_id)
+        SELECT
+            data.child_id as child_id,
+            data.parent_id as parent_id
+        FROM UNNEST($1::INTEGER[], $2::INTEGER[]) as data(child_id, parent_id)",
+        &child_ids as &[i32],
+        &parent_ids as &[i32],
+    )
+    .execute(&mut *transaction)
+    .await
+    .wrap_err("Database error attemping to insert martial arts charm prerequisites trees")?;
+
+    Ok(())
 }
