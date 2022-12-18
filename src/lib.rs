@@ -1,4 +1,4 @@
-#![warn(missing_docs)]
+// #![warn(missing_docs)]
 //! **Daiklave** is a Rust character sheet application, designed to be as
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
