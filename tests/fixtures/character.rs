@@ -5,8 +5,7 @@ use daiklave::{
 };
 
 pub fn create_initial_base_character(player: &Player) -> CharacterBuilder {
-    Character::builder(0)
-        .with_player(player.clone())
+    Character::builder(0, player.clone())
         .with_name("Test Character Name".to_owned())
         .with_concept("A character for testing purposes".to_owned())
         .with_willpower(Willpower {

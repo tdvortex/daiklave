@@ -82,7 +82,7 @@ pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Ch
     let mut transaction = pool.begin().await.wrap_err("Failed to start transaction")?;
 
     let old_character = if character.id.is_placeholder() {
-        create_character_transaction(&mut transaction, character.player.clone())
+        create_character_transaction(&mut transaction, *character.player.id())
             .await
             .wrap_err_with(|| {
                 format!("Failed to create initial character from: {:#?}", character)

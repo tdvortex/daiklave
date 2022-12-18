@@ -19,11 +19,12 @@ use crate::{
     anima::AnimaLevel,
     charms::{SolarCharm, Spell},
     essence::Essence,
+    id::Id,
     limit::Limit,
     sorcery::{
         CelestialCircleTraits, ShapingRitual, SolarCircleTraits, SolarSorcererLevel, Sorcerer,
         TerrestrialCircleTraits,
-    }, id::Id,
+    },
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -41,7 +42,15 @@ pub struct SolarTraits {
 
 impl SolarTraits {
     pub fn builder() -> SolarTraitsBuilder {
-        SolarTraitsBuilder { essence: Essence::solar(1).unwrap(), limit: None, anima: AnimaLevel::Dim, caste: None, favored: Vec::new(), sorcery_level: SolarSorcererLevel::None, solar_charms: Vec::new() }
+        SolarTraitsBuilder {
+            essence: Essence::solar(1).unwrap(),
+            limit: None,
+            anima: AnimaLevel::Dim,
+            caste: None,
+            favored: Vec::new(),
+            sorcery_level: SolarSorcererLevel::None,
+            solar_charms: Vec::new(),
+        }
     }
 
     /// Brawl and MartialArts are different supernal abilities for Dawn castes.
@@ -238,8 +247,12 @@ impl SolarTraitsBuilder {
         self.essence.rating() >= charm.essence_requirement()
     }
 
-    pub fn check_charm_prerequisites(&self, charm: &SolarCharm) -> bool {        
-        let known_charms = self.solar_charms.iter().map(|known_charm| known_charm.id()).collect::<HashSet<Id>>();
+    pub fn check_charm_prerequisites(&self, charm: &SolarCharm) -> bool {
+        let known_charms = self
+            .solar_charms
+            .iter()
+            .map(|known_charm| known_charm.id())
+            .collect::<HashSet<Id>>();
         for id in charm.prerequisite_charm_ids() {
             if !known_charms.contains(&id) {
                 return false;
@@ -250,7 +263,11 @@ impl SolarTraitsBuilder {
 
     pub fn with_solar_charm_checked(self, charm: SolarCharm) -> Result<Self> {
         if !self.check_essence_requirement(&charm) {
-            Err(eyre!("Charm requires essence {}, character only has {}", charm.essence_requirement(), self.essence.rating()))
+            Err(eyre!(
+                "Charm requires essence {}, character only has {}",
+                charm.essence_requirement(),
+                self.essence.rating()
+            ))
         } else if !self.check_charm_prerequisites(&charm) {
             Err(eyre!("Not all prerequisite charms are known"))
         } else {

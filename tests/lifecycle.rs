@@ -145,11 +145,11 @@ fn lifecycle() {
 
     // Client sends delete player order
     // Server deletes player
-    destroy_player(&pool, player.id()).await.unwrap();
+    destroy_player(&pool, *player.id()).await.unwrap();
 
     // Player should not exist
     assert!(
-        sqlx::query!("SELECT * FROM players WHERE id = $1", player.id())
+        sqlx::query!("SELECT * FROM players WHERE id = $1", *player.id())
             .fetch_optional(&pool)
             .await
             .unwrap()

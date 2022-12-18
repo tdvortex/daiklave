@@ -1,8 +1,12 @@
 use crate::{
+    abilities::AbilityNameNoSubskill,
     anima::AnimaLevel,
-    charms::{Spell, SolarCharm},
-    solar::{SolarTraits, SolarTraitsBuilder, DawnTraits, ZenithTraits, TwilightTraits, EclipseTraits, NightTraits},
-    sorcery::{MortalSorcererLevel, ShapingRitual, Sorcerer, TerrestrialCircleTraits}, abilities::AbilityNameNoSubskill,
+    charms::{SolarCharm, Spell},
+    solar::{
+        DawnTraits, EclipseTraits, NightTraits, SolarTraits, SolarTraitsBuilder, TwilightTraits,
+        ZenithTraits,
+    },
+    sorcery::{MortalSorcererLevel, ShapingRitual, Sorcerer, TerrestrialCircleTraits},
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -37,7 +41,9 @@ impl Sorcerer for ExaltType {
 
 impl ExaltType {
     fn builder() -> ExaltTypeBuilder {
-        ExaltTypeBuilder::Mortal(MortalBuilder { sorcerer_level: MortalSorcererLevel::None })
+        ExaltTypeBuilder::Mortal(MortalBuilder {
+            sorcerer_level: MortalSorcererLevel::None,
+        })
     }
 }
 
@@ -117,21 +123,36 @@ impl ExaltTypeBuilder {
                 let mut solar_builder = SolarTraits::builder();
 
                 // Preserve sorcery if possible
-                if let MortalSorcererLevel::Terrestrial(terrestrial_traits) = mortal_builder.sorcerer_level {
-                    let shaping_ritual = terrestrial_traits.shaping_rituals().expect("Terrestrial sorcery must have one shaping ritual")[0].clone();
-                    let (control_spell, other_spells) = terrestrial_traits.spells().expect("Terrestrial sorcery must have at least one spell").iter()
-                        .fold((None, Vec::new()), |(mut control_spell, mut other_spells), (spell, is_control)| {
-                            if *is_control {
-                                control_spell = Some((*spell).clone());
-                            } else {
-                                other_spells.push((*spell).clone());
-                            }
-                            (control_spell, other_spells)
-                        });
+                if let MortalSorcererLevel::Terrestrial(terrestrial_traits) =
+                    mortal_builder.sorcerer_level
+                {
+                    let shaping_ritual = terrestrial_traits
+                        .shaping_rituals()
+                        .expect("Terrestrial sorcery must have one shaping ritual")[0]
+                        .clone();
+                    let (control_spell, other_spells) = terrestrial_traits
+                        .spells()
+                        .expect("Terrestrial sorcery must have at least one spell")
+                        .iter()
+                        .fold(
+                            (None, Vec::new()),
+                            |(mut control_spell, mut other_spells), (spell, is_control)| {
+                                if *is_control {
+                                    control_spell = Some((*spell).clone());
+                                } else {
+                                    other_spells.push((*spell).clone());
+                                }
+                                (control_spell, other_spells)
+                            },
+                        );
 
-                    solar_builder = solar_builder.with_terrestrial_circle_sorcery(shaping_ritual, control_spell.unwrap()).expect("Terrestial Circle is valid for both mortals and Solars");
+                    solar_builder = solar_builder
+                        .with_terrestrial_circle_sorcery(shaping_ritual, control_spell.unwrap())
+                        .expect("Terrestial Circle is valid for both mortals and Solars");
                     for other_spell in other_spells.into_iter() {
-                        solar_builder = solar_builder.with_spell(other_spell).expect("Valid spell for mortal should be valid for solar as well");
+                        solar_builder = solar_builder
+                            .with_spell(other_spell)
+                            .expect("Valid spell for mortal should be valid for solar as well");
                     }
                 }
 
@@ -152,36 +173,36 @@ impl ExaltTypeBuilder {
 
     pub(crate) fn as_zenith(self, zenith_traits: ZenithTraits) -> Result<Self> {
         match self {
-            ExaltTypeBuilder::Solar(solar_builder) => {
-                Ok(ExaltTypeBuilder::Solar(solar_builder.as_zenith(zenith_traits)))
-            }
+            ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
+                solar_builder.as_zenith(zenith_traits),
+            )),
             _ => Err(eyre!("Must be Solar before being Zenith Caste")),
         }
     }
 
     pub(crate) fn as_night(self, night_traits: NightTraits) -> Result<Self> {
         match self {
-            ExaltTypeBuilder::Solar(solar_builder) => {
-                Ok(ExaltTypeBuilder::Solar(solar_builder.as_night(night_traits)))
-            }
+            ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
+                solar_builder.as_night(night_traits),
+            )),
             _ => Err(eyre!("Must be Solar before being Night Caste")),
         }
     }
 
     pub(crate) fn as_twilight(self, twilight_traits: TwilightTraits) -> Result<Self> {
         match self {
-            ExaltTypeBuilder::Solar(solar_builder) => {
-                Ok(ExaltTypeBuilder::Solar(solar_builder.as_twilight(twilight_traits)))
-            }
+            ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
+                solar_builder.as_twilight(twilight_traits),
+            )),
             _ => Err(eyre!("Must be Solar before being Twilight Caste")),
         }
     }
 
     pub(crate) fn as_eclipse(self, eclipse_traits: EclipseTraits) -> Result<Self> {
         match self {
-            ExaltTypeBuilder::Solar(solar_builder) => {
-                Ok(ExaltTypeBuilder::Solar(solar_builder.as_eclipse(eclipse_traits)))
-            }
+            ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
+                solar_builder.as_eclipse(eclipse_traits),
+            )),
             _ => Err(eyre!("Must be Solar before being Eclipse Caste")),
         }
     }
@@ -189,17 +210,20 @@ impl ExaltTypeBuilder {
     pub(crate) fn with_favored_ability(self, ability: AbilityNameNoSubskill) -> Result<Self> {
         match self {
             ExaltTypeBuilder::Mortal(_) => Err(eyre!("Mortals do not have Favored abilities")),
-            ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(solar_builder.with_favored_ability(ability)?)), 
+            ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
+                solar_builder.with_favored_ability(ability)?,
+            )),
         }
     }
 
     pub(crate) fn with_solar_charm(self, charm: SolarCharm) -> Result<Self> {
         match self {
-            ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(solar_builder.with_solar_charm_checked(charm)?)), 
+            ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
+                solar_builder.with_solar_charm_checked(charm)?,
+            )),
             ExaltTypeBuilder::Mortal(_) => Err(eyre!("Non-Solars cannot use Solar Charms")),
         }
     }
-
 
     pub(crate) fn with_terrestrial_circle_sorcery(
         self,
@@ -222,7 +246,9 @@ impl ExaltTypeBuilder {
         control_spell: Spell,
     ) -> Result<Self> {
         match self {
-            ExaltTypeBuilder::Mortal(mortal_builder) => Err(eyre!("Mortals may not use Celestial circle sorcery")),
+            ExaltTypeBuilder::Mortal(mortal_builder) => {
+                Err(eyre!("Mortals may not use Celestial circle sorcery"))
+            }
             ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
                 solar_builder.with_celestial_circle_sorcery(shaping_ritual, control_spell)?,
             )),
@@ -235,7 +261,9 @@ impl ExaltTypeBuilder {
         control_spell: Spell,
     ) -> Result<Self> {
         match self {
-            ExaltTypeBuilder::Mortal(mortal_builder) => Err(eyre!("Mortals may not use Solar circle sorcery")),
+            ExaltTypeBuilder::Mortal(mortal_builder) => {
+                Err(eyre!("Mortals may not use Solar circle sorcery"))
+            }
             ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
                 solar_builder.with_solar_circle_sorcery(shaping_ritual, control_spell)?,
             )),

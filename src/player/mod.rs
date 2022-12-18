@@ -5,22 +5,30 @@ pub(crate) mod tables;
 pub use create::create_player;
 pub use destroy::destroy_player;
 
+use crate::id::Id;
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Player {
-    database_id: i32,
+    id: Id,
     name: String,
 }
 
-impl Player {
-    pub fn new(id: i32, name: String) -> Self {
-        Self {
-            database_id: id,
-            name,
+impl Default for Player {
+    fn default() -> Self {
+        Player {
+            id: Id::Placeholder(0),
+            name: "New Player".to_owned(),
         }
     }
+}
 
-    pub fn id(&self) -> i32 {
-        self.database_id
+impl Player {
+    pub fn new(id: Id, name: String) -> Self {
+        Self { id, name }
+    }
+
+    pub fn id(&self) -> Id {
+        self.id
     }
 
     pub fn name(&self) -> &str {

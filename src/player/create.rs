@@ -1,6 +1,8 @@
 use eyre::Result;
 use sqlx::{query, PgPool};
 
+use crate::id::Id;
+
 use super::Player;
 
 pub async fn create_player(pool: &PgPool, name: String) -> Result<Player> {
@@ -16,7 +18,7 @@ pub async fn create_player(pool: &PgPool, name: String) -> Result<Player> {
     .id;
 
     Ok(Player {
-        database_id: id,
+        id: Id::Database(id),
         name,
     })
 }

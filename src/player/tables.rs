@@ -1,5 +1,4 @@
-use crate::character::CharacterBuilder;
-use crate::player::Player;
+use crate::{id::Id, player::Player};
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "players")]
@@ -8,8 +7,11 @@ pub struct PlayerRow {
     pub name: String,
 }
 
-impl CharacterBuilder {
-    pub(crate) fn apply_player_row(self, player_row: PlayerRow) -> Self {
-        self.with_player(Player::new(player_row.id, player_row.name))
+impl From<PlayerRow> for Player {
+    fn from(row: PlayerRow) -> Self {
+        Player {
+            id: Id::Database(row.id),
+            name: row.name,
+        }
     }
 }

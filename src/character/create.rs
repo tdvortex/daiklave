@@ -6,9 +6,13 @@ use crate::character::Character;
 use crate::player::Player;
 
 pub async fn create_character(pool: &PgPool, player: Player) -> Result<Character> {
+    if player.id().is_placeholder() {
+        return Err(eyre!("Cannot insert character for placeholder player id"));
+    }
+
     let mut transaction = pool.begin().await?;
 
-    let character = create_character_transaction(&mut transaction, player).await?;
+    let character = create_character_transaction(&mut transaction, *player.id()).await?;
 
     transaction.commit().await?;
 
@@ -17,7 +21,7 @@ pub async fn create_character(pool: &PgPool, player: Player) -> Result<Character
 
 pub(crate) async fn create_character_transaction(
     transaction: &mut Transaction<'_, Postgres>,
-    player: Player,
+    player_id: i32,
 ) -> Result<Character> {
     // Insert character placeholder and get an ID
     let character_id = query!(
@@ -26,8 +30,8 @@ pub(crate) async fn create_character_transaction(
         VALUES($1, 'New Character', 0, 0, 0, 0)
         RETURNING id
         ",
-        player.id()
-    ).fetch_one(&mut *transaction).await.wrap_err_with(|| format!("Initial character insert failed for player id {}", player.id()))?.id;
+        player_id
+    ).fetch_one(&mut *transaction).await.wrap_err_with(|| format!("Initial character insert failed for player id {}", player_id))?.id;
 
     // Insert attributes
     query!(
