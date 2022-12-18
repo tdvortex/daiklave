@@ -245,7 +245,19 @@ impl SolarTraitsBuilder {
     }
 
     pub fn check_essence_requirement(&self, charm: &SolarCharm) -> bool {
-        self.essence.rating() >= charm.essence_requirement()
+        if self.essence.rating() >= charm.essence_requirement() {
+            true
+        } else if let Some(caste) = &self.caste {
+            match caste {
+                SolarCaste::Dawn(traits) => traits.supernal_ability() == charm.ability(),
+                SolarCaste::Zenith(traits) => traits.supernal_ability() == charm.ability(),
+                SolarCaste::Twilight(traits) => traits.supernal_ability() == charm.ability(),
+                SolarCaste::Night(traits) => traits.supernal_ability() == charm.ability(),
+                SolarCaste::Eclipse(traits) => traits.supernal_ability() == charm.ability(),
+            }
+        } else {
+            false
+        }
     }
 
     pub fn check_charm_prerequisites(&self, charm: &SolarCharm) -> bool {
@@ -265,7 +277,7 @@ impl SolarTraitsBuilder {
     pub fn with_solar_charm_checked(self, charm: SolarCharm) -> Result<Self> {
         if !self.check_essence_requirement(&charm) {
             Err(eyre!(
-                "Charm requires essence {}, character only has {}",
+                "Charm requires essence {} (or Supernal), character only has Essence {}",
                 charm.essence_requirement(),
                 self.essence.rating()
             ))
@@ -306,6 +318,10 @@ impl SolarTraitsBuilder {
         shaping_ritual: ShapingRitual,
         control_spell: Spell,
     ) -> Result<Self> {
+        if self.essence.rating() < 3 {
+            return Err(eyre!("Must be Essence 3 to take Celestial sorcery (Supernal doesn't apply)"));
+        }
+
         match &mut self.sorcery_level {
             SolarSorcererLevel::None => Err(eyre!(
                 "Must be a Terrestrial sorcerer before becoming Celestial"
@@ -333,6 +349,10 @@ impl SolarTraitsBuilder {
         shaping_ritual: ShapingRitual,
         control_spell: Spell,
     ) -> Result<Self> {
+        if self.essence.rating() < 3 {
+            return Err(eyre!("Must be Essence 5 to take Solar sorcery (Supernal doesn't apply)"));
+        }
+
         match &mut self.sorcery_level {
             SolarSorcererLevel::None | SolarSorcererLevel::Terrestrial(_) => Err(eyre!(
                 "Must be Terrestial and Celestial before becoming Solar sorcerer"

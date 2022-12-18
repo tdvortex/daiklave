@@ -39,14 +39,6 @@ impl Sorcerer for ExaltType {
     }
 }
 
-impl ExaltType {
-    fn builder() -> ExaltTypeBuilder {
-        ExaltTypeBuilder::Mortal(MortalBuilder {
-            sorcerer_level: MortalSorcererLevel::None,
-        })
-    }
-}
-
 #[derive(Debug, Default)]
 pub struct MortalBuilder {
     sorcerer_level: MortalSorcererLevel,
@@ -254,7 +246,7 @@ impl ExaltTypeBuilder {
         control_spell: Spell,
     ) -> Result<Self> {
         match self {
-            ExaltTypeBuilder::Mortal(mortal_builder) => {
+            ExaltTypeBuilder::Mortal(_) => {
                 Err(eyre!("Mortals may not use Celestial circle sorcery"))
             }
             ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
@@ -269,7 +261,7 @@ impl ExaltTypeBuilder {
         control_spell: Spell,
     ) -> Result<Self> {
         match self {
-            ExaltTypeBuilder::Mortal(mortal_builder) => {
+            ExaltTypeBuilder::Mortal(_) => {
                 Err(eyre!("Mortals may not use Solar circle sorcery"))
             }
             ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
