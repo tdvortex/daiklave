@@ -105,6 +105,36 @@ impl ExaltTypeBuilder {
         }
     }
 
+    pub(crate) fn as_solar(self) -> Self {
+        match self {
+            ExaltTypeBuilder::Mortal(mortal_builder) => {
+                let mut solar_builder = SolarTraits::builder();
+
+                // Preserve sorcery if possible
+                if let MortalSorcererLevel::Terrestrial(terrestrial_traits) = mortal_builder.sorcerer_level {
+                    let shaping_ritual = terrestrial_traits.shaping_rituals().expect("Terrestrial sorcery must have one shaping ritual")[0].clone();
+                    let (control_spell, other_spells) = terrestrial_traits.spells().expect("Terrestrial sorcery must have at least one spell").iter()
+                        .fold((None, Vec::new()), |(mut control_spell, mut other_spells), (spell, is_control)| {
+                            if *is_control {
+                                control_spell = Some((*spell).clone());
+                            } else {
+                                other_spells.push((*spell).clone());
+                            }
+                            (control_spell, other_spells)
+                        });
+
+                    solar_builder = solar_builder.with_terrestrial_circle_sorcery(shaping_ritual, control_spell.unwrap()).expect("Terrestial Circle is valid for both mortals and Solars");
+                    for other_spell in other_spells.into_iter() {
+                        solar_builder = solar_builder.with_spell(other_spell).expect("Valid spell for mortal should be valid for solar as well");
+                    }
+                }
+
+                ExaltTypeBuilder::Solar(solar_builder)
+            }
+            ExaltTypeBuilder::Solar(solar_builder) => ExaltTypeBuilder::Solar(solar_builder),
+        }
+    }
+
     pub(crate) fn with_terrestrial_circle_sorcery(
         self,
         shaping_ritual: ShapingRitual,

@@ -38,6 +38,10 @@ pub struct SolarTraits {
 }
 
 impl SolarTraits {
+    pub fn builder() -> SolarTraitsBuilder {
+        SolarTraitsBuilder { essence: Essence::solar(1).unwrap(), limit: None, anima: AnimaLevel::Dim, caste: None, favored: Vec::new(), sorcery_level: SolarSorcererLevel::None, solar_charms: Vec::new() }
+    }
+
     /// Brawl and MartialArts are different supernal abilities for Dawn castes.
     pub fn supernal_ability(&self) -> AbilityNameNoSubskill {
         self.caste.supernal_ability()
