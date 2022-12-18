@@ -117,7 +117,7 @@ impl ExaltTypeBuilder {
         }
     }
 
-    pub(crate) fn as_solar(self) -> Self {
+    pub(crate) fn into_solar(self) -> Self {
         match self {
             ExaltTypeBuilder::Mortal(mortal_builder) => {
                 let mut solar_builder = SolarTraits::builder();
@@ -162,46 +162,46 @@ impl ExaltTypeBuilder {
         }
     }
 
-    pub(crate) fn as_dawn(self, dawn_traits: DawnTraits) -> Result<Self> {
+    pub(crate) fn into_dawn(self, dawn_traits: DawnTraits) -> Result<Self> {
         match self {
             ExaltTypeBuilder::Solar(solar_builder) => {
-                Ok(ExaltTypeBuilder::Solar(solar_builder.as_dawn(dawn_traits)))
+                Ok(ExaltTypeBuilder::Solar(solar_builder.into_dawn(dawn_traits)))
             }
             _ => Err(eyre!("Must be Solar before being Dawn Caste")),
         }
     }
 
-    pub(crate) fn as_zenith(self, zenith_traits: ZenithTraits) -> Result<Self> {
+    pub(crate) fn into_zenith(self, zenith_traits: ZenithTraits) -> Result<Self> {
         match self {
             ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
-                solar_builder.as_zenith(zenith_traits),
+                solar_builder.into_zenith(zenith_traits),
             )),
             _ => Err(eyre!("Must be Solar before being Zenith Caste")),
         }
     }
 
-    pub(crate) fn as_night(self, night_traits: NightTraits) -> Result<Self> {
+    pub(crate) fn into_night(self, night_traits: NightTraits) -> Result<Self> {
         match self {
             ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
-                solar_builder.as_night(night_traits),
+                solar_builder.into_night(night_traits),
             )),
             _ => Err(eyre!("Must be Solar before being Night Caste")),
         }
     }
 
-    pub(crate) fn as_twilight(self, twilight_traits: TwilightTraits) -> Result<Self> {
+    pub(crate) fn into_twilight(self, twilight_traits: TwilightTraits) -> Result<Self> {
         match self {
             ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
-                solar_builder.as_twilight(twilight_traits),
+                solar_builder.into_twilight(twilight_traits),
             )),
             _ => Err(eyre!("Must be Solar before being Twilight Caste")),
         }
     }
 
-    pub(crate) fn as_eclipse(self, eclipse_traits: EclipseTraits) -> Result<Self> {
+    pub(crate) fn into_eclipse(self, eclipse_traits: EclipseTraits) -> Result<Self> {
         match self {
             ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
-                solar_builder.as_eclipse(eclipse_traits),
+                solar_builder.into_eclipse(eclipse_traits),
             )),
             _ => Err(eyre!("Must be Solar before being Eclipse Caste")),
         }

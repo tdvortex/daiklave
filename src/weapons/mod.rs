@@ -820,17 +820,17 @@ impl WeaponBuilder {
         self
     }
 
-    pub fn as_one_handed(mut self) -> WeaponBuilder {
+    pub fn into_one_handed(mut self) -> WeaponBuilder {
         self.two_handed = false;
         self
     }
 
-    pub fn as_two_handed(mut self) -> WeaponBuilder {
+    pub fn into_two_handed(mut self) -> WeaponBuilder {
         self.two_handed = true;
         self
     }
 
-    pub fn as_archery_with_range(mut self, max_range: RangeBand) -> WeaponBuilder {
+    pub fn into_archery_with_range(mut self, max_range: RangeBand) -> WeaponBuilder {
         self.attack_tags = std::mem::take(&mut self.attack_tags)
             .into_iter()
             .filter_map(|tag| match tag {
@@ -843,7 +843,7 @@ impl WeaponBuilder {
         self
     }
 
-    pub fn as_brawl(mut self) -> WeaponBuilder {
+    pub fn into_brawl(mut self) -> WeaponBuilder {
         self.attack_tags = std::mem::take(&mut self.attack_tags)
             .into_iter()
             .filter_map(|tag| match tag {
@@ -856,7 +856,7 @@ impl WeaponBuilder {
         self
     }
 
-    pub fn as_melee(mut self) -> WeaponBuilder {
+    pub fn into_melee(mut self) -> WeaponBuilder {
         self.attack_tags = std::mem::take(&mut self.attack_tags)
             .into_iter()
             .filter_map(|tag| match tag {
@@ -889,41 +889,41 @@ impl WeaponBuilder {
         self
     }
 
-    pub fn as_light(mut self) -> WeaponBuilder {
+    pub fn into_light(mut self) -> WeaponBuilder {
         self.weight_class_tag = Some(WeaponTag::Light);
         self
     }
 
-    pub fn as_medium(mut self) -> WeaponBuilder {
+    pub fn into_medium(mut self) -> WeaponBuilder {
         self.weight_class_tag = Some(WeaponTag::Medium);
         self
     }
 
-    pub fn as_heavy(mut self) -> WeaponBuilder {
+    pub fn into_heavy(mut self) -> WeaponBuilder {
         self.weight_class_tag = Some(WeaponTag::Heavy);
         self
     }
 
-    pub fn as_artifact(mut self) -> WeaponBuilder {
+    pub fn into_artifact(mut self) -> WeaponBuilder {
         self.other_tags.push(WeaponTag::Artifact);
         self
     }
 
     pub fn with_tag(mut self, tag: WeaponTag) -> WeaponBuilder {
         match tag {
-            WeaponTag::Archery(range) => self.as_archery_with_range(range),
-            WeaponTag::Artifact => self.as_artifact(),
+            WeaponTag::Archery(range) => self.into_archery_with_range(range),
+            WeaponTag::Artifact => self.into_artifact(),
             WeaponTag::Bashing => self.dealing_bashing(),
-            WeaponTag::Brawl => self.as_brawl(),
-            WeaponTag::Heavy => self.as_heavy(),
+            WeaponTag::Brawl => self.into_brawl(),
+            WeaponTag::Heavy => self.into_heavy(),
             WeaponTag::Lethal => self.dealing_lethal(),
-            WeaponTag::Light => self.as_light(),
+            WeaponTag::Light => self.into_light(),
             WeaponTag::MartialArts(style) => self.with_martial_arts(style),
-            WeaponTag::Medium => self.as_medium(),
-            WeaponTag::Melee => self.as_melee(),
-            WeaponTag::OneHanded => self.as_one_handed(),
+            WeaponTag::Medium => self.into_medium(),
+            WeaponTag::Melee => self.into_melee(),
+            WeaponTag::OneHanded => self.into_one_handed(),
             WeaponTag::Thrown(range) => self.with_thrown_range(range),
-            WeaponTag::TwoHanded => self.as_two_handed(),
+            WeaponTag::TwoHanded => self.into_two_handed(),
             other_tag => {
                 self.other_tags.push(other_tag);
                 self

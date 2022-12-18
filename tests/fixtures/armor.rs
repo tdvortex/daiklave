@@ -11,8 +11,8 @@ pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {
         .with_armor(
             ArmorItem::from_book(0, "Core Rulebook".to_owned(), 600)
                 .with_name("Silken Armor".to_owned())
-                .as_light()
-                .as_artifact()
+                .into_light()
+                .into_artifact()
                 .with_tag(ArmorTag::Silent)
                 .with_tag(ArmorTag::Special)
                 .build()
@@ -22,7 +22,7 @@ pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {
         .with_armor(
             ArmorItem::custom(1, character_placeholder_id)
                 .with_name("Straw Hat".to_owned())
-                .as_light()
+                .into_light()
                 .build()
                 .unwrap(),
             true,
@@ -103,7 +103,7 @@ pub fn modify_armor(character_database_id: i32, armor: &mut Armor) {
     // Add an item
     armor.add_armor_item(
         ArmorItem::custom(2, Id::Database(character_database_id))
-            .as_medium()
+            .into_medium()
             .with_name("Stolen Guard's Breastplate".to_owned())
             .build()
             .unwrap(),

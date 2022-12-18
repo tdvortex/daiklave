@@ -203,27 +203,27 @@ impl SolarTraitsBuilder {
         self
     }
 
-    pub fn as_dawn(mut self, dawn_traits: DawnTraits) -> Self {
+    pub fn into_dawn(mut self, dawn_traits: DawnTraits) -> Self {
         self.caste = Some(SolarCaste::Dawn(dawn_traits));
         self
     }
 
-    pub fn as_zenith(mut self, zenith_traits: ZenithTraits) -> Self {
+    pub fn into_zenith(mut self, zenith_traits: ZenithTraits) -> Self {
         self.caste = Some(SolarCaste::Zenith(zenith_traits));
         self
     }
 
-    pub fn as_twilight(mut self, twilight_traits: TwilightTraits) -> Self {
+    pub fn into_twilight(mut self, twilight_traits: TwilightTraits) -> Self {
         self.caste = Some(SolarCaste::Twilight(twilight_traits));
         self
     }
 
-    pub fn as_night(mut self, night_traits: NightTraits) -> Self {
+    pub fn into_night(mut self, night_traits: NightTraits) -> Self {
         self.caste = Some(SolarCaste::Night(night_traits));
         self
     }
 
-    pub fn as_eclipse(mut self, eclipse_traits: EclipseTraits) -> Self {
+    pub fn into_eclipse(mut self, eclipse_traits: EclipseTraits) -> Self {
         self.caste = Some(SolarCaste::Eclipse(eclipse_traits));
         self
     }

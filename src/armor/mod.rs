@@ -294,32 +294,32 @@ impl ArmorBuilder {
         self
     }
 
-    pub fn as_light(mut self) -> Self {
+    pub fn into_light(mut self) -> Self {
         self.weight_class = Some(WeightClass::Light);
         self
     }
 
-    pub fn as_medium(mut self) -> Self {
+    pub fn into_medium(mut self) -> Self {
         self.weight_class = Some(WeightClass::Medium);
         self
     }
 
-    pub fn as_heavy(mut self) -> Self {
+    pub fn into_heavy(mut self) -> Self {
         self.weight_class = Some(WeightClass::Heavy);
         self
     }
 
-    pub fn as_artifact(mut self) -> Self {
+    pub fn into_artifact(mut self) -> Self {
         self.tags.insert(ArmorTag::Artifact);
         self
     }
 
     pub fn with_tag(mut self, tag: ArmorTag) -> Self {
         match tag {
-            ArmorTag::Artifact => self.as_artifact(),
-            ArmorTag::Heavy => self.as_heavy(),
-            ArmorTag::Light => self.as_light(),
-            ArmorTag::Medium => self.as_medium(),
+            ArmorTag::Artifact => self.into_artifact(),
+            ArmorTag::Heavy => self.into_heavy(),
+            ArmorTag::Light => self.into_light(),
+            ArmorTag::Medium => self.into_medium(),
             other_tag => {
                 self.tags.insert(other_tag);
                 self

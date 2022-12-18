@@ -180,8 +180,8 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    pub fn as_solar(mut self) -> Self {
-        self.exalt_type = self.exalt_type.as_solar();
+    pub fn into_solar(mut self) -> Self {
+        self.exalt_type = self.exalt_type.into_solar();
         self
     }
 
@@ -200,28 +200,28 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    pub fn as_dawn(mut self, dawn_traits: DawnTraits) -> Result<Self> {
-        self.exalt_type = self.exalt_type.as_dawn(dawn_traits)?;
+    pub fn into_dawn(mut self, dawn_traits: DawnTraits) -> Result<Self> {
+        self.exalt_type = self.exalt_type.into_dawn(dawn_traits)?;
         Ok(self)
     }
 
-    pub fn as_zenith(mut self, zenith_traits: ZenithTraits) -> Result<Self> {
-        self.exalt_type = self.exalt_type.as_zenith(zenith_traits)?;
+    pub fn into_zenith(mut self, zenith_traits: ZenithTraits) -> Result<Self> {
+        self.exalt_type = self.exalt_type.into_zenith(zenith_traits)?;
         Ok(self)
     }
 
-    pub fn as_twilight(mut self, twilight_traits: TwilightTraits) -> Result<Self> {
-        self.exalt_type = self.exalt_type.as_twilight(twilight_traits)?;
+    pub fn into_twilight(mut self, twilight_traits: TwilightTraits) -> Result<Self> {
+        self.exalt_type = self.exalt_type.into_twilight(twilight_traits)?;
         Ok(self)
     }
 
-    pub fn as_night(mut self, night_traits: NightTraits) -> Result<Self> {
-        self.exalt_type = self.exalt_type.as_night(night_traits)?;
+    pub fn into_night(mut self, night_traits: NightTraits) -> Result<Self> {
+        self.exalt_type = self.exalt_type.into_night(night_traits)?;
         Ok(self)
     }
 
-    pub fn as_eclipse(mut self, eclipse_traits: EclipseTraits) -> Result<Self> {
-        self.exalt_type = self.exalt_type.as_eclipse(eclipse_traits)?;
+    pub fn into_eclipse(mut self, eclipse_traits: EclipseTraits) -> Result<Self> {
+        self.exalt_type = self.exalt_type.into_eclipse(eclipse_traits)?;
         Ok(self)
     }
 

@@ -258,7 +258,7 @@ impl SolarCharm {
     }
 
     pub fn prerequisite_charm_ids(&self) -> impl Iterator<Item = Id> + '_ {
-        self.prerequisite_charms.iter().map(|id| *id)
+        self.prerequisite_charms.iter().copied()
     }
 
     pub fn id(&self) -> Id {
