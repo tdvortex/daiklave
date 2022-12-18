@@ -1,4 +1,4 @@
-use daiklave::{
+use daiklave_core::{
     abilities::AbilityNameVanilla,
     attributes::AttributeName,
     character::CharacterBuilder,

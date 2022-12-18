@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use daiklave::{
+use daiklave_core::{
     attributes::{AttributeName, Attributes},
     character::CharacterBuilder,
 };

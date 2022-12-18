@@ -1,4 +1,4 @@
-use daiklave::{
+use daiklave_core::{
     character::{CharacterBuilder, ExperiencePoints, Willpower},
     player::Player,
     Character,

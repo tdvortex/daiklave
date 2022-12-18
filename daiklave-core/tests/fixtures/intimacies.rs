@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use daiklave::{
+use daiklave_core::{
     character::CharacterBuilder,
     id::Id,
     intimacies::{Intimacy, IntimacyLevel, IntimacyType},

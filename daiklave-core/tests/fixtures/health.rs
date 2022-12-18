@@ -1,4 +1,4 @@
-use daiklave::{
+use daiklave_core::{
     character::CharacterBuilder,
     health::{DamageLevel, Health, WoundPenalty},
 };

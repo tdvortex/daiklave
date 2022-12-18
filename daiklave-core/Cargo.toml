@@ -1,0 +1,18 @@
+[package]
+name = "daiklave_core"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = ["database"]
+database = []
+
+[dependencies]
+dotenvy = "0.15.6"
+eyre = "0.6.8"
+postcard = {version = "1.0.2", features = ["alloc"]}
+serde = {version = "1.0.149", features = ["derive"]}
+sqlx = {version = "0.6", features = ["runtime-tokio-native-tls", "postgres"]}
+tokio = {version = "1.22.0", features = ["macros"]}

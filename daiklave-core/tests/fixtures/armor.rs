@@ -1,4 +1,4 @@
-use daiklave::{
+use daiklave_core::{
     armor::{Armor, ArmorItem, ArmorTag},
     character::CharacterBuilder,
     data_source::{BookReference, DataSource},

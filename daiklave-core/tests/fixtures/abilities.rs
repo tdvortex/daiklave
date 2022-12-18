@@ -1,4 +1,4 @@
-use daiklave::{
+use daiklave_core::{
     abilities::{AbilityNameNoSubskill, AbilityNameVanilla},
     character::CharacterBuilder,
     id::Id,

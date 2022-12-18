@@ -1,4 +1,4 @@
-use daiklave::{
+use daiklave_core::{
     character::CharacterBuilder,
     data_source::{BookReference, DataSource},
     id::Id,

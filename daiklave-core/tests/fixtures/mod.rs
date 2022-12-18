@@ -7,7 +7,7 @@ mod intimacies;
 mod merits;
 pub mod serde;
 mod weapons;
-use daiklave::{player::Player, Character};
+use daiklave_core::{player::Player, Character};
 
 pub use self::serde::validate_player_serde;
 
