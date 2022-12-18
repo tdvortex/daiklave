@@ -1,5 +1,5 @@
 use super::MartialArtsStyle;
-use crate::charms::tables::CharmActionTypePostgres;
+use crate::charms::tables::{CharmActionTypePostgres, CharmKeywordPostgres, CharmCostTypePostgres};
 use crate::charms::MartialArtsCharm;
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
@@ -42,7 +42,7 @@ pub(crate) async fn create_martial_arts_charm_transaction(
 
     let action_type_pg: CharmActionTypePostgres = charm.action_type().into();
 
-    query!(
+    let charm_id = query!(
         "INSERT INTO martial_arts_charms (style_id, ability_dots_required, essence_dots_required, name, summary, description, action_type, duration, book_title, page_number, creator_id)
         VALUES ($1::INTEGER, $2::SMALLINT, $3::SMALLINT, $4::VARCHAR(255), $5::TEXT, $6::TEXT, $7::CHARMACTIONTYPE, $8::VARCHAR(255), $9::VARCHAR(255), $10::SMALLINT, $11::INTEGER)
         RETURNING id",
@@ -57,5 +57,37 @@ pub(crate) async fn create_martial_arts_charm_transaction(
         charm.data_source().book_title() as Option<&str>,
         charm.data_source().page_number() as Option<i16>,
         creator_id
-    ).fetch_one(&mut *transaction).await.wrap_err_with(|| format!("Database error attempting to insert martial arts charm {}", charm.name())).map(|record| record.id)
+    ).fetch_one(&mut *transaction).await.wrap_err_with(|| format!("Database error attempting to insert martial arts charm {}", charm.name())).map(|record| record.id)?;
+
+    let charm_keywords_pg: Vec<CharmKeywordPostgres> = charm.keywords().iter().map(|keyword| (*keyword).into()).collect();
+
+    query!(
+        "INSERT INTO martial_arts_charms_keywords(charm_id, keyword)
+        SELECT
+            $1::INTEGER as charm_id,
+            data.keyword as keyword
+        FROM UNNEST($2::CHARMKEYWORD[]) as data(keyword)",
+        charm_id as i32,
+        &charm_keywords_pg as &[CharmKeywordPostgres]
+    ).execute(&mut *transaction).await.wrap_err_with(|| format!("Database error attempting to insert keywords for martial arts charm {}", charm.name()))?;
+
+    let (cost_types_pg, cost_amounts_i16) = charm.costs().iter().fold((Vec::<CharmCostTypePostgres>::new(), Vec::<i16>::new()), |(mut cost_types_pg, mut cost_amounts_i16), (cost_type, amount)| {
+        cost_types_pg.push((*cost_type).into());
+        cost_amounts_i16.push((*amount).into());
+        (cost_types_pg, cost_amounts_i16)
+    });
+
+    query!(
+        "INSERT INTO martial_arts_charms_costs(charm_id, cost_type, amount)
+        SELECT
+            $1::INTEGER as charm_id,
+            data.cost_type as cost_type,
+            data.amount as amount
+        FROM UNNEST($2::CHARMCOSTTYPE[], $3::SMALLINT[]) as data(cost_type, amount)",
+        charm_id as i32,
+        &cost_types_pg as &[CharmCostTypePostgres],
+        &cost_amounts_i16 as &[i16]
+    ).execute(&mut *transaction).await.wrap_err_with(|| format!("Database error attempting to insert activation costs for martial arts charm {}", charm.name()))?;
+
+    Ok(charm_id)
 }

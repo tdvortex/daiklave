@@ -55,6 +55,7 @@ pub enum CharmKeywordPostgres {
     Protean,
     Psyche,
     Perilous,
+    Ritual,
     Salient,
     Signature,
     Stackable,
@@ -63,6 +64,12 @@ pub enum CharmKeywordPostgres {
     WitheringOnly,
     Wood,
     WrittenOnly,
+}
+
+impl PgHasArrayType for CharmKeywordPostgres {
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("_CHARMKEYWORD")
+    }
 }
 
 impl From<CharmKeywordPostgres> for CharmKeyword {
@@ -86,6 +93,7 @@ impl From<CharmKeywordPostgres> for CharmKeyword {
             CharmKeywordPostgres::Protean => Self::Protean,
             CharmKeywordPostgres::Psyche => Self::Psyche,
             CharmKeywordPostgres::Perilous => Self::Perilous,
+            CharmKeywordPostgres::Ritual => Self::Ritual,
             CharmKeywordPostgres::Salient => Self::Salient,
             CharmKeywordPostgres::Signature => Self::Signature,
             CharmKeywordPostgres::Stackable => Self::Stackable,
@@ -94,6 +102,40 @@ impl From<CharmKeywordPostgres> for CharmKeyword {
             CharmKeywordPostgres::WitheringOnly => Self::WitheringOnly,
             CharmKeywordPostgres::Wood => Self::Wood,
             CharmKeywordPostgres::WrittenOnly => Self::WrittenOnly,
+        }
+    }
+}
+
+impl From<CharmKeyword> for CharmKeywordPostgres {
+    fn from(keyword: CharmKeyword) -> Self {
+        match keyword {
+            CharmKeyword::Air => Self::Air,
+            CharmKeyword::Aggravated => Self::Aggravated,
+            CharmKeyword::Archetype => Self::Archetype,
+            CharmKeyword::Aura => Self::Aura,
+            CharmKeyword::Balanced => Self::Balanced,
+            CharmKeyword::Bridge => Self::Bridge,
+            CharmKeyword::Clash => Self::Clash,
+            CharmKeyword::Counterattack => Self::Counterattack,
+            CharmKeyword::DecisiveOnly => Self::DecisiveOnly,
+            CharmKeyword::Dual => Self::Dual,
+            CharmKeyword::Excellency => Self::Excellency,
+            CharmKeyword::Fire => Self::Fire,
+            CharmKeyword::Earth => Self::Earth,
+            CharmKeyword::Mute => Self::Mute,
+            CharmKeyword::Pilot => Self::Pilot,
+            CharmKeyword::Protean => Self::Protean,
+            CharmKeyword::Psyche => Self::Psyche,
+            CharmKeyword::Perilous => Self::Perilous,
+            CharmKeyword::Ritual => Self::Ritual,
+            CharmKeyword::Salient => Self::Salient,
+            CharmKeyword::Signature => Self::Signature,
+            CharmKeyword::Stackable => Self::Stackable,
+            CharmKeyword::Uniform => Self::Uniform,
+            CharmKeyword::Water => Self::Water,
+            CharmKeyword::WitheringOnly => Self::WitheringOnly,
+            CharmKeyword::Wood => Self::Wood,
+            CharmKeyword::WrittenOnly => Self::WrittenOnly,
         }
     }
 }
@@ -144,6 +186,31 @@ pub enum CharmCostTypePostgres {
     SilverCraftExperience,
     GoldCraftExperience,
     WhiteCraftExperience,
+}
+
+impl PgHasArrayType for CharmCostTypePostgres {
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        sqlx::postgres::PgTypeInfo::with_name("_CHARMCOSTTYPE")
+    }
+}
+
+impl From<CharmCostType> for CharmCostTypePostgres {
+    fn from(value: CharmCostType) -> Self {
+        match value {
+            CharmCostType::Motes => Self::Motes,
+            CharmCostType::SorcerousMotes => Self::SorcerousMotes,
+            CharmCostType::Willpower => Self::Willpower,
+            CharmCostType::BashingHealth => Self::BashingHealth,
+            CharmCostType::LethalHealth => Self::LethalHealth,
+            CharmCostType::AggravatedHealth => Self::AggravatedHealth,
+            CharmCostType::AnimaLevels => Self::AnimaLevels,
+            CharmCostType::Initiative => Self::Initiative,
+            CharmCostType::Experience => Self::Experience,
+            CharmCostType::SilverCraftExperience => Self::SilverCraftExperience,
+            CharmCostType::GoldCraftExperience => Self::GoldCraftExperience,
+            CharmCostType::WhiteCraftExperience => Self::WhiteCraftExperience,
+        }
+    }
 }
 
 #[derive(Debug)]

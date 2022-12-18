@@ -136,7 +136,7 @@ impl CharmTraits {
         &self.keywords
     }
 
-    fn _costs(&self) -> &Vec<(CharmCostType, u8)> {
+    fn costs(&self) -> &Vec<(CharmCostType, u8)> {
         &self.costs
     }
 
@@ -325,6 +325,10 @@ impl MartialArtsCharm {
 
     pub fn action_type(&self) -> CharmActionType {
         self.action_type
+    }
+
+    pub fn costs(&self) -> &Vec<(CharmCostType, u8)> {
+        self.traits.costs()
     }
 }
 
