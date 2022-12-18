@@ -330,6 +330,18 @@ pub enum MortalSorcererLevel {
     Terrestrial(TerrestrialCircleTraits),
 }
 
+impl MortalSorcererLevel {
+    pub fn add_spell(&mut self, spell: Spell) -> Result<()> {
+        match (&spell.circle(), self) {
+            (_, MortalSorcererLevel::None) => Err(eyre!("Not a sorcerer, cannot learn spells")),
+            (SpellLevel::Terrestrial, MortalSorcererLevel::Terrestrial(terrestrial_traits))  => {
+                terrestrial_traits.add_spell(spell)
+            }
+            (_, _) => Err(eyre!("Spell is too high level to be learned")),
+        }
+    }
+}
+
 impl Default for MortalSorcererLevel {
     fn default() -> Self {
         Self::None
@@ -354,26 +366,42 @@ impl Sorcerer for MortalSorcererLevel {
     }
 }
 
-enum _LunarSorcererLevel {
+enum LunarSorcererLevel {
     None,
     _Terrestrial(TerrestrialCircleTraits),
     _Celestial(TerrestrialCircleTraits, CelestialCircleTraits),
 }
 
-impl Default for _LunarSorcererLevel {
+impl LunarSorcererLevel {
+    pub fn _add_spell(&mut self, spell: Spell) -> Result<()> {
+        match (&spell.circle(), self) {
+            (_, LunarSorcererLevel::None) => Err(eyre!("Not a sorcerer, cannot learn spells")),
+            (SpellLevel::Terrestrial, LunarSorcererLevel::_Terrestrial(terrestrial_traits)) 
+            | (SpellLevel::Terrestrial, LunarSorcererLevel::_Celestial(terrestrial_traits, _))=> {
+                terrestrial_traits.add_spell(spell)
+            }
+            (SpellLevel::Celestial, LunarSorcererLevel::_Celestial(_, celestial_traits)) => {
+                celestial_traits.add_spell(spell)
+            }
+            (_, _) => Err(eyre!("Spell is too high level to be learned")),
+        }
+    }
+}
+
+impl Default for LunarSorcererLevel {
     fn default() -> Self {
         Self::None
     }
 }
 
-impl Sorcerer for _LunarSorcererLevel {
+impl Sorcerer for LunarSorcererLevel {
     fn shaping_rituals(&self) -> Option<Vec<&ShapingRitual>> {
         match self {
-            _LunarSorcererLevel::None => None,
-            _LunarSorcererLevel::_Terrestrial(terrestrial_traits) => {
+            LunarSorcererLevel::None => None,
+            LunarSorcererLevel::_Terrestrial(terrestrial_traits) => {
                 terrestrial_traits.shaping_rituals()
             }
-            _LunarSorcererLevel::_Celestial(terrestrial_traits, celestial_traits) => {
+            LunarSorcererLevel::_Celestial(terrestrial_traits, celestial_traits) => {
                 let mut output: Vec<&ShapingRitual> = terrestrial_traits
                     .shaping_rituals()
                     .unwrap()
@@ -388,9 +416,9 @@ impl Sorcerer for _LunarSorcererLevel {
 
     fn spells(&self) -> Option<Vec<(&Spell, bool)>> {
         match self {
-            _LunarSorcererLevel::None => None,
-            _LunarSorcererLevel::_Terrestrial(terrestrial_traits) => terrestrial_traits.spells(),
-            _LunarSorcererLevel::_Celestial(terrestrial_traits, celestial_traits) => {
+            LunarSorcererLevel::None => None,
+            LunarSorcererLevel::_Terrestrial(terrestrial_traits) => terrestrial_traits.spells(),
+            LunarSorcererLevel::_Celestial(terrestrial_traits, celestial_traits) => {
                 let mut output: Vec<(&Spell, bool)> = terrestrial_traits
                     .spells()
                     .unwrap()
@@ -407,6 +435,18 @@ impl Sorcerer for _LunarSorcererLevel {
 enum DragonBloodedSorcererLevel {
     None,
     _Terrestrial(TerrestrialCircleTraits),
+}
+
+impl DragonBloodedSorcererLevel {
+    pub fn _add_spell(&mut self, spell: Spell) -> Result<()> {
+        match (&spell.circle(), self) {
+            (_, DragonBloodedSorcererLevel::None) => Err(eyre!("Not a sorcerer, cannot learn spells")),
+            (SpellLevel::Terrestrial, DragonBloodedSorcererLevel::_Terrestrial(terrestrial_traits))  => {
+                terrestrial_traits.add_spell(spell)
+            }
+            (_, _) => Err(eyre!("Spell is too high level to be learned")),
+        }
+    }
 }
 
 impl Default for DragonBloodedSorcererLevel {
@@ -445,6 +485,27 @@ pub enum SolarSorcererLevel {
         CelestialCircleTraits,
         SolarCircleTraits,
     ),
+}
+
+impl SolarSorcererLevel {
+    pub fn add_spell(&mut self, spell: Spell) -> Result<()> {
+        match (&spell.circle(), self) {
+            (_, SolarSorcererLevel::None) => Err(eyre!("Not a sorcerer, cannot learn spells")),
+            (SpellLevel::Terrestrial, SolarSorcererLevel::Terrestrial(terrestrial_traits)) 
+            | (SpellLevel::Terrestrial, SolarSorcererLevel::Celestial(terrestrial_traits, _))
+            | (SpellLevel::Terrestrial, SolarSorcererLevel::Solar(terrestrial_traits, _, _)) => {
+                terrestrial_traits.add_spell(spell)
+            }
+            (SpellLevel::Celestial, SolarSorcererLevel::Celestial(_, celestial_traits))
+            | (SpellLevel::Celestial, SolarSorcererLevel::Solar(_, celestial_traits, _)) => {
+                celestial_traits.add_spell(spell)
+            }
+            (SpellLevel::Solar, SolarSorcererLevel::Solar(_, _, solar_traits)) => {
+                solar_traits.add_spell(spell)
+            }
+            (_, _) => Err(eyre!("Spell is too high level to be learned")),
+        }
+    }
 }
 
 impl Default for SolarSorcererLevel {
