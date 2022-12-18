@@ -106,7 +106,7 @@ impl ShapingRitualBuilder {
     }
 }
 
-trait Sorcerer {
+pub trait Sorcerer {
     fn shaping_rituals(&self) -> Option<Vec<&ShapingRitual>>;
     fn spells(&self) -> Option<Vec<(&Spell, bool)>>;
 }

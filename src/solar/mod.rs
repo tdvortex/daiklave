@@ -13,8 +13,8 @@ pub use self::{
 };
 
 use crate::{
-    abilities::AbilityNameNoSubskill, anima::AnimaLevel, charms::SolarCharm, essence::Essence,
-    limit::Limit, sorcery::SolarSorcererLevel,
+    abilities::AbilityNameNoSubskill, anima::AnimaLevel, charms::{SolarCharm}, essence::Essence,
+    limit::Limit, sorcery::{SolarSorcererLevel, Sorcerer},
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -82,6 +82,16 @@ impl SolarTraits {
     /// Returns true for MartialArts if Brawl is a caste or favored ability.
     pub fn has_caste_or_favored_ability(&self, ability: AbilityNameNoSubskill) -> bool {
         self.has_favored_ability(ability) || self.has_caste_ability(ability)
+    }
+}
+
+impl Sorcerer for SolarTraits {
+    fn shaping_rituals(&self) -> Option<Vec<&crate::sorcery::ShapingRitual>> {
+        self.sorcery_level.shaping_rituals()
+    }
+
+    fn spells(&self) -> Option<Vec<(&crate::charms::Spell, bool)>> {
+        self.sorcery_level.spells()
     }
 }
 
