@@ -1,3 +1,4 @@
+#![allow(clippy::large_enum_variant)] // TODO: box stuff where needed
 // #![warn(missing_docs)]
 //! **Daiklave** is a Rust character sheet application, designed to be as
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
