@@ -1,6 +1,6 @@
 use sqlx::postgres::PgHasArrayType;
 
-use super::{CharmActionType, CharmKeyword};
+use super::{CharmActionType, CharmCostType, CharmKeyword};
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "CHARMCOST")]
@@ -12,6 +12,25 @@ pub struct CharmCostPostgres {
 impl PgHasArrayType for CharmCostPostgres {
     fn array_type_info() -> sqlx::postgres::PgTypeInfo {
         sqlx::postgres::PgTypeInfo::with_name("_CHARMCOST")
+    }
+}
+
+impl From<CharmCostTypePostgres> for CharmCostType {
+    fn from(value: CharmCostTypePostgres) -> Self {
+        match value {
+            CharmCostTypePostgres::Motes => Self::Motes,
+            CharmCostTypePostgres::SorcerousMotes => Self::SorcerousMotes,
+            CharmCostTypePostgres::Willpower => Self::Willpower,
+            CharmCostTypePostgres::BashingHealth => Self::BashingHealth,
+            CharmCostTypePostgres::LethalHealth => Self::LethalHealth,
+            CharmCostTypePostgres::AggravatedHealth => Self::AggravatedHealth,
+            CharmCostTypePostgres::AnimaLevels => Self::AnimaLevels,
+            CharmCostTypePostgres::Initiative => Self::Initiative,
+            CharmCostTypePostgres::Experience => Self::Experience,
+            CharmCostTypePostgres::SilverCraftExperience => Self::SilverCraftExperience,
+            CharmCostTypePostgres::GoldCraftExperience => Self::GoldCraftExperience,
+            CharmCostTypePostgres::WhiteCraftExperience => Self::WhiteCraftExperience,
+        }
     }
 }
 
@@ -114,6 +133,7 @@ impl From<CharmActionType> for CharmActionTypePostgres {
 #[sqlx(type_name = "CHARMCOSTTYPE", rename_all = "UPPERCASE")]
 pub enum CharmCostTypePostgres {
     Motes,
+    SorcerousMotes,
     Willpower,
     BashingHealth,
     LethalHealth,
@@ -124,7 +144,6 @@ pub enum CharmCostTypePostgres {
     SilverCraftExperience,
     GoldCraftExperience,
     WhiteCraftExperience,
-    SorcerousMotes,
 }
 
 #[derive(Debug)]

@@ -12,8 +12,8 @@ use crate::{
     health::tables::HealthBoxRow,
     intimacies::tables::IntimacyRow,
     martial_arts::tables::{
-        CharacterMartialArtsRow, CharacterMartialArtsSpecialtyRow, MartialArtsCharmKeywordRow,
-        MartialArtsCharmRow, MartialArtsStyleRow, MartialArtsCharmCostRow,
+        CharacterMartialArtsRow, CharacterMartialArtsSpecialtyRow, MartialArtsCharmCostRow,
+        MartialArtsCharmKeywordRow, MartialArtsCharmRow, MartialArtsStyleRow,
     },
     merits::tables::{MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow},
     player::tables::PlayerRow,

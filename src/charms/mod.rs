@@ -136,7 +136,7 @@ impl CharmTraits {
         &self.keywords
     }
 
-    fn costs(&self) -> &Vec<(CharmCostType, u8)> {
+    fn _costs(&self) -> &Vec<(CharmCostType, u8)> {
         &self.costs
     }
 
@@ -187,7 +187,11 @@ impl CharmTraitsBuilder {
             return self;
         }
 
-        if let Some((_, old_amount)) = self.costs.iter_mut().find(|(existing_cost, _)| *existing_cost == cost) {
+        if let Some((_, old_amount)) = self
+            .costs
+            .iter_mut()
+            .find(|(existing_cost, _)| *existing_cost == cost)
+        {
             *old_amount += amount;
         } else {
             self.costs.push((cost, amount));
@@ -365,6 +369,11 @@ impl MartialArtsCharmBuilder {
 
     pub fn with_action_type(mut self, action_type: CharmActionType) -> Self {
         self.action_type = Some(action_type);
+        self
+    }
+
+    pub fn with_cost(mut self, cost_type: CharmCostType, amount: u8) -> Self {
+        self.traits = self.traits.with_cost(cost_type, amount);
         self
     }
 

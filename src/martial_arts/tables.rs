@@ -1,8 +1,8 @@
 use crate::{
     character::CharacterBuilder,
     charms::{
-        tables::{CharmActionTypePostgres, CharmKeywordPostgres, CharmCostTypePostgres},
-        CharmKeyword, MartialArtsCharm, MartialArtsCharmBuilder,
+        tables::{CharmActionTypePostgres, CharmCostTypePostgres, CharmKeywordPostgres},
+        CharmCostType, CharmKeyword, MartialArtsCharm, MartialArtsCharmBuilder,
     },
     id::Id,
 };
@@ -235,7 +235,7 @@ impl CharacterBuilder {
             return Ok(self);
         }
 
-        // Construct charms except for keywords
+        // Construct charms except for keywords and costs
         let mut charm_builder_map: HashMap<i32, MartialArtsCharmBuilder>;
         if let Some(rows) = martial_arts_charm_rows {
             charm_builder_map = HashMap::new();
@@ -305,10 +305,30 @@ impl CharacterBuilder {
             }
         }
 
+        // Group charm costs
+        let mut charm_costs_map: HashMap<Id, Vec<(CharmCostType, u8)>> = HashMap::new();
+        if let Some(rows) = charm_cost_rows {
+            for row in rows.into_iter() {
+                let id = Id::Database(row.charm_id);
+                charm_costs_map.entry(id).or_default().push((
+                    row.cost.into(),
+                    row.amount
+                        .try_into()
+                        .wrap_err_with(|| format!("Invalid cost amount: {}", row.amount))?,
+                ));
+            }
+        }
+
         for (charm_id, mut charm_builder) in charm_builder_map.into_iter() {
             if let Some(keywords) = charm_keyword_map.remove(&Id::Database(charm_id)) {
                 for keyword in keywords.into_iter() {
                     charm_builder = charm_builder.with_keyword(keyword);
+                }
+            }
+
+            if let Some(costs) = charm_costs_map.remove(&Id::Database(charm_id)) {
+                for (cost_type, amount) in costs.into_iter() {
+                    charm_builder = charm_builder.with_cost(cost_type, amount);
                 }
             }
             let charm = charm_builder.build()?;
