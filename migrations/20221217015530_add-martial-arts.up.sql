@@ -49,6 +49,13 @@ CREATE TABLE martial_arts_charms_keywords (
     PRIMARY KEY (charm_id, keyword)
 );
 
+CREATE TABLE martial_arts_charms_costs (
+    charm_id INTEGER REFERENCES martial_arts_charms(id) ON DELETE CASCADE,
+    cost_type CHARMCOSTTYPE NOT NULL,
+    amount SMALLINT NOT NULL CHECK (0 < amount AND amount <= 255),
+    PRIMARY KEY (charm_id, cost_type)
+);
+
 CREATE TABLE character_martial_arts_charms (
     character_id INTEGER REFERENCES characters(id) ON DELETE CASCADE,
     charm_id INTEGER REFERENCES martial_arts_charms(id) ON DELETE CASCADE,

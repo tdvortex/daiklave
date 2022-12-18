@@ -48,9 +48,10 @@ pub enum CharmActionType {
     Permanent,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, PartialOrd, Ord)]
 pub enum CharmCostType {
     Motes,
+    SorcerousMotes,
     Willpower,
     BashingHealth,
     LethalHealth,
@@ -61,7 +62,6 @@ pub enum CharmCostType {
     SilverCraftExperience,
     GoldCraftExperience,
     WhiteCraftExperience,
-    SorcerousMotes,
 }
 
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
@@ -72,6 +72,7 @@ struct CharmTraits {
     summary: Option<String>,
     duration: String,
     keywords: Vec<CharmKeyword>,
+    costs: Vec<(CharmCostType, u8)>,
     description: String,
 }
 
@@ -93,6 +94,7 @@ impl CharmTraits {
             summary: None,
             duration: None,
             keywords: Vec::new(),
+            costs: Vec::new(),
             description: None,
         }
     }
@@ -105,6 +107,7 @@ impl CharmTraits {
             summary: None,
             duration: None,
             keywords: Vec::new(),
+            costs: Vec::new(),
             description: None,
         }
     }
@@ -133,6 +136,10 @@ impl CharmTraits {
         &self.keywords
     }
 
+    fn costs(&self) -> &Vec<(CharmCostType, u8)> {
+        &self.costs
+    }
+
     fn description(&self) -> &str {
         self.description.as_str()
     }
@@ -145,6 +152,7 @@ struct CharmTraitsBuilder {
     summary: Option<String>,
     duration: Option<String>,
     keywords: Vec<CharmKeyword>,
+    costs: Vec<(CharmCostType, u8)>,
     description: Option<String>,
 }
 
@@ -174,6 +182,20 @@ impl CharmTraitsBuilder {
         self
     }
 
+    fn with_cost(mut self, cost: CharmCostType, amount: u8) -> Self {
+        if amount == 0 {
+            return self;
+        }
+
+        if let Some((_, old_amount)) = self.costs.iter_mut().find(|(existing_cost, _)| *existing_cost == cost) {
+            *old_amount += amount;
+        } else {
+            self.costs.push((cost, amount));
+            self.costs.sort();
+        }
+        self
+    }
+
     fn build(mut self) -> Result<CharmTraits> {
         self.keywords.sort();
         self.keywords.dedup();
@@ -187,6 +209,7 @@ impl CharmTraitsBuilder {
                 .duration
                 .ok_or_else(|| eyre!("Charm name is required"))?,
             keywords: self.keywords,
+            costs: self.costs,
             description: self
                 .description
                 .ok_or_else(|| eyre!("Charm name is required"))?,
