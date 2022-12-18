@@ -1,5 +1,5 @@
-use crate::{charms::Spell, data_source::DataSource, id::Id};
-use eyre::eyre;
+use crate::{charms::Spell, data_source::{DataSource, BookReference}, id::Id};
+use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -56,8 +56,52 @@ impl TryFrom<Spell> for SolarCircleSpell {
 struct ShapingRitual {
     id: Id,
     name: String,
-    ritual: String,
+    description: String,
     data_source: DataSource,
+}
+
+impl ShapingRitual {
+    pub fn from_book(id: Id, book_title: String, page_number: i16) -> ShapingRitualBuilder {
+        ShapingRitualBuilder { id, data_source: DataSource::Book(BookReference{book_title, page_number}), name: None, description: None }
+    }
+
+    pub fn custom(id: Id, creator_id: Id) -> ShapingRitualBuilder {
+        ShapingRitualBuilder { id, data_source: DataSource::Custom(creator_id), name: None, description: None }
+    }
+}
+
+struct ShapingRitualBuilder {
+    id: Id,
+    data_source: DataSource,
+    name: Option<String>,
+    description: Option<String>,
+}
+
+impl ShapingRitualBuilder {
+    pub fn with_name(mut self, name: String) -> Self {
+        self.name = Some(name);
+        self
+    }
+
+    pub fn with_description(mut self, description: String) -> Self {
+        self.description = Some(description);
+        self
+    }
+
+    pub fn build(self) -> Result<ShapingRitual> {
+        if self.name.is_none() {
+            Err(eyre!("Shaping Ritual name is required"))
+        } else if self.description.is_none() {
+            Err(eyre!("Shaping ritual description is required"))
+        } else {
+            Ok(ShapingRitual{
+                id: self.id,
+                name: self.name.unwrap(),
+                description: self.description.unwrap(),
+                data_source: self.data_source
+            })
+        }
+    }
 }
 
 trait Sorcerer {

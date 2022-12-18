@@ -440,6 +440,20 @@ impl PartialEq for Spell {
 }
 
 impl Spell {
+    pub fn from_book(id: Id, book_title: String, page_number: i16) -> SpellBuilder {
+        SpellBuilder {
+            level: None,
+            traits: CharmTraits::from_book(id, book_title, page_number),
+        }
+    }
+
+    pub fn custom(id: Id, creator_id: Id) -> SpellBuilder {
+        SpellBuilder {
+            level: None,
+            traits: CharmTraits::custom(id, creator_id),
+        }
+    }
+
     pub fn circle(&self) -> SpellLevel {
         self.circle
     }
