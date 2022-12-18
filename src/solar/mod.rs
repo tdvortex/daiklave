@@ -4,6 +4,8 @@ mod night;
 mod twilight;
 mod zenith;
 
+use std::collections::HashSet;
+
 pub use self::{
     dawn::{DawnAbility, DawnTraits, DawnTraitsBuilder},
     eclipse::{EclipseAbility, EclipseTraits, EclipseTraitsBuilder},
@@ -21,7 +23,7 @@ use crate::{
     sorcery::{
         CelestialCircleTraits, ShapingRitual, SolarCircleTraits, SolarSorcererLevel, Sorcerer,
         TerrestrialCircleTraits,
-    },
+    }, id::Id,
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -230,6 +232,30 @@ impl SolarTraitsBuilder {
     pub fn with_solar_charm_unchecked(mut self, charm: SolarCharm) -> Self {
         self.solar_charms.push(charm);
         self
+    }
+
+    pub fn check_essence_requirement(&self, charm: &SolarCharm) -> bool {
+        self.essence.rating() >= charm.essence_requirement()
+    }
+
+    pub fn check_charm_prerequisites(&self, charm: &SolarCharm) -> bool {        
+        let known_charms = self.solar_charms.iter().map(|known_charm| known_charm.id()).collect::<HashSet<Id>>();
+        for id in charm.prerequisite_charm_ids() {
+            if !known_charms.contains(&id) {
+                return false;
+            }
+        }
+        true
+    }
+
+    pub fn with_solar_charm_checked(self, charm: SolarCharm) -> Result<Self> {
+        if !self.check_essence_requirement(&charm) {
+            Err(eyre!("Charm requires essence {}, character only has {}", charm.essence_requirement(), self.essence.rating()))
+        } else if !self.check_charm_prerequisites(&charm) {
+            Err(eyre!("Not all prerequisite charms are known"))
+        } else {
+            Ok(self.with_solar_charm_unchecked(charm))
+        }
     }
 
     pub fn with_terrestrial_circle_sorcery(

@@ -240,6 +240,60 @@ pub struct SolarCharm {
     prerequisite_charms: Vec<Id>,
 }
 
+impl SolarCharm {
+    pub fn action_type(&self) -> CharmActionType {
+        self.action_type
+    }
+
+    pub fn ability(&self) -> AbilityNameNoSubskill {
+        self.ability
+    }
+
+    pub fn ability_requirement(&self) -> (AbilityNameNoSubskill, u8) {
+        (self.ability, self.ability_requirement)
+    }
+
+    pub fn essence_requirement(&self) -> u8 {
+        self.essence_requirement
+    }
+
+    pub fn prerequisite_charm_ids(&self) -> impl Iterator<Item = Id> + '_ {
+        self.prerequisite_charms.iter().map(|id| *id)
+    }
+
+    pub fn id(&self) -> Id {
+        self.traits.id()
+    }
+
+    pub fn data_source(&self) -> &DataSource {
+        self.traits.data_source()
+    }
+
+    pub fn name(&self) -> &str {
+        self.traits.name()
+    }
+
+    pub fn summary(&self) -> Option<&str> {
+        self.traits.summary()
+    }
+
+    pub fn duration(&self) -> &str {
+        self.traits.duration()
+    }
+
+    pub fn keywords(&self) -> &Vec<CharmKeyword> {
+        self.traits.keywords()
+    }
+
+    pub fn costs(&self) -> &Vec<(CharmCostType, u8)> {
+        self.traits.costs()
+    }
+
+    pub fn description(&self) -> &str {
+        self.traits.description()
+    }
+}
+
 pub struct _LunarCharm {
     action_type: CharmActionType,
     attribute: Option<AttributeName>,
