@@ -6,7 +6,7 @@ use crate::{
         DawnTraits, EclipseTraits, NightTraits, SolarTraits, SolarTraitsBuilder, TwilightTraits,
         ZenithTraits,
     },
-    sorcery::{MortalSorcererLevel, ShapingRitual, Sorcerer, TerrestrialCircleTraits},
+    sorcery::{MortalSorcererLevel, ShapingRitual, Sorcerer, TerrestrialCircleTraits}, essence::Essence,
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -90,6 +90,13 @@ impl Default for ExaltTypeBuilder {
 }
 
 impl ExaltTypeBuilder {
+    pub(crate) fn essence(&self) -> Option<&Essence> {
+        match self {
+            ExaltTypeBuilder::Mortal(_) => None,
+            ExaltTypeBuilder::Solar(solar_builder) => Some(solar_builder.essence()),
+        }
+    }
+
     pub(crate) fn with_essence_rating(self, rating: u8) -> Result<Self> {
         match self {
             ExaltTypeBuilder::Mortal(_) => Err(eyre!("Mortals do not have Essence")),

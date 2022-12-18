@@ -174,8 +174,18 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    // TODO: fix this to check prerequisites properly
     pub fn with_martial_arts_charm(mut self, charm: MartialArtsCharm) -> Result<Self> {
+        let essence_rating = self.exalt_type.essence().map_or(0, |ess| ess.rating());
+        if essence_rating < charm.essence_requirement() {
+            if let ExaltTypeBuilder::Solar(solar_builder) = &self.exalt_type {
+                if solar_builder.supernal() != Some(AbilityNameNoSubskill::MartialArts) {
+                    return Err(eyre!("Essence requirement not met, need {} (or Supernal) but only have {}", charm.essence_requirement(), essence_rating));
+                }
+            } else {
+                return Err(eyre!("Essence requirement not met, need {} but only have {}", charm.essence_requirement(), essence_rating));
+            }
+        } 
+
         self.martial_arts_styles.add_charm(charm)?;
         Ok(self)
     }

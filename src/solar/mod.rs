@@ -185,6 +185,14 @@ pub struct SolarTraitsBuilder {
 }
 
 impl SolarTraitsBuilder {
+    pub fn essence(&self) -> &Essence {
+        &self.essence
+    }
+
+    pub fn supernal(&self) -> Option<AbilityNameNoSubskill> {
+        self.caste.as_ref().map(|caste| caste.supernal_ability())
+    }
+
     pub fn with_essence_rating(mut self, rating: u8) -> Result<Self> {
         self.essence = Essence::solar(rating)?;
         Ok(self)

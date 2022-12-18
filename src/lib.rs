@@ -42,7 +42,7 @@ pub mod essence;
 
 /// Defines a trait to allow a character to switch between various Exalt
 /// types (as well as Mortal and MortalSorcerer).
-pub mod exalt_type;
+pub(crate) mod exalt_type;
 
 /// Defines the Health interface for damage and healing.
 pub mod health;
