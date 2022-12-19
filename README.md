@@ -10,6 +10,7 @@ An Exalted 3e character sheet app and dice roller, written entirely in Rust.
 * *Support custom content*. Daiklave should allow users to create their own resources with minimal effort. 
 * *Support correctness*. It should be difficult or impossible to build an invalid character using Daiklave.
 * *Support online play over Discord*. Daiklave should make it easy to play an Exalted 3e game through a Discord server (guild), with no additional support from external VTTs.
+* *Support mobile-first design*. Daiklave's design should assume smartphone support, while also supporting desktop browsers.
 
 It is explicitly **not** the goal of the project to provide full programmatic support for all Charms. Exalted breaks its own rules constantly and creatively. Modeling all of these variants in code would be both infeasible, and also also restrictive, as it would prevent new custom homebrew. 
 
@@ -21,12 +22,6 @@ Support for material will be limited to **only** official, published content for
 * ```daiklave-postgres```: An interface, written using ```sqlx```, for saving and loading characters into a Postgres SQL database.
 * ```daiklave-axum```: A webserver, written using ```axum```, to enable a REST API for Discord OIDC authentication, ```daiklave-postgres``` content storage, and HTTP-based requests to the Discord API.
 * ```daiklave-yew```: a GUI written using the ```yew``` library, using Tailwind as a CSS library.
-
-Possible future binaries may include:
-
-* ```daiklave-redis```: a cache layer interface to make the API server **blazingly fast**.
-* ```daiklave-serenity```: a persistent, WebSocket-based chat bot using the ```serenity``` library to respond to slash commands in a Discord campaign server.
-* ```daiklave-tauri```: an offline version of the application, using the ```tauri``` library to serve the ```daiklave-yew``` application.
 
 Deployment is intended to be through Google Cloud, using Docker containers on Cloud Run.
 
@@ -74,3 +69,11 @@ Deployment is intended to be through Google Cloud, using Docker containers on Cl
 - [ ] Update dice roller
 - [ ] Update Postgres CRUD functions
 - [ ] Update Yew renderer/editer
+
+### Eventually?
+
+- [ ] Exigents, Sidereals, etc.
+- [ ] *Essence* support
+- [ ] Progessive Web App (PWA) qualification
+- [ ] Image support (profiles pics)
+- [ ] Caching using redis
