@@ -1,8 +1,8 @@
-pub(crate) mod update;
+pub(crate) mod diff;
 use std::ops::{Deref, DerefMut};
 
 use serde::{Deserialize, Serialize};
-pub use update::{compare_merits, MeritDiff};
+pub use diff::{compare_merits, MeritDiff};
 use crate::{
     data_source::{BookReference, DataSource},
     id::Id,

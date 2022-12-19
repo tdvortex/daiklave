@@ -1,8 +1,7 @@
 mod builder;
 mod diff;
-pub(crate) mod update;
 pub use builder::CharacterBuilder;
-pub use update::CharacterBaseDiff;
+pub use diff::{CharacterDiff, CharacterBaseDiff};
 use eyre::{eyre, Result};
 
 use crate::abilities::Ability;

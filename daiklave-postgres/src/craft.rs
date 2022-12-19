@@ -1,4 +1,4 @@
-use daiklave_core::{character::CharacterBuilder, craft::update::CraftDiff};
+use daiklave_core::{character::CharacterBuilder, craft::diff::CraftDiff};
 use eyre::{Result, WrapErr};
 use sqlx::{query, Postgres, Transaction};
 

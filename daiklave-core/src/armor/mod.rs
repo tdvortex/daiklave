@@ -1,6 +1,6 @@
-pub(crate) mod update;
+pub(crate) mod diff;
 use serde::{Deserialize, Serialize};
-pub use update::ArmorDiff;
+pub use diff::ArmorDiff;
 use std::{collections::HashSet, hash::Hash};
 
 use eyre::{eyre, Result};

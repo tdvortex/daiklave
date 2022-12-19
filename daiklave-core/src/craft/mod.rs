@@ -1,4 +1,4 @@
-pub mod update;
+pub mod diff;
 use crate::abilities::{Ability, AbilityName, AbilityRating, NonZeroAbility};
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};

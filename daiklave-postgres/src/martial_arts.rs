@@ -6,7 +6,7 @@ use daiklave_core::{
     data_source::DataSource,
     id::Id,
     martial_arts::{
-        update::MartialArtsDiff, MartialArtsCharm, MartialArtsCharmBuilder, MartialArtsStyle,
+        diff::MartialArtsDiff, MartialArtsCharm, MartialArtsCharmBuilder, MartialArtsStyle,
     },
 };
 use eyre::{eyre, Result, WrapErr};

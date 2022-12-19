@@ -19,7 +19,7 @@ impl Health {
             .map(|(index, health_box)| {
                 (
                     index as usize,
-                    health_box.wound_penalty().into(),
+                    health_box.wound_penalty(),
                     health_box.damage().into(),
                 )
             })
@@ -38,7 +38,7 @@ impl Health {
             .map(|(index, health_box)| {
                 (
                     index,
-                    health_box.wound_penalty().into(),
+                    health_box.wound_penalty(),
                     health_box.damage().into(),
                 )
             })

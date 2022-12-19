@@ -322,7 +322,7 @@ pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Ch
         *old_character.id()
     };
 
-    let diff = old_character.compare_newer(&character);
+    let diff = old_character.compare_newer(character);
 
     update_abilities(diff.abilities_diff, &mut transaction, character_id)
         .await

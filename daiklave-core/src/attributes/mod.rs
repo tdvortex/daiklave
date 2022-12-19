@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
-pub(crate) mod update;
-pub use update::AttributesDiff;
+pub(crate) mod diff;
+pub use diff::AttributesDiff;
 
 use eyre::{eyre, Result};
 use std::iter::{ExactSizeIterator, FusedIterator};

@@ -1,6 +1,4 @@
-use crate::{abilities::update::AbilitiesDiff, attributes::AttributesDiff, craft::update::CraftDiff, intimacies::{IntimaciesDiff, compare_intimacies}, weapons::WeaponsDiff, merits::{MeritDiff, compare_merits}, health::HealthDiff, armor::ArmorDiff, martial_arts::update::MartialArtsDiff, Character};
-
-use super::CharacterBaseDiff;
+use crate::{abilities::diff::AbilitiesDiff, attributes::AttributesDiff, craft::diff::CraftDiff, intimacies::{IntimaciesDiff, compare_intimacies}, weapons::WeaponsDiff, merits::{MeritDiff, compare_merits}, health::HealthDiff, armor::ArmorDiff, martial_arts::diff::MartialArtsDiff, Character};
 
 pub struct CharacterDiff {
     pub attributes_diff: AttributesDiff,
@@ -21,7 +19,7 @@ impl Character {
             attributes_diff: self.attributes.compare_newer(&newer.attributes), 
             abilities_diff: self.abilities.compare_newer(&newer.abilities), 
             craft_diff: self.craft_abilities.compare_newer(&newer.craft_abilities),
-            base_diff: self.compare_newer_base(&newer),
+            base_diff: self.compare_newer_base(newer),
             health_diff: self.health.compare_newer(&newer.health),
             intimacies_diff: compare_intimacies(&self.intimacies, &newer.intimacies),
             weapons_diff: self.weapons.compare_newer(&newer.weapons),
@@ -29,5 +27,46 @@ impl Character {
             merits_diff: compare_merits(&self.merits, &newer.merits),
             martial_arts_diff: self.martial_arts_styles.compare_newer(&newer.martial_arts_styles),
         }
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct CharacterBaseDiff(pub Option<(String, Option<String>, i16, i16, i16, i16)>);
+
+impl Character {
+    pub fn compare_newer_base(&self, newer: &Character) -> CharacterBaseDiff {
+        let mut diff = CharacterBaseDiff::default();
+
+        let eq_condition = (self.name.as_str() == newer.name.as_str())
+            && (self.concept.as_deref() == newer.concept.as_deref())
+            && (self.willpower.current == newer.willpower.current)
+            && (self.willpower.maximum == newer.willpower.maximum)
+            && (self.experience.current.min(i16::MAX as u16)
+                != newer.experience.current.max(i16::MAX as u16))
+            && (self.experience.total.min(i16::MAX as u16)
+                != newer.experience.total.max(i16::MAX as u16));
+
+        if !eq_condition {
+            diff = CharacterBaseDiff(Some((
+                newer.name.clone(),
+                newer.concept.clone(),
+                newer.willpower.current as i16,
+                newer.willpower.maximum as i16,
+                newer
+                    .experience
+                    .current
+                    .min(i16::MAX as u16)
+                    .try_into()
+                    .unwrap(),
+                newer
+                    .experience
+                    .total
+                    .min(i16::MAX as u16)
+                    .try_into()
+                    .unwrap(),
+            )));
+        }
+
+        diff
     }
 }

@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
-pub(crate) mod update;
+pub(crate) mod diff;
 use eyre::{eyre, Result};
 use std::fmt::Debug;
 use std::iter::FusedIterator;
 pub(crate) mod enums;
 pub use enums::{AbilityName, AbilityNameNoSubskill, AbilityNameVanilla};
-pub use update::AbilitiesDiff;
+pub use diff::AbilitiesDiff;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 

@@ -1,4 +1,4 @@
-pub mod update;
+pub mod diff;
 use std::collections::HashSet;
 
 pub use crate::charms::{MartialArtsCharm, MartialArtsCharmBuilder};
