@@ -1,24 +1,24 @@
 use abilities::{AbilityNameVanillaPostgres, AbilityRow, SpecialtyRow, apply_abilities_and_specialties_rows};
+use armor::{ArmorRow, ArmorTagRow, ArmorWornRow, apply_armor_rows};
 use attributes::{AttributeNamePostgres, AttributeRow, apply_attribute_rows};
 use campaign::{apply_campaign_row, CampaignRow};
 use character::{apply_character_row, CharacterRow};
 use craft::{CraftAbilityRow, CraftAbilitySpecialtyRow, apply_craft};
 use daiklave_core::{
-    armor::ArmorTag,
     charms::{CharmActionType, CharmCostType, CharmKeyword},
     id::Id,
     merits::{MeritTemplate, MeritType},
     player::Player,
     prerequisite::ExaltTypePrerequisite,
-    weapons::{RangeBand, WeaponTag},
     Character,
 };
-use eyre::{eyre, Report, Result, WrapErr};
+use eyre::{Result, WrapErr};
 use health::{HealthBoxRow, apply_health_box_rows};
 use intimacies::{IntimacyRow, apply_intimacy_rows};
 use sqlx::{postgres::PgHasArrayType, query, PgPool, Postgres, Transaction};
 use weapons::{WeaponRow, WeaponTagRow, WeaponEquippedRow, apply_weapon_rows};
 mod abilities;
+mod armor;
 mod attributes;
 mod campaign;
 mod character;
@@ -65,141 +65,7 @@ impl From<PlayerRow> for Player {
 
 
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
-#[sqlx(type_name = "ARMORTAGTYPE", rename_all = "UPPERCASE")]
-pub enum ArmorTagTypePostgres {
-    Artifact,
-    Concealable,
-    Heavy,
-    Light,
-    Medium,
-    Silent,
-    Special,
-}
 
-impl PgHasArrayType for ArmorTagTypePostgres {
-    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_ARMORTAGTYPE")
-    }
-}
-
-impl From<ArmorTagTypePostgres> for ArmorTag {
-    fn from(tag: ArmorTagTypePostgres) -> Self {
-        match tag {
-            ArmorTagTypePostgres::Artifact => Self::Artifact,
-            ArmorTagTypePostgres::Concealable => Self::Concealable,
-            ArmorTagTypePostgres::Heavy => Self::Heavy,
-            ArmorTagTypePostgres::Light => Self::Light,
-            ArmorTagTypePostgres::Medium => Self::Medium,
-            ArmorTagTypePostgres::Silent => Self::Silent,
-            ArmorTagTypePostgres::Special => Self::Special,
-        }
-    }
-}
-
-impl From<ArmorTag> for ArmorTagTypePostgres {
-    fn from(tag: ArmorTag) -> Self {
-        match tag {
-            ArmorTag::Artifact => Self::Artifact,
-            ArmorTag::Concealable => Self::Concealable,
-            ArmorTag::Heavy => Self::Heavy,
-            ArmorTag::Light => Self::Light,
-            ArmorTag::Medium => Self::Medium,
-            ArmorTag::Silent => Self::Silent,
-            ArmorTag::Special => Self::Special,
-        }
-    }
-}
-
-#[derive(Debug)]
-pub struct ArmorRow {
-    pub id: i32,
-    pub name: String,
-    pub book_title: Option<String>,
-    pub page_number: Option<i16>,
-    pub creator_id: Option<i32>,
-}
-
-impl sqlx::Type<sqlx::Postgres> for ArmorRow {
-    fn type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("armor")
-    }
-}
-
-impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorRow {
-    fn decode(
-        value: sqlx::postgres::PgValueRef<'r>,
-    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
-        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let id = decoder.try_decode::<i32>()?;
-        let name = decoder.try_decode::<String>()?;
-        let book_title = decoder.try_decode::<Option<String>>()?;
-        let page_number = decoder.try_decode::<Option<i16>>()?;
-        let creator_id = decoder.try_decode::<Option<i32>>()?;
-
-        Ok(Self {
-            id,
-            name,
-            book_title,
-            page_number,
-            creator_id,
-        })
-    }
-}
-
-#[derive(Debug)]
-pub struct ArmorWornRow {
-    pub character_id: i32,
-    pub armor_id: i32,
-    pub worn: bool,
-}
-
-impl sqlx::Type<sqlx::Postgres> for ArmorWornRow {
-    fn type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("character_armor")
-    }
-}
-
-impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorWornRow {
-    fn decode(
-        value: sqlx::postgres::PgValueRef<'r>,
-    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
-        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let character_id = decoder.try_decode::<i32>()?;
-        let armor_id = decoder.try_decode::<i32>()?;
-        let worn = decoder.try_decode::<bool>()?;
-
-        Ok(Self {
-            character_id,
-            armor_id,
-            worn,
-        })
-    }
-}
-
-#[derive(Debug)]
-pub struct ArmorTagRow {
-    pub armor_id: i32,
-    pub tag_type: ArmorTagTypePostgres,
-}
-
-impl sqlx::Type<sqlx::Postgres> for ArmorTagRow {
-    fn type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("armor_tags")
-    }
-}
-
-impl<'r> sqlx::Decode<'r, sqlx::Postgres> for ArmorTagRow {
-    fn decode(
-        value: sqlx::postgres::PgValueRef<'r>,
-    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
-        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let armor_id = decoder.try_decode::<i32>()?;
-        let tag_type = decoder.try_decode::<ArmorTagTypePostgres>()?;
-
-        Ok(Self { armor_id, tag_type })
-    }
-}
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "MERITTYPE", rename_all = "UPPERCASE")]

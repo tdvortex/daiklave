@@ -284,7 +284,7 @@ pub struct ArmorBuilder {
 }
 
 impl ArmorBuilder {
-    pub(crate) fn with_database_id(mut self, id: i32) -> Self {
+    pub fn with_database_id(mut self, id: i32) -> Self {
         self.id = Id::Database(id);
         self
     }
