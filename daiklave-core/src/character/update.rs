@@ -1,9 +1,7 @@
 use eyre::{eyre, Result, WrapErr};
 use sqlx::{query, PgPool, Postgres, Transaction};
 
-use crate::{
-    character::Character, intimacies::update::compare_intimacies, merits::update::compare_merits,
-};
+use crate::character::Character;
 
 use super::{create::create_character_transaction, retrieve::retrieve_character_transaction};
 
@@ -11,7 +9,7 @@ use super::{create::create_character_transaction, retrieve::retrieve_character_t
 pub struct CharacterBaseDiff(Option<(String, Option<String>, i16, i16, i16, i16)>);
 
 impl Character {
-    pub fn compare_newer(&self, newer: &Character) -> CharacterBaseDiff {
+    pub fn compare_newer_base(&self, newer: &Character) -> CharacterBaseDiff {
         let mut diff = CharacterBaseDiff::default();
 
         let eq_condition = (self.name.as_str() == newer.name.as_str())
@@ -108,58 +106,53 @@ pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Ch
         *old_character.id
     };
 
-    old_character
-        .abilities
-        .compare_newer(&character.abilities)
+    let diff = old_character.compare_newer(&character);
+
+    diff
+        .abilities_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating abilities")?;
-    old_character
-        .craft_abilities
-        .compare_newer(&character.craft_abilities)
+    diff
+        .craft_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating craft abilities")?;
-    old_character
-        .attributes
-        .compare_newer(&character.attributes)
+    diff
+        .attributes_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating attributes")?;
-    old_character
-        .compare_newer(character)
+    diff
+        .base_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating base character")?;
-    old_character
-        .health
-        .compare_newer(&character.health)
+    diff.health_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating health")?;
-    compare_intimacies(&old_character.intimacies, &character.intimacies)
+    diff.intimacies_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating intimacies")?;
-    old_character
-        .weapons
-        .compare_newer(&character.weapons)
+    diff
+        .weapons_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating weapons")?;
-    old_character
-        .armor
-        .compare_newer(&character.armor)
+    diff
+        .armor_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating armor")?;
-    compare_merits(&old_character.merits, &character.merits)
+    diff
+        .merits_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating merits")?;
-    old_character
-        .martial_arts_styles
-        .compare_newer(&character.martial_arts_styles)
+    diff
+        .martial_arts_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating martial arts")?;

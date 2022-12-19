@@ -1,5 +1,5 @@
 pub(crate) mod tables;
-mod update;
+pub mod update;
 use crate::abilities::{Ability, AbilityName, AbilityRating, NonZeroAbility};
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};

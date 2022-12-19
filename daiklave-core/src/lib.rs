@@ -29,7 +29,7 @@ pub mod campaign;
 pub mod character;
 
 pub mod charms;
-pub(crate) mod craft;
+pub mod craft;
 
 /// Defines a DataSource field, allowing for resources (Merits, Charms,
 /// Weapons, etc.) to be specified from either an official sourcebook

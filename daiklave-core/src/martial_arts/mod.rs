@@ -1,6 +1,6 @@
 pub(crate) mod create;
 pub(crate) mod tables;
-mod update;
+pub mod update;
 use std::collections::HashSet;
 
 pub use crate::charms::{MartialArtsCharm, MartialArtsCharmBuilder};

@@ -5,7 +5,7 @@ use std::collections::HashSet;
 use super::CraftAbilities;
 
 #[derive(Debug, Default)]
-pub(crate) struct CraftDiff {
+pub struct CraftDiff {
     upserted_foci: Vec<(String, u8)>,
     removed_foci: Vec<String>,
     added_specialties: Vec<(String, String)>,
