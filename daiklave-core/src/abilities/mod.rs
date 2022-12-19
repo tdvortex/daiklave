@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-pub(crate) mod tables;
 pub(crate) mod update;
 use eyre::{eyre, Result};
 use std::fmt::Debug;

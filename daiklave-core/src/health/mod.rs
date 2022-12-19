@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 pub(crate) mod update;
 pub use update::HealthDiff;
-pub(crate) mod tables;
 use eyre::Result;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]

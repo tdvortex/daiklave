@@ -1,9 +1,4 @@
 use serde::{Deserialize, Serialize};
-pub(crate) mod create;
-pub(crate) mod destroy;
-pub(crate) mod tables;
-pub use create::create_player;
-pub use destroy::destroy_player;
 
 use crate::id::Id;
 

@@ -1,10 +1,6 @@
-pub(crate) mod create;
-pub(crate) mod destroy;
 pub(crate) mod update;
-pub use destroy::destroy_armor;
 use serde::{Deserialize, Serialize};
 pub use update::ArmorDiff;
-pub(crate) mod tables;
 use std::{collections::HashSet, hash::Hash};
 
 use eyre::{eyre, Result};

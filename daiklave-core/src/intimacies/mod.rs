@@ -1,7 +1,6 @@
 use std::ops::{Deref, DerefMut};
 
 use serde::{Deserialize, Serialize};
-pub(crate) mod tables;
 pub(crate) mod update;
 pub use update::{compare_intimacies, IntimaciesDiff};
 

@@ -1,10 +1,8 @@
-use eyre::{Result, WrapErr};
-use sqlx::{query, Postgres, Transaction};
+
 use std::collections::HashSet;
 
 use crate::id::Id;
 
-use super::create::create_armor_transaction;
 use super::{Armor, ArmorItem};
 
 pub struct ArmorDiff {
@@ -60,66 +58,4 @@ impl Armor {
 
         diff
     }
-}
-
-pub async fn update_armor(
-    armor_diff: ArmorDiff,
-    transaction: &mut Transaction<'_, Postgres>,
-    character_id: i32,
-) -> Result<()> {
-    if armor_diff.noop {
-        return Ok(());
-    }
-
-    query!(
-        "DELETE FROM character_armor
-        WHERE character_id = $1
-        ",
-        character_id
-    )
-    .execute(&mut *transaction)
-    .await
-    .wrap_err("Database error deleting armor owned/worn")?;
-
-    let (new_items, mut new_items_equipped) = armor_diff.insert_items.into_iter().fold(
-        (Vec::new(), Vec::new()),
-        |(mut new_items, mut new_items_equipped), (item, equipped)| {
-            new_items.push(item);
-            new_items_equipped.push(equipped);
-            (new_items, new_items_equipped)
-        },
-    );
-
-    let mut new_ids = create_armor_transaction(transaction, new_items, character_id)
-        .await
-        .wrap_err("Error trying to create new armor items")?;
-
-    let (mut ids, mut ids_equipped) = armor_diff.owned_items.into_iter().fold(
-        (Vec::new(), Vec::new()),
-        |(mut ids, mut ids_equipped), id| {
-            ids.push(id);
-            ids_equipped.push(Some(id) == armor_diff.worn_item);
-            (ids, ids_equipped)
-        },
-    );
-
-    ids.append(&mut new_ids);
-    ids_equipped.append(&mut new_items_equipped);
-
-    query!(
-        "INSERT INTO character_armor(character_id, armor_id, worn)
-        SELECT
-            $1::INTEGER as character_id,
-            data.armor_id as armor_id,
-            data.worn as worn
-        FROM UNNEST($2::INTEGER[], $3::BOOLEAN[]) as data(armor_id, worn)",
-        character_id,
-        &ids as &[i32],
-        &ids_equipped as &[bool]
-    )
-    .execute(&mut *transaction)
-    .await
-    .wrap_err("Database error trying to armor owned/worn rows")?;
-
-    Ok(())
 }

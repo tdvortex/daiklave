@@ -1,10 +1,6 @@
 pub(crate) mod update;
 use serde::{Deserialize, Serialize};
 pub use update::WeaponsDiff;
-pub(crate) mod create;
-pub(crate) mod destroy;
-pub use destroy::destroy_weapons;
-pub(crate) mod tables;
 use std::hash::Hash;
 use std::{cmp::Ordering, collections::HashSet};
 

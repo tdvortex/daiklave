@@ -8,8 +8,6 @@ use crate::{
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
 
-pub mod tables;
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, PartialOrd, Ord)]
 pub enum CharmKeyword {
     Air,
@@ -222,7 +220,7 @@ impl CharmTraitsBuilder {
     }
 }
 
-pub struct _DragonBloodedCharm {
+struct _DragonBloodedCharm {
     action_type: CharmActionType,
     ability: AbilityNameNoSubskill,
     ability_requirement: u8,
@@ -294,7 +292,7 @@ impl SolarCharm {
     }
 }
 
-pub struct _LunarCharm {
+struct _LunarCharm {
     action_type: CharmActionType,
     attribute: Option<AttributeName>,
     attribute_requirement: u8,

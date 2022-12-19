@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-pub(crate) mod tables;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub struct Campaign {

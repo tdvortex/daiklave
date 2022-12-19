@@ -3,10 +3,6 @@ use std::ops::{Deref, DerefMut};
 
 use serde::{Deserialize, Serialize};
 pub use update::{compare_merits, MeritDiff};
-pub(crate) mod create;
-pub(crate) mod destroy;
-pub use destroy::destroy_merits;
-pub(crate) mod tables;
 use crate::{
     data_source::{BookReference, DataSource},
     id::Id,

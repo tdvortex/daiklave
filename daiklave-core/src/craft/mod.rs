@@ -1,4 +1,3 @@
-pub(crate) mod tables;
 pub mod update;
 use crate::abilities::{Ability, AbilityName, AbilityRating, NonZeroAbility};
 use eyre::{eyre, Result};
