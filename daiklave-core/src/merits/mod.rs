@@ -2,7 +2,7 @@ pub(crate) mod update;
 use std::ops::{Deref, DerefMut};
 
 use serde::{Deserialize, Serialize};
-pub use update::MeritDiff;
+pub use update::{compare_merits, MeritDiff};
 pub(crate) mod create;
 pub(crate) mod destroy;
 pub use destroy::destroy_merits;

@@ -4,8 +4,8 @@ use attributes::{apply_attribute_rows, AttributeRow};
 use campaign::{apply_campaign_row, CampaignRow};
 use character::{apply_character_row, CharacterRow};
 use craft::{apply_craft, CraftAbilityRow, CraftAbilitySpecialtyRow};
-use daiklave_core::Character;
-use eyre::{Result, WrapErr};
+use daiklave_core::{Character, intimacies::compare_intimacies, merits::compare_merits};
+use eyre::{eyre, Result, WrapErr};
 use health::{apply_health_box_rows, HealthBoxRow};
 use intimacies::{apply_intimacy_rows, IntimacyRow};
 use martial_arts::{
@@ -170,5 +170,110 @@ impl TryInto<Character> for GetCharacter {
 }
 
 pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Character> {
-    todo!()
+    let mut transaction = pool.begin().await.wrap_err("Failed to start transaction")?;
+
+    let old_character = if character.id().is_placeholder() {
+        create_character_transaction(&mut transaction, *character.player().id())
+            .await
+            .wrap_err_with(|| {
+                format!("Failed to create initial character from: {:#?}", character)
+            })?
+    } else {
+        retrieve_character_transaction(&mut transaction, *character.id())
+            .await
+            .wrap_err_with(|| {
+                format!(
+                    "Database error on retrieving pre-update character_id: {}",
+                    *character.id()
+                )
+            })?
+            .ok_or_else(|| eyre!("No character found with id {}", *character.id()))?
+    };
+
+    let character_id = if old_character.id.is_placeholder() {
+        return Err(eyre!(
+            "Missing character id for character with name {}",
+            old_character.name
+        ));
+    } else {
+        *old_character.id
+    };
+
+    old_character
+        .abilities
+        .compare_newer(&character.abilities)
+        .update(&mut transaction, character_id)
+        .await
+        .wrap_err("Error when updating abilities")?;
+    old_character
+        .craft_abilities
+        .compare_newer(&character.craft_abilities)
+        .update(&mut transaction, character_id)
+        .await
+        .wrap_err("Error when updating craft abilities")?;
+    old_character
+        .attributes
+        .compare_newer(&character.attributes)
+        .update(&mut transaction, character_id)
+        .await
+        .wrap_err("Error when updating attributes")?;
+    old_character
+        .compare_newer(character)
+        .update(&mut transaction, character_id)
+        .await
+        .wrap_err("Error when updating base character")?;
+    old_character
+        .health
+        .compare_newer(&character.health)
+        .update(&mut transaction, character_id)
+        .await
+        .wrap_err("Error when updating health")?;
+    compare_intimacies(&old_character.intimacies, &character.intimacies)
+        .update(&mut transaction, character_id)
+        .await
+        .wrap_err("Error when updating intimacies")?;
+    old_character
+        .weapons
+        .compare_newer(&character.weapons)
+        .update(&mut transaction, character_id)
+        .await
+        .wrap_err("Error when updating weapons")?;
+    old_character
+        .armor
+        .compare_newer(&character.armor)
+        .update(&mut transaction, character_id)
+        .await
+        .wrap_err("Error when updating armor")?;
+    compare_merits(&old_character.merits, &character.merits)
+        .update(&mut transaction, character_id)
+        .await
+        .wrap_err("Error when updating merits")?;
+    old_character
+        .martial_arts_styles
+        .compare_newer(&character.martial_arts_styles)
+        .update(&mut transaction, character_id)
+        .await
+        .wrap_err("Error when updating martial arts")?;
+
+    let character = retrieve_character_transaction(&mut transaction, character_id)
+        .await
+        .wrap_err_with(|| {
+            format!(
+                "Database error on retrieving post-update character_id: {}",
+                character_id
+            )
+        })?
+        .ok_or_else(|| {
+            eyre!(
+                "Could not retrieve post-update character with id {}",
+                character_id
+            )
+        })?;
+
+    transaction
+        .commit()
+        .await
+        .wrap_err("Error trying to commit character update transaction")?;
+
+    Ok(character)
 }
