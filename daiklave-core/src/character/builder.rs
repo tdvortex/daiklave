@@ -1,7 +1,7 @@
 use super::{ExperiencePoints, Willpower};
 use crate::{
     abilities::{Abilities, AbilityNameNoSubskill, AbilityNameVanilla},
-    anima::AnimaLevel,
+    anima::{AnimaLevel, AnimaEffect},
     armor::{Armor, ArmorItem},
     attributes::{AttributeName, Attributes},
     campaign::Campaign,
@@ -228,6 +228,11 @@ impl CharacterBuilder {
 
     pub fn with_anima_level(mut self, anima_level: AnimaLevel) -> Result<Self> {
         self.exalt_type = self.exalt_type.with_anima_level(anima_level)?;
+        Ok(self)
+    }
+
+    pub fn with_anima_effect(mut self, effect: AnimaEffect) -> Result<Self> {
+        self.exalt_type = self.exalt_type.with_anima_effect(effect)?;
         Ok(self)
     }
 

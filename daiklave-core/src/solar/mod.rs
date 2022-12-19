@@ -16,7 +16,7 @@ pub use self::{
 
 use crate::{
     abilities::AbilityNameNoSubskill,
-    anima::AnimaLevel,
+    anima::{AnimaLevel, AnimaEffect, ExaltAnimaType},
     charms::{SolarCharm, Spell},
     essence::Essence,
     id::Id,
@@ -33,7 +33,8 @@ use serde::{Deserialize, Serialize};
 pub struct SolarTraits {
     pub essence: Essence,
     pub limit: Limit,
-    pub anima: AnimaLevel,
+    pub anima_level: AnimaLevel,
+    anima_effects: [AnimaEffect; 5],
     caste: SolarCaste,
     favored_abilities: [AbilityNameNoSubskill; 5],
     sorcery_level: SolarSorcererLevel,
@@ -45,7 +46,8 @@ impl SolarTraits {
         SolarTraitsBuilder {
             essence: Essence::solar(1).unwrap(),
             limit: None,
-            anima: AnimaLevel::Dim,
+            anima_level: AnimaLevel::Dim,
+            anima_effects: Vec::new(),
             caste: None,
             favored: Vec::new(),
             sorcery_level: SolarSorcererLevel::None,
@@ -177,7 +179,8 @@ impl SolarCaste {
 pub struct SolarTraitsBuilder {
     essence: Essence,
     limit: Option<Limit>,
-    anima: AnimaLevel,
+    anima_level: AnimaLevel,
+    anima_effects: Vec<AnimaEffect>,
     caste: Option<SolarCaste>,
     favored: Vec<AbilityNameNoSubskill>,
     sorcery_level: SolarSorcererLevel,
@@ -207,7 +210,7 @@ impl SolarTraitsBuilder {
     }
 
     pub fn with_anima_level(mut self, anima_level: AnimaLevel) -> Self {
-        self.anima = anima_level;
+        self.anima_level = anima_level;
         self
     }
 
@@ -234,6 +237,41 @@ impl SolarTraitsBuilder {
     pub fn into_eclipse(mut self, eclipse_traits: EclipseTraits) -> Self {
         self.caste = Some(SolarCaste::Eclipse(eclipse_traits));
         self
+    }
+
+    pub fn with_anima_effect(mut self, effect: AnimaEffect) -> Result<Self> {
+        match effect.exalt_and_caste() {
+            ExaltAnimaType::AnySolar => Ok(()),
+            ExaltAnimaType::DawnSolar => if let Some(SolarCaste::Dawn(_)) = self.caste {
+                Ok(())
+            } else {
+                Err(eyre!("Not a Dawn caste"))
+            }
+            ExaltAnimaType::ZenithSolar => if let Some(SolarCaste::Zenith(_)) = self.caste {
+                Ok(())
+            } else {
+                Err(eyre!("Not a Zenith caste"))
+            }
+            ExaltAnimaType::TwilightSolar => if let Some(SolarCaste::Twilight(_)) = self.caste {
+                Ok(())
+            } else {
+                Err(eyre!("Not a Twilight caste"))
+            }
+            ExaltAnimaType::NightSolar => if let Some(SolarCaste::Night(_)) = self.caste {
+                Ok(())
+            } else {
+                Err(eyre!("Not a Night caste"))
+            }
+            ExaltAnimaType::EclipseSolar => if let Some(SolarCaste::Eclipse(_)) = self.caste {
+                Ok(())
+            } else {
+                Err(eyre!("Not an Eclipse caste"))
+            }
+            _ => Err(eyre!("Solars can only have Solar anima effects")),
+        }?;
+
+        self.anima_effects.push(effect);
+        Ok(self)
     }
 
     pub fn with_favored_ability(mut self, ability: AbilityNameNoSubskill) -> Result<Self> {
@@ -401,6 +439,18 @@ impl SolarTraitsBuilder {
             return Err(eyre!("Solars must have a limit trigger"));
         }
 
+        self.anima_effects.sort_by(|a, b| a.id().cmp(&b.id()));
+        self.anima_effects.dedup();
+
+        if self.anima_effects.len() != 5 {
+            return Err(eyre!("Solars must have 2 Solar anima effects and 3 caste anima effects"));
+        }
+
+        let anima_effects = self.anima_effects.into_iter().take(5).enumerate().fold([None, None, None, None, None], |mut arr, (index, effect)| {
+            arr[index] = Some(effect);
+            arr
+        }).map(|opt| opt.unwrap());
+
         self.favored.sort();
         self.favored.dedup();
         let caste = self.caste.unwrap();
@@ -422,7 +472,8 @@ impl SolarTraitsBuilder {
             Ok(SolarTraits {
                 essence: self.essence,
                 limit: self.limit.unwrap(),
-                anima: self.anima,
+                anima_level: self.anima_level,
+                anima_effects,
                 caste,
                 favored_abilities,
                 sorcery_level: self.sorcery_level,
