@@ -4,7 +4,7 @@ use attributes::{apply_attribute_rows, AttributeRow};
 use campaign::{apply_campaign_row, CampaignRow};
 use character::{apply_character_row, CharacterRow};
 use craft::{apply_craft, CraftAbilityRow, CraftAbilitySpecialtyRow};
-use daiklave_core::{Character, intimacies::compare_intimacies, merits::compare_merits};
+use daiklave_core::{Character};
 use eyre::{eyre, Result, WrapErr};
 use health::{apply_health_box_rows, HealthBoxRow};
 use intimacies::{apply_intimacy_rows, IntimacyRow};
@@ -319,61 +319,56 @@ pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Ch
             old_character.name
         ));
     } else {
-        *old_character.id
+        *old_character.id()
     };
 
-    old_character
-        .abilities
-        .compare_newer(&character.abilities)
+    let diff = old_character.compare_newer(&character);
+
+    diff
+        .abilities_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating abilities")?;
-    old_character
-        .craft_abilities
-        .compare_newer(&character.craft_abilities)
-        .update(&mut transaction, character_id)
+    diff
+        .craft_diff
+        .update_craft(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating craft abilities")?;
-    old_character
-        .attributes
-        .compare_newer(&character.attributes)
-        .update(&mut transaction, character_id)
+    diff
+        .attributes_diff
+        .update_attributes(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating attributes")?;
-    old_character
-        .compare_newer(character)
-        .update(&mut transaction, character_id)
+    diff
+        .base_diff
+        .update_base_character(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating base character")?;
-    old_character
-        .health
-        .compare_newer(&character.health)
+    diff.health_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating health")?;
-    compare_intimacies(&old_character.intimacies, &character.intimacies)
+    diff.intimacies_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating intimacies")?;
-    old_character
-        .weapons
-        .compare_newer(&character.weapons)
+    diff
+        .weapons_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating weapons")?;
-    old_character
-        .armor
-        .compare_newer(&character.armor)
+    diff
+        .armor_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating armor")?;
-    compare_merits(&old_character.merits, &character.merits)
+    diff
+        .merits_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating merits")?;
-    old_character
-        .martial_arts_styles
-        .compare_newer(&character.martial_arts_styles)
+    diff
+        .martial_arts_diff
         .update(&mut transaction, character_id)
         .await
         .wrap_err("Error when updating martial arts")?;

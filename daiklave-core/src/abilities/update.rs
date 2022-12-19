@@ -70,137 +70,135 @@ impl Abilities {
     }
 }
 
-impl AbilitiesDiff {
-    async fn update_vanilla_abilities(
-        &self,
-        transaction: &mut Transaction<'_, Postgres>,
-        character_id: i32,
-    ) -> Result<()> {
-        let (mut names_to_update, mut dots_to_update) =
-            (Vec::<AbilityNameVanillaPostgres>::new(), Vec::new());
+async fn update_vanilla_abilities(
+    abilities_diff: &AbilitiesDiff,
+    transaction: &mut Transaction<'_, Postgres>,
+    character_id: i32,
+) -> Result<()> {
+    let (mut names_to_update, mut dots_to_update) =
+        (Vec::<AbilityNameVanillaPostgres>::new(), Vec::new());
 
-        for (name_vanilla, dots) in self.abilities_to_modify.iter() {
-            names_to_update.push((*name_vanilla).into());
-            dots_to_update.push((*dots).into());
-        }
-
-        if !names_to_update.is_empty() {
-            query!(
-                "UPDATE abilities
-                SET dots = data.dots
-                FROM UNNEST($2::ABILITYNAMEVANILLA[], $3::SMALLINT[]) as data(name, dots)
-                WHERE abilities.character_id = $1 AND abilities.name = data.name",
-                character_id,
-                &names_to_update as &[AbilityNameVanillaPostgres],
-                &dots_to_update as &[i16]
-            )
-            .execute(&mut *transaction)
-            .await
-            .wrap_err("Database error attempting to update non-Craft, non-MartialArts abilities")?;
-        }
-
-        Ok(())
+    for (name_vanilla, dots) in abilities_diff.abilities_to_modify.iter() {
+        names_to_update.push((*name_vanilla).into());
+        dots_to_update.push((*dots).into());
     }
 
-    async fn remove_specialties(
-        &self,
-        transaction: &mut Transaction<'_, Postgres>,
-        character_id: i32,
-    ) -> Result<()> {
-        let ability_name_with_specialty_to_remove: Vec<AbilityNameVanillaPostgres> = self
-            .specialties_to_remove
-            .iter()
-            .map(|(ability_name, _)| (*ability_name).into())
-            .collect();
-
-        let specialty_name_to_remove: Vec<&str> = self
-            .specialties_to_remove
-            .iter()
-            .map(|(_, specialty)| specialty.as_str())
-            .collect();
-
+    if !names_to_update.is_empty() {
         query!(
-            "
-            DELETE FROM specialties
-            WHERE (specialties.character_id, specialties.ability_name, specialties.specialty) IN
-            (
-                SELECT
-                    $1::INTEGER as character_id,
-                    data.ability_name as ability_name,
-                    data.specialty as specialty
-                FROM UNNEST($2::ABILITYNAMEVANILLA[], $3::VARCHAR(255)[]) AS data(ability_name, specialty)
-            )",
-            character_id as i32,
-            &ability_name_with_specialty_to_remove as &[AbilityNameVanillaPostgres],
-            &specialty_name_to_remove as &[&str]
+            "UPDATE abilities
+            SET dots = data.dots
+            FROM UNNEST($2::ABILITYNAMEVANILLA[], $3::SMALLINT[]) as data(name, dots)
+            WHERE abilities.character_id = $1 AND abilities.name = data.name",
+            character_id,
+            &names_to_update as &[AbilityNameVanillaPostgres],
+            &dots_to_update as &[i16]
         )
         .execute(&mut *transaction)
         .await
-        .wrap_err("Database error attempting to remove specialties")?;
-
-        Ok(())
+        .wrap_err("Database error attempting to update non-Craft, non-MartialArts abilities")?;
     }
 
-    async fn add_specialties(
-        &self,
-        transaction: &mut Transaction<'_, Postgres>,
-        character_id: i32,
-    ) -> Result<()> {
-        let ability_name_with_specialty_to_add: Vec<AbilityNameVanillaPostgres> = self
-            .specialties_to_add
-            .iter()
-            .map(|(ability_name, _)| (*ability_name).into())
-            .collect();
+    Ok(())
+}
 
-        let specialty_name_to_add: Vec<&str> = self
-            .specialties_to_add
-            .iter()
-            .map(|(_, text)| text.as_str())
-            .collect();
+async fn remove_specialties(
+    abilities_diff: &AbilitiesDiff,
+    transaction: &mut Transaction<'_, Postgres>,
+    character_id: i32,
+) -> Result<()> {
+    let ability_name_with_specialty_to_remove: Vec<AbilityNameVanillaPostgres> = abilities_diff
+        .specialties_to_remove
+        .iter()
+        .map(|(ability_name, _)| (*ability_name).into())
+        .collect();
 
-        query!(
-            r#"
-            INSERT INTO specialties
+    let specialty_name_to_remove: Vec<&str> = abilities_diff
+        .specialties_to_remove
+        .iter()
+        .map(|(_, specialty)| specialty.as_str())
+        .collect();
+
+    query!(
+        "
+        DELETE FROM specialties
+        WHERE (specialties.character_id, specialties.ability_name, specialties.specialty) IN
+        (
             SELECT
                 $1::INTEGER as character_id,
-                data.name as name,
+                data.ability_name as ability_name,
                 data.specialty as specialty
-            FROM UNNEST($2::ABILITYNAMEVANILLA[], $3::VARCHAR(255)[]) AS data(name, specialty)
-            "#,
-            character_id as i32,
-            &ability_name_with_specialty_to_add as &[AbilityNameVanillaPostgres],
-            &specialty_name_to_add as &[&str],
-        )
-        .execute(&mut *transaction)
-        .await
-        .wrap_err("Database error attempting to insert specialties")?;
+            FROM UNNEST($2::ABILITYNAMEVANILLA[], $3::VARCHAR(255)[]) AS data(ability_name, specialty)
+        )",
+        character_id as i32,
+        &ability_name_with_specialty_to_remove as &[AbilityNameVanillaPostgres],
+        &specialty_name_to_remove as &[&str]
+    )
+    .execute(&mut *transaction)
+    .await
+    .wrap_err("Database error attempting to remove specialties")?;
 
-        Ok(())
+    Ok(())
+}
+
+async fn add_specialties(
+    abilities_diff: &AbilitiesDiff,
+    transaction: &mut Transaction<'_, Postgres>,
+    character_id: i32,
+) -> Result<()> {
+    let ability_name_with_specialty_to_add: Vec<AbilityNameVanillaPostgres> = abilities_diff
+        .specialties_to_add
+        .iter()
+        .map(|(ability_name, _)| (*ability_name).into())
+        .collect();
+
+    let specialty_name_to_add: Vec<&str> = abilities_diff
+        .specialties_to_add
+        .iter()
+        .map(|(_, text)| text.as_str())
+        .collect();
+
+    query!(
+        r#"
+        INSERT INTO specialties
+        SELECT
+            $1::INTEGER as character_id,
+            data.name as name,
+            data.specialty as specialty
+        FROM UNNEST($2::ABILITYNAMEVANILLA[], $3::VARCHAR(255)[]) AS data(name, specialty)
+        "#,
+        character_id as i32,
+        &ability_name_with_specialty_to_add as &[AbilityNameVanillaPostgres],
+        &specialty_name_to_add as &[&str],
+    )
+    .execute(&mut *transaction)
+    .await
+    .wrap_err("Database error attempting to insert specialties")?;
+
+    Ok(())
+}
+
+pub async fn update_abilities(
+    abilities_diff: AbilitiesDiff,
+    transaction: &mut Transaction<'_, Postgres>,
+    character_id: i32,
+) -> Result<()> {
+    if !abilities_diff.abilities_to_modify.is_empty() {
+        update_vanilla_abilities(&abilities_diff, transaction, character_id)
+            .await
+            .wrap_err("Error attempting to upsert abilities")?;
     }
 
-    pub async fn update(
-        self,
-        transaction: &mut Transaction<'_, Postgres>,
-        character_id: i32,
-    ) -> Result<()> {
-        if !self.abilities_to_modify.is_empty() {
-            self.update_vanilla_abilities(transaction, character_id)
-                .await
-                .wrap_err("Error attempting to upsert abilities")?;
-        }
-
-        if !self.specialties_to_remove.is_empty() {
-            self.remove_specialties(transaction, character_id)
-                .await
-                .wrap_err("Error attempting to remove specialties")?;
-        }
-
-        if !self.specialties_to_add.is_empty() {
-            self.add_specialties(transaction, character_id)
-                .await
-                .wrap_err("Error attempting to add specialties")?;
-        }
-
-        Ok(())
+    if !abilities_diff.specialties_to_remove.is_empty() {
+        remove_specialties(&abilities_diff,transaction, character_id)
+            .await
+            .wrap_err("Error attempting to remove specialties")?;
     }
+
+    if !abilities_diff.specialties_to_add.is_empty() {
+        add_specialties(&abilities_diff,transaction, character_id)
+            .await
+            .wrap_err("Error attempting to add specialties")?;
+    }
+
+    Ok(())
 }

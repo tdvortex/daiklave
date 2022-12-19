@@ -1,7 +1,7 @@
 use eyre::{eyre, Result, WrapErr};
 use sqlx::{query, PgPool, Postgres, Transaction};
 
-use crate::character::Character;
+use crate::{character::Character, abilities::update::update_abilities, craft::update::update_craft, attributes::update::update_attributes, health::update::update_health, intimacies::update::update_intimacies, weapons::update::update_weapons, armor::update::update_armor, merits::update::update_merits, martial_arts::update::update_martial_arts};
 
 use super::{create::create_character_transaction, retrieve::retrieve_character_transaction};
 
@@ -46,35 +46,35 @@ impl Character {
     }
 }
 
-impl CharacterBaseDiff {
-    pub async fn update(
-        self,
-        transaction: &mut Transaction<'_, Postgres>,
-        character_id: i32,
-    ) -> Result<()> {
-        if self.0.is_none() {
-            return Ok(());
-        }
 
-        let (
-            name,
-            maybe_concept,
-            current_willpower,
-            maximum_willpower,
-            current_experience,
-            total_experience,
-        ) = self.0.as_ref().unwrap();
-
-        query!("
-            UPDATE characters
-            SET name = $2, concept = $3, current_willpower = $4, max_willpower = $5, current_experience = $6, total_experience = $7
-            WHERE id = $1",
-            character_id, name.as_ref() as &str, maybe_concept.as_deref(), current_willpower, maximum_willpower, current_experience, total_experience
-        ).execute(&mut *transaction).await.wrap_err_with(|| format!("Failed to update character: {:?}", self.0.as_ref().unwrap()))?;
-
-        Ok(())
+pub async fn update_base_character(
+    base_character_diff: CharacterBaseDiff,
+    transaction: &mut Transaction<'_, Postgres>,
+    character_id: i32,
+) -> Result<()> {
+    if base_character_diff.0.is_none() {
+        return Ok(());
     }
+
+    let (
+        name,
+        maybe_concept,
+        current_willpower,
+        maximum_willpower,
+        current_experience,
+        total_experience,
+    ) = base_character_diff.0.as_ref().unwrap();
+
+    query!("
+        UPDATE characters
+        SET name = $2, concept = $3, current_willpower = $4, max_willpower = $5, current_experience = $6, total_experience = $7
+        WHERE id = $1",
+        character_id, name.as_ref() as &str, maybe_concept.as_deref(), current_willpower, maximum_willpower, current_experience, total_experience
+    ).execute(&mut *transaction).await.wrap_err_with(|| format!("Failed to update character: {:?}", base_character_diff.0.as_ref().unwrap()))?;
+
+    Ok(())
 }
+
 
 pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Character> {
     let mut transaction = pool.begin().await.wrap_err("Failed to start transaction")?;
@@ -108,52 +108,34 @@ pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Ch
 
     let diff = old_character.compare_newer(&character);
 
-    diff
-        .abilities_diff
-        .update(&mut transaction, character_id)
+    update_abilities(diff.abilities_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating abilities")?;
-    diff
-        .craft_diff
-        .update(&mut transaction, character_id)
+    update_craft(diff.craft_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating craft abilities")?;
-    diff
-        .attributes_diff
-        .update(&mut transaction, character_id)
+    update_attributes(diff.attributes_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating attributes")?;
-    diff
-        .base_diff
-        .update(&mut transaction, character_id)
+    update_base_character(diff.base_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating base character")?;
-    diff.health_diff
-        .update(&mut transaction, character_id)
+    update_health(diff.health_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating health")?;
-    diff.intimacies_diff
-        .update(&mut transaction, character_id)
+    update_intimacies(diff.intimacies_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating intimacies")?;
-    diff
-        .weapons_diff
-        .update(&mut transaction, character_id)
+    update_weapons(diff.weapons_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating weapons")?;
-    diff
-        .armor_diff
-        .update(&mut transaction, character_id)
+    update_armor(diff.armor_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating armor")?;
-    diff
-        .merits_diff
-        .update(&mut transaction, character_id)
+    update_merits(diff.merits_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating merits")?;
-    diff
-        .martial_arts_diff
-        .update(&mut transaction, character_id)
+    update_martial_arts(diff.martial_arts_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating martial arts")?;
 

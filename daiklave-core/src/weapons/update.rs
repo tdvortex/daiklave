@@ -58,91 +58,89 @@ impl Weapons {
     }
 }
 
-impl WeaponsDiff {
-    pub async fn update(
-        self,
-        transaction: &mut Transaction<'_, Postgres>,
-        character_id: i32,
-    ) -> Result<()> {
-        if self.noop {
-            return Ok(());
-        }
+pub async fn update_weapons(
+    weapons_diff: WeaponsDiff,
+    transaction: &mut Transaction<'_, Postgres>,
+    character_id: i32,
+) -> Result<()> {
+    if weapons_diff.noop {
+        return Ok(());
+    }
 
-        // Drop all owned/equipped records
-        query!(
-            "DELETE FROM character_weapons
-            WHERE character_id = $1",
+    // Drop all owned/equipped records
+    query!(
+        "DELETE FROM character_weapons
+        WHERE character_id = $1",
+        character_id
+    )
+    .execute(&mut *transaction)
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "Could not drop owned weapons for character id {}",
             character_id
         )
-        .execute(&mut *transaction)
-        .await
-        .wrap_err_with(|| {
-            format!(
-                "Could not drop owned weapons for character id {}",
-                character_id
-            )
-        })?;
+    })?;
 
-        let (hands, weapons) = self.created_weapons.into_iter().fold(
+    let (hands, weapons) = weapons_diff.created_weapons.into_iter().fold(
+        (Vec::new(), Vec::new()),
+        |(mut hands, mut weapons), (weapon, maybe_hand)| {
+            hands.push(maybe_hand);
+            weapons.push(weapon);
+            (hands, weapons)
+        },
+    );
+
+    let created_ids = create_weapons_transaction(transaction, weapons, character_id)
+        .await
+        .wrap_err("Error attempting to create new weapons")?;
+
+    let (ids, hands_postgres) = created_ids
+        .into_iter()
+        .zip(hands.into_iter())
+        .chain(weapons_diff.owned_weapons.into_iter())
+        .fold(
             (Vec::new(), Vec::new()),
-            |(mut hands, mut weapons), (weapon, maybe_hand)| {
-                hands.push(maybe_hand);
-                weapons.push(weapon);
-                (hands, weapons)
+            |(mut ids, mut hands_postgres), (id, maybe_hand)| {
+                match maybe_hand {
+                    Some(EquipHand::Both) => {
+                        hands_postgres.push(Some(EquipHandPostgres::Main));
+                        hands_postgres.push(Some(EquipHandPostgres::Off));
+                        ids.push(id);
+                        ids.push(id);
+                    }
+                    Some(EquipHand::Main) => {
+                        hands_postgres.push(Some(EquipHandPostgres::Main));
+                        ids.push(id);
+                    }
+                    Some(EquipHand::Off) => {
+                        hands_postgres.push(Some(EquipHandPostgres::Off));
+                        ids.push(id);
+                    }
+                    None => {
+                        hands_postgres.push(None);
+                        ids.push(id);
+                    }
+                };
+                (ids, hands_postgres)
             },
         );
 
-        let created_ids = create_weapons_transaction(transaction, weapons, character_id)
-            .await
-            .wrap_err("Error attempting to create new weapons")?;
+    query!(
+        "INSERT INTO character_weapons(character_id, weapon_id, equip_hand)
+        SELECT
+            $1::INTEGER as character_id,
+            data.id as weapon_id,
+            data.hand as equip_hand
+        FROM UNNEST($2::INTEGER[], $3::EQUIPHAND[]) as data(id, hand)
+        ",
+        character_id,
+        &ids as &[i32],
+        &hands_postgres as &[Option<EquipHandPostgres>],
+    )
+    .execute(&mut *transaction)
+    .await
+    .wrap_err("Error when inserting owned weapons")?;
 
-        let (ids, hands_postgres) = created_ids
-            .into_iter()
-            .zip(hands.into_iter())
-            .chain(self.owned_weapons.into_iter())
-            .fold(
-                (Vec::new(), Vec::new()),
-                |(mut ids, mut hands_postgres), (id, maybe_hand)| {
-                    match maybe_hand {
-                        Some(EquipHand::Both) => {
-                            hands_postgres.push(Some(EquipHandPostgres::Main));
-                            hands_postgres.push(Some(EquipHandPostgres::Off));
-                            ids.push(id);
-                            ids.push(id);
-                        }
-                        Some(EquipHand::Main) => {
-                            hands_postgres.push(Some(EquipHandPostgres::Main));
-                            ids.push(id);
-                        }
-                        Some(EquipHand::Off) => {
-                            hands_postgres.push(Some(EquipHandPostgres::Off));
-                            ids.push(id);
-                        }
-                        None => {
-                            hands_postgres.push(None);
-                            ids.push(id);
-                        }
-                    };
-                    (ids, hands_postgres)
-                },
-            );
-
-        query!(
-            "INSERT INTO character_weapons(character_id, weapon_id, equip_hand)
-            SELECT
-                $1::INTEGER as character_id,
-                data.id as weapon_id,
-                data.hand as equip_hand
-            FROM UNNEST($2::INTEGER[], $3::EQUIPHAND[]) as data(id, hand)
-            ",
-            character_id,
-            &ids as &[i32],
-            &hands_postgres as &[Option<EquipHandPostgres>],
-        )
-        .execute(&mut *transaction)
-        .await
-        .wrap_err("Error when inserting owned weapons")?;
-
-        Ok(())
-    }
+    Ok(())
 }
