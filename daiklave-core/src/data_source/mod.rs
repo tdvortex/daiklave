@@ -19,21 +19,21 @@ impl DataSource {
         matches!(self, Self::Custom(_))
     }
 
-    pub(crate) fn book_title(&self) -> Option<&str> {
+    pub fn book_title(&self) -> Option<&str> {
         match self {
             DataSource::Custom(_) => None,
             DataSource::Book(book_reference) => Some(book_reference.book_title.as_str()),
         }
     }
 
-    pub(crate) fn page_number(&self) -> Option<i16> {
+    pub fn page_number(&self) -> Option<i16> {
         match self {
             DataSource::Custom(_) => None,
             DataSource::Book(book_reference) => Some(book_reference.page_number),
         }
     }
 
-    pub(crate) fn creator_id(&self) -> Option<Id> {
+    pub fn creator_id(&self) -> Option<Id> {
         match self {
             DataSource::Custom(creator_id) => Some(*creator_id),
             DataSource::Book(_) => None,

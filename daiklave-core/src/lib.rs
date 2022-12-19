@@ -28,7 +28,7 @@ pub mod campaign;
 /// Willpower and Experience.
 pub mod character;
 
-pub(crate) mod charms;
+pub mod charms;
 pub(crate) mod craft;
 
 /// Defines a DataSource field, allowing for resources (Merits, Charms,
