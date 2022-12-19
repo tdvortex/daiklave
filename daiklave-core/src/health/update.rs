@@ -5,8 +5,8 @@ use sqlx::{query, Postgres, Transaction};
 
 #[derive(Debug, Default)]
 pub struct HealthDiff {
-    upserted_boxes: Vec<(usize, WoundPenalty, Option<DamageLevel>)>,
-    deleted_boxes: Vec<usize>,
+    pub upserted_boxes: Vec<(usize, WoundPenalty, Option<DamageLevel>)>,
+    pub deleted_boxes: Vec<usize>,
 }
 
 impl Health {

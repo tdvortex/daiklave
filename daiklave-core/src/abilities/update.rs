@@ -9,9 +9,9 @@ use super::AbilityNameVanilla;
 
 #[derive(Debug, Default)]
 pub struct AbilitiesDiff {
-    abilities_to_modify: Vec<(AbilityNameVanilla, u8)>,
-    specialties_to_add: Vec<(AbilityNameVanilla, String)>,
-    specialties_to_remove: Vec<(AbilityNameVanilla, String)>,
+    pub abilities_to_modify: Vec<(AbilityNameVanilla, u8)>,
+    pub specialties_to_add: Vec<(AbilityNameVanilla, String)>,
+    pub specialties_to_remove: Vec<(AbilityNameVanilla, String)>,
 }
 
 impl Abilities {

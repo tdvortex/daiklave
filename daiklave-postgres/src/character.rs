@@ -1,5 +1,6 @@
-use daiklave_core::character::{CharacterBuilder, ExperiencePoints, Willpower};
-use eyre::Result;
+use daiklave_core::character::{CharacterBaseDiff, CharacterBuilder, ExperiencePoints, Willpower};
+use eyre::{Result, WrapErr};
+use sqlx::{query, Postgres, Transaction};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "EXALTTYPE", rename_all = "UPPERCASE")]
@@ -85,4 +86,32 @@ pub fn apply_character_row(
     }
 
     Ok(applied)
+}
+
+pub async fn update_base_character(
+    base_character_diff: CharacterBaseDiff,
+    transaction: &mut Transaction<'_, Postgres>,
+    character_id: i32,
+) -> Result<()> {
+    if base_character_diff.0.is_none() {
+        return Ok(());
+    }
+
+    let (
+        name,
+        maybe_concept,
+        current_willpower,
+        maximum_willpower,
+        current_experience,
+        total_experience,
+    ) = base_character_diff.0.as_ref().unwrap();
+
+    query!("
+        UPDATE characters
+        SET name = $2, concept = $3, current_willpower = $4, max_willpower = $5, current_experience = $6, total_experience = $7
+        WHERE id = $1",
+        character_id, name.as_ref() as &str, maybe_concept.as_deref(), current_willpower, maximum_willpower, current_experience, total_experience
+    ).execute(&mut *transaction).await.wrap_err_with(|| format!("Failed to update character: {:?}", base_character_diff.0.as_ref().unwrap()))?;
+
+    Ok(())
 }

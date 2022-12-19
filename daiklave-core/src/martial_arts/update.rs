@@ -21,9 +21,9 @@ type AddedStyle = (
 type ModifiedStyle = (Id, u8, Option<Vec<String>>, Vec<MartialArtsCharm>);
 
 pub struct MartialArtsDiff {
-    removed_styles: Vec<Id>,
-    added_styles: Vec<AddedStyle>,
-    modified_styles: Vec<ModifiedStyle>,
+    pub removed_styles: Vec<Id>,
+    pub added_styles: Vec<AddedStyle>,
+    pub modified_styles: Vec<ModifiedStyle>,
 }
 
 impl MartialArtistTraits {

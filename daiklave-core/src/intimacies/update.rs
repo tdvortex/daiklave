@@ -11,9 +11,9 @@ use crate::{
 
 #[derive(Debug, Default)]
 pub struct IntimaciesDiff {
-    new_intimacies: Vec<Intimacy>,
-    updated_intimacies: Vec<Intimacy>,
-    deleted_intimacies: Vec<i32>,
+    pub new_intimacies: Vec<Intimacy>,
+    pub updated_intimacies: Vec<Intimacy>,
+    pub deleted_intimacies: Vec<i32>,
 }
 
 pub fn compare_intimacies(older: &[Intimacy], newer: &[Intimacy]) -> IntimaciesDiff {

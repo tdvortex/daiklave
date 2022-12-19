@@ -8,10 +8,10 @@ use super::create::create_armor_transaction;
 use super::{Armor, ArmorItem};
 
 pub struct ArmorDiff {
-    noop: bool,
-    insert_items: Vec<(ArmorItem, bool)>,
-    owned_items: Vec<i32>,
-    worn_item: Option<i32>,
+    pub noop: bool,
+    pub insert_items: Vec<(ArmorItem, bool)>,
+    pub owned_items: Vec<i32>,
+    pub worn_item: Option<i32>,
 }
 
 impl Armor {

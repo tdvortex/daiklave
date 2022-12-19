@@ -1,24 +1,25 @@
-use abilities::{apply_abilities_and_specialties_rows, AbilityRow, SpecialtyRow};
-use armor::{apply_armor_rows, ArmorRow, ArmorTagRow, ArmorWornRow};
-use attributes::{apply_attribute_rows, AttributeRow};
+use abilities::{apply_abilities_and_specialties_rows, update_abilities, AbilityRow, SpecialtyRow};
+use armor::{apply_armor_rows, update_armor, ArmorRow, ArmorTagRow, ArmorWornRow};
+use attributes::{apply_attribute_rows, update_attributes, AttributeRow};
 use campaign::{apply_campaign_row, CampaignRow};
-use character::{apply_character_row, CharacterRow};
-use craft::{apply_craft, CraftAbilityRow, CraftAbilitySpecialtyRow};
-use daiklave_core::{Character};
+use character::{apply_character_row, update_base_character, CharacterRow};
+use craft::{apply_craft, update_craft, CraftAbilityRow, CraftAbilitySpecialtyRow};
+use daiklave_core::Character;
 use eyre::{eyre, Result, WrapErr};
-use health::{apply_health_box_rows, HealthBoxRow};
-use intimacies::{apply_intimacy_rows, IntimacyRow};
+use health::{apply_health_box_rows, update_health, HealthBoxRow};
+use intimacies::{apply_intimacy_rows, update_intimacies, IntimacyRow};
 use martial_arts::{
-    apply_martial_arts, AllMartialArtsRows, CharacterMartialArtsRow,
+    apply_martial_arts, update_martial_arts, AllMartialArtsRows, CharacterMartialArtsRow,
     CharacterMartialArtsSpecialtyRow, MartialArtsCharmCostRow, MartialArtsCharmKeywordRow,
     MartialArtsCharmRow, MartialArtsCharmTreeRow, MartialArtsStyleRow,
 };
 use merits::{
-    apply_merits_rows, MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow, PrerequisiteRow,
+    apply_merits_rows, update_merits, MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow,
+    PrerequisiteRow,
 };
 use player::PlayerRow;
 use sqlx::{query, PgPool, Postgres, Transaction};
-use weapons::{apply_weapon_rows, WeaponEquippedRow, WeaponRow, WeaponTagRow};
+use weapons::{apply_weapon_rows, update_weapons, WeaponEquippedRow, WeaponRow, WeaponTagRow};
 mod abilities;
 mod armor;
 mod attributes;
@@ -291,7 +292,6 @@ async fn create_character_transaction(
         })
 }
 
-
 pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Character> {
     let mut transaction = pool.begin().await.wrap_err("Failed to start transaction")?;
 
@@ -324,52 +324,34 @@ pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Ch
 
     let diff = old_character.compare_newer(&character);
 
-    diff
-        .abilities_diff
-        .update(&mut transaction, character_id)
+    update_abilities(diff.abilities_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating abilities")?;
-    diff
-        .craft_diff
-        .update_craft(&mut transaction, character_id)
+    update_craft(diff.craft_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating craft abilities")?;
-    diff
-        .attributes_diff
-        .update_attributes(&mut transaction, character_id)
+    update_attributes(diff.attributes_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating attributes")?;
-    diff
-        .base_diff
-        .update_base_character(&mut transaction, character_id)
+    update_base_character(diff.base_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating base character")?;
-    diff.health_diff
-        .update(&mut transaction, character_id)
+    update_health(diff.health_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating health")?;
-    diff.intimacies_diff
-        .update(&mut transaction, character_id)
+    update_intimacies(diff.intimacies_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating intimacies")?;
-    diff
-        .weapons_diff
-        .update(&mut transaction, character_id)
+    update_weapons(diff.weapons_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating weapons")?;
-    diff
-        .armor_diff
-        .update(&mut transaction, character_id)
+    update_armor(diff.armor_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating armor")?;
-    diff
-        .merits_diff
-        .update(&mut transaction, character_id)
+    update_merits(diff.merits_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating merits")?;
-    diff
-        .martial_arts_diff
-        .update(&mut transaction, character_id)
+    update_martial_arts(diff.martial_arts_diff, &mut transaction, character_id)
         .await
         .wrap_err("Error when updating martial arts")?;
 

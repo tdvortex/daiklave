@@ -6,7 +6,7 @@ use crate::{character::Character, abilities::update::update_abilities, craft::up
 use super::{create::create_character_transaction, retrieve::retrieve_character_transaction};
 
 #[derive(Debug, Default)]
-pub struct CharacterBaseDiff(Option<(String, Option<String>, i16, i16, i16, i16)>);
+pub struct CharacterBaseDiff(pub Option<(String, Option<String>, i16, i16, i16, i16)>);
 
 impl Character {
     pub fn compare_newer_base(&self, newer: &Character) -> CharacterBaseDiff {

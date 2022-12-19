@@ -10,9 +10,9 @@ use crate::weapons::{EquipHand, Weapon, Weapons};
 
 #[derive(Debug, Default)]
 pub struct WeaponsDiff {
-    noop: bool,
-    created_weapons: Vec<(Weapon, Option<EquipHand>)>,
-    owned_weapons: Vec<(i32, Option<EquipHand>)>,
+    pub noop: bool,
+    pub created_weapons: Vec<(Weapon, Option<EquipHand>)>,
+    pub owned_weapons: Vec<(i32, Option<EquipHand>)>,
 }
 
 impl Weapons {

@@ -6,10 +6,10 @@ use super::CraftAbilities;
 
 #[derive(Debug, Default)]
 pub struct CraftDiff {
-    upserted_foci: Vec<(String, u8)>,
-    removed_foci: Vec<String>,
-    added_specialties: Vec<(String, String)>,
-    removed_specialties: Vec<(String, String)>,
+    pub upserted_foci: Vec<(String, u8)>,
+    pub removed_foci: Vec<String>,
+    pub added_specialties: Vec<(String, String)>,
+    pub removed_specialties: Vec<(String, String)>,
 }
 
 impl CraftAbilities {

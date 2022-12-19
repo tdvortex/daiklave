@@ -8,9 +8,9 @@ use std::collections::HashSet;
 
 #[derive(Debug, Default)]
 pub struct MeritDiff {
-    insert_merit_templates: Vec<Merit>,
-    insert_merit_instance: Vec<(i32, u8, Option<String>)>,
-    remove_merit_instances: Vec<i32>,
+    pub insert_merit_templates: Vec<Merit>,
+    pub insert_merit_instance: Vec<(i32, u8, Option<String>)>,
+    pub remove_merit_instances: Vec<i32>,
 }
 
 pub fn compare_merits(old_merits: &[Merit], new_merits: &[Merit]) -> MeritDiff {

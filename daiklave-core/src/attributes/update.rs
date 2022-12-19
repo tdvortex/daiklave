@@ -5,7 +5,7 @@ use sqlx::{query, Postgres, Transaction};
 
 #[derive(Debug, Default)]
 pub struct AttributesDiff {
-    updated_attributes: Vec<(AttributeName, u8)>,
+    pub updated_attributes: Vec<(AttributeName, u8)>,
 }
 
 impl Attributes {

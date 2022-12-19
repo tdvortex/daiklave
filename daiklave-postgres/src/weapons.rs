@@ -2,11 +2,12 @@ use std::collections::HashMap;
 
 use daiklave_core::{
     character::CharacterBuilder,
+    data_source::DataSource,
     id::Id,
-    weapons::{EquipHand, RangeBand, Weapon, WeaponTag},
+    weapons::{EquipHand, RangeBand, Weapon, WeaponTag, WeaponsDiff},
 };
 use eyre::{eyre, Report, Result, WrapErr};
-use sqlx::postgres::PgHasArrayType;
+use sqlx::{postgres::PgHasArrayType, query, Postgres, Transaction};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "RANGEBAND", rename_all = "UPPERCASE")]
@@ -505,4 +506,198 @@ pub fn apply_weapon_rows(
     }
 
     Ok(builder)
+}
+
+pub(crate) async fn create_weapons_transaction(
+    transaction: &mut Transaction<'_, Postgres>,
+    weapons: Vec<Weapon>,
+    character_id: i32,
+) -> Result<Vec<i32>> {
+    let mut output = Vec::new();
+    for weapon in weapons.into_iter() {
+        if let DataSource::Custom(_) = weapon.data_source() {
+            output.push(
+                create_weapon_transaction(transaction, weapon, Some(character_id))
+                    .await
+                    .wrap_err("Database error creating new custom weapon")?,
+            );
+        } else {
+            output.push(
+                create_weapon_transaction(transaction, weapon, None)
+                    .await
+                    .wrap_err("Database error creating new book referenced weapon")?,
+            );
+        }
+    }
+
+    Ok(output)
+}
+
+pub(crate) async fn create_weapon_transaction(
+    transaction: &mut Transaction<'_, Postgres>,
+    weapon: Weapon,
+    creator_id: Option<i32>,
+) -> Result<i32> {
+    let weapon_id = query!(
+        "INSERT INTO weapons(name, book_title, page_number, creator_id)
+        VALUES (
+            $1::VARCHAR(255),
+            $2::VARCHAR(255),
+            $3::SMALLINT,
+            $4::INTEGER
+        )
+        RETURNING id",
+        weapon.name() as &str,
+        weapon.data_source().book_title() as Option<&str>,
+        weapon.data_source().page_number() as Option<i16>,
+        creator_id
+    )
+    .fetch_one(&mut *transaction)
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "Database error creating weapon with name '{}'",
+            weapon.name()
+        )
+    })?
+    .id;
+
+    let (tag_types, ranges, styles) = weapon.tags().into_iter().fold(
+        (
+            Vec::<WeaponTagTypePostgres>::new(),
+            Vec::<Option<RangeBandPostgres>>::new(),
+            Vec::<Option<String>>::new(),
+        ),
+        |(mut tag_types, mut ranges, mut styles), tag| {
+            match tag {
+                WeaponTag::Archery(range) => {
+                    ranges.push(Some(range.into()));
+                    styles.push(None);
+                    tag_types.push(WeaponTagTypePostgres::Archery);
+                }
+                WeaponTag::Thrown(range) => {
+                    ranges.push(Some(range.into()));
+                    styles.push(None);
+                    tag_types.push(WeaponTagTypePostgres::Thrown);
+                }
+                WeaponTag::MartialArts(style) => {
+                    ranges.push(None);
+                    styles.push(Some(style));
+                    tag_types.push(WeaponTagTypePostgres::MartialArts);
+                }
+                other => {
+                    ranges.push(None);
+                    styles.push(None);
+                    tag_types.push(other.into())
+                }
+            }
+            (tag_types, ranges, styles)
+        },
+    );
+
+    query!(
+        "INSERT INTO weapon_tags(weapon_id, tag_type, max_range, martial_arts_style)
+        SELECT
+            $1::INTEGER as weapon_id,
+            data.tag_type,
+            data.max_range,
+            data.martial_arts_style
+        FROM UNNEST($2::WEAPONTAGTYPE[], $3::RANGEBAND[], $4::VARCHAR(255)[]) as data(tag_type, max_range, martial_arts_style)",
+        weapon_id as i32,
+        &tag_types as &[WeaponTagTypePostgres],
+        &ranges as &[Option<RangeBandPostgres>],
+        &styles as &[Option<String>]
+    )
+    .execute(&mut *transaction)
+    .await
+    .wrap_err_with(|| format!("Database error creating weapon tags for weapon {}", weapon_id))?;
+
+    Ok(weapon_id)
+}
+
+pub async fn update_weapons(
+    weapons_diff: WeaponsDiff,
+    transaction: &mut Transaction<'_, Postgres>,
+    character_id: i32,
+) -> Result<()> {
+    if weapons_diff.noop {
+        return Ok(());
+    }
+
+    // Drop all owned/equipped records
+    query!(
+        "DELETE FROM character_weapons
+        WHERE character_id = $1",
+        character_id
+    )
+    .execute(&mut *transaction)
+    .await
+    .wrap_err_with(|| {
+        format!(
+            "Could not drop owned weapons for character id {}",
+            character_id
+        )
+    })?;
+
+    let (hands, weapons) = weapons_diff.created_weapons.into_iter().fold(
+        (Vec::new(), Vec::new()),
+        |(mut hands, mut weapons), (weapon, maybe_hand)| {
+            hands.push(maybe_hand);
+            weapons.push(weapon);
+            (hands, weapons)
+        },
+    );
+
+    let created_ids = create_weapons_transaction(transaction, weapons, character_id)
+        .await
+        .wrap_err("Error attempting to create new weapons")?;
+
+    let (ids, hands_postgres) = created_ids
+        .into_iter()
+        .zip(hands.into_iter())
+        .chain(weapons_diff.owned_weapons.into_iter())
+        .fold(
+            (Vec::new(), Vec::new()),
+            |(mut ids, mut hands_postgres), (id, maybe_hand)| {
+                match maybe_hand {
+                    Some(EquipHand::Both) => {
+                        hands_postgres.push(Some(EquipHandPostgres::Main));
+                        hands_postgres.push(Some(EquipHandPostgres::Off));
+                        ids.push(id);
+                        ids.push(id);
+                    }
+                    Some(EquipHand::Main) => {
+                        hands_postgres.push(Some(EquipHandPostgres::Main));
+                        ids.push(id);
+                    }
+                    Some(EquipHand::Off) => {
+                        hands_postgres.push(Some(EquipHandPostgres::Off));
+                        ids.push(id);
+                    }
+                    None => {
+                        hands_postgres.push(None);
+                        ids.push(id);
+                    }
+                };
+                (ids, hands_postgres)
+            },
+        );
+
+    query!(
+        "INSERT INTO character_weapons(character_id, weapon_id, equip_hand)
+        SELECT
+            $1::INTEGER as character_id,
+            data.id as weapon_id,
+            data.hand as equip_hand
+        FROM UNNEST($2::INTEGER[], $3::EQUIPHAND[]) as data(id, hand)
+        ",
+        character_id,
+        &ids as &[i32],
+        &hands_postgres as &[Option<EquipHandPostgres>],
+    )
+    .execute(&mut *transaction)
+    .await
+    .wrap_err("Error when inserting owned weapons")?;
+
+    Ok(())
 }

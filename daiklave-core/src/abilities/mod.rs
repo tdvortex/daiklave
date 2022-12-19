@@ -6,6 +6,7 @@ use std::fmt::Debug;
 use std::iter::FusedIterator;
 pub(crate) mod enums;
 pub use enums::{AbilityName, AbilityNameNoSubskill, AbilityNameVanilla};
+pub use update::AbilitiesDiff;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 
