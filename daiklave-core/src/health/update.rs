@@ -1,26 +1,26 @@
 use super::tables::{DamageTypePostgres, WoundPenaltyPostgres};
-use super::Health;
-use eyre::Result;
+use super::{Health, WoundPenalty, DamageLevel};
+use eyre::{WrapErr, Result};
 use sqlx::{query, Postgres, Transaction};
 
 #[derive(Debug, Default)]
 pub struct HealthDiff {
-    upserted_boxes: Vec<(i16, WoundPenaltyPostgres, Option<DamageTypePostgres>)>,
-    deleted_boxes: Vec<i16>,
+    upserted_boxes: Vec<(usize, WoundPenalty, Option<DamageLevel>)>,
+    deleted_boxes: Vec<usize>,
 }
 
 impl Health {
     pub fn compare_newer(&self, newer: &Self) -> HealthDiff {
         let mut diff = HealthDiff::default();
 
-        let mut old_vec: Vec<(i16, WoundPenaltyPostgres, Option<DamageTypePostgres>)> = self
+        let mut old_vec: Vec<(usize, WoundPenalty, Option<DamageLevel>)> = self
             .health_boxes()
             .iter()
             .enumerate()
             .take(i16::MAX as usize)
             .map(|(index, health_box)| {
                 (
-                    index as i16,
+                    index as usize,
                     health_box.wound_penalty().into(),
                     health_box.damage().into(),
                 )
@@ -47,7 +47,7 @@ impl Health {
             .for_each(|(index, wound_penalty, maybe_damage)| {
                 if index >= old_vec.len() {
                     diff.upserted_boxes
-                        .push((index as i16, wound_penalty, maybe_damage));
+                        .push((index, wound_penalty, maybe_damage));
                 } else if old_vec[index].1 != wound_penalty || old_vec[index].2 != maybe_damage {
                     diff.upserted_boxes
                         .push((old_vec[index].0, wound_penalty, maybe_damage))
@@ -65,6 +65,11 @@ impl HealthDiff {
         character_id: i32,
     ) -> Result<()> {
         if !self.deleted_boxes.is_empty() {
+            let mut deleted_positions = Vec::<i16>::new();
+            for position in self.deleted_boxes.into_iter() {
+                deleted_positions.push(position.try_into().wrap_err("Number of health boxes overflows i16")?);
+            }
+
             query!(
                 "
                 DELETE FROM health_boxes
@@ -72,7 +77,7 @@ impl HealthDiff {
                 AND health_boxes.position IN (SELECT * FROM UNNEST($2::SMALLINT[]))
                 ",
                 character_id,
-                &self.deleted_boxes as &[i16]
+                &deleted_positions as &[i16]
             )
             .execute(&mut *transaction)
             .await?;
@@ -82,17 +87,17 @@ impl HealthDiff {
             let upserted_positions = self
                 .upserted_boxes
                 .iter()
-                .map(|x| x.0)
+                .map(|x| x.0.try_into().unwrap())
                 .collect::<Vec<i16>>();
             let upserted_wound_penalties = self
                 .upserted_boxes
                 .iter()
-                .map(|x| x.1)
+                .map(|x| x.1.into())
                 .collect::<Vec<WoundPenaltyPostgres>>();
             let upserted_damages = self
                 .upserted_boxes
                 .iter()
-                .map(|x| x.2)
+                .map(|x| x.2.map(|dmg| dmg.into()))
                 .collect::<Vec<Option<DamageTypePostgres>>>();
             query!(
                 "

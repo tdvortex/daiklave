@@ -1,4 +1,4 @@
-use crate::attributes::{Attribute, AttributeName};
+use crate::attributes::{AttributeName};
 use crate::character::CharacterBuilder;
 use eyre::{Result, WrapErr};
 use sqlx::postgres::PgHasArrayType;
@@ -61,27 +61,6 @@ pub struct AttributeRow {
     pub character_id: i32,
     pub name: AttributeNamePostgres,
     pub dots: i16,
-}
-
-#[derive(Debug)]
-pub struct AttributeUpdate {
-    pub name: AttributeNamePostgres,
-    pub dots: i16,
-}
-
-impl From<Attribute> for AttributeUpdate {
-    fn from(attribute: Attribute) -> Self {
-        Self {
-            name: attribute.name().into(),
-            dots: attribute.dots().into(),
-        }
-    }
-}
-
-impl AttributeUpdate {
-    pub fn into_tuple(self) -> (AttributeNamePostgres, i16) {
-        (self.name, self.dots)
-    }
 }
 
 impl CharacterBuilder {

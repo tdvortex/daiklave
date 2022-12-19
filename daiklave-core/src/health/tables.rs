@@ -51,13 +51,13 @@ pub enum DamageTypePostgres {
     Aggravated,
 }
 
-impl From<DamageLevel> for Option<DamageTypePostgres> {
+impl From<DamageLevel> for DamageTypePostgres {
     fn from(value: DamageLevel) -> Self {
         match value {
-            DamageLevel::None => None,
-            DamageLevel::Bashing => Some(DamageTypePostgres::Bashing),
-            DamageLevel::Lethal => Some(DamageTypePostgres::Lethal),
-            DamageLevel::Aggravated => Some(DamageTypePostgres::Aggravated),
+            DamageLevel::None => DamageTypePostgres::Bashing, // Wrong but going to be fixed in transition
+            DamageLevel::Bashing => DamageTypePostgres::Bashing,
+            DamageLevel::Lethal => DamageTypePostgres::Lethal,
+            DamageLevel::Aggravated => DamageTypePostgres::Aggravated,
         }
     }
 }

@@ -105,14 +105,14 @@ async fn create_merit_prerequisite_sets_transaction(
 
 pub(crate) async fn post_merits_details_transaction(
     transaction: &mut Transaction<'_, Postgres>,
-    merit_details: Vec<(i32, i16, Option<String>)>,
+    merit_details: Vec<(i32, u8, Option<String>)>,
     character_id: i32,
 ) -> Result<Vec<i32>> {
     let (merit_template_ids, dots_vec, details) = merit_details.into_iter().fold(
-        (Vec::new(), Vec::new(), Vec::new()),
+        (Vec::new(), Vec::<i16>::new(), Vec::new()),
         |(mut ids, mut dots_vec, mut details), (id, dots, detail)| {
             ids.push(id);
-            dots_vec.push(dots);
+            dots_vec.push(dots.into());
             details.push(detail);
             (ids, dots_vec, details)
         },
@@ -270,7 +270,7 @@ pub(crate) async fn create_new_merits_transaction(
     for (merit, merit_id) in new_merits.iter().zip(new_template_ids.iter()) {
         merit_details.push((
             *merit_id,
-            merit.dots() as i16,
+            merit.dots(),
             merit.detail().map(|s| s.to_owned()),
         ));
     }

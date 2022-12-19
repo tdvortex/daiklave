@@ -1,11 +1,11 @@
-use super::tables::{AttributeNamePostgres, AttributeUpdate};
+use super::{tables::{AttributeNamePostgres}, AttributeName};
 use crate::attributes::Attributes;
 use eyre::{Context, Result};
 use sqlx::{query, Postgres, Transaction};
 
 #[derive(Debug, Default)]
 pub struct AttributesDiff {
-    updated_attributes: Vec<AttributeUpdate>,
+    updated_attributes: Vec<(AttributeName, u8)>,
 }
 
 impl Attributes {
@@ -14,7 +14,7 @@ impl Attributes {
 
         newer.iter().for_each(|attribute| {
             if attribute.dots() != self.get(attribute.name()).dots() {
-                diff.updated_attributes.push(attribute.into());
+                diff.updated_attributes.push((attribute.name(), attribute.dots()))
             }
         });
 
@@ -35,12 +35,11 @@ impl AttributesDiff {
         let (updated_attribute_names, updated_attribute_dots) = self
             .updated_attributes
             .into_iter()
-            .map(|update| update.into_tuple())
             .fold(
-                (Vec::new(), Vec::new()),
+                (Vec::<AttributeNamePostgres>::new(), Vec::<i16>::new()),
                 |(mut updated_attribute_names, mut updated_attribute_dots), (name, dots)| {
-                    updated_attribute_names.push(name);
-                    updated_attribute_dots.push(dots);
+                    updated_attribute_names.push(name.into());
+                    updated_attribute_dots.push(dots.into());
                     (updated_attribute_names, updated_attribute_dots)
                 },
             );
