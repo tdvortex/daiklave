@@ -327,7 +327,9 @@ impl SolarTraitsBuilder {
         control_spell: Spell,
     ) -> Result<Self> {
         if self.essence.rating() < 3 {
-            return Err(eyre!("Must be Essence 3 to take Celestial sorcery (Supernal doesn't apply)"));
+            return Err(eyre!(
+                "Must be Essence 3 to take Celestial sorcery (Supernal doesn't apply)"
+            ));
         }
 
         match &mut self.sorcery_level {
@@ -358,7 +360,9 @@ impl SolarTraitsBuilder {
         control_spell: Spell,
     ) -> Result<Self> {
         if self.essence.rating() < 3 {
-            return Err(eyre!("Must be Essence 5 to take Solar sorcery (Supernal doesn't apply)"));
+            return Err(eyre!(
+                "Must be Essence 5 to take Solar sorcery (Supernal doesn't apply)"
+            ));
         }
 
         match &mut self.sorcery_level {

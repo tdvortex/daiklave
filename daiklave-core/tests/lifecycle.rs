@@ -1,6 +1,5 @@
 use daiklave_core::{
-    armor::destroy_armor,
-    merits::destroy_merits, weapons::destroy_weapons, player::Player, id::Id,
+    armor::destroy_armor, id::Id, merits::destroy_merits, player::Player, weapons::destroy_weapons,
 };
 use sqlx::PgPool;
 
@@ -40,7 +39,6 @@ fn lifecycle() {
 
     // User inputs a username, Client serializes it
     let player_name = "Test Player Name".to_owned();
-
 
     // Server deserializes it and creates a new player with that name
     let player = Player::new(Id::Database(123456789), player_name.clone());

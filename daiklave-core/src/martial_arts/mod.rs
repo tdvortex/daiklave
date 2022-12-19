@@ -3,6 +3,7 @@ pub(crate) mod tables;
 mod update;
 use std::collections::HashSet;
 
+pub use crate::charms::{MartialArtsCharm, MartialArtsCharmBuilder};
 use crate::{
     abilities::{Ability, AbilityName, AbilityRating, NonZeroAbility},
     data_source::{BookReference, DataSource},
@@ -10,7 +11,6 @@ use crate::{
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
-pub use crate::charms::{MartialArtsCharm, MartialArtsCharmBuilder};
 
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 pub struct MartialArtsStyle {
@@ -186,10 +186,17 @@ impl MartialArtistTraits {
         // Do NOT check Essence here--needs to be done at a level above ExaltType
         // DO check style, ability dots, and charm prerequisites
         let style_id = charm.style_id();
-        
-        let ability = self.get_ability(style_id).ok_or_else(|| eyre!("Martial Arts style {} not found", *style_id))?;
+
+        let ability = self
+            .get_ability(style_id)
+            .ok_or_else(|| eyre!("Martial Arts style {} not found", *style_id))?;
         if ability.dots() < charm.martial_arts_requirement() {
-            return Err(eyre!("Insufficient Martial Arts {} dots, need {} but only have {}", ability.name().subskill().unwrap(), charm.martial_arts_requirement(), ability.dots()));
+            return Err(eyre!(
+                "Insufficient Martial Arts {} dots, need {} but only have {}",
+                ability.name().subskill().unwrap(),
+                charm.martial_arts_requirement(),
+                ability.dots()
+            ));
         }
 
         let charms = &mut self
@@ -199,7 +206,10 @@ impl MartialArtistTraits {
             .ok_or_else(|| eyre!("Martial Arts style {} not found", *style_id))?
             .charms;
 
-        let known_charm_ids = charms.iter().map(|known_charm| known_charm.id()).collect::<HashSet<Id>>();
+        let known_charm_ids = charms
+            .iter()
+            .map(|known_charm| known_charm.id())
+            .collect::<HashSet<Id>>();
         for id in charm.prerequisite_charm_ids().iter() {
             if !known_charm_ids.contains(id) {
                 return Err(eyre!("Not all Charm prerequisites met"));

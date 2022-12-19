@@ -1,19 +1,23 @@
 use super::{ExperiencePoints, Willpower};
 use crate::{
-    abilities::{Abilities, AbilityNameVanilla, AbilityNameNoSubskill},
+    abilities::{Abilities, AbilityNameNoSubskill, AbilityNameVanilla},
+    anima::AnimaLevel,
     armor::{Armor, ArmorItem},
     attributes::{AttributeName, Attributes},
     campaign::Campaign,
+    charms::{MartialArtsCharm, SolarCharm, Spell},
     craft::CraftAbilities,
-    exalt_type::{ExaltTypeBuilder},
+    exalt_type::ExaltTypeBuilder,
     health::{Health, WoundPenalty},
     id::Id,
     intimacies::{Intimacies, Intimacy},
     martial_arts::{MartialArtistTraits, MartialArtsStyle},
     merits::{Merit, MeritTemplate, Merits},
     player::Player,
+    solar::{DawnTraits, EclipseTraits, NightTraits, TwilightTraits, ZenithTraits},
+    sorcery::ShapingRitual,
     weapons::{EquipHand, Weapon, Weapons},
-    Character, charms::{MartialArtsCharm, SolarCharm, Spell}, anima::AnimaLevel, solar::{DawnTraits, ZenithTraits, TwilightTraits, NightTraits, EclipseTraits}, sorcery::ShapingRitual,
+    Character,
 };
 use eyre::{eyre, Result};
 
@@ -179,12 +183,20 @@ impl CharacterBuilder {
         if essence_rating < charm.essence_requirement() {
             if let ExaltTypeBuilder::Solar(solar_builder) = &self.exalt_type {
                 if solar_builder.supernal() != Some(AbilityNameNoSubskill::MartialArts) {
-                    return Err(eyre!("Essence requirement not met, need {} (or Supernal) but only have {}", charm.essence_requirement(), essence_rating));
+                    return Err(eyre!(
+                        "Essence requirement not met, need {} (or Supernal) but only have {}",
+                        charm.essence_requirement(),
+                        essence_rating
+                    ));
                 }
             } else {
-                return Err(eyre!("Essence requirement not met, need {} but only have {}", charm.essence_requirement(), essence_rating));
+                return Err(eyre!(
+                    "Essence requirement not met, need {} but only have {}",
+                    charm.essence_requirement(),
+                    essence_rating
+                ));
             }
-        } 
+        }
 
         self.martial_arts_styles.add_charm(charm)?;
         Ok(self)
@@ -243,7 +255,12 @@ impl CharacterBuilder {
     pub fn with_solar_charm(mut self, charm: SolarCharm) -> Result<Self> {
         let meets_ability_requirement = match charm.ability_requirement() {
             (AbilityNameNoSubskill::Craft, dots) => {
-                self.craft_abilities.iter().map(|ability| ability.dots()).max().unwrap_or(0) >= dots
+                self.craft_abilities
+                    .iter()
+                    .map(|ability| ability.dots())
+                    .max()
+                    .unwrap_or(0)
+                    >= dots
             }
             (AbilityNameNoSubskill::MartialArts, _) => {
                 return Err(eyre!("Solar charms may not be Martial Arts based"));
@@ -261,29 +278,56 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    pub fn with_terrestrial_circle_sorcery(mut self, shaping_ritual: ShapingRitual, control_spell: Spell) -> Result<Self> {
+    pub fn with_terrestrial_circle_sorcery(
+        mut self,
+        shaping_ritual: ShapingRitual,
+        control_spell: Spell,
+    ) -> Result<Self> {
         if self.abilities.get(AbilityNameVanilla::Occult).dots() < 3 {
-            Err(eyre!("Occult 3 requirement not met, only have {} dots", self.abilities.get(AbilityNameVanilla::Occult).dots()))
+            Err(eyre!(
+                "Occult 3 requirement not met, only have {} dots",
+                self.abilities.get(AbilityNameVanilla::Occult).dots()
+            ))
         } else {
-            self.exalt_type = self.exalt_type.with_terrestrial_circle_sorcery(shaping_ritual, control_spell)?;
+            self.exalt_type = self
+                .exalt_type
+                .with_terrestrial_circle_sorcery(shaping_ritual, control_spell)?;
             Ok(self)
         }
     }
 
-    pub fn with_celestial_circle_sorcery(mut self, shaping_ritual: ShapingRitual, control_spell: Spell) -> Result<Self> {
+    pub fn with_celestial_circle_sorcery(
+        mut self,
+        shaping_ritual: ShapingRitual,
+        control_spell: Spell,
+    ) -> Result<Self> {
         if self.abilities.get(AbilityNameVanilla::Occult).dots() < 4 {
-            Err(eyre!("Occult 4 requirement not met, only have {} dots", self.abilities.get(AbilityNameVanilla::Occult).dots()))
+            Err(eyre!(
+                "Occult 4 requirement not met, only have {} dots",
+                self.abilities.get(AbilityNameVanilla::Occult).dots()
+            ))
         } else {
-            self.exalt_type = self.exalt_type.with_celestial_circle_sorcery(shaping_ritual, control_spell)?;
+            self.exalt_type = self
+                .exalt_type
+                .with_celestial_circle_sorcery(shaping_ritual, control_spell)?;
             Ok(self)
         }
     }
 
-    pub fn with_solar_circle_sorcery(mut self, shaping_ritual: ShapingRitual, control_spell: Spell) -> Result<Self> {
+    pub fn with_solar_circle_sorcery(
+        mut self,
+        shaping_ritual: ShapingRitual,
+        control_spell: Spell,
+    ) -> Result<Self> {
         if self.abilities.get(AbilityNameVanilla::Occult).dots() < 5 {
-            Err(eyre!("Occult 5 requirement not met, only have {} dots", self.abilities.get(AbilityNameVanilla::Occult).dots()))
+            Err(eyre!(
+                "Occult 5 requirement not met, only have {} dots",
+                self.abilities.get(AbilityNameVanilla::Occult).dots()
+            ))
         } else {
-            self.exalt_type = self.exalt_type.with_solar_circle_sorcery(shaping_ritual, control_spell)?;
+            self.exalt_type = self
+                .exalt_type
+                .with_solar_circle_sorcery(shaping_ritual, control_spell)?;
             Ok(self)
         }
     }

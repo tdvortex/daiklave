@@ -2,11 +2,12 @@ use crate::{
     abilities::AbilityNameNoSubskill,
     anima::AnimaLevel,
     charms::{SolarCharm, Spell},
+    essence::Essence,
     solar::{
         DawnTraits, EclipseTraits, NightTraits, SolarTraits, SolarTraitsBuilder, TwilightTraits,
         ZenithTraits,
     },
-    sorcery::{MortalSorcererLevel, ShapingRitual, Sorcerer, TerrestrialCircleTraits}, essence::Essence,
+    sorcery::{MortalSorcererLevel, ShapingRitual, Sorcerer, TerrestrialCircleTraits},
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -171,9 +172,9 @@ impl ExaltTypeBuilder {
 
     pub(crate) fn into_dawn(self, dawn_traits: DawnTraits) -> Result<Self> {
         match self {
-            ExaltTypeBuilder::Solar(solar_builder) => {
-                Ok(ExaltTypeBuilder::Solar(solar_builder.into_dawn(dawn_traits)))
-            }
+            ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
+                solar_builder.into_dawn(dawn_traits),
+            )),
             _ => Err(eyre!("Must be Solar before being Dawn Caste")),
         }
     }
@@ -268,9 +269,7 @@ impl ExaltTypeBuilder {
         control_spell: Spell,
     ) -> Result<Self> {
         match self {
-            ExaltTypeBuilder::Mortal(_) => {
-                Err(eyre!("Mortals may not use Solar circle sorcery"))
-            }
+            ExaltTypeBuilder::Mortal(_) => Err(eyre!("Mortals may not use Solar circle sorcery")),
             ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
                 solar_builder.with_solar_circle_sorcery(shaping_ritual, control_spell)?,
             )),
