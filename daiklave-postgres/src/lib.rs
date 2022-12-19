@@ -6,7 +6,6 @@ use craft::{CraftAbilityRow, CraftAbilitySpecialtyRow, apply_craft};
 use daiklave_core::{
     armor::ArmorTag,
     charms::{CharmActionType, CharmCostType, CharmKeyword},
-    health::{DamageLevel, WoundPenalty},
     id::Id,
     merits::{MeritTemplate, MeritType},
     player::Player,
@@ -15,6 +14,7 @@ use daiklave_core::{
     Character,
 };
 use eyre::{eyre, Report, Result, WrapErr};
+use health::{HealthBoxRow, apply_health_box_rows};
 use intimacies::{IntimacyRow, apply_intimacy_rows};
 use sqlx::{postgres::PgHasArrayType, query, PgPool, Postgres, Transaction};
 mod abilities;
@@ -22,6 +22,7 @@ mod attributes;
 mod campaign;
 mod character;
 mod craft;
+mod health;
 mod intimacies;
 
 pub async fn destroy_character(pool: &PgPool, id: i32) -> Result<()> {
@@ -57,80 +58,8 @@ impl From<PlayerRow> for Player {
 
 
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
-#[sqlx(type_name = "WOUNDPENALTY", rename_all = "UPPERCASE")]
-pub enum WoundPenaltyPostgres {
-    Zero,
-    MinusOne,
-    MinusTwo,
-    MinusFour,
-    Incapacitated,
-}
 
-impl From<WoundPenalty> for WoundPenaltyPostgres {
-    fn from(value: WoundPenalty) -> Self {
-        match value {
-            WoundPenalty::Zero => Self::Zero,
-            WoundPenalty::MinusOne => Self::MinusOne,
-            WoundPenalty::MinusTwo => Self::MinusTwo,
-            WoundPenalty::MinusFour => Self::MinusFour,
-            WoundPenalty::Incapacitated => Self::Incapacitated,
-        }
-    }
-}
 
-impl From<WoundPenaltyPostgres> for WoundPenalty {
-    fn from(value: WoundPenaltyPostgres) -> Self {
-        match value {
-            WoundPenaltyPostgres::Zero => Self::Zero,
-            WoundPenaltyPostgres::MinusOne => Self::MinusOne,
-            WoundPenaltyPostgres::MinusTwo => Self::MinusTwo,
-            WoundPenaltyPostgres::MinusFour => Self::MinusFour,
-            WoundPenaltyPostgres::Incapacitated => Self::Incapacitated,
-        }
-    }
-}
-
-impl PgHasArrayType for WoundPenaltyPostgres {
-    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_WOUNDPENALTY")
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
-#[sqlx(type_name = "DAMAGETYPE", rename_all = "UPPERCASE")]
-pub enum DamageTypePostgres {
-    None,
-    Bashing,
-    Lethal,
-    Aggravated,
-}
-
-impl From<DamageLevel> for DamageTypePostgres {
-    fn from(value: DamageLevel) -> Self {
-        match value {
-            DamageLevel::None => DamageTypePostgres::None,
-            DamageLevel::Bashing => DamageTypePostgres::Bashing,
-            DamageLevel::Lethal => DamageTypePostgres::Lethal,
-            DamageLevel::Aggravated => DamageTypePostgres::Aggravated,
-        }
-    }
-}
-
-impl PgHasArrayType for DamageTypePostgres {
-    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_DAMAGETYPE")
-    }
-}
-
-#[derive(Debug, sqlx::Type)]
-#[sqlx(type_name = "health_boxes")]
-pub struct HealthBoxRow {
-    pub character_id: i32,
-    pub position: i16,
-    pub wound_penalty: WoundPenaltyPostgres,
-    pub damage: Option<DamageTypePostgres>,
-}
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "RANGEBAND", rename_all = "UPPERCASE")]
