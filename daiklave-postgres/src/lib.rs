@@ -1,20 +1,19 @@
-use abilities::{AbilityNameVanillaPostgres, AbilityRow, SpecialtyRow, apply_abilities_and_specialties_rows};
+use abilities::{AbilityRow, SpecialtyRow, apply_abilities_and_specialties_rows};
 use armor::{ArmorRow, ArmorTagRow, ArmorWornRow, apply_armor_rows};
-use attributes::{AttributeNamePostgres, AttributeRow, apply_attribute_rows};
+use attributes::{AttributeRow, apply_attribute_rows};
 use campaign::{apply_campaign_row, CampaignRow};
 use character::{apply_character_row, CharacterRow};
 use craft::{CraftAbilityRow, CraftAbilitySpecialtyRow, apply_craft};
 use daiklave_core::{
     charms::{CharmActionType, CharmCostType, CharmKeyword},
     id::Id,
-    merits::{MeritTemplate, MeritType},
     player::Player,
-    prerequisite::ExaltTypePrerequisite,
     Character,
 };
 use eyre::{Result, WrapErr};
 use health::{HealthBoxRow, apply_health_box_rows};
 use intimacies::{IntimacyRow, apply_intimacy_rows};
+use merits::{MeritTemplateRow, apply_merits_rows, MeritDetailRow, MeritPrerequisiteSetRow, PrerequisiteRow};
 use sqlx::{postgres::PgHasArrayType, query, PgPool, Postgres, Transaction};
 use weapons::{WeaponRow, WeaponTagRow, WeaponEquippedRow, apply_weapon_rows};
 mod abilities;
@@ -25,6 +24,7 @@ mod character;
 mod craft;
 mod health;
 mod intimacies;
+mod merits;
 mod weapons;
 
 pub async fn destroy_character(pool: &PgPool, id: i32) -> Result<()> {
@@ -67,244 +67,8 @@ impl From<PlayerRow> for Player {
 
 
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
-#[sqlx(type_name = "MERITTYPE", rename_all = "UPPERCASE")]
-pub enum MeritTypePostgres {
-    Innate,
-    Supernatural,
-    Story,
-    Purchased,
-}
 
-impl PgHasArrayType for MeritTypePostgres {
-    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_MERITTYPE")
-    }
-}
 
-impl From<MeritTypePostgres> for MeritType {
-    fn from(merit_type_postgres: MeritTypePostgres) -> Self {
-        match merit_type_postgres {
-            MeritTypePostgres::Innate => Self::Innate,
-            MeritTypePostgres::Supernatural => Self::Supernatural,
-            MeritTypePostgres::Story => Self::Story,
-            MeritTypePostgres::Purchased => Self::Purchased,
-        }
-    }
-}
-
-impl From<MeritType> for MeritTypePostgres {
-    fn from(merit_type: MeritType) -> Self {
-        match merit_type {
-            MeritType::Innate => Self::Innate,
-            MeritType::Supernatural => Self::Supernatural,
-            MeritType::Story => Self::Story,
-            MeritType::Purchased => Self::Purchased,
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct MeritTemplateRow {
-    pub id: i32,
-    pub name: String,
-    pub requires_detail: bool,
-    pub merit_type: MeritTypePostgres,
-    pub description: String,
-    pub book_title: Option<String>,
-    pub page_number: Option<i16>,
-    pub creator_id: Option<i32>,
-}
-
-impl sqlx::Type<sqlx::Postgres> for MeritTemplateRow {
-    fn type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("merits")
-    }
-}
-
-impl<'r> sqlx::Decode<'r, sqlx::Postgres> for MeritTemplateRow {
-    fn decode(
-        value: sqlx::postgres::PgValueRef<'r>,
-    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
-        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let id = decoder.try_decode::<i32>()?;
-        let name = decoder.try_decode::<String>()?;
-        let requires_detail = decoder.try_decode::<bool>()?;
-        let merit_type = decoder.try_decode::<MeritTypePostgres>()?;
-        let description = decoder.try_decode::<String>()?;
-        let book_title = decoder.try_decode::<Option<String>>()?;
-        let page_number = decoder.try_decode::<Option<i16>>()?;
-        let creator_id = decoder.try_decode::<Option<i32>>()?;
-
-        Ok(Self {
-            id,
-            name,
-            requires_detail,
-            merit_type,
-            description,
-            book_title,
-            page_number,
-            creator_id,
-        })
-    }
-}
-
-#[derive(Debug)]
-pub struct MeritTemplateInsert {
-    pub name: String,
-    pub merit_type: MeritTypePostgres,
-    pub description: String,
-    pub requires_detail: bool,
-    pub book_title: Option<String>,
-    pub page_number: Option<i16>,
-    pub creator_id: Option<i32>,
-}
-
-impl From<MeritTemplate> for MeritTemplateInsert {
-    fn from(template: MeritTemplate) -> Self {
-        let nulled_creator_id = template.data_source().creator_id().and_then(|id| {
-            if id.is_placeholder() {
-                None
-            } else {
-                Some(*id)
-            }
-        });
-        Self {
-            name: template.name().to_owned(),
-            merit_type: template.merit_type().into(),
-            description: template.description().to_owned(),
-            requires_detail: template.requires_detail(),
-            book_title: template.data_source().book_title().map(|s| s.to_owned()),
-            page_number: template.data_source().page_number(),
-            creator_id: nulled_creator_id,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, sqlx::Type)]
-#[sqlx(type_name = "merit_prerequisite_sets")]
-pub struct MeritPrerequisiteSetRow {
-    pub id: i32,
-    pub merit_id: i32,
-}
-
-#[derive(Debug, Clone, sqlx::Type)]
-#[sqlx(type_name = "character_merits")]
-pub struct MeritDetailRow {
-    pub id: i32,
-    pub character_id: i32,
-    pub merit_id: i32,
-    pub dots: i16,
-    pub detail: Option<String>,
-}
-
-#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
-#[sqlx(type_name = "PREREQUISITETYPE", rename_all = "UPPERCASE")]
-pub enum PrerequisiteTypePostgres {
-    Ability,
-    Attribute,
-    Essence,
-    Charm,
-    ExaltType,
-}
-
-impl PgHasArrayType for PrerequisiteTypePostgres {
-    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_PREREQUISITETYPE")
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
-#[sqlx(type_name = "PREREQUISITEEXALTTYPE", rename_all = "UPPERCASE")]
-pub enum PrerequisiteExaltTypePostgres {
-    Solar,
-    Lunar,
-    DragonBlooded,
-    Spirit,
-    SpiritOrEclipse,
-}
-
-impl PgHasArrayType for PrerequisiteExaltTypePostgres {
-    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_PREREQUISITEEXALTTYPE")
-    }
-}
-
-impl From<PrerequisiteExaltTypePostgres> for ExaltTypePrerequisite {
-    fn from(exalt_type: PrerequisiteExaltTypePostgres) -> Self {
-        match exalt_type {
-            PrerequisiteExaltTypePostgres::Solar => Self::Solar,
-            PrerequisiteExaltTypePostgres::Lunar => Self::Lunar,
-            PrerequisiteExaltTypePostgres::DragonBlooded => Self::DragonBlooded,
-            PrerequisiteExaltTypePostgres::Spirit => Self::Spirit,
-            PrerequisiteExaltTypePostgres::SpiritOrEclipse => Self::SpiritOrEclipse,
-        }
-    }
-}
-
-impl From<ExaltTypePrerequisite> for PrerequisiteExaltTypePostgres {
-    fn from(exalt_type: ExaltTypePrerequisite) -> Self {
-        match exalt_type {
-            ExaltTypePrerequisite::Solar => Self::Solar,
-            ExaltTypePrerequisite::Lunar => Self::Lunar,
-            ExaltTypePrerequisite::DragonBlooded => Self::DragonBlooded,
-            ExaltTypePrerequisite::Spirit => Self::Spirit,
-            ExaltTypePrerequisite::SpiritOrEclipse => Self::SpiritOrEclipse,
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct PrerequisiteRow {
-    pub id: i32,
-    pub merit_prerequisite_set_id: Option<i32>,
-    pub charm_prerequisite_set_id: Option<i32>,
-    pub prerequisite_type: PrerequisiteTypePostgres,
-    pub ability_name: Option<AbilityNameVanillaPostgres>,
-    pub subskill_name: Option<String>,
-    pub attribute_name: Option<AttributeNamePostgres>,
-    pub dots: Option<i16>,
-    pub prerequisite_charm_id: Option<i32>,
-    pub prerequisite_exalt_type: Option<PrerequisiteExaltTypePostgres>,
-}
-
-impl sqlx::Type<sqlx::Postgres> for PrerequisiteRow {
-    fn type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("prerequisites")
-    }
-}
-
-impl<'r> sqlx::Decode<'r, sqlx::Postgres> for PrerequisiteRow {
-    fn decode(
-        value: sqlx::postgres::PgValueRef<'r>,
-    ) -> Result<Self, Box<dyn std::error::Error + 'static + Send + Sync>> {
-        let mut decoder = sqlx::postgres::types::PgRecordDecoder::new(value)?;
-        let id = decoder.try_decode::<i32>()?;
-        let merit_prerequisite_set_id = decoder.try_decode::<Option<i32>>()?;
-        let charm_prerequisite_set_id = decoder.try_decode::<Option<i32>>()?;
-        let prerequisite_type = decoder.try_decode::<PrerequisiteTypePostgres>()?;
-        let ability_name = decoder.try_decode::<Option<AbilityNameVanillaPostgres>>()?;
-        let subskill_name = decoder.try_decode::<Option<String>>()?;
-        let attribute_name = decoder.try_decode::<Option<AttributeNamePostgres>>()?;
-        let dots = decoder.try_decode::<Option<i16>>()?;
-        let prerequisite_charm_id = decoder.try_decode::<Option<i32>>()?;
-        let prerequisite_exalt_type =
-            decoder.try_decode::<Option<PrerequisiteExaltTypePostgres>>()?;
-
-        Ok(Self {
-            id,
-            merit_prerequisite_set_id,
-            charm_prerequisite_set_id,
-            prerequisite_type,
-            ability_name,
-            subskill_name,
-            attribute_name,
-            dots,
-            prerequisite_charm_id,
-            prerequisite_exalt_type,
-        })
-    }
-}
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "CHARMCOST")]
