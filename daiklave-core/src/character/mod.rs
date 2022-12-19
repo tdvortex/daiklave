@@ -1,11 +1,9 @@
 mod builder;
 pub(crate) mod create;
-pub(crate) mod destroy;
 pub(crate) mod retrieve;
 pub(crate) mod update;
 pub use builder::CharacterBuilder;
 pub use create::create_character;
-pub use destroy::destroy_character;
 pub use retrieve::retrieve_character;
 pub use update::update_character;
 pub use update::CharacterBaseDiff;

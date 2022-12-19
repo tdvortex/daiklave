@@ -1,5 +1,5 @@
 use daiklave_core::{
-    armor::destroy_armor, character::destroy_character,
+    armor::destroy_armor,
     merits::destroy_merits, weapons::destroy_weapons, player::Player, id::Id,
 };
 use sqlx::PgPool;
@@ -68,7 +68,6 @@ fn lifecycle() {
 
     // Client sends delete character order
     // Server deletes character
-    destroy_character(&pool, *character.id()).await.unwrap();
 
     // Character should not exist
     assert!(
