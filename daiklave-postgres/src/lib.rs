@@ -2,6 +2,7 @@ use abilities::{AbilityNameVanillaPostgres, AbilityRow, SpecialtyRow, apply_abil
 use attributes::{AttributeNamePostgres, AttributeRow, apply_attribute_rows};
 use campaign::{apply_campaign_row, CampaignRow};
 use character::{apply_character_row, CharacterRow};
+use craft::{CraftAbilityRow, CraftAbilitySpecialtyRow, apply_craft};
 use daiklave_core::{
     armor::ArmorTag,
     charms::{CharmActionType, CharmCostType, CharmKeyword},
@@ -20,6 +21,7 @@ mod abilities;
 mod attributes;
 mod campaign;
 mod character;
+mod craft;
 
 pub async fn destroy_character(pool: &PgPool, id: i32) -> Result<()> {
     query!(
@@ -1269,21 +1271,7 @@ pub(crate) struct MartialArtsCharmTreeRow {
     parent_id: i32,
 }
 
-#[derive(Debug, sqlx::Type)]
-#[sqlx(type_name = "craft_abilities")]
-pub(crate) struct CraftAbilityRow {
-    character_id: i32,
-    focus: String,
-    dots: i16,
-}
 
-#[derive(Debug, sqlx::Type)]
-#[sqlx(type_name = "craft_ability_specialties")]
-pub(crate) struct CraftAbilitySpecialtyRow {
-    character_id: i32,
-    focus: String,
-    specialty: String,
-}
 
 #[derive(Debug)]
 struct GetCharacter {
