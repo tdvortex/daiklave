@@ -34,7 +34,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for CampaignRow {
 }
 
 pub fn apply_campaign_row(
-    mut builder: CharacterBuilder,
+    builder: CharacterBuilder,
     campaign_row: Option<CampaignRow>,
 ) -> CharacterBuilder {
     if let Some(campaign) = campaign_row {

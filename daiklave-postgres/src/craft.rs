@@ -1,5 +1,5 @@
 use daiklave_core::character::CharacterBuilder;
-use eyre::{WrapErr, Result};
+use eyre::{Result, WrapErr};
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "craft_abilities")]

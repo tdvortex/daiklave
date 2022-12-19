@@ -22,7 +22,7 @@ pub fn compare_intimacies(older: &[Intimacy], newer: &[Intimacy]) -> IntimaciesD
     let old_hashmap: HashMap<i32, &Intimacy> = older
         .iter()
         .filter_map(|intimacy| {
-            if let Id::Database(id) = intimacy.id() {
+            if let Id::Database(id) = intimacy.id {
                 Some((id, intimacy))
             } else {
                 None
@@ -33,7 +33,7 @@ pub fn compare_intimacies(older: &[Intimacy], newer: &[Intimacy]) -> IntimaciesD
     let new_hashmap: HashMap<i32, &Intimacy> = newer
         .iter()
         .filter_map(|intimacy| {
-            if let Id::Database(id) = intimacy.id() {
+            if let Id::Database(id) = intimacy.id {
                 Some((id, intimacy))
             } else {
                 diff.new_intimacies.push(intimacy.clone());
@@ -130,7 +130,7 @@ impl IntimaciesDiff {
         let mut levels: Vec<IntimacyLevelPostgres> = Vec::new();
         let mut descriptions: Vec<&str> = Vec::new();
         for intimacy in self.updated_intimacies.iter() {
-            if let Id::Database(id) = intimacy.id() {
+            if let Id::Database(id) = intimacy.id {
                 ids.push(id);
                 types.push(intimacy.intimacy_type.into());
                 levels.push(intimacy.intimacy_level.into());

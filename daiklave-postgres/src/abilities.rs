@@ -1,6 +1,9 @@
-use daiklave_core::{abilities::{AbilityNameVanilla, AbilityNameNoSubskill}, character::CharacterBuilder};
+use daiklave_core::{
+    abilities::{AbilityNameNoSubskill, AbilityNameVanilla},
+    character::CharacterBuilder,
+};
+use eyre::{Result, WrapErr};
 use sqlx::postgres::PgHasArrayType;
-use eyre::{WrapErr, Result};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ABILITYNAMEVANILLA", rename_all = "UPPERCASE")]

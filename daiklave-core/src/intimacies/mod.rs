@@ -45,7 +45,7 @@ impl DerefMut for Intimacies {
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Serialize, Deserialize)]
 pub struct Intimacy {
-    id: Id,
+    pub id: Id,
     pub intimacy_level: IntimacyLevel,
     pub intimacy_type: IntimacyType,
     pub description: String,
@@ -64,9 +64,5 @@ impl Intimacy {
             intimacy_type,
             description,
         }
-    }
-
-    pub fn id(&self) -> Id {
-        self.id
     }
 }

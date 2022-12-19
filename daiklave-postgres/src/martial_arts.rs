@@ -1,9 +1,13 @@
 use std::collections::HashMap;
 
-use daiklave_core::{charms::{CharmCostType, CharmKeyword, CharmActionType}, character::CharacterBuilder, martial_arts::{MartialArtsStyle, MartialArtsCharmBuilder, MartialArtsCharm}, id::Id};
-use sqlx::postgres::PgHasArrayType;
+use daiklave_core::{
+    character::CharacterBuilder,
+    charms::{CharmActionType, CharmCostType, CharmKeyword},
+    id::Id,
+    martial_arts::{MartialArtsCharm, MartialArtsCharmBuilder, MartialArtsStyle},
+};
 use eyre::{eyre, Result, WrapErr};
-use crate::AllMartialArtsRows;
+use sqlx::postgres::PgHasArrayType;
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "CHARMCOST")]
@@ -217,7 +221,7 @@ impl From<CharmCostType> for CharmCostTypePostgres {
 }
 
 #[derive(Debug)]
-pub(crate) struct MartialArtsStyleRow {
+pub struct MartialArtsStyleRow {
     id: i32,
     name: String,
     description: String,
@@ -257,7 +261,7 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for MartialArtsStyleRow {
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "character_martial_arts")]
-pub(crate) struct CharacterMartialArtsRow {
+pub struct CharacterMartialArtsRow {
     character_id: i32,
     style_id: i32,
     dots: i16,
@@ -265,13 +269,13 @@ pub(crate) struct CharacterMartialArtsRow {
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "character_martial_arts_specialties")]
-pub(crate) struct CharacterMartialArtsSpecialtyRow {
+pub struct CharacterMartialArtsSpecialtyRow {
     character_id: i32,
     style_id: i32,
     specialty: String,
 }
 #[derive(Debug)]
-pub(crate) struct MartialArtsCharmRow {
+pub struct MartialArtsCharmRow {
     id: i32,
     style_id: i32,
     ability_dots_required: i16,
@@ -329,14 +333,14 @@ impl<'r> sqlx::Decode<'r, sqlx::Postgres> for MartialArtsCharmRow {
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "martial_arts_charms_keywords")]
-pub(crate) struct MartialArtsCharmKeywordRow {
+pub struct MartialArtsCharmKeywordRow {
     charm_id: i32,
     charm_keyword: CharmKeywordPostgres,
 }
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "martial_arts_charms_costs")]
-pub(crate) struct MartialArtsCharmCostRow {
+pub struct MartialArtsCharmCostRow {
     charm_id: i32,
     cost: CharmCostTypePostgres,
     amount: i16,
@@ -344,12 +348,25 @@ pub(crate) struct MartialArtsCharmCostRow {
 
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "martial_arts_charm_tree")]
-pub(crate) struct MartialArtsCharmTreeRow {
+pub struct MartialArtsCharmTreeRow {
     child_id: i32,
     parent_id: i32,
 }
 
-pub fn apply_martial_arts(mut builder: CharacterBuilder, all_rows: AllMartialArtsRows) -> Result<CharacterBuilder> {
+pub struct AllMartialArtsRows {
+    pub style_rows: Option<Vec<MartialArtsStyleRow>>,
+    pub character_style_rows: Option<Vec<CharacterMartialArtsRow>>,
+    pub specialty_rows: Option<Vec<CharacterMartialArtsSpecialtyRow>>,
+    pub martial_arts_charm_rows: Option<Vec<MartialArtsCharmRow>>,
+    pub charm_keyword_rows: Option<Vec<MartialArtsCharmKeywordRow>>,
+    pub charm_cost_rows: Option<Vec<MartialArtsCharmCostRow>>,
+    pub charm_tree_rows: Option<Vec<MartialArtsCharmTreeRow>>,
+}
+
+pub fn apply_martial_arts(
+    mut builder: CharacterBuilder,
+    all_rows: AllMartialArtsRows,
+) -> Result<CharacterBuilder> {
     if all_rows.character_style_rows.is_none() {
         return Ok(builder);
     }
@@ -359,44 +376,46 @@ pub fn apply_martial_arts(mut builder: CharacterBuilder, all_rows: AllMartialArt
     }
 
     // Construct styles from style rows, leave space for specialties
-    let mut style_map = all_rows.style_rows.unwrap().into_iter().fold(
-        Ok(HashMap::new()),
-        |result_map, row| {
-            result_map.and_then(|mut map| {
-                let builder = if row.book_title.is_some()
-                    && row.page_number.is_some()
-                    && row.creator_id.is_none()
-                {
-                    MartialArtsStyle::from_book(
-                        Id::Database(row.id),
-                        row.book_title.unwrap(),
-                        row.page_number.unwrap(),
-                    )
-                } else if row.book_title.is_none()
-                    && row.page_number.is_none()
-                    && row.creator_id.is_some()
-                {
-                    MartialArtsStyle::custom(
-                        Id::Database(row.id),
-                        Id::Database(row.creator_id.unwrap()),
-                    )
-                } else {
-                    return Err(eyre!(
-                        "Database error: inconsistent data source for martial arts style {}",
-                        row.id
-                    ));
-                };
+    let mut style_map =
+        all_rows
+            .style_rows
+            .unwrap()
+            .into_iter()
+            .fold(Ok(HashMap::new()), |result_map, row| {
+                result_map.and_then(|mut map| {
+                    let builder = if row.book_title.is_some()
+                        && row.page_number.is_some()
+                        && row.creator_id.is_none()
+                    {
+                        MartialArtsStyle::from_book(
+                            Id::Database(row.id),
+                            row.book_title.unwrap(),
+                            row.page_number.unwrap(),
+                        )
+                    } else if row.book_title.is_none()
+                        && row.page_number.is_none()
+                        && row.creator_id.is_some()
+                    {
+                        MartialArtsStyle::custom(
+                            Id::Database(row.id),
+                            Id::Database(row.creator_id.unwrap()),
+                        )
+                    } else {
+                        return Err(eyre!(
+                            "Database error: inconsistent data source for martial arts style {}",
+                            row.id
+                        ));
+                    };
 
-                let style = builder
-                    .with_name(row.name)
-                    .with_description(row.description)
-                    .build()?;
+                    let style = builder
+                        .with_name(row.name)
+                        .with_description(row.description)
+                        .build()?;
 
-                map.insert(style.id(), (style, Vec::new()));
-                Ok(map)
-            })
-        },
-    )?;
+                    map.insert(style.id(), (style, Vec::new()));
+                    Ok(map)
+                })
+            })?;
 
     // Construct character's specialties for styles
     if let Some(rows) = all_rows.specialty_rows {
@@ -466,13 +485,12 @@ pub fn apply_martial_arts(mut builder: CharacterBuilder, all_rows: AllMartialArt
                     row.id
                 ));
             };
-            let martial_arts_dots =
-                row.ability_dots_required.try_into().wrap_err_with(|| {
-                    format!(
-                        "Invalid number of martial arts dots: {}",
-                        row.ability_dots_required
-                    )
-                })?;
+            let martial_arts_dots = row.ability_dots_required.try_into().wrap_err_with(|| {
+                format!(
+                    "Invalid number of martial arts dots: {}",
+                    row.ability_dots_required
+                )
+            })?;
             let essence_rating = row.essence_dots_required.try_into().wrap_err_with(|| {
                 format!("Invalid essence requirement: {}", row.essence_dots_required)
             })?;

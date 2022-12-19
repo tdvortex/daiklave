@@ -1,6 +1,6 @@
 use daiklave_core::{attributes::AttributeName, character::CharacterBuilder};
+use eyre::{Result, WrapErr};
 use sqlx::postgres::PgHasArrayType;
-use eyre::{WrapErr, Result};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ATTRIBUTENAME", rename_all = "UPPERCASE")]
@@ -62,7 +62,10 @@ pub struct AttributeRow {
     pub dots: i16,
 }
 
-fn apply_attribute_row(builder: CharacterBuilder, attribute_row: AttributeRow) -> Result<CharacterBuilder> {
+fn apply_attribute_row(
+    builder: CharacterBuilder,
+    attribute_row: AttributeRow,
+) -> Result<CharacterBuilder> {
     let attribute_name = attribute_row.name.into();
     let value = attribute_row
         .dots
@@ -72,7 +75,10 @@ fn apply_attribute_row(builder: CharacterBuilder, attribute_row: AttributeRow) -
     builder.with_attribute(attribute_name, value)
 }
 
-pub(crate) fn apply_attribute_rows(builder: CharacterBuilder, attribute_rows: Vec<AttributeRow>) -> Result<CharacterBuilder> {
+pub(crate) fn apply_attribute_rows(
+    builder: CharacterBuilder,
+    attribute_rows: Vec<AttributeRow>,
+) -> Result<CharacterBuilder> {
     attribute_rows
         .into_iter()
         .fold(Ok(builder), |output, attribute_row| {

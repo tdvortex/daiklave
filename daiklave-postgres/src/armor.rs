@@ -1,8 +1,11 @@
 use std::collections::HashMap;
 
-use daiklave_core::{armor::{ArmorTag, ArmorItem}, character::CharacterBuilder};
+use daiklave_core::{
+    armor::{ArmorItem, ArmorTag},
+    character::CharacterBuilder,
+};
+use eyre::{eyre, Result, WrapErr};
 use sqlx::postgres::PgHasArrayType;
-use eyre::{eyre, WrapErr, Result};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "ARMORTAGTYPE", rename_all = "UPPERCASE")]
@@ -191,7 +194,9 @@ pub fn apply_armor_rows(
             ));
         };
 
-        armor_builder = armor_builder.with_database_id(armor_id).with_name(armor_row.name);
+        armor_builder = armor_builder
+            .with_database_id(armor_id)
+            .with_name(armor_row.name);
 
         for tag_row in armor_tags.into_iter() {
             armor_builder = armor_builder.with_tag(tag_row.tag_type.into());

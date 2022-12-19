@@ -1,4 +1,7 @@
-use daiklave_core::{character::CharacterBuilder, health::{WoundPenalty, DamageLevel}};
+use daiklave_core::{
+    character::CharacterBuilder,
+    health::{DamageLevel, WoundPenalty},
+};
 use sqlx::postgres::PgHasArrayType;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
@@ -67,7 +70,6 @@ impl PgHasArrayType for DamageTypePostgres {
     }
 }
 
-
 #[derive(Debug, sqlx::Type)]
 #[sqlx(type_name = "health_boxes")]
 pub struct HealthBoxRow {
@@ -77,7 +79,10 @@ pub struct HealthBoxRow {
     pub damage: DamageTypePostgres,
 }
 
-pub fn apply_health_box_rows(mut builder: CharacterBuilder, health_box_rows: Vec<HealthBoxRow>) -> CharacterBuilder {
+pub fn apply_health_box_rows(
+    builder: CharacterBuilder,
+    health_box_rows: Vec<HealthBoxRow>,
+) -> CharacterBuilder {
     let (mut bashing, mut lethal, mut aggravated) = (0, 0, 0);
     let mut wound_penalties = Vec::new();
 
@@ -97,6 +102,7 @@ pub fn apply_health_box_rows(mut builder: CharacterBuilder, health_box_rows: Vec
             DamageTypePostgres::None => {}
         }
     }
-    builder.with_wound_penalties(wound_penalties)
+    builder
+        .with_wound_penalties(wound_penalties)
         .with_damage(bashing, lethal, aggravated)
 }

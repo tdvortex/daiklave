@@ -1,8 +1,12 @@
 use std::collections::HashMap;
 
-use daiklave_core::{weapons::{RangeBand, WeaponTag, Weapon, EquipHand}, character::CharacterBuilder, id::Id};
+use daiklave_core::{
+    character::CharacterBuilder,
+    id::Id,
+    weapons::{EquipHand, RangeBand, Weapon, WeaponTag},
+};
+use eyre::{eyre, Report, Result, WrapErr};
 use sqlx::postgres::PgHasArrayType;
-use eyre::{eyre, Report, WrapErr, Result};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "RANGEBAND", rename_all = "UPPERCASE")]
@@ -497,9 +501,7 @@ pub fn apply_weapon_rows(
             .ok_or_else(|| eyre!("Missing weapon row with id {}", weapon_id))?;
         builder = builder
             .with_weapon(weapon, maybe_equip_hand)
-            .wrap_err_with(|| {
-                format!("Could not apply weapon row {} to character", weapon_id)
-            })?;
+            .wrap_err_with(|| format!("Could not apply weapon row {} to character", weapon_id))?;
     }
 
     Ok(builder)

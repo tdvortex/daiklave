@@ -62,7 +62,7 @@ pub fn validate_initial_intimacies(intimacies: &Vec<Intimacy>, should_have_id: b
     assert_eq!(expected.len(), intimacies.len());
 
     for actual in intimacies.iter() {
-        assert_eq!(!actual.id().is_placeholder(), should_have_id);
+        assert_eq!(!actual.id.is_placeholder(), should_have_id);
         assert!(expected.contains(&(
             actual.intimacy_level,
             actual.intimacy_type,

@@ -1,9 +1,14 @@
 use std::collections::HashMap;
 
-use daiklave_core::{merits::{MeritType, MeritTemplate}, character::CharacterBuilder, prerequisite::{PrerequisiteSet, ExaltTypePrerequisite}, id::Id};
+use daiklave_core::{
+    character::CharacterBuilder,
+    id::Id,
+    merits::{MeritTemplate, MeritType},
+    prerequisite::{ExaltTypePrerequisite, PrerequisiteSet},
+};
 use sqlx::postgres::PgHasArrayType;
 
-use eyre::{eyre, WrapErr, Result};
+use eyre::{eyre, Result, WrapErr};
 
 use crate::{abilities::AbilityNameVanillaPostgres, attributes::AttributeNamePostgres};
 
@@ -258,25 +263,24 @@ pub fn apply_merits_rows(
     }
 
     // Create map from merit prerequisite set id -> Vec<PrerequisiteRow>
-    let set_id_to_prerequisite_rows =
-        merit_prerequisites.map_or(HashMap::new(), |vec_of_rows| {
-            vec_of_rows
-                .into_iter()
-                .filter_map(|row| {
-                    row.merit_prerequisite_set_id
-                        .map(|merit_prerequisite_set_id| (merit_prerequisite_set_id, row))
-                })
-                .fold(
-                    HashMap::new(),
-                    |mut hashmap, (merit_prerequisite_set_id, row)| {
-                        hashmap
-                            .entry(merit_prerequisite_set_id)
-                            .or_insert_with(Vec::new)
-                            .push(row);
-                        hashmap
-                    },
-                )
-        });
+    let set_id_to_prerequisite_rows = merit_prerequisites.map_or(HashMap::new(), |vec_of_rows| {
+        vec_of_rows
+            .into_iter()
+            .filter_map(|row| {
+                row.merit_prerequisite_set_id
+                    .map(|merit_prerequisite_set_id| (merit_prerequisite_set_id, row))
+            })
+            .fold(
+                HashMap::new(),
+                |mut hashmap, (merit_prerequisite_set_id, row)| {
+                    hashmap
+                        .entry(merit_prerequisite_set_id)
+                        .or_insert_with(Vec::new)
+                        .push(row);
+                    hashmap
+                },
+            )
+    });
 
     // Compile each Vec<PrerequisiteRow> into PrerequisiteSet using builder
     let mut set_id_to_prerequisite_set = HashMap::new();
@@ -310,10 +314,7 @@ pub fn apply_merits_rows(
                     builder = builder.requiring_attribute(
                         row.attribute_name
                             .ok_or_else(|| {
-                                eyre!(
-                                    "Missing ability name for attribute prerequisite {}",
-                                    row.id
-                                )
+                                eyre!("Missing ability name for attribute prerequisite {}", row.id)
                             })?
                             .into(),
                         dots,
@@ -330,10 +331,9 @@ pub fn apply_merits_rows(
                     builder = builder.requiring_essence_rating(dots);
                 }
                 PrerequisiteTypePostgres::Charm => {
-                    builder =
-                        builder.requiring_charm(row.charm_prerequisite_set_id.ok_or_else(
-                            || eyre!("Missing charm id for charm prerequisite {}", row.id),
-                        )?);
+                    builder = builder.requiring_charm(row.charm_prerequisite_set_id.ok_or_else(
+                        || eyre!("Missing charm id for charm prerequisite {}", row.id),
+                    )?);
                 }
                 PrerequisiteTypePostgres::ExaltType => {
                     let exalt_type: ExaltTypePrerequisite = row
@@ -345,13 +345,9 @@ pub fn apply_merits_rows(
                     builder = match exalt_type {
                         ExaltTypePrerequisite::Solar => builder.requiring_solar(),
                         ExaltTypePrerequisite::Lunar => builder.requiring_lunar(),
-                        ExaltTypePrerequisite::DragonBlooded => {
-                            builder.requiring_dragon_blooded()
-                        }
+                        ExaltTypePrerequisite::DragonBlooded => builder.requiring_dragon_blooded(),
                         ExaltTypePrerequisite::Spirit => builder.requiring_spirit(false),
-                        ExaltTypePrerequisite::SpiritOrEclipse => {
-                            builder.requiring_spirit(true)
-                        }
+                        ExaltTypePrerequisite::SpiritOrEclipse => builder.requiring_spirit(true),
                     }
                 }
             }

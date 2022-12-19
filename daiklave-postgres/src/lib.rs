@@ -1,21 +1,24 @@
-use abilities::{AbilityRow, SpecialtyRow, apply_abilities_and_specialties_rows};
-use armor::{ArmorRow, ArmorTagRow, ArmorWornRow, apply_armor_rows};
-use attributes::{AttributeRow, apply_attribute_rows};
+use abilities::{apply_abilities_and_specialties_rows, AbilityRow, SpecialtyRow};
+use armor::{apply_armor_rows, ArmorRow, ArmorTagRow, ArmorWornRow};
+use attributes::{apply_attribute_rows, AttributeRow};
 use campaign::{apply_campaign_row, CampaignRow};
 use character::{apply_character_row, CharacterRow};
-use craft::{CraftAbilityRow, CraftAbilitySpecialtyRow, apply_craft};
-use daiklave_core::{
-    id::Id,
-    player::Player,
-    Character,
-};
+use craft::{apply_craft, CraftAbilityRow, CraftAbilitySpecialtyRow};
+use daiklave_core::Character;
 use eyre::{Result, WrapErr};
-use health::{HealthBoxRow, apply_health_box_rows};
-use intimacies::{IntimacyRow, apply_intimacy_rows};
-use martial_arts::{MartialArtsStyleRow, CharacterMartialArtsRow, CharacterMartialArtsSpecialtyRow, MartialArtsCharmRow, MartialArtsCharmKeywordRow, MartialArtsCharmCostRow, MartialArtsCharmTreeRow, apply_martial_arts};
-use merits::{MeritTemplateRow, apply_merits_rows, MeritDetailRow, MeritPrerequisiteSetRow, PrerequisiteRow};
+use health::{apply_health_box_rows, HealthBoxRow};
+use intimacies::{apply_intimacy_rows, IntimacyRow};
+use martial_arts::{
+    apply_martial_arts, AllMartialArtsRows, CharacterMartialArtsRow,
+    CharacterMartialArtsSpecialtyRow, MartialArtsCharmCostRow, MartialArtsCharmKeywordRow,
+    MartialArtsCharmRow, MartialArtsCharmTreeRow, MartialArtsStyleRow,
+};
+use merits::{
+    apply_merits_rows, MeritDetailRow, MeritPrerequisiteSetRow, MeritTemplateRow, PrerequisiteRow,
+};
+use player::PlayerRow;
 use sqlx::{query, PgPool, Postgres, Transaction};
-use weapons::{WeaponRow, WeaponTagRow, WeaponEquippedRow, apply_weapon_rows};
+use weapons::{apply_weapon_rows, WeaponEquippedRow, WeaponRow, WeaponTagRow};
 mod abilities;
 mod armor;
 mod attributes;
@@ -26,6 +29,7 @@ mod health;
 mod intimacies;
 mod martial_arts;
 mod merits;
+mod player;
 mod weapons;
 
 pub async fn destroy_character(pool: &PgPool, id: i32) -> Result<()> {
@@ -40,39 +44,6 @@ pub async fn destroy_character(pool: &PgPool, id: i32) -> Result<()> {
 
     Ok(())
 }
-
-#[derive(Debug, sqlx::Type)]
-#[sqlx(type_name = "players")]
-pub struct PlayerRow {
-    pub id: i32,
-    pub name: String,
-}
-
-impl From<PlayerRow> for Player {
-    fn from(row: PlayerRow) -> Self {
-        Player {
-            id: Id::Database(row.id),
-            name: row.name,
-        }
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #[derive(Debug)]
 struct GetCharacter {
@@ -147,16 +118,6 @@ async fn retrieve_character_transaction(
     }
 }
 
-struct AllMartialArtsRows {
-    pub style_rows: Option<Vec<MartialArtsStyleRow>>,
-    pub character_style_rows: Option<Vec<CharacterMartialArtsRow>>,
-    pub specialty_rows: Option<Vec<CharacterMartialArtsSpecialtyRow>>,
-    pub martial_arts_charm_rows: Option<Vec<MartialArtsCharmRow>>,
-    pub charm_keyword_rows: Option<Vec<MartialArtsCharmKeywordRow>>,
-    pub charm_cost_rows: Option<Vec<MartialArtsCharmCostRow>>,
-    pub charm_tree_rows: Option<Vec<MartialArtsCharmTreeRow>>,
-}
-
 impl TryInto<Character> for GetCharacter {
     type Error = eyre::Report;
 
@@ -173,18 +134,26 @@ impl TryInto<Character> for GetCharacter {
             .wrap_err("Could not apply craft rows")?;
         builder = apply_intimacy_rows(builder, self.intimacies);
         builder = apply_health_box_rows(builder, self.health_boxes);
-        builder = apply_weapon_rows(builder, self.weapons_owned, self.weapon_tags, self.weapons_equipped)
-            .wrap_err("Could not apply weapon rows")?;
+        builder = apply_weapon_rows(
+            builder,
+            self.weapons_owned,
+            self.weapon_tags,
+            self.weapons_equipped,
+        )
+        .wrap_err("Could not apply weapon rows")?;
         builder = apply_armor_rows(builder, self.armor_owned, self.armor_tags, self.armor_worn)
             .wrap_err("Could not apply armor rows")?;
-        builder = apply_merits_rows(builder, 
-                self.merit_templates,
-                self.merit_details,
-                self.merit_prerequisite_sets,
-                self.merit_prerequisites,
-            )
-            .wrap_err("Could not apply merit rows")?;
-        builder = apply_martial_arts(builder, AllMartialArtsRows {
+        builder = apply_merits_rows(
+            builder,
+            self.merit_templates,
+            self.merit_details,
+            self.merit_prerequisite_sets,
+            self.merit_prerequisites,
+        )
+        .wrap_err("Could not apply merit rows")?;
+        builder = apply_martial_arts(
+            builder,
+            AllMartialArtsRows {
                 style_rows: self.martial_arts_styles,
                 character_style_rows: self.character_martial_arts_styles,
                 specialty_rows: self.martial_arts_specialties,
@@ -192,8 +161,9 @@ impl TryInto<Character> for GetCharacter {
                 charm_keyword_rows: self.martial_arts_charm_keywords,
                 charm_cost_rows: self.martial_arts_charms_costs,
                 charm_tree_rows: self.martial_arts_charm_tree,
-            })
-            .wrap_err("Could not apply martial arts rows")?;
+            },
+        )
+        .wrap_err("Could not apply martial arts rows")?;
 
         builder.build()
     }

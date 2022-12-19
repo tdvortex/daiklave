@@ -1,4 +1,8 @@
-use daiklave_core::{intimacies::{IntimacyLevel, IntimacyType, Intimacy}, character::CharacterBuilder, id::Id};
+use daiklave_core::{
+    character::CharacterBuilder,
+    id::Id,
+    intimacies::{Intimacy, IntimacyLevel, IntimacyType},
+};
 use sqlx::postgres::PgHasArrayType;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
@@ -82,7 +86,10 @@ impl PgHasArrayType for IntimacyRow {
     }
 }
 
-pub fn apply_intimacy_rows(builder: CharacterBuilder, intimacy_rows: Option<Vec<IntimacyRow>>) -> CharacterBuilder {
+pub fn apply_intimacy_rows(
+    builder: CharacterBuilder,
+    intimacy_rows: Option<Vec<IntimacyRow>>,
+) -> CharacterBuilder {
     if let Some(rows) = intimacy_rows {
         rows.into_iter().fold(builder, |s, intimacy_row| {
             s.with_intimacy(Intimacy {
