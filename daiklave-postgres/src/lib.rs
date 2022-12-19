@@ -1,9 +1,9 @@
+use abilities::{AbilityNameVanillaPostgres, AbilityRow, SpecialtyRow, apply_abilities_and_specialties_rows};
+use attributes::{AttributeNamePostgres, AttributeRow, apply_attribute_rows};
 use campaign::{apply_campaign_row, CampaignRow};
 use character::{apply_character_row, CharacterRow};
 use daiklave_core::{
-    abilities::{AbilityNameNoSubskill, AbilityNameVanilla},
     armor::ArmorTag,
-    attributes::AttributeName,
     charms::{CharmActionType, CharmCostType, CharmKeyword},
     health::{DamageLevel, WoundPenalty},
     id::Id,
@@ -16,6 +16,8 @@ use daiklave_core::{
 };
 use eyre::{eyre, Report, Result, WrapErr};
 use sqlx::{postgres::PgHasArrayType, query, PgPool, Postgres, Transaction};
+mod abilities;
+mod attributes;
 mod campaign;
 mod character;
 
@@ -48,215 +50,8 @@ impl From<PlayerRow> for Player {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
-#[sqlx(type_name = "ATTRIBUTENAME", rename_all = "UPPERCASE")]
-pub enum AttributeNamePostgres {
-    Strength,
-    Dexterity,
-    Stamina,
-    Charisma,
-    Manipulation,
-    Appearance,
-    Perception,
-    Intelligence,
-    Wits,
-}
 
-impl From<AttributeNamePostgres> for AttributeName {
-    fn from(value: AttributeNamePostgres) -> Self {
-        match value {
-            AttributeNamePostgres::Strength => Self::Strength,
-            AttributeNamePostgres::Dexterity => Self::Dexterity,
-            AttributeNamePostgres::Stamina => Self::Stamina,
-            AttributeNamePostgres::Charisma => Self::Charisma,
-            AttributeNamePostgres::Manipulation => Self::Manipulation,
-            AttributeNamePostgres::Appearance => Self::Appearance,
-            AttributeNamePostgres::Perception => Self::Perception,
-            AttributeNamePostgres::Intelligence => Self::Intelligence,
-            AttributeNamePostgres::Wits => Self::Wits,
-        }
-    }
-}
 
-impl From<AttributeName> for AttributeNamePostgres {
-    fn from(value: AttributeName) -> Self {
-        match value {
-            AttributeName::Strength => Self::Strength,
-            AttributeName::Dexterity => Self::Dexterity,
-            AttributeName::Stamina => Self::Stamina,
-            AttributeName::Charisma => Self::Charisma,
-            AttributeName::Manipulation => Self::Manipulation,
-            AttributeName::Appearance => Self::Appearance,
-            AttributeName::Perception => Self::Perception,
-            AttributeName::Intelligence => Self::Intelligence,
-            AttributeName::Wits => Self::Wits,
-        }
-    }
-}
-
-impl PgHasArrayType for AttributeNamePostgres {
-    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_ATTRIBUTENAME")
-    }
-}
-
-#[derive(Debug, sqlx::Type)]
-#[sqlx(type_name = "attributes")]
-pub struct AttributeRow {
-    pub character_id: i32,
-    pub name: AttributeNamePostgres,
-    pub dots: i16,
-}
-
-#[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
-#[sqlx(type_name = "ABILITYNAMEVANILLA", rename_all = "UPPERCASE")]
-pub enum AbilityNameVanillaPostgres {
-    Archery,
-    Athletics,
-    Awareness,
-    Brawl,
-    Bureaucracy,
-    Dodge,
-    Integrity,
-    Investigation,
-    Larceny,
-    Linguistics,
-    Lore,
-    Medicine,
-    Melee,
-    Occult,
-    Performance,
-    Presence,
-    Resistance,
-    Ride,
-    Sail,
-    Socialize,
-    Stealth,
-    Survival,
-    Thrown,
-    War,
-}
-
-impl PgHasArrayType for AbilityNameVanillaPostgres {
-    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_ABILITYNAMEVANILLA")
-    }
-}
-
-impl From<AbilityNameVanillaPostgres> for AbilityNameNoSubskill {
-    fn from(ability_name_postgres: AbilityNameVanillaPostgres) -> Self {
-        match ability_name_postgres {
-            AbilityNameVanillaPostgres::Archery => Self::Archery,
-            AbilityNameVanillaPostgres::Athletics => Self::Athletics,
-            AbilityNameVanillaPostgres::Awareness => Self::Awareness,
-            AbilityNameVanillaPostgres::Brawl => Self::Brawl,
-            AbilityNameVanillaPostgres::Bureaucracy => Self::Bureaucracy,
-            AbilityNameVanillaPostgres::Dodge => Self::Dodge,
-            AbilityNameVanillaPostgres::Integrity => Self::Integrity,
-            AbilityNameVanillaPostgres::Investigation => Self::Investigation,
-            AbilityNameVanillaPostgres::Larceny => Self::Larceny,
-            AbilityNameVanillaPostgres::Linguistics => Self::Linguistics,
-            AbilityNameVanillaPostgres::Lore => Self::Lore,
-            AbilityNameVanillaPostgres::Medicine => Self::Medicine,
-            AbilityNameVanillaPostgres::Melee => Self::Melee,
-            AbilityNameVanillaPostgres::Occult => Self::Occult,
-            AbilityNameVanillaPostgres::Performance => Self::Performance,
-            AbilityNameVanillaPostgres::Presence => Self::Presence,
-            AbilityNameVanillaPostgres::Resistance => Self::Resistance,
-            AbilityNameVanillaPostgres::Ride => Self::Ride,
-            AbilityNameVanillaPostgres::Sail => Self::Sail,
-            AbilityNameVanillaPostgres::Socialize => Self::Socialize,
-            AbilityNameVanillaPostgres::Stealth => Self::Stealth,
-            AbilityNameVanillaPostgres::Survival => Self::Survival,
-            AbilityNameVanillaPostgres::Thrown => Self::Thrown,
-            AbilityNameVanillaPostgres::War => Self::War,
-        }
-    }
-}
-
-impl From<AbilityNameVanillaPostgres> for AbilityNameVanilla {
-    fn from(ability_name_postgres: AbilityNameVanillaPostgres) -> Self {
-        match ability_name_postgres {
-            AbilityNameVanillaPostgres::Archery => Self::Archery,
-            AbilityNameVanillaPostgres::Athletics => Self::Athletics,
-            AbilityNameVanillaPostgres::Awareness => Self::Awareness,
-            AbilityNameVanillaPostgres::Brawl => Self::Brawl,
-            AbilityNameVanillaPostgres::Bureaucracy => Self::Bureaucracy,
-            AbilityNameVanillaPostgres::Dodge => Self::Dodge,
-            AbilityNameVanillaPostgres::Integrity => Self::Integrity,
-            AbilityNameVanillaPostgres::Investigation => Self::Investigation,
-            AbilityNameVanillaPostgres::Larceny => Self::Larceny,
-            AbilityNameVanillaPostgres::Linguistics => Self::Linguistics,
-            AbilityNameVanillaPostgres::Lore => Self::Lore,
-            AbilityNameVanillaPostgres::Medicine => Self::Medicine,
-            AbilityNameVanillaPostgres::Melee => Self::Melee,
-            AbilityNameVanillaPostgres::Occult => Self::Occult,
-            AbilityNameVanillaPostgres::Performance => Self::Performance,
-            AbilityNameVanillaPostgres::Presence => Self::Presence,
-            AbilityNameVanillaPostgres::Resistance => Self::Resistance,
-            AbilityNameVanillaPostgres::Ride => Self::Ride,
-            AbilityNameVanillaPostgres::Sail => Self::Sail,
-            AbilityNameVanillaPostgres::Socialize => Self::Socialize,
-            AbilityNameVanillaPostgres::Stealth => Self::Stealth,
-            AbilityNameVanillaPostgres::Survival => Self::Survival,
-            AbilityNameVanillaPostgres::Thrown => Self::Thrown,
-            AbilityNameVanillaPostgres::War => Self::War,
-        }
-    }
-}
-
-impl From<AbilityNameVanilla> for AbilityNameVanillaPostgres {
-    fn from(ability_name: AbilityNameVanilla) -> Self {
-        match ability_name {
-            AbilityNameVanilla::Archery => Self::Archery,
-            AbilityNameVanilla::Athletics => Self::Athletics,
-            AbilityNameVanilla::Awareness => Self::Awareness,
-            AbilityNameVanilla::Brawl => Self::Brawl,
-            AbilityNameVanilla::Bureaucracy => Self::Bureaucracy,
-            AbilityNameVanilla::Dodge => Self::Dodge,
-            AbilityNameVanilla::Integrity => Self::Integrity,
-            AbilityNameVanilla::Investigation => Self::Investigation,
-            AbilityNameVanilla::Larceny => Self::Larceny,
-            AbilityNameVanilla::Linguistics => Self::Linguistics,
-            AbilityNameVanilla::Lore => Self::Lore,
-            AbilityNameVanilla::Medicine => Self::Medicine,
-            AbilityNameVanilla::Melee => Self::Melee,
-            AbilityNameVanilla::Occult => Self::Occult,
-            AbilityNameVanilla::Performance => Self::Performance,
-            AbilityNameVanilla::Presence => Self::Presence,
-            AbilityNameVanilla::Resistance => Self::Resistance,
-            AbilityNameVanilla::Ride => Self::Ride,
-            AbilityNameVanilla::Sail => Self::Sail,
-            AbilityNameVanilla::Socialize => Self::Socialize,
-            AbilityNameVanilla::Stealth => Self::Stealth,
-            AbilityNameVanilla::Survival => Self::Survival,
-            AbilityNameVanilla::Thrown => Self::Thrown,
-            AbilityNameVanilla::War => Self::War,
-        }
-    }
-}
-
-#[derive(Debug, sqlx::Type)]
-#[sqlx(type_name = "abilities")]
-pub struct AbilityRow {
-    pub character_id: i32,
-    pub name: AbilityNameVanillaPostgres,
-    pub dots: i16,
-}
-
-#[derive(Debug, sqlx::Type)]
-#[sqlx(type_name = "specialties")]
-pub struct SpecialtyRow {
-    pub character_id: i32,
-    pub name: AbilityNameVanillaPostgres,
-    pub specialty: String,
-}
-
-impl PgHasArrayType for SpecialtyRow {
-    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
-        sqlx::postgres::PgTypeInfo::with_name("_specialties")
-    }
-}
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, sqlx::Type)]
 #[sqlx(type_name = "INTIMACYTYPE", rename_all = "UPPERCASE")]
@@ -1581,27 +1376,26 @@ impl TryInto<Character> for GetCharacter {
         builder = apply_campaign_row(builder, self.campaign);
         builder = apply_character_row(builder, self.character)
             .wrap_err("Could not apply character row")?;
-        builder
-            .apply_attribute_rows(self.attributes)
-            .wrap_err("Could not apply attribute rows")?
-            .apply_abilities_and_specialties_rows(self.abilities, self.specialties)
-            .wrap_err("Could not apply ability and specialty rows")?
-            .apply_craft(self.craft_abilities, self.craft_specialties)
-            .wrap_err("Could not apply craft rows")?
-            .apply_intimacy_rows(self.intimacies)
-            .apply_health_box_rows(self.health_boxes)
-            .apply_weapon_rows(self.weapons_owned, self.weapon_tags, self.weapons_equipped)
-            .wrap_err("Could not apply weapon rows")?
-            .apply_armor_rows(self.armor_owned, self.armor_tags, self.armor_worn)
-            .wrap_err("Could not apply armor rows")?
-            .apply_merits_rows(
+        builder = apply_attribute_rows(builder, self.attributes)
+            .wrap_err("Could not apply attribute rows")?;
+        builder = apply_abilities_and_specialties_rows(builder, self.abilities, self.specialties)
+            .wrap_err("Could not apply ability and specialty rows")?;
+        builder = apply_craft(builder, self.craft_abilities, self.craft_specialties)
+            .wrap_err("Could not apply craft rows")?;
+        builder = apply_intimacy_rows(builder, self.intimacies);
+        builder = apply_health_box_rows(builder, self.health_boxes);
+        builder = apply_weapon_rows(builder, self.weapons_owned, self.weapon_tags, self.weapons_equipped)
+            .wrap_err("Could not apply weapon rows")?;
+        builder = apply_armor_rows(builder, self.armor_owned, self.armor_tags, self.armor_worn)
+            .wrap_err("Could not apply armor rows")?;
+        builder = apply_merits_rows(builder, 
                 self.merit_templates,
                 self.merit_details,
                 self.merit_prerequisite_sets,
                 self.merit_prerequisites,
             )
-            .wrap_err("Could not apply merit rows")?
-            .apply_martial_arts(AllMartialArtsRows {
+            .wrap_err("Could not apply merit rows")?;
+        builder = apply_martial_arts(builder, AllMartialArtsRows {
                 style_rows: self.martial_arts_styles,
                 character_style_rows: self.character_martial_arts_styles,
                 specialty_rows: self.martial_arts_specialties,
@@ -1610,8 +1404,9 @@ impl TryInto<Character> for GetCharacter {
                 charm_cost_rows: self.martial_arts_charms_costs,
                 charm_tree_rows: self.martial_arts_charm_tree,
             })
-            .wrap_err("Could not apply martial arts rows")?
-            .build()
+            .wrap_err("Could not apply martial arts rows")?;
+
+        builder.build()
     }
 }
 
