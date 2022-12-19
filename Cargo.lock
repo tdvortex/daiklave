@@ -170,10 +170,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "daiklave-postgres"
-version = "0.1.0"
-
-[[package]]
 name = "daiklave_core"
 version = "0.1.0"
 dependencies = [
@@ -181,6 +177,16 @@ dependencies = [
  "eyre",
  "postcard",
  "serde",
+ "sqlx",
+ "tokio",
+]
+
+[[package]]
+name = "daiklave_postgres"
+version = "0.1.0"
+dependencies = [
+ "daiklave_core",
+ "eyre",
  "sqlx",
  "tokio",
 ]

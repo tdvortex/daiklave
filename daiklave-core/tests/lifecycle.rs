@@ -1,8 +1,7 @@
 use daiklave_core::{
-    armor::destroy_armor, character::destroy_character, create_player, destroy_player,
-    merits::destroy_merits, update_character, weapons::destroy_weapons, Character,
+    armor::destroy_armor, character::destroy_character,
+    merits::destroy_merits, weapons::destroy_weapons, player::Player, id::Id,
 };
-use postcard::from_bytes;
 use sqlx::PgPool;
 
 mod fixtures;
@@ -41,42 +40,31 @@ fn lifecycle() {
 
     // User inputs a username, Client serializes it
     let player_name = "Test Player Name".to_owned();
-    let send_bytes = postcard::to_allocvec(&player_name).unwrap();
+
 
     // Server deserializes it and creates a new player with that name
-    let player = create_player(&pool, from_bytes::<String>(&send_bytes).unwrap().clone())
-        .await
-        .unwrap();
+    let player = Player::new(Id::Database(123456789), player_name.clone());
     assert_eq!(&player_name.as_str(), &player.name());
 
     // Server serializes player result and sends it back to the client
     validate_player_serde(&player);
 
     // Client (in isolation) creates a character and subcomponents
-    let character = create_initial_character(&player);
+    let mut character = create_initial_character(&player);
     validate_initial_character(&player, &character, false);
 
     // Client builds, serializes, and sends to server
     // Server deserializes character
-    validate_initial_character_serde(&player, &character, false);
-
     // Server inserts character and retrieves after updating
-    let mut character: Character = update_character(&pool, &character).await.unwrap();
-    validate_initial_character(&player, &character, true);
-
     // Server serializes and sends character to client
     // Client deserializes character and modifies it
-    validate_initial_character_serde(&player, &character, true);
+    validate_initial_character_serde(&player, &character, false);
     modify_character(&mut character);
     validate_modified_character(&player, &character);
 
     // Client reserializes character and sends to server
     // Server deserializes, reconciles, inserts, and extracts
     validate_modified_character_serde(&player, &character);
-    let character = update_character(&pool, &character).await.unwrap();
-
-    // Client deserializes
-    validate_modified_character(&player, &character);
 
     // Client sends delete character order
     // Server deletes character
@@ -145,8 +133,6 @@ fn lifecycle() {
 
     // Client sends delete player order
     // Server deletes player
-    destroy_player(&pool, *player.id()).await.unwrap();
-
     // Player should not exist
     assert!(
         sqlx::query!("SELECT * FROM players WHERE id = $1", *player.id())

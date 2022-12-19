@@ -82,5 +82,4 @@ pub mod sorcery;
 /// them.
 pub mod weapons;
 
-pub use character::{destroy_character, retrieve_character, update_character, Character};
-pub use player::{create_player, destroy_player};
+pub use character::Character;

@@ -1,8 +1,12 @@
 [package]
-name = "daiklave-postgres"
+name = "daiklave_postgres"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+daiklave_core = {path = "../daiklave-core"}
+eyre = "0.6.8"
+sqlx = {version = "0.6", features = ["runtime-tokio-native-tls", "postgres"]}
+tokio = {version = "1.22.0", features = ["macros"]}
