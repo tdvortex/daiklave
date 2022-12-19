@@ -17,7 +17,7 @@ use crate::{
     solar::{DawnTraits, EclipseTraits, NightTraits, TwilightTraits, ZenithTraits},
     sorcery::ShapingRitual,
     weapons::{EquipHand, Weapon, Weapons},
-    Character,
+    Character, initiative::Initiative,
 };
 use eyre::{eyre, Result};
 
@@ -30,6 +30,7 @@ pub struct CharacterBuilder {
     concept: Option<String>,
     willpower: Willpower,
     experience: ExperiencePoints,
+    initiative: Initiative,
     attributes: Attributes,
     abilities: Abilities,
     intimacies: Vec<Intimacy>,
@@ -84,6 +85,14 @@ impl CharacterBuilder {
 
     pub fn with_experience(mut self, experience: ExperiencePoints) -> Self {
         self.experience = experience;
+        self
+    }
+
+    pub fn with_initiative(mut self, initiative: i32) -> Self {
+        if !self.initiative.is_in_combat() {
+            self.initiative.join_battle(0);
+        } 
+        self.initiative.set_initiative(initiative);
         self
     }
 
@@ -346,6 +355,7 @@ impl CharacterBuilder {
             concept: self.concept,
             willpower: self.willpower,
             experience: self.experience,
+            initiative: self.initiative,
             attributes: self.attributes,
             abilities: self.abilities,
             intimacies: Intimacies::new(self.intimacies),

@@ -51,6 +51,8 @@ pub mod health;
 /// and database-side.
 pub mod id;
 
+pub mod initiative;
+
 /// Defines the Intimacy item and its collection, Intimacies.
 pub mod intimacies;
 

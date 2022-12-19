@@ -31,7 +31,7 @@ impl Character {
 }
 
 #[derive(Debug, Default)]
-pub struct CharacterBaseDiff(pub Option<(String, Option<String>, i16, i16, i16, i16)>);
+pub struct CharacterBaseDiff(pub Option<(String, Option<String>, i16, i16, i16, i16, Option<i32>)>);
 
 impl Character {
     pub fn compare_newer_base(&self, newer: &Character) -> CharacterBaseDiff {
@@ -43,6 +43,7 @@ impl Character {
             && (self.willpower.maximum == newer.willpower.maximum)
             && (self.experience.current.min(i16::MAX as u16)
                 != newer.experience.current.max(i16::MAX as u16))
+            && (self.initiative == newer.initiative)
             && (self.experience.total.min(i16::MAX as u16)
                 != newer.experience.total.max(i16::MAX as u16));
 
@@ -64,6 +65,7 @@ impl Character {
                     .min(i16::MAX as u16)
                     .try_into()
                     .unwrap(),
+                newer.initiative.current()
             )));
         }
 

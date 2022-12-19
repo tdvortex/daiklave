@@ -16,6 +16,7 @@ use crate::craft::CraftAbilities;
 use crate::exalt_type::ExaltType;
 use crate::health::Health;
 use crate::id::Id;
+use crate::initiative::Initiative;
 use crate::intimacies::Intimacies;
 use crate::martial_arts::MartialArtistTraits;
 use crate::martial_arts::MartialArtsStyle;
@@ -37,6 +38,7 @@ pub struct Character {
     pub concept: Option<String>,
     pub willpower: Willpower,
     pub experience: ExperiencePoints,
+    pub initiative: Initiative,
     pub attributes: Attributes,
     abilities: Abilities,
     pub intimacies: Intimacies,
