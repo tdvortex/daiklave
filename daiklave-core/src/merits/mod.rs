@@ -1,14 +1,14 @@
 pub(crate) mod diff;
 use std::ops::{Deref, DerefMut};
 
-use serde::{Deserialize, Serialize};
-pub use diff::{compare_merits, MeritDiff};
 use crate::{
     data_source::{BookReference, DataSource},
     id::Id,
     prerequisite::PrerequisiteSet,
 };
+pub use diff::{compare_merits, MeritDiff};
 use eyre::{eyre, Result};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 pub enum MeritType {

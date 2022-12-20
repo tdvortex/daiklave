@@ -1,5 +1,4 @@
-
-use super::{Health, WoundPenalty, DamageLevel};
+use super::{DamageLevel, Health, WoundPenalty};
 
 #[derive(Debug, Default)]
 pub struct HealthDiff {

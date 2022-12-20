@@ -16,7 +16,7 @@ pub use self::{
 
 use crate::{
     abilities::AbilityNameNoSubskill,
-    anima::{AnimaLevel, AnimaEffect, ExaltAnimaType},
+    anima::{AnimaEffect, AnimaLevel, ExaltAnimaType},
     charms::{SolarCharm, Spell},
     essence::Essence,
     id::Id,
@@ -242,30 +242,40 @@ impl SolarTraitsBuilder {
     pub fn with_anima_effect(mut self, effect: AnimaEffect) -> Result<Self> {
         match effect.exalt_and_caste() {
             ExaltAnimaType::AnySolar => Ok(()),
-            ExaltAnimaType::DawnSolar => if let Some(SolarCaste::Dawn(_)) = self.caste {
-                Ok(())
-            } else {
-                Err(eyre!("Not a Dawn caste"))
+            ExaltAnimaType::DawnSolar => {
+                if let Some(SolarCaste::Dawn(_)) = self.caste {
+                    Ok(())
+                } else {
+                    Err(eyre!("Not a Dawn caste"))
+                }
             }
-            ExaltAnimaType::ZenithSolar => if let Some(SolarCaste::Zenith(_)) = self.caste {
-                Ok(())
-            } else {
-                Err(eyre!("Not a Zenith caste"))
+            ExaltAnimaType::ZenithSolar => {
+                if let Some(SolarCaste::Zenith(_)) = self.caste {
+                    Ok(())
+                } else {
+                    Err(eyre!("Not a Zenith caste"))
+                }
             }
-            ExaltAnimaType::TwilightSolar => if let Some(SolarCaste::Twilight(_)) = self.caste {
-                Ok(())
-            } else {
-                Err(eyre!("Not a Twilight caste"))
+            ExaltAnimaType::TwilightSolar => {
+                if let Some(SolarCaste::Twilight(_)) = self.caste {
+                    Ok(())
+                } else {
+                    Err(eyre!("Not a Twilight caste"))
+                }
             }
-            ExaltAnimaType::NightSolar => if let Some(SolarCaste::Night(_)) = self.caste {
-                Ok(())
-            } else {
-                Err(eyre!("Not a Night caste"))
+            ExaltAnimaType::NightSolar => {
+                if let Some(SolarCaste::Night(_)) = self.caste {
+                    Ok(())
+                } else {
+                    Err(eyre!("Not a Night caste"))
+                }
             }
-            ExaltAnimaType::EclipseSolar => if let Some(SolarCaste::Eclipse(_)) = self.caste {
-                Ok(())
-            } else {
-                Err(eyre!("Not an Eclipse caste"))
+            ExaltAnimaType::EclipseSolar => {
+                if let Some(SolarCaste::Eclipse(_)) = self.caste {
+                    Ok(())
+                } else {
+                    Err(eyre!("Not an Eclipse caste"))
+                }
             }
             _ => Err(eyre!("Solars can only have Solar anima effects")),
         }?;
@@ -443,13 +453,24 @@ impl SolarTraitsBuilder {
         self.anima_effects.dedup();
 
         if self.anima_effects.len() != 5 {
-            return Err(eyre!("Solars must have 2 Solar anima effects and 3 caste anima effects"));
+            return Err(eyre!(
+                "Solars must have 2 Solar anima effects and 3 caste anima effects"
+            ));
         }
 
-        let anima_effects = self.anima_effects.into_iter().take(5).enumerate().fold([None, None, None, None, None], |mut arr, (index, effect)| {
-            arr[index] = Some(effect);
-            arr
-        }).map(|opt| opt.unwrap());
+        let anima_effects = self
+            .anima_effects
+            .into_iter()
+            .take(5)
+            .enumerate()
+            .fold(
+                [None, None, None, None, None],
+                |mut arr, (index, effect)| {
+                    arr[index] = Some(effect);
+                    arr
+                },
+            )
+            .map(|opt| opt.unwrap());
 
         self.favored.sort();
         self.favored.dedup();

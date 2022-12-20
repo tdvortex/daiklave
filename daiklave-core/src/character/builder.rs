@@ -1,7 +1,7 @@
 use super::{ExperiencePoints, Willpower};
 use crate::{
     abilities::{Abilities, AbilityNameNoSubskill, AbilityNameVanilla},
-    anima::{AnimaLevel, AnimaEffect},
+    anima::{AnimaEffect, AnimaLevel},
     armor::{Armor, ArmorItem},
     attributes::{AttributeName, Attributes},
     campaign::Campaign,
@@ -10,6 +10,7 @@ use crate::{
     exalt_type::ExaltTypeBuilder,
     health::{Health, WoundPenalty},
     id::Id,
+    initiative::Initiative,
     intimacies::{Intimacies, Intimacy},
     martial_arts::{MartialArtistTraits, MartialArtsStyle},
     merits::{Merit, MeritTemplate, Merits},
@@ -17,7 +18,7 @@ use crate::{
     solar::{DawnTraits, EclipseTraits, NightTraits, TwilightTraits, ZenithTraits},
     sorcery::ShapingRitual,
     weapons::{EquipHand, Weapon, Weapons},
-    Character, initiative::Initiative,
+    Character,
 };
 use eyre::{eyre, Result};
 
@@ -91,7 +92,7 @@ impl CharacterBuilder {
     pub fn with_initiative(mut self, initiative: i32) -> Self {
         if !self.initiative.is_in_combat() {
             self.initiative.join_battle(0);
-        } 
+        }
         self.initiative.set_initiative(initiative);
         self
     }

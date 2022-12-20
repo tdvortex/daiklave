@@ -12,7 +12,8 @@ impl Attributes {
 
         newer.iter().for_each(|attribute| {
             if attribute.dots() != self.get(attribute.name()).dots() {
-                diff.updated_attributes.push((attribute.name(), attribute.dots()))
+                diff.updated_attributes
+                    .push((attribute.name(), attribute.dots()))
             }
         });
 

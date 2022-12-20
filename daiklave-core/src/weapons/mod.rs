@@ -1,6 +1,6 @@
 pub(crate) mod diff;
-use serde::{Deserialize, Serialize};
 pub use diff::WeaponsDiff;
+use serde::{Deserialize, Serialize};
 use std::hash::Hash;
 use std::{cmp::Ordering, collections::HashSet};
 

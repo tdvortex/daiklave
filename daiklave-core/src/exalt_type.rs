@@ -1,6 +1,6 @@
 use crate::{
     abilities::AbilityNameNoSubskill,
-    anima::{AnimaLevel, AnimaEffect},
+    anima::{AnimaEffect, AnimaLevel},
     charms::{SolarCharm, Spell},
     essence::Essence,
     solar::{
@@ -128,7 +128,9 @@ impl ExaltTypeBuilder {
     pub(crate) fn with_anima_effect(self, effect: AnimaEffect) -> Result<Self> {
         match self {
             ExaltTypeBuilder::Mortal(_) => Err(eyre!("Mortals do not have Anima")),
-            ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(solar_builder.with_anima_effect(effect)?))
+            ExaltTypeBuilder::Solar(solar_builder) => Ok(ExaltTypeBuilder::Solar(
+                solar_builder.with_anima_effect(effect)?,
+            )),
         }
     }
 

@@ -1,9 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{
-    id::Id,
-    intimacies::Intimacy,
-};
+use crate::{id::Id, intimacies::Intimacy};
 
 #[derive(Debug, Default)]
 pub struct IntimaciesDiff {

@@ -104,7 +104,7 @@ pub async fn update_base_character(
         maximum_willpower,
         current_experience,
         total_experience,
-        _initiative
+        _initiative,
     ) = base_character_diff.0.as_ref().unwrap();
 
     query!("

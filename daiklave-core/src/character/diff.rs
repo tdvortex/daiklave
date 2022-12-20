@@ -1,4 +1,15 @@
-use crate::{abilities::diff::AbilitiesDiff, attributes::AttributesDiff, craft::diff::CraftDiff, intimacies::{IntimaciesDiff, compare_intimacies}, weapons::WeaponsDiff, merits::{MeritDiff, compare_merits}, health::HealthDiff, armor::ArmorDiff, martial_arts::diff::MartialArtsDiff, Character};
+use crate::{
+    abilities::diff::AbilitiesDiff,
+    armor::ArmorDiff,
+    attributes::AttributesDiff,
+    craft::diff::CraftDiff,
+    health::HealthDiff,
+    intimacies::{compare_intimacies, IntimaciesDiff},
+    martial_arts::diff::MartialArtsDiff,
+    merits::{compare_merits, MeritDiff},
+    weapons::WeaponsDiff,
+    Character,
+};
 
 pub struct CharacterDiff {
     pub attributes_diff: AttributesDiff,
@@ -15,9 +26,9 @@ pub struct CharacterDiff {
 
 impl Character {
     pub fn compare_newer(&self, newer: &Character) -> CharacterDiff {
-        CharacterDiff { 
-            attributes_diff: self.attributes.compare_newer(&newer.attributes), 
-            abilities_diff: self.abilities.compare_newer(&newer.abilities), 
+        CharacterDiff {
+            attributes_diff: self.attributes.compare_newer(&newer.attributes),
+            abilities_diff: self.abilities.compare_newer(&newer.abilities),
             craft_diff: self.craft_abilities.compare_newer(&newer.craft_abilities),
             base_diff: self.compare_newer_base(newer),
             health_diff: self.health.compare_newer(&newer.health),
@@ -25,7 +36,9 @@ impl Character {
             weapons_diff: self.weapons.compare_newer(&newer.weapons),
             armor_diff: self.armor.compare_newer(&newer.armor),
             merits_diff: compare_merits(&self.merits, &newer.merits),
-            martial_arts_diff: self.martial_arts_styles.compare_newer(&newer.martial_arts_styles),
+            martial_arts_diff: self
+                .martial_arts_styles
+                .compare_newer(&newer.martial_arts_styles),
         }
     }
 }
@@ -65,7 +78,7 @@ impl Character {
                     .min(i16::MAX as u16)
                     .try_into()
                     .unwrap(),
-                newer.initiative.current()
+                newer.initiative.current(),
             )));
         }
 

@@ -4,8 +4,8 @@ use eyre::{eyre, Result};
 use std::fmt::Debug;
 use std::iter::FusedIterator;
 pub(crate) mod enums;
-pub use enums::{AbilityName, AbilityNameNoSubskill, AbilityNameVanilla};
 pub use diff::AbilitiesDiff;
+pub use enums::{AbilityName, AbilityNameNoSubskill, AbilityNameVanilla};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 

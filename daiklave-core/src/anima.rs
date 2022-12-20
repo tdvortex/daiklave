@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{id::Id, data_source::{DataSource, BookReference}};
+use crate::{
+    data_source::{BookReference, DataSource},
+    id::Id,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum AnimaLevel {
@@ -58,16 +61,30 @@ impl PartialEq for AnimaEffect {
 }
 
 impl AnimaEffect {
-    pub fn from_book(id: Id, book_title: String, page_number: i16, exalt_and_caste: ExaltAnimaType, description: String) -> Self {     
+    pub fn from_book(
+        id: Id,
+        book_title: String,
+        page_number: i16,
+        exalt_and_caste: ExaltAnimaType,
+        description: String,
+    ) -> Self {
         Self {
             id,
-            data_source: DataSource::Book(BookReference{book_title, page_number}),
+            data_source: DataSource::Book(BookReference {
+                book_title,
+                page_number,
+            }),
             exalt_type: exalt_and_caste,
             description,
         }
     }
 
-    pub fn custom(id: Id, creator_id: Id, exalt_and_caste: ExaltAnimaType, description: String) -> Self {
+    pub fn custom(
+        id: Id,
+        creator_id: Id,
+        exalt_and_caste: ExaltAnimaType,
+        description: String,
+    ) -> Self {
         Self {
             id,
             data_source: DataSource::Custom(creator_id),

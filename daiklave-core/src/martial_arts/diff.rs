@@ -2,9 +2,7 @@ use std::collections::HashMap;
 
 use crate::{abilities::Ability, charms::MartialArtsCharm, id::Id};
 
-use super::{
-    MartialArtistTraits, MartialArtsStyle,
-};
+use super::{MartialArtistTraits, MartialArtsStyle};
 
 type AddedStyle = (
     MartialArtsStyle,

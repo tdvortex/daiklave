@@ -1,6 +1,6 @@
 mod fixtures;
 
-use daiklave_core::{player::Player, id::Id};
+use daiklave_core::{id::Id, player::Player};
 use fixtures::{create_initial_character, validate_initial_character};
 
 use crate::fixtures::{

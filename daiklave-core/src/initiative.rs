@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Copy, Default)]
 pub struct Initiative(pub Option<i32>);
@@ -27,7 +27,7 @@ impl Initiative {
     pub fn set_initiative(&mut self, new_initiative: i32) -> Option<i32> {
         if self.0.is_some() {
             self.0 = Some(new_initiative);
-        } 
+        }
         self.0
     }
 }

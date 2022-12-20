@@ -15,6 +15,8 @@ pub mod anima;
 /// as well as the interface to own and equip them.
 pub mod armor;
 
+pub mod artifact;
+
 /// Defines the interface for character attributes (Strength, Intelligence,
 /// etc.).
 pub mod attributes;
