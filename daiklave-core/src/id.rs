@@ -64,3 +64,58 @@ impl Deref for AnimaEffectId {
         &self.0
     }
 }
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+pub struct EvocationId(pub Id);
+
+impl Deref for EvocationId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+pub struct SolarCharmId(pub Id);
+
+impl Deref for SolarCharmId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+pub struct MartialArtsCharmId(pub Id);
+
+impl Deref for MartialArtsCharmId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+pub struct MartialArtsStyleId(pub Id);
+
+impl Deref for MartialArtsStyleId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+pub struct SpellId(pub Id);
+
+impl Deref for SpellId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}

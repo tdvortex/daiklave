@@ -1,7 +1,7 @@
 use crate::{
     charms::Spell,
     data_source::{BookReference, DataSource},
-    id::{Id, CharacterId},
+    id::{Id, CharacterId, SpellId},
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -159,7 +159,7 @@ impl TerrestrialCircleTraits {
         Ok(())
     }
 
-    pub fn remove_spell(&mut self, spell_id: Id) -> Result<()> {
+    pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<()> {
         if self.control_spell.0.id() == spell_id {
             return Err(eyre!("Cannot remove control spell"));
         }
@@ -169,7 +169,7 @@ impl TerrestrialCircleTraits {
         Ok(())
     }
 
-    pub fn swap_control_spell(&mut self, new_control_spell_id: Id) -> Result<()> {
+    pub fn swap_control_spell(&mut self, new_control_spell_id: SpellId) -> Result<()> {
         if self.control_spell.0.id() == new_control_spell_id {
             return Ok(());
         }
@@ -185,7 +185,7 @@ impl TerrestrialCircleTraits {
                     None
                 }
             })
-            .ok_or_else(|| eyre!("Spell id {} is not known", *new_control_spell_id))?;
+            .ok_or_else(|| eyre!("Spell id {} is not known", **new_control_spell_id))?;
 
         let mut swap_spell = self.other_spells.remove(remove_index);
         std::mem::swap(&mut self.control_spell, &mut swap_spell);
@@ -245,7 +245,7 @@ impl CelestialCircleTraits {
         Ok(())
     }
 
-    pub fn remove_spell(&mut self, spell_id: Id) -> Result<()> {
+    pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<()> {
         if self.control_spell.0.id() == spell_id {
             return Err(eyre!("Cannot remove control spell"));
         }
@@ -255,7 +255,7 @@ impl CelestialCircleTraits {
         Ok(())
     }
 
-    pub fn swap_control_spell(&mut self, new_control_spell_id: Id) -> Result<()> {
+    pub fn swap_control_spell(&mut self, new_control_spell_id: SpellId) -> Result<()> {
         if self.control_spell.0.id() == new_control_spell_id {
             return Ok(());
         }
@@ -270,7 +270,7 @@ impl CelestialCircleTraits {
                     None
                 }
             })
-            .ok_or_else(|| eyre!("Spell id {} is not known", *new_control_spell_id))?;
+            .ok_or_else(|| eyre!("Spell id {} is not known", **new_control_spell_id))?;
 
         let mut swap_spell = self.other_spells.remove(remove_index);
         std::mem::swap(&mut self.control_spell, &mut swap_spell);
@@ -327,7 +327,7 @@ impl SolarCircleTraits {
         Ok(())
     }
 
-    pub fn remove_spell(&mut self, spell_id: Id) -> Result<()> {
+    pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<()> {
         if self.control_spell.0.id() == spell_id {
             return Err(eyre!("Cannot remove control spell"));
         }
@@ -336,7 +336,7 @@ impl SolarCircleTraits {
         Ok(())
     }
 
-    pub fn swap_control_spell(&mut self, new_control_spell_id: Id) -> Result<()> {
+    pub fn swap_control_spell(&mut self, new_control_spell_id: SpellId) -> Result<()> {
         if self.control_spell.0.id() == new_control_spell_id {
             return Ok(());
         }
@@ -352,7 +352,7 @@ impl SolarCircleTraits {
                     None
                 }
             })
-            .ok_or_else(|| eyre!("Spell id {} is not known", *new_control_spell_id))?;
+            .ok_or_else(|| eyre!("Spell id {} is not known", **new_control_spell_id))?;
 
         let mut swap_spell = self.other_spells.remove(remove_index);
         std::mem::swap(&mut self.control_spell, &mut swap_spell);

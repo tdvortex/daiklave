@@ -5,14 +5,14 @@ pub use crate::charms::{MartialArtsCharm, MartialArtsCharmBuilder};
 use crate::{
     abilities::{Ability, AbilityName, AbilityRating, NonZeroAbility},
     data_source::{BookReference, DataSource},
-    id::{Id, CharacterId},
+    id::{CharacterId, MartialArtsStyleId, MartialArtsCharmId},
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 pub struct MartialArtsStyle {
-    id: Id,
+    id: MartialArtsStyleId,
     name: String,
     description: String,
     data_source: DataSource,
@@ -25,7 +25,7 @@ impl PartialEq for MartialArtsStyle {
 }
 
 impl MartialArtsStyle {
-    pub fn from_book(id: Id, book_title: String, page_number: i16) -> MartialArtsStyleBuilder {
+    pub fn from_book(id: MartialArtsStyleId, book_title: String, page_number: i16) -> MartialArtsStyleBuilder {
         MartialArtsStyleBuilder {
             id,
             data_source: DataSource::Book(BookReference {
@@ -37,7 +37,7 @@ impl MartialArtsStyle {
         }
     }
 
-    pub fn custom(id: Id, creator_id: CharacterId) -> MartialArtsStyleBuilder {
+    pub fn custom(id: MartialArtsStyleId, creator_id: CharacterId) -> MartialArtsStyleBuilder {
         MartialArtsStyleBuilder {
             id,
             data_source: DataSource::Custom(creator_id),
@@ -46,7 +46,7 @@ impl MartialArtsStyle {
         }
     }
 
-    pub fn id(&self) -> Id {
+    pub fn id(&self) -> MartialArtsStyleId {
         self.id
     }
 
@@ -64,7 +64,7 @@ impl MartialArtsStyle {
 }
 
 pub struct MartialArtsStyleBuilder {
-    id: Id,
+    id: MartialArtsStyleId,
     data_source: DataSource,
     name: Option<String>,
     description: Option<String>,
@@ -119,7 +119,7 @@ impl MartialArtistDetails {
 pub(crate) struct MartialArtistTraits(Vec<MartialArtistDetails>);
 
 impl MartialArtistTraits {
-    pub fn get_ability(&self, style_id: Id) -> Option<Ability> {
+    pub fn get_ability(&self, style_id: MartialArtsStyleId) -> Option<Ability> {
         self.0
             .iter()
             .find(|&details| details.style().id() == style_id)
@@ -158,25 +158,25 @@ impl MartialArtistTraits {
         }
     }
 
-    fn get_rating_mut(&mut self, style_id: Id) -> Result<&mut AbilityRating> {
+    fn get_rating_mut(&mut self, style_id: MartialArtsStyleId) -> Result<&mut AbilityRating> {
         Ok(&mut self
             .0
             .iter_mut()
             .find(|details| details.style().id() == style_id)
-            .ok_or_else(|| eyre!("Martial Arts style {} not found", *style_id))?
+            .ok_or_else(|| eyre!("Martial Arts style {} not found", **style_id))?
             .rating)
     }
 
-    pub fn set_dots(&mut self, style_id: Id, dots: u8) -> Result<()> {
+    pub fn set_dots(&mut self, style_id: MartialArtsStyleId, dots: u8) -> Result<()> {
         self.get_rating_mut(style_id)?.set_dots(dots);
         Ok(())
     }
 
-    pub fn add_specialty(&mut self, style_id: Id, specialty: String) -> Result<()> {
+    pub fn add_specialty(&mut self, style_id: MartialArtsStyleId, specialty: String) -> Result<()> {
         self.get_rating_mut(style_id)?.add_specialty(specialty)
     }
 
-    pub fn remove_specialty(&mut self, style_id: Id, specialty: &str) -> Result<()> {
+    pub fn remove_specialty(&mut self, style_id: MartialArtsStyleId, specialty: &str) -> Result<()> {
         self.get_rating_mut(style_id)?.remove_specialty(specialty)
     }
 
@@ -187,7 +187,7 @@ impl MartialArtistTraits {
 
         let ability = self
             .get_ability(style_id)
-            .ok_or_else(|| eyre!("Martial Arts style {} not found", *style_id))?;
+            .ok_or_else(|| eyre!("Martial Arts style {} not found", **style_id))?;
         if ability.dots() < charm.martial_arts_requirement() {
             return Err(eyre!(
                 "Insufficient Martial Arts {} dots, need {} but only have {}",
@@ -201,13 +201,13 @@ impl MartialArtistTraits {
             .0
             .iter_mut()
             .find(|details| details.style().id() == style_id)
-            .ok_or_else(|| eyre!("Martial Arts style {} not found", *style_id))?
+            .ok_or_else(|| eyre!("Martial Arts style {} not found", **style_id))?
             .charms;
 
         let known_charm_ids = charms
             .iter()
             .map(|known_charm| known_charm.id())
-            .collect::<HashSet<Id>>();
+            .collect::<HashSet<MartialArtsCharmId>>();
         for id in charm.prerequisite_charm_ids().iter() {
             if !known_charm_ids.contains(id) {
                 return Err(eyre!("Not all Charm prerequisites met"));

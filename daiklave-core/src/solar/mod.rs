@@ -19,7 +19,7 @@ use crate::{
     anima::{AnimaEffect, AnimaLevel, ExaltAnimaType},
     charms::{SolarCharm, Spell},
     essence::Essence,
-    id::Id,
+    id::SolarCharmId,
     limit::Limit,
     sorcery::{
         CelestialCircleTraits, ShapingRitual, SolarCircleTraits, SolarSorcererLevel, Sorcerer,
@@ -321,7 +321,7 @@ impl SolarTraitsBuilder {
             .solar_charms
             .iter()
             .map(|known_charm| known_charm.id())
-            .collect::<HashSet<Id>>();
+            .collect::<HashSet<SolarCharmId>>();
         for id in charm.prerequisite_charm_ids() {
             if !known_charms.contains(&id) {
                 return false;

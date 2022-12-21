@@ -2,7 +2,7 @@ use crate::{
     abilities::AbilityNameNoSubskill,
     attributes::AttributeName,
     data_source::{BookReference, DataSource},
-    id::{Id, CharacterId},
+    id::{CharacterId, SolarCharmId, MartialArtsStyleId, MartialArtsCharmId, SpellId},
     sorcery::SpellLevel,
 };
 use eyre::{eyre, Result};
@@ -63,9 +63,8 @@ pub enum CharmCostType {
     WhiteCraftExperience,
 }
 
-#[derive(Debug, Clone, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct CharmTraits {
-    id: Id,
     data_source: DataSource,
     name: String,
     summary: Option<String>,
@@ -75,16 +74,9 @@ pub(crate) struct CharmTraits {
     description: String,
 }
 
-impl PartialEq for CharmTraits {
-    fn eq(&self, other: &Self) -> bool {
-        self.id == other.id
-    }
-}
-
 impl CharmTraits {
-    fn from_book(id: Id, book_title: String, page_number: i16) -> CharmTraitsBuilder {
+    fn from_book(book_title: String, page_number: i16) -> CharmTraitsBuilder {
         CharmTraitsBuilder {
-            id,
             data_source: DataSource::Book(BookReference {
                 book_title,
                 page_number,
@@ -98,9 +90,8 @@ impl CharmTraits {
         }
     }
 
-    fn custom(id: Id, creator_id: CharacterId) -> CharmTraitsBuilder {
+    fn custom(creator_id: CharacterId) -> CharmTraitsBuilder {
         CharmTraitsBuilder {
-            id,
             data_source: DataSource::Custom(creator_id),
             name: None,
             summary: None,
@@ -109,10 +100,6 @@ impl CharmTraits {
             costs: Vec::new(),
             description: None,
         }
-    }
-
-    fn id(&self) -> Id {
-        self.id
     }
 
     fn data_source(&self) -> &DataSource {
@@ -145,7 +132,6 @@ impl CharmTraits {
 }
 
 struct CharmTraitsBuilder {
-    id: Id,
     data_source: DataSource,
     name: Option<String>,
     summary: Option<String>,
@@ -204,7 +190,6 @@ impl CharmTraitsBuilder {
         self.keywords.dedup();
 
         Ok(CharmTraits {
-            id: self.id,
             data_source: self.data_source,
             name: self.name.ok_or_else(|| eyre!("Charm name is required"))?,
             summary: self.summary,
@@ -228,15 +213,24 @@ struct _DragonBloodedCharm {
     traits: CharmTraits,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SolarCharm {
+    id: SolarCharmId,
     action_type: CharmActionType,
     ability: AbilityNameNoSubskill,
     ability_requirement: u8,
     essence_requirement: u8,
     traits: CharmTraits,
-    prerequisite_charms: Vec<Id>,
+    prerequisite_charms: Vec<SolarCharmId>,
 }
+
+impl PartialEq for SolarCharm {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
+impl Eq for SolarCharm {}
 
 impl SolarCharm {
     pub fn action_type(&self) -> CharmActionType {
@@ -255,12 +249,12 @@ impl SolarCharm {
         self.essence_requirement
     }
 
-    pub fn prerequisite_charm_ids(&self) -> impl Iterator<Item = Id> + '_ {
+    pub fn prerequisite_charm_ids(&self) -> impl Iterator<Item = SolarCharmId> + '_ {
         self.prerequisite_charms.iter().copied()
     }
 
-    pub fn id(&self) -> Id {
-        self.traits.id()
+    pub fn id(&self) -> SolarCharmId {
+        self.id
     }
 
     pub fn data_source(&self) -> &DataSource {
@@ -300,50 +294,55 @@ struct _LunarCharm {
     traits: CharmTraits,
 }
 
-#[derive(Debug, Serialize, Deserialize, Eq, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MartialArtsCharm {
-    style_id: Id,
+    charm_id: MartialArtsCharmId,
+    style_id: MartialArtsStyleId,
     action_type: CharmActionType,
     martial_arts_requirement: u8,
     essence_requirement: u8,
     traits: CharmTraits,
-    prerequisite_charms: Vec<Id>,
+    prerequisite_charms: Vec<MartialArtsCharmId>,
 }
 
 impl PartialEq for MartialArtsCharm {
     fn eq(&self, other: &Self) -> bool {
-        self.traits == other.traits
+        self.charm_id == other.charm_id
     }
 }
 
+impl Eq for MartialArtsCharm {}
+
 impl MartialArtsCharm {
-    pub fn from_book(id: Id, book_title: String, page_number: i16) -> MartialArtsCharmBuilder {
+    pub fn from_book(id: MartialArtsCharmId, book_title: String, page_number: i16) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {
             style_id: None,
+            charm_id: id,
             action_type: None,
             martial_arts_requirement: None,
             essence_requirement: None,
-            traits: CharmTraits::from_book(id, book_title, page_number),
+            traits: CharmTraits::from_book(book_title, page_number),
             prerequisite_charms: Vec::new(),
         }
     }
 
-    pub fn custom(id: Id, creator_id: CharacterId) -> MartialArtsCharmBuilder {
+    pub fn custom(id: MartialArtsCharmId, creator_id: CharacterId) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {
             style_id: None,
+            charm_id: id, 
             action_type: None,
             martial_arts_requirement: None,
             essence_requirement: None,
-            traits: CharmTraits::custom(id, creator_id),
+            traits: CharmTraits::custom(creator_id),
             prerequisite_charms: Vec::new(),
         }
     }
 
-    pub fn id(&self) -> Id {
-        self.traits.id()
+    pub fn id(&self) -> MartialArtsCharmId {
+        self.charm_id
     }
 
-    pub fn style_id(&self) -> Id {
+    pub fn style_id(&self) -> MartialArtsStyleId {
         self.style_id
     }
 
@@ -387,22 +386,23 @@ impl MartialArtsCharm {
         self.traits.costs()
     }
 
-    pub fn prerequisite_charm_ids(&self) -> &Vec<Id> {
+    pub fn prerequisite_charm_ids(&self) -> &Vec<MartialArtsCharmId> {
         &self.prerequisite_charms
     }
 }
 
 pub struct MartialArtsCharmBuilder {
-    style_id: Option<Id>,
+    style_id: Option<MartialArtsStyleId>,
+    charm_id: MartialArtsCharmId,
     action_type: Option<CharmActionType>,
     martial_arts_requirement: Option<u8>,
     essence_requirement: Option<u8>,
     traits: CharmTraitsBuilder,
-    prerequisite_charms: Vec<Id>,
+    prerequisite_charms: Vec<MartialArtsCharmId>,
 }
 
 impl MartialArtsCharmBuilder {
-    pub fn for_martial_arts_style(mut self, style_id: Id) -> Self {
+    pub fn for_martial_arts_style(mut self, style_id: MartialArtsStyleId) -> Self {
         self.style_id = Some(style_id);
         self
     }
@@ -452,7 +452,7 @@ impl MartialArtsCharmBuilder {
         self
     }
 
-    pub fn with_charm_prerequisite(mut self, martial_arts_charm_id: Id) -> Self {
+    pub fn with_charm_prerequisite(mut self, martial_arts_charm_id: MartialArtsCharmId) -> Self {
         self.prerequisite_charms.push(martial_arts_charm_id);
         self.prerequisite_charms.sort();
         self.prerequisite_charms.dedup();
@@ -464,6 +464,7 @@ impl MartialArtsCharmBuilder {
             style_id: self
                 .style_id
                 .ok_or_else(|| eyre!("Martial Arts style required for Martial Arts charms"))?,
+            charm_id: self.charm_id,
             action_type: self
                 .action_type
                 .ok_or_else(|| eyre!("Action type required for Martial Arts charms"))?,
@@ -479,30 +480,35 @@ impl MartialArtsCharmBuilder {
     }
 }
 
-#[derive(Debug, Clone, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone,  Serialize, Deserialize)]
 pub struct Spell {
+    id: SpellId,
     circle: SpellLevel,
     traits: CharmTraits,
 }
 
 impl PartialEq for Spell {
     fn eq(&self, other: &Self) -> bool {
-        self.traits == other.traits
+        self.id == other.id
     }
 }
 
+impl Eq for Spell {}
+
 impl Spell {
-    pub fn from_book(id: Id, book_title: String, page_number: i16) -> SpellBuilder {
+    pub fn from_book(id: SpellId, book_title: String, page_number: i16) -> SpellBuilder {
         SpellBuilder {
+            id,
             level: None,
-            traits: CharmTraits::from_book(id, book_title, page_number),
+            traits: CharmTraits::from_book(book_title, page_number),
         }
     }
 
-    pub fn custom(id: Id, creator_id: CharacterId) -> SpellBuilder {
+    pub fn custom(id: SpellId, creator_id: CharacterId) -> SpellBuilder {
         SpellBuilder {
+            id,
             level: None,
-            traits: CharmTraits::custom(id, creator_id),
+            traits: CharmTraits::custom(creator_id),
         }
     }
 
@@ -510,8 +516,8 @@ impl Spell {
         self.circle
     }
 
-    pub fn id(&self) -> Id {
-        self.traits.id()
+    pub fn id(&self) -> SpellId {
+        self.id
     }
 
     pub fn data_source(&self) -> &DataSource {
@@ -544,6 +550,7 @@ impl Spell {
 }
 
 pub struct SpellBuilder {
+    id: SpellId,
     level: Option<SpellLevel>,
     traits: CharmTraitsBuilder,
 }
@@ -593,6 +600,7 @@ impl SpellBuilder {
             let traits = self.traits.build()?;
 
             Ok(Spell {
+                id: self.id,
                 circle: self.level.unwrap(),
                 traits,
             })

@@ -9,7 +9,7 @@ use crate::{
     craft::CraftAbilities,
     exalt_type::ExaltTypeBuilder,
     health::{Health, WoundPenalty},
-    id::{Id, CharacterId},
+    id::{Id, CharacterId, MartialArtsStyleId},
     initiative::Initiative,
     intimacies::{Intimacies, Intimacy},
     martial_arts::{MartialArtistTraits, MartialArtsStyle},
@@ -131,7 +131,7 @@ impl CharacterBuilder {
         Ok(self)
     }
 
-    pub fn with_martial_arts_specialty(mut self, style_id: Id, specialty: String) -> Result<Self> {
+    pub fn with_martial_arts_specialty(mut self, style_id: MartialArtsStyleId, specialty: String) -> Result<Self> {
         self.martial_arts_styles
             .add_specialty(style_id, specialty)?;
         Ok(self)

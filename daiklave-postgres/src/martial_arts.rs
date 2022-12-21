@@ -4,7 +4,7 @@ use daiklave_core::{
     character::CharacterBuilder,
     charms::{CharmActionType, CharmCostType, CharmKeyword},
     data_source::DataSource,
-    id::{Id, CharacterId},
+    id::{Id, CharacterId, MartialArtsStyleId, MartialArtsCharmId},
     martial_arts::{
         diff::MartialArtsDiff, MartialArtsCharm, MartialArtsCharmBuilder, MartialArtsStyle,
     },
@@ -391,7 +391,7 @@ pub fn apply_martial_arts(
                         && row.creator_id.is_none()
                     {
                         MartialArtsStyle::from_book(
-                            Id::Database(row.id),
+                            MartialArtsStyleId(Id::Database(row.id)),
                             row.book_title.unwrap(),
                             row.page_number.unwrap(),
                         )
@@ -400,7 +400,7 @@ pub fn apply_martial_arts(
                         && row.creator_id.is_some()
                     {
                         MartialArtsStyle::custom(
-                            Id::Database(row.id),
+                            MartialArtsStyleId(Id::Database(row.id)),
                             CharacterId(Id::Database(row.creator_id.unwrap())),
                         )
                     } else {
@@ -423,7 +423,7 @@ pub fn apply_martial_arts(
     // Construct character's specialties for styles
     if let Some(rows) = all_rows.specialty_rows {
         for row in rows.into_iter() {
-            if let Some(ptr) = style_map.get_mut(&Id::Database(row.style_id)) {
+            if let Some(ptr) = style_map.get_mut(&MartialArtsStyleId(Id::Database(row.style_id))) {
                 ptr.1.push(row.specialty);
             } else {
                 return Err(eyre!("Style {} not found", row.style_id));
@@ -436,7 +436,7 @@ pub fn apply_martial_arts(
         Ok(builder),
         |result_self, row| {
             let (style, specialties) = style_map
-                .remove(&Id::Database(row.style_id))
+                .remove(&MartialArtsStyleId(Id::Database(row.style_id)))
                 .ok_or_else(|| eyre!("Style {} not found", row.style_id))?;
             let style_id = style.id();
             let dots: u8 = row
@@ -470,7 +470,7 @@ pub fn apply_martial_arts(
                 && row.creator_id.is_none()
             {
                 MartialArtsCharm::from_book(
-                    Id::Database(row.id),
+                    MartialArtsCharmId(Id::Database(row.id)),
                     row.book_title.unwrap(),
                     row.page_number.unwrap(),
                 )
@@ -479,7 +479,7 @@ pub fn apply_martial_arts(
                 && row.creator_id.is_some()
             {
                 MartialArtsCharm::custom(
-                    Id::Database(row.id),
+                    MartialArtsCharmId(Id::Database(row.id)),
                     CharacterId(Id::Database(row.creator_id.unwrap())),
                 )
             } else {
@@ -499,7 +499,7 @@ pub fn apply_martial_arts(
             })?;
 
             builder = builder
-                .for_martial_arts_style(Id::Database(row.style_id))
+                .for_martial_arts_style(MartialArtsStyleId(Id::Database(row.style_id)))
                 .with_name(row.name)
                 .with_action_type(row.action_type.into())
                 .with_description(row.description)
@@ -544,12 +544,11 @@ pub fn apply_martial_arts(
     }
 
     // Group charm prerequisites
-    let mut charm_prerequisites_map: HashMap<Id, Vec<Id>> = HashMap::new();
+    let mut charm_prerequisites_map: HashMap<MartialArtsCharmId, Vec<MartialArtsCharmId>> = HashMap::new();
     if let Some(rows) = all_rows.charm_tree_rows {
         for row in rows.into_iter() {
-            let child_id = Id::Database(row.child_id);
-            let parent_id = Id::Database(row.parent_id);
-
+            let child_id = MartialArtsCharmId(Id::Database(row.child_id));
+            let parent_id = MartialArtsCharmId(Id::Database(row.parent_id));
             charm_prerequisites_map
                 .entry(child_id)
                 .or_default()
@@ -570,7 +569,7 @@ pub fn apply_martial_arts(
             }
         }
 
-        if let Some(prerequisites) = charm_prerequisites_map.remove(&Id::Database(charm_id)) {
+        if let Some(prerequisites) = charm_prerequisites_map.remove(&MartialArtsCharmId(Id::Database(charm_id))) {
             for prerequisite_id in prerequisites.into_iter() {
                 charm_builder = charm_builder.with_charm_prerequisite(prerequisite_id);
             }
@@ -660,7 +659,7 @@ async fn upsert_character_charms(
 
     let mut placeholder_to_database_map = HashMap::new();
     for charm in style_charms.iter() {
-        if let Id::Database(id) = charm.id() {
+        if let MartialArtsCharmId(Id::Database(id)) = charm.id() {
             charm_database_ids.push(id);
         } else {
             let placeholder = charm.id();
@@ -686,16 +685,16 @@ async fn upsert_character_charms(
                 .ok_or_else(|| {
                     eyre!(
                         "Martial arts charm placeholder id {} not successfully inserted",
-                        *charm.id()
+                        **charm.id()
                     )
                 })?;
 
-            for pre in charm.prerequisite_charm_ids().iter() {
-                if let Id::Database(id) = pre {
+            for prerequisite_charm_id in charm.prerequisite_charm_ids().iter() {
+                if let MartialArtsCharmId(Id::Database(id)) = prerequisite_charm_id {
                     prerequisite_pairs.push((child_id, *id));
                 } else {
-                    let parent_id = **placeholder_to_database_map.get(pre).ok_or_else(|| {
-                        eyre!("Unknown martial arts charm placeholder id {}", **pre)
+                    let parent_id = **placeholder_to_database_map.get(prerequisite_charm_id).ok_or_else(|| {
+                        eyre!("Unknown martial arts charm placeholder id {}", ***prerequisite_charm_id)
                     })?;
                     prerequisite_pairs.push((child_id, parent_id));
                 }
@@ -740,7 +739,7 @@ async fn remove_character_styles(
         .iter()
         .filter_map(|id| {
             if !id.is_placeholder() {
-                Some(**id)
+                Some(***id)
             } else {
                 None
             }
@@ -766,7 +765,7 @@ async fn add_styles_to_character(
     for (style, style_dots, maybe_specialties, style_charms) in
         martial_arts_diff.added_styles.iter()
     {
-        let style_database_id = if let Id::Database(id) = style.id() {
+        let style_database_id = if let MartialArtsStyleId(Id::Database(id)) = style.id() {
             id
         } else if let DataSource::Custom(_) = style.data_source() {
             create_martial_arts_style_transaction(transaction, style, Some(character_id)).await?
@@ -807,7 +806,7 @@ async fn update_character_styles(
         upsert_character_styles(
             transaction,
             character_id,
-            **style_id,
+            ***style_id,
             *style_dots,
             maybe_specialties.as_ref(),
         )
@@ -885,7 +884,7 @@ pub(crate) async fn create_martial_arts_charm_transaction(
     creator_id: Option<i32>,
 ) -> Result<i32> {
     if !charm.id().is_placeholder() {
-        return Ok(*charm.id());
+        return Ok(**charm.id());
     }
 
     let action_type_pg: CharmActionTypePostgres = charm.action_type().into();
@@ -894,7 +893,7 @@ pub(crate) async fn create_martial_arts_charm_transaction(
         "INSERT INTO martial_arts_charms (style_id, ability_dots_required, essence_dots_required, name, summary, description, action_type, duration, book_title, page_number, creator_id)
         VALUES ($1::INTEGER, $2::SMALLINT, $3::SMALLINT, $4::VARCHAR(255), $5::TEXT, $6::TEXT, $7::CHARMACTIONTYPE, $8::VARCHAR(255), $9::VARCHAR(255), $10::SMALLINT, $11::INTEGER)
         RETURNING id",
-        *charm.style_id() as i32,
+        **charm.style_id() as i32,
         charm.martial_arts_requirement() as i16,
         charm.essence_requirement() as i16,
         charm.name() as &str,

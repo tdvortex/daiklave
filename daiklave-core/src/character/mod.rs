@@ -16,7 +16,7 @@ use crate::craft::CraftAbilities;
 use crate::exalt_type::ExaltType;
 use crate::health::Health;
 use crate::id::CharacterId;
-use crate::id::Id;
+use crate::id::MartialArtsStyleId;
 use crate::initiative::Initiative;
 use crate::intimacies::Intimacies;
 use crate::martial_arts::MartialArtistTraits;
@@ -88,7 +88,7 @@ impl Character {
             .find(|a| *a.name() == AbilityName::Craft(focus))
     }
 
-    pub fn get_martial_arts_ability(&self, style_id: Id) -> Option<Ability> {
+    pub fn get_martial_arts_ability(&self, style_id: MartialArtsStyleId) -> Option<Ability> {
         self.martial_arts_styles.get_ability(style_id)
     }
 
@@ -106,7 +106,7 @@ impl Character {
         self.craft_abilities.set_dots(focus, dots);
     }
 
-    pub fn set_martial_arts_ability_dots(&mut self, style_id: Id, dots: u8) -> Result<()> {
+    pub fn set_martial_arts_ability_dots(&mut self, style_id: MartialArtsStyleId, dots: u8) -> Result<()> {
         self.martial_arts_styles.set_dots(style_id, dots)
     }
 
@@ -122,7 +122,7 @@ impl Character {
         self.craft_abilities.add_specialty(focus, specialty)
     }
 
-    pub fn add_martial_arts_specialty(&mut self, style_id: Id, specialty: String) -> Result<()> {
+    pub fn add_martial_arts_specialty(&mut self, style_id: MartialArtsStyleId, specialty: String) -> Result<()> {
         self.martial_arts_styles.add_specialty(style_id, specialty)
     }
 
@@ -144,7 +144,7 @@ impl Character {
         self.craft_abilities.remove_specialty(focus, specialty)
     }
 
-    pub fn remove_martial_arts_specialty(&mut self, style_id: Id, specialty: &str) -> Result<()> {
+    pub fn remove_martial_arts_specialty(&mut self, style_id: MartialArtsStyleId, specialty: &str) -> Result<()> {
         self.martial_arts_styles
             .remove_specialty(style_id, specialty)
     }

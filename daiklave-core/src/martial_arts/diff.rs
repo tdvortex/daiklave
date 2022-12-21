@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{abilities::Ability, charms::MartialArtsCharm, id::Id};
+use crate::{abilities::Ability, charms::MartialArtsCharm, id::MartialArtsStyleId};
 
 use super::{MartialArtistTraits, MartialArtsStyle};
 
@@ -10,10 +10,10 @@ type AddedStyle = (
     Option<Vec<String>>,
     Vec<MartialArtsCharm>,
 );
-type ModifiedStyle = (Id, u8, Option<Vec<String>>, Vec<MartialArtsCharm>);
+type ModifiedStyle = (MartialArtsStyleId, u8, Option<Vec<String>>, Vec<MartialArtsCharm>);
 
 pub struct MartialArtsDiff {
-    pub removed_styles: Vec<Id>,
+    pub removed_styles: Vec<MartialArtsStyleId>,
     pub added_styles: Vec<AddedStyle>,
     pub modified_styles: Vec<ModifiedStyle>,
 }
@@ -25,7 +25,7 @@ impl MartialArtistTraits {
             added_styles: Vec::new(),
             modified_styles: Vec::new(),
         };
-        let mut old_hashmap: HashMap<Id, (&MartialArtsStyle, Ability, &Vec<MartialArtsCharm>)> =
+        let mut old_hashmap: HashMap<MartialArtsStyleId, (&MartialArtsStyle, Ability, &Vec<MartialArtsCharm>)> =
             self.iter()
                 .map(|(style_ptr, ability, vec_ptr)| {
                     (style_ptr.id(), (style_ptr, ability, vec_ptr))

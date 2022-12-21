@@ -1,10 +1,11 @@
-use crate::{id::Id, data_source::DataSource, weapons::Weapon, artifact::MagicMaterial, armor::{ArmorItem}, charms::{CharmActionType, CharmTraits}, health::Health};
+use crate::{id::{Id, EvocationId}, data_source::DataSource, weapons::Weapon, artifact::MagicMaterial, armor::{ArmorItem}, charms::{CharmActionType, CharmTraits}, health::Health};
 
 struct Evocation {
+    id: EvocationId,
     action_type: CharmActionType,
     essence_requirement: u8,
     traits: CharmTraits,
-    prerequisite_charms: Vec<Id>,
+    prerequisite_evocations: Vec<EvocationId>,
 }
 
 enum HearthstoneCategory {
