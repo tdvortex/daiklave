@@ -96,7 +96,7 @@ impl ArtifactTraits {
         if self.magic_material.is_some() {
             Err(eyre!("Hearthstones have no magic material"))
         } else if self.hearthstone_slot_count > 0 || self.hearthstones_slotted.len() > 0 {
-            Err(eyre!("Hearthsones cannot slot other hearthstones"))
+            Err(eyre!("Hearthstones cannot slot other hearthstones"))
         } else {
             Ok(Hearthstone(self))
         }

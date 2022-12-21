@@ -21,6 +21,8 @@ pub mod artifact;
 /// etc.).
 pub mod attributes;
 
+mod brainstorming;
+
 /// Defines the properties of a campaign, to which players and characters
 /// may be added.
 pub mod campaign;

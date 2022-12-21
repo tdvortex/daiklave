@@ -64,7 +64,7 @@ pub enum CharmCostType {
 }
 
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
-struct CharmTraits {
+pub(crate) struct CharmTraits {
     id: Id,
     data_source: DataSource,
     name: String,
