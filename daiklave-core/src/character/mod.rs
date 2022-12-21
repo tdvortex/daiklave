@@ -1,5 +1,6 @@
 mod builder;
 mod diff;
+mod guided;
 pub use builder::CharacterBuilder;
 pub use diff::{CharacterBaseDiff, CharacterDiff};
 use eyre::{eyre, Result};
