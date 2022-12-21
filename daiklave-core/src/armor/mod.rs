@@ -7,7 +7,7 @@ use eyre::{eyre, Result};
 
 use crate::{
     data_source::{BookReference, DataSource},
-    id::Id,
+    id::{Id, ArmorItemId, CharacterId},
 };
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
@@ -23,7 +23,7 @@ pub enum ArmorTag {
 
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 pub struct ArmorItem {
-    id: Id,
+    id: ArmorItemId,
     name: String,
     weight_class: WeightClass,
     artifact: bool,
@@ -43,7 +43,7 @@ impl ArmorItem {
     pub(crate) fn new(
         name: String,
         tags: HashSet<ArmorTag>,
-        id: Id,
+        id: ArmorItemId,
         data_source: DataSource,
     ) -> Result<ArmorItem> {
         let mut weight_class = None::<WeightClass>;
@@ -98,7 +98,7 @@ impl ArmorItem {
 
     pub fn from_book(placeholder_id: i32, book_title: String, page_number: i16) -> ArmorBuilder {
         ArmorBuilder {
-            id: Id::Placeholder(placeholder_id),
+            id: ArmorItemId(Id::Placeholder(placeholder_id)),
             name: None,
             weight_class: None,
             tags: HashSet::new(),
@@ -109,9 +109,9 @@ impl ArmorItem {
         }
     }
 
-    pub fn custom(placeholder_id: i32, creator_id: Id) -> ArmorBuilder {
+    pub fn custom(placeholder_id: i32, creator_id: CharacterId) -> ArmorBuilder {
         ArmorBuilder {
-            id: Id::Placeholder(placeholder_id),
+            id: ArmorItemId(Id::Placeholder(placeholder_id)),
             name: None,
             weight_class: None,
             tags: HashSet::new(),
@@ -119,7 +119,7 @@ impl ArmorItem {
         }
     }
 
-    pub fn id(&self) -> Id {
+    pub fn id(&self) -> ArmorItemId {
         self.id
     }
 
@@ -272,7 +272,7 @@ enum WeightClass {
 
 #[derive(Debug)]
 pub struct ArmorBuilder {
-    id: Id,
+    id: ArmorItemId,
     name: Option<String>,
     weight_class: Option<WeightClass>,
     tags: HashSet<ArmorTag>,
@@ -281,7 +281,7 @@ pub struct ArmorBuilder {
 
 impl ArmorBuilder {
     pub fn with_database_id(mut self, id: i32) -> Self {
-        self.id = Id::Database(id);
+        self.id = ArmorItemId(Id::Database(id));
         self
     }
 

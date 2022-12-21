@@ -1,7 +1,7 @@
 use daiklave_core::{
     character::CharacterBuilder,
     data_source::{BookReference, DataSource},
-    id::Id,
+    id::{Id, CharacterId},
     weapons::{EquipHand, RangeBand, Weapon, WeaponTag, Weapons},
 };
 
@@ -86,9 +86,9 @@ pub fn validate_initial_weapons(weapons: &Weapons, should_have_id: bool) {
                 if should_have_id {
                     assert!(match weapons.get_by_index(key).unwrap().1.data_source() {
                         DataSource::Book(_) => panic!("should be custom"),
-                        DataSource::Custom(Id::Placeholder(_)) =>
+                        DataSource::Custom(CharacterId(Id::Placeholder(_))) =>
                             panic!("should have creator id in database"),
-                        DataSource::Custom(Id::Database(_)) => true,
+                        DataSource::Custom(CharacterId(Id::Database(_))) => true,
                     });
                 } else {
                     assert!(weapons

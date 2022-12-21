@@ -3,7 +3,7 @@ use std::ops::{Deref, DerefMut};
 
 use crate::{
     data_source::{BookReference, DataSource},
-    id::Id,
+    id::{Id, CharacterId},
     prerequisite::PrerequisiteSet,
 };
 pub use diff::{compare_merits, MeritDiff};
@@ -51,7 +51,7 @@ impl MeritTemplate {
         }
     }
 
-    pub fn custom(id: Id, creator_id: Id) -> MeritTemplateBuilder {
+    pub fn custom(id: Id, creator_id: CharacterId) -> MeritTemplateBuilder {
         MeritTemplateBuilder {
             name: Default::default(),
             merit_type: Default::default(),

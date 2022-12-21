@@ -4,7 +4,7 @@ use daiklave_core::{
     character::CharacterBuilder,
     charms::{CharmActionType, CharmCostType, CharmKeyword},
     data_source::DataSource,
-    id::Id,
+    id::{Id, CharacterId},
     martial_arts::{
         diff::MartialArtsDiff, MartialArtsCharm, MartialArtsCharmBuilder, MartialArtsStyle,
     },
@@ -401,7 +401,7 @@ pub fn apply_martial_arts(
                     {
                         MartialArtsStyle::custom(
                             Id::Database(row.id),
-                            Id::Database(row.creator_id.unwrap()),
+                            CharacterId(Id::Database(row.creator_id.unwrap())),
                         )
                     } else {
                         return Err(eyre!(
@@ -480,7 +480,7 @@ pub fn apply_martial_arts(
             {
                 MartialArtsCharm::custom(
                     Id::Database(row.id),
-                    Id::Database(row.creator_id.unwrap()),
+                    CharacterId(Id::Database(row.creator_id.unwrap())),
                 )
             } else {
                 return Err(eyre!(

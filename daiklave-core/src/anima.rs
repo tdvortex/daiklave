@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     data_source::{BookReference, DataSource},
-    id::Id,
+    id::{CharacterId, AnimaEffectId},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -48,7 +48,7 @@ pub enum ExaltAnimaType {
 
 #[derive(Debug, Clone, Eq, Serialize, Deserialize)]
 pub struct AnimaEffect {
-    id: Id,
+    id: AnimaEffectId,
     data_source: DataSource,
     exalt_type: ExaltAnimaType,
     description: String,
@@ -62,7 +62,7 @@ impl PartialEq for AnimaEffect {
 
 impl AnimaEffect {
     pub fn from_book(
-        id: Id,
+        id: AnimaEffectId,
         book_title: String,
         page_number: i16,
         exalt_and_caste: ExaltAnimaType,
@@ -80,8 +80,8 @@ impl AnimaEffect {
     }
 
     pub fn custom(
-        id: Id,
-        creator_id: Id,
+        id: AnimaEffectId,
+        creator_id: CharacterId,
         exalt_and_caste: ExaltAnimaType,
         description: String,
     ) -> Self {
@@ -93,7 +93,7 @@ impl AnimaEffect {
         }
     }
 
-    pub fn id(&self) -> Id {
+    pub fn id(&self) -> AnimaEffectId {
         self.id
     }
 

@@ -9,7 +9,7 @@ use crate::{
     craft::CraftAbilities,
     exalt_type::ExaltTypeBuilder,
     health::{Health, WoundPenalty},
-    id::Id,
+    id::{Id, CharacterId},
     initiative::Initiative,
     intimacies::{Intimacies, Intimacy},
     martial_arts::{MartialArtistTraits, MartialArtsStyle},
@@ -24,7 +24,7 @@ use eyre::{eyre, Result};
 
 #[derive(Debug, Default)]
 pub struct CharacterBuilder {
-    id: Id,
+    id: CharacterId,
     player: Player,
     campaign: Option<Campaign>,
     name: String,
@@ -45,17 +45,17 @@ pub struct CharacterBuilder {
 }
 
 impl CharacterBuilder {
-    pub fn id(&self) -> Id {
+    pub fn id(&self) -> CharacterId {
         self.id
     }
 
     pub fn with_placeholder_id(mut self, id: i32) -> Self {
-        self.id = Id::Placeholder(id);
+        self.id = CharacterId(Id::Placeholder(id));
         self
     }
 
     pub fn with_database_id(mut self, id: i32) -> Self {
-        self.id = Id::Database(id);
+        self.id = CharacterId(Id::Database(id));
         self
     }
 

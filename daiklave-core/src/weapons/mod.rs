@@ -7,7 +7,7 @@ use std::{cmp::Ordering, collections::HashSet};
 use eyre::{eyre, Result};
 
 use crate::data_source::{BookReference, DataSource};
-use crate::id::Id;
+use crate::id::{Id, CharacterId};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 enum WeightClass {
@@ -378,7 +378,7 @@ impl Weapon {
         }
     }
 
-    pub fn custom(id: Id, creator_id: Id) -> WeaponBuilder {
+    pub fn custom(id: Id, creator_id: CharacterId) -> WeaponBuilder {
         WeaponBuilder {
             id,
             name: Default::default(),

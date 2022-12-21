@@ -2,7 +2,7 @@ use crate::{
     abilities::AbilityNameNoSubskill,
     attributes::AttributeName,
     data_source::{BookReference, DataSource},
-    id::Id,
+    id::{Id, CharacterId},
     sorcery::SpellLevel,
 };
 use eyre::{eyre, Result};
@@ -98,7 +98,7 @@ impl CharmTraits {
         }
     }
 
-    fn custom(id: Id, creator_id: Id) -> CharmTraitsBuilder {
+    fn custom(id: Id, creator_id: CharacterId) -> CharmTraitsBuilder {
         CharmTraitsBuilder {
             id,
             data_source: DataSource::Custom(creator_id),
@@ -328,7 +328,7 @@ impl MartialArtsCharm {
         }
     }
 
-    pub fn custom(id: Id, creator_id: Id) -> MartialArtsCharmBuilder {
+    pub fn custom(id: Id, creator_id: CharacterId) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {
             style_id: None,
             action_type: None,
@@ -499,7 +499,7 @@ impl Spell {
         }
     }
 
-    pub fn custom(id: Id, creator_id: Id) -> SpellBuilder {
+    pub fn custom(id: Id, creator_id: CharacterId) -> SpellBuilder {
         SpellBuilder {
             level: None,
             traits: CharmTraits::custom(id, creator_id),

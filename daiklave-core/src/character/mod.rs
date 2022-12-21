@@ -15,6 +15,7 @@ use crate::charms::MartialArtsCharm;
 use crate::craft::CraftAbilities;
 use crate::exalt_type::ExaltType;
 use crate::health::Health;
+use crate::id::CharacterId;
 use crate::id::Id;
 use crate::initiative::Initiative;
 use crate::intimacies::Intimacies;
@@ -31,7 +32,7 @@ use serde::{Deserialize, Serialize};
 /// It is also the serialization format to be moved back and forth between client and server.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct Character {
-    id: Id,
+    id: CharacterId,
     player: Player,
     campaign: Option<Campaign>,
     pub name: String,
@@ -65,7 +66,7 @@ impl Character {
             .with_name("New Character".to_owned())
     }
 
-    pub fn id(&self) -> Id {
+    pub fn id(&self) -> CharacterId {
         self.id
     }
 

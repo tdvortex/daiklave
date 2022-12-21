@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use daiklave_core::{
     character::CharacterBuilder,
     data_source::DataSource,
-    id::Id,
+    id::{Id, CharacterId},
     weapons::{EquipHand, RangeBand, Weapon, WeaponTag, WeaponsDiff},
 };
 use eyre::{eyre, Report, Result, WrapErr};
@@ -429,7 +429,7 @@ pub fn apply_weapon_rows(
         {
             Weapon::custom(
                 Id::Database(weapon_id),
-                Id::Database(weapon_row.creator_id.unwrap()),
+                CharacterId(Id::Database(weapon_row.creator_id.unwrap())),
             )
         } else {
             return Err(eyre!(

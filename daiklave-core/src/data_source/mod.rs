@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::id::Id;
+use crate::id::CharacterId;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct BookReference {
@@ -10,7 +10,7 @@ pub struct BookReference {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum DataSource {
-    Custom(Id),
+    Custom(CharacterId),
     Book(BookReference),
 }
 
@@ -33,7 +33,7 @@ impl DataSource {
         }
     }
 
-    pub fn creator_id(&self) -> Option<Id> {
+    pub fn creator_id(&self) -> Option<CharacterId> {
         match self {
             DataSource::Custom(creator_id) => Some(*creator_id),
             DataSource::Book(_) => None,

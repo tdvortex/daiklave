@@ -31,3 +31,36 @@ impl Id {
         matches!(self, Self::Placeholder(_))
     }
 }
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+pub struct ArmorItemId(pub Id);
+
+impl Deref for ArmorItemId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+pub struct CharacterId(pub Id);
+
+impl Deref for CharacterId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+pub struct AnimaEffectId(pub Id);
+
+impl Deref for AnimaEffectId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}

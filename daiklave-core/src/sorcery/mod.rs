@@ -1,7 +1,7 @@
 use crate::{
     charms::Spell,
     data_source::{BookReference, DataSource},
-    id::Id,
+    id::{Id, CharacterId},
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -79,7 +79,7 @@ impl ShapingRitual {
         }
     }
 
-    pub fn custom(id: Id, creator_id: Id) -> ShapingRitualBuilder {
+    pub fn custom(id: Id, creator_id: CharacterId) -> ShapingRitualBuilder {
         ShapingRitualBuilder {
             id,
             data_source: DataSource::Custom(creator_id),

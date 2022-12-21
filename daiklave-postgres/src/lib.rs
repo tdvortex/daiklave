@@ -302,15 +302,15 @@ pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Ch
                 format!("Failed to create initial character from: {:#?}", character)
             })?
     } else {
-        retrieve_character_transaction(&mut transaction, *character.id())
+        retrieve_character_transaction(&mut transaction, **character.id())
             .await
             .wrap_err_with(|| {
                 format!(
                     "Database error on retrieving pre-update character_id: {}",
-                    *character.id()
+                    **character.id()
                 )
             })?
-            .ok_or_else(|| eyre!("No character found with id {}", *character.id()))?
+            .ok_or_else(|| eyre!("No character found with id {}", **character.id()))?
     };
 
     let character_id = if old_character.id().is_placeholder() {
@@ -324,49 +324,49 @@ pub async fn update_character(pool: &PgPool, character: &Character) -> Result<Ch
 
     let diff = old_character.compare_newer(character);
 
-    update_abilities(diff.abilities_diff, &mut transaction, character_id)
+    update_abilities(diff.abilities_diff, &mut transaction, *character_id)
         .await
         .wrap_err("Error when updating abilities")?;
-    update_craft(diff.craft_diff, &mut transaction, character_id)
+    update_craft(diff.craft_diff, &mut transaction, *character_id)
         .await
         .wrap_err("Error when updating craft abilities")?;
-    update_attributes(diff.attributes_diff, &mut transaction, character_id)
+    update_attributes(diff.attributes_diff, &mut transaction, *character_id)
         .await
         .wrap_err("Error when updating attributes")?;
-    update_base_character(diff.base_diff, &mut transaction, character_id)
+    update_base_character(diff.base_diff, &mut transaction, *character_id)
         .await
         .wrap_err("Error when updating base character")?;
-    update_health(diff.health_diff, &mut transaction, character_id)
+    update_health(diff.health_diff, &mut transaction, *character_id)
         .await
         .wrap_err("Error when updating health")?;
-    update_intimacies(diff.intimacies_diff, &mut transaction, character_id)
+    update_intimacies(diff.intimacies_diff, &mut transaction, *character_id)
         .await
         .wrap_err("Error when updating intimacies")?;
-    update_weapons(diff.weapons_diff, &mut transaction, character_id)
+    update_weapons(diff.weapons_diff, &mut transaction, *character_id)
         .await
         .wrap_err("Error when updating weapons")?;
-    update_armor(diff.armor_diff, &mut transaction, character_id)
+    update_armor(diff.armor_diff, &mut transaction, *character_id)
         .await
         .wrap_err("Error when updating armor")?;
-    update_merits(diff.merits_diff, &mut transaction, character_id)
+    update_merits(diff.merits_diff, &mut transaction, *character_id)
         .await
         .wrap_err("Error when updating merits")?;
-    update_martial_arts(diff.martial_arts_diff, &mut transaction, character_id)
+    update_martial_arts(diff.martial_arts_diff, &mut transaction, *character_id)
         .await
         .wrap_err("Error when updating martial arts")?;
 
-    let character = retrieve_character_transaction(&mut transaction, character_id)
+    let character = retrieve_character_transaction(&mut transaction, *character_id)
         .await
         .wrap_err_with(|| {
             format!(
                 "Database error on retrieving post-update character_id: {}",
-                character_id
+                *character_id
             )
         })?
         .ok_or_else(|| {
             eyre!(
                 "Could not retrieve post-update character with id {}",
-                character_id
+                *character_id
             )
         })?;
 

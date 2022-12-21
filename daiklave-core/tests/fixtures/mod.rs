@@ -78,7 +78,7 @@ pub fn modify_character(character: &mut Character) {
     modify_attributes(&mut character.attributes);
     modify_health(&mut character.health);
     modify_intimacies(&mut character.intimacies);
-    modify_armor(*character.id(), &mut character.armor);
+    modify_armor(**character.id(), &mut character.armor);
     modify_weapons(&mut character.weapons);
     modify_merits(&mut character.merits);
 }

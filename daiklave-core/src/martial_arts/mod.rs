@@ -5,7 +5,7 @@ pub use crate::charms::{MartialArtsCharm, MartialArtsCharmBuilder};
 use crate::{
     abilities::{Ability, AbilityName, AbilityRating, NonZeroAbility},
     data_source::{BookReference, DataSource},
-    id::Id,
+    id::{Id, CharacterId},
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -37,7 +37,7 @@ impl MartialArtsStyle {
         }
     }
 
-    pub fn custom(id: Id, creator_id: Id) -> MartialArtsStyleBuilder {
+    pub fn custom(id: Id, creator_id: CharacterId) -> MartialArtsStyleBuilder {
         MartialArtsStyleBuilder {
             id,
             data_source: DataSource::Custom(creator_id),

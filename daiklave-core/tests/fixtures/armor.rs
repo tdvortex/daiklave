@@ -2,7 +2,7 @@ use daiklave_core::{
     armor::{Armor, ArmorItem, ArmorTag},
     character::CharacterBuilder,
     data_source::{BookReference, DataSource},
-    id::Id,
+    id::{Id, CharacterId},
 };
 
 pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {
@@ -45,9 +45,9 @@ pub fn validate_initial_armor_items(armor: &Armor, should_have_id: bool) {
                 if should_have_id {
                     assert!(match armor.get_by_index(key).unwrap().1.data_source() {
                         DataSource::Book(_) => panic!("should be custom"),
-                        DataSource::Custom(Id::Placeholder(_)) =>
+                        DataSource::Custom(CharacterId(Id::Placeholder(_))) =>
                             panic!("should have creator id in database"),
-                        DataSource::Custom(Id::Database(_)) => true,
+                        DataSource::Custom(CharacterId(Id::Database(_))) => true,
                     });
                 } else {
                     assert!(armor.get_by_index(key).unwrap().1.data_source().is_custom());
@@ -102,7 +102,7 @@ pub fn modify_armor(character_database_id: i32, armor: &mut Armor) {
 
     // Add an item
     armor.add_armor_item(
-        ArmorItem::custom(2, Id::Database(character_database_id))
+        ArmorItem::custom(2, CharacterId(Id::Database(character_database_id)))
             .into_medium()
             .with_name("Stolen Guard's Breastplate".to_owned())
             .build()

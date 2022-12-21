@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use daiklave_core::{
     character::CharacterBuilder,
     data_source::DataSource,
-    id::Id,
+    id::{Id, CharacterId},
     merits::{Merit, MeritDiff, MeritTemplate, MeritType},
     prerequisite::{ExaltTypePrerequisite, PrerequisiteSet, PrerequisiteType},
 };
@@ -237,7 +237,7 @@ impl From<MeritTemplate> for MeritTemplateInsert {
             if id.is_placeholder() {
                 None
             } else {
-                Some(*id)
+                Some(**id)
             }
         });
         Self {
@@ -397,7 +397,7 @@ pub fn apply_merits_rows(
             {
                 MeritTemplate::custom(
                     Id::Database(merit_template_row.id),
-                    Id::Database(merit_template_row.creator_id.unwrap()),
+                    CharacterId(Id::Database(merit_template_row.creator_id.unwrap())),
                 )
             } else {
                 return Err(eyre!(
