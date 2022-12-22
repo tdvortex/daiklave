@@ -2,27 +2,27 @@ use crate::{Character, player::Player, attributes::AttributeName};
 
 use super::CharacterBuilder;
 
-fn begin_guided_builder(player: Player) -> ChooseNameAndConcept {
-    ChooseNameAndConcept { 
+fn _begin_guided_builder(player: Player) -> _ChooseNameAndConcept {
+    _ChooseNameAndConcept { 
         counter: 2,
         character_builder: Character::builder(1, player)
     }
 }
 
-struct ChooseNameAndConcept {
+struct _ChooseNameAndConcept {
     counter: i32,
     character_builder: CharacterBuilder,
 }
 
-impl ChooseNameAndConcept {
-    fn name_and_concept(self, name: String, concept: Option<String>) -> ChooseExaltType {
+impl _ChooseNameAndConcept {
+    fn _name_and_concept(self, name: String, concept: Option<String>) -> _ChooseExaltType {
         if let Some(concept) = concept {
-            ChooseExaltType {
+            _ChooseExaltType {
                 counter: self.counter,
                 character_builder: self.character_builder.with_name(name).with_concept(concept)
             }
         } else {
-            ChooseExaltType {
+            _ChooseExaltType {
                 counter: self.counter,
                 character_builder: self.character_builder.with_name(name)
             } 
@@ -30,19 +30,19 @@ impl ChooseNameAndConcept {
     }
 }
 
-struct ChooseExaltType {
+struct _ChooseExaltType {
     counter: i32,
     character_builder: CharacterBuilder,
 }
 
-enum ExaltTypeChoice {
+enum _ExaltTypeChoice {
     Mortal,
     Solar,
 }
 
-impl ChooseExaltType {
-    pub fn mortal(self) -> MortalAttributesBuilder {
-        MortalAttributesBuilder {
+impl _ChooseExaltType {
+    pub fn _mortal(self) -> _MortalAttributesBuilder {
+        _MortalAttributesBuilder {
             counter: self.counter,
             character_builder: self.character_builder,
             strength: 1,
@@ -58,7 +58,7 @@ impl ChooseExaltType {
     }
 }
 
-struct MortalAttributesBuilder {
+struct _MortalAttributesBuilder {
     counter: i32,
     character_builder: CharacterBuilder,
     strength: u8,
@@ -72,23 +72,23 @@ struct MortalAttributesBuilder {
     wits: u8,
 }
 
-enum AttributeGroup {
+enum _AttributeGroup {
     Mental,
     Social,
     Physical,
 }
 
 // Mortals get 8/6/4 attributes
-impl MortalAttributesBuilder {
-    fn group_dots_allocated(&self, group: AttributeGroup) -> u8 {
+impl _MortalAttributesBuilder {
+    fn _group_dots_allocated(&self, group: _AttributeGroup) -> u8 {
         (match group {
-            AttributeGroup::Physical => self.strength + self.dexterity + self.stamina,
-            AttributeGroup::Social => self.charisma + self.manipulation + self.appearance,
-            AttributeGroup::Mental => self.perception + self.intelligence + self.wits,
+            _AttributeGroup::Physical => self.strength + self.dexterity + self.stamina,
+            _AttributeGroup::Social => self.charisma + self.manipulation + self.appearance,
+            _AttributeGroup::Mental => self.perception + self.intelligence + self.wits,
         }) - 3
     }
 
-    fn can_increase(&self, attribute: AttributeName) -> bool {
+    fn _can_increase(&self, attribute: AttributeName) -> bool {
         
         // Can't increase any attribute group above 8
 
@@ -111,9 +111,9 @@ impl MortalAttributesBuilder {
             return false;
         }
 
-        let mental = self.group_dots_allocated(AttributeGroup::Mental);
-        let social = self.group_dots_allocated(AttributeGroup::Social);
-        let physical = self.group_dots_allocated(AttributeGroup::Physical);
+        let mental = self._group_dots_allocated(_AttributeGroup::Mental);
+        let social = self._group_dots_allocated(_AttributeGroup::Social);
+        let physical = self._group_dots_allocated(_AttributeGroup::Physical);
 
         // Can't increase any attribute if 18 dots have been allocated
         if mental + social + physical >= 18 {
@@ -152,7 +152,7 @@ impl MortalAttributesBuilder {
         true
     }
 
-    fn can_decrease(&self, attribute: AttributeName) -> bool {
+    fn _can_decrease(&self, attribute: AttributeName) -> bool {
         // Can decrease to a minimum of 1 for any attribute
         match attribute {
             AttributeName::Strength => self.strength > 1,
@@ -167,8 +167,8 @@ impl MortalAttributesBuilder {
         }
     }
 
-    fn increase(&mut self, attribute: AttributeName) -> bool {
-        if !self.can_increase(attribute) {
+    fn _increase(&mut self, attribute: AttributeName) -> bool {
+        if !self._can_increase(attribute) {
             return false;
         }
 
@@ -187,8 +187,8 @@ impl MortalAttributesBuilder {
         true
     }
 
-    fn decrease(&mut self, attribute: AttributeName) -> bool {
-        if !self.can_decrease(attribute) {
+    fn _decrease(&mut self, attribute: AttributeName) -> bool {
+        if !self._can_decrease(attribute) {
             return false;
         }
 
@@ -207,10 +207,10 @@ impl MortalAttributesBuilder {
         true
     }
 
-    fn ready_to_progress(&self) -> bool {
-        let mental = self.group_dots_allocated(AttributeGroup::Mental);
-        let social = self.group_dots_allocated(AttributeGroup::Social);
-        let physical = self.group_dots_allocated(AttributeGroup::Physical);
+    fn _ready_to_progress(&self) -> bool {
+        let mental = self._group_dots_allocated(_AttributeGroup::Mental);
+        let social = self._group_dots_allocated(_AttributeGroup::Social);
+        let physical = self._group_dots_allocated(_AttributeGroup::Physical);
 
         let max_group = mental.max(social).max(physical);
         let min_group = mental.min(social).min(physical);
