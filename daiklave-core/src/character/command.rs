@@ -196,7 +196,9 @@ impl Character {
             CharacterMutation::SetDamage(bashing, lethal, aggravated) => {
                 self.health.set_damage(*bashing, *lethal, *aggravated);
             }
-            CharacterMutation::SetBoxes(_) => todo!(),
+            CharacterMutation::SetBoxes(wound_penalties) => {
+                self.health.set_health_boxes(wound_penalties);
+            }
             CharacterMutation::AddHearthstone(_) => todo!(),
             CharacterMutation::RemoveHearthstone(_) => todo!(),
             CharacterMutation::SlotHeartstoneIntoArmor(_, _) => todo!(),

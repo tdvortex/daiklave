@@ -118,6 +118,16 @@ impl Health {
         }
     }
 
+    pub fn set_health_boxes(&mut self, wound_penalties: &[WoundPenalty]) {
+        let (bashing, lethal, aggravated) = self.damage();
+        *self = Health::empty();
+        for wound_penalty in wound_penalties.iter() {
+            self.health_boxes.push(HealthBox::new(*wound_penalty));
+        }
+        self.sort_boxes();
+        self.set_damage(bashing, lethal, aggravated);
+    }
+
     pub fn add_health_box(&mut self, wound_penalty: WoundPenalty) {
         self.health_boxes.push(HealthBox::new(wound_penalty));
         self.sort_boxes();
