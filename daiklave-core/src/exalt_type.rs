@@ -2,7 +2,7 @@ use crate::{
     abilities::AbilityNameNoSubskill,
     anima::{AnimaEffect, AnimaLevel},
     charms::{SolarCharm, Spell},
-    essence::Essence,
+    essence::{Essence, MotePool},
     solar::{
         DawnTraits, EclipseTraits, NightTraits, SolarTraits, SolarTraitsBuilder, TwilightTraits,
         ZenithTraits,
@@ -16,6 +16,45 @@ use serde::{Deserialize, Serialize};
 pub enum ExaltType {
     Mortal(MortalSorcererLevel),
     Solar(SolarTraits),
+}
+
+impl ExaltType {
+    pub fn set_anima_level(&mut self, anima_level: AnimaLevel) -> Result<()> {
+        match self {
+            Self::Mortal(_) => Err(eyre!("Mortals do not have anima")),
+            Self::Solar(solar_traits) => {solar_traits.anima_level = anima_level; Ok(())}
+        }
+    }
+
+    pub fn set_essence_rating(&mut self, dots: u8) -> Result<()> {
+        match self {
+            Self::Mortal(_) => Err(eyre!("Mortals do not have Essence ratings")),
+            Self::Solar(solar_traits) => {
+                solar_traits.essence = Essence::solar(dots)?;
+                Ok(())
+            }
+        }
+    }
+
+    pub fn set_peripheral_motes(&mut self, mote_pool: MotePool) -> Result<()> {
+        match self {
+            Self::Mortal(_) => Err(eyre!("Mortals do not have mote pools")),
+            Self::Solar(solar_traits) => {
+                solar_traits.essence.peripheral = mote_pool;
+                Ok(())
+            }
+        }
+    }
+
+    pub fn set_personal_motes(&mut self, mote_pool: MotePool) -> Result<()> {
+        match self {
+            Self::Mortal(_) => Err(eyre!("Mortals do not have mote pools")),
+            Self::Solar(solar_traits) => {
+                solar_traits.essence.personal = mote_pool;
+                Ok(())
+            }
+        }
+    }
 }
 
 impl Default for ExaltType {

@@ -129,20 +129,19 @@ pub enum CharacterMutation {
 impl Character {
     pub fn apply_mutation(&mut self, mutation: &CharacterMutation) -> Result<&mut Self> {
         match mutation {
-            CharacterMutation::Load(character) => {*self = character.clone(); Ok(self)}
+            CharacterMutation::Load(character) => {*self = character.clone();}
             CharacterMutation::SetAbility(ability_name_vanilla, dots) => {
                 self.abilities.set_dots(*ability_name_vanilla, *dots);
-                Ok(self)
             }
             CharacterMutation::AddSpecialty(ability_name_vanilla, specialty) => {
                 self.abilities.add_specialty(*ability_name_vanilla, specialty.clone())?;
-                Ok(self)
             }
             CharacterMutation::RemoveSpecialty(ability_name_vanilla, specialty) => {
                 self.abilities.remove_specialty(*ability_name_vanilla, specialty.clone())?;
-                Ok(self)
             }
-            CharacterMutation::SetAnimaLevel(_) => todo!(),
+            CharacterMutation::SetAnimaLevel(anima_level) => {
+                self.exalt_type.set_anima_level(*anima_level)?; 
+            }
             CharacterMutation::AddNonArtifactArmor(_) => todo!(),
             CharacterMutation::AddArtifactArmor(_) => todo!(),
             CharacterMutation::RemoveNonArtifactArmor(_) => todo!(),
@@ -154,54 +153,48 @@ impl Character {
             CharacterMutation::UnattuneArtifactArmor(_) => todo!(),
             CharacterMutation::SetAttribute(attribute_name, value) => {
                 self.attributes.set(*attribute_name, *value)?;
-                Ok(self)
             }
             CharacterMutation::SetCampaign(campaign) => {
                 self.campaign = Some(campaign.clone());
-                Ok(self)
             }
             CharacterMutation::RemoveCampaign => {
                 self.campaign = None;
-                Ok(self)
             }
             CharacterMutation::SetName(name) => {
                 self.name = name.clone();
-                Ok(self)
             }
             CharacterMutation::SetConcept(concept) => {
                 self.concept = Some(concept.clone());
-                Ok(self)
             }
             CharacterMutation::RemoveConcept => {
                 self.concept = None;
-                Ok(self)
             }
             CharacterMutation::SetWillpower(willpower) => {
                 self.willpower = *willpower;
-                Ok(self)
             }
             CharacterMutation::SetExperience(experience) => {
                 self.experience = *experience;
-                Ok(self)
             }
             CharacterMutation::SetCraftAbility(focus, dots) => {
                 self.craft_abilities.set_dots(focus.as_str(), *dots);
-                Ok(self)
             }
             CharacterMutation::AddCraftSpecialty(focus, specialty) => {
                 self.craft_abilities.add_specialty(focus.as_str(), specialty.clone())?;
-                Ok(self)
             }
             CharacterMutation::RemoveCraftSpecialty(focus, specialty) => {
                 self.craft_abilities.remove_specialty(focus.as_str(), specialty.as_str())?;
-                Ok(self)
             }
-            CharacterMutation::SetEssenceRating(_) => todo!(),
-            CharacterMutation::SetPeripheralMotes(_) => todo!(),
-            CharacterMutation::SetPersonalMotes(_) => todo!(),
+            CharacterMutation::SetEssenceRating(essence) => {
+                self.exalt_type.set_essence_rating(*essence)?;
+            }
+            CharacterMutation::SetPeripheralMotes(peripheral) => {
+                self.exalt_type.set_peripheral_motes(*peripheral)?;
+            }
+            CharacterMutation::SetPersonalMotes(personal) => {
+                self.exalt_type.set_personal_motes(*personal)?;
+            }
             CharacterMutation::SetDamage(bashing, lethal, aggravated) => {
                 self.health.set_damage(*bashing, *lethal, *aggravated);
-                Ok(self)
             }
             CharacterMutation::SetBoxes(_) => todo!(),
             CharacterMutation::AddHearthstone(_) => todo!(),
@@ -229,7 +222,6 @@ impl Character {
             CharacterMutation::ConvertToMortal => todo!(),
             CharacterMutation::SetPlayer(player) => {
                 self.player = player.clone();
-                Ok(self)
             }
             CharacterMutation::SetSolarCaste(_, _, _) => todo!(),
             CharacterMutation::AddSolarCharm(_) => todo!(),
@@ -257,5 +249,6 @@ impl Character {
             CharacterMutation::AttuneWonder(_, _, _) => todo!(),
             CharacterMutation::UnattuneWonder(_) => todo!(),
         }
+        Ok(self)
     }
 }
