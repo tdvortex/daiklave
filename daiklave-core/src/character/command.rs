@@ -138,7 +138,10 @@ impl Character {
                 self.abilities.add_specialty(*ability_name_vanilla, specialty.clone())?;
                 Ok(self)
             }
-            CharacterMutation::RemoveSpecialty(_, _) => todo!(),
+            CharacterMutation::RemoveSpecialty(ability_name_vanilla, specialty) => {
+                self.abilities.remove_specialty(*ability_name_vanilla, specialty.clone())?;
+                Ok(self)
+            }
             CharacterMutation::SetAnimaLevel(_) => todo!(),
             CharacterMutation::AddNonArtifactArmor(_) => todo!(),
             CharacterMutation::AddArtifactArmor(_) => todo!(),

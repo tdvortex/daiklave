@@ -9,7 +9,7 @@ use eyre::{eyre, Result};
 use crate::abilities::Ability;
 use crate::abilities::AbilityName;
 use crate::abilities::AbilityNameVanilla;
-use crate::abilities::{Abilities, AbilityNameNoSubskill};
+use crate::abilities::Abilities;
 use crate::armor::Armor;
 use crate::attributes::Attributes;
 use crate::campaign::Campaign;
@@ -138,16 +138,10 @@ impl Character {
 
     pub fn remove_specialty(
         &mut self,
-        ability_name: AbilityNameNoSubskill,
-        subskill: Option<&str>,
-        specialty: &str,
+        ability_name: AbilityNameVanilla,
+        specialty: String,
     ) -> Result<()> {
-        if ability_name == AbilityNameNoSubskill::MartialArts {
-            Err(eyre!("TODO: fix this"))
-        } else {
-            self.abilities
-                .remove_specialty(ability_name, subskill, specialty)
-        }
+        self.abilities.remove_specialty(ability_name, specialty)
     }
 
     pub fn remove_craft_specialty(&mut self, focus: &str, specialty: &str) -> Result<()> {

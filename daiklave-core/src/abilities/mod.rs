@@ -450,66 +450,37 @@ impl Abilities {
 
     pub fn remove_specialty(
         &mut self,
-        ability_name_no_subskill: AbilityNameNoSubskill,
-        subskill: Option<&str>,
-        specialty: &str,
+        ability_name: AbilityNameVanilla,
+        specialty: String,
     ) -> Result<()> {
-        if subskill.is_none()
-            && (ability_name_no_subskill == AbilityNameNoSubskill::Craft
-                || ability_name_no_subskill == AbilityNameNoSubskill::MartialArts)
-        {
-            return Err(eyre!("must specify a subskill for Craft or Martial arts"));
-        }
-
-        let rating_ptr = match ability_name_no_subskill {
-            AbilityNameNoSubskill::Archery => &mut self.archery,
-            AbilityNameNoSubskill::Athletics => &mut self.athletics,
-            AbilityNameNoSubskill::Awareness => &mut self.awareness,
-            AbilityNameNoSubskill::Brawl => &mut self.brawl,
-            AbilityNameNoSubskill::Bureaucracy => &mut self.bureaucracy,
-            AbilityNameNoSubskill::Dodge => &mut self.dodge,
-            AbilityNameNoSubskill::Integrity => &mut self.integrity,
-            AbilityNameNoSubskill::Investigation => &mut self.investigation,
-            AbilityNameNoSubskill::Larceny => &mut self.larcency,
-            AbilityNameNoSubskill::Linguistics => &mut self.linguistics,
-            AbilityNameNoSubskill::Lore => &mut self.lore,
-            AbilityNameNoSubskill::Medicine => &mut self.medicine,
-            AbilityNameNoSubskill::Melee => &mut self.melee,
-            AbilityNameNoSubskill::Occult => &mut self.occult,
-            AbilityNameNoSubskill::Performance => &mut self.performance,
-            AbilityNameNoSubskill::Presence => &mut self.presence,
-            AbilityNameNoSubskill::Resistance => &mut self.resistance,
-            AbilityNameNoSubskill::Ride => &mut self.ride,
-            AbilityNameNoSubskill::Sail => &mut self.sail,
-            AbilityNameNoSubskill::Socialize => &mut self.socialize,
-            AbilityNameNoSubskill::Stealth => &mut self.stealth,
-            AbilityNameNoSubskill::Survival => &mut self.survival,
-            AbilityNameNoSubskill::Thrown => &mut self.thrown,
-            AbilityNameNoSubskill::War => &mut self.war,
-            AbilityNameNoSubskill::Craft => self
-                .craft
-                .iter_mut()
-                .find_map(|(focus, rating)| {
-                    if Some(focus.as_str()) == subskill {
-                        Some(rating)
-                    } else {
-                        None
-                    }
-                })
-                .ok_or_else(|| {
-                    eyre!(
-                        "Cannot have specialties on 0-rated ability: Craft ({})",
-                        subskill.unwrap()
-                    )
-                })?,
-            AbilityNameNoSubskill::MartialArts => {
-                return Err(eyre!(
-                    "Remove martial arts specialties from MartialArtist, not Abilities"
-                ));
-            }
+        let rating_ptr = match ability_name {
+            AbilityNameVanilla::Archery => &mut self.archery,
+            AbilityNameVanilla::Athletics => &mut self.athletics,
+            AbilityNameVanilla::Awareness => &mut self.awareness,
+            AbilityNameVanilla::Brawl => &mut self.brawl,
+            AbilityNameVanilla::Bureaucracy => &mut self.bureaucracy,
+            AbilityNameVanilla::Dodge => &mut self.dodge,
+            AbilityNameVanilla::Integrity => &mut self.integrity,
+            AbilityNameVanilla::Investigation => &mut self.investigation,
+            AbilityNameVanilla::Larceny => &mut self.larcency,
+            AbilityNameVanilla::Linguistics => &mut self.linguistics,
+            AbilityNameVanilla::Lore => &mut self.lore,
+            AbilityNameVanilla::Medicine => &mut self.medicine,
+            AbilityNameVanilla::Melee => &mut self.melee,
+            AbilityNameVanilla::Occult => &mut self.occult,
+            AbilityNameVanilla::Performance => &mut self.performance,
+            AbilityNameVanilla::Presence => &mut self.presence,
+            AbilityNameVanilla::Resistance => &mut self.resistance,
+            AbilityNameVanilla::Ride => &mut self.ride,
+            AbilityNameVanilla::Sail => &mut self.sail,
+            AbilityNameVanilla::Socialize => &mut self.socialize,
+            AbilityNameVanilla::Stealth => &mut self.stealth,
+            AbilityNameVanilla::Survival => &mut self.survival,
+            AbilityNameVanilla::Thrown => &mut self.thrown,
+            AbilityNameVanilla::War => &mut self.war,
         };
 
-        rating_ptr.remove_specialty(specialty)
+        rating_ptr.remove_specialty(specialty.as_str())
     }
 
     pub fn iter(&self) -> impl Iterator<Item = Ability> + '_ {
