@@ -1,4 +1,5 @@
 use super::{ExperiencePoints, Willpower};
+use eyre::Result;
 use crate::{
     abilities::{AbilityNameNoSubskill, AbilityNameVanilla},
     anima::{AnimaEffect, AnimaLevel},
@@ -18,7 +19,7 @@ use crate::{
     merits::{Flaw, MeritTemplate},
     player::Player,
     solar::SolarCaste,
-    sorcery::{ShapingRitual, SorceryCircle}, weapons::{Weapon, ArtifactWeapon, EquipHand},
+    sorcery::{ShapingRitual, SorceryCircle}, weapons::{Weapon, ArtifactWeapon, EquipHand}, Character,
 };
 
 pub enum CharacterMutation {
@@ -121,4 +122,134 @@ pub enum CharacterMutation {
     RemoveWonder(WonderId),
     AttuneWonder(WonderId, u8, u8),
     UnattuneWonder(WonderId),
+}
+
+impl Character {
+    pub fn apply_mutation(&mut self, mutation: &CharacterMutation) -> Result<&mut Self> {
+        match mutation {
+            CharacterMutation::SetAbility(ability_name_vanilla, dots) => {
+                self.abilities.set_dots(*ability_name_vanilla, *dots);
+                Ok(self)
+            }
+            CharacterMutation::AddSpecialty(ability_name_vanilla, specialty) => {
+                self.abilities.add_specialty(*ability_name_vanilla, specialty.clone())?;
+                Ok(self)
+            }
+            CharacterMutation::RemoveSpecialty(_, _) => todo!(),
+            CharacterMutation::SetAnimaLevel(_) => todo!(),
+            CharacterMutation::AddNonArtifactArmor(_) => todo!(),
+            CharacterMutation::AddArtifactArmor(_) => todo!(),
+            CharacterMutation::RemoveNonArtifactArmor(_) => todo!(),
+            CharacterMutation::RemoveArtifactArmor(_) => todo!(),
+            CharacterMutation::EquipNonArtifactArmor(_) => todo!(),
+            CharacterMutation::EquipArtifactArmor(_) => todo!(),
+            CharacterMutation::UnequipArmor => todo!(),
+            CharacterMutation::AttuneArtifactArmor(_, _, _) => todo!(),
+            CharacterMutation::UnattuneArtifactArmor(_) => todo!(),
+            CharacterMutation::SetAttribute(attribute_name, value) => {
+                self.attributes.set(*attribute_name, *value)?;
+                Ok(self)
+            }
+            CharacterMutation::SetCampaign(campaign) => {
+                self.campaign = Some(campaign.clone());
+                Ok(self)
+            }
+            CharacterMutation::RemoveCampaign => {
+                self.campaign = None;
+                Ok(self)
+            }
+            CharacterMutation::SetName(name) => {
+                self.name = name.clone();
+                Ok(self)
+            }
+            CharacterMutation::SetConcept(concept) => {
+                self.concept = Some(concept.clone());
+                Ok(self)
+            }
+            CharacterMutation::RemoveConcept => {
+                self.concept = None;
+                Ok(self)
+            }
+            CharacterMutation::SetWillpower(willpower) => {
+                self.willpower = *willpower;
+                Ok(self)
+            }
+            CharacterMutation::SetExperience(experience) => {
+                self.experience = *experience;
+                Ok(self)
+            }
+            CharacterMutation::SetCraftAbility(focus, dots) => {
+                self.craft_abilities.set_dots(focus.as_str(), *dots);
+                Ok(self)
+            }
+            CharacterMutation::AddCraftSpecialty(focus, specialty) => {
+                self.craft_abilities.add_specialty(focus.as_str(), specialty.clone())?;
+                Ok(self)
+            }
+            CharacterMutation::RemoveCraftSpecialty(focus, specialty) => {
+                self.craft_abilities.remove_specialty(focus.as_str(), specialty.as_str())?;
+                Ok(self)
+            }
+            CharacterMutation::SetEssenceRating(_) => todo!(),
+            CharacterMutation::SetPeripheralMotes(_) => todo!(),
+            CharacterMutation::SetPersonalMotes(_) => todo!(),
+            CharacterMutation::SetDamage(bashing, lethal, aggravated) => {
+                self.health.set_damage(*bashing, *lethal, *aggravated);
+                Ok(self)
+            }
+            CharacterMutation::SetBoxes(_) => todo!(),
+            CharacterMutation::AddHearthstone(_) => todo!(),
+            CharacterMutation::RemoveHearthstone(_) => todo!(),
+            CharacterMutation::SlotHeartstoneIntoArmor(_, _) => todo!(),
+            CharacterMutation::SlotHeartstoneIntoWarstrider(_, _) => todo!(),
+            CharacterMutation::SlotHeartstoneIntoWeapon(_, _) => todo!(),
+            CharacterMutation::SlotHearthstoneIntoWonder(_, _) => todo!(),
+            CharacterMutation::UnslotHearthstone(_) => todo!(),
+            CharacterMutation::SetIntimacy(_) => todo!(),
+            CharacterMutation::RemoveIntimacy(_) => todo!(),
+            CharacterMutation::SetLimitTrack(_) => todo!(),
+            CharacterMutation::SetLimitTrigger(_) => todo!(),
+            CharacterMutation::AddMartialArtsStyle(_) => todo!(),
+            CharacterMutation::SetMartialArtsDots(_, _) => todo!(),
+            CharacterMutation::AddMartialArtsSpecialty(_, _) => todo!(),
+            CharacterMutation::RemoveMartialArtsSpecialty(_, _) => todo!(),
+            CharacterMutation::AddMartialArtsCharm(_) => todo!(),
+            CharacterMutation::RemoveMartialArtsCharm(_) => todo!(),
+            CharacterMutation::AddDetailedMerit(_, _) => todo!(),
+            CharacterMutation::AddNonDetailedMerit(_) => todo!(),
+            CharacterMutation::RemoveMerit(_) => todo!(),
+            CharacterMutation::AddFlaw(_) => todo!(),
+            CharacterMutation::RemoveFlaw(_) => todo!(),
+            CharacterMutation::ConvertToMortal => todo!(),
+            CharacterMutation::SetPlayer(player) => {
+                self.player = player.clone();
+                Ok(self)
+            }
+            CharacterMutation::SetSolarCaste(_, _, _) => todo!(),
+            CharacterMutation::AddSolarCharm(_) => todo!(),
+            CharacterMutation::RemoveSolarCharm(_) => todo!(),
+            CharacterMutation::SetSolarExperience(_) => todo!(),
+            CharacterMutation::AddSorceryCircle(_, _, _) => todo!(),
+            CharacterMutation::RemoveSorceryCircle(_) => todo!(),
+            CharacterMutation::AddSpell(_) => todo!(),
+            CharacterMutation::RemoveSpell(_) => todo!(),
+            CharacterMutation::AddWarstrider(_) => todo!(),
+            CharacterMutation::EquipWarstrider(_) => todo!(),
+            CharacterMutation::UnequipWarstrider => todo!(),
+            CharacterMutation::AttuneWarstrider(_, _, _) => todo!(),
+            CharacterMutation::UnattuneWarstrider => todo!(),
+            CharacterMutation::AddNonArtifactWeapon(_) => todo!(),
+            CharacterMutation::AddArtifactWeapon(_) => todo!(),
+            CharacterMutation::RemoveNonArtifactWeapon(_) => todo!(),
+            CharacterMutation::RemoveArtifactWeapon(_) => todo!(),
+            CharacterMutation::EquipNonArtifactWeapon(_, _) => todo!(),
+            CharacterMutation::EquipArtifactWeapon(_, _) => todo!(),
+            CharacterMutation::AttuneArtifactWeapon(_, _, _) => todo!(),
+            CharacterMutation::UnattuneArtifactWeapon(_) => todo!(),
+            CharacterMutation::AddWonder(_) => todo!(),
+            CharacterMutation::RemoveWonder(_) => todo!(),
+            CharacterMutation::AttuneWonder(_, _, _) => todo!(),
+            CharacterMutation::UnattuneWonder(_) => todo!(),
+        }
+    }
 }
