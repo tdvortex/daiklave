@@ -110,6 +110,10 @@ impl SolarTraits {
         self.has_favored_ability(ability) || self.has_caste_ability(ability)
     }
 
+    pub fn sorcery(&self) -> &SolarSorcererLevel {
+        &self.sorcery_level
+    }
+
     pub fn sorcery_mut(&mut self) -> &mut SolarSorcererLevel {
         &mut self.sorcery_level
     }

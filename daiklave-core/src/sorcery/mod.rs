@@ -397,6 +397,15 @@ impl MortalSorcererLevel {
             (_, _) => Err(eyre!("Spell is too high level to be learned")),
         }
     }
+
+    pub fn remove_spell(&mut self, id: SpellId) -> Result<()> {
+        match self {
+            MortalSorcererLevel::None => Err(eyre!("Not a sorcerer, no spell to remove")),
+            MortalSorcererLevel::Terrestrial(terrestrial_traits) => {
+                terrestrial_traits.remove_spell(id)
+            }
+        }
+    }
 }
 
 impl Default for MortalSorcererLevel {
@@ -441,6 +450,22 @@ impl LunarSorcererLevel {
                 celestial_traits.add_spell(spell)
             }
             (_, _) => Err(eyre!("Spell is too high level to be learned")),
+        }
+    }
+
+    pub fn _remove_spell(&mut self, id: SpellId) -> Result<()> {
+        match self {
+            LunarSorcererLevel::None => Err(eyre!("Not a sorcerer, no spell to remove")),
+            LunarSorcererLevel::_Terrestrial(terrestrial_traits) => {
+                terrestrial_traits.remove_spell(id)
+            }
+            LunarSorcererLevel::_Celestial(terrestrial_traits, celestial_traits) => {
+                if terrestrial_traits.remove_spell(id).is_err() && celestial_traits.remove_spell(id).is_err() {
+                    Err(eyre!("Spell is not known"))
+                } else {
+                    Ok(())
+                }
+            }
         }
     }
 }
@@ -507,6 +532,15 @@ impl DragonBloodedSorcererLevel {
             (_, _) => Err(eyre!("Spell is too high level to be learned")),
         }
     }
+
+    pub fn _remove_spell(&mut self, id: SpellId) -> Result<()> {
+        match self {
+            DragonBloodedSorcererLevel::None => Err(eyre!("Not a sorcerer, no spell to remove")),
+            DragonBloodedSorcererLevel::_Terrestrial(terrestrial_traits) => {
+                terrestrial_traits.remove_spell(id)
+            }
+        }
+    }
 }
 
 impl Default for DragonBloodedSorcererLevel {
@@ -564,6 +598,29 @@ impl SolarSorcererLevel {
                 solar_traits.add_spell(spell)
             }
             (_, _) => Err(eyre!("Spell is too high level to be learned")),
+        }
+    }
+
+    pub fn remove_spell(&mut self, id: SpellId) -> Result<()> {
+        match self {
+            SolarSorcererLevel::None => Err(eyre!("Not a sorcerer, no spell to remove")),
+            SolarSorcererLevel::Terrestrial(terrestrial_traits) => {
+                terrestrial_traits.remove_spell(id)
+            }
+            SolarSorcererLevel::Celestial(terrestrial_traits, celestial_traits) => {
+                if terrestrial_traits.remove_spell(id).is_err() && celestial_traits.remove_spell(id).is_err() {
+                    Err(eyre!("Spell is not known"))
+                } else {
+                    Ok(())
+                }
+            }
+            SolarSorcererLevel::Solar(terrestrial_traits, celestial_traits, solar_circle_traits) => {
+                if terrestrial_traits.remove_spell(id).is_err() && celestial_traits.remove_spell(id).is_err() && solar_circle_traits.remove_spell(id).is_err() {
+                    Err(eyre!("Spell is not known"))
+                } else {
+                    Ok(())
+                }
+            }
         }
     }
 }

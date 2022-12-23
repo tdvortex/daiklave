@@ -7,7 +7,7 @@ use crate::{
         DawnTraits, EclipseTraits, NightTraits, SolarTraits, SolarTraitsBuilder, TwilightTraits,
         ZenithTraits,
     },
-    sorcery::{MortalSorcererLevel, ShapingRitual, Sorcerer, TerrestrialCircleTraits}, character::ExperiencePoints,
+    sorcery::{MortalSorcererLevel, ShapingRitual, Sorcerer, TerrestrialCircleTraits, SorceryCircle, SolarSorcererLevel, CelestialCircleTraits, SolarCircleTraits}, character::ExperiencePoints, id::SpellId,
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -62,6 +62,144 @@ impl ExaltType {
             Self::Solar(solar_traits) => {
                 solar_traits.set_solar_experience(experience_points);
                 Ok(())
+            }
+        }
+    }
+
+    pub fn set_sorcery_level(
+        &mut self, 
+        sorcery_circle: SorceryCircle, 
+        shaping_ritual: ShapingRitual,
+        control_spell: Spell,
+    ) -> Result<()> {
+        match (self, sorcery_circle) {
+            (ExaltType::Mortal(sorcery_level), SorceryCircle::Terrestrial) => {
+                *sorcery_level = MortalSorcererLevel::Terrestrial(
+                    TerrestrialCircleTraits::new(shaping_ritual, control_spell)?
+                );
+                Ok(())
+            }
+            (ExaltType::Mortal(_), _) => Err(eyre!("Mortals can only be Terrestrial Circle sorcerers")),
+            (ExaltType::Solar(solar_traits), SorceryCircle::Terrestrial) => {
+                match solar_traits.sorcery_mut() {
+                    SolarSorcererLevel::None => {
+                        *solar_traits.sorcery_mut() = SolarSorcererLevel::Terrestrial(TerrestrialCircleTraits::new(shaping_ritual, control_spell)?); 
+                        Ok(())
+                    }
+                    SolarSorcererLevel::Terrestrial(old_terrestrial)
+                    | SolarSorcererLevel::Celestial(old_terrestrial, _)
+                    | SolarSorcererLevel::Solar(old_terrestrial, _, _) => {
+                        let id = control_spell.id();
+                        old_terrestrial.add_spell(control_spell)?;
+                        old_terrestrial.swap_control_spell(id)?;
+                        old_terrestrial.swap_shaping_ritual(shaping_ritual);
+
+                        Ok(())
+                    }
+                }
+            }
+            (ExaltType::Solar(solar_traits), SorceryCircle::Celestial) => {
+                if solar_traits.essence.rating() < 3 {
+                    return Err(eyre!(
+                        "Must be Essence 3 to take Celestial sorcery (Supernal doesn't apply)"
+                    ));
+                }
+
+                match solar_traits.sorcery_mut() {
+                    SolarSorcererLevel::None => Err(eyre!("Must be Terrestrial before becoming Celestial")),
+                    SolarSorcererLevel::Terrestrial(terrestrial) => {
+                        *solar_traits.sorcery_mut() = SolarSorcererLevel::Celestial(
+                            terrestrial.clone(), 
+                            CelestialCircleTraits::new(shaping_ritual, control_spell)?
+                        );
+                        Ok(())
+                    }
+                    SolarSorcererLevel::Celestial(_, old_celestial)
+                    | SolarSorcererLevel::Solar(_, old_celestial, _) => {
+                        let id = control_spell.id();
+                        old_celestial.add_spell(control_spell)?;
+                        old_celestial.swap_control_spell(id)?;
+                        old_celestial.swap_shaping_ritual(shaping_ritual);
+
+                        Ok(())
+                    }
+                }
+            }
+            (ExaltType::Solar(solar_traits), SorceryCircle::Solar) => {
+                if solar_traits.essence.rating() < 5 {
+                    return Err(eyre!(
+                        "Must be Essence 5 to take Solar sorcery (Supernal doesn't apply)"
+                    ));
+                }
+
+                match solar_traits.sorcery_mut() {
+                    SolarSorcererLevel::None
+                    | SolarSorcererLevel::Terrestrial(_) => Err(eyre!("Must be Terrestrial and Celestial before becoming Solar")),
+                    SolarSorcererLevel::Celestial(terrestrial, celestial) => {
+                        *solar_traits.sorcery_mut() = SolarSorcererLevel::Solar(terrestrial.clone(), celestial.clone(), SolarCircleTraits::new(shaping_ritual, control_spell)?);
+                        Ok(())
+                    }
+                    SolarSorcererLevel::Solar(_, _, old_solar) => {
+                        let id = control_spell.id();
+                        old_solar.add_spell(control_spell)?;
+                        old_solar.swap_control_spell(id)?;
+                        old_solar.swap_shaping_ritual(shaping_ritual);
+
+                        Ok(())
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn remove_sorcery_circle(&mut self) -> Result<()> {
+        match self {
+            ExaltType::Mortal(mortal_sorcerer_level) => {
+                if let MortalSorcererLevel::Terrestrial(_) = mortal_sorcerer_level {
+                    *mortal_sorcerer_level = MortalSorcererLevel::None;
+                    Ok(())
+                } else {
+                    Err(eyre!("No sorcery circles to remove"))
+                }
+            }
+            ExaltType::Solar(solar_traits) => {
+                match solar_traits.sorcery_mut() {
+                    SolarSorcererLevel::None => Err(eyre!("No sorcery circles to remove")),
+                    SolarSorcererLevel::Terrestrial(_) => {
+                        *solar_traits.sorcery_mut() = SolarSorcererLevel::None;
+                        Ok(())
+                    }
+                    SolarSorcererLevel::Celestial(terrestrial_traits, _) => {
+                        *solar_traits.sorcery_mut() = SolarSorcererLevel::Terrestrial(terrestrial_traits.clone());
+                        Ok(())
+                    }
+                    SolarSorcererLevel::Solar(terrestrial_traits, celestial_traits, _) => {
+                        *solar_traits.sorcery_mut() = SolarSorcererLevel::Celestial(terrestrial_traits.clone(), celestial_traits.clone());
+                        Ok(())
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn add_spell(&mut self, spell: Spell) -> Result<()> {
+        match self {
+            ExaltType::Mortal(mortal_sorcerer_traits) => {
+                mortal_sorcerer_traits.add_spell(spell)
+            }
+            ExaltType::Solar(solar_traits) => {
+                solar_traits.sorcery_mut().add_spell(spell)
+            }
+        }
+    }
+
+    pub fn remove_spell(&mut self, id: SpellId) -> Result<()> {
+        match self {
+            ExaltType::Mortal(mortal_sorcerer_traits) => {
+                mortal_sorcerer_traits.remove_spell(id)
+            }
+            ExaltType::Solar(solar_traits) => {
+                solar_traits.sorcery_mut().remove_spell(id)
             }
         }
     }

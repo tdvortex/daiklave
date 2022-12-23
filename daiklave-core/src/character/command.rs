@@ -100,8 +100,8 @@ pub enum CharacterMutation {
     RemoveSolarCharm(SolarCharmId),
     SetSolarExperience(ExperiencePoints),
     // Sorcery
-    AddSorceryCircle(SorceryCircle, ShapingRitual, Spell),
-    RemoveSorceryCircle(SorceryCircle),
+    SetSorceryCircle(SorceryCircle, ShapingRitual, Spell),
+    RemoveSorceryCircle,
     AddSpell(Spell),
     RemoveSpell(SpellId),
     // Warstriders
@@ -235,10 +235,18 @@ impl Character {
             CharacterMutation::SetSolarExperience(solar_experience) => {
                 self.exalt_type.set_solar_experience(*solar_experience)?;
             }
-            CharacterMutation::AddSorceryCircle(_, _, _) => todo!(),
-            CharacterMutation::RemoveSorceryCircle(_) => todo!(),
-            CharacterMutation::AddSpell(_) => todo!(),
-            CharacterMutation::RemoveSpell(_) => todo!(),
+            CharacterMutation::SetSorceryCircle(circle, shaping_ritual, control_spell) => {
+                self.exalt_type.set_sorcery_level(*circle, shaping_ritual.clone(), control_spell.clone())?;
+            }
+            CharacterMutation::RemoveSorceryCircle => {
+                self.exalt_type.remove_sorcery_circle()?;
+            }
+            CharacterMutation::AddSpell(spell) => {
+                self.exalt_type.add_spell(spell.clone())?;
+            }
+            CharacterMutation::RemoveSpell(spell_id) => {
+                self.exalt_type.remove_spell(*spell_id)?;
+            }
             CharacterMutation::AddWarstrider(_) => todo!(),
             CharacterMutation::EquipWarstrider(_) => todo!(),
             CharacterMutation::UnequipWarstrider => todo!(),
