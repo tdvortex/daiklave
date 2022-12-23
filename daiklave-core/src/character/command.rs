@@ -23,6 +23,8 @@ use crate::{
 };
 
 pub enum CharacterMutation {
+    // Load
+    Load(Character),
     // Abilities
     SetAbility(AbilityNameVanilla, u8),
     AddSpecialty(AbilityNameVanilla, String),
@@ -127,6 +129,7 @@ pub enum CharacterMutation {
 impl Character {
     pub fn apply_mutation(&mut self, mutation: &CharacterMutation) -> Result<&mut Self> {
         match mutation {
+            CharacterMutation::Load(character) => {*self = character.clone(); Ok(self)}
             CharacterMutation::SetAbility(ability_name_vanilla, dots) => {
                 self.abilities.set_dots(*ability_name_vanilla, *dots);
                 Ok(self)
