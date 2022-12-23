@@ -137,7 +137,7 @@ impl Character {
                 self.abilities.add_specialty(*ability_name_vanilla, specialty.clone())?;
             }
             CharacterMutation::RemoveSpecialty(ability_name_vanilla, specialty) => {
-                self.abilities.remove_specialty(*ability_name_vanilla, specialty.clone())?;
+                self.abilities.remove_specialty(*ability_name_vanilla, specialty)?;
             }
             CharacterMutation::SetAnimaLevel(anima_level) => {
                 self.exalt_type.set_anima_level(*anima_level)?; 

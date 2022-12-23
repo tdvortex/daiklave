@@ -179,7 +179,7 @@ pub fn modify_abilities(character: &mut Character) {
         .unwrap();
     // Remove a specialty
     character
-        .remove_specialty(AbilityNameNoSubskill::War, None, "While Outnumbered")
+        .remove_specialty(AbilityNameVanilla::War, "While Outnumbered")
         .unwrap();
 }
 

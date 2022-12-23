@@ -451,7 +451,7 @@ impl Abilities {
     pub fn remove_specialty(
         &mut self,
         ability_name: AbilityNameVanilla,
-        specialty: String,
+        specialty: &str,
     ) -> Result<()> {
         let rating_ptr = match ability_name {
             AbilityNameVanilla::Archery => &mut self.archery,
@@ -480,7 +480,7 @@ impl Abilities {
             AbilityNameVanilla::War => &mut self.war,
         };
 
-        rating_ptr.remove_specialty(specialty.as_str())
+        rating_ptr.remove_specialty(specialty)
     }
 
     pub fn iter(&self) -> impl Iterator<Item = Ability> + '_ {

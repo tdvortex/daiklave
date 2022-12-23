@@ -139,7 +139,7 @@ impl Character {
     pub fn remove_specialty(
         &mut self,
         ability_name: AbilityNameVanilla,
-        specialty: String,
+        specialty: &str,
     ) -> Result<()> {
         self.abilities.remove_specialty(ability_name, specialty)
     }
