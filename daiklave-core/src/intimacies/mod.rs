@@ -1,6 +1,6 @@
-use std::collections::HashMap;
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 pub(crate) mod diff;
 pub use diff::{compare_intimacies, IntimaciesDiff};
 
@@ -32,7 +32,9 @@ impl Intimacies {
     }
 
     pub fn remove_intimacy(&mut self, id: IntimacyId) -> Result<()> {
-        self.0.remove(&id).ok_or_else(|| eyre!("Intimacy does not exist"))?;
+        self.0
+            .remove(&id)
+            .ok_or_else(|| eyre!("Intimacy does not exist"))?;
         Ok(())
     }
 }

@@ -460,7 +460,9 @@ impl LunarSorcererLevel {
                 terrestrial_traits.remove_spell(id)
             }
             LunarSorcererLevel::_Celestial(terrestrial_traits, celestial_traits) => {
-                if terrestrial_traits.remove_spell(id).is_err() && celestial_traits.remove_spell(id).is_err() {
+                if terrestrial_traits.remove_spell(id).is_err()
+                    && celestial_traits.remove_spell(id).is_err()
+                {
                     Err(eyre!("Spell is not known"))
                 } else {
                     Ok(())
@@ -608,14 +610,23 @@ impl SolarSorcererLevel {
                 terrestrial_traits.remove_spell(id)
             }
             SolarSorcererLevel::Celestial(terrestrial_traits, celestial_traits) => {
-                if terrestrial_traits.remove_spell(id).is_err() && celestial_traits.remove_spell(id).is_err() {
+                if terrestrial_traits.remove_spell(id).is_err()
+                    && celestial_traits.remove_spell(id).is_err()
+                {
                     Err(eyre!("Spell is not known"))
                 } else {
                     Ok(())
                 }
             }
-            SolarSorcererLevel::Solar(terrestrial_traits, celestial_traits, solar_circle_traits) => {
-                if terrestrial_traits.remove_spell(id).is_err() && celestial_traits.remove_spell(id).is_err() && solar_circle_traits.remove_spell(id).is_err() {
+            SolarSorcererLevel::Solar(
+                terrestrial_traits,
+                celestial_traits,
+                solar_circle_traits,
+            ) => {
+                if terrestrial_traits.remove_spell(id).is_err()
+                    && celestial_traits.remove_spell(id).is_err()
+                    && solar_circle_traits.remove_spell(id).is_err()
+                {
                     Err(eyre!("Spell is not known"))
                 } else {
                     Ok(())

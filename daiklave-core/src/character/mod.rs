@@ -6,10 +6,10 @@ pub use builder::CharacterBuilder;
 pub use diff::{CharacterBaseDiff, CharacterDiff};
 use eyre::{eyre, Result};
 
+use crate::abilities::Abilities;
 use crate::abilities::Ability;
 use crate::abilities::AbilityName;
 use crate::abilities::AbilityNameVanilla;
-use crate::abilities::Abilities;
 use crate::armor::Armor;
 use crate::attributes::Attributes;
 use crate::campaign::Campaign;

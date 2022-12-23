@@ -1,5 +1,4 @@
 use super::{ExperiencePoints, Willpower};
-use eyre::Result;
 use crate::{
     abilities::{AbilityNameNoSubskill, AbilityNameVanilla},
     anima::{AnimaEffect, AnimaLevel},
@@ -12,15 +11,19 @@ use crate::{
     health::WoundPenalty,
     id::{
         ArmorItemId, ArtifactArmorItemId, ArtifactWeaponId, FlawId, HearthstoneId, IntimacyId,
-        MartialArtsCharmId, MartialArtsStyleId, MeritId, SpellId, WarstriderId, WonderId, WeaponId, SolarCharmId,
+        MartialArtsCharmId, MartialArtsStyleId, MeritId, SolarCharmId, SpellId, WarstriderId,
+        WeaponId, WonderId,
     },
     intimacies::Intimacy,
     martial_arts::MartialArtsStyle,
     merits::{Flaw, MeritTemplate},
     player::Player,
     solar::SolarCaste,
-    sorcery::{ShapingRitual, SorceryCircle}, weapons::{Weapon, ArtifactWeapon, EquipHand}, Character,
+    sorcery::{ShapingRitual, SorceryCircle},
+    weapons::{ArtifactWeapon, EquipHand, Weapon},
+    Character,
 };
+use eyre::Result;
 
 pub enum CharacterMutation {
     // Load
@@ -129,18 +132,22 @@ pub enum CharacterMutation {
 impl Character {
     pub fn apply_mutation(&mut self, mutation: &CharacterMutation) -> Result<&mut Self> {
         match mutation {
-            CharacterMutation::Load(character) => {*self = character.clone();}
+            CharacterMutation::Load(character) => {
+                *self = character.clone();
+            }
             CharacterMutation::SetAbility(ability_name_vanilla, dots) => {
                 self.abilities.set_dots(*ability_name_vanilla, *dots);
             }
             CharacterMutation::AddSpecialty(ability_name_vanilla, specialty) => {
-                self.abilities.add_specialty(*ability_name_vanilla, specialty.clone())?;
+                self.abilities
+                    .add_specialty(*ability_name_vanilla, specialty.clone())?;
             }
             CharacterMutation::RemoveSpecialty(ability_name_vanilla, specialty) => {
-                self.abilities.remove_specialty(*ability_name_vanilla, specialty)?;
+                self.abilities
+                    .remove_specialty(*ability_name_vanilla, specialty)?;
             }
             CharacterMutation::SetAnimaLevel(anima_level) => {
-                self.exalt_type.set_anima_level(*anima_level)?; 
+                self.exalt_type.set_anima_level(*anima_level)?;
             }
             CharacterMutation::AddNonArtifactArmor(_) => todo!(),
             CharacterMutation::AddArtifactArmor(_) => todo!(),
@@ -179,10 +186,12 @@ impl Character {
                 self.craft_abilities.set_dots(focus.as_str(), *dots);
             }
             CharacterMutation::AddCraftSpecialty(focus, specialty) => {
-                self.craft_abilities.add_specialty(focus.as_str(), specialty.clone())?;
+                self.craft_abilities
+                    .add_specialty(focus.as_str(), specialty.clone())?;
             }
             CharacterMutation::RemoveCraftSpecialty(focus, specialty) => {
-                self.craft_abilities.remove_specialty(focus.as_str(), specialty.as_str())?;
+                self.craft_abilities
+                    .remove_specialty(focus.as_str(), specialty.as_str())?;
             }
             CharacterMutation::SetEssenceRating(essence) => {
                 self.exalt_type.set_essence_rating(*essence)?;
@@ -236,7 +245,11 @@ impl Character {
                 self.exalt_type.set_solar_experience(*solar_experience)?;
             }
             CharacterMutation::SetSorceryCircle(circle, shaping_ritual, control_spell) => {
-                self.exalt_type.set_sorcery_level(*circle, shaping_ritual.clone(), control_spell.clone())?;
+                self.exalt_type.set_sorcery_level(
+                    *circle,
+                    shaping_ritual.clone(),
+                    control_spell.clone(),
+                )?;
             }
             CharacterMutation::RemoveSorceryCircle => {
                 self.exalt_type.remove_sorcery_circle()?;

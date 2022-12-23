@@ -17,6 +17,7 @@ pub use self::{
 use crate::{
     abilities::AbilityNameNoSubskill,
     anima::{AnimaEffect, AnimaLevel, ExaltAnimaType},
+    character::ExperiencePoints,
     charms::{SolarCharm, Spell},
     essence::Essence,
     id::SolarCharmId,
@@ -24,7 +25,7 @@ use crate::{
     sorcery::{
         CelestialCircleTraits, ShapingRitual, SolarCircleTraits, SolarSorcererLevel, Sorcerer,
         TerrestrialCircleTraits,
-    }, character::ExperiencePoints,
+    },
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
