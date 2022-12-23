@@ -221,8 +221,12 @@ impl Character {
             CharacterMutation::RemoveIntimacy(id) => {
                 self.intimacies.remove_intimacy(*id)?;
             }
-            CharacterMutation::SetLimitTrack(_) => todo!(),
-            CharacterMutation::SetLimitTrigger(_) => todo!(),
+            CharacterMutation::SetLimitTrack(value) => {
+                self.exalt_type.set_limit_track(*value)?;
+            }
+            CharacterMutation::SetLimitTrigger(trigger) => {
+                self.exalt_type.set_limit_trigger(trigger.clone())?;
+            }
             CharacterMutation::AddMartialArtsStyle(_) => todo!(),
             CharacterMutation::SetMartialArtsDots(_, _) => todo!(),
             CharacterMutation::AddMartialArtsSpecialty(_, _) => todo!(),

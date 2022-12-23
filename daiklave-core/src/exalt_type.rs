@@ -217,6 +217,26 @@ impl ExaltType {
             ExaltType::Solar(solar_traits) => solar_traits.sorcery_mut().remove_spell(id),
         }
     }
+
+    pub fn set_limit_trigger(&mut self, trigger: String) -> Result<()> {
+        match self {
+            ExaltType::Mortal(_) => Err(eyre!("Mortals do not have Limit")),
+            ExaltType::Solar(solar_traits) => {
+                solar_traits.limit.limit_trigger = trigger;
+                Ok(())
+            }
+        }
+    }
+
+    pub fn set_limit_track(&mut self, value: u8) -> Result<()> {
+        match self {
+            ExaltType::Mortal(_) => Err(eyre!("Mortals do not have Limit")),
+            ExaltType::Solar(solar_traits) => {
+                solar_traits.limit.track = value;
+                Ok(())
+            }
+        }
+    }
 }
 
 impl Default for ExaltType {
