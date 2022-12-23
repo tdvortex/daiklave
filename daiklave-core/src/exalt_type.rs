@@ -7,7 +7,7 @@ use crate::{
         DawnTraits, EclipseTraits, NightTraits, SolarTraits, SolarTraitsBuilder, TwilightTraits,
         ZenithTraits,
     },
-    sorcery::{MortalSorcererLevel, ShapingRitual, Sorcerer, TerrestrialCircleTraits},
+    sorcery::{MortalSorcererLevel, ShapingRitual, Sorcerer, TerrestrialCircleTraits}, character::ExperiencePoints,
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -51,6 +51,16 @@ impl ExaltType {
             Self::Mortal(_) => Err(eyre!("Mortals do not have mote pools")),
             Self::Solar(solar_traits) => {
                 solar_traits.essence.personal = mote_pool;
+                Ok(())
+            }
+        }
+    }
+
+    pub fn set_solar_experience(&mut self, experience_points: ExperiencePoints) -> Result<()> {
+        match self {
+            Self::Mortal(_) => Err(eyre!("Only Solars have Solar Experience")),
+            Self::Solar(solar_traits) => {
+                solar_traits.set_solar_experience(experience_points);
                 Ok(())
             }
         }

@@ -24,7 +24,7 @@ use crate::{
     sorcery::{
         CelestialCircleTraits, ShapingRitual, SolarCircleTraits, SolarSorcererLevel, Sorcerer,
         TerrestrialCircleTraits,
-    },
+    }, character::ExperiencePoints,
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -39,6 +39,7 @@ pub struct SolarTraits {
     favored_abilities: [AbilityNameNoSubskill; 5],
     sorcery_level: SolarSorcererLevel,
     solar_charms: Vec<SolarCharm>,
+    solar_experience: ExperiencePoints,
 }
 
 impl SolarTraits {
@@ -52,6 +53,7 @@ impl SolarTraits {
             favored: Vec::new(),
             sorcery_level: SolarSorcererLevel::None,
             solar_charms: Vec::new(),
+            solar_experience: ExperiencePoints::default(),
         }
     }
 
@@ -110,6 +112,10 @@ impl SolarTraits {
 
     pub fn sorcery_mut(&mut self) -> &mut SolarSorcererLevel {
         &mut self.sorcery_level
+    }
+
+    pub fn set_solar_experience(&mut self, experience_points: ExperiencePoints) {
+        self.solar_experience = experience_points;
     }
 }
 
@@ -185,6 +191,7 @@ pub struct SolarTraitsBuilder {
     favored: Vec<AbilityNameNoSubskill>,
     sorcery_level: SolarSorcererLevel,
     solar_charms: Vec<SolarCharm>,
+    solar_experience: ExperiencePoints,
 }
 
 impl SolarTraitsBuilder {
@@ -499,6 +506,7 @@ impl SolarTraitsBuilder {
                 favored_abilities,
                 sorcery_level: self.sorcery_level,
                 solar_charms: self.solar_charms,
+                solar_experience: self.solar_experience,
             })
         }
     }

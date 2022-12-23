@@ -232,7 +232,9 @@ impl Character {
             CharacterMutation::SetSolarCaste(_, _, _) => todo!(),
             CharacterMutation::AddSolarCharm(_) => todo!(),
             CharacterMutation::RemoveSolarCharm(_) => todo!(),
-            CharacterMutation::SetSolarExperience(_) => todo!(),
+            CharacterMutation::SetSolarExperience(solar_experience) => {
+                self.exalt_type.set_solar_experience(*solar_experience)?;
+            }
             CharacterMutation::AddSorceryCircle(_, _, _) => todo!(),
             CharacterMutation::RemoveSorceryCircle(_) => todo!(),
             CharacterMutation::AddSpell(_) => todo!(),
