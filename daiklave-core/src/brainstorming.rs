@@ -1,4 +1,12 @@
-use crate::{id::{Id, EvocationId}, data_source::DataSource, weapons::Weapon, artifact::MagicMaterial, armor::{ArmorItem}, charms::{CharmActionType, CharmTraits}, health::Health};
+use crate::{
+    armor::ArmorItem,
+    artifact::MagicMaterial,
+    charms::{CharmActionType, CharmTraits},
+    data_source::DataSource,
+    health::Health,
+    id::{EvocationId, Id},
+    weapons::Weapon,
+};
 
 struct Evocation {
     id: EvocationId,
@@ -38,7 +46,7 @@ struct Hearthstone {
 }
 
 struct MagicItemTraits {
-    name: String, 
+    name: String,
     lore: Option<String>,
     powers: Option<String>,
     available_evocations: Vec<Evocation>,
@@ -72,7 +80,6 @@ enum EquipState {
     OffHand(OneHandedWeapon),
     Paired(OneHandedWeapon),
     TwoDifferent(OneHandedWeapon, OneHandedWeapon),
-
 }
 
 struct Weapons {
@@ -98,16 +105,14 @@ struct Armor {
     unworn: Vec<ArmorItem>,
 }
 
-
 struct ArtifactWonder {
-    id: Id, 
+    id: Id,
     data_source: DataSource,
     merit_dots: u8,
     magic_item_traits: MagicItemTraits,
     magic_material: Option<MagicMaterial>,
     hearthstone_slots: Vec<Option<Id>>,
 }
-
 
 struct Warstrider {
     id: Id,
@@ -124,14 +129,14 @@ struct Warstrider {
 
 enum GeomancyLevel {
     Standard,
-    Greater
+    Greater,
 }
 
 struct Manse {
     manse_detail: String,
     demense_detail: String,
     geomancy_level: GeomancyLevel,
-    hearthstone: Hearthstone
+    hearthstone: Hearthstone,
 }
 
 struct Panoply {

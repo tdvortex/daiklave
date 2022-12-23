@@ -1,4 +1,5 @@
 mod builder;
+mod command;
 mod diff;
 // mod guided; // Not sure about this; maybe Yew-only?
 pub use builder::CharacterBuilder;
@@ -107,7 +108,11 @@ impl Character {
         self.craft_abilities.set_dots(focus, dots);
     }
 
-    pub fn set_martial_arts_ability_dots(&mut self, style_id: MartialArtsStyleId, dots: u8) -> Result<()> {
+    pub fn set_martial_arts_ability_dots(
+        &mut self,
+        style_id: MartialArtsStyleId,
+        dots: u8,
+    ) -> Result<()> {
         self.martial_arts_styles.set_dots(style_id, dots)
     }
 
@@ -123,7 +128,11 @@ impl Character {
         self.craft_abilities.add_specialty(focus, specialty)
     }
 
-    pub fn add_martial_arts_specialty(&mut self, style_id: MartialArtsStyleId, specialty: String) -> Result<()> {
+    pub fn add_martial_arts_specialty(
+        &mut self,
+        style_id: MartialArtsStyleId,
+        specialty: String,
+    ) -> Result<()> {
         self.martial_arts_styles.add_specialty(style_id, specialty)
     }
 
@@ -145,7 +154,11 @@ impl Character {
         self.craft_abilities.remove_specialty(focus, specialty)
     }
 
-    pub fn remove_martial_arts_specialty(&mut self, style_id: MartialArtsStyleId, specialty: &str) -> Result<()> {
+    pub fn remove_martial_arts_specialty(
+        &mut self,
+        style_id: MartialArtsStyleId,
+        specialty: &str,
+    ) -> Result<()> {
         self.martial_arts_styles
             .remove_specialty(style_id, specialty)
     }

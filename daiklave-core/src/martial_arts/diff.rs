@@ -10,7 +10,12 @@ type AddedStyle = (
     Option<Vec<String>>,
     Vec<MartialArtsCharm>,
 );
-type ModifiedStyle = (MartialArtsStyleId, u8, Option<Vec<String>>, Vec<MartialArtsCharm>);
+type ModifiedStyle = (
+    MartialArtsStyleId,
+    u8,
+    Option<Vec<String>>,
+    Vec<MartialArtsCharm>,
+);
 
 pub struct MartialArtsDiff {
     pub removed_styles: Vec<MartialArtsStyleId>,
@@ -25,12 +30,13 @@ impl MartialArtistTraits {
             added_styles: Vec::new(),
             modified_styles: Vec::new(),
         };
-        let mut old_hashmap: HashMap<MartialArtsStyleId, (&MartialArtsStyle, Ability, &Vec<MartialArtsCharm>)> =
-            self.iter()
-                .map(|(style_ptr, ability, vec_ptr)| {
-                    (style_ptr.id(), (style_ptr, ability, vec_ptr))
-                })
-                .collect();
+        let mut old_hashmap: HashMap<
+            MartialArtsStyleId,
+            (&MartialArtsStyle, Ability, &Vec<MartialArtsCharm>),
+        > = self
+            .iter()
+            .map(|(style_ptr, ability, vec_ptr)| (style_ptr.id(), (style_ptr, ability, vec_ptr)))
+            .collect();
 
         for (style_ptr, ability, vec_ptr) in newer.iter() {
             if !old_hashmap.contains_key(&style_ptr.id()) {

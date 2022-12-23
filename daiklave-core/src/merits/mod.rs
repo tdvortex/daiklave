@@ -3,7 +3,7 @@ use std::ops::{Deref, DerefMut};
 
 use crate::{
     data_source::{BookReference, DataSource},
-    id::{Id, CharacterId},
+    id::{CharacterId, Id},
     prerequisite::PrerequisiteSet,
 };
 pub use diff::{compare_merits, MeritDiff};
@@ -270,3 +270,5 @@ impl DerefMut for Merits {
         &mut self.0
     }
 }
+
+pub struct Flaw;

@@ -27,12 +27,15 @@ const SINGLE_POINT_STYLE_DESCRIPTION: &str =
     armor.";
 
 pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder {
-    let single_point_shining_into_the_void_style =
-        MartialArtsStyle::from_book(MartialArtsStyleId(Id::Placeholder(0)), "Core Rulebook".to_owned(), 434)
-            .with_name("Single Point Shining Into the Void Style".to_owned())
-            .with_description(SINGLE_POINT_STYLE_DESCRIPTION.to_owned())
-            .build()
-            .unwrap();
+    let single_point_shining_into_the_void_style = MartialArtsStyle::from_book(
+        MartialArtsStyleId(Id::Placeholder(0)),
+        "Core Rulebook".to_owned(),
+        434,
+    )
+    .with_name("Single Point Shining Into the Void Style".to_owned())
+    .with_description(SINGLE_POINT_STYLE_DESCRIPTION.to_owned())
+    .build()
+    .unwrap();
 
     vec![
         (AbilityNameVanilla::Awareness, 4),
@@ -59,7 +62,10 @@ pub fn create_intitial_abilities(builder: CharacterBuilder) -> CharacterBuilder 
     .unwrap()
     .with_craft_specialty("Weapon Forging", "Sharpening Blades".to_owned())
     .unwrap()
-    .with_martial_arts_specialty(MartialArtsStyleId(Id::Placeholder(0)), "Join Battle".to_owned())
+    .with_martial_arts_specialty(
+        MartialArtsStyleId(Id::Placeholder(0)),
+        "Join Battle".to_owned(),
+    )
     .unwrap()
 }
 

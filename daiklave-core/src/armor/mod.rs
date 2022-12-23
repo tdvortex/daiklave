@@ -7,7 +7,7 @@ use eyre::{eyre, Result};
 
 use crate::{
     data_source::{BookReference, DataSource},
-    id::{Id, ArmorItemId, CharacterId},
+    id::{ArmorItemId, CharacterId, Id},
 };
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
@@ -32,6 +32,8 @@ pub struct ArmorItem {
     special: bool,
     data_source: DataSource,
 }
+
+pub struct ArtifactArmorItem; // TODO
 
 impl PartialEq for ArmorItem {
     fn eq(&self, other: &Self) -> bool {

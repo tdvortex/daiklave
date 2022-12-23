@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::id::{Id, ArmorItemId};
+use crate::id::{ArmorItemId, Id};
 
 use super::{Armor, ArmorItem};
 

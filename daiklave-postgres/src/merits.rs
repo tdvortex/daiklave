@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use daiklave_core::{
     character::CharacterBuilder,
     data_source::DataSource,
-    id::{Id, CharacterId},
+    id::{CharacterId, Id},
     merits::{Merit, MeritDiff, MeritTemplate, MeritType},
     prerequisite::{ExaltTypePrerequisite, PrerequisiteSet, PrerequisiteType},
 };

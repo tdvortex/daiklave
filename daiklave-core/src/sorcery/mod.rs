@@ -1,13 +1,13 @@
 use crate::{
     charms::Spell,
     data_source::{BookReference, DataSource},
-    id::{Id, CharacterId, SpellId},
+    id::{CharacterId, Id, SpellId},
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
-pub enum SpellLevel {
+pub enum SorceryCircle {
     Terrestrial,
     Celestial,
     Solar,
@@ -20,7 +20,7 @@ impl TryFrom<Spell> for TerrestrialCircleSpell {
     type Error = eyre::Report;
 
     fn try_from(value: Spell) -> Result<Self, Self::Error> {
-        if value.circle() != SpellLevel::Terrestrial {
+        if value.circle() != SorceryCircle::Terrestrial {
             Err(eyre!("Spell is not Terrestrial-level"))
         } else {
             Ok(TerrestrialCircleSpell(value))
@@ -35,7 +35,7 @@ impl TryFrom<Spell> for CelestialCircleSpell {
     type Error = eyre::Report;
 
     fn try_from(value: Spell) -> Result<Self, Self::Error> {
-        if value.circle() != SpellLevel::Celestial {
+        if value.circle() != SorceryCircle::Celestial {
             Err(eyre!("Spell is not Celestial-level"))
         } else {
             Ok(CelestialCircleSpell(value))
@@ -50,7 +50,7 @@ impl TryFrom<Spell> for SolarCircleSpell {
     type Error = eyre::Report;
 
     fn try_from(value: Spell) -> Result<Self, Self::Error> {
-        if value.circle() != SpellLevel::Solar {
+        if value.circle() != SorceryCircle::Solar {
             Err(eyre!("Spell is not Solar-level"))
         } else {
             Ok(SolarCircleSpell(value))
@@ -391,7 +391,7 @@ impl MortalSorcererLevel {
     pub fn add_spell(&mut self, spell: Spell) -> Result<()> {
         match (&spell.circle(), self) {
             (_, MortalSorcererLevel::None) => Err(eyre!("Not a sorcerer, cannot learn spells")),
-            (SpellLevel::Terrestrial, MortalSorcererLevel::Terrestrial(terrestrial_traits)) => {
+            (SorceryCircle::Terrestrial, MortalSorcererLevel::Terrestrial(terrestrial_traits)) => {
                 terrestrial_traits.add_spell(spell)
             }
             (_, _) => Err(eyre!("Spell is too high level to be learned")),
@@ -433,11 +433,11 @@ impl LunarSorcererLevel {
     pub fn _add_spell(&mut self, spell: Spell) -> Result<()> {
         match (&spell.circle(), self) {
             (_, LunarSorcererLevel::None) => Err(eyre!("Not a sorcerer, cannot learn spells")),
-            (SpellLevel::Terrestrial, LunarSorcererLevel::_Terrestrial(terrestrial_traits))
-            | (SpellLevel::Terrestrial, LunarSorcererLevel::_Celestial(terrestrial_traits, _)) => {
+            (SorceryCircle::Terrestrial, LunarSorcererLevel::_Terrestrial(terrestrial_traits))
+            | (SorceryCircle::Terrestrial, LunarSorcererLevel::_Celestial(terrestrial_traits, _)) => {
                 terrestrial_traits.add_spell(spell)
             }
-            (SpellLevel::Celestial, LunarSorcererLevel::_Celestial(_, celestial_traits)) => {
+            (SorceryCircle::Celestial, LunarSorcererLevel::_Celestial(_, celestial_traits)) => {
                 celestial_traits.add_spell(spell)
             }
             (_, _) => Err(eyre!("Spell is too high level to be learned")),
@@ -501,7 +501,7 @@ impl DragonBloodedSorcererLevel {
                 Err(eyre!("Not a sorcerer, cannot learn spells"))
             }
             (
-                SpellLevel::Terrestrial,
+                SorceryCircle::Terrestrial,
                 DragonBloodedSorcererLevel::_Terrestrial(terrestrial_traits),
             ) => terrestrial_traits.add_spell(spell),
             (_, _) => Err(eyre!("Spell is too high level to be learned")),
@@ -551,16 +551,16 @@ impl SolarSorcererLevel {
     pub fn add_spell(&mut self, spell: Spell) -> Result<()> {
         match (&spell.circle(), self) {
             (_, SolarSorcererLevel::None) => Err(eyre!("Not a sorcerer, cannot learn spells")),
-            (SpellLevel::Terrestrial, SolarSorcererLevel::Terrestrial(terrestrial_traits))
-            | (SpellLevel::Terrestrial, SolarSorcererLevel::Celestial(terrestrial_traits, _))
-            | (SpellLevel::Terrestrial, SolarSorcererLevel::Solar(terrestrial_traits, _, _)) => {
+            (SorceryCircle::Terrestrial, SolarSorcererLevel::Terrestrial(terrestrial_traits))
+            | (SorceryCircle::Terrestrial, SolarSorcererLevel::Celestial(terrestrial_traits, _))
+            | (SorceryCircle::Terrestrial, SolarSorcererLevel::Solar(terrestrial_traits, _, _)) => {
                 terrestrial_traits.add_spell(spell)
             }
-            (SpellLevel::Celestial, SolarSorcererLevel::Celestial(_, celestial_traits))
-            | (SpellLevel::Celestial, SolarSorcererLevel::Solar(_, celestial_traits, _)) => {
+            (SorceryCircle::Celestial, SolarSorcererLevel::Celestial(_, celestial_traits))
+            | (SorceryCircle::Celestial, SolarSorcererLevel::Solar(_, celestial_traits, _)) => {
                 celestial_traits.add_spell(spell)
             }
-            (SpellLevel::Solar, SolarSorcererLevel::Solar(_, _, solar_traits)) => {
+            (SorceryCircle::Solar, SolarSorcererLevel::Solar(_, _, solar_traits)) => {
                 solar_traits.add_spell(spell)
             }
             (_, _) => Err(eyre!("Spell is too high level to be learned")),

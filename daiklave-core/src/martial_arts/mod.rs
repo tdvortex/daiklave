@@ -5,7 +5,7 @@ pub use crate::charms::{MartialArtsCharm, MartialArtsCharmBuilder};
 use crate::{
     abilities::{Ability, AbilityName, AbilityRating, NonZeroAbility},
     data_source::{BookReference, DataSource},
-    id::{CharacterId, MartialArtsStyleId, MartialArtsCharmId},
+    id::{CharacterId, MartialArtsCharmId, MartialArtsStyleId},
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -25,7 +25,11 @@ impl PartialEq for MartialArtsStyle {
 }
 
 impl MartialArtsStyle {
-    pub fn from_book(id: MartialArtsStyleId, book_title: String, page_number: i16) -> MartialArtsStyleBuilder {
+    pub fn from_book(
+        id: MartialArtsStyleId,
+        book_title: String,
+        page_number: i16,
+    ) -> MartialArtsStyleBuilder {
         MartialArtsStyleBuilder {
             id,
             data_source: DataSource::Book(BookReference {
@@ -176,7 +180,11 @@ impl MartialArtistTraits {
         self.get_rating_mut(style_id)?.add_specialty(specialty)
     }
 
-    pub fn remove_specialty(&mut self, style_id: MartialArtsStyleId, specialty: &str) -> Result<()> {
+    pub fn remove_specialty(
+        &mut self,
+        style_id: MartialArtsStyleId,
+        specialty: &str,
+    ) -> Result<()> {
         self.get_rating_mut(style_id)?.remove_specialty(specialty)
     }
 

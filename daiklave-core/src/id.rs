@@ -32,7 +32,9 @@ impl Id {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
 pub struct ArmorItemId(pub Id);
 
 impl Deref for ArmorItemId {
@@ -43,7 +45,9 @@ impl Deref for ArmorItemId {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
 pub struct CharacterId(pub Id);
 
 impl Deref for CharacterId {
@@ -54,7 +58,9 @@ impl Deref for CharacterId {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
 pub struct AnimaEffectId(pub Id);
 
 impl Deref for AnimaEffectId {
@@ -65,7 +71,9 @@ impl Deref for AnimaEffectId {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
 pub struct EvocationId(pub Id);
 
 impl Deref for EvocationId {
@@ -76,7 +84,9 @@ impl Deref for EvocationId {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
 pub struct SolarCharmId(pub Id);
 
 impl Deref for SolarCharmId {
@@ -87,7 +97,9 @@ impl Deref for SolarCharmId {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
 pub struct MartialArtsCharmId(pub Id);
 
 impl Deref for MartialArtsCharmId {
@@ -98,7 +110,9 @@ impl Deref for MartialArtsCharmId {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
 pub struct MartialArtsStyleId(pub Id);
 
 impl Deref for MartialArtsStyleId {
@@ -109,10 +123,129 @@ impl Deref for MartialArtsStyleId {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default)]
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
 pub struct SpellId(pub Id);
 
 impl Deref for SpellId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
+pub struct IntimacyId(pub Id);
+
+impl Deref for IntimacyId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
+pub struct ArtifactArmorItemId(pub Id);
+
+impl Deref for ArtifactArmorItemId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
+pub struct MeritId(pub Id);
+
+impl Deref for MeritId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
+pub struct FlawId(pub Id);
+
+impl Deref for FlawId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
+pub struct HearthstoneId(pub Id);
+
+impl Deref for HearthstoneId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
+pub struct WarstriderId(pub Id);
+
+impl Deref for WarstriderId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
+pub struct WonderId(pub Id);
+
+impl Deref for WonderId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
+pub struct ArtifactWeaponId(pub Id);
+
+impl Deref for ArtifactWeaponId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
+pub struct WeaponId(pub Id);
+
+impl Deref for WeaponId {
     type Target = Id;
 
     fn deref(&self) -> &Self::Target {

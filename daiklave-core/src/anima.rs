@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     data_source::{BookReference, DataSource},
-    id::{CharacterId, AnimaEffectId},
+    id::{AnimaEffectId, CharacterId},
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]

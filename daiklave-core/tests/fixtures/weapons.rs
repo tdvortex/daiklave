@@ -1,7 +1,7 @@
 use daiklave_core::{
     character::CharacterBuilder,
     data_source::{BookReference, DataSource},
-    id::{Id, CharacterId},
+    id::{CharacterId, Id},
     weapons::{EquipHand, RangeBand, Weapon, WeaponTag, Weapons},
 };
 

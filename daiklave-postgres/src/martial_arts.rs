@@ -4,7 +4,7 @@ use daiklave_core::{
     character::CharacterBuilder,
     charms::{CharmActionType, CharmCostType, CharmKeyword},
     data_source::DataSource,
-    id::{Id, CharacterId, MartialArtsStyleId, MartialArtsCharmId},
+    id::{CharacterId, Id, MartialArtsCharmId, MartialArtsStyleId},
     martial_arts::{
         diff::MartialArtsDiff, MartialArtsCharm, MartialArtsCharmBuilder, MartialArtsStyle,
     },
@@ -544,7 +544,8 @@ pub fn apply_martial_arts(
     }
 
     // Group charm prerequisites
-    let mut charm_prerequisites_map: HashMap<MartialArtsCharmId, Vec<MartialArtsCharmId>> = HashMap::new();
+    let mut charm_prerequisites_map: HashMap<MartialArtsCharmId, Vec<MartialArtsCharmId>> =
+        HashMap::new();
     if let Some(rows) = all_rows.charm_tree_rows {
         for row in rows.into_iter() {
             let child_id = MartialArtsCharmId(Id::Database(row.child_id));
@@ -569,7 +570,9 @@ pub fn apply_martial_arts(
             }
         }
 
-        if let Some(prerequisites) = charm_prerequisites_map.remove(&MartialArtsCharmId(Id::Database(charm_id))) {
+        if let Some(prerequisites) =
+            charm_prerequisites_map.remove(&MartialArtsCharmId(Id::Database(charm_id)))
+        {
             for prerequisite_id in prerequisites.into_iter() {
                 charm_builder = charm_builder.with_charm_prerequisite(prerequisite_id);
             }
@@ -693,9 +696,14 @@ async fn upsert_character_charms(
                 if let MartialArtsCharmId(Id::Database(id)) = prerequisite_charm_id {
                     prerequisite_pairs.push((child_id, *id));
                 } else {
-                    let parent_id = **placeholder_to_database_map.get(prerequisite_charm_id).ok_or_else(|| {
-                        eyre!("Unknown martial arts charm placeholder id {}", ***prerequisite_charm_id)
-                    })?;
+                    let parent_id = **placeholder_to_database_map
+                        .get(prerequisite_charm_id)
+                        .ok_or_else(|| {
+                            eyre!(
+                                "Unknown martial arts charm placeholder id {}",
+                                ***prerequisite_charm_id
+                            )
+                        })?;
                     prerequisite_pairs.push((child_id, parent_id));
                 }
             }

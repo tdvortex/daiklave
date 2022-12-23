@@ -2,8 +2,8 @@ use crate::{
     abilities::AbilityNameNoSubskill,
     attributes::AttributeName,
     data_source::{BookReference, DataSource},
-    id::{CharacterId, SolarCharmId, MartialArtsStyleId, MartialArtsCharmId, SpellId},
-    sorcery::SpellLevel,
+    id::{CharacterId, MartialArtsCharmId, MartialArtsStyleId, SolarCharmId, SpellId},
+    sorcery::SorceryCircle,
 };
 use eyre::{eyre, Result};
 use serde::{Deserialize, Serialize};
@@ -314,7 +314,11 @@ impl PartialEq for MartialArtsCharm {
 impl Eq for MartialArtsCharm {}
 
 impl MartialArtsCharm {
-    pub fn from_book(id: MartialArtsCharmId, book_title: String, page_number: i16) -> MartialArtsCharmBuilder {
+    pub fn from_book(
+        id: MartialArtsCharmId,
+        book_title: String,
+        page_number: i16,
+    ) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {
             style_id: None,
             charm_id: id,
@@ -329,7 +333,7 @@ impl MartialArtsCharm {
     pub fn custom(id: MartialArtsCharmId, creator_id: CharacterId) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {
             style_id: None,
-            charm_id: id, 
+            charm_id: id,
             action_type: None,
             martial_arts_requirement: None,
             essence_requirement: None,
@@ -480,10 +484,10 @@ impl MartialArtsCharmBuilder {
     }
 }
 
-#[derive(Debug, Clone,  Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Spell {
     id: SpellId,
-    circle: SpellLevel,
+    circle: SorceryCircle,
     traits: CharmTraits,
 }
 
@@ -512,7 +516,7 @@ impl Spell {
         }
     }
 
-    pub fn circle(&self) -> SpellLevel {
+    pub fn circle(&self) -> SorceryCircle {
         self.circle
     }
 
@@ -551,12 +555,12 @@ impl Spell {
 
 pub struct SpellBuilder {
     id: SpellId,
-    level: Option<SpellLevel>,
+    level: Option<SorceryCircle>,
     traits: CharmTraitsBuilder,
 }
 
 impl SpellBuilder {
-    pub fn with_spell_level(mut self, spell_level: SpellLevel) -> Self {
+    pub fn with_spell_level(mut self, spell_level: SorceryCircle) -> Self {
         self.level = Some(spell_level);
         self
     }

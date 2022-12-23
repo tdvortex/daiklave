@@ -2,7 +2,7 @@ use daiklave_core::{
     armor::{Armor, ArmorItem, ArmorTag},
     character::CharacterBuilder,
     data_source::{BookReference, DataSource},
-    id::{Id, CharacterId},
+    id::{CharacterId, Id},
 };
 
 pub fn create_initial_armor(builder: CharacterBuilder) -> CharacterBuilder {

@@ -3,7 +3,7 @@ use std::ops::Deref;
 
 use crate::{
     data_source::{BookReference, DataSource},
-    id::{Id, CharacterId},
+    id::{CharacterId, Id},
 };
 
 pub enum MagicMaterial {
@@ -190,3 +190,6 @@ impl ArtifactBuilder {
         })
     }
 }
+
+pub struct Warstrider;
+pub struct Wonder;

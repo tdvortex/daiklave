@@ -7,7 +7,7 @@ use std::{cmp::Ordering, collections::HashSet};
 use eyre::{eyre, Result};
 
 use crate::data_source::{BookReference, DataSource};
-use crate::id::{Id, CharacterId};
+use crate::id::{CharacterId, Id};
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 enum WeightClass {
@@ -961,3 +961,5 @@ impl WeaponBuilder {
         )
     }
 }
+
+pub struct ArtifactWeapon;
