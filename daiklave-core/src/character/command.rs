@@ -206,8 +206,12 @@ impl Character {
             CharacterMutation::SlotHeartstoneIntoWeapon(_, _) => todo!(),
             CharacterMutation::SlotHearthstoneIntoWonder(_, _) => todo!(),
             CharacterMutation::UnslotHearthstone(_) => todo!(),
-            CharacterMutation::SetIntimacy(_) => todo!(),
-            CharacterMutation::RemoveIntimacy(_) => todo!(),
+            CharacterMutation::SetIntimacy(intimacy) => {
+                self.intimacies.set_intimacy(intimacy.clone());
+            }
+            CharacterMutation::RemoveIntimacy(id) => {
+                self.intimacies.remove_intimacy(*id)?;
+            }
             CharacterMutation::SetLimitTrack(_) => todo!(),
             CharacterMutation::SetLimitTrigger(_) => todo!(),
             CharacterMutation::AddMartialArtsStyle(_) => todo!(),

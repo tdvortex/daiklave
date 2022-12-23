@@ -34,7 +34,7 @@ pub struct CharacterBuilder {
     initiative: Initiative,
     attributes: Attributes,
     abilities: Abilities,
-    intimacies: Vec<Intimacy>,
+    intimacies: Intimacies,
     health: Health,
     weapons: Weapons,
     armor: Armor,
@@ -142,7 +142,7 @@ impl CharacterBuilder {
     }
 
     pub fn with_intimacy(mut self, intimacy: Intimacy) -> Self {
-        self.intimacies.push(intimacy);
+        self.intimacies.set_intimacy(intimacy);
         self
     }
 
@@ -368,7 +368,7 @@ impl CharacterBuilder {
             initiative: self.initiative,
             attributes: self.attributes,
             abilities: self.abilities,
-            intimacies: Intimacies::new(self.intimacies),
+            intimacies: self.intimacies,
             health: self.health,
             weapons: self.weapons,
             armor: self.armor,

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{id::Id, intimacies::Intimacy};
+use crate::{id::{Id, IntimacyId}, intimacies::Intimacy};
 
 #[derive(Debug, Default)]
 pub struct IntimaciesDiff {
@@ -15,7 +15,7 @@ pub fn compare_intimacies(older: &[Intimacy], newer: &[Intimacy]) -> IntimaciesD
     let old_hashmap: HashMap<i32, &Intimacy> = older
         .iter()
         .filter_map(|intimacy| {
-            if let Id::Database(id) = intimacy.id {
+            if let IntimacyId(Id::Database(id)) = intimacy.id {
                 Some((id, intimacy))
             } else {
                 None
@@ -26,7 +26,7 @@ pub fn compare_intimacies(older: &[Intimacy], newer: &[Intimacy]) -> IntimaciesD
     let new_hashmap: HashMap<i32, &Intimacy> = newer
         .iter()
         .filter_map(|intimacy| {
-            if let Id::Database(id) = intimacy.id {
+            if let IntimacyId(Id::Database(id)) = intimacy.id {
                 Some((id, intimacy))
             } else {
                 diff.new_intimacies.push(intimacy.clone());

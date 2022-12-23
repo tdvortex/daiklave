@@ -4,7 +4,7 @@ use crate::{
     attributes::AttributesDiff,
     craft::diff::CraftDiff,
     health::HealthDiff,
-    intimacies::{compare_intimacies, IntimaciesDiff},
+    intimacies::IntimaciesDiff,
     martial_arts::diff::MartialArtsDiff,
     merits::{compare_merits, MeritDiff},
     weapons::WeaponsDiff,
@@ -32,7 +32,7 @@ impl Character {
             craft_diff: self.craft_abilities.compare_newer(&newer.craft_abilities),
             base_diff: self.compare_newer_base(newer),
             health_diff: self.health.compare_newer(&newer.health),
-            intimacies_diff: compare_intimacies(&self.intimacies, &newer.intimacies),
+            intimacies_diff: IntimaciesDiff::default(), // TODO: Fix this
             weapons_diff: self.weapons.compare_newer(&newer.weapons),
             armor_diff: self.armor.compare_newer(&newer.armor),
             merits_diff: compare_merits(&self.merits, &newer.merits),
