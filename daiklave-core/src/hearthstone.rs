@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use serde::{Serialize, Deserialize};
 use eyre::{eyre, Result};
 
-use crate::{id::{HearthstoneId, CharacterId}, data_source::{DataSource, BookReference}};
+use crate::{id::{HearthstoneId, CharacterId, OwnedHearthstoneId}, data_source::{DataSource, BookReference}};
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone, Copy, Hash)]
 pub enum HearthstoneCategory {
@@ -90,13 +90,21 @@ impl Hearthstone {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct OwnedHearthstone {
+    id: OwnedHearthstoneId,
     hearthstone: Hearthstone,
     source: HearthstoneSource,
 }
 
 impl OwnedHearthstone {
-    pub fn new(hearthstone: Hearthstone, source: HearthstoneSource) -> Self {
+    pub fn id(&self) -> OwnedHearthstoneId {
+        self.id
+    }
+}
+
+impl OwnedHearthstone {
+    pub fn new(id: OwnedHearthstoneId, hearthstone: Hearthstone, source: HearthstoneSource) -> Self {
         Self {
+            id,
             hearthstone,
             source
         }

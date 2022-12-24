@@ -3,16 +3,16 @@ use crate::{
     abilities::{AbilityNameNoSubskill, AbilityNameVanilla},
     anima::{AnimaEffect, AnimaLevel},
     armor::{ArmorItem, ArtifactArmorItem},
-    artifact::{Hearthstone, Warstrider, Wonder},
+    artifact::{Warstrider, Wonder},
     attributes::AttributeName,
     campaign::Campaign,
     charms::{MartialArtsCharm, SolarCharm, Spell},
     essence::MotePool,
     health::WoundPenalty,
     id::{
-        ArmorItemId, ArtifactArmorItemId, ArtifactWeaponId, FlawId, HearthstoneId, IntimacyId,
+        ArmorItemId, ArtifactArmorItemId, ArtifactWeaponId, FlawId, IntimacyId,
         MartialArtsCharmId, MartialArtsStyleId, MeritId, SolarCharmId, SpellId, WarstriderId,
-        WeaponId, WonderId,
+        WeaponId, WonderId, OwnedHearthstoneId,
     },
     intimacies::Intimacy,
     martial_arts::MartialArtsStyle,
@@ -21,7 +21,7 @@ use crate::{
     solar::SolarCaste,
     sorcery::{ShapingRitual, SorceryCircle},
     weapons::{ArtifactWeapon, EquipHand, Weapon},
-    Character,
+    Character, hearthstone::{OwnedHearthstone},
 };
 use eyre::Result;
 
@@ -67,13 +67,13 @@ pub enum CharacterMutation {
     SetDamage(u8, u8, u8),
     SetBoxes(Vec<WoundPenalty>),
     // Hearthstones
-    AddHearthstone(Hearthstone),
-    RemoveHearthstone(HearthstoneId),
-    SlotHeartstoneIntoArmor(HearthstoneId, ArtifactArmorItemId),
-    SlotHeartstoneIntoWarstrider(HearthstoneId, WarstriderId),
-    SlotHeartstoneIntoWeapon(HearthstoneId, ArtifactWeaponId),
-    SlotHearthstoneIntoWonder(HearthstoneId, WonderId),
-    UnslotHearthstone(HearthstoneId),
+    AddHearthstone(OwnedHearthstone),
+    RemoveHearthstone(OwnedHearthstoneId),
+    SlotHeartstoneIntoArmor(OwnedHearthstoneId, ArtifactArmorItemId),
+    SlotHeartstoneIntoWarstrider(OwnedHearthstoneId, WarstriderId),
+    SlotHeartstoneIntoWeapon(OwnedHearthstoneId, ArtifactWeaponId),
+    SlotHearthstoneIntoWonder(OwnedHearthstoneId, WonderId),
+    UnslotHearthstone(OwnedHearthstoneId),
     // Intimacies
     SetIntimacy(Intimacy),
     RemoveIntimacy(IntimacyId),
@@ -208,7 +208,9 @@ impl Character {
             CharacterMutation::SetBoxes(wound_penalties) => {
                 self.health.set_health_boxes(wound_penalties);
             }
-            CharacterMutation::AddHearthstone(_) => todo!(),
+            CharacterMutation::AddHearthstone(owned_hearthstone) => {
+                self.unslotted_hearthstones.insert(owned_hearthstone.id(), owned_hearthstone.clone());
+            }
             CharacterMutation::RemoveHearthstone(_) => todo!(),
             CharacterMutation::SlotHeartstoneIntoArmor(_, _) => todo!(),
             CharacterMutation::SlotHeartstoneIntoWarstrider(_, _) => todo!(),

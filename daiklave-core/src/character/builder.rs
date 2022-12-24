@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use super::{ExperiencePoints, Willpower};
 use crate::{
     abilities::{Abilities, AbilityNameNoSubskill, AbilityNameVanilla},
@@ -376,7 +378,7 @@ impl CharacterBuilder {
             exalt_type: self.exalt_type.build()?,
             craft_abilities: self.craft_abilities,
             martial_arts_styles: self.martial_arts_styles,
-            unslotted_hearthstones: Vec::new(),
+            unslotted_hearthstones: HashMap::new(),
         })
     }
 }

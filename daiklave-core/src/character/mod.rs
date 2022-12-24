@@ -1,6 +1,8 @@
 mod builder;
 mod command;
 mod diff;
+use std::collections::HashMap;
+
 // mod guided; // Not sure about this; maybe Yew-only?
 pub use builder::CharacterBuilder;
 pub use diff::{CharacterBaseDiff, CharacterDiff};
@@ -20,6 +22,7 @@ use crate::health::Health;
 use crate::hearthstone::OwnedHearthstone;
 use crate::id::CharacterId;
 use crate::id::MartialArtsStyleId;
+use crate::id::OwnedHearthstoneId;
 use crate::initiative::Initiative;
 use crate::intimacies::Intimacies;
 use crate::martial_arts::MartialArtistTraits;
@@ -53,7 +56,7 @@ pub struct Character {
     exalt_type: ExaltType,
     craft_abilities: CraftAbilities,
     martial_arts_styles: MartialArtistTraits,
-    unslotted_hearthstones: Vec<OwnedHearthstone>,
+    unslotted_hearthstones: HashMap<OwnedHearthstoneId, OwnedHearthstone>,
 }
 
 impl Character {

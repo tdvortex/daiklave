@@ -3,7 +3,6 @@ use std::ops::Deref;
 use serde::{Deserialize, Serialize};
 
 /// A unique identifier for a particular resource.
-///
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord)]
 pub enum Id {
     Database(i32),
@@ -246,6 +245,19 @@ impl Deref for ArtifactWeaponId {
 pub struct WeaponId(pub Id);
 
 impl Deref for WeaponId {
+    type Target = Id;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(
+    Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord, Default,
+)]
+pub struct OwnedHearthstoneId(pub Id);
+
+impl Deref for OwnedHearthstoneId {
     type Target = Id;
 
     fn deref(&self) -> &Self::Target {
