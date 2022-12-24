@@ -90,4 +90,6 @@ pub mod sorcery;
 /// them.
 pub mod weapons;
 
+pub mod wonder;
+
 pub use character::Character;

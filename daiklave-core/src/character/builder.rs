@@ -379,6 +379,7 @@ impl CharacterBuilder {
             craft_abilities: self.craft_abilities,
             martial_arts_styles: self.martial_arts_styles,
             unslotted_hearthstones: HashMap::new(),
+            wonders: HashMap::new(),
         })
     }
 }

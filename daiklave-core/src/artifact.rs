@@ -1,4 +1,5 @@
 use eyre::{eyre, Result};
+use serde::{Serialize, Deserialize};
 use std::ops::Deref;
 
 use crate::{
@@ -6,6 +7,7 @@ use crate::{
     id::{CharacterId, Id},
 };
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub enum MagicMaterial {
     Orichalcum,
     Starmetal,

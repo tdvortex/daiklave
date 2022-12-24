@@ -23,6 +23,7 @@ use crate::hearthstone::OwnedHearthstone;
 use crate::id::CharacterId;
 use crate::id::MartialArtsStyleId;
 use crate::id::OwnedHearthstoneId;
+use crate::id::WonderId;
 use crate::initiative::Initiative;
 use crate::intimacies::Intimacies;
 use crate::martial_arts::MartialArtistTraits;
@@ -31,6 +32,7 @@ use crate::merits::Merits;
 use crate::player::Player;
 use crate::sorcery::Sorcerer;
 use crate::weapons::Weapons;
+use crate::wonder::Wonder;
 use serde::{Deserialize, Serialize};
 
 /// The basic Character object, representing a full player character.
@@ -57,6 +59,7 @@ pub struct Character {
     craft_abilities: CraftAbilities,
     martial_arts_styles: MartialArtistTraits,
     unslotted_hearthstones: HashMap<OwnedHearthstoneId, OwnedHearthstone>,
+    wonders: HashMap<WonderId, Wonder>,
 }
 
 impl Character {
