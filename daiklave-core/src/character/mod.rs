@@ -17,6 +17,7 @@ use crate::charms::MartialArtsCharm;
 use crate::craft::CraftAbilities;
 use crate::exalt_type::ExaltType;
 use crate::health::Health;
+use crate::hearthstone::OwnedHearthstone;
 use crate::id::CharacterId;
 use crate::id::MartialArtsStyleId;
 use crate::initiative::Initiative;
@@ -52,6 +53,7 @@ pub struct Character {
     exalt_type: ExaltType,
     craft_abilities: CraftAbilities,
     martial_arts_styles: MartialArtistTraits,
+    unslotted_hearthstones: Vec<OwnedHearthstone>,
 }
 
 impl Character {

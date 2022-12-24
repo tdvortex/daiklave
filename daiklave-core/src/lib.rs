@@ -51,6 +51,8 @@ pub(crate) mod exalt_type;
 /// Defines the Health interface for damage and healing.
 pub mod health;
 
+pub mod hearthstone;
+
 /// Defines an Id enum to uniquely identify a resource, both client-side
 /// and database-side.
 pub mod id;
