@@ -237,6 +237,15 @@ impl ExaltType {
             }
         }
     }
+
+    pub fn mote_pools(&self) -> Option<(&MotePool, &MotePool)> {
+        match self {
+            ExaltType::Mortal(_) => None,
+            ExaltType::Solar(solar_traits) => {
+                Some((&solar_traits.essence.peripheral, &solar_traits.essence.personal))
+            }
+        }
+    }
 }
 
 impl Default for ExaltType {

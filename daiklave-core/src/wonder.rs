@@ -43,6 +43,9 @@ impl Wonder {
             attunement_cost: None }
     }
 
+    pub fn id(&self) -> WonderId {
+        self.id
+    }
 
     pub fn slots(&self) -> (usize, usize) {
         self.hearthstone_slots.iter().fold((0, 0), |(filled, total), slot| {
@@ -68,6 +71,14 @@ impl Wonder {
         }).ok_or_else(|| eyre!("Hearthstone not slotted in this wonder"))?;
 
         Ok(std::mem::take(slot).unwrap())
+    }
+
+    pub fn is_attuned(&self) -> bool {
+        self.committed_motes.is_some()
+    }
+
+    pub fn attunement_cost(&self) -> u8 {
+        self.attunement_cost
     }
 
     pub fn attune(&mut self, peripheral: u8, personal: u8) -> Result<()> {

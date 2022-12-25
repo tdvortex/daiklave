@@ -3,7 +3,7 @@ use crate::{
     abilities::{AbilityNameNoSubskill, AbilityNameVanilla},
     anima::{AnimaEffect, AnimaLevel},
     armor::{ArmorItem, ArtifactArmorItem},
-    artifact::{Warstrider, Wonder},
+    artifact::{Warstrider},
     attributes::AttributeName,
     campaign::Campaign,
     charms::{MartialArtsCharm, SolarCharm, Spell},
@@ -21,9 +21,10 @@ use crate::{
     solar::SolarCaste,
     sorcery::{ShapingRitual, SorceryCircle},
     weapons::{ArtifactWeapon, EquipHand, Weapon},
+    wonder::Wonder,
     Character, hearthstone::{OwnedHearthstone},
 };
-use eyre::Result;
+use eyre::{eyre, Result};
 
 pub enum CharacterMutation {
     // Load
@@ -279,10 +280,38 @@ impl Character {
             CharacterMutation::EquipArtifactWeapon(_, _) => todo!(),
             CharacterMutation::AttuneArtifactWeapon(_, _, _) => todo!(),
             CharacterMutation::UnattuneArtifactWeapon(_) => todo!(),
-            CharacterMutation::AddWonder(_) => todo!(),
-            CharacterMutation::RemoveWonder(_) => todo!(),
-            CharacterMutation::AttuneWonder(_, _, _) => todo!(),
-            CharacterMutation::UnattuneWonder(_) => todo!(),
+            CharacterMutation::AddWonder(wonder) => {
+                if self.wonders.contains_key(&wonder.id()) {
+                    return Err(eyre!("Character already has wonder"))
+                } else {
+                    self.wonders.insert(wonder.id(), wonder.clone());
+                }
+            }
+            CharacterMutation::RemoveWonder(id) => {
+                self.wonders.remove(id).ok_or_else(|| eyre!("Wonder {} is not owned", ***id))?;
+            }
+            CharacterMutation::AttuneWonder(id, peripheral_cost, personal_cost) => {
+                let (peripheral_pool, personal_pool) = self.exalt_type.mote_pools().ok_or_else(|| eyre!("Mortals cannot attune to wonders"))?;
+                let (peripheral_available, peripheral_committed, peripheral_spent) = (peripheral_pool.available, peripheral_pool.committed, peripheral_pool.spent);
+                let (personal_available, personal_committed, personal_spent) = (personal_pool.available, personal_pool.committed, personal_pool.spent);
+                
+                if peripheral_available < *peripheral_cost || personal_available < *personal_cost {
+                    return Err(eyre!("Insufficient motes to pay attunement"));
+                }
+
+                self.wonders.get_mut(&id).ok_or_else(|| eyre!("Wonder {} is not owned", ***id))?.attune(*peripheral_cost, *personal_cost)?;
+                self.exalt_type.set_peripheral_motes(MotePool {
+                    available: peripheral_available - peripheral_cost,
+                    committed: peripheral_committed + peripheral_cost,
+                    spent: peripheral_spent,
+                })?;
+                self.exalt_type.set_personal_motes(MotePool {
+                    available: personal_available - personal_cost,
+                    committed: personal_committed + personal_cost,
+                    spent: personal_spent,
+                })?;        
+            }
+            CharacterMutation::UnattuneWonder(id) => todo!(),
         }
         Ok(self)
     }
