@@ -217,6 +217,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "daiklave_core2"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "daiklave_postgres"
 version = "0.1.0"
 dependencies = [
