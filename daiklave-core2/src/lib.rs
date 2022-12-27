@@ -25,10 +25,10 @@ pub struct Character {
 
 impl Default for Character {
     fn default() -> Self {
-        Self { 
-            id: Default::default(), 
-            name: "New Character".to_owned(), 
-            concept: Default::default() 
+        Self {
+            id: Default::default(),
+            name: "New Character".to_owned(),
+            concept: Default::default(),
         }
     }
 }
@@ -44,10 +44,11 @@ pub struct CharacterView<'source> {
 
 impl<'source> Default for CharacterView<'source> {
     fn default() -> Self {
-        Self { 
-            id: Default::default(), 
-            name: "New Character", 
-            concept: Default::default() }
+        Self {
+            id: Default::default(),
+            name: "New Character",
+            concept: Default::default(),
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-use daiklave_core2::{Character, CharacterView, CharacterEventSource, CharacterMutation};
+use daiklave_core2::{Character, CharacterEventSource, CharacterMutation, CharacterView};
 
 #[test]
 fn test_name_and_concept_character() {

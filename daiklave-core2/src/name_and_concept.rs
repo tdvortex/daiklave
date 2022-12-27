@@ -33,7 +33,9 @@ impl Character {
     /// Checks if the character's concept can be removed.
     pub fn check_remove_concept(&self) -> Result<(), CharacterMutationError> {
         if self.concept().is_none() {
-            Err(CharacterMutationError::RemoveConceptError(RemoveConceptError::NoConcept))
+            Err(CharacterMutationError::RemoveConceptError(
+                RemoveConceptError::NoConcept,
+            ))
         } else {
             Ok(())
         }
@@ -69,7 +71,7 @@ impl<'source> CharacterView<'source> {
 
     /// Returns the character's concept (if any).
     pub fn concept(&self) -> Option<&str> {
-        self.concept.as_deref()
+        self.concept
     }
 
     /// Checks if the character's name can be changed.
@@ -85,7 +87,9 @@ impl<'source> CharacterView<'source> {
     /// Checks if the character's concept can be removed.
     pub fn check_remove_concept(&self) -> Result<(), CharacterMutationError> {
         if self.concept().is_none() {
-            Err(CharacterMutationError::RemoveConceptError(RemoveConceptError::NoConcept))
+            Err(CharacterMutationError::RemoveConceptError(
+                RemoveConceptError::NoConcept,
+            ))
         } else {
             Ok(())
         }
@@ -99,7 +103,10 @@ impl<'source> CharacterView<'source> {
     }
 
     /// Sets the character to the given concept.
-    pub fn set_concept(&mut self, concept: &'source str) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_concept(
+        &mut self,
+        concept: &'source str,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_concept(concept)?;
         self.concept = Some(concept);
         Ok(self)
