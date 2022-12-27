@@ -23,7 +23,7 @@ pub enum Id {
 
 impl Default for Id {
     fn default() -> Self {
-        Self::Placeholder(0)
+        Self::NonUnique
     }
 }
 

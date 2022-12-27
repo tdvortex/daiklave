@@ -7,7 +7,7 @@ use daiklave_core2::{
 fn test_set_id_character() {
     // Check default Id
     let mut character = Character::default();
-    assert_eq!(character.id(), CharacterId(Id::Placeholder(0)));
+    assert_eq!(character.id(), CharacterId(Id::NonUnique));
 
     // Check that we can override with placeholder Id
     let new_placeholder = CharacterId(Id::Placeholder(1));
@@ -38,7 +38,7 @@ fn test_set_id_character() {
 fn test_set_id_character_view() {
     // Check default Id
     let mut character_view = CharacterView::default();
-    assert_eq!(character_view.id(), CharacterId(Id::Placeholder(0)));
+    assert_eq!(character_view.id(), CharacterId(Id::NonUnique));
 
     // Check that we can override with placeholder Id
     let new_placeholder = CharacterId(Id::Placeholder(1));
@@ -70,7 +70,7 @@ fn test_set_id_character_event_source() {
     // Check default Id
     let mut event_source = CharacterEventSource::default();
     let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.id(), CharacterId(Id::Placeholder(0)));
+    assert_eq!(character_view.id(), CharacterId(Id::NonUnique));
 
     // Check that we can override with placeholder Id
     let mutation = CharacterMutation::SetId(CharacterId(Id::Placeholder(1)));
@@ -120,7 +120,7 @@ fn test_set_id_character_event_source() {
     assert!(event_source.can_undo());
     assert!(event_source.undo());
     let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.id(), CharacterId(Id::Placeholder(0)));
+    assert_eq!(character_view.id(), CharacterId(Id::NonUnique));
 
     assert!(event_source.can_redo());
     assert!(!event_source.can_undo());
