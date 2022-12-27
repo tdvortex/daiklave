@@ -1,4 +1,7 @@
-use daiklave_core2::{Character, id::{CharacterId, Id}, CharacterView, CharacterEventSource, CharacterMutation};
+use daiklave_core2::{
+    id::{CharacterId, Id},
+    Character, CharacterEventSource, CharacterMutation, CharacterView,
+};
 
 #[test]
 fn test_set_id_character() {
