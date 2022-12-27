@@ -13,7 +13,6 @@ use thiserror::Error;
 pub mod id;
 
 mod name_and_concept;
-
 /// An owned instance of a full (player) character. This is the format used in
 /// serialization and deserialization.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
