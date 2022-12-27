@@ -83,6 +83,7 @@ fn test_set_id_character_event_source() {
     let mutation = CharacterMutation::SetId(CharacterId(Id::NonUnique));
     assert!(character_view.check_mutation(&mutation).is_err());
     assert!(event_source.apply_mutation(mutation).is_err());
+    let character_view = event_source.as_character_view().unwrap();
 
     // Check that we can override with database Id
     let mutation = CharacterMutation::SetId(CharacterId(Id::Database(2)));
@@ -95,6 +96,7 @@ fn test_set_id_character_event_source() {
     let mutation = CharacterMutation::SetId(CharacterId(Id::Database(3)));
     assert!(character_view.check_mutation(&mutation).is_err());
     assert!(event_source.apply_mutation(mutation).is_err());
+    let character_view = event_source.as_character_view().unwrap();
     assert_eq!(character_view.id(), CharacterId(Id::Database(2)));
 
     // Check that invalid unchecked cannot be reconstructed

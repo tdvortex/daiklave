@@ -79,7 +79,7 @@ impl Character {
     }
 }
 
-impl CharacterView {
+impl<'source> CharacterView<'source> {
     /// Returns the character's id.
     pub fn id(&self) -> CharacterId {
         self.id

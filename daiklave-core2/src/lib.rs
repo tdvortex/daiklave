@@ -11,18 +11,43 @@ use thiserror::Error;
 /// unique keys.
 pub mod id;
 
+mod name_and_concept;
+
 /// An owned instance of a full (player) character. This is the format used in
 /// serialization and deserialization.
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Character {
     id: CharacterId,
+    name: String,
+    concept: Option<String>,
+}
+
+impl Default for Character {
+    fn default() -> Self {
+        Self { 
+            id: Default::default(), 
+            name: "New Character".to_owned(), 
+            concept: Default::default() 
+        }
+    }
 }
 
 /// A borrowed instance of a Character which references a CharacterEventSource
 /// object, using &str instead of String.
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
-pub struct CharacterView {
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CharacterView<'source> {
     id: CharacterId,
+    name: &'source str,
+    concept: Option<&'source str>,
+}
+
+impl<'source> Default for CharacterView<'source> {
+    fn default() -> Self {
+        Self { 
+            id: Default::default(), 
+            name: "New Character", 
+            concept: Default::default() }
+    }
 }
 
 /// The API for the character, expressed as an owned struct. Each mutation has
@@ -58,7 +83,7 @@ impl Character {
     }
 }
 
-impl CharacterView {
+impl<'source> CharacterView<'source> {
     /// Checks if a specific CharacterMutation can be safely applied.
     pub fn check_mutation(
         &self,
