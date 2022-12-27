@@ -3,6 +3,7 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
+use exalt_type::ExaltState;
 use id::{CharacterId, SetIdError};
 use name_and_concept::RemoveConceptError;
 use serde::{Deserialize, Serialize};
@@ -12,7 +13,11 @@ use thiserror::Error;
 /// unique keys.
 pub mod id;
 
+/// Traits which are unique to being a Solar Exalted.
+pub use exalt_type::SolarTraits;
+
 mod name_and_concept;
+mod exalt_type;
 /// An owned instance of a full (player) character. This is the format used in
 /// serialization and deserialization.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -20,6 +25,7 @@ pub struct Character {
     id: CharacterId,
     name: String,
     concept: Option<String>,
+    exalt_state: ExaltState,
 }
 
 impl Default for Character {
@@ -28,6 +34,7 @@ impl Default for Character {
             id: Default::default(),
             name: "New Character".to_owned(),
             concept: Default::default(),
+            exalt_state: Default::default(),
         }
     }
 }
@@ -39,6 +46,7 @@ pub struct CharacterView<'source> {
     id: CharacterId,
     name: &'source str,
     concept: Option<&'source str>,
+    exalt_state: ExaltState,
 }
 
 impl<'source> Default for CharacterView<'source> {
@@ -47,6 +55,7 @@ impl<'source> Default for CharacterView<'source> {
             id: Default::default(),
             name: "New Character",
             concept: Default::default(),
+            exalt_state: Default::default(),
         }
     }
 }
@@ -65,6 +74,10 @@ pub enum CharacterMutation {
     SetConcept(String),
     /// Remove the Character's concept
     RemoveConcept,
+    /// Set character to be mortal
+    SetMortal,
+    /// Set character to be Solar
+    SetSolar(SolarTraits),
 }
 
 impl Character {
@@ -78,6 +91,8 @@ impl Character {
             CharacterMutation::SetName(name) => self.check_set_name(name.as_str()),
             CharacterMutation::SetConcept(concept) => self.check_set_concept(concept.as_str()),
             CharacterMutation::RemoveConcept => self.check_remove_concept(),
+            CharacterMutation::SetMortal => self.check_set_mortal(),
+            CharacterMutation::SetSolar(solar_traits) => self.check_set_solar(solar_traits),
         }
     }
 
@@ -92,6 +107,8 @@ impl Character {
             CharacterMutation::SetName(name) => self.set_name(name.as_str()),
             CharacterMutation::SetConcept(concept) => self.set_concept(concept.as_str()),
             CharacterMutation::RemoveConcept => self.remove_concept(),
+            CharacterMutation::SetMortal => self.set_mortal(),
+            CharacterMutation::SetSolar(solar_traits) => self.set_solar(solar_traits),
         }
     }
 }
@@ -107,6 +124,8 @@ impl<'source> CharacterView<'source> {
             CharacterMutation::SetName(name) => self.check_set_name(name.as_str()),
             CharacterMutation::SetConcept(concept) => self.check_set_concept(concept.as_str()),
             CharacterMutation::RemoveConcept => self.check_remove_concept(),
+            CharacterMutation::SetMortal => self.check_set_mortal(),
+            CharacterMutation::SetSolar(solar_traits) => self.check_set_solar(solar_traits),
         }
     }
 
@@ -121,6 +140,8 @@ impl<'source> CharacterView<'source> {
             CharacterMutation::SetName(name) => self.set_name(name.as_str()),
             CharacterMutation::SetConcept(concept) => self.set_concept(concept.as_str()),
             CharacterMutation::RemoveConcept => self.remove_concept(),
+            CharacterMutation::SetMortal => self.set_mortal(),
+            CharacterMutation::SetSolar(solar_traits) => self.set_solar(solar_traits),
         }
     }
 }
