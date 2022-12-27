@@ -4,6 +4,7 @@
 //! with full Discord integration for over-the-internet play.
 
 use id::{CharacterId, SetIdError};
+use name_and_concept::RemoveConceptError;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
@@ -58,6 +59,12 @@ impl<'source> Default for CharacterView<'source> {
 pub enum CharacterMutation {
     /// Set the Character's Id.
     SetId(CharacterId),
+    /// Set the Character's name
+    SetName(String),
+    /// Set the Character's concept
+    SetConcept(String),
+    /// Remove the Character's concept
+    RemoveConcept,
 }
 
 impl Character {
@@ -68,6 +75,9 @@ impl Character {
     ) -> Result<(), CharacterMutationError> {
         match mutation {
             CharacterMutation::SetId(id) => self.check_set_id(*id),
+            CharacterMutation::SetName(name) => self.check_set_name(name.as_str()),
+            CharacterMutation::SetConcept(concept) => self.check_set_concept(concept.as_str()),
+            CharacterMutation::RemoveConcept => self.check_remove_concept(),
         }
     }
 
@@ -79,6 +89,9 @@ impl Character {
         self.check_mutation(mutation)?;
         match mutation {
             CharacterMutation::SetId(id) => self.set_id(*id),
+            CharacterMutation::SetName(name) => self.set_name(name.as_str()),
+            CharacterMutation::SetConcept(concept) => self.set_concept(concept.as_str()),
+            CharacterMutation::RemoveConcept => self.remove_concept(),
         }
     }
 }
@@ -91,17 +104,23 @@ impl<'source> CharacterView<'source> {
     ) -> Result<(), CharacterMutationError> {
         match mutation {
             CharacterMutation::SetId(id) => self.check_set_id(*id),
+            CharacterMutation::SetName(name) => self.check_set_name(name.as_str()),
+            CharacterMutation::SetConcept(concept) => self.check_set_concept(concept.as_str()),
+            CharacterMutation::RemoveConcept => self.check_remove_concept(),
         }
     }
 
     /// Applies a specific CharacterMutation or returns an error.
     pub fn apply_mutation(
         &mut self,
-        mutation: &CharacterMutation,
+        mutation: &'source CharacterMutation,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_mutation(mutation)?;
         match mutation {
             CharacterMutation::SetId(id) => self.set_id(*id),
+            CharacterMutation::SetName(name) => self.set_name(name.as_str()),
+            CharacterMutation::SetConcept(concept) => self.set_concept(concept.as_str()),
+            CharacterMutation::RemoveConcept => self.remove_concept(),
         }
     }
 }
@@ -113,6 +132,9 @@ pub enum CharacterMutationError {
     /// Error occurring while trying to set CharacterId
     #[error("Cannot set character Id")]
     SetIdError(#[from] SetIdError),
+    /// Error occurring while trying to remove concept
+    #[error("Cannot remove character concept")]
+    RemoveConceptError(#[from] RemoveConceptError),
 }
 
 /// A container to hold a successfully applied sequence of mutations, with

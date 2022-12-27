@@ -69,7 +69,7 @@ fn test_name_and_concept_character_event_source() {
     assert_eq!(character_view.concept(), Some("Wandering ronin"));
 
     // Check remove concept
-    let mutation = CharacterMutation::RemoveConcept();
+    let mutation = CharacterMutation::RemoveConcept;
     assert!(character_view.check_mutation(&mutation).is_ok());
     assert!(event_source.apply_mutation(mutation).is_ok());
     let character_view = event_source.as_character_view().unwrap();
@@ -89,11 +89,13 @@ fn test_name_and_concept_character_event_source() {
     assert_eq!(character_view.name(), "Drifting Leaves");
 
     assert!(event_source.can_redo());
-    assert!(!event_source.can_undo());
+    assert!(event_source.can_undo());
     assert!(event_source.undo());
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(character_view.name(), "New Character");
     assert!(character_view.concept().is_none());
+
+    assert!(!event_source.can_undo());
 
     // Check we can redo the full history
     assert!(event_source.redo());
