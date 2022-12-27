@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::{Character, CharacterMutationError, CharacterView};
 
@@ -16,11 +16,7 @@ impl Default for ExaltState {
 
 impl ExaltState {
     pub fn is_mortal(&self) -> bool {
-        if let Self::Mortal = self {
-            true
-        } else {
-            false
-        }
+        matches!(self, Self::Mortal)
     }
 
     pub fn is_exalted(&self) -> bool {
@@ -44,11 +40,17 @@ impl ExaltState {
         Ok(self)
     }
 
-    pub fn check_set_solar(&self, _solar_traits: &SolarTraits) -> Result<(), CharacterMutationError> {
+    pub fn check_set_solar(
+        &self,
+        _solar_traits: &SolarTraits,
+    ) -> Result<(), CharacterMutationError> {
         Ok(())
     }
 
-    pub fn set_solar(&mut self, solar_traits: &SolarTraits) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_solar(
+        &mut self,
+        solar_traits: &SolarTraits,
+    ) -> Result<&mut Self, CharacterMutationError> {
         *self = Self::Exalted(ExaltType::Solar(solar_traits.clone()));
         Ok(self)
     }
@@ -106,9 +108,12 @@ impl Character {
         self.exalt_state.check_set_mortal()
     }
 
-    /// Checks if character can be turned into a Solar Exalted with given 
+    /// Checks if character can be turned into a Solar Exalted with given
     /// traits.
-    pub fn check_set_solar(&self, solar_traits: &SolarTraits) -> Result<(), CharacterMutationError> {
+    pub fn check_set_solar(
+        &self,
+        solar_traits: &SolarTraits,
+    ) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_set_solar(solar_traits)
     }
 
@@ -119,7 +124,10 @@ impl Character {
     }
 
     /// Sets a character's Exaltation to be the given Solar exaltation.
-    pub fn set_solar(&mut self, solar_traits: &SolarTraits) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_solar(
+        &mut self,
+        solar_traits: &SolarTraits,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.exalt_state.set_solar(solar_traits)?;
         Ok(self)
     }
@@ -146,9 +154,12 @@ impl<'source> CharacterView<'source> {
         self.exalt_state.check_set_mortal()
     }
 
-    /// Checks if character can be turned into a Solar Exalted with given 
+    /// Checks if character can be turned into a Solar Exalted with given
     /// traits.
-    pub fn check_set_solar(&self, solar_traits: &SolarTraits) -> Result<(), CharacterMutationError> {
+    pub fn check_set_solar(
+        &self,
+        solar_traits: &SolarTraits,
+    ) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_set_solar(solar_traits)
     }
 
@@ -159,7 +170,10 @@ impl<'source> CharacterView<'source> {
     }
 
     /// Sets a character's Exaltation to be the given Solar exaltation.
-    pub fn set_solar(&mut self, solar_traits: &SolarTraits) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_solar(
+        &mut self,
+        solar_traits: &SolarTraits,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.exalt_state.set_solar(solar_traits)?;
         Ok(self)
     }

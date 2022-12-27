@@ -16,8 +16,8 @@ pub mod id;
 /// Traits which are unique to being a Solar Exalted.
 pub use exalt_type::SolarTraits;
 
-mod name_and_concept;
 mod exalt_type;
+mod name_and_concept;
 /// An owned instance of a full (player) character. This is the format used in
 /// serialization and deserialization.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

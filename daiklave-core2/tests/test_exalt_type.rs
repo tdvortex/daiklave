@@ -1,4 +1,6 @@
-use daiklave_core2::{Character, CharacterView, CharacterEventSource, CharacterMutation, SolarTraits};
+use daiklave_core2::{
+    Character, CharacterEventSource, CharacterMutation, CharacterView, SolarTraits,
+};
 
 #[test]
 fn test_exalt_type_character() {
