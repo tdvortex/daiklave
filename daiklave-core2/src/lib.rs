@@ -69,6 +69,7 @@ pub struct CharacterView<'source> {
     exalt_state: ExaltStateView<'source>,
     willpower: Willpower,
     health: Health,
+    attributes: Attributes,
 }
 
 impl<'source> Default for CharacterView<'source> {
@@ -80,6 +81,7 @@ impl<'source> Default for CharacterView<'source> {
             exalt_state: Default::default(),
             willpower: Default::default(),
             health: Default::default(),
+            attributes: Default::default(),
         }
     }
 }
