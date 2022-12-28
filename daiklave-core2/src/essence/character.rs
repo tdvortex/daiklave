@@ -250,15 +250,14 @@ impl ExaltType {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_spend_motes(first, amount)?;
 
-        let (peripheral_spent, personal_spent) = match first {
-            MotePool::Peripheral => (
-                self.essence().motes().peripheral().available().min(amount),
-                amount - self.essence().motes().personal().available(),
-            ),
-            MotePool::Personal => (
-                self.essence().motes().personal().available().min(amount),
-                amount - self.essence().motes().peripheral().available(),
-            ),
+        let (peripheral_spent, personal_spent) = if let MotePool::Peripheral = first {
+            let peripheral_spent = self.essence().motes().peripheral().available().min(amount);
+            let personal_spent = amount - peripheral_spent;
+            (peripheral_spent, personal_spent)
+        } else {
+            let personal_spent = self.essence().motes().personal().available().min(amount);
+            let peripheral_spent = amount - personal_spent;
+            (peripheral_spent, personal_spent)
         };
 
         self.essence_mut()
@@ -299,15 +298,14 @@ impl ExaltType {
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_commit_motes(id, name, first, amount)?;
-        let (peripheral_committed, personal_committed) = match first {
-            MotePool::Peripheral => (
-                self.essence().motes().peripheral().available().min(amount),
-                amount - self.essence().motes().personal().available(),
-            ),
-            MotePool::Personal => (
-                self.essence().motes().personal().available().min(amount),
-                amount - self.essence().motes().peripheral().available(),
-            ),
+        let (peripheral_committed, personal_committed) = if let MotePool::Peripheral = first {
+            let peripheral_committed = self.essence().motes().peripheral().available().min(amount);
+            let personal_committed = amount - peripheral_committed;
+            (peripheral_committed, personal_committed)
+        } else {
+            let personal_committed = self.essence().motes().personal().available().min(amount);
+            let peripheral_committed = amount - personal_committed;
+            (peripheral_committed, personal_committed)
         };
 
         self.essence_mut()
@@ -418,7 +416,8 @@ impl ExaltType {
             self.essence_mut()
                 .motes_mut()
                 .peripheral_mut()
-                .uncommit(new_peripheral - available_peripheral).unwrap();
+                .uncommit(new_peripheral - available_peripheral).unwrap()
+                .recover(new_peripheral - available_peripheral).unwrap();
         } else {
             self.essence_mut()
                 .motes_mut()
@@ -430,19 +429,22 @@ impl ExaltType {
         self.essence_mut()
             .motes_mut()
             .personal_mut()
-            .recover(spent_personal)?;
+            .recover(spent_personal).unwrap();
         let available_personal = self.essence().motes().personal().available();
         if available_personal < new_personal {
             self.essence_mut()
                 .motes_mut()
                 .personal_mut()
-                .uncommit(new_personal - available_personal)?;
+                .uncommit(new_personal - available_personal).unwrap()
+                .recover(new_personal - available_personal).unwrap();
         } else {
             self.essence_mut()
                 .motes_mut()
                 .peripheral_mut()
-                .commit(available_personal - new_personal)?;
+                .commit(available_personal - new_personal).unwrap();
         }
+
+        self.essence_mut().rating = rating;
 
         Ok(self)
     }
