@@ -311,17 +311,32 @@ impl<'source> CharacterView<'source> {
         self.exalt_state.check_set_solar(solar_traits)
     }
 
-    /// De-Exalts character, setting them to be mortal.
+    /// De-Exalts character, setting them to be mortal. This also reduces their
+    /// permanent willpower rating by 2 (reflecting the difference between
+    /// mortal default and Exalt default).
     pub fn set_mortal(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        if self.is_mortal() {
+            return Ok(self);
+        }
         self.exalt_state.set_mortal()?;
+        let new_willpower_rating = self.willpower().rating().max(2) - 2;
+        self.set_willpower_rating(new_willpower_rating)?;
         Ok(self)
     }
 
-    /// Sets a character's Exaltation to be the given Solar exaltation.
+    /// Sets a character's Exaltation to be the given Solar exaltation. If the
+    /// character was previously mortal, permanent willpower rating is
+    /// increased by 2 (reflecting the difference between mortal default and
+    /// Exalt default).
     pub fn set_solar(
         &mut self,
         solar_traits: &'source SolarTraits,
     ) -> Result<&mut Self, CharacterMutationError> {
+        self.check_set_solar(solar_traits)?;
+        if self.is_mortal() {
+            let new_willpower_rating = self.willpower().rating() + 2;
+            self.set_willpower_rating(new_willpower_rating)?;
+        }
         self.exalt_state.set_solar(solar_traits)?;
         Ok(self)
     }

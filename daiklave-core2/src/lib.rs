@@ -57,6 +57,7 @@ pub struct CharacterView<'source> {
     name: &'source str,
     concept: Option<&'source str>,
     exalt_state: ExaltStateView<'source>,
+    willpower: Willpower,
 }
 
 impl<'source> Default for CharacterView<'source> {
@@ -66,6 +67,7 @@ impl<'source> Default for CharacterView<'source> {
             name: "New Character",
             concept: Default::default(),
             exalt_state: Default::default(),
+            willpower: Default::default(),
         }
     }
 }
