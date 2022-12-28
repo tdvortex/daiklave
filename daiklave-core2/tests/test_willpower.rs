@@ -1,4 +1,4 @@
-use daiklave_core2::{Character, SolarTraits, CharacterView};
+use daiklave_core2::{Character, CharacterView, SolarTraits};
 
 #[test]
 fn test_willpower_character() {
