@@ -59,7 +59,7 @@ impl Default for Attributes {
 
 impl Attributes {
     /// Returns the dot value for the specific attribute.
-    pub fn get_dots(&self, attribute_name: AttributeName) -> u8 {
+    pub fn dots(&self, attribute_name: AttributeName) -> u8 {
         match attribute_name {
             AttributeName::Strength => self.strength,
             AttributeName::Dexterity => self.dexterity,
