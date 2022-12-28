@@ -1,4 +1,4 @@
-use daiklave_core2::Character;
+use daiklave_core2::{Character, AttributeName};
 
 #[test]
 fn test_attributes_character() {

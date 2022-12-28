@@ -3,6 +3,7 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
+use attributes::SetAttributesError;
 use essence::{CommitMotesError, SpendMotesError};
 use essence::{RecoverMotesError, SetEssenceRatingError, UncommitMotesError};
 use exalt_type::{ExaltState, ExaltStateView};
@@ -20,8 +21,10 @@ pub use exalt_type::SolarTraits;
 
 pub use essence::CommittedMotesId;
 pub use essence::MotePool;
+pub use attributes::{AttributeName, Attributes};
 use willpower::Willpower;
 
+mod attributes;
 mod essence;
 mod exalt_type;
 mod health;
@@ -39,6 +42,7 @@ pub struct Character {
     exalt_state: ExaltState,
     willpower: Willpower,
     health: Health,
+    attributes: Attributes,
 }
 
 impl Default for Character {
@@ -50,6 +54,7 @@ impl Default for Character {
             exalt_state: Default::default(),
             willpower: Default::default(),
             health: Default::default(),
+            attributes: Default::default(),
         }
     }
 }
@@ -283,6 +288,9 @@ pub enum CharacterMutationError {
     /// Error occurring while trying to set essence rating
     #[error("Cannot set Essence rating")]
     SetEssenceRatingError(#[from] SetEssenceRatingError),
+    /// Error occurring while trying to set an attribute rating
+    #[error("Cannot set attribute rating")]
+    SetAttributesError(#[from] SetAttributesError),
 }
 
 /// A container to hold a successfully applied sequence of mutations, with
