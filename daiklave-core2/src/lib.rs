@@ -4,8 +4,7 @@
 //! with full Discord integration for over-the-internet play.
 
 use abilities::{
-    Abilities, AbilitiesView, AddSpecialtyError, RemoveSpecialtyError,
-    SetAbilityError,
+    Abilities, AbilitiesView, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError,
 };
 use attributes::SetAttributesError;
 use essence::{CommitMotesError, SpendMotesError};
@@ -141,6 +140,12 @@ pub enum CharacterMutation {
     HealDamage(u8),
     /// Sets an attribute to a specific rating.
     SetAttribute(AttributeName, u8),
+    /// Sets an ability (other than Craft or Martial Arts) to a dot rating.
+    SetAbilityDots(AbilityNameVanilla, u8),
+    /// Adds a specialty to a non-zero, non-Craft, non-Martial Arts ability.
+    AddSpecialty(AbilityNameVanilla, String),
+    /// Removes a specialty from a non-Craft, non-Martial Arts ability.
+    RemoveSpecialty(AbilityNameVanilla, String),
 }
 
 impl Character {
@@ -177,6 +182,15 @@ impl Character {
             CharacterMutation::SetAttribute(attribute_name, dots) => {
                 self.check_set_attribute(*attribute_name, *dots)
             }
+            CharacterMutation::SetAbilityDots(ability_name, dots) => {
+                self.check_set_ability_dots(*ability_name, *dots)
+            }
+            CharacterMutation::AddSpecialty(ability_name, specialty) => {
+                self.check_add_specialty(*ability_name, specialty.as_str())
+            }
+            CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
+                self.check_remove_specialty(*ability_name, specialty.as_str())
+            }
         }
     }
 
@@ -211,6 +225,15 @@ impl Character {
             CharacterMutation::HealDamage(amount) => self.heal_damage(*amount),
             CharacterMutation::SetAttribute(attribute_name, dots) => {
                 self.set_attribute(*attribute_name, *dots)
+            }
+            CharacterMutation::SetAbilityDots(ability_name, dots) => {
+                self.set_ability_dots(*ability_name, *dots)
+            }
+            CharacterMutation::AddSpecialty(ability_name, specialty) => {
+                self.add_specialty(*ability_name, specialty.as_str())
+            }
+            CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
+                self.remove_specialty(*ability_name, specialty.as_str())
             }
         }
     }
@@ -250,6 +273,15 @@ impl<'source> CharacterView<'source> {
             CharacterMutation::SetAttribute(attribute_name, dots) => {
                 self.check_set_attribute(*attribute_name, *dots)
             }
+            CharacterMutation::SetAbilityDots(ability_name, dots) => {
+                self.check_set_ability_dots(*ability_name, *dots)
+            }
+            CharacterMutation::AddSpecialty(ability_name, specialty) => {
+                self.check_add_specialty(*ability_name, specialty.as_str())
+            }
+            CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
+                self.check_remove_specialty(*ability_name, specialty.as_str())
+            }
         }
     }
 
@@ -284,6 +316,15 @@ impl<'source> CharacterView<'source> {
             CharacterMutation::HealDamage(amount) => self.heal_damage(*amount),
             CharacterMutation::SetAttribute(attribute_name, dots) => {
                 self.set_attribute(*attribute_name, *dots)
+            }
+            CharacterMutation::SetAbilityDots(ability_name, dots) => {
+                self.set_ability_dots(*ability_name, *dots)
+            }
+            CharacterMutation::AddSpecialty(ability_name, specialty) => {
+                self.add_specialty(*ability_name, specialty.as_str())
+            }
+            CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
+                self.remove_specialty(*ability_name, specialty.as_str())
             }
         }
     }
