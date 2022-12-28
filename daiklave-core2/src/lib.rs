@@ -5,7 +5,7 @@
 
 use essence::{RecoverMotesError, UncommitMotesError, SetEssenceRatingError};
 use essence::{SpendMotesError, CommitMotesError};
-use exalt_type::ExaltState;
+use exalt_type::{ExaltState, ExaltStateView};
 use id::{CharacterId, SetIdError};
 use name_and_concept::RemoveConceptError;
 use serde::{Deserialize, Serialize};
@@ -52,7 +52,7 @@ pub struct CharacterView<'source> {
     id: CharacterId,
     name: &'source str,
     concept: Option<&'source str>,
-    exalt_state: ExaltState,
+    exalt_state: ExaltStateView<'source>,
 }
 
 impl<'source> Default for CharacterView<'source> {
