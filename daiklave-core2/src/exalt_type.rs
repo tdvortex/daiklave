@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{Character, CharacterMutationError, CharacterView};
+use crate::{Character, CharacterMutationError, CharacterView, essence::{Essence, Motes}};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum ExaltState {
@@ -56,6 +56,11 @@ impl ExaltState {
     }
 }
 
+struct ExaltTraits {
+    essence: Essence,
+    exalt_type: ExaltType,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum ExaltType {
     Solar(SolarTraits),
@@ -69,7 +74,9 @@ impl ExaltType {
 
 /// Traits which are unique to being a Solar Exalted.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct SolarTraits;
+pub struct SolarTraits {
+    pub(crate) essence: Essence,
+}
 
 pub struct SolarTraitsBuilder;
 
@@ -83,7 +90,16 @@ impl SolarTraits {
 impl SolarTraitsBuilder {
     /// Consumes the builder to finalize Solar Traits.
     pub fn build(self) -> SolarTraits {
-        SolarTraits
+        SolarTraits {
+            essence: Essence {
+                rating: 1,
+                motes: Motes {
+                    peripheral: todo!(),
+                    personal: todo!(),
+                    commitments: todo!(),
+                }
+            }
+        }
     }
 }
 

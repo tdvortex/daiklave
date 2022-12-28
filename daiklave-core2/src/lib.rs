@@ -3,6 +3,8 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
+use essence::{RecoverMotesError, UncommitMotesError, SetEssenceRatingError};
+use essence::{SpendMotesError, CommitMotesError};
 use exalt_type::ExaltState;
 use id::{CharacterId, SetIdError};
 use name_and_concept::RemoveConceptError;
@@ -16,8 +18,12 @@ pub mod id;
 /// Traits which are unique to being a Solar Exalted.
 pub use exalt_type::SolarTraits;
 
+pub use essence::MotePool;
+pub use essence::CommittedMotesId;
+
 mod exalt_type;
 mod name_and_concept;
+mod essence;
 /// An owned instance of a full (player) character. This is the format used in
 /// serialization and deserialization.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -156,6 +162,21 @@ pub enum CharacterMutationError {
     /// Error occurring while trying to remove concept
     #[error("Cannot remove character concept")]
     RemoveConceptError(#[from] RemoveConceptError),
+    /// Error occurring while trying to spend motes
+    #[error("Cannot spend motes")]
+    SpendMotesError(#[from] SpendMotesError),
+    /// Error occurring while trying to commit motes
+    #[error("Cannot commit motes")]
+    CommitMotesError(#[from] CommitMotesError),
+    /// Error occurring while trying to recover motes
+    #[error("Cannot recover motes")]
+    RecoverMotesError(#[from] RecoverMotesError),
+    /// Error occuring while trying to uncommit motes
+    #[error("Cannot uncommit motes")]
+    UncommitMotesError(#[from] UncommitMotesError),
+    /// Error occurring while trying to set essence rating
+    #[error("Cannot set Essence rating")]
+    SetEssenceRatingError(#[from] SetEssenceRatingError),
 }
 
 /// A container to hold a successfully applied sequence of mutations, with
