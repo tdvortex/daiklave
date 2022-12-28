@@ -1,4 +1,4 @@
-use daiklave_core2::Character;
+use daiklave_core2::{Character, WoundPenalty, DamageLevel};
 
 #[test]
 fn test_character_health() {
@@ -14,7 +14,7 @@ fn test_character_health() {
         (WoundPenalty::MinusFour, None),
         (WoundPenalty::Incapacitated, None),
     ];
-    for ((wound_penalty, damage), (expected_wound_penalty, expected_damage)) in character.health().iter().zip(expected.iter()) {
+    for ((wound_penalty, damage), &(expected_wound_penalty, expected_damage)) in character.health().iter().zip(expected.iter()) {
         count += 1;
         assert_eq!(wound_penalty, expected_wound_penalty);
         assert_eq!(damage, expected_damage);
@@ -46,7 +46,7 @@ fn test_character_health() {
         (WoundPenalty::MinusFour, None),
         (WoundPenalty::Incapacitated, None),
     ];
-    for ((wound_penalty, damage), (expected_wound_penalty, expected_damage)) in character.health().iter().zip(expected.iter()) {
+    for ((wound_penalty, damage), &(expected_wound_penalty, expected_damage)) in character.health().iter().zip(expected.iter()) {
         count += 1;
         assert_eq!(wound_penalty, expected_wound_penalty);
         assert_eq!(damage, expected_damage);
@@ -58,13 +58,13 @@ fn test_character_health() {
     // Check taking damage
     assert!(character.check_take_damage(DamageLevel::Bashing, 3).is_ok());
     assert!(character.take_damage(DamageLevel::Bashing, 3).is_ok());
-    assert!(character.health().current_wound_penalty(), WoundPenalty::MinusOne);
+    assert_eq!(character.health().current_wound_penalty(), WoundPenalty::MinusOne);
     assert!(character.check_take_damage(DamageLevel::Lethal, 2).is_ok());
     assert!(character.take_damage(DamageLevel::Lethal, 2).is_ok());
-    assert!(character.health().current_wound_penalty(), WoundPenalty::MinusTwo);
+    assert_eq!(character.health().current_wound_penalty(), WoundPenalty::MinusTwo);
     assert!(character.check_take_damage(DamageLevel::Aggravated, 2).is_ok());
     assert!(character.take_damage(DamageLevel::Aggravated, 2).is_ok());
-    assert!(character.health().current_wound_penalty(), WoundPenalty::MinusFour);
+    assert_eq!(character.health().current_wound_penalty(), WoundPenalty::MinusFour);
     assert!(character.check_take_damage(DamageLevel::Bashing, 1).is_ok());
     assert!(character.take_damage(DamageLevel::Bashing, 1).is_ok());
     
@@ -79,7 +79,7 @@ fn test_character_health() {
         (WoundPenalty::MinusFour, Some(DamageLevel::Bashing)),
         (WoundPenalty::Incapacitated, Some(DamageLevel::Bashing)),
     ];
-    for ((wound_penalty, damage), (expected_wound_penalty, expected_damage)) in character.health().iter().zip(expected.iter()) {
+    for ((wound_penalty, damage), &(expected_wound_penalty, expected_damage)) in character.health().iter().zip(expected.iter()) {
         count += 1;
         assert_eq!(wound_penalty, expected_wound_penalty);
         assert_eq!(damage, expected_damage);
@@ -90,10 +90,10 @@ fn test_character_health() {
     // Check healing
     assert!(character.check_heal_damage(2).is_ok());
     assert!(character.heal_damage(2).is_ok());
-    assert!(character.health().current_wound_penalty(), WoundPenalty::MinusTwo);
+    assert_eq!(character.health().current_wound_penalty(), WoundPenalty::MinusTwo);
     assert!(character.check_heal_damage(3).is_ok());
     assert!(character.heal_damage(3).is_ok());
-    assert!(character.health().current_wound_penalty(), WoundPenalty::MinusOne);
+    assert_eq!(character.health().current_wound_penalty(), WoundPenalty::MinusOne);
     assert!(character.check_heal_damage(3).is_ok());
     assert!(character.heal_damage(3).is_ok());
     let mut count = 0;
@@ -107,7 +107,7 @@ fn test_character_health() {
         (WoundPenalty::MinusFour, None),
         (WoundPenalty::Incapacitated, None),
     ];
-    for ((wound_penalty, damage), (expected_wound_penalty, expected_damage)) in character.health().iter().zip(expected.iter()) {
+    for ((wound_penalty, damage), &(expected_wound_penalty, expected_damage)) in character.health().iter().zip(expected.iter()) {
         count += 1;
         assert_eq!(wound_penalty, expected_wound_penalty);
         assert_eq!(damage, expected_damage);

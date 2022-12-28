@@ -24,8 +24,11 @@ use willpower::Willpower;
 
 mod essence;
 mod exalt_type;
+mod health;
 mod name_and_concept;
 mod willpower;
+
+pub use health::{Health, DamageLevel, WoundPenalty};
 /// An owned instance of a full (player) character. This is the format used in
 /// serialization and deserialization.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -35,6 +38,7 @@ pub struct Character {
     concept: Option<String>,
     exalt_state: ExaltState,
     willpower: Willpower,
+    health: Health,
 }
 
 impl Default for Character {
@@ -45,6 +49,7 @@ impl Default for Character {
             concept: Default::default(),
             exalt_state: Default::default(),
             willpower: Default::default(),
+            health: Default::default(),
         }
     }
 }
