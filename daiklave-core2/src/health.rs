@@ -1,23 +1,34 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::{Character, CharacterMutationError};
 
+/// The possible wound penalty levels for a health box or character
 #[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Clone, Copy)]
 pub enum WoundPenalty {
+    /// -0 wound penalty
     Zero,
+    /// -1 wound penalty
     MinusOne,
+    /// -2 wound penalty
     MinusTwo,
+    /// -4 wound penalty
     MinusFour,
+    /// Incapacitated-level wound penalty
     Incapacitated,
 }
 
+/// The three levels of damage severity
 #[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Clone, Copy)]
 pub enum DamageLevel {
+    /// Bashing damage [/]
     Bashing,
+    /// Lethal damage [X]
     Lethal,
+    /// Aggravated damage [∗]
     Aggravated,
 }
 
+/// Struct for a character's health track.
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 pub struct Health {
     zero_boxes: u8,
@@ -32,20 +43,24 @@ pub struct Health {
 
 impl Default for Health {
     fn default() -> Self {
-        Self { 
-            zero_boxes: 1, 
+        Self {
+            zero_boxes: 1,
             minus_one_boxes: 2,
             minus_two_boxes: 2,
             minus_four_boxes: 1,
             incapacitated_boxes: 1,
             bashing_damage: 0,
-            lethal_damage: 0, 
+            lethal_damage: 0,
             aggravated_damage: 0,
         }
     }
 }
 
 impl Health {
+    /// Iterates over a health track as boxes from left to right. Lower wound
+    /// penalties (-0, -1) appear before higher wound penalties (-4, INC);
+    /// worse damage types (Agg, Lethal) appear before lighter wound penalties
+    /// (Bashing, no damage)
     pub fn iter(&self) -> impl Iterator<Item = (WoundPenalty, Option<DamageLevel>)> {
         HealthIter {
             zero_boxes: self.zero_boxes,
@@ -59,6 +74,8 @@ impl Health {
         }
     }
 
+    /// The character's current wound penalty, given their current damage
+    /// amount.
     pub fn current_wound_penalty(&self) -> WoundPenalty {
         let mut damage = self.bashing_damage + self.lethal_damage + self.aggravated_damage;
         if damage <= self.zero_boxes {
@@ -86,7 +103,11 @@ impl Health {
         }
     }
 
-    fn set_wound_penalties(&mut self, new_wound_penalties: &[WoundPenalty]) -> Result<&mut Self, CharacterMutationError> {
+    ///
+    fn set_wound_penalties(
+        &mut self,
+        new_wound_penalties: &[WoundPenalty],
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.bashing_damage = 0;
         self.lethal_damage = 0;
         self.aggravated_damage = 0;
@@ -97,23 +118,47 @@ impl Health {
         self.incapacitated_boxes = 0;
         for wound_penalty in new_wound_penalties.iter() {
             match wound_penalty {
-                WoundPenalty::Zero => {self.zero_boxes += 1;}
-                WoundPenalty::MinusOne => {self.minus_one_boxes += 1;}
-                WoundPenalty::MinusTwo => {self.minus_two_boxes += 1;}
-                WoundPenalty::MinusFour => {self.minus_four_boxes += 1;}
-                WoundPenalty::Incapacitated => {self.incapacitated_boxes += 1;}
+                WoundPenalty::Zero => {
+                    self.zero_boxes += 1;
+                }
+                WoundPenalty::MinusOne => {
+                    self.minus_one_boxes += 1;
+                }
+                WoundPenalty::MinusTwo => {
+                    self.minus_two_boxes += 1;
+                }
+                WoundPenalty::MinusFour => {
+                    self.minus_four_boxes += 1;
+                }
+                WoundPenalty::Incapacitated => {
+                    self.incapacitated_boxes += 1;
+                }
             }
         }
         Ok(self)
     }
 
-    fn take_damage(&mut self, damage_level: DamageLevel, amount: u8) -> Result<&mut Self, CharacterMutationError> {
-        let total_health = self.zero_boxes + self.minus_one_boxes + self.minus_two_boxes + self.minus_four_boxes + self.incapacitated_boxes;
+    fn take_damage(
+        &mut self,
+        damage_level: DamageLevel,
+        amount: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        let total_health = self.zero_boxes
+            + self.minus_one_boxes
+            + self.minus_two_boxes
+            + self.minus_four_boxes
+            + self.incapacitated_boxes;
 
         match damage_level {
-            DamageLevel::Bashing => {self.bashing_damage += amount;}
-            DamageLevel::Lethal => {self.lethal_damage += amount;}
-            DamageLevel::Aggravated => {self.aggravated_damage += amount;}
+            DamageLevel::Bashing => {
+                self.bashing_damage += amount;
+            }
+            DamageLevel::Lethal => {
+                self.lethal_damage += amount;
+            }
+            DamageLevel::Aggravated => {
+                self.aggravated_damage += amount;
+            }
         }
 
         while self.bashing_damage + self.lethal_damage + self.aggravated_damage > total_health {
@@ -219,34 +264,58 @@ impl Iterator for HealthIter {
     }
 }
 
-
 impl Character {
+    /// Gets the character's health state (read-only).
     pub fn health(&self) -> &Health {
         &self.health
     }
 
-    pub fn check_set_wound_penalties(&self, new_wound_penalties: &[WoundPenalty]) -> Result<(), CharacterMutationError> {
+    /// Checks if wound penalties can be set to a specific level.
+    pub fn check_set_wound_penalties(
+        &self,
+        _new_wound_penalties: &[WoundPenalty],
+    ) -> Result<(), CharacterMutationError> {
         Ok(())
     }
 
-    pub fn set_wound_penalties(&mut self, new_wound_penalties: &[WoundPenalty]) -> Result<&mut Self, CharacterMutationError> {
+    /// Sets a character's health track to be the specified set of wound
+    /// penalies. Additionally heals all damage.
+    pub fn set_wound_penalties(
+        &mut self,
+        new_wound_penalties: &[WoundPenalty],
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.health.set_wound_penalties(new_wound_penalties)?;
         Ok(self)
     }
 
-    pub fn check_take_damage(&self, damage_level: DamageLevel, amount: u8) -> Result<(), CharacterMutationError> {
+    /// Checks if character can be assigned an amount and type of damage.
+    pub fn check_take_damage(
+        &self,
+        _damage_level: DamageLevel,
+        _6amount: u8,
+    ) -> Result<(), CharacterMutationError> {
         Ok(())
     }
 
-    pub fn take_damage(&mut self, damage_level: DamageLevel, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+    /// Adds damage to character (including overflow rollovers). Caps out at
+    /// being full up with aggravated.
+    pub fn take_damage(
+        &mut self,
+        damage_level: DamageLevel,
+        amount: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.health.take_damage(damage_level, amount)?;
         Ok(self)
     }
 
-    pub fn check_heal_damage(&self, amount: u8) -> Result<(), CharacterMutationError> {
+    /// Checks if the character can heal the specified amount of damage.
+    pub fn check_heal_damage(&self, _amount: u8) -> Result<(), CharacterMutationError> {
         Ok(())
     }
 
+    /// Heals a character for the specified amount of damage (capped at the
+    /// amount of damage they actually have). Bashing heals before lethal which
+    /// heals before aggravated.
     pub fn heal_damage(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         self.health.heal_damage(amount)?;
         Ok(self)

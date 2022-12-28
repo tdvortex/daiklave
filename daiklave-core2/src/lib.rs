@@ -28,7 +28,7 @@ mod health;
 mod name_and_concept;
 mod willpower;
 
-pub use health::{Health, DamageLevel, WoundPenalty};
+pub use health::{DamageLevel, Health, WoundPenalty};
 /// An owned instance of a full (player) character. This is the format used in
 /// serialization and deserialization.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
