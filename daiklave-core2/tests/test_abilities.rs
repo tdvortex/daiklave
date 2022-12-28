@@ -1,10 +1,10 @@
-use daiklave_core2::Character;
+use daiklave_core2::{Character, AbilityNameVanilla};
 
 #[test]
 fn test_abilities_character() {
     // Check default abilities
     let mut character = Character::default();
-    let expected = vec![
+    let expected: Vec<(AbilityNameVanilla, u8, Option<&str>)> = vec![
         (AbilityNameVanilla::Archery, 0, None),
         (AbilityNameVanilla::Athletics, 0, None),
         (AbilityNameVanilla::Awareness, 0, None),
@@ -32,8 +32,8 @@ fn test_abilities_character() {
     ];
 
     for (ability_name_vanilla, expected_dots, expected_specialties) in expected.iter() {
-        assert_eq!(character.abilities().dots(ability_name_vanilla), expected_dots);
-        assert_eq!(character.abilities().specialties(ability_name_vanilla).next(), expected_specialties);
+        assert_eq!(character.abilities().dots(*ability_name_vanilla), *expected_dots);
+        assert_eq!(character.abilities().specialties(*ability_name_vanilla).next(), *expected_specialties);
     }
 
     // Check set ability dots

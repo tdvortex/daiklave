@@ -3,6 +3,7 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
+use abilities::{SetAbilityError, AddSpecialtyError, RemoveSpecialtyError};
 use attributes::SetAttributesError;
 use essence::{CommitMotesError, SpendMotesError};
 use essence::{RecoverMotesError, SetEssenceRatingError, UncommitMotesError};
@@ -19,11 +20,13 @@ pub mod id;
 /// Traits which are unique to being a Solar Exalted.
 pub use exalt_type::SolarTraits;
 
+pub use abilities::{AbilityNameVanilla, Abilities};
 pub use attributes::{AttributeName, Attributes};
 pub use essence::CommittedMotesId;
 pub use essence::MotePool;
 use willpower::Willpower;
 
+mod abilities;
 mod attributes;
 mod essence;
 mod exalt_type;
@@ -43,6 +46,7 @@ pub struct Character {
     willpower: Willpower,
     health: Health,
     attributes: Attributes,
+    abilities: Abilities,
 }
 
 impl Default for Character {
@@ -55,6 +59,7 @@ impl Default for Character {
             willpower: Default::default(),
             health: Default::default(),
             attributes: Default::default(),
+            abilities: Default::default(),
         }
     }
 }
@@ -307,6 +312,15 @@ pub enum CharacterMutationError {
     /// Error occurring while trying to set an attribute rating
     #[error("Cannot set attribute rating")]
     SetAttributesError(#[from] SetAttributesError),
+    /// Error occurring while trying to set an ability dot rating
+    #[error("Cannot set ability rating")]
+    SetAbilityError(#[from] SetAbilityError),
+    /// Error occurring while trying to add a specialty
+    #[error("Cannot add specialty")]
+    AddSpecialtyError(#[from] AddSpecialtyError),
+    /// Error occurring while trying to remove a specialty
+    #[error("Cannot remove specialty")]
+    RemoveSpecialtyError(#[from] RemoveSpecialtyError),
 }
 
 /// A container to hold a successfully applied sequence of mutations, with
