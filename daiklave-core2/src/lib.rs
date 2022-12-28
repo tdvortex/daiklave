@@ -3,7 +3,10 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
-use abilities::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
+use abilities::{
+    Abilities, AbilitiesView, AddSpecialtyError, RemoveSpecialtyError,
+    SetAbilityError,
+};
 use attributes::SetAttributesError;
 use essence::{CommitMotesError, SpendMotesError};
 use essence::{RecoverMotesError, SetEssenceRatingError, UncommitMotesError};
@@ -20,7 +23,7 @@ pub mod id;
 /// Traits which are unique to being a Solar Exalted.
 pub use exalt_type::SolarTraits;
 
-pub use abilities::{Abilities, AbilityNameVanilla};
+pub use abilities::AbilityNameVanilla;
 pub use attributes::{AttributeName, Attributes};
 pub use essence::CommittedMotesId;
 pub use essence::MotePool;
@@ -75,6 +78,7 @@ pub struct CharacterView<'source> {
     willpower: Willpower,
     health: Health,
     attributes: Attributes,
+    abilities: AbilitiesView<'source>,
 }
 
 impl<'source> Default for CharacterView<'source> {
@@ -87,6 +91,7 @@ impl<'source> Default for CharacterView<'source> {
             willpower: Default::default(),
             health: Default::default(),
             attributes: Default::default(),
+            abilities: Default::default(),
         }
     }
 }
