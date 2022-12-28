@@ -20,10 +20,12 @@ pub use exalt_type::SolarTraits;
 
 pub use essence::CommittedMotesId;
 pub use essence::MotePool;
+use willpower::Willpower;
 
 mod essence;
 mod exalt_type;
 mod name_and_concept;
+mod willpower;
 /// An owned instance of a full (player) character. This is the format used in
 /// serialization and deserialization.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -32,6 +34,7 @@ pub struct Character {
     name: String,
     concept: Option<String>,
     exalt_state: ExaltState,
+    willpower: Willpower,
 }
 
 impl Default for Character {
@@ -41,6 +44,7 @@ impl Default for Character {
             name: "New Character".to_owned(),
             concept: Default::default(),
             exalt_state: Default::default(),
+            willpower: Default::default(),
         }
     }
 }
