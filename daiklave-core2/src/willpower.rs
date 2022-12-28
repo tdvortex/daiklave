@@ -35,10 +35,7 @@ impl Character {
 
     /// Checks if the character's current willpower can be set to the specified
     /// amount.
-    pub fn check_set_current_willpower(
-        &self,
-        _amount: u8,
-    ) -> Result<(), CharacterMutationError> {
+    pub fn check_set_current_willpower(&self, _amount: u8) -> Result<(), CharacterMutationError> {
         Ok(())
     }
 
@@ -76,10 +73,7 @@ impl<'source> CharacterView<'source> {
 
     /// Checks if the character's current willpower can be set to the specified
     /// amount.
-    pub fn check_set_current_willpower(
-        &self,
-        _amount: u8,
-    ) -> Result<(), CharacterMutationError> {
+    pub fn check_set_current_willpower(&self, _amount: u8) -> Result<(), CharacterMutationError> {
         Ok(())
     }
 
