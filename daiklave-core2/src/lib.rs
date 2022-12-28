@@ -19,9 +19,9 @@ pub mod id;
 /// Traits which are unique to being a Solar Exalted.
 pub use exalt_type::SolarTraits;
 
+pub use attributes::{AttributeName, Attributes};
 pub use essence::CommittedMotesId;
 pub use essence::MotePool;
-pub use attributes::{AttributeName, Attributes};
 use willpower::Willpower;
 
 mod attributes;
