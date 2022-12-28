@@ -251,7 +251,7 @@ impl Character {
     }
 
     /// De-Exalts character, setting them to be mortal. This also reduces their
-    /// permanent willpower rating by 2 (reflecting the difference between 
+    /// permanent willpower rating by 2 (reflecting the difference between
     /// mortal default and Exalt default).
     pub fn set_mortal(&mut self) -> Result<&mut Self, CharacterMutationError> {
         if self.is_mortal() {
@@ -265,7 +265,7 @@ impl Character {
 
     /// Sets a character's Exaltation to be the given Solar exaltation. If the
     /// character was previously mortal, permanent willpower rating is
-    /// increased by 2 (reflecting the difference between mortal default and 
+    /// increased by 2 (reflecting the difference between mortal default and
     /// Exalt default).
     pub fn set_solar(
         &mut self,
