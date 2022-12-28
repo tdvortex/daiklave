@@ -1,4 +1,4 @@
-use daiklave_core2::{Character, AbilityNameVanilla};
+use daiklave_core2::{AbilityNameVanilla, Character};
 
 #[test]
 fn test_abilities_character() {
@@ -32,36 +32,85 @@ fn test_abilities_character() {
     ];
 
     for (ability_name_vanilla, expected_dots, expected_specialties) in expected.iter() {
-        assert_eq!(character.abilities().dots(*ability_name_vanilla), *expected_dots);
-        assert_eq!(character.abilities().specialties(*ability_name_vanilla).next(), *expected_specialties);
+        assert_eq!(
+            character.abilities().dots(*ability_name_vanilla),
+            *expected_dots
+        );
+        assert_eq!(
+            character
+                .abilities()
+                .specialties(*ability_name_vanilla)
+                .next(),
+            *expected_specialties
+        );
     }
 
     // Check set ability dots
-    assert!(character.check_set_ability_dots(AbilityNameVanilla::Archery, 1).is_ok());
-    assert!(character.set_ability_dots(AbilityNameVanilla::Archery, 1).is_ok());
+    assert!(character
+        .check_set_ability_dots(AbilityNameVanilla::Archery, 1)
+        .is_ok());
+    assert!(character
+        .set_ability_dots(AbilityNameVanilla::Archery, 1)
+        .is_ok());
     assert_eq!(character.abilities().dots(AbilityNameVanilla::Archery), 1);
 
     // Check add specialty
-    assert!(character.check_add_specialty(AbilityNameVanilla::Archery, "Firewands").is_ok());
-    assert!(character.add_specialty(AbilityNameVanilla::Archery, "Firewands").is_ok());
-    assert_eq!(character.abilities().specialties(AbilityNameVanilla::Archery).next(), Some("Firewands"));
+    assert!(character
+        .check_add_specialty(AbilityNameVanilla::Archery, "Firewands")
+        .is_ok());
+    assert!(character
+        .add_specialty(AbilityNameVanilla::Archery, "Firewands")
+        .is_ok());
+    assert_eq!(
+        character
+            .abilities()
+            .specialties(AbilityNameVanilla::Archery)
+            .next(),
+        Some("Firewands")
+    );
 
     // Check remove specialty
-    assert!(character.check_remove_specialty(AbilityNameVanilla::Archery, "Firewands").is_ok());
-    assert!(character.remove_specialty(AbilityNameVanilla::Archery, "Firewands").is_ok());
-    assert_eq!(character.abilities().specialties(AbilityNameVanilla::Archery).next(), None);
+    assert!(character
+        .check_remove_specialty(AbilityNameVanilla::Archery, "Firewands")
+        .is_ok());
+    assert!(character
+        .remove_specialty(AbilityNameVanilla::Archery, "Firewands")
+        .is_ok());
+    assert_eq!(
+        character
+            .abilities()
+            .specialties(AbilityNameVanilla::Archery)
+            .next(),
+        None
+    );
 
     // Check can't add specialties to zero-rated abilities
-    assert!(character.check_add_specialty(AbilityNameVanilla::Athletics, "Bad specialty").is_err());
+    assert!(character
+        .check_add_specialty(AbilityNameVanilla::Athletics, "Bad specialty")
+        .is_err());
 
     // Check can't remove nonexistent specialties
-    assert!(character.check_remove_specialty(AbilityNameVanilla::Athletics, "Bad specialty").is_err());
+    assert!(character
+        .check_remove_specialty(AbilityNameVanilla::Athletics, "Bad specialty")
+        .is_err());
 
     // Check can't add duplicate specialties
-    character.add_specialty(AbilityNameVanilla::Archery, "Firewands").unwrap();
-    assert!(character.check_add_specialty(AbilityNameVanilla::Archery, "Firewands").is_err());
+    character
+        .add_specialty(AbilityNameVanilla::Archery, "Firewands")
+        .unwrap();
+    assert!(character
+        .check_add_specialty(AbilityNameVanilla::Archery, "Firewands")
+        .is_err());
 
     // Check setting an ability to zero removes all specialties
-    character.set_ability_dots(AbilityNameVanilla::Archery, 0).unwrap();
-    assert_eq!(character.abilities().specialties(AbilityNameVanilla::Archery).next(), None);
+    character
+        .set_ability_dots(AbilityNameVanilla::Archery, 0)
+        .unwrap();
+    assert_eq!(
+        character
+            .abilities()
+            .specialties(AbilityNameVanilla::Archery)
+            .next(),
+        None
+    );
 }

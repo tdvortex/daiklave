@@ -3,7 +3,7 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
-use abilities::{SetAbilityError, AddSpecialtyError, RemoveSpecialtyError};
+use abilities::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 use attributes::SetAttributesError;
 use essence::{CommitMotesError, SpendMotesError};
 use essence::{RecoverMotesError, SetEssenceRatingError, UncommitMotesError};
@@ -20,7 +20,7 @@ pub mod id;
 /// Traits which are unique to being a Solar Exalted.
 pub use exalt_type::SolarTraits;
 
-pub use abilities::{AbilityNameVanilla, Abilities};
+pub use abilities::{Abilities, AbilityNameVanilla};
 pub use attributes::{AttributeName, Attributes};
 pub use essence::CommittedMotesId;
 pub use essence::MotePool;

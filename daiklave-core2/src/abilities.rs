@@ -1,9 +1,9 @@
 use std::collections::HashSet;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{CharacterMutationError, Character};
+use crate::{Character, CharacterMutationError};
 
 /// This is used to identify all ability ratings that must exist for a
 /// character. It excludes all Craft abilities and MartialArts styles.
@@ -62,7 +62,7 @@ pub enum AbilityNameVanilla {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 enum Ability {
     Zero,
-    NonZero(u8, HashSet<String>)
+    NonZero(u8, HashSet<String>),
 }
 
 impl Default for Ability {
@@ -101,54 +101,66 @@ impl Ability {
 
     fn set_dots(&mut self, new_dots: u8) -> Result<&mut Self, CharacterMutationError> {
         if new_dots > 5 {
-            Err(CharacterMutationError::SetAbilityError(SetAbilityError::InvalidRating(new_dots)))
+            Err(CharacterMutationError::SetAbilityError(
+                SetAbilityError::InvalidRating(new_dots),
+            ))
+        } else if new_dots == 0 {
+            *self = Ability::Zero;
+            Ok(self)
+        } else if let Ability::NonZero(dots, _) = self {
+            *dots = new_dots;
+            Ok(self)
         } else {
-            if new_dots == 0 {
-                *self = Ability::Zero;
-                Ok(self)
-            } else if let Ability::NonZero(dots, _) = self {
-                *dots = new_dots;
-                Ok(self)
-            } else { // Was zero, now is non zero
-                *self = Ability::NonZero(new_dots, HashSet::new());
-                Ok(self)
-            }
+            // Was zero, now is non zero
+            *self = Ability::NonZero(new_dots, HashSet::new());
+            Ok(self)
         }
     }
 
     fn specialties(&self) -> impl Iterator<Item = &str> {
         match self {
             Ability::Zero => vec![],
-            Ability::NonZero(_, specialties) => specialties.iter().map(|s| s.as_str()).collect()
-        }.into_iter()
+            Ability::NonZero(_, specialties) => specialties.iter().map(|s| s.as_str()).collect(),
+        }
+        .into_iter()
     }
 
     fn add_specialty(&mut self, new_specialty: &str) -> Result<&mut Self, CharacterMutationError> {
         if let Ability::NonZero(_, specialties) = self {
             if specialties.contains(new_specialty) {
-                Err(CharacterMutationError::AddSpecialtyError(AddSpecialtyError::DuplicateSpecialty))
+                Err(CharacterMutationError::AddSpecialtyError(
+                    AddSpecialtyError::DuplicateSpecialty,
+                ))
             } else {
                 specialties.insert(new_specialty.to_owned());
                 Ok(self)
             }
         } else {
-            Err(CharacterMutationError::AddSpecialtyError(AddSpecialtyError::ZeroAbility))
+            Err(CharacterMutationError::AddSpecialtyError(
+                AddSpecialtyError::ZeroAbility,
+            ))
         }
     }
 
     fn remove_specialty(&mut self, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
         if let Ability::NonZero(_, specialties) = self {
             if !specialties.remove(specialty) {
-                Err(CharacterMutationError::RemoveSpecialtyError(RemoveSpecialtyError::NotFound))
+                Err(CharacterMutationError::RemoveSpecialtyError(
+                    RemoveSpecialtyError::NotFound,
+                ))
             } else {
                 Ok(self)
             }
         } else {
-            Err(CharacterMutationError::RemoveSpecialtyError(RemoveSpecialtyError::NotFound))
+            Err(CharacterMutationError::RemoveSpecialtyError(
+                RemoveSpecialtyError::NotFound,
+            ))
         }
     }
 }
 
+/// A struct representing all non-Craft, non-Martial Arts abilities, including
+/// any specialties.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub struct Abilities {
     archery: Ability,
@@ -236,67 +248,117 @@ impl Abilities {
         }
     }
 
+    /// Get the dot rating for a specific (non-Craft, non-MA) ability.
     pub fn dots(&self, ability_name: AbilityNameVanilla) -> u8 {
         self.ability(ability_name).dots()
     }
 
+    /// Get an iterator for all specialties associated with a specific ability.
     pub fn specialties(&self, ability_name: AbilityNameVanilla) -> impl Iterator<Item = &str> {
         self.ability(ability_name).specialties()
     }
 }
 
 impl Character {
+    /// Get read-only access to a character's Abilities.
     pub fn abilities(&self) -> &Abilities {
         &self.abilities
     }
 
-    pub fn check_set_ability_dots(&self, _ability_name: AbilityNameVanilla, dots: u8) -> Result<(), CharacterMutationError> {
+    /// Check if an ability's dots can be set to a specific level.
+    pub fn check_set_ability_dots(
+        &self,
+        _ability_name: AbilityNameVanilla,
+        dots: u8,
+    ) -> Result<(), CharacterMutationError> {
         if dots > 5 {
-            Err(CharacterMutationError::SetAbilityError(SetAbilityError::InvalidRating(dots)))
+            Err(CharacterMutationError::SetAbilityError(
+                SetAbilityError::InvalidRating(dots),
+            ))
         } else {
             Ok(())
         }
     }
 
-    pub fn set_ability_dots(&mut self, ability_name: AbilityNameVanilla, dots: u8) -> Result<&mut Self, CharacterMutationError> {
+    /// Set an ability's dots to a specific dot value. If this sets the ability
+    /// to 0 dots, will erase all specialties.
+    pub fn set_ability_dots(
+        &mut self,
+        ability_name: AbilityNameVanilla,
+        dots: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_ability_dots(ability_name, dots)?;
         self.abilities.ability_mut(ability_name).set_dots(dots)?;
         Ok(self)
     }
 
-    pub fn check_add_specialty(&self, ability_name: AbilityNameVanilla, specialty: &str) -> Result<(), CharacterMutationError> {
+    /// Checks if a specialty can be added to an ability. Errors if ability is
+    /// 0 dots or specialty is not unique.
+    pub fn check_add_specialty(
+        &self,
+        ability_name: AbilityNameVanilla,
+        specialty: &str,
+    ) -> Result<(), CharacterMutationError> {
         if let Ability::NonZero(_, specialties) = self.abilities().ability(ability_name) {
             if specialties.contains(specialty) {
-                Err(CharacterMutationError::AddSpecialtyError(AddSpecialtyError::DuplicateSpecialty))
+                Err(CharacterMutationError::AddSpecialtyError(
+                    AddSpecialtyError::DuplicateSpecialty,
+                ))
             } else {
                 Ok(())
             }
         } else {
-            Err(CharacterMutationError::AddSpecialtyError(AddSpecialtyError::ZeroAbility))
+            Err(CharacterMutationError::AddSpecialtyError(
+                AddSpecialtyError::ZeroAbility,
+            ))
         }
     }
 
-    pub fn add_specialty(&mut self, ability_name: AbilityNameVanilla, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
+    /// Adds a specialty to an ability.
+    pub fn add_specialty(
+        &mut self,
+        ability_name: AbilityNameVanilla,
+        specialty: &str,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.check_add_specialty(ability_name, specialty)?;
-        self.abilities.ability_mut(ability_name).add_specialty(specialty)?;
+        self.abilities
+            .ability_mut(ability_name)
+            .add_specialty(specialty)?;
         Ok(self)
     }
 
-    pub fn check_remove_specialty(&self, ability_name: AbilityNameVanilla, specialty: &str) -> Result<(), CharacterMutationError> {
+    /// Checks if a specialty can be removed from an ability. Returns an error
+    /// if specialty does not exist.
+    pub fn check_remove_specialty(
+        &self,
+        ability_name: AbilityNameVanilla,
+        specialty: &str,
+    ) -> Result<(), CharacterMutationError> {
         if let Ability::NonZero(_, specialties) = self.abilities().ability(ability_name) {
             if !specialties.contains(specialty) {
-                Err(CharacterMutationError::RemoveSpecialtyError(RemoveSpecialtyError::NotFound))
+                Err(CharacterMutationError::RemoveSpecialtyError(
+                    RemoveSpecialtyError::NotFound,
+                ))
             } else {
                 Ok(())
             }
         } else {
-            Err(CharacterMutationError::RemoveSpecialtyError(RemoveSpecialtyError::NotFound))
+            Err(CharacterMutationError::RemoveSpecialtyError(
+                RemoveSpecialtyError::NotFound,
+            ))
         }
     }
 
-    pub fn remove_specialty(&mut self, ability_name: AbilityNameVanilla, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
+    /// Removes a specialty from an ability.
+    pub fn remove_specialty(
+        &mut self,
+        ability_name: AbilityNameVanilla,
+        specialty: &str,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.check_remove_specialty(ability_name, specialty)?;
-        self.abilities.ability_mut(ability_name).remove_specialty(specialty)?;
+        self.abilities
+            .ability_mut(ability_name)
+            .remove_specialty(specialty)?;
         Ok(self)
     }
 }
