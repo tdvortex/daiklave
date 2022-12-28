@@ -113,6 +113,15 @@ pub enum CharacterMutation {
     /// Sets the permanent willpower rating of the character. Also resets
     /// current willpower to permanent rating.
     SetWillpowerRating(u8),
+    /// Changes the character's health track to have the specified wound
+    /// penalties.
+    SetWoundPenalties(Vec<WoundPenalty>),
+    /// Adds the specified amount and type of damage to the character's
+    /// health track, accounting for overflows.
+    TakeDamage(DamageLevel, u8),
+    /// Heals the specified amount of damage, always bashing then lethal then
+    /// aggravated.
+    HealDamage(u8),
 }
 
 impl Character {
@@ -139,6 +148,13 @@ impl Character {
                 self.check_set_current_willpower(*amount)
             }
             CharacterMutation::SetWillpowerRating(dots) => self.check_set_willpower_rating(*dots),
+            CharacterMutation::SetWoundPenalties(wound_penalties) => {
+                self.check_set_wound_penalties(wound_penalties)
+            }
+            CharacterMutation::TakeDamage(damage_level, amount) => {
+                self.check_take_damage(*damage_level, *amount)
+            }
+            CharacterMutation::HealDamage(amount) => self.check_heal_damage(*amount),
         }
     }
 
@@ -164,6 +180,13 @@ impl Character {
             CharacterMutation::SetEssenceRating(rating) => self.set_essence_rating(*rating),
             CharacterMutation::SetCurrentWillpower(amount) => self.set_current_willpower(*amount),
             CharacterMutation::SetWillpowerRating(dots) => self.set_willpower_rating(*dots),
+            CharacterMutation::SetWoundPenalties(wound_penalties) => {
+                self.set_wound_penalties(wound_penalties)
+            }
+            CharacterMutation::TakeDamage(damage_level, amount) => {
+                self.take_damage(*damage_level, *amount)
+            }
+            CharacterMutation::HealDamage(amount) => self.heal_damage(*amount),
         }
     }
 }
@@ -192,6 +215,13 @@ impl<'source> CharacterView<'source> {
                 self.check_set_current_willpower(*amount)
             }
             CharacterMutation::SetWillpowerRating(dots) => self.check_set_willpower_rating(*dots),
+            CharacterMutation::SetWoundPenalties(wound_penalties) => {
+                self.check_set_wound_penalties(wound_penalties)
+            }
+            CharacterMutation::TakeDamage(damage_level, amount) => {
+                self.check_take_damage(*damage_level, *amount)
+            }
+            CharacterMutation::HealDamage(amount) => self.check_heal_damage(*amount),
         }
     }
 
@@ -217,6 +247,13 @@ impl<'source> CharacterView<'source> {
             CharacterMutation::SetEssenceRating(rating) => self.set_essence_rating(*rating),
             CharacterMutation::SetCurrentWillpower(amount) => self.set_current_willpower(*amount),
             CharacterMutation::SetWillpowerRating(dots) => self.set_willpower_rating(*dots),
+            CharacterMutation::SetWoundPenalties(wound_penalties) => {
+                self.set_wound_penalties(wound_penalties)
+            }
+            CharacterMutation::TakeDamage(damage_level, amount) => {
+                self.take_damage(*damage_level, *amount)
+            }
+            CharacterMutation::HealDamage(amount) => self.heal_damage(*amount),
         }
     }
 }
