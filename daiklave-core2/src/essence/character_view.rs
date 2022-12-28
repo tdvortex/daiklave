@@ -1,8 +1,14 @@
 use std::collections::HashMap;
 
-use crate::{CharacterView, CommittedMotesId, exalt_type::{ExaltStateView, ExaltTypeView}, CharacterMutationError, MotePool};
+use crate::{
+    exalt_type::{ExaltStateView, ExaltTypeView},
+    CharacterMutationError, CharacterView, CommittedMotesId, MotePool,
+};
 
-use super::{MoteState, MoteCommitmentView, SpendMotesError, CommitMotesError, RecoverMotesError, UncommitMotesError, SetEssenceRatingError};
+use super::{
+    CommitMotesError, MoteCommitmentView, MoteState, RecoverMotesError, SetEssenceRatingError,
+    SpendMotesError, UncommitMotesError,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EssenceView<'source> {
@@ -56,10 +62,12 @@ impl<'source> MotesView<'source> {
 }
 
 impl<'source> CharacterView<'source> {
+    /// None for mortals.
     pub fn essence(&self) -> Option<&EssenceView> {
         self.exalt_state.essence()
     }
 
+    /// Checks if the requested amount of motes can be spent.
     pub fn check_spend_motes(
         &self,
         first: MotePool,
@@ -68,6 +76,7 @@ impl<'source> CharacterView<'source> {
         self.exalt_state.check_spend_motes(first, amount)
     }
 
+    /// Spends motes, starting with the specified pool first.
     pub fn spend_motes(
         &mut self,
         first: MotePool,
@@ -77,6 +86,7 @@ impl<'source> CharacterView<'source> {
         Ok(self)
     }
 
+    /// Checks if the requested mote commitment would be possible.
     pub fn check_commit_motes(
         &self,
         id: &CommittedMotesId,
@@ -87,6 +97,8 @@ impl<'source> CharacterView<'source> {
         self.exalt_state.check_commit_motes(id, name, first, amount)
     }
 
+    /// Removes available motes, starting with the specified pool, and
+    /// packages them into a commitment package to be later uncommitted.
     pub fn commit_motes(
         &mut self,
         id: &CommittedMotesId,
@@ -98,15 +110,19 @@ impl<'source> CharacterView<'source> {
         Ok(self)
     }
 
+    /// Checks if mote recovery is possible.
     pub fn check_recover_motes(&self, amount: u8) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_recover_motes(amount)
     }
 
+    /// Recovers motes, moving them from spent to available. Will not uncommit
+    /// motes.
     pub fn recover_motes(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         self.exalt_state.recover_motes(amount)?;
         Ok(self)
     }
 
+    /// Checks if a committed mote effect can be uncommitted.
     pub fn check_uncommit_motes(
         &self,
         id: &CommittedMotesId,
@@ -114,6 +130,8 @@ impl<'source> CharacterView<'source> {
         self.exalt_state.check_uncommit_motes(id)
     }
 
+    /// Uncommits a mote effect, returning the committed motes to their pool(s)
+    /// as spent motes to be later recovered.
     pub fn uncommit_motes(
         &mut self,
         id: &CommittedMotesId,
@@ -122,10 +140,13 @@ impl<'source> CharacterView<'source> {
         Ok(self)
     }
 
+    /// Checks if essence can be set to the specified value.
     pub fn check_set_essence_rating(&self, rating: u8) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_set_essence_rating(rating)
     }
 
+    /// Changes the essence rating of the character to the specified value.
+    /// This also uncommits all active effects and recovers all motes.
     pub fn set_essence_rating(&mut self, rating: u8) -> Result<&mut Self, CharacterMutationError> {
         self.exalt_state.set_essence_rating(rating)?;
         Ok(self)
@@ -279,7 +300,11 @@ impl<'source> ExaltTypeView<'source> {
         }
     }
 
-    fn check_spend_motes(&self, _first: MotePool, amount: u8) -> Result<(), CharacterMutationError> {
+    fn check_spend_motes(
+        &self,
+        _first: MotePool,
+        amount: u8,
+    ) -> Result<(), CharacterMutationError> {
         let total_available = self.essence().motes().peripheral().available()
             + self.essence().motes().personal().available();
 
@@ -417,17 +442,19 @@ impl<'source> ExaltTypeView<'source> {
             .motes_mut()
             .commitments
             .remove(id)
-            .ok_or_else(|| {
+            .ok_or({
                 CharacterMutationError::UncommitMotesError(UncommitMotesError::NotFound(*id))
             })?;
         self.essence_mut()
             .motes_mut()
             .peripheral_mut()
-            .uncommit(commitment.peripheral).unwrap();
+            .uncommit(commitment.peripheral)
+            .unwrap();
         self.essence_mut()
             .motes_mut()
             .personal_mut()
-            .uncommit(commitment.personal).unwrap();
+            .uncommit(commitment.personal)
+            .unwrap();
         Ok(self)
     }
 
@@ -460,38 +487,46 @@ impl<'source> ExaltTypeView<'source> {
         self.essence_mut()
             .motes_mut()
             .peripheral_mut()
-            .recover(spent_peripheral).unwrap();
+            .recover(spent_peripheral)
+            .unwrap();
         let available_peripheral = self.essence().motes().peripheral().available();
         if available_peripheral < new_peripheral {
             self.essence_mut()
                 .motes_mut()
                 .peripheral_mut()
-                .uncommit(new_peripheral - available_peripheral).unwrap()
-                .recover(new_peripheral - available_peripheral).unwrap();
+                .uncommit(new_peripheral - available_peripheral)
+                .unwrap()
+                .recover(new_peripheral - available_peripheral)
+                .unwrap();
         } else {
             self.essence_mut()
                 .motes_mut()
                 .peripheral_mut()
-                .commit(available_peripheral - new_peripheral).unwrap();
+                .commit(available_peripheral - new_peripheral)
+                .unwrap();
         }
 
         let spent_personal = self.essence().motes().personal().spent();
         self.essence_mut()
             .motes_mut()
             .personal_mut()
-            .recover(spent_personal).unwrap();
+            .recover(spent_personal)
+            .unwrap();
         let available_personal = self.essence().motes().personal().available();
         if available_personal < new_personal {
             self.essence_mut()
                 .motes_mut()
                 .personal_mut()
-                .uncommit(new_personal - available_personal).unwrap()
-                .recover(new_personal - available_personal).unwrap();
+                .uncommit(new_personal - available_personal)
+                .unwrap()
+                .recover(new_personal - available_personal)
+                .unwrap();
         } else {
             self.essence_mut()
                 .motes_mut()
                 .peripheral_mut()
-                .commit(available_personal - new_personal).unwrap();
+                .commit(available_personal - new_personal)
+                .unwrap();
         }
 
         self.essence_mut().rating = rating;

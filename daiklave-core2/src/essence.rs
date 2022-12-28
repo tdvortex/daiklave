@@ -1,32 +1,27 @@
-use std::{
-    ops::Deref,
-};
+use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    id::Id, CharacterMutationError,
-};
+use crate::{id::Id, CharacterMutationError};
 
 mod character;
 mod character_view;
 mod error;
-pub use error::{CommitMotesError, UncommitMotesError, RecoverMotesError, SetEssenceRatingError, SpendMotesError};
 pub use character::{Essence, Motes};
 pub use character_view::{EssenceView, MotesView};
+pub use error::{
+    CommitMotesError, RecoverMotesError, SetEssenceRatingError, SpendMotesError, UncommitMotesError,
+};
 
-
-
-
-
-
+/// Indicates whether motes are spent/committed from peripheral or peripheral
+/// pool first.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub enum MotePool {
+    /// Spend/commit peripheral motes first
     Peripheral,
+    /// Spend/commit personal motes first
     Personal,
 }
-
-
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub struct MoteState {
@@ -79,7 +74,6 @@ impl MoteState {
     }
 }
 
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MoteCommitmentView<'source> {
     pub(crate) name: &'source str,
@@ -87,6 +81,7 @@ pub(crate) struct MoteCommitmentView<'source> {
     pub(crate) personal: u8,
 }
 
+/// A unique identifier for a mote commitment effect.
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CommittedMotesId(pub Id);
 

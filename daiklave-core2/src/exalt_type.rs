@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{Character, CharacterMutationError, CharacterView, essence::{Essence, Motes, MoteState, EssenceView, MoteCommitmentView, MotesView}, CommittedMotesId};
+use crate::{
+    essence::{Essence, EssenceView, MoteCommitmentView, MoteState, Motes, MotesView},
+    Character, CharacterMutationError, CharacterView, CommittedMotesId,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum ExaltState {
@@ -112,28 +115,30 @@ impl<'source> ExaltStateView<'source> {
         let peripheral = {
             let available = solar_traits.essence.motes().peripheral().available();
             let spent = solar_traits.essence.motes().peripheral().spent();
-            MoteState {
-                available,
-                spent,
-            }
+            MoteState { available, spent }
         };
 
         let personal = {
             let available = solar_traits.essence.motes().personal().available();
             let spent = solar_traits.essence.motes().personal().spent();
-            MoteState {
-                available,
-                spent,
-            }
+            MoteState { available, spent }
         };
-        
-        let commitments = solar_traits.essence.motes().committed().map(|(id, name, peripheral, personal), | {
-            (id, MoteCommitmentView {
-                name,
-                peripheral,
-                personal,
+
+        let commitments = solar_traits
+            .essence
+            .motes()
+            .committed()
+            .map(|(id, name, peripheral, personal)| {
+                (
+                    id,
+                    MoteCommitmentView {
+                        name,
+                        peripheral,
+                        personal,
+                    },
+                )
             })
-        }).collect::<HashMap<CommittedMotesId, MoteCommitmentView>>();
+            .collect::<HashMap<CommittedMotesId, MoteCommitmentView>>();
 
         let motes = MotesView {
             peripheral,
@@ -141,16 +146,9 @@ impl<'source> ExaltStateView<'source> {
             commitments,
         };
 
-        let essence = EssenceView {
-            rating,
-            motes,
-        };
+        let essence = EssenceView { rating, motes };
 
-
-        let solar_traits_view = SolarTraitsView {
-            essence,
-        };
-
+        let solar_traits_view = SolarTraitsView { essence };
 
         *self = Self::Exalted(ExaltTypeView::Solar(solar_traits_view));
         Ok(self)
@@ -215,9 +213,9 @@ impl SolarTraitsBuilder {
                         available: 13,
                         spent: 0,
                     },
-                    commitments: HashMap::new()
-                }
-            }
+                    commitments: HashMap::new(),
+                },
+            },
         }
     }
 }

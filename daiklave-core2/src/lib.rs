@@ -3,8 +3,8 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
-use essence::{RecoverMotesError, UncommitMotesError, SetEssenceRatingError};
-use essence::{SpendMotesError, CommitMotesError};
+use essence::{CommitMotesError, SpendMotesError};
+use essence::{RecoverMotesError, SetEssenceRatingError, UncommitMotesError};
 use exalt_type::{ExaltState, ExaltStateView};
 use id::{CharacterId, SetIdError};
 use name_and_concept::RemoveConceptError;
@@ -18,12 +18,12 @@ pub mod id;
 /// Traits which are unique to being a Solar Exalted.
 pub use exalt_type::SolarTraits;
 
-pub use essence::MotePool;
 pub use essence::CommittedMotesId;
+pub use essence::MotePool;
 
+mod essence;
 mod exalt_type;
 mod name_and_concept;
-mod essence;
 /// An owned instance of a full (player) character. This is the format used in
 /// serialization and deserialization.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -92,7 +92,7 @@ pub enum CharacterMutation {
     RecoverMotes(u8),
     /// Uncommit motes from a peristent effect
     UncommitMotes(CommittedMotesId),
-    /// Set the Essence rating of the character. Note: also ends all mote 
+    /// Set the Essence rating of the character. Note: also ends all mote
     /// commitments and recovers all motes.
     SetEssenceRating(u8),
 }
@@ -111,7 +111,9 @@ impl Character {
             CharacterMutation::SetMortal => self.check_set_mortal(),
             CharacterMutation::SetSolar(solar_traits) => self.check_set_solar(solar_traits),
             CharacterMutation::SpendMotes(first, amount) => self.check_spend_motes(*first, *amount),
-            CharacterMutation::CommitMotes(id, name, first, amount) => self.check_commit_motes(id, name, *first, *amount),
+            CharacterMutation::CommitMotes(id, name, first, amount) => {
+                self.check_commit_motes(id, name, *first, *amount)
+            }
             CharacterMutation::RecoverMotes(amount) => self.check_recover_motes(*amount),
             CharacterMutation::UncommitMotes(id) => self.check_uncommit_motes(id),
             CharacterMutation::SetEssenceRating(rating) => self.check_set_essence_rating(*rating),
@@ -132,7 +134,9 @@ impl Character {
             CharacterMutation::SetMortal => self.set_mortal(),
             CharacterMutation::SetSolar(solar_traits) => self.set_solar(solar_traits),
             CharacterMutation::SpendMotes(first, amount) => self.spend_motes(*first, *amount),
-            CharacterMutation::CommitMotes(id, name, first, amount) => self.commit_motes(id, name, *first, *amount),
+            CharacterMutation::CommitMotes(id, name, first, amount) => {
+                self.commit_motes(id, name, *first, *amount)
+            }
             CharacterMutation::RecoverMotes(amount) => self.recover_motes(*amount),
             CharacterMutation::UncommitMotes(id) => self.uncommit_motes(id),
             CharacterMutation::SetEssenceRating(rating) => self.set_essence_rating(*rating),
@@ -154,7 +158,9 @@ impl<'source> CharacterView<'source> {
             CharacterMutation::SetMortal => self.check_set_mortal(),
             CharacterMutation::SetSolar(solar_traits) => self.check_set_solar(solar_traits),
             CharacterMutation::SpendMotes(first, amount) => self.check_spend_motes(*first, *amount),
-            CharacterMutation::CommitMotes(id, name, first, amount) => self.check_commit_motes(id, name, *first, *amount),
+            CharacterMutation::CommitMotes(id, name, first, amount) => {
+                self.check_commit_motes(id, name, *first, *amount)
+            }
             CharacterMutation::RecoverMotes(amount) => self.check_recover_motes(*amount),
             CharacterMutation::UncommitMotes(id) => self.check_uncommit_motes(id),
             CharacterMutation::SetEssenceRating(rating) => self.check_set_essence_rating(*rating),
@@ -175,7 +181,9 @@ impl<'source> CharacterView<'source> {
             CharacterMutation::SetMortal => self.set_mortal(),
             CharacterMutation::SetSolar(solar_traits) => self.set_solar(solar_traits),
             CharacterMutation::SpendMotes(first, amount) => self.spend_motes(*first, *amount),
-            CharacterMutation::CommitMotes(id, name, first, amount) => self.commit_motes(id, name, *first, *amount),
+            CharacterMutation::CommitMotes(id, name, first, amount) => {
+                self.commit_motes(id, name, *first, *amount)
+            }
             CharacterMutation::RecoverMotes(amount) => self.recover_motes(*amount),
             CharacterMutation::UncommitMotes(id) => self.uncommit_motes(id),
             CharacterMutation::SetEssenceRating(rating) => self.set_essence_rating(*rating),
