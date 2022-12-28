@@ -129,6 +129,8 @@ pub enum CharacterMutation {
     /// Heals the specified amount of damage, always bashing then lethal then
     /// aggravated.
     HealDamage(u8),
+    /// Sets an attribute to a specific rating.
+    SetAttribute(AttributeName, u8),
 }
 
 impl Character {
@@ -162,6 +164,9 @@ impl Character {
                 self.check_take_damage(*damage_level, *amount)
             }
             CharacterMutation::HealDamage(amount) => self.check_heal_damage(*amount),
+            CharacterMutation::SetAttribute(attribute_name, dots) => {
+                self.check_set_attribute(*attribute_name, *dots)
+            }
         }
     }
 
@@ -194,6 +199,9 @@ impl Character {
                 self.take_damage(*damage_level, *amount)
             }
             CharacterMutation::HealDamage(amount) => self.heal_damage(*amount),
+            CharacterMutation::SetAttribute(attribute_name, dots) => {
+                self.set_attribute(*attribute_name, *dots)
+            }
         }
     }
 }
@@ -229,6 +237,9 @@ impl<'source> CharacterView<'source> {
                 self.check_take_damage(*damage_level, *amount)
             }
             CharacterMutation::HealDamage(amount) => self.check_heal_damage(*amount),
+            CharacterMutation::SetAttribute(attribute_name, dots) => {
+                self.check_set_attribute(*attribute_name, *dots)
+            }
         }
     }
 
@@ -261,6 +272,9 @@ impl<'source> CharacterView<'source> {
                 self.take_damage(*damage_level, *amount)
             }
             CharacterMutation::HealDamage(amount) => self.heal_damage(*amount),
+            CharacterMutation::SetAttribute(attribute_name, dots) => {
+                self.set_attribute(*attribute_name, *dots)
+            }
         }
     }
 }
