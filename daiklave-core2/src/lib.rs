@@ -101,6 +101,11 @@ pub enum CharacterMutation {
     /// Set the Essence rating of the character. Note: also ends all mote
     /// commitments and recovers all motes.
     SetEssenceRating(u8),
+    /// Sets the current willpower value of the character.
+    SetCurrentWillpower(u8),
+    /// Sets the permanent willpower rating of the character. Also resets
+    /// current willpower to permanent rating.
+    SetWillpowerRating(u8),
 }
 
 impl Character {
@@ -123,6 +128,8 @@ impl Character {
             CharacterMutation::RecoverMotes(amount) => self.check_recover_motes(*amount),
             CharacterMutation::UncommitMotes(id) => self.check_uncommit_motes(id),
             CharacterMutation::SetEssenceRating(rating) => self.check_set_essence_rating(*rating),
+            CharacterMutation::SetCurrentWillpower(amount) => self.check_set_current_willpower(*amount),
+            CharacterMutation::SetWillpowerRating(dots) => self.check_set_willpower_rating(*dots),
         }
     }
 
@@ -146,6 +153,8 @@ impl Character {
             CharacterMutation::RecoverMotes(amount) => self.recover_motes(*amount),
             CharacterMutation::UncommitMotes(id) => self.uncommit_motes(id),
             CharacterMutation::SetEssenceRating(rating) => self.set_essence_rating(*rating),
+            CharacterMutation::SetCurrentWillpower(amount) => self.set_current_willpower(*amount),
+            CharacterMutation::SetWillpowerRating(dots) => self.set_willpower_rating(*dots),
         }
     }
 }
@@ -170,6 +179,8 @@ impl<'source> CharacterView<'source> {
             CharacterMutation::RecoverMotes(amount) => self.check_recover_motes(*amount),
             CharacterMutation::UncommitMotes(id) => self.check_uncommit_motes(id),
             CharacterMutation::SetEssenceRating(rating) => self.check_set_essence_rating(*rating),
+            CharacterMutation::SetCurrentWillpower(amount) => self.check_set_current_willpower(*amount),
+            CharacterMutation::SetWillpowerRating(dots) => self.check_set_willpower_rating(*dots),
         }
     }
 
@@ -193,6 +204,8 @@ impl<'source> CharacterView<'source> {
             CharacterMutation::RecoverMotes(amount) => self.recover_motes(*amount),
             CharacterMutation::UncommitMotes(id) => self.uncommit_motes(id),
             CharacterMutation::SetEssenceRating(rating) => self.set_essence_rating(*rating),
+            CharacterMutation::SetCurrentWillpower(amount) => self.set_current_willpower(*amount),
+            CharacterMutation::SetWillpowerRating(dots) => self.set_willpower_rating(*dots),
         }
     }
 }
