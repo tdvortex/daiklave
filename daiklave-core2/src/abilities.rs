@@ -5,10 +5,11 @@ mod error;
 pub use character::Abilities;
 pub use character_view::AbilitiesView;
 pub use error::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
+use serde::{Serialize, Deserialize};
 
 /// This is used to identify all ability ratings that must exist for a
 /// character. It excludes all Craft abilities and MartialArts styles.
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, PartialOrd, Ord)]
 pub enum AbilityNameVanilla {
     /// Archery
     Archery,
@@ -62,7 +63,7 @@ pub enum AbilityNameVanilla {
 
 /// This is used to identify all abilities, treating all Craft abilities as 
 /// equivalent and all MartialArts abilities as equivalent. 
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize, PartialOrd, Ord)]
 pub enum AbilityName {
     /// Archery
     Archery,

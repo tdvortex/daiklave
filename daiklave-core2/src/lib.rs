@@ -20,7 +20,7 @@ use thiserror::Error;
 pub mod id;
 
 /// Traits which are unique to being a Solar Exalted.
-pub use exalt_type::SolarTraits;
+pub use solar::Solar;
 
 /// A character builder with additional logic for bonus points, free starting
 /// dots, and other constraints.
@@ -38,6 +38,7 @@ mod essence;
 mod exalt_type;
 mod health;
 mod name_and_concept;
+mod solar;
 mod willpower;
 
 pub use health::{DamageLevel, Health, WoundPenalty};
@@ -116,7 +117,7 @@ pub enum CharacterMutation {
     /// Set character to be mortal
     SetMortal,
     /// Set character to be Solar
-    SetSolar(SolarTraits),
+    SetSolar(Solar),
     /// Spend motes, starting with one pool
     SpendMotes(MotePool, u8),
     /// Commit motes into a persistent effect, starting with one pool

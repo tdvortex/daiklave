@@ -1,6 +1,6 @@
 use daiklave_core2::{
     id::Id, Character, CharacterEventSource, CharacterMutation, CharacterView, CommittedMotesId,
-    MotePool, SolarTraits,
+    MotePool, Solar,
 };
 
 #[test]
@@ -10,7 +10,7 @@ fn test_essence_character() {
     assert!(character.essence().is_none());
 
     // Exalts (including Solars) should have essence
-    let solar_traits = SolarTraits::builder().build();
+    let solar_traits = Solar::builder().build();
     character.set_solar(&solar_traits).unwrap();
     assert!(character.essence().is_some());
     assert_eq!(character.essence().unwrap().rating(), 1);
@@ -207,7 +207,7 @@ fn test_essence_character_view() {
     assert!(character_view.essence().is_none());
 
     // Exalts (including Solars) should have essence
-    let solar_traits = SolarTraits::builder().build();
+    let solar_traits = Solar::builder().build();
     character_view.set_solar(&solar_traits).unwrap();
     assert!(character_view.essence().is_some());
     assert_eq!(character_view.essence().unwrap().rating(), 1);
@@ -407,7 +407,7 @@ fn test_essence_character_event_source() {
     assert!(character_view.essence().is_none());
 
     // Exalts (including Solars) should have essence
-    let solar_traits = SolarTraits::builder().build();
+    let solar_traits = Solar::builder().build();
     let mutation = CharacterMutation::SetSolar(solar_traits);
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();

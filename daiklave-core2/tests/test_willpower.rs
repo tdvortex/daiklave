@@ -1,5 +1,5 @@
 use daiklave_core2::{
-    Character, CharacterEventSource, CharacterMutation, CharacterView, SolarTraits,
+    Character, CharacterEventSource, CharacterMutation, CharacterView, Solar,
 };
 
 #[test]
@@ -10,7 +10,7 @@ fn test_willpower_character() {
     assert_eq!(character.willpower().current(), 3);
 
     // Check default (exalt)
-    let solar_traits = SolarTraits::builder().build();
+    let solar_traits = Solar::builder().build();
     character.set_solar(&solar_traits).unwrap();
     assert_eq!(character.willpower().rating(), 5);
     assert_eq!(character.willpower().current(), 5);
@@ -36,7 +36,7 @@ fn test_willpower_character_view() {
     assert_eq!(character_view.willpower().current(), 3);
 
     // Check default (exalt)
-    let solar_traits = SolarTraits::builder().build();
+    let solar_traits = Solar::builder().build();
     character_view.set_solar(&solar_traits).unwrap();
     assert_eq!(character_view.willpower().rating(), 5);
     assert_eq!(character_view.willpower().current(), 5);
@@ -63,7 +63,7 @@ fn test_willpower_character_event_source() {
     assert_eq!(character_view.willpower().current(), 3);
 
     // Check default (exalt)
-    let solar_traits = SolarTraits::builder().build();
+    let solar_traits = Solar::builder().build();
     let mutation = CharacterMutation::SetSolar(solar_traits);
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();

@@ -1,5 +1,5 @@
 use daiklave_core2::{
-    Character, CharacterEventSource, CharacterMutation, CharacterView, SolarTraits,
+    Character, CharacterEventSource, CharacterMutation, CharacterView, Solar,
 };
 
 #[test]
@@ -9,7 +9,7 @@ fn test_exalt_type_character() {
     assert!(character.is_mortal());
 
     // Confirm toggle to solar
-    let solar_traits = SolarTraits::builder().build();
+    let solar_traits = Solar::builder().build();
     assert!(character.check_set_solar(&solar_traits).is_ok());
     assert!(character.set_solar(&solar_traits).is_ok());
     assert!(character.is_solar());
@@ -27,7 +27,7 @@ fn test_exalt_type_character_view() {
     assert!(character_view.is_mortal());
 
     // Confirm toggle to solar
-    let solar_traits = SolarTraits::builder().build();
+    let solar_traits = Solar::builder().build();
     assert!(character_view.check_set_solar(&solar_traits).is_ok());
     assert!(character_view.set_solar(&solar_traits).is_ok());
     assert!(character_view.is_solar());
@@ -46,7 +46,7 @@ fn test_exalt_type_character_event_source() {
     assert!(character_view.is_mortal());
 
     // Check toggle to solar
-    let solar_traits = SolarTraits::builder().build();
+    let solar_traits = Solar::builder().build();
     let mutation = CharacterMutation::SetSolar(solar_traits);
     assert!(character_view.check_mutation(&mutation).is_ok());
     assert!(event_source.apply_mutation(mutation).is_ok());
