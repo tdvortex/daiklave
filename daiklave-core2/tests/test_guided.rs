@@ -1,5 +1,6 @@
-use daiklave_core2::{id::{CharacterId, Id}, CharacterMutation, AttributeName, guided::{begin_guided_builder, GuidedCharacterMutation, GuidedStage}};
+use daiklave_core2::{id::{CharacterId, Id}, CharacterMutation, AttributeName, guided::{begin_guided_builder, GuidedCharacterMutation, GuidedStage, ExaltationChoice}};
 
+#[test]
 fn test_guided_mortal() {
     let mut guided_builder = begin_guided_builder(CharacterId(Id::Placeholder(1)));
     
@@ -30,10 +31,14 @@ fn test_guided_mortal() {
     assert!(guided_builder.apply_mutation(mutation).is_ok());
 
     // Bonus points are not alloted until after choosing exaltation
-    assert_eq!(guided_builder.bonus_point_remaining(), 0);
+    assert_eq!(guided_builder.bonus_points_remaining(), 0);
 
-    // Choose to be mortal
+    // Choose to be mortal and progress to attributes
     let mutation = GuidedCharacterMutation::SetExaltation(ExaltationChoice::Mortal);
+    assert!(guided_builder.check_mutation(&mutation).is_ok());
+    assert!(guided_builder.apply_mutation(mutation).is_ok());
+
+    let mutation = GuidedCharacterMutation::SetStage(GuidedStage::ChooseAttributes);
     assert!(guided_builder.check_mutation(&mutation).is_ok());
     assert!(guided_builder.apply_mutation(mutation).is_ok());
 
@@ -80,8 +85,8 @@ fn test_guided_mortal() {
     assert_eq!(guided_builder.bonus_points_remaining(), 10);
 
     // Revert attribute bonus point expenditures
-    guided_builder.undo().unwrap();
-    guided_builder.undo().unwrap();
-    guided_builder.undo().unwrap();
+    guided_builder.undo();
+    guided_builder.undo();
+    guided_builder.undo();
     assert_eq!(guided_builder.bonus_points_remaining(), 21);
 }
