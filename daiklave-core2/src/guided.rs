@@ -282,6 +282,13 @@ impl<'source> GuidedView<'source> {
                 match (self.stage, stage) {
                     (GuidedStage::ChooseNameAndConcept, GuidedStage::ChooseExaltation)
                     | (GuidedStage::ChooseExaltation, GuidedStage::ChooseAttributes) => Ok(()),
+                    (GuidedStage::ChooseAttributes, GuidedStage::ChooseMartialArtsStyles) => {
+                        if matches!(self.exaltation_choice, Some(ExaltationChoice::Mortal)) {
+                            Ok(())
+                        } else {
+                            Err(GuidedError::StageOrderError)
+                        }
+                    }
                     _ => Err(GuidedError::StageOrderError),
                 }?;
             }
