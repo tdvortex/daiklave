@@ -1,4 +1,4 @@
-use daiklave_core2::{id::{CharacterId, Id}, CharacterMutation, AttributeName};
+use daiklave_core2::{id::{CharacterId, Id}, CharacterMutation, AttributeName, guided::{begin_guided_builder, GuidedCharacterMutation, GuidedStage}};
 
 fn test_guided_mortal() {
     let mut guided_builder = begin_guided_builder(CharacterId(Id::Placeholder(1)));
