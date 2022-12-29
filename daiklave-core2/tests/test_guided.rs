@@ -280,7 +280,7 @@ fn test_guided_solar() {
 
     // Move on to next stage
     let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSolarCasteAbilities);
-    assert!(guided_builder.check_mutation(&mutation).is_ok());
+    guided_builder.check_mutation(&mutation).unwrap();
     assert!(guided_builder.apply_mutation(mutation).is_ok());
 
     // Check cannot add an invalid caste ability
@@ -330,7 +330,7 @@ fn test_guided_solar() {
     assert!(guided_builder.check_mutation(&GuidedMutation::AddSolarFavoredAbility(AbilityName::MartialArts)).is_err());
 
     // Check can add 5 valid favored abilities
-    assert!(guided_builder.check_mutation(&GuidedMutation::AddSolarFavoredAbility(AbilityName::Linguistics)).is_ok());
+    guided_builder.check_mutation(&GuidedMutation::AddSolarFavoredAbility(AbilityName::Linguistics)).unwrap();
     assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Linguistics)).is_ok());
     assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Lore)).is_ok());
     assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Occult)).is_ok());
@@ -350,11 +350,10 @@ fn test_guided_solar() {
     // Check cannot proceed without 5 favored abilities
     assert!(guided_builder.check_mutation(&GuidedMutation::SetStage(GuidedStage::ChooseMartialArtsStyles)).is_err());
 
-    // Move on to next stage
-    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Survival)).is_ok());
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseMartialArtsStyles);
-    assert!(guided_builder.check_mutation(&mutation).is_ok());
-    assert!(guided_builder.apply_mutation(mutation).is_ok());
+    // Finish building solar
+    guided_builder.apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Survival));
+    let solar = guided_builder.as_guided_view().unwrap().solar_traits().unwrap();
+    guided_builder.apply_mutation(GuidedMutation::CharacterMutation(CharacterMutation::SetSolar(solar))).unwrap();
 
     // After finalizing caste/supernal/favored, should be a valid Solar with 
     // the correct abilities.
@@ -374,4 +373,11 @@ fn test_guided_solar() {
     assert!(solar_traits.has_favored_ability(AbilityName::Socialize));
     assert!(solar_traits.has_favored_ability(AbilityName::Survival));
     assert!(solar_traits.has_favored_ability(AbilityName::Thrown));
+
+    // Move on to next stage
+    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseMartialArtsStyles);
+    guided_builder.check_mutation(&mutation).unwrap();
+    assert!(guided_builder.apply_mutation(mutation).is_ok());
+
+
 }
