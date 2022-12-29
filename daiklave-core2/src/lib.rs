@@ -22,7 +22,7 @@ pub mod id;
 /// Traits which are unique to being a Solar Exalted.
 pub use exalt_type::SolarTraits;
 
-/// A character builder with additional logic for bonus points, free starting 
+/// A character builder with additional logic for bonus points, free starting
 /// dots, and other constraints.
 pub mod guided;
 

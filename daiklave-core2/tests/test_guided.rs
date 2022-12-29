@@ -1,16 +1,24 @@
-use daiklave_core2::{id::{CharacterId, Id}, CharacterMutation, AttributeName, guided::{begin_guided_builder, GuidedCharacterMutation, GuidedStage, ExaltationChoice}};
+use daiklave_core2::{
+    guided::{begin_guided_builder, ExaltationChoice, GuidedCharacterMutation, GuidedStage},
+    id::{CharacterId, Id},
+    AttributeName, CharacterMutation,
+};
 
 #[test]
 fn test_guided_mortal() {
     let mut guided_builder = begin_guided_builder(CharacterId(Id::Placeholder(1)));
-    
+
     // Choose character name
-    let mutation = GuidedCharacterMutation::CharacterMutation(CharacterMutation::SetName("Test Mortal".to_owned()));
+    let mutation = GuidedCharacterMutation::CharacterMutation(CharacterMutation::SetName(
+        "Test Mortal".to_owned(),
+    ));
     assert!(guided_builder.check_mutation(&mutation).is_ok());
     assert!(guided_builder.apply_mutation(mutation).is_ok());
 
     // Choose character concept
-    let mutation = GuidedCharacterMutation::CharacterMutation(CharacterMutation::SetConcept("Test Concept".to_owned()));
+    let mutation = GuidedCharacterMutation::CharacterMutation(CharacterMutation::SetConcept(
+        "Test Concept".to_owned(),
+    ));
     assert!(guided_builder.check_mutation(&mutation).is_ok());
     assert!(guided_builder.apply_mutation(mutation).is_ok());
 
@@ -63,25 +71,25 @@ fn test_guided_mortal() {
     assert_eq!(guided_builder.bonus_points_remaining(), 21);
 
     // Check attribute bonus points costs
-    guided_builder.apply_mutation(
-        GuidedCharacterMutation::CharacterMutation(
-            CharacterMutation::SetAttribute(AttributeName::Stamina, 3)
-        )
-    ).unwrap();
+    guided_builder
+        .apply_mutation(GuidedCharacterMutation::CharacterMutation(
+            CharacterMutation::SetAttribute(AttributeName::Stamina, 3),
+        ))
+        .unwrap();
     assert_eq!(guided_builder.bonus_points_remaining(), 17);
 
-    guided_builder.apply_mutation(
-        GuidedCharacterMutation::CharacterMutation(
-            CharacterMutation::SetAttribute(AttributeName::Manipulation, 3)
-        )
-    ).unwrap();
+    guided_builder
+        .apply_mutation(GuidedCharacterMutation::CharacterMutation(
+            CharacterMutation::SetAttribute(AttributeName::Manipulation, 3),
+        ))
+        .unwrap();
     assert_eq!(guided_builder.bonus_points_remaining(), 13);
 
-    guided_builder.apply_mutation(
-        GuidedCharacterMutation::CharacterMutation(
-            CharacterMutation::SetAttribute(AttributeName::Wits, 2)
-        )
-    ).unwrap();
+    guided_builder
+        .apply_mutation(GuidedCharacterMutation::CharacterMutation(
+            CharacterMutation::SetAttribute(AttributeName::Wits, 2),
+        ))
+        .unwrap();
     assert_eq!(guided_builder.bonus_points_remaining(), 10);
 
     // Revert attribute bonus point expenditures
