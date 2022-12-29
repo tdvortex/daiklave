@@ -101,7 +101,7 @@ impl GuidedEventSource {
                 }
                 GuidedMutation::RemoveSolarCasteAbility(ability) => {
                     if let Some(abilities) = guided_view.solar_caste_abilities.as_mut() {
-                        if !abilities.remove(&ability) {
+                        if !abilities.remove(ability) {
                             return Err(GuidedError::SolarAbilityError(
                                 SolarAbilityError::NotFound,
                             ));
@@ -126,7 +126,7 @@ impl GuidedEventSource {
                 }
                 GuidedMutation::RemoveSolarFavoredAbility(ability) => {
                     if let Some(abilities) = guided_view.solar_favored_abilities.as_mut() {
-                        if !abilities.remove(&ability) {
+                        if !abilities.remove(ability) {
                             return Err(GuidedError::SolarAbilityError(
                                 SolarAbilityError::NotFound,
                             ));
@@ -554,7 +554,7 @@ impl<'source> GuidedView<'source> {
                     .solar_caste_abilities
                     .as_ref()
                     .unwrap()
-                    .contains(&ability)
+                    .contains(ability)
                 {
                     return Err(GuidedError::SolarAbilityError(
                         SolarAbilityError::UniqueCasteAndFavored,
@@ -592,24 +592,23 @@ impl<'source> GuidedView<'source> {
                     return Err(GuidedError::StageOrderError);
                 }
 
-                if ability == &AbilityName::MartialArts {
-                    if !self
+                if ability == &AbilityName::MartialArts
+                    && !self
                         .solar_caste_abilities
                         .as_ref()
                         .unwrap()
                         .contains(&AbilityName::Brawl)
-                    {
-                        return Err(GuidedError::SolarAbilityError(
-                            SolarAbilityError::SupernalIsCaste,
-                        ));
-                    }
+                {
+                    return Err(GuidedError::SolarAbilityError(
+                        SolarAbilityError::SupernalIsCaste,
+                    ));
                 }
 
                 if !self
                     .solar_caste_abilities
                     .as_ref()
                     .unwrap()
-                    .contains(&ability)
+                    .contains(ability)
                 {
                     return Err(GuidedError::SolarAbilityError(
                         SolarAbilityError::SupernalIsCaste,
@@ -635,7 +634,7 @@ impl<'source> GuidedView<'source> {
                     .solar_caste_abilities
                     .as_ref()
                     .unwrap()
-                    .contains(&ability)
+                    .contains(ability)
                 {
                     return Err(GuidedError::SolarAbilityError(
                         SolarAbilityError::UniqueCasteAndFavored,
@@ -650,7 +649,7 @@ impl<'source> GuidedView<'source> {
                     .solar_favored_abilities
                     .as_ref()
                     .unwrap()
-                    .contains(&ability)
+                    .contains(ability)
                 {
                     return Err(GuidedError::SolarAbilityError(
                         SolarAbilityError::UniqueCasteAndFavored,
