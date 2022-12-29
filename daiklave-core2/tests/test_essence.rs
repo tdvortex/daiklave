@@ -1,6 +1,6 @@
 use daiklave_core2::{
     id::Id, Character, CharacterEventSource, CharacterMutation, CharacterView, CommittedMotesId,
-    MotePool, Solar,
+    MotePool, Solar, Eclipse, AbilityName,
 };
 
 #[test]
@@ -10,7 +10,35 @@ fn test_essence_character() {
     assert!(character.essence().is_none());
 
     // Exalts (including Solars) should have essence
-    let solar_traits = Solar::builder().build();
+    let eclipse = {
+        let mut builder = Eclipse::builder();
+        [
+            AbilityName::Larceny,
+            AbilityName::Linguistics,
+            AbilityName::Sail,
+            AbilityName::Socialize,
+        ].into_iter().for_each(|ability| {
+            builder.add_caste_ability(ability).unwrap();
+        });
+        builder.set_supernal_ability(AbilityName::Presence).unwrap();
+        builder.build().unwrap()
+    };
+
+    let solar_traits = {
+        let mut builder = Solar::builder();
+        builder.set_eclipse(eclipse);
+        [
+            AbilityName::Archery,
+            AbilityName::Dodge,
+            AbilityName::Investigation,
+            AbilityName::Performance,
+            AbilityName::Ride,
+        ].into_iter().for_each(|ability| {
+            builder.add_favored_ability(ability).unwrap();
+        });
+        builder.build().unwrap()
+    };
+
     character.set_solar(&solar_traits).unwrap();
     assert!(character.essence().is_some());
     assert_eq!(character.essence().unwrap().rating(), 1);
@@ -207,8 +235,35 @@ fn test_essence_character_view() {
     assert!(character_view.essence().is_none());
 
     // Exalts (including Solars) should have essence
-    let solar_traits = Solar::builder().build();
-    character_view.set_solar(&solar_traits).unwrap();
+    let eclipse = {
+        let mut builder = Eclipse::builder();
+        [
+            AbilityName::Larceny,
+            AbilityName::Linguistics,
+            AbilityName::Sail,
+            AbilityName::Socialize,
+        ].into_iter().for_each(|ability| {
+            builder.add_caste_ability(ability).unwrap();
+        });
+        builder.set_supernal_ability(AbilityName::Presence).unwrap();
+        builder.build().unwrap()
+    };
+
+    let solar_traits = {
+        let mut builder = Solar::builder();
+        builder.set_eclipse(eclipse);
+        [
+            AbilityName::Archery,
+            AbilityName::Dodge,
+            AbilityName::Investigation,
+            AbilityName::Performance,
+            AbilityName::Ride,
+        ].into_iter().for_each(|ability| {
+            builder.add_favored_ability(ability).unwrap();
+        });
+        builder.build().unwrap()
+    };
+    assert!(character_view.set_solar(&solar_traits).is_ok());
     assert!(character_view.essence().is_some());
     assert_eq!(character_view.essence().unwrap().rating(), 1);
     let mote_state = character_view.essence().unwrap().motes();
@@ -407,7 +462,35 @@ fn test_essence_character_event_source() {
     assert!(character_view.essence().is_none());
 
     // Exalts (including Solars) should have essence
-    let solar_traits = Solar::builder().build();
+    let eclipse = {
+        let mut builder = Eclipse::builder();
+        [
+            AbilityName::Larceny,
+            AbilityName::Linguistics,
+            AbilityName::Sail,
+            AbilityName::Socialize,
+        ].into_iter().for_each(|ability| {
+            builder.add_caste_ability(ability).unwrap();
+        });
+        builder.set_supernal_ability(AbilityName::Presence).unwrap();
+        builder.build().unwrap()
+    };
+
+    let solar_traits = {
+        let mut builder = Solar::builder();
+        builder.set_eclipse(eclipse);
+        [
+            AbilityName::Archery,
+            AbilityName::Dodge,
+            AbilityName::Investigation,
+            AbilityName::Performance,
+            AbilityName::Ride,
+        ].into_iter().for_each(|ability| {
+            builder.add_favored_ability(ability).unwrap();
+        });
+        builder.build().unwrap()
+    };
+
     let mutation = CharacterMutation::SetSolar(solar_traits);
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();

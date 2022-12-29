@@ -5,299 +5,19 @@ use thiserror::Error;
 
 use crate::{essence::{Essence, EssenceView, Motes, MoteState, MoteCommitmentView, MotesView}, exalt_type::{ExaltType, ExaltState, ExaltStateView, ExaltTypeView}, CharacterMutationError, CommittedMotesId, Character, CharacterView, AbilityName};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-enum DawnCasteAbility {
-    Archery,
-    Awareness,
-    Brawl,
-    Dodge,
-    Melee,
-    Resistance,
-    Thrown,
-    War
-}
+use self::{dawn::{DawnView}, zenith::{ZenithView}, twilight::{TwilightView}, night::{NightView}, eclipse::{EclipseView}};
+mod dawn;
+mod eclipse;
+mod night;
+mod twilight;
+mod zenith;
 
-impl From<DawnCasteAbility> for AbilityName {
-    fn from(value: DawnCasteAbility) -> Self {
-        match value {
-            DawnCasteAbility::Archery => Self::Archery,
-            DawnCasteAbility::Awareness => Self::Awareness,
-            DawnCasteAbility::Brawl => Self::Brawl,
-            DawnCasteAbility::Dodge => Self::Dodge,
-            DawnCasteAbility::Melee => Self::Melee,
-            DawnCasteAbility::Resistance => Self::Resistance,
-            DawnCasteAbility::Thrown => Self::Thrown,
-            DawnCasteAbility::War => Self::War,
-        }
-    }
-}
+pub use dawn::{Dawn, DawnBuilder};
+pub use eclipse::{Eclipse, EclipseBuilder};
+pub use night::{Night, NightBuilder};
+pub use twilight::{Twilight, TwilightBuilder};
+pub use zenith::{Zenith, ZenithBuilder};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-enum DawnSupernalAbility {
-    Archery,
-    Awareness,
-    Brawl,
-    Dodge,
-    MartialArts,
-    Melee,
-    Resistance,
-    Thrown,
-    War
-}
-
-impl From<DawnSupernalAbility> for AbilityName {
-    fn from(value: DawnSupernalAbility) -> Self {
-        match value {
-            DawnSupernalAbility::Archery => Self::Archery,
-            DawnSupernalAbility::Awareness => Self::Awareness,
-            DawnSupernalAbility::Brawl => Self::Brawl,
-            DawnSupernalAbility::Dodge => Self::Dodge,
-            DawnSupernalAbility::MartialArts => Self::MartialArts,
-            DawnSupernalAbility::Melee => Self::Melee,
-            DawnSupernalAbility::Resistance => Self::Resistance,
-            DawnSupernalAbility::Thrown => Self::Thrown,
-            DawnSupernalAbility::War => Self::War,
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Dawn {
-    caste_not_supernal: [DawnCasteAbility; 4],
-    supernal: DawnSupernalAbility,
-}
-
-impl Dawn {
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|dawn_caste_ability| AbilityName::from(*dawn_caste_ability) == ability) {
-            true
-        } else {
-            AbilityName::from(self.supernal) == ability
-        }
-    }
-
-    pub fn supernal_ability(&self) -> AbilityName {
-        AbilityName::from(self.supernal)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct DawnView {
-    caste_not_supernal: [DawnCasteAbility; 4],
-    supernal: DawnSupernalAbility,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-enum ZenithAbility {
-    Athletics,
-    Integrity,
-    Performance,
-    Lore,
-    Presence,
-    Resistance,
-    Survival,
-    War,
-}
-
-impl From<ZenithAbility> for AbilityName {
-    fn from(value: ZenithAbility) -> Self {
-        match value {
-            ZenithAbility::Athletics => Self::Athletics,
-            ZenithAbility::Integrity => Self::Integrity,
-            ZenithAbility::Performance => Self::Performance,
-            ZenithAbility::Lore => Self::Lore,
-            ZenithAbility::Presence => Self::Presence,
-            ZenithAbility::Resistance => Self::Resistance,
-            ZenithAbility::Survival => Self::Survival,
-            ZenithAbility::War => Self::War,
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Zenith {
-    caste_not_supernal: [ZenithAbility; 4],
-    supernal: ZenithAbility,
-}
-
-impl Zenith {
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|zenith_caste_ability| AbilityName::from(*zenith_caste_ability) == ability) {
-            true
-        } else {
-            AbilityName::from(self.supernal) == ability
-        }
-    }
-
-    pub fn supernal_ability(&self) -> AbilityName {
-        AbilityName::from(self.supernal)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ZenithView {
-    caste_not_supernal: [ZenithAbility; 4],
-    supernal: ZenithAbility,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-enum TwilightAbility {
-    Bureaucracy,
-    Craft,
-    Integrity,
-    Investigation,
-    Linguistics,
-    Lore,
-    Medicine,
-    Occult,
-}
-
-impl From<TwilightAbility> for AbilityName {
-    fn from(value: TwilightAbility) -> Self {
-        match value {
-            TwilightAbility::Bureaucracy => Self::Bureaucracy,
-            TwilightAbility::Craft => Self::Craft,
-            TwilightAbility::Integrity => Self::Integrity,
-            TwilightAbility::Investigation => Self::Investigation,
-            TwilightAbility::Linguistics => Self::Linguistics,
-            TwilightAbility::Lore => Self::Lore,
-            TwilightAbility::Medicine => Self::Medicine,
-            TwilightAbility::Occult => Self::Occult,
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Twilight {
-    caste_not_supernal: [TwilightAbility; 4],
-    supernal: TwilightAbility,
-}
-
-impl Twilight {
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|twilight_ability| AbilityName::from(*twilight_ability) == ability) {
-            true
-        } else {
-            AbilityName::from(self.supernal) == ability
-        }
-    }
-
-    pub fn supernal_ability(&self) -> AbilityName {
-        AbilityName::from(self.supernal)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TwilightView {
-    caste_not_supernal: [TwilightAbility; 4],
-    supernal: TwilightAbility,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-enum NightAbility {
-    Athletics,
-    Awareness,
-    Dodge,
-    Investigation,
-    Larceny,
-    Ride,
-    Stealth,
-    Socialize,
-}
-
-impl From<NightAbility> for AbilityName {
-    fn from(value: NightAbility) -> Self {
-        match value {
-            NightAbility::Athletics => Self::Athletics,
-            NightAbility::Awareness => Self::Awareness,
-            NightAbility::Dodge => Self::Dodge,
-            NightAbility::Investigation => Self::Investigation,
-            NightAbility::Larceny => Self::Larceny,
-            NightAbility::Ride => Self::Ride,
-            NightAbility::Stealth => Self::Stealth,
-            NightAbility::Socialize => Self::Socialize,
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Night {
-    caste_not_supernal: [NightAbility; 4],
-    supernal: NightAbility,
-}
-
-impl Night {
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|night_ability| AbilityName::from(*night_ability) == ability) {
-            true
-        } else {
-            AbilityName::from(self.supernal) == ability
-        }
-    }
-
-    pub fn supernal_ability(&self) -> AbilityName {
-        AbilityName::from(self.supernal)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct NightView {
-    caste_not_supernal: [NightAbility; 4],
-    supernal: NightAbility,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-enum EclipseAbility {
-    Bureaucracy,
-    Larceny,
-    Linguistics,
-    Occult,
-    Presence,
-    Ride,
-    Sail,
-    Socialize,
-}
-
-impl From<EclipseAbility> for AbilityName {
-    fn from(value: EclipseAbility) -> Self {
-        match value {
-            EclipseAbility::Bureaucracy => Self::Bureaucracy,
-            EclipseAbility::Larceny => Self::Larceny,
-            EclipseAbility::Linguistics => Self::Linguistics,
-            EclipseAbility::Occult => Self::Occult,
-            EclipseAbility::Presence => Self::Presence,
-            EclipseAbility::Ride => Self::Ride,
-            EclipseAbility::Sail => Self::Sail,
-            EclipseAbility::Socialize => Self::Socialize,
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Eclipse {
-    caste_not_supernal: [EclipseAbility; 4],
-    supernal: EclipseAbility,
-}
-
-impl Eclipse {
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|eclipse_ability| AbilityName::from(*eclipse_ability) == ability) {
-            true
-        } else {
-            AbilityName::from(self.supernal) == ability
-        }
-    }
-
-    pub fn supernal_ability(&self) -> AbilityName {
-        AbilityName::from(self.supernal)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct EclipseView {
-    caste_not_supernal: [EclipseAbility; 4],
-    supernal: EclipseAbility,
-}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SolarCaste {
@@ -339,6 +59,29 @@ pub enum SolarCasteView {
     Eclipse(EclipseView),
 }
 
+
+impl SolarCasteView {
+    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
+        match self {
+            SolarCasteView::Dawn(dawn) => dawn.has_caste_ability(ability),
+            SolarCasteView::Zenith(zenith) => zenith.has_caste_ability(ability),
+            SolarCasteView::Twilight(twilight) => twilight.has_caste_ability(ability),
+            SolarCasteView::Night(night) => night.has_caste_ability(ability),
+            SolarCasteView::Eclipse(eclipse) => eclipse.has_caste_ability(ability),
+        }
+    }
+
+    pub fn supernal_ability(&self) -> AbilityName {
+        match self {
+            SolarCasteView::Dawn(dawn) => dawn.supernal_ability(),
+            SolarCasteView::Zenith(zenith) => zenith.supernal_ability(),
+            SolarCasteView::Twilight(twilight) => twilight.supernal_ability(),
+            SolarCasteView::Night(night) => night.supernal_ability(),
+            SolarCasteView::Eclipse(eclipse) => eclipse.supernal_ability(),
+        }
+    }
+}
+
 /// Traits which are unique to being a Solar Exalted.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Solar {
@@ -354,6 +97,28 @@ pub struct SolarView<'source> {
     caste: SolarCasteView,
     favored_abilities: [AbilityName; 5],
 }
+
+impl<'source> SolarView<'source> {
+    /// Returns True if the ability is a caste ability for the charcter. Note
+    /// that MartialArts is a caste ability if and only if Brawl is a caste
+    /// ability.
+    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
+        self.caste.has_caste_ability(ability)
+    }
+
+    /// Returns the Solar's supernal ability.
+    pub fn supernal_ability(&self) -> AbilityName {
+        self.caste.supernal_ability()
+    }
+
+    /// Returns True if the ability is a favored ability for the charcter. Note
+    /// that MartialArts is a favored ability if and only if Brawl is a favored
+    /// ability.
+    pub fn has_favored_ability(&self, ability: AbilityName) -> bool {
+        self.favored_abilities.iter().any(|&a| a == ability)
+    }
+}
+
 
 pub struct SolarTraitsBuilder {
     caste: Option<SolarCaste>,
@@ -399,10 +164,12 @@ pub enum SolarBuilderError {
     CasteAndFavoredCount,
     #[error("Martial Arts cannot be a Caste or Favored ability")]
     MartialArts,
+    #[error("Must use correct caste abilities")]
+    InvalidCasteAbility,
 }
 
 impl SolarTraitsBuilder {
-    pub fn dawn(&mut self, dawn: Dawn) -> &mut Self {
+    pub fn set_dawn(&mut self, dawn: Dawn) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();
         }
@@ -411,7 +178,7 @@ impl SolarTraitsBuilder {
         self
     }
 
-    pub fn zenith(&mut self, zenith: Zenith) -> &mut Self {
+    pub fn set_zenith(&mut self, zenith: Zenith) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();
         }
@@ -420,7 +187,7 @@ impl SolarTraitsBuilder {
         self
     }
 
-    pub fn twilight(&mut self, twilight: Twilight) -> &mut Self {
+    pub fn set_twilight(&mut self, twilight: Twilight) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();
         }
@@ -429,7 +196,7 @@ impl SolarTraitsBuilder {
         self
     }
 
-    pub fn night(&mut self, night: Night) -> &mut Self {
+    pub fn set_night(&mut self, night: Night) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();
         }
@@ -438,7 +205,7 @@ impl SolarTraitsBuilder {
         self
     }
 
-    pub fn eclipse(&mut self, eclipse: Eclipse) -> &mut Self {
+    pub fn set_eclipse(&mut self, eclipse: Eclipse) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();
         }
@@ -447,7 +214,7 @@ impl SolarTraitsBuilder {
         self
     }
 
-    pub fn favored_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
+    pub fn add_favored_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
         if ability == AbilityName::MartialArts {
             Err(SolarBuilderError::MartialArts)
         } else if self.caste.as_ref().map_or(false, |c| c.has_caste_ability(ability)) {

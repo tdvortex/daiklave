@@ -358,7 +358,8 @@ fn test_guided_solar() {
 
     // After finalizing caste/supernal/favored, should be a valid Solar with 
     // the correct abilities.
-    let character_view = guided_builder.as_guided_view().unwrap().as_character_view();
+    let guided_view = guided_builder.as_guided_view().unwrap();
+    let character_view = guided_view.as_character_view();
     assert!(character_view.is_solar());
     let solar_traits = character_view.solar_traits().unwrap();
 

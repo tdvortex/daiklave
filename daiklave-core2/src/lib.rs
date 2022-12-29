@@ -21,6 +21,7 @@ pub mod id;
 
 /// Traits which are unique to being a Solar Exalted.
 pub use solar::Solar;
+pub use solar::{Dawn, DawnBuilder, Eclipse, EclipseBuilder, Night, NightBuilder, Twilight, TwilightBuilder, Zenith, ZenithBuilder};
 
 /// A character builder with additional logic for bonus points, free starting
 /// dots, and other constraints.

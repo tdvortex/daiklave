@@ -1,5 +1,5 @@
 use daiklave_core2::{
-    Character, CharacterEventSource, CharacterMutation, CharacterView, Solar,
+    Character, CharacterEventSource, CharacterMutation, CharacterView, Solar, Twilight, AbilityName,
 };
 
 #[test]
@@ -9,7 +9,35 @@ fn test_exalt_type_character() {
     assert!(character.is_mortal());
 
     // Confirm toggle to solar
-    let solar_traits = Solar::builder().build();
+    let twilight = {
+        let mut builder = Twilight::builder();
+        [
+            AbilityName::Bureaucracy,
+            AbilityName::Craft,
+            AbilityName::Integrity,
+            AbilityName::Investigation,
+        ].into_iter().for_each(|ability| {
+            builder.add_caste_ability(ability).unwrap();
+        });
+        builder.set_supernal_ability(AbilityName::Linguistics).unwrap();
+        builder.build().unwrap()
+    };
+
+    let solar_traits = {
+        let mut builder = Solar::builder();
+        builder.set_twilight(twilight);
+        [
+            AbilityName::Archery,
+            AbilityName::Athletics,
+            AbilityName::Awareness,
+            AbilityName::Brawl,
+            AbilityName::Dodge,
+        ].into_iter().for_each(|ability| {
+            builder.add_favored_ability(ability).unwrap();
+        });
+        builder.build().unwrap()
+    };
+
     assert!(character.check_set_solar(&solar_traits).is_ok());
     assert!(character.set_solar(&solar_traits).is_ok());
     assert!(character.is_solar());
@@ -27,7 +55,35 @@ fn test_exalt_type_character_view() {
     assert!(character_view.is_mortal());
 
     // Confirm toggle to solar
-    let solar_traits = Solar::builder().build();
+    let twilight = {
+        let mut builder = Twilight::builder();
+        [
+            AbilityName::Bureaucracy,
+            AbilityName::Craft,
+            AbilityName::Integrity,
+            AbilityName::Investigation,
+        ].into_iter().for_each(|ability| {
+            builder.add_caste_ability(ability).unwrap();
+        });
+        builder.set_supernal_ability(AbilityName::Linguistics).unwrap();
+        builder.build().unwrap()
+    };
+
+    let solar_traits = {
+        let mut builder = Solar::builder();
+        builder.set_twilight(twilight);
+        [
+            AbilityName::Archery,
+            AbilityName::Athletics,
+            AbilityName::Awareness,
+            AbilityName::Brawl,
+            AbilityName::Dodge,
+        ].into_iter().for_each(|ability| {
+            builder.add_favored_ability(ability).unwrap();
+        });
+        builder.build().unwrap()
+    };
+
     assert!(character_view.check_set_solar(&solar_traits).is_ok());
     assert!(character_view.set_solar(&solar_traits).is_ok());
     assert!(character_view.is_solar());
@@ -46,7 +102,35 @@ fn test_exalt_type_character_event_source() {
     assert!(character_view.is_mortal());
 
     // Check toggle to solar
-    let solar_traits = Solar::builder().build();
+    let twilight = {
+        let mut builder = Twilight::builder();
+        [
+            AbilityName::Bureaucracy,
+            AbilityName::Craft,
+            AbilityName::Integrity,
+            AbilityName::Investigation,
+        ].into_iter().for_each(|ability| {
+            builder.add_caste_ability(ability).unwrap();
+        });
+        builder.set_supernal_ability(AbilityName::Linguistics).unwrap();
+        builder.build().unwrap()
+    };
+
+    let solar_traits = {
+        let mut builder = Solar::builder();
+        builder.set_twilight(twilight);
+        [
+            AbilityName::Archery,
+            AbilityName::Athletics,
+            AbilityName::Awareness,
+            AbilityName::Brawl,
+            AbilityName::Dodge,
+        ].into_iter().for_each(|ability| {
+            builder.add_favored_ability(ability).unwrap();
+        });
+        builder.build().unwrap()
+    };
+    
     let mutation = CharacterMutation::SetSolar(solar_traits);
     assert!(character_view.check_mutation(&mutation).is_ok());
     assert!(event_source.apply_mutation(mutation).is_ok());
