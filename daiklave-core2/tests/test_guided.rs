@@ -137,6 +137,11 @@ fn test_guided_mortal() {
             .bonus_points_remaining(),
         21
     );
+
+    // Move on to the next stage
+    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseMartialArtsStyles);
+    assert!(guided_builder.check_mutation(&mutation).is_ok());
+    assert!(guided_builder.apply_mutation(mutation).is_ok());
 }
 
 #[test]
@@ -272,4 +277,85 @@ fn test_guided_solar() {
             .bonus_points_remaining(),
         15
     );
+
+    // Move on to next stage
+    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSolarCasteAbilities);
+    assert!(guided_builder.check_mutation(&mutation).is_ok());
+    assert!(guided_builder.apply_mutation(mutation).is_ok());
+
+    // Check cannot add an invalid caste ability
+    assert!(guided_builder.check_mutation(&GuidedMutation::AddSolarCasteAbility(AbilityName::Archery)).is_err());
+
+    // Check can add 5 valid caste abilities
+    assert!(guided_builder.check_mutation(&GuidedMutation::AddSolarCasteAbility(AbilityName::Athletics)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarCasteAbility(AbilityName::Athletics)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarCasteAbility(AbilityName::Awareness)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarCasteAbility(AbilityName::Dodge)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarCasteAbility(AbilityName::Investigation)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarCasteAbility(AbilityName::Larceny)).is_ok());
+
+    // Check cannot add a 6th caste ability
+    assert!(guided_builder.check_mutation(&GuidedMutation::AddSolarCasteAbility(AbilityName::Ride)).is_err());
+
+    // Check can remove a caste ability
+    assert!(guided_builder.check_mutation(&GuidedMutation::RemoveSolarCasteAbility(AbilityName::Investigation)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::RemoveSolarCasteAbility(AbilityName::Investigation)).is_ok());
+
+    // Check cannot remove a missing caste ability
+    assert!(guided_builder.check_mutation(&GuidedMutation::RemoveSolarCasteAbility(AbilityName::Ride)).is_err());
+
+    // Check cannot proceed without 5 caste abilities
+    assert!(guided_builder.check_mutation(&GuidedMutation::SetStage(GuidedStage::ChooseSolarSupernalAbility)).is_err());
+
+    // Move on to next stage
+    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarCasteAbility(AbilityName::Stealth)).is_ok());
+    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSolarSupernalAbility);
+    assert!(guided_builder.check_mutation(&mutation).is_ok());
+    assert!(guided_builder.apply_mutation(mutation).is_ok());
+
+    // Check you cannot choose a supernal ability that is not an owned caste ability
+    assert!(guided_builder.check_mutation(&GuidedMutation::SetSolarSupernalAbility(AbilityName::Socialize)).is_err());
+
+    // Move on to next stage
+    assert!(guided_builder.check_mutation(&GuidedMutation::SetSolarSupernalAbility(AbilityName::Dodge)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::SetSolarSupernalAbility(AbilityName::Dodge)).is_ok());
+    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSolarFavoredAbilities);
+    assert!(guided_builder.check_mutation(&mutation).is_ok());
+    assert!(guided_builder.apply_mutation(mutation).is_ok());
+
+    // Check you cannot add a favored ability that is already a caste ability
+    assert!(guided_builder.check_mutation(&GuidedMutation::AddSolarFavoredAbility(AbilityName::Athletics)).is_err());
+
+    // Check you cannot add MartialArts as a favored ability
+    assert!(guided_builder.check_mutation(&GuidedMutation::AddSolarFavoredAbility(AbilityName::MartialArts)).is_err());
+
+    // Check can add 5 valid favored abilities
+    assert!(guided_builder.check_mutation(&GuidedMutation::AddSolarFavoredAbility(AbilityName::Linguistics)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Linguistics)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Lore)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Occult)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Socialize)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Thrown)).is_ok());
+
+    // Check cannot add a 6th favored ability
+    assert!(guided_builder.check_mutation(&GuidedMutation::AddSolarFavoredAbility(AbilityName::Survival)).is_err());
+
+    // Check can remove a favored ability
+    assert!(guided_builder.check_mutation(&GuidedMutation::RemoveSolarFavoredAbility(AbilityName::Lore)).is_ok());
+    assert!(guided_builder.apply_mutation(GuidedMutation::RemoveSolarFavoredAbility(AbilityName::Lore)).is_ok());
+
+    // Check cannot remove a missing favored ability
+    assert!(guided_builder.check_mutation(&GuidedMutation::RemoveSolarCasteAbility(AbilityName::Lore)).is_err());
+
+    // Check cannot proceed without 5 favored abilities
+    assert!(guided_builder.check_mutation(&GuidedMutation::SetStage(GuidedStage::ChooseMartialArtsStyles)).is_err());
+
+    // Move on to next stage
+    assert!(guided_builder.apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Survival)).is_ok());
+    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseMartialArtsStyles);
+    assert!(guided_builder.check_mutation(&mutation).is_ok());
+    assert!(guided_builder.apply_mutation(mutation).is_ok());
+
+    // After finalizing caste/supernal/favored, should be a valid Solar
+    assert!(guided_builder.as_guided_view().as_character_view().is_solar());
 }
