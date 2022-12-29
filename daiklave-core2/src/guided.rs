@@ -144,6 +144,8 @@ impl GuidedEventSource {
 }
 
 impl<'source> GuidedView<'source> {
+    /// Returns a new owned Solar object for the previously specified Caste,
+    /// Supernal, and Favored abilities.
     pub fn solar_traits(&self) -> Result<Solar, GuidedError> {
         Ok(match self.exaltation_choice {
             None => return Err(GuidedError::StageOrderError),

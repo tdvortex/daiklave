@@ -437,9 +437,11 @@ fn test_guided_solar() {
         .is_err());
 
     // Finish building solar
-    guided_builder.apply_mutation(GuidedMutation::AddSolarFavoredAbility(
-        AbilityName::Survival,
-    ));
+    guided_builder
+        .apply_mutation(GuidedMutation::AddSolarFavoredAbility(
+            AbilityName::Survival,
+        ))
+        .unwrap();
     let solar = guided_builder
         .as_guided_view()
         .unwrap()

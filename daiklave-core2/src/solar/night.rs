@@ -33,6 +33,7 @@ impl From<NightAbility> for AbilityName {
     }
 }
 
+/// Caste traits for the Night Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Night {
     pub(crate) caste_not_supernal: [NightAbility; 4],
@@ -40,6 +41,7 @@ pub struct Night {
 }
 
 impl Night {
+    /// Builder method
     pub fn builder() -> NightBuilder {
         NightBuilder {
             caste_not_supernal: HashSet::new(),
@@ -47,7 +49,7 @@ impl Night {
         }
     }
 
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
+    pub(crate) fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal
             .iter()
@@ -59,7 +61,7 @@ impl Night {
         }
     }
 
-    pub fn supernal_ability(&self) -> AbilityName {
+    pub(crate) fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
     }
 }
@@ -88,12 +90,14 @@ impl NightView {
     }
 }
 
+/// Builder struct for constructing Night Caste traits.
 pub struct NightBuilder {
     caste_not_supernal: HashSet<NightAbility>,
     supernal: Option<NightAbility>,
 }
 
 impl NightBuilder {
+    /// Adds a caste ability.
     pub fn add_caste_ability(
         &mut self,
         ability: AbilityName,
@@ -123,6 +127,7 @@ impl NightBuilder {
         Ok(self)
     }
 
+    /// Sets the Supernal ability
     pub fn set_supernal_ability(
         &mut self,
         ability: AbilityName,
@@ -158,6 +163,7 @@ impl NightBuilder {
         Ok(self)
     }
 
+    /// Completes the build process and returns a Night struct if successful.
     pub fn build(mut self) -> Result<Night, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));

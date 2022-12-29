@@ -33,6 +33,7 @@ impl From<TwilightAbility> for AbilityName {
     }
 }
 
+/// Caste traits for the Twilight Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Twilight {
     pub(crate) caste_not_supernal: [TwilightAbility; 4],
@@ -40,6 +41,7 @@ pub struct Twilight {
 }
 
 impl Twilight {
+    /// Builder method
     pub fn builder() -> TwilightBuilder {
         TwilightBuilder {
             caste_not_supernal: HashSet::new(),
@@ -47,7 +49,7 @@ impl Twilight {
         }
     }
 
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
+    pub(crate) fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal
             .iter()
@@ -59,7 +61,7 @@ impl Twilight {
         }
     }
 
-    pub fn supernal_ability(&self) -> AbilityName {
+    pub(crate) fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
     }
 }
@@ -88,12 +90,14 @@ impl TwilightView {
     }
 }
 
+/// Builder struct for constructing Twilight Caste traits.
 pub struct TwilightBuilder {
     caste_not_supernal: HashSet<TwilightAbility>,
     supernal: Option<TwilightAbility>,
 }
 
 impl TwilightBuilder {
+    /// Adds a caste ability.
     pub fn add_caste_ability(
         &mut self,
         ability: AbilityName,
@@ -127,6 +131,7 @@ impl TwilightBuilder {
         Ok(self)
     }
 
+    /// Sets the Supernal ability
     pub fn set_supernal_ability(
         &mut self,
         ability: AbilityName,
@@ -162,6 +167,7 @@ impl TwilightBuilder {
         Ok(self)
     }
 
+    /// Completes the build process and returns a Twilight struct if successful.
     pub fn build(mut self) -> Result<Twilight, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));

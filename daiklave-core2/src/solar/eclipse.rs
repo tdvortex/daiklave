@@ -33,6 +33,7 @@ impl From<EclipseAbility> for AbilityName {
     }
 }
 
+/// Caste traits for the Eclipse Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Eclipse {
     pub(crate) caste_not_supernal: [EclipseAbility; 4],
@@ -40,6 +41,7 @@ pub struct Eclipse {
 }
 
 impl Eclipse {
+    /// Builder method
     pub fn builder() -> EclipseBuilder {
         EclipseBuilder {
             caste_not_supernal: HashSet::new(),
@@ -47,7 +49,7 @@ impl Eclipse {
         }
     }
 
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
+    pub(crate) fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal
             .iter()
@@ -59,7 +61,7 @@ impl Eclipse {
         }
     }
 
-    pub fn supernal_ability(&self) -> AbilityName {
+    pub(crate) fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
     }
 }
@@ -88,12 +90,14 @@ impl EclipseView {
     }
 }
 
+/// Builder struct for constructing Eclipse Caste traits.
 pub struct EclipseBuilder {
     caste_not_supernal: HashSet<EclipseAbility>,
     supernal: Option<EclipseAbility>,
 }
 
 impl EclipseBuilder {
+    /// Adds a caste ability.
     pub fn add_caste_ability(
         &mut self,
         ability: AbilityName,
@@ -121,6 +125,7 @@ impl EclipseBuilder {
         Ok(self)
     }
 
+    /// Sets the Supernal ability.
     pub fn set_supernal_ability(
         &mut self,
         ability: AbilityName,
@@ -156,6 +161,7 @@ impl EclipseBuilder {
         Ok(self)
     }
 
+    /// Completes the build process and returns an Eclipse struct if successful.
     pub fn build(mut self) -> Result<Eclipse, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));

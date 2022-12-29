@@ -62,6 +62,9 @@ impl From<DawnSupernalAbility> for AbilityName {
     }
 }
 
+/// Caste traits for the Dawn Caste Solar. Note that because of
+/// Brawl/MartialArts, Dawns have 5 possible Caste abilities but 6 possible
+/// Supernal abilities.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Dawn {
     pub(crate) caste_not_supernal: [DawnCasteAbility; 4],
@@ -69,6 +72,7 @@ pub struct Dawn {
 }
 
 impl Dawn {
+    /// Builder method
     pub fn builder() -> DawnBuilder {
         DawnBuilder {
             caste_not_supernal: HashSet::new(),
@@ -76,7 +80,7 @@ impl Dawn {
         }
     }
 
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
+    pub(crate) fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal
             .iter()
@@ -88,7 +92,7 @@ impl Dawn {
         }
     }
 
-    pub fn supernal_ability(&self) -> AbilityName {
+    pub(crate) fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
     }
 }
@@ -117,12 +121,14 @@ impl DawnView {
     }
 }
 
+/// Builder struct for constructing Dawn Caste traits.
 pub struct DawnBuilder {
     caste_not_supernal: HashSet<DawnCasteAbility>,
     supernal: Option<DawnSupernalAbility>,
 }
 
 impl DawnBuilder {
+    /// Adds a caste ability to the Dawn. MartialArts is **not** valid here.
     pub fn add_caste_ability(
         &mut self,
         ability: AbilityName,
@@ -154,6 +160,8 @@ impl DawnBuilder {
         Ok(self)
     }
 
+    /// Sets the Supernal ability to the specified value. MartialArts **is**
+    /// valid here, provided that Brawl was a Caste ability.
     pub fn set_supernal_ability(
         &mut self,
         ability: AbilityName,
@@ -192,6 +200,7 @@ impl DawnBuilder {
         Ok(self)
     }
 
+    /// Completes the build process and returns a Dawn struct if successful.
     pub fn build(mut self) -> Result<Dawn, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));

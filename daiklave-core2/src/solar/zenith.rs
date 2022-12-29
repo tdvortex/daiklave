@@ -33,6 +33,7 @@ impl From<ZenithAbility> for AbilityName {
     }
 }
 
+/// Caste traits for the Zenith Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Zenith {
     pub(crate) caste_not_supernal: [ZenithAbility; 4],
@@ -40,6 +41,7 @@ pub struct Zenith {
 }
 
 impl Zenith {
+    /// Builder method
     pub fn builder() -> ZenithBuilder {
         ZenithBuilder {
             caste_not_supernal: HashSet::new(),
@@ -47,7 +49,7 @@ impl Zenith {
         }
     }
 
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
+    pub(crate) fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal
             .iter()
@@ -59,7 +61,7 @@ impl Zenith {
         }
     }
 
-    pub fn supernal_ability(&self) -> AbilityName {
+    pub(crate) fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
     }
 }
@@ -88,12 +90,14 @@ impl ZenithView {
     }
 }
 
+/// Builder struct for constructing Zenith Caste traits.
 pub struct ZenithBuilder {
     caste_not_supernal: HashSet<ZenithAbility>,
     supernal: Option<ZenithAbility>,
 }
 
 impl ZenithBuilder {
+    /// Adds a caste ability.
     pub fn add_caste_ability(
         &mut self,
         ability: AbilityName,
@@ -121,6 +125,7 @@ impl ZenithBuilder {
         Ok(self)
     }
 
+    /// Sets the Supernal ability
     pub fn set_supernal_ability(
         &mut self,
         ability: AbilityName,
@@ -156,6 +161,7 @@ impl ZenithBuilder {
         Ok(self)
     }
 
+    /// Completes the build process and returns a Zenith struct if successful.
     pub fn build(mut self) -> Result<Zenith, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));
