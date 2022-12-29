@@ -26,7 +26,7 @@ pub use exalt_type::SolarTraits;
 /// dots, and other constraints.
 pub mod guided;
 
-pub use abilities::AbilityNameVanilla;
+pub use abilities::{AbilityName, AbilityNameVanilla};
 pub use attributes::{AttributeName, Attributes};
 pub use essence::CommittedMotesId;
 pub use essence::MotePool;

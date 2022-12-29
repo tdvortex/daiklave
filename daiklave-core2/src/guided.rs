@@ -1,7 +1,9 @@
+use std::collections::HashSet;
+
 use thiserror::Error;
 
 use crate::{
-    id::CharacterId, AttributeName, CharacterMutation, CharacterMutationError, CharacterView,
+    id::CharacterId, AttributeName, CharacterMutation, CharacterMutationError, CharacterView, abilities::AbilityName,
 };
 
 /// Initiates a new guided character builder.
@@ -25,6 +27,16 @@ pub enum GuidedMutation {
     /// Choose a specific Exalt type (or Mortal), without necessarily setting
     /// all exaltations up-front.
     SetExaltation(ExaltationChoice),
+    /// Add a Solar Caste ability to the guided builder.
+    AddSolarCasteAbility(AbilityName),
+    /// Removes a Solar Caste ability from the guided builder.
+    RemoveSolarCasteAbility(AbilityName),
+    /// Sets the Solar's Supernal ability.
+    SetSolarSupernalAbility(AbilityName),
+    /// Add a Solar Favored ability to the guided builder.
+    AddSolarFavoredAbility(AbilityName),
+    /// Remove a Solar Favored ability from the guided builder.
+    RemoveSolarFavoredAbility(AbilityName),
 }
 
 /// An event-sourced guided character builder, supporting undo/redo.
@@ -40,6 +52,9 @@ pub struct GuidedView<'source> {
     stage: GuidedStage,
     bonus_points: i32,
     exaltation_choice: Option<ExaltationChoice>,
+    solar_caste_abilities: Option<HashSet<AbilityName>>,
+    solar_supernal_ability: Option<AbilityName>,
+    solar_favored_abilities: Option<HashSet<AbilityName>>,
 }
 
 impl GuidedEventSource {
@@ -51,10 +66,13 @@ impl GuidedEventSource {
             stage: GuidedStage::ChooseNameAndConcept,
             bonus_points: 0,
             exaltation_choice: None,
+            solar_caste_abilities: None,
+            solar_supernal_ability: None,
+            solar_favored_abilities: None,
         };
 
         // Don't use GuidedView::apply_mutation() to avoid redundant bonus
-        // point recalculations
+        // point recalculations and unnecessary validity checks
         for guided_mutation in self.history.iter() {
             match guided_mutation {
                 GuidedMutation::CharacterMutation(character_mutation) => {
@@ -67,6 +85,41 @@ impl GuidedEventSource {
                 }
                 GuidedMutation::SetExaltation(exaltation_choice) => {
                     guided_view.exaltation_choice = Some(*exaltation_choice);
+                }
+                GuidedMutation::AddSolarCasteAbility(ability) => {
+                    if guided_view.solar_caste_abilities.is_none() {
+                        guided_view.solar_caste_abilities = Some(HashSet::new());
+                    }
+
+                    guided_view.solar_caste_abilities.as_mut().unwrap().insert(*ability);
+                }
+                GuidedMutation::RemoveSolarCasteAbility(ability) => {
+                    if let Some(abilities) = guided_view.solar_caste_abilities.as_mut() {
+                        if !abilities.remove(&ability) {
+                            return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
+                        }
+                    } else {
+                        return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
+                    }
+                }
+                GuidedMutation::SetSolarSupernalAbility(ability) => {
+                    guided_view.solar_supernal_ability = Some(*ability);
+                }
+                GuidedMutation::AddSolarFavoredAbility(ability) => {
+                    if guided_view.solar_favored_abilities.is_none() {
+                        guided_view.solar_favored_abilities = Some(HashSet::new());
+                    }
+
+                    guided_view.solar_favored_abilities.as_mut().unwrap().insert(*ability);
+                }
+                GuidedMutation::RemoveSolarFavoredAbility(ability) => {
+                    if let Some(abilities) = guided_view.solar_favored_abilities.as_mut() {
+                        if !abilities.remove(&ability) {
+                            return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
+                        }
+                    } else {
+                        return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
+                    }
                 }
             }
         }
@@ -185,6 +238,16 @@ impl<'source> GuidedView<'source> {
                     return Err(GuidedError::StageOrderError);
                 }
             }
+            GuidedStage::ChooseSolarCasteAbilities => {
+                matches!(self.solar_caste_abilities.as_ref().map(|v| v.len()), Some(5))
+            }
+            GuidedStage::ChooseSolarSupernalAbility => {
+                matches!(self.solar_supernal_ability, Some(_))
+            }
+            GuidedStage::ChooseSolarFavoredAbilities => {
+                matches!(self.solar_favored_abilities.as_ref().map(|v| v.len()), Some(5))
+            }
+            GuidedStage::ChooseMartialArtsStyles => todo!(),
         } {
             Err(GuidedError::StageIncompleteError)
         } else {
@@ -223,8 +286,92 @@ impl<'source> GuidedView<'source> {
                 }?;
             }
             GuidedMutation::SetExaltation(exaltation_choice) => {
+                if self.stage != GuidedStage::ChooseExaltation {
+                    return Err(GuidedError::StageOrderError);
+                }
+
                 self.exaltation_choice = Some(*exaltation_choice);
                 self.update_bonus_points();
+            }
+            GuidedMutation::AddSolarCasteAbility(ability) => {
+                if self.stage != GuidedStage::ChooseSolarCasteAbilities {
+                    return Err(GuidedError::StageOrderError);
+                }
+                
+                if self.solar_caste_abilities.is_none() {
+                    self.solar_caste_abilities = Some(HashSet::new());
+                }
+
+                if self.solar_caste_abilities.as_ref().unwrap().contains(&ability) {
+                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::UniqueCasteAndFavored));
+                }
+
+                self.solar_caste_abilities.as_mut().unwrap().insert(*ability);
+            }
+            GuidedMutation::RemoveSolarCasteAbility(ability) => {
+                if self.stage != GuidedStage::ChooseSolarCasteAbilities {
+                    return Err(GuidedError::StageOrderError);
+                }
+
+                if self.solar_caste_abilities.is_none() {
+                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
+                }
+
+                if !self.solar_caste_abilities.as_mut().unwrap().remove(ability) {
+                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
+                }
+            }
+            GuidedMutation::SetSolarSupernalAbility(ability) => {
+                if self.stage != GuidedStage::ChooseSolarSupernalAbility || self.solar_caste_abilities.is_none() {
+                    return Err(GuidedError::StageOrderError);
+                }
+
+                if ability == &AbilityName::MartialArts {
+                    if !self.solar_caste_abilities.as_ref().unwrap().contains(&AbilityName::Brawl) {
+                        return Err(GuidedError::SolarAbilityError(SolarAbilityError::SupernalIsCaste))
+                    }
+                }
+
+                if !self.solar_caste_abilities.as_ref().unwrap().contains(&ability) {
+                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::SupernalIsCaste))
+                }
+
+            }
+            GuidedMutation::AddSolarFavoredAbility(ability) => {
+                if self.stage != GuidedStage::ChooseSolarCasteAbilities {
+                    return Err(GuidedError::StageOrderError);
+                }
+
+                if self.solar_caste_abilities.is_none() {
+                    return Err(GuidedError::StageOrderError);
+                }
+
+                if self.solar_caste_abilities.as_ref().unwrap().contains(&ability) {
+                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::UniqueCasteAndFavored));
+                }
+                
+                if self.solar_favored_abilities.is_none() {
+                    self.solar_favored_abilities = Some(HashSet::new());
+                }
+
+                if self.solar_favored_abilities.as_ref().unwrap().contains(&ability) {
+                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::UniqueCasteAndFavored));
+                }
+
+                self.solar_favored_abilities.as_mut().unwrap().insert(*ability);
+            }
+            GuidedMutation::RemoveSolarFavoredAbility(ability) => {
+                if self.stage != GuidedStage::ChooseSolarFavoredAbilities {
+                    return Err(GuidedError::StageOrderError);
+                }
+
+                if self.solar_favored_abilities.is_none() {
+                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
+                }
+
+                if !self.solar_favored_abilities.as_mut().unwrap().remove(ability) {
+                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
+                }
             }
         }
 
@@ -233,6 +380,11 @@ impl<'source> GuidedView<'source> {
         }
 
         Ok(self)
+    }
+
+    /// Gets a read-only view at the partially constructed character.
+    pub fn as_character_view(&self) -> &CharacterView {
+        &self.character_view
     }
 }
 
@@ -246,6 +398,19 @@ pub enum GuidedStage {
     /// The attribute selection stage. Comes after ChooseExaltation for
     /// Mortals and Solars.
     ChooseAttributes,
+    /// The stage where Solars pick five Caste abilities from the 7 available
+    /// for their Caste.
+    ChooseSolarCasteAbilities,
+    /// The stage where Solars pick their Supernal ability from the 5 Caste
+    /// abilities they previously selected, except that Dawn castes may 
+    /// instead pick Martial Arts if Brawl is a selected caste ability.
+    ChooseSolarSupernalAbility,
+    /// The stage where Solars pick their Favored abilities.
+    ChooseSolarFavoredAbilities,
+    /// A stage for selecting which Martial Arts styles (if any) the character
+    /// practices. This purchases the MartialArtist merit and forces Brawl 1
+    /// but does not purchase any MartialArts dots, specialties, or charms.
+    ChooseMartialArtsStyles,
 }
 
 /// The supported options for Exaltations.
@@ -265,6 +430,22 @@ pub enum ExaltationChoice {
     Eclipse,
 }
 
+/// An error trying to set or remove a Solar caste, supernal, or favored 
+/// ability
+#[derive(Debug, Error)]
+pub enum SolarAbilityError {
+    /// Solar caste and favored abilities must be unique.
+    #[error("Cannot have duplicate Caste or Favored abilities")]
+    UniqueCasteAndFavored,
+    /// Referencing an absent ability
+    #[error("Could not find ability")]
+    NotFound,
+    /// Supernal abilities must first be selected as Caste abilities, unless 
+    /// MartialArts is Supernal, in which case Brawl must be a Caste ability.
+    #[error("Supernal ability must be a selected Caste ability")]
+    SupernalIsCaste,
+}
+
 /// The possible errors occurring in the guided character builder.
 #[derive(Debug, Error)]
 pub enum GuidedError {
@@ -280,6 +461,10 @@ pub enum GuidedError {
     /// An error in trying to spend more bonus points than are available
     #[error("Cannot spend more bonus points than are available")]
     InsufficientBonusPoints,
+    /// An error trying to set or remove a Solar caste, supernal, or favored 
+    /// ability
+    #[error("Could not add a Solar caste ability")]
+    SolarAbilityError(#[from] SolarAbilityError),
 }
 
 impl GuidedEventSource {

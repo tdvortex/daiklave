@@ -59,3 +59,61 @@ pub enum AbilityNameVanilla {
     /// War
     War,
 }
+
+/// This is used to identify all abilities, treating all Craft abilities as 
+/// equivalent and all MartialArts abilities as equivalent. 
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+pub enum AbilityName {
+    /// Archery
+    Archery,
+    /// Athletics
+    Athletics,
+    /// Awareness
+    Awareness,
+    /// Brawl
+    Brawl,
+    /// Craft
+    Craft,
+    /// Bureaucracy
+    Bureaucracy,
+    /// Dodge
+    Dodge,
+    /// Integrity
+    Integrity,
+    /// Investigation
+    Investigation,
+    /// Larceny
+    Larceny,
+    /// Linguistics
+    Linguistics,
+    /// Lore
+    Lore,
+    /// Martial Arts
+    MartialArts,
+    /// Medicine
+    Medicine,
+    /// Melee
+    Melee,
+    /// Occult
+    Occult,
+    /// Performance
+    Performance,
+    /// Presence
+    Presence,
+    /// Resistance
+    Resistance,
+    /// Ride
+    Ride,
+    /// Sail
+    Sail,
+    /// Socialize
+    Socialize,
+    /// Stealth
+    Stealth,
+    /// Survival
+    Survival,
+    /// Thrown
+    Thrown,
+    /// War
+    War,
+}

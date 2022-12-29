@@ -36,6 +36,14 @@ impl ExaltState {
         }
     }
 
+    pub fn solar_traits(&self) -> Option<&SolarTraits> {
+        if let Self::Exalted(exalt_type) = self {
+            exalt_type.solar_traits()
+        } else {
+            None
+        }
+    }
+
     pub fn check_set_mortal(&self) -> Result<(), CharacterMutationError> {
         Ok(())
     }
@@ -87,6 +95,14 @@ impl<'source> ExaltStateView<'source> {
             exalt_type.is_solar()
         } else {
             false
+        }
+    }
+
+    pub fn solar_traits(&self) -> Option<&SolarTraitsView> {
+        if let Self::Exalted(exalt_type) = self {
+            exalt_type.solar_traits()
+        } else {
+            None
         }
     }
 
@@ -164,6 +180,12 @@ impl ExaltType {
     pub fn is_solar(&self) -> bool {
         true
     }
+
+    pub fn solar_traits(&self) -> Option<&SolarTraits> {
+        match self {
+            ExaltType::Solar(solar_traits) => Some(solar_traits),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -174,6 +196,12 @@ pub(crate) enum ExaltTypeView<'source> {
 impl<'source> ExaltTypeView<'source> {
     pub fn is_solar(&self) -> bool {
         true
+    }
+
+    pub fn solar_traits(&self) -> Option<&SolarTraitsView> {
+        match self {
+            ExaltTypeView::Solar(solar_traits) => Some(solar_traits),
+        }
     }
 }
 
@@ -236,6 +264,11 @@ impl Character {
         self.exalt_state.is_solar()
     }
 
+    /// Returns the character's Solar-specific traits, or None if not a Solar.
+    pub fn solar_traits(&self) -> Option<&SolarTraits> {
+        self.exalt_state.solar_traits()
+    }
+
     /// Checks if character can be de-Exalted and set to be mortal.
     pub fn check_set_mortal(&self) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_set_mortal()
@@ -295,6 +328,11 @@ impl<'source> CharacterView<'source> {
     /// Returns true if character is a Solar.
     pub fn is_solar(&self) -> bool {
         self.exalt_state.is_solar()
+    }
+
+    /// Returns the character's Solar-specific traits, or None if not a Solar.
+    pub fn solar_traits(&self) -> Option<&SolarTraitsView> {
+        self.exalt_state.solar_traits()
     }
 
     /// Checks if character can be de-Exalted and set to be mortal.

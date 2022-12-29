@@ -1,7 +1,7 @@
 use daiklave_core2::{
     guided::{begin_guided_builder, ExaltationChoice, GuidedMutation, GuidedStage},
     id::{CharacterId, Id},
-    AttributeName, CharacterMutation,
+    AttributeName, CharacterMutation, AbilityName,
 };
 
 #[test]
@@ -356,6 +356,21 @@ fn test_guided_solar() {
     assert!(guided_builder.check_mutation(&mutation).is_ok());
     assert!(guided_builder.apply_mutation(mutation).is_ok());
 
-    // After finalizing caste/supernal/favored, should be a valid Solar
-    assert!(guided_builder.as_guided_view().as_character_view().is_solar());
+    // After finalizing caste/supernal/favored, should be a valid Solar with 
+    // the correct abilities.
+    let character_view = guided_builder.as_guided_view().unwrap().as_character_view();
+    assert!(character_view.is_solar());
+    let solar_traits = character_view.solar_traits().unwrap();
+
+    assert!(solar_traits.has_caste_ability(AbilityName::Athletics));
+    assert!(solar_traits.has_caste_ability(AbilityName::Awareness));
+    assert!(solar_traits.has_caste_ability(AbilityName::Dodge));
+    assert!(solar_traits.has_caste_ability(AbilityName::Larceny));
+    assert!(solar_traits.has_caste_ability(AbilityName::Stealth));
+    assert_eq!(solar_traits.supernal_ability(), AbilityName::Dodge);
+    assert!(solar_traits.has_favored_ability(AbilityName::Linguistics));
+    assert!(solar_traits.has_favored_ability(AbilityName::Occult));
+    assert!(solar_traits.has_favored_ability(AbilityName::Socialize));
+    assert!(solar_traits.has_favored_ability(AbilityName::Survival));
+    assert!(solar_traits.has_favored_ability(AbilityName::Thrown));
 }
