@@ -50,6 +50,16 @@ pub enum GuidedStage {
 pub enum ExaltationChoice {
     /// No exaltation, just a heroic mortal.
     Mortal,
+    /// Dawn caste Solar.
+    Dawn,
+    /// Zenith caste Solar.
+    Zenith,
+    /// Twilight caste Solar.
+    Twilight,
+    /// Night caste Solar.
+    Night,
+    /// Eclipse caste Solar.
+    Eclipse,
 }
 
 /// The possible errors occurring in the guided character builder.
@@ -105,6 +115,43 @@ impl GuidedCharacterEventSource {
         bonus_points
     }
 
+    fn solar_bonus_points_remaining(&self) -> i32 {
+        let mut bonus_points = 15;
+        let character_view = self.as_character_view().expect("History should be valid");
+
+        // Attribute bonus points costs
+        let physical_attributes = character_view.attributes().dots(AttributeName::Strength)
+            + character_view.attributes().dots(AttributeName::Dexterity)
+            + character_view.attributes().dots(AttributeName::Stamina);
+        let mental_attributes = character_view.attributes().dots(AttributeName::Perception)
+            + character_view
+                .attributes()
+                .dots(AttributeName::Intelligence)
+            + character_view.attributes().dots(AttributeName::Wits);
+        let social_attributes = character_view.attributes().dots(AttributeName::Charisma)
+            + character_view
+                .attributes()
+                .dots(AttributeName::Manipulation)
+            + character_view.attributes().dots(AttributeName::Appearance);
+
+        let primary = physical_attributes
+            .max(mental_attributes)
+            .max(social_attributes)
+            - 3;
+        let tertiary = physical_attributes
+            .min(mental_attributes)
+            .min(social_attributes)
+            - 3;
+        let secondary =
+            physical_attributes + mental_attributes + social_attributes - primary - tertiary - 9;
+
+        let attributes_cost = (primary - primary.min(8) + secondary - secondary.min(6)) * 4
+            + (tertiary - tertiary.min(4)) * 3;
+
+        bonus_points -= attributes_cost as i32;
+        bonus_points
+    }
+
     /// The number of character creation Bonus Points remaining. Returns 0
     /// before ExaltationChoice is selected.
     pub fn bonus_points_remaining(&self) -> i32 {
@@ -112,6 +159,11 @@ impl GuidedCharacterEventSource {
         if let Some(exaltation_choice) = maybe_exaltation_choice {
             match exaltation_choice {
                 ExaltationChoice::Mortal => self.mortal_bonus_points_remaining(),
+                ExaltationChoice::Dawn
+                | ExaltationChoice::Zenith
+                | ExaltationChoice::Twilight
+                | ExaltationChoice::Night
+                | ExaltationChoice::Eclipse => self.solar_bonus_points_remaining(),
             }
         } else {
             0
