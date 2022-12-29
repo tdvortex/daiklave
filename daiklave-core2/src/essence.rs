@@ -74,7 +74,7 @@ impl MoteState {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct MoteCommitmentView<'source> {
     pub(crate) name: &'source str,
     pub(crate) peripheral: u8,
