@@ -1,11 +1,19 @@
 use std::collections::{HashMap, HashSet};
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{essence::{Essence, EssenceView, Motes, MoteState, MoteCommitmentView, MotesView}, exalt_type::{ExaltType, ExaltState, ExaltStateView, ExaltTypeView}, CharacterMutationError, CommittedMotesId, Character, CharacterView, AbilityName, guided::ExaltationChoice};
+use crate::{
+    essence::{Essence, EssenceView, MoteCommitmentView, MoteState, Motes, MotesView},
+    exalt_type::{ExaltState, ExaltStateView, ExaltType, ExaltTypeView},
+    guided::ExaltationChoice,
+    AbilityName, Character, CharacterMutationError, CharacterView, CommittedMotesId,
+};
 
-use self::{dawn::{DawnView}, zenith::{ZenithView}, twilight::{TwilightView}, night::{NightView}, eclipse::{EclipseView}};
+use self::{
+    dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView,
+    zenith::ZenithView,
+};
 mod dawn;
 mod eclipse;
 mod night;
@@ -17,7 +25,6 @@ pub use eclipse::{Eclipse, EclipseBuilder};
 pub use night::{Night, NightBuilder};
 pub use twilight::{Twilight, TwilightBuilder};
 pub use zenith::{Zenith, ZenithBuilder};
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SolarCaste {
@@ -58,7 +65,6 @@ pub enum SolarCasteView {
     Night(NightView),
     Eclipse(EclipseView),
 }
-
 
 impl SolarCasteView {
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
@@ -118,7 +124,6 @@ impl<'source> SolarView<'source> {
         self.favored_abilities.iter().any(|&a| a == ability)
     }
 }
-
 
 pub struct SolarTraitsBuilder {
     caste: Option<SolarCaste>,
@@ -214,20 +219,24 @@ impl SolarTraitsBuilder {
         self
     }
 
-    pub fn add_favored_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
+    pub fn add_favored_ability(
+        &mut self,
+        ability: AbilityName,
+    ) -> Result<&mut Self, SolarBuilderError> {
         if ability == AbilityName::MartialArts {
             Err(SolarBuilderError::MartialArts)
-        } else if self.caste.as_ref().map_or(false, |c| c.has_caste_ability(ability)) {
+        } else if self
+            .caste
+            .as_ref()
+            .map_or(false, |c| c.has_caste_ability(ability))
+        {
             Err(SolarBuilderError::UniqueCasteAndFavored)
-
         } else if !self.favored_abilities.insert(ability) {
             Err(SolarBuilderError::UniqueCasteAndFavored)
         } else {
             Ok(self)
         }
     }
-
-
 
     /// Consumes the builder to finalize Solar Traits.
     pub fn build(self) -> Result<Solar, SolarBuilderError> {
@@ -247,7 +256,6 @@ impl SolarTraitsBuilder {
 
         let mut arr = option_arr.map(|el| el.unwrap());
         arr.sort();
-
 
         Ok(Solar {
             essence: Essence {
@@ -269,7 +277,6 @@ impl SolarTraitsBuilder {
         })
     }
 }
-
 
 impl ExaltType {
     pub fn is_solar(&self) -> bool {
@@ -311,18 +318,12 @@ impl ExaltState {
             None
         }
     }
-    
-    pub fn check_set_solar(
-        &self,
-        _solar_traits: &Solar,
-    ) -> Result<(), CharacterMutationError> {
+
+    pub fn check_set_solar(&self, _solar_traits: &Solar) -> Result<(), CharacterMutationError> {
         Ok(())
     }
 
-    pub fn set_solar(
-        &mut self,
-        solar_traits: &Solar,
-    ) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_solar(&mut self, solar_traits: &Solar) -> Result<&mut Self, CharacterMutationError> {
         *self = Self::Exalted(ExaltType::Solar(solar_traits.clone()));
         Ok(self)
     }
@@ -395,40 +396,30 @@ impl<'source> ExaltStateView<'source> {
         let essence = EssenceView { rating, motes };
 
         let caste = match &solar_traits.caste {
-            SolarCaste::Dawn(dawn) => SolarCasteView::Dawn(
-                DawnView { 
-                    caste_not_supernal: dawn.caste_not_supernal, 
-                    supernal: dawn.supernal,
-                }
-            ),
-            SolarCaste::Zenith(zenith) => SolarCasteView::Zenith(
-                ZenithView { 
-                    caste_not_supernal: zenith.caste_not_supernal, 
-                    supernal: zenith.supernal,
-                }
-            ),
-            SolarCaste::Twilight(twilight) => SolarCasteView::Twilight(
-                TwilightView { 
-                    caste_not_supernal: twilight.caste_not_supernal,
-                    supernal: twilight.supernal,
-                }
-            ),
-            SolarCaste::Night(night) => SolarCasteView::Night(
-                NightView { 
-                    caste_not_supernal: night.caste_not_supernal, 
-                    supernal: night.supernal,
-                }
-            ),
-            SolarCaste::Eclipse(eclipse) => SolarCasteView::Eclipse(
-                EclipseView { 
-                    caste_not_supernal: eclipse.caste_not_supernal, 
-                    supernal: eclipse.supernal,
-                }
-            ),
+            SolarCaste::Dawn(dawn) => SolarCasteView::Dawn(DawnView {
+                caste_not_supernal: dawn.caste_not_supernal,
+                supernal: dawn.supernal,
+            }),
+            SolarCaste::Zenith(zenith) => SolarCasteView::Zenith(ZenithView {
+                caste_not_supernal: zenith.caste_not_supernal,
+                supernal: zenith.supernal,
+            }),
+            SolarCaste::Twilight(twilight) => SolarCasteView::Twilight(TwilightView {
+                caste_not_supernal: twilight.caste_not_supernal,
+                supernal: twilight.supernal,
+            }),
+            SolarCaste::Night(night) => SolarCasteView::Night(NightView {
+                caste_not_supernal: night.caste_not_supernal,
+                supernal: night.supernal,
+            }),
+            SolarCaste::Eclipse(eclipse) => SolarCasteView::Eclipse(EclipseView {
+                caste_not_supernal: eclipse.caste_not_supernal,
+                supernal: eclipse.supernal,
+            }),
         };
         let favored_abilities = solar_traits.favored_abilities;
 
-        let solar_traits_view = SolarView { 
+        let solar_traits_view = SolarView {
             essence,
             caste,
             favored_abilities,
@@ -452,10 +443,7 @@ impl Character {
 
     /// Checks if character can be turned into a Solar Exalted with given
     /// traits.
-    pub fn check_set_solar(
-        &self,
-        solar_traits: &Solar,
-    ) -> Result<(), CharacterMutationError> {
+    pub fn check_set_solar(&self, solar_traits: &Solar) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_set_solar(solar_traits)
     }
 
@@ -463,10 +451,7 @@ impl Character {
     /// character was previously mortal, permanent willpower rating is
     /// increased by 2 (reflecting the difference between mortal default and
     /// Exalt default).
-    pub fn set_solar(
-        &mut self,
-        solar_traits: &Solar,
-    ) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_solar(&mut self, solar_traits: &Solar) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_solar(solar_traits)?;
         if self.is_mortal() {
             let new_willpower_rating = self.willpower().rating() + 2;
@@ -490,10 +475,7 @@ impl<'source> CharacterView<'source> {
 
     /// Checks if character can be turned into a Solar Exalted with given
     /// traits.
-    pub fn check_set_solar(
-        &self,
-        solar_traits: &Solar,
-    ) -> Result<(), CharacterMutationError> {
+    pub fn check_set_solar(&self, solar_traits: &Solar) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_set_solar(solar_traits)
     }
 
@@ -515,7 +497,10 @@ impl<'source> CharacterView<'source> {
     }
 }
 
-pub(crate) fn validate_solar_caste_ability(exaltation: ExaltationChoice, ability: AbilityName) -> bool {
+pub(crate) fn validate_solar_caste_ability(
+    exaltation: ExaltationChoice,
+    ability: AbilityName,
+) -> bool {
     match (exaltation, ability) {
         (ExaltationChoice::Dawn, AbilityName::Archery)
         | (ExaltationChoice::Dawn, AbilityName::Awareness)
@@ -525,7 +510,6 @@ pub(crate) fn validate_solar_caste_ability(exaltation: ExaltationChoice, ability
         | (ExaltationChoice::Dawn, AbilityName::Resistance)
         | (ExaltationChoice::Dawn, AbilityName::Thrown)
         | (ExaltationChoice::Dawn, AbilityName::War)
-
         | (ExaltationChoice::Zenith, AbilityName::Athletics)
         | (ExaltationChoice::Zenith, AbilityName::Integrity)
         | (ExaltationChoice::Zenith, AbilityName::Performance)
@@ -534,7 +518,6 @@ pub(crate) fn validate_solar_caste_ability(exaltation: ExaltationChoice, ability
         | (ExaltationChoice::Zenith, AbilityName::Resistance)
         | (ExaltationChoice::Zenith, AbilityName::Survival)
         | (ExaltationChoice::Zenith, AbilityName::War)
-
         | (ExaltationChoice::Twilight, AbilityName::Bureaucracy)
         | (ExaltationChoice::Twilight, AbilityName::Craft)
         | (ExaltationChoice::Twilight, AbilityName::Integrity)
@@ -543,7 +526,6 @@ pub(crate) fn validate_solar_caste_ability(exaltation: ExaltationChoice, ability
         | (ExaltationChoice::Twilight, AbilityName::Lore)
         | (ExaltationChoice::Twilight, AbilityName::Medicine)
         | (ExaltationChoice::Twilight, AbilityName::Occult)
-
         | (ExaltationChoice::Night, AbilityName::Athletics)
         | (ExaltationChoice::Night, AbilityName::Awareness)
         | (ExaltationChoice::Night, AbilityName::Dodge)
@@ -552,7 +534,6 @@ pub(crate) fn validate_solar_caste_ability(exaltation: ExaltationChoice, ability
         | (ExaltationChoice::Night, AbilityName::Ride)
         | (ExaltationChoice::Night, AbilityName::Stealth)
         | (ExaltationChoice::Night, AbilityName::Socialize)
-
         | (ExaltationChoice::Eclipse, AbilityName::Bureaucracy)
         | (ExaltationChoice::Eclipse, AbilityName::Larceny)
         | (ExaltationChoice::Eclipse, AbilityName::Linguistics)
@@ -561,6 +542,6 @@ pub(crate) fn validate_solar_caste_ability(exaltation: ExaltationChoice, ability
         | (ExaltationChoice::Eclipse, AbilityName::Ride)
         | (ExaltationChoice::Eclipse, AbilityName::Sail)
         | (ExaltationChoice::Eclipse, AbilityName::Socialize) => true,
-        _ => false
+        _ => false,
     }
 }

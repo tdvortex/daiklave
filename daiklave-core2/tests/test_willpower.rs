@@ -1,5 +1,5 @@
 use daiklave_core2::{
-    Character, CharacterEventSource, CharacterMutation, CharacterView, Solar, Dawn, AbilityName,
+    AbilityName, Character, CharacterEventSource, CharacterMutation, CharacterView, Dawn, Solar,
 };
 
 #[test]
@@ -17,10 +17,14 @@ fn test_willpower_character() {
             AbilityName::Resistance,
             AbilityName::Awareness,
             AbilityName::War,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_caste_ability(ability).unwrap();
         });
-        builder.set_supernal_ability(AbilityName::MartialArts).unwrap();
+        builder
+            .set_supernal_ability(AbilityName::MartialArts)
+            .unwrap();
         builder.build().unwrap()
     };
 
@@ -33,7 +37,9 @@ fn test_willpower_character() {
             AbilityName::Linguistics,
             AbilityName::Medicine,
             AbilityName::Performance,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
         builder.build().unwrap()
@@ -71,10 +77,14 @@ fn test_willpower_character_view() {
             AbilityName::Resistance,
             AbilityName::Awareness,
             AbilityName::War,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_caste_ability(ability).unwrap();
         });
-        builder.set_supernal_ability(AbilityName::MartialArts).unwrap();
+        builder
+            .set_supernal_ability(AbilityName::MartialArts)
+            .unwrap();
         builder.build().unwrap()
     };
 
@@ -87,7 +97,9 @@ fn test_willpower_character_view() {
             AbilityName::Linguistics,
             AbilityName::Medicine,
             AbilityName::Performance,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
         builder.build().unwrap()
@@ -126,10 +138,14 @@ fn test_willpower_character_event_source() {
             AbilityName::Resistance,
             AbilityName::Awareness,
             AbilityName::War,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_caste_ability(ability).unwrap();
         });
-        builder.set_supernal_ability(AbilityName::MartialArts).unwrap();
+        builder
+            .set_supernal_ability(AbilityName::MartialArts)
+            .unwrap();
         builder.build().unwrap()
     };
 
@@ -142,7 +158,9 @@ fn test_willpower_character_event_source() {
             AbilityName::Linguistics,
             AbilityName::Medicine,
             AbilityName::Performance,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
         builder.build().unwrap()

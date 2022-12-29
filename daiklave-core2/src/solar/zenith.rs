@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::AbilityName;
 
@@ -48,7 +48,11 @@ impl Zenith {
     }
 
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|zenith_caste_ability| AbilityName::from(*zenith_caste_ability) == ability) {
+        if self
+            .caste_not_supernal
+            .iter()
+            .any(|zenith_caste_ability| AbilityName::from(*zenith_caste_ability) == ability)
+        {
             true
         } else {
             AbilityName::from(self.supernal) == ability
@@ -68,7 +72,11 @@ pub struct ZenithView {
 
 impl ZenithView {
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|zenith_caste_ability| AbilityName::from(*zenith_caste_ability) == ability) {
+        if self
+            .caste_not_supernal
+            .iter()
+            .any(|zenith_caste_ability| AbilityName::from(*zenith_caste_ability) == ability)
+        {
             true
         } else {
             AbilityName::from(self.supernal) == ability
@@ -86,7 +94,10 @@ pub struct ZenithBuilder {
 }
 
 impl ZenithBuilder {
-    pub fn add_caste_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
+    pub fn add_caste_ability(
+        &mut self,
+        ability: AbilityName,
+    ) -> Result<&mut Self, SolarBuilderError> {
         let duplicate: bool = !match ability {
             AbilityName::Athletics => self.caste_not_supernal.insert(ZenithAbility::Athletics),
             AbilityName::Integrity => self.caste_not_supernal.insert(ZenithAbility::Integrity),
@@ -96,36 +107,54 @@ impl ZenithBuilder {
             AbilityName::Resistance => self.caste_not_supernal.insert(ZenithAbility::Resistance),
             AbilityName::Survival => self.caste_not_supernal.insert(ZenithAbility::Survival),
             AbilityName::War => self.caste_not_supernal.insert(ZenithAbility::War),
-            _ => {return Err(SolarBuilderError::InvalidCasteAbility)}
+            _ => return Err(SolarBuilderError::InvalidCasteAbility),
         };
 
         if duplicate {
             return Err(SolarBuilderError::UniqueCasteAndFavored);
         }
 
-        if self.caste_not_supernal.len() > 5{
+        if self.caste_not_supernal.len() > 5 {
             return Err(SolarBuilderError::CasteAndFavoredCount);
         }
 
         Ok(self)
     }
 
-    pub fn set_supernal_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
+    pub fn set_supernal_ability(
+        &mut self,
+        ability: AbilityName,
+    ) -> Result<&mut Self, SolarBuilderError> {
         match ability {
-            AbilityName::Athletics => {self.supernal = Some(ZenithAbility::Athletics);}
-            AbilityName::Integrity => {self.supernal = Some(ZenithAbility::Integrity);}
-            AbilityName::Performance => {self.supernal = Some(ZenithAbility::Performance);}
-            AbilityName::Lore => {self.supernal = Some(ZenithAbility::Lore);}
-            AbilityName::Presence => {self.supernal = Some(ZenithAbility::Presence);}
-            AbilityName::Resistance => {self.supernal = Some(ZenithAbility::Resistance);}
-            AbilityName::Survival => {self.supernal = Some(ZenithAbility::Survival);}
-            AbilityName::War => {self.supernal = Some(ZenithAbility::War);}
-            _ => {return Err(SolarBuilderError::InvalidCasteAbility)}
+            AbilityName::Athletics => {
+                self.supernal = Some(ZenithAbility::Athletics);
+            }
+            AbilityName::Integrity => {
+                self.supernal = Some(ZenithAbility::Integrity);
+            }
+            AbilityName::Performance => {
+                self.supernal = Some(ZenithAbility::Performance);
+            }
+            AbilityName::Lore => {
+                self.supernal = Some(ZenithAbility::Lore);
+            }
+            AbilityName::Presence => {
+                self.supernal = Some(ZenithAbility::Presence);
+            }
+            AbilityName::Resistance => {
+                self.supernal = Some(ZenithAbility::Resistance);
+            }
+            AbilityName::Survival => {
+                self.supernal = Some(ZenithAbility::Survival);
+            }
+            AbilityName::War => {
+                self.supernal = Some(ZenithAbility::War);
+            }
+            _ => return Err(SolarBuilderError::InvalidCasteAbility),
         };
 
         Ok(self)
     }
-
 
     pub fn build(mut self) -> Result<Zenith, SolarBuilderError> {
         if self.supernal.is_none() {
@@ -147,9 +176,8 @@ impl ZenithBuilder {
 
         let mut arr = option_arr.map(|opt| opt.unwrap());
         arr.sort();
-        
-        
-        Ok(Zenith { 
+
+        Ok(Zenith {
             caste_not_supernal: arr,
             supernal,
         })

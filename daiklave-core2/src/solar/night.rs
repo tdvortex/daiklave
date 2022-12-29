@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::AbilityName;
 
@@ -48,7 +48,11 @@ impl Night {
     }
 
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|night_ability| AbilityName::from(*night_ability) == ability) {
+        if self
+            .caste_not_supernal
+            .iter()
+            .any(|night_ability| AbilityName::from(*night_ability) == ability)
+        {
             true
         } else {
             AbilityName::from(self.supernal) == ability
@@ -68,7 +72,11 @@ pub struct NightView {
 
 impl NightView {
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|night_ability| AbilityName::from(*night_ability) == ability) {
+        if self
+            .caste_not_supernal
+            .iter()
+            .any(|night_ability| AbilityName::from(*night_ability) == ability)
+        {
             true
         } else {
             AbilityName::from(self.supernal) == ability
@@ -86,46 +94,69 @@ pub struct NightBuilder {
 }
 
 impl NightBuilder {
-    pub fn add_caste_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
+    pub fn add_caste_ability(
+        &mut self,
+        ability: AbilityName,
+    ) -> Result<&mut Self, SolarBuilderError> {
         let duplicate: bool = !match ability {
             AbilityName::Athletics => self.caste_not_supernal.insert(NightAbility::Athletics),
             AbilityName::Awareness => self.caste_not_supernal.insert(NightAbility::Awareness),
             AbilityName::Dodge => self.caste_not_supernal.insert(NightAbility::Dodge),
-            AbilityName::Investigation => self.caste_not_supernal.insert(NightAbility::Investigation),
+            AbilityName::Investigation => {
+                self.caste_not_supernal.insert(NightAbility::Investigation)
+            }
             AbilityName::Larceny => self.caste_not_supernal.insert(NightAbility::Larceny),
             AbilityName::Ride => self.caste_not_supernal.insert(NightAbility::Ride),
             AbilityName::Stealth => self.caste_not_supernal.insert(NightAbility::Stealth),
             AbilityName::Socialize => self.caste_not_supernal.insert(NightAbility::Socialize),
-            _ => {return Err(SolarBuilderError::InvalidCasteAbility)}
+            _ => return Err(SolarBuilderError::InvalidCasteAbility),
         };
 
         if duplicate {
             return Err(SolarBuilderError::UniqueCasteAndFavored);
         }
 
-        if self.caste_not_supernal.len() > 5{
+        if self.caste_not_supernal.len() > 5 {
             return Err(SolarBuilderError::CasteAndFavoredCount);
         }
 
         Ok(self)
     }
 
-    pub fn set_supernal_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
+    pub fn set_supernal_ability(
+        &mut self,
+        ability: AbilityName,
+    ) -> Result<&mut Self, SolarBuilderError> {
         match ability {
-            AbilityName::Athletics => {self.supernal = Some(NightAbility::Athletics);}
-            AbilityName::Awareness => {self.supernal = Some(NightAbility::Awareness);}
-            AbilityName::Dodge => {self.supernal = Some(NightAbility::Dodge);}
-            AbilityName::Investigation => {self.supernal = Some(NightAbility::Investigation);}
-            AbilityName::Larceny => {self.supernal = Some(NightAbility::Larceny);}
-            AbilityName::Ride => {self.supernal = Some(NightAbility::Ride);}
-            AbilityName::Stealth => {self.supernal = Some(NightAbility::Stealth);}
-            AbilityName::Socialize => {self.supernal = Some(NightAbility::Socialize);}
-            _ => {return Err(SolarBuilderError::InvalidCasteAbility)}
+            AbilityName::Athletics => {
+                self.supernal = Some(NightAbility::Athletics);
+            }
+            AbilityName::Awareness => {
+                self.supernal = Some(NightAbility::Awareness);
+            }
+            AbilityName::Dodge => {
+                self.supernal = Some(NightAbility::Dodge);
+            }
+            AbilityName::Investigation => {
+                self.supernal = Some(NightAbility::Investigation);
+            }
+            AbilityName::Larceny => {
+                self.supernal = Some(NightAbility::Larceny);
+            }
+            AbilityName::Ride => {
+                self.supernal = Some(NightAbility::Ride);
+            }
+            AbilityName::Stealth => {
+                self.supernal = Some(NightAbility::Stealth);
+            }
+            AbilityName::Socialize => {
+                self.supernal = Some(NightAbility::Socialize);
+            }
+            _ => return Err(SolarBuilderError::InvalidCasteAbility),
         };
 
         Ok(self)
     }
-
 
     pub fn build(mut self) -> Result<Night, SolarBuilderError> {
         if self.supernal.is_none() {
@@ -147,9 +178,8 @@ impl NightBuilder {
 
         let mut arr = option_arr.map(|opt| opt.unwrap());
         arr.sort();
-        
-        
-        Ok(Night { 
+
+        Ok(Night {
             caste_not_supernal: arr,
             supernal,
         })

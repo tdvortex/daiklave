@@ -1,6 +1,6 @@
 use daiklave_core2::{
-    id::Id, Character, CharacterEventSource, CharacterMutation, CharacterView, CommittedMotesId,
-    MotePool, Solar, Eclipse, AbilityName,
+    id::Id, AbilityName, Character, CharacterEventSource, CharacterMutation, CharacterView,
+    CommittedMotesId, Eclipse, MotePool, Solar,
 };
 
 #[test]
@@ -17,7 +17,9 @@ fn test_essence_character() {
             AbilityName::Linguistics,
             AbilityName::Sail,
             AbilityName::Socialize,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_caste_ability(ability).unwrap();
         });
         builder.set_supernal_ability(AbilityName::Presence).unwrap();
@@ -33,7 +35,9 @@ fn test_essence_character() {
             AbilityName::Investigation,
             AbilityName::Performance,
             AbilityName::Ride,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
         builder.build().unwrap()
@@ -242,7 +246,9 @@ fn test_essence_character_view() {
             AbilityName::Linguistics,
             AbilityName::Sail,
             AbilityName::Socialize,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_caste_ability(ability).unwrap();
         });
         builder.set_supernal_ability(AbilityName::Presence).unwrap();
@@ -258,7 +264,9 @@ fn test_essence_character_view() {
             AbilityName::Investigation,
             AbilityName::Performance,
             AbilityName::Ride,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
         builder.build().unwrap()
@@ -469,7 +477,9 @@ fn test_essence_character_event_source() {
             AbilityName::Linguistics,
             AbilityName::Sail,
             AbilityName::Socialize,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_caste_ability(ability).unwrap();
         });
         builder.set_supernal_ability(AbilityName::Presence).unwrap();
@@ -485,7 +495,9 @@ fn test_essence_character_event_source() {
             AbilityName::Investigation,
             AbilityName::Performance,
             AbilityName::Ride,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
         builder.build().unwrap()

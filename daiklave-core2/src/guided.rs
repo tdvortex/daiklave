@@ -3,7 +3,9 @@ use std::collections::HashSet;
 use thiserror::Error;
 
 use crate::{
-    id::CharacterId, AttributeName, CharacterMutation, CharacterMutationError, CharacterView, abilities::AbilityName, solar::validate_solar_caste_ability, Dawn, Solar, Zenith, Twilight, Night, Eclipse,
+    abilities::AbilityName, id::CharacterId, solar::validate_solar_caste_ability, AttributeName,
+    CharacterMutation, CharacterMutationError, CharacterView, Dawn, Eclipse, Night, Solar,
+    Twilight, Zenith,
 };
 
 /// Initiates a new guided character builder.
@@ -91,12 +93,18 @@ impl GuidedEventSource {
                         guided_view.solar_caste_abilities = Some(HashSet::new());
                     }
 
-                    guided_view.solar_caste_abilities.as_mut().unwrap().insert(*ability);
+                    guided_view
+                        .solar_caste_abilities
+                        .as_mut()
+                        .unwrap()
+                        .insert(*ability);
                 }
                 GuidedMutation::RemoveSolarCasteAbility(ability) => {
                     if let Some(abilities) = guided_view.solar_caste_abilities.as_mut() {
                         if !abilities.remove(&ability) {
-                            return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
+                            return Err(GuidedError::SolarAbilityError(
+                                SolarAbilityError::NotFound,
+                            ));
                         }
                     } else {
                         return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
@@ -110,12 +118,18 @@ impl GuidedEventSource {
                         guided_view.solar_favored_abilities = Some(HashSet::new());
                     }
 
-                    guided_view.solar_favored_abilities.as_mut().unwrap().insert(*ability);
+                    guided_view
+                        .solar_favored_abilities
+                        .as_mut()
+                        .unwrap()
+                        .insert(*ability);
                 }
                 GuidedMutation::RemoveSolarFavoredAbility(ability) => {
                     if let Some(abilities) = guided_view.solar_favored_abilities.as_mut() {
                         if !abilities.remove(&ability) {
-                            return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
+                            return Err(GuidedError::SolarAbilityError(
+                                SolarAbilityError::NotFound,
+                            ));
                         }
                     } else {
                         return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
@@ -132,73 +146,182 @@ impl GuidedEventSource {
 impl<'source> GuidedView<'source> {
     pub fn solar_traits(&self) -> Result<Solar, GuidedError> {
         Ok(match self.exaltation_choice {
-            None => {return Err(GuidedError::StageOrderError)}
+            None => return Err(GuidedError::StageOrderError),
             Some(ExaltationChoice::Dawn) => {
                 let dawn = {
                     let mut builder = Dawn::builder();
-                    self.solar_caste_abilities.as_ref().ok_or(GuidedError::StageIncompleteError)?.iter().for_each(|ability| {builder.add_caste_ability(*ability).expect("GuidedView should have valid caste abilities");});
-                    builder.set_supernal_ability(*self.solar_supernal_ability.as_ref().ok_or(GuidedError::StageIncompleteError)?).or(Err(GuidedError::StageIncompleteError))?;
+                    self.solar_caste_abilities
+                        .as_ref()
+                        .ok_or(GuidedError::StageIncompleteError)?
+                        .iter()
+                        .for_each(|ability| {
+                            builder
+                                .add_caste_ability(*ability)
+                                .expect("GuidedView should have valid caste abilities");
+                        });
+                    builder
+                        .set_supernal_ability(
+                            *self
+                                .solar_supernal_ability
+                                .as_ref()
+                                .ok_or(GuidedError::StageIncompleteError)?,
+                        )
+                        .or(Err(GuidedError::StageIncompleteError))?;
                     builder.build().or(Err(GuidedError::StageIncompleteError))?
                 };
 
                 let mut builder = Solar::builder();
                 builder.set_dawn(dawn);
-                self.solar_favored_abilities.as_ref().ok_or(GuidedError::StageIncompleteError)?.iter().for_each(|ability| {builder.add_favored_ability(*ability).expect("GuidedView should have valid favored abilities");});
+                self.solar_favored_abilities
+                    .as_ref()
+                    .ok_or(GuidedError::StageIncompleteError)?
+                    .iter()
+                    .for_each(|ability| {
+                        builder
+                            .add_favored_ability(*ability)
+                            .expect("GuidedView should have valid favored abilities");
+                    });
                 builder.build().or(Err(GuidedError::StageIncompleteError))?
             }
             Some(ExaltationChoice::Zenith) => {
                 let zenith = {
                     let mut builder = Zenith::builder();
-                    self.solar_caste_abilities.as_ref().ok_or(GuidedError::StageIncompleteError)?.iter().for_each(|ability| {builder.add_caste_ability(*ability).expect("GuidedView should have valid caste abilities");});
-                    builder.set_supernal_ability(self.solar_supernal_ability.ok_or(GuidedError::StageIncompleteError)?).or(Err(GuidedError::StageIncompleteError))?;
+                    self.solar_caste_abilities
+                        .as_ref()
+                        .ok_or(GuidedError::StageIncompleteError)?
+                        .iter()
+                        .for_each(|ability| {
+                            builder
+                                .add_caste_ability(*ability)
+                                .expect("GuidedView should have valid caste abilities");
+                        });
+                    builder
+                        .set_supernal_ability(
+                            self.solar_supernal_ability
+                                .ok_or(GuidedError::StageIncompleteError)?,
+                        )
+                        .or(Err(GuidedError::StageIncompleteError))?;
                     builder.build().or(Err(GuidedError::StageIncompleteError))?
                 };
 
                 let mut builder = Solar::builder();
                 builder.set_zenith(zenith);
-                self.solar_favored_abilities.as_ref().ok_or(GuidedError::StageIncompleteError)?.iter().for_each(|ability| {builder.add_favored_ability(*ability).expect("GuidedView should have valid favored abilities");});
+                self.solar_favored_abilities
+                    .as_ref()
+                    .ok_or(GuidedError::StageIncompleteError)?
+                    .iter()
+                    .for_each(|ability| {
+                        builder
+                            .add_favored_ability(*ability)
+                            .expect("GuidedView should have valid favored abilities");
+                    });
                 builder.build().or(Err(GuidedError::StageIncompleteError))?
             }
             Some(ExaltationChoice::Twilight) => {
                 let twilight = {
                     let mut builder = Twilight::builder();
-                    self.solar_caste_abilities.as_ref().ok_or(GuidedError::StageIncompleteError)?.iter().for_each(|ability| {builder.add_caste_ability(*ability).expect("GuidedView should have valid caste abilities");});
-                    builder.set_supernal_ability(self.solar_supernal_ability.ok_or(GuidedError::StageIncompleteError)?).or(Err(GuidedError::StageIncompleteError))?;
+                    self.solar_caste_abilities
+                        .as_ref()
+                        .ok_or(GuidedError::StageIncompleteError)?
+                        .iter()
+                        .for_each(|ability| {
+                            builder
+                                .add_caste_ability(*ability)
+                                .expect("GuidedView should have valid caste abilities");
+                        });
+                    builder
+                        .set_supernal_ability(
+                            self.solar_supernal_ability
+                                .ok_or(GuidedError::StageIncompleteError)?,
+                        )
+                        .or(Err(GuidedError::StageIncompleteError))?;
                     builder.build().or(Err(GuidedError::StageIncompleteError))?
                 };
 
                 let mut builder = Solar::builder();
                 builder.set_twilight(twilight);
-                self.solar_favored_abilities.as_ref().ok_or(GuidedError::StageIncompleteError)?.iter().for_each(|ability| {builder.add_favored_ability(*ability).expect("GuidedView should have valid favored abilities");});
+                self.solar_favored_abilities
+                    .as_ref()
+                    .ok_or(GuidedError::StageIncompleteError)?
+                    .iter()
+                    .for_each(|ability| {
+                        builder
+                            .add_favored_ability(*ability)
+                            .expect("GuidedView should have valid favored abilities");
+                    });
                 builder.build().or(Err(GuidedError::StageIncompleteError))?
             }
             Some(ExaltationChoice::Night) => {
                 let night = {
                     let mut builder = Night::builder();
-                    self.solar_caste_abilities.as_ref().ok_or(GuidedError::StageIncompleteError)?.iter().for_each(|ability| {builder.add_caste_ability(*ability).expect("GuidedView should have valid caste abilities");});
-                    builder.set_supernal_ability(self.solar_supernal_ability.ok_or(GuidedError::StageIncompleteError)?).or(Err(GuidedError::StageIncompleteError))?;
+                    self.solar_caste_abilities
+                        .as_ref()
+                        .ok_or(GuidedError::StageIncompleteError)?
+                        .iter()
+                        .for_each(|ability| {
+                            builder
+                                .add_caste_ability(*ability)
+                                .expect("GuidedView should have valid caste abilities");
+                        });
+                    builder
+                        .set_supernal_ability(
+                            self.solar_supernal_ability
+                                .ok_or(GuidedError::StageIncompleteError)?,
+                        )
+                        .or(Err(GuidedError::StageIncompleteError))?;
                     builder.build().or(Err(GuidedError::StageIncompleteError))?
                 };
 
                 let mut builder = Solar::builder();
                 builder.set_night(night);
-                self.solar_favored_abilities.as_ref().ok_or(GuidedError::StageIncompleteError)?.iter().for_each(|ability| {builder.add_favored_ability(*ability).expect("GuidedView should have valid favored abilities");});
+                self.solar_favored_abilities
+                    .as_ref()
+                    .ok_or(GuidedError::StageIncompleteError)?
+                    .iter()
+                    .for_each(|ability| {
+                        builder
+                            .add_favored_ability(*ability)
+                            .expect("GuidedView should have valid favored abilities");
+                    });
                 builder.build().or(Err(GuidedError::StageIncompleteError))?
             }
             Some(ExaltationChoice::Eclipse) => {
                 let eclipse = {
                     let mut builder = Eclipse::builder();
-                    self.solar_caste_abilities.as_ref().ok_or(GuidedError::StageIncompleteError)?.iter().for_each(|ability| {builder.add_caste_ability(*ability).expect("GuidedView should have valid caste abilities");});
-                    builder.set_supernal_ability(self.solar_supernal_ability.ok_or(GuidedError::StageIncompleteError)?).or(Err(GuidedError::StageIncompleteError))?;
+                    self.solar_caste_abilities
+                        .as_ref()
+                        .ok_or(GuidedError::StageIncompleteError)?
+                        .iter()
+                        .for_each(|ability| {
+                            builder
+                                .add_caste_ability(*ability)
+                                .expect("GuidedView should have valid caste abilities");
+                        });
+                    builder
+                        .set_supernal_ability(
+                            self.solar_supernal_ability
+                                .ok_or(GuidedError::StageIncompleteError)?,
+                        )
+                        .or(Err(GuidedError::StageIncompleteError))?;
                     builder.build().or(Err(GuidedError::StageIncompleteError))?
                 };
 
                 let mut builder = Solar::builder();
                 builder.set_eclipse(eclipse);
-                self.solar_favored_abilities.as_ref().ok_or(GuidedError::StageIncompleteError)?.iter().for_each(|ability| {builder.add_favored_ability(*ability).expect("GuidedView should have valid favored abilities");});
+                self.solar_favored_abilities
+                    .as_ref()
+                    .ok_or(GuidedError::StageIncompleteError)?
+                    .iter()
+                    .for_each(|ability| {
+                        builder
+                            .add_favored_ability(*ability)
+                            .expect("GuidedView should have valid favored abilities");
+                    });
                 builder.build().or(Err(GuidedError::StageIncompleteError))?
             }
-            Some(_) => {return Err(GuidedError::StageOrderError);}
+            Some(_) => {
+                return Err(GuidedError::StageOrderError);
+            }
         })
     }
 
@@ -311,13 +434,19 @@ impl<'source> GuidedView<'source> {
                 }
             }
             GuidedStage::ChooseSolarCasteAbilities => {
-                matches!(self.solar_caste_abilities.as_ref().map(|v| v.len()), Some(5))
+                matches!(
+                    self.solar_caste_abilities.as_ref().map(|v| v.len()),
+                    Some(5)
+                )
             }
             GuidedStage::ChooseSolarSupernalAbility => {
                 matches!(self.solar_supernal_ability, Some(_))
             }
             GuidedStage::ChooseSolarFavoredAbilities => {
-                matches!(self.solar_favored_abilities.as_ref().map(|v| v.len()), Some(5))
+                matches!(
+                    self.solar_favored_abilities.as_ref().map(|v| v.len()),
+                    Some(5)
+                )
             }
             GuidedStage::ChooseMartialArtsStyles => todo!(),
         } {
@@ -361,16 +490,26 @@ impl<'source> GuidedView<'source> {
                             Err(GuidedError::StageOrderError)
                         }
                     }
-                    (GuidedStage::ChooseAttributes, GuidedStage::ChooseSolarCasteAbilities) 
-                    | (GuidedStage::ChooseSolarCasteAbilities, GuidedStage::ChooseSolarSupernalAbility)
-                    | (GuidedStage::ChooseSolarSupernalAbility, GuidedStage::ChooseSolarFavoredAbilities) 
-                    | (GuidedStage::ChooseSolarFavoredAbilities, GuidedStage::ChooseMartialArtsStyles) => {
-                        if matches!(self.exaltation_choice, 
+                    (GuidedStage::ChooseAttributes, GuidedStage::ChooseSolarCasteAbilities)
+                    | (
+                        GuidedStage::ChooseSolarCasteAbilities,
+                        GuidedStage::ChooseSolarSupernalAbility,
+                    )
+                    | (
+                        GuidedStage::ChooseSolarSupernalAbility,
+                        GuidedStage::ChooseSolarFavoredAbilities,
+                    )
+                    | (
+                        GuidedStage::ChooseSolarFavoredAbilities,
+                        GuidedStage::ChooseMartialArtsStyles,
+                    ) => {
+                        if matches!(
+                            self.exaltation_choice,
                             Some(ExaltationChoice::Dawn)
-                            | Some(ExaltationChoice::Zenith)
-                            | Some(ExaltationChoice::Twilight)
-                            | Some(ExaltationChoice::Night)
-                            | Some(ExaltationChoice::Eclipse)
+                                | Some(ExaltationChoice::Zenith)
+                                | Some(ExaltationChoice::Twilight)
+                                | Some(ExaltationChoice::Night)
+                                | Some(ExaltationChoice::Eclipse)
                         ) {
                             Ok(())
                         } else {
@@ -400,22 +539,36 @@ impl<'source> GuidedView<'source> {
                 }
 
                 if !validate_solar_caste_ability(self.exaltation_choice.unwrap(), *ability) {
-                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::InvalidCasteAbility));
+                    return Err(GuidedError::SolarAbilityError(
+                        SolarAbilityError::InvalidCasteAbility,
+                    ));
                 }
-                
+
                 if self.solar_caste_abilities.is_none() {
                     self.solar_caste_abilities = Some(HashSet::new());
                 }
 
-                if self.solar_caste_abilities.as_ref().unwrap().contains(&ability) {
-                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::UniqueCasteAndFavored));
+                if self
+                    .solar_caste_abilities
+                    .as_ref()
+                    .unwrap()
+                    .contains(&ability)
+                {
+                    return Err(GuidedError::SolarAbilityError(
+                        SolarAbilityError::UniqueCasteAndFavored,
+                    ));
                 }
 
                 if self.solar_caste_abilities.as_ref().unwrap().len() >= 5 {
-                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::CasteAndFavoredCount));
+                    return Err(GuidedError::SolarAbilityError(
+                        SolarAbilityError::CasteAndFavoredCount,
+                    ));
                 }
 
-                self.solar_caste_abilities.as_mut().unwrap().insert(*ability);
+                self.solar_caste_abilities
+                    .as_mut()
+                    .unwrap()
+                    .insert(*ability);
             }
             GuidedMutation::RemoveSolarCasteAbility(ability) => {
                 if self.stage != GuidedStage::ChooseSolarCasteAbilities {
@@ -431,20 +584,35 @@ impl<'source> GuidedView<'source> {
                 }
             }
             GuidedMutation::SetSolarSupernalAbility(ability) => {
-                if self.stage != GuidedStage::ChooseSolarSupernalAbility || self.solar_caste_abilities.is_none() {
+                if self.stage != GuidedStage::ChooseSolarSupernalAbility
+                    || self.solar_caste_abilities.is_none()
+                {
                     return Err(GuidedError::StageOrderError);
                 }
 
                 if ability == &AbilityName::MartialArts {
-                    if !self.solar_caste_abilities.as_ref().unwrap().contains(&AbilityName::Brawl) {
-                        return Err(GuidedError::SolarAbilityError(SolarAbilityError::SupernalIsCaste))
+                    if !self
+                        .solar_caste_abilities
+                        .as_ref()
+                        .unwrap()
+                        .contains(&AbilityName::Brawl)
+                    {
+                        return Err(GuidedError::SolarAbilityError(
+                            SolarAbilityError::SupernalIsCaste,
+                        ));
                     }
                 }
 
-                if !self.solar_caste_abilities.as_ref().unwrap().contains(&ability) {
-                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::SupernalIsCaste))
+                if !self
+                    .solar_caste_abilities
+                    .as_ref()
+                    .unwrap()
+                    .contains(&ability)
+                {
+                    return Err(GuidedError::SolarAbilityError(
+                        SolarAbilityError::SupernalIsCaste,
+                    ));
                 }
-
             }
             GuidedMutation::AddSolarFavoredAbility(ability) => {
                 if self.stage != GuidedStage::ChooseSolarFavoredAbilities {
@@ -452,30 +620,51 @@ impl<'source> GuidedView<'source> {
                 }
 
                 if ability == &AbilityName::MartialArts {
-                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::MartialArts));
+                    return Err(GuidedError::SolarAbilityError(
+                        SolarAbilityError::MartialArts,
+                    ));
                 }
 
                 if self.solar_caste_abilities.is_none() {
                     return Err(GuidedError::StageOrderError);
                 }
 
-                if self.solar_caste_abilities.as_ref().unwrap().contains(&ability) {
-                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::UniqueCasteAndFavored));
+                if self
+                    .solar_caste_abilities
+                    .as_ref()
+                    .unwrap()
+                    .contains(&ability)
+                {
+                    return Err(GuidedError::SolarAbilityError(
+                        SolarAbilityError::UniqueCasteAndFavored,
+                    ));
                 }
-                
+
                 if self.solar_favored_abilities.is_none() {
                     self.solar_favored_abilities = Some(HashSet::new());
                 }
 
-                if self.solar_favored_abilities.as_ref().unwrap().contains(&ability) {
-                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::UniqueCasteAndFavored));
+                if self
+                    .solar_favored_abilities
+                    .as_ref()
+                    .unwrap()
+                    .contains(&ability)
+                {
+                    return Err(GuidedError::SolarAbilityError(
+                        SolarAbilityError::UniqueCasteAndFavored,
+                    ));
                 }
 
-                if self.solar_favored_abilities.as_ref().unwrap().len() >= 5  {
-                    return Err(GuidedError::SolarAbilityError(SolarAbilityError::CasteAndFavoredCount));
+                if self.solar_favored_abilities.as_ref().unwrap().len() >= 5 {
+                    return Err(GuidedError::SolarAbilityError(
+                        SolarAbilityError::CasteAndFavoredCount,
+                    ));
                 }
 
-                self.solar_favored_abilities.as_mut().unwrap().insert(*ability);
+                self.solar_favored_abilities
+                    .as_mut()
+                    .unwrap()
+                    .insert(*ability);
             }
             GuidedMutation::RemoveSolarFavoredAbility(ability) => {
                 if self.stage != GuidedStage::ChooseSolarFavoredAbilities {
@@ -486,7 +675,12 @@ impl<'source> GuidedView<'source> {
                     return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
                 }
 
-                if !self.solar_favored_abilities.as_mut().unwrap().remove(ability) {
+                if !self
+                    .solar_favored_abilities
+                    .as_mut()
+                    .unwrap()
+                    .remove(ability)
+                {
                     return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
                 }
             }
@@ -519,7 +713,7 @@ pub enum GuidedStage {
     /// for their Caste.
     ChooseSolarCasteAbilities,
     /// The stage where Solars pick their Supernal ability from the 5 Caste
-    /// abilities they previously selected, except that Dawn castes may 
+    /// abilities they previously selected, except that Dawn castes may
     /// instead pick Martial Arts if Brawl is a selected caste ability.
     ChooseSolarSupernalAbility,
     /// The stage where Solars pick their Favored abilities.
@@ -547,7 +741,7 @@ pub enum ExaltationChoice {
     Eclipse,
 }
 
-/// An error trying to set or remove a Solar caste, supernal, or favored 
+/// An error trying to set or remove a Solar caste, supernal, or favored
 /// ability
 #[derive(Debug, Error)]
 pub enum SolarAbilityError {
@@ -557,7 +751,7 @@ pub enum SolarAbilityError {
     /// Referencing an absent ability
     #[error("Could not find ability")]
     NotFound,
-    /// Supernal abilities must first be selected as Caste abilities, unless 
+    /// Supernal abilities must first be selected as Caste abilities, unless
     /// MartialArts is Supernal, in which case Brawl must be a Caste ability.
     #[error("Supernal ability must be a selected Caste ability")]
     SupernalIsCaste,
@@ -588,7 +782,7 @@ pub enum GuidedError {
     /// An error in trying to spend more bonus points than are available
     #[error("Cannot spend more bonus points than are available")]
     InsufficientBonusPoints,
-    /// An error trying to set or remove a Solar caste, supernal, or favored 
+    /// An error trying to set or remove a Solar caste, supernal, or favored
     /// ability
     #[error("Could not add a Solar caste ability")]
     SolarAbilityError(#[from] SolarAbilityError),

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::AbilityName;
 
@@ -48,7 +48,11 @@ impl Eclipse {
     }
 
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|eclipse_ability| AbilityName::from(*eclipse_ability) == ability) {
+        if self
+            .caste_not_supernal
+            .iter()
+            .any(|eclipse_ability| AbilityName::from(*eclipse_ability) == ability)
+        {
             true
         } else {
             AbilityName::from(self.supernal) == ability
@@ -68,7 +72,11 @@ pub struct EclipseView {
 
 impl EclipseView {
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|eclipse_ability| AbilityName::from(*eclipse_ability) == ability) {
+        if self
+            .caste_not_supernal
+            .iter()
+            .any(|eclipse_ability| AbilityName::from(*eclipse_ability) == ability)
+        {
             true
         } else {
             AbilityName::from(self.supernal) == ability
@@ -86,7 +94,10 @@ pub struct EclipseBuilder {
 }
 
 impl EclipseBuilder {
-    pub fn add_caste_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
+    pub fn add_caste_ability(
+        &mut self,
+        ability: AbilityName,
+    ) -> Result<&mut Self, SolarBuilderError> {
         let duplicate: bool = !match ability {
             AbilityName::Bureaucracy => self.caste_not_supernal.insert(EclipseAbility::Bureaucracy),
             AbilityName::Larceny => self.caste_not_supernal.insert(EclipseAbility::Larceny),
@@ -96,36 +107,54 @@ impl EclipseBuilder {
             AbilityName::Ride => self.caste_not_supernal.insert(EclipseAbility::Ride),
             AbilityName::Sail => self.caste_not_supernal.insert(EclipseAbility::Sail),
             AbilityName::Socialize => self.caste_not_supernal.insert(EclipseAbility::Socialize),
-            _ => {return Err(SolarBuilderError::InvalidCasteAbility)}
+            _ => return Err(SolarBuilderError::InvalidCasteAbility),
         };
 
         if duplicate {
             return Err(SolarBuilderError::UniqueCasteAndFavored);
         }
 
-        if self.caste_not_supernal.len() > 5{
+        if self.caste_not_supernal.len() > 5 {
             return Err(SolarBuilderError::CasteAndFavoredCount);
         }
 
         Ok(self)
     }
 
-    pub fn set_supernal_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
+    pub fn set_supernal_ability(
+        &mut self,
+        ability: AbilityName,
+    ) -> Result<&mut Self, SolarBuilderError> {
         match ability {
-            AbilityName::Bureaucracy => {self.supernal = Some(EclipseAbility::Bureaucracy);}
-            AbilityName::Larceny => {self.supernal = Some(EclipseAbility::Larceny);}
-            AbilityName::Linguistics => {self.supernal = Some(EclipseAbility::Linguistics);}
-            AbilityName::Occult => {self.supernal = Some(EclipseAbility::Occult);}
-            AbilityName::Presence => {self.supernal = Some(EclipseAbility::Presence);}
-            AbilityName::Ride => {self.supernal = Some(EclipseAbility::Ride);}
-            AbilityName::Sail => {self.supernal = Some(EclipseAbility::Sail);}
-            AbilityName::Socialize => {self.supernal = Some(EclipseAbility::Socialize);}
-            _ => {return Err(SolarBuilderError::InvalidCasteAbility)}
+            AbilityName::Bureaucracy => {
+                self.supernal = Some(EclipseAbility::Bureaucracy);
+            }
+            AbilityName::Larceny => {
+                self.supernal = Some(EclipseAbility::Larceny);
+            }
+            AbilityName::Linguistics => {
+                self.supernal = Some(EclipseAbility::Linguistics);
+            }
+            AbilityName::Occult => {
+                self.supernal = Some(EclipseAbility::Occult);
+            }
+            AbilityName::Presence => {
+                self.supernal = Some(EclipseAbility::Presence);
+            }
+            AbilityName::Ride => {
+                self.supernal = Some(EclipseAbility::Ride);
+            }
+            AbilityName::Sail => {
+                self.supernal = Some(EclipseAbility::Sail);
+            }
+            AbilityName::Socialize => {
+                self.supernal = Some(EclipseAbility::Socialize);
+            }
+            _ => return Err(SolarBuilderError::InvalidCasteAbility),
         };
 
         Ok(self)
     }
-
 
     pub fn build(mut self) -> Result<Eclipse, SolarBuilderError> {
         if self.supernal.is_none() {
@@ -147,9 +176,8 @@ impl EclipseBuilder {
 
         let mut arr = option_arr.map(|opt| opt.unwrap());
         arr.sort();
-        
-        
-        Ok(Eclipse { 
+
+        Ok(Eclipse {
             caste_not_supernal: arr,
             supernal,
         })

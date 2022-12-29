@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::AbilityName;
 
@@ -15,7 +15,7 @@ pub(crate) enum DawnCasteAbility {
     Melee,
     Resistance,
     Thrown,
-    War
+    War,
 }
 
 impl From<DawnCasteAbility> for AbilityName {
@@ -43,7 +43,7 @@ pub(crate) enum DawnSupernalAbility {
     Melee,
     Resistance,
     Thrown,
-    War
+    War,
 }
 
 impl From<DawnSupernalAbility> for AbilityName {
@@ -77,7 +77,11 @@ impl Dawn {
     }
 
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|dawn_caste_ability| AbilityName::from(*dawn_caste_ability) == ability) {
+        if self
+            .caste_not_supernal
+            .iter()
+            .any(|dawn_caste_ability| AbilityName::from(*dawn_caste_ability) == ability)
+        {
             true
         } else {
             AbilityName::from(self.supernal) == ability
@@ -97,7 +101,11 @@ pub struct DawnView {
 
 impl DawnView {
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|dawn_caste_ability| AbilityName::from(*dawn_caste_ability) == ability) {
+        if self
+            .caste_not_supernal
+            .iter()
+            .any(|dawn_caste_ability| AbilityName::from(*dawn_caste_ability) == ability)
+        {
             true
         } else {
             AbilityName::from(self.supernal) == ability
@@ -115,7 +123,10 @@ pub struct DawnBuilder {
 }
 
 impl DawnBuilder {
-    pub fn add_caste_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
+    pub fn add_caste_ability(
+        &mut self,
+        ability: AbilityName,
+    ) -> Result<&mut Self, SolarBuilderError> {
         if ability == AbilityName::MartialArts {
             return Err(SolarBuilderError::MartialArts);
         }
@@ -129,37 +140,57 @@ impl DawnBuilder {
             AbilityName::Resistance => self.caste_not_supernal.insert(DawnCasteAbility::Resistance),
             AbilityName::Thrown => self.caste_not_supernal.insert(DawnCasteAbility::Thrown),
             AbilityName::War => self.caste_not_supernal.insert(DawnCasteAbility::War),
-            _ => {return Err(SolarBuilderError::InvalidCasteAbility)}
+            _ => return Err(SolarBuilderError::InvalidCasteAbility),
         };
 
         if duplicate {
             return Err(SolarBuilderError::UniqueCasteAndFavored);
         }
 
-        if self.caste_not_supernal.len() > 5{
+        if self.caste_not_supernal.len() > 5 {
             return Err(SolarBuilderError::CasteAndFavoredCount);
         }
 
         Ok(self)
     }
 
-    pub fn set_supernal_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
+    pub fn set_supernal_ability(
+        &mut self,
+        ability: AbilityName,
+    ) -> Result<&mut Self, SolarBuilderError> {
         match ability {
-            AbilityName::Archery => {self.supernal = Some(DawnSupernalAbility::Archery);}
-            AbilityName::Awareness => {self.supernal = Some(DawnSupernalAbility::Awareness);}
-            AbilityName::Brawl => {self.supernal = Some(DawnSupernalAbility::Brawl);}
-            AbilityName::Dodge => {self.supernal = Some(DawnSupernalAbility::Dodge);}
-            AbilityName::MartialArts => {self.supernal = Some(DawnSupernalAbility::MartialArts);}
-            AbilityName::Melee => {self.supernal = Some(DawnSupernalAbility::Melee);}
-            AbilityName::Resistance => {self.supernal = Some(DawnSupernalAbility::Resistance);}
-            AbilityName::Thrown => {self.supernal = Some(DawnSupernalAbility::Thrown);}
-            AbilityName::War => {self.supernal = Some(DawnSupernalAbility::War);}
-            _ => {return Err(SolarBuilderError::InvalidCasteAbility)}
+            AbilityName::Archery => {
+                self.supernal = Some(DawnSupernalAbility::Archery);
+            }
+            AbilityName::Awareness => {
+                self.supernal = Some(DawnSupernalAbility::Awareness);
+            }
+            AbilityName::Brawl => {
+                self.supernal = Some(DawnSupernalAbility::Brawl);
+            }
+            AbilityName::Dodge => {
+                self.supernal = Some(DawnSupernalAbility::Dodge);
+            }
+            AbilityName::MartialArts => {
+                self.supernal = Some(DawnSupernalAbility::MartialArts);
+            }
+            AbilityName::Melee => {
+                self.supernal = Some(DawnSupernalAbility::Melee);
+            }
+            AbilityName::Resistance => {
+                self.supernal = Some(DawnSupernalAbility::Resistance);
+            }
+            AbilityName::Thrown => {
+                self.supernal = Some(DawnSupernalAbility::Thrown);
+            }
+            AbilityName::War => {
+                self.supernal = Some(DawnSupernalAbility::War);
+            }
+            _ => return Err(SolarBuilderError::InvalidCasteAbility),
         };
 
         Ok(self)
     }
-
 
     pub fn build(mut self) -> Result<Dawn, SolarBuilderError> {
         if self.supernal.is_none() {
@@ -169,15 +200,34 @@ impl DawnBuilder {
         let supernal = self.supernal.unwrap();
 
         match supernal {
-            DawnSupernalAbility::Archery => {self.caste_not_supernal.remove(&DawnCasteAbility::Archery);}
-            DawnSupernalAbility::Awareness => {self.caste_not_supernal.remove(&DawnCasteAbility::Awareness);}
-            DawnSupernalAbility::Brawl => {self.caste_not_supernal.remove(&DawnCasteAbility::Brawl);}
-            DawnSupernalAbility::Dodge => {self.caste_not_supernal.remove(&DawnCasteAbility::Dodge);}
-            DawnSupernalAbility::MartialArts => {self.caste_not_supernal.remove(&DawnCasteAbility::Brawl);}
-            DawnSupernalAbility::Melee => {self.caste_not_supernal.remove(&DawnCasteAbility::Melee);}
-            DawnSupernalAbility::Resistance => {self.caste_not_supernal.remove(&DawnCasteAbility::Resistance);}
-            DawnSupernalAbility::Thrown => {self.caste_not_supernal.remove(&DawnCasteAbility::Thrown);}
-            DawnSupernalAbility::War => {self.caste_not_supernal.remove(&DawnCasteAbility::War);}
+            DawnSupernalAbility::Archery => {
+                self.caste_not_supernal.remove(&DawnCasteAbility::Archery);
+            }
+            DawnSupernalAbility::Awareness => {
+                self.caste_not_supernal.remove(&DawnCasteAbility::Awareness);
+            }
+            DawnSupernalAbility::Brawl => {
+                self.caste_not_supernal.remove(&DawnCasteAbility::Brawl);
+            }
+            DawnSupernalAbility::Dodge => {
+                self.caste_not_supernal.remove(&DawnCasteAbility::Dodge);
+            }
+            DawnSupernalAbility::MartialArts => {
+                self.caste_not_supernal.remove(&DawnCasteAbility::Brawl);
+            }
+            DawnSupernalAbility::Melee => {
+                self.caste_not_supernal.remove(&DawnCasteAbility::Melee);
+            }
+            DawnSupernalAbility::Resistance => {
+                self.caste_not_supernal
+                    .remove(&DawnCasteAbility::Resistance);
+            }
+            DawnSupernalAbility::Thrown => {
+                self.caste_not_supernal.remove(&DawnCasteAbility::Thrown);
+            }
+            DawnSupernalAbility::War => {
+                self.caste_not_supernal.remove(&DawnCasteAbility::War);
+            }
         };
 
         if self.caste_not_supernal.len() != 4 {
@@ -192,9 +242,8 @@ impl DawnBuilder {
 
         let mut arr = option_arr.map(|opt| opt.unwrap());
         arr.sort();
-        
-        
-        Ok(Dawn { 
+
+        Ok(Dawn {
             caste_not_supernal: arr,
             supernal,
         })

@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    Character, CharacterMutationError, CharacterView, Solar, solar::SolarView,
-};
+use crate::{solar::SolarView, Character, CharacterMutationError, CharacterView, Solar};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum ExaltState {
@@ -33,7 +31,6 @@ impl ExaltState {
         *self = ExaltState::Mortal;
         Ok(self)
     }
-
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -71,7 +68,6 @@ impl<'source> ExaltStateView<'source> {
 pub(crate) enum ExaltType {
     Solar(Solar),
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum ExaltTypeView<'source> {

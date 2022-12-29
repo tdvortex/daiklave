@@ -1,5 +1,5 @@
 use daiklave_core2::{
-    Character, CharacterEventSource, CharacterMutation, CharacterView, Solar, Twilight, AbilityName,
+    AbilityName, Character, CharacterEventSource, CharacterMutation, CharacterView, Solar, Twilight,
 };
 
 #[test]
@@ -16,10 +16,14 @@ fn test_exalt_type_character() {
             AbilityName::Craft,
             AbilityName::Integrity,
             AbilityName::Investigation,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_caste_ability(ability).unwrap();
         });
-        builder.set_supernal_ability(AbilityName::Linguistics).unwrap();
+        builder
+            .set_supernal_ability(AbilityName::Linguistics)
+            .unwrap();
         builder.build().unwrap()
     };
 
@@ -32,7 +36,9 @@ fn test_exalt_type_character() {
             AbilityName::Awareness,
             AbilityName::Brawl,
             AbilityName::Dodge,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
         builder.build().unwrap()
@@ -62,10 +68,14 @@ fn test_exalt_type_character_view() {
             AbilityName::Craft,
             AbilityName::Integrity,
             AbilityName::Investigation,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_caste_ability(ability).unwrap();
         });
-        builder.set_supernal_ability(AbilityName::Linguistics).unwrap();
+        builder
+            .set_supernal_ability(AbilityName::Linguistics)
+            .unwrap();
         builder.build().unwrap()
     };
 
@@ -78,7 +88,9 @@ fn test_exalt_type_character_view() {
             AbilityName::Awareness,
             AbilityName::Brawl,
             AbilityName::Dodge,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
         builder.build().unwrap()
@@ -109,10 +121,14 @@ fn test_exalt_type_character_event_source() {
             AbilityName::Craft,
             AbilityName::Integrity,
             AbilityName::Investigation,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_caste_ability(ability).unwrap();
         });
-        builder.set_supernal_ability(AbilityName::Linguistics).unwrap();
+        builder
+            .set_supernal_ability(AbilityName::Linguistics)
+            .unwrap();
         builder.build().unwrap()
     };
 
@@ -125,12 +141,14 @@ fn test_exalt_type_character_event_source() {
             AbilityName::Awareness,
             AbilityName::Brawl,
             AbilityName::Dodge,
-        ].into_iter().for_each(|ability| {
+        ]
+        .into_iter()
+        .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
         builder.build().unwrap()
     };
-    
+
     let mutation = CharacterMutation::SetSolar(solar_traits);
     assert!(character_view.check_mutation(&mutation).is_ok());
     assert!(event_source.apply_mutation(mutation).is_ok());

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::AbilityName;
 
@@ -48,7 +48,11 @@ impl Twilight {
     }
 
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|twilight_ability| AbilityName::from(*twilight_ability) == ability) {
+        if self
+            .caste_not_supernal
+            .iter()
+            .any(|twilight_ability| AbilityName::from(*twilight_ability) == ability)
+        {
             true
         } else {
             AbilityName::from(self.supernal) == ability
@@ -68,7 +72,11 @@ pub struct TwilightView {
 
 impl TwilightView {
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self.caste_not_supernal.iter().any(|twilight_ability| AbilityName::from(*twilight_ability) == ability) {
+        if self
+            .caste_not_supernal
+            .iter()
+            .any(|twilight_ability| AbilityName::from(*twilight_ability) == ability)
+        {
             true
         } else {
             AbilityName::from(self.supernal) == ability
@@ -86,46 +94,73 @@ pub struct TwilightBuilder {
 }
 
 impl TwilightBuilder {
-    pub fn add_caste_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
+    pub fn add_caste_ability(
+        &mut self,
+        ability: AbilityName,
+    ) -> Result<&mut Self, SolarBuilderError> {
         let duplicate: bool = !match ability {
-            AbilityName::Bureaucracy => self.caste_not_supernal.insert(TwilightAbility::Bureaucracy),
+            AbilityName::Bureaucracy => {
+                self.caste_not_supernal.insert(TwilightAbility::Bureaucracy)
+            }
             AbilityName::Craft => self.caste_not_supernal.insert(TwilightAbility::Craft),
             AbilityName::Integrity => self.caste_not_supernal.insert(TwilightAbility::Integrity),
-            AbilityName::Investigation => self.caste_not_supernal.insert(TwilightAbility::Investigation),
-            AbilityName::Linguistics => self.caste_not_supernal.insert(TwilightAbility::Linguistics),
+            AbilityName::Investigation => self
+                .caste_not_supernal
+                .insert(TwilightAbility::Investigation),
+            AbilityName::Linguistics => {
+                self.caste_not_supernal.insert(TwilightAbility::Linguistics)
+            }
             AbilityName::Lore => self.caste_not_supernal.insert(TwilightAbility::Lore),
             AbilityName::Medicine => self.caste_not_supernal.insert(TwilightAbility::Medicine),
             AbilityName::Occult => self.caste_not_supernal.insert(TwilightAbility::Occult),
-            _ => {return Err(SolarBuilderError::InvalidCasteAbility)}
+            _ => return Err(SolarBuilderError::InvalidCasteAbility),
         };
 
         if duplicate {
             return Err(SolarBuilderError::UniqueCasteAndFavored);
         }
 
-        if self.caste_not_supernal.len() > 5{
+        if self.caste_not_supernal.len() > 5 {
             return Err(SolarBuilderError::CasteAndFavoredCount);
         }
 
         Ok(self)
     }
 
-    pub fn set_supernal_ability(&mut self, ability: AbilityName) -> Result<&mut Self, SolarBuilderError> {
+    pub fn set_supernal_ability(
+        &mut self,
+        ability: AbilityName,
+    ) -> Result<&mut Self, SolarBuilderError> {
         match ability {
-            AbilityName::Bureaucracy => {self.supernal = Some(TwilightAbility::Bureaucracy);}
-            AbilityName::Craft => {self.supernal = Some(TwilightAbility::Craft);}
-            AbilityName::Integrity => {self.supernal = Some(TwilightAbility::Integrity);}
-            AbilityName::Investigation => {self.supernal = Some(TwilightAbility::Investigation);}
-            AbilityName::Linguistics => {self.supernal = Some(TwilightAbility::Linguistics);}
-            AbilityName::Lore => {self.supernal = Some(TwilightAbility::Lore);}
-            AbilityName::Medicine => {self.supernal = Some(TwilightAbility::Medicine);}
-            AbilityName::Occult => {self.supernal = Some(TwilightAbility::Occult);}
-            _ => {return Err(SolarBuilderError::InvalidCasteAbility)}
+            AbilityName::Bureaucracy => {
+                self.supernal = Some(TwilightAbility::Bureaucracy);
+            }
+            AbilityName::Craft => {
+                self.supernal = Some(TwilightAbility::Craft);
+            }
+            AbilityName::Integrity => {
+                self.supernal = Some(TwilightAbility::Integrity);
+            }
+            AbilityName::Investigation => {
+                self.supernal = Some(TwilightAbility::Investigation);
+            }
+            AbilityName::Linguistics => {
+                self.supernal = Some(TwilightAbility::Linguistics);
+            }
+            AbilityName::Lore => {
+                self.supernal = Some(TwilightAbility::Lore);
+            }
+            AbilityName::Medicine => {
+                self.supernal = Some(TwilightAbility::Medicine);
+            }
+            AbilityName::Occult => {
+                self.supernal = Some(TwilightAbility::Occult);
+            }
+            _ => return Err(SolarBuilderError::InvalidCasteAbility),
         };
 
         Ok(self)
     }
-
 
     pub fn build(mut self) -> Result<Twilight, SolarBuilderError> {
         if self.supernal.is_none() {
@@ -147,9 +182,8 @@ impl TwilightBuilder {
 
         let mut arr = option_arr.map(|opt| opt.unwrap());
         arr.sort();
-        
-        
-        Ok(Twilight { 
+
+        Ok(Twilight {
             caste_not_supernal: arr,
             supernal,
         })
