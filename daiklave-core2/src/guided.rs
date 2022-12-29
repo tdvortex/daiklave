@@ -5,17 +5,17 @@ use crate::{
 };
 
 /// Initiates a new guided character builder.
-pub fn begin_guided_builder(id: CharacterId) -> GuidedCharacterEventSource {
-    GuidedCharacterEventSource {
-        history: vec![GuidedCharacterMutation::CharacterMutation(
-            CharacterMutation::SetId(id),
-        )],
+pub fn begin_guided_builder(id: CharacterId) -> GuidedEventSource {
+    GuidedEventSource {
+        history: vec![GuidedMutation::CharacterMutation(CharacterMutation::SetId(
+            id,
+        ))],
         future: Vec::new(),
     }
 }
 
 /// The operations you can do during a guided character building process.
-pub enum GuidedCharacterMutation {
+pub enum GuidedMutation {
     /// Apply a standard character mutation (with additional validation).
     CharacterMutation(CharacterMutation),
     /// Move on to the next stage of the builder. Note that because different
@@ -28,9 +28,212 @@ pub enum GuidedCharacterMutation {
 }
 
 /// An event-sourced guided character builder, supporting undo/redo.
-pub struct GuidedCharacterEventSource {
-    history: Vec<GuidedCharacterMutation>,
-    future: Vec<GuidedCharacterMutation>,
+pub struct GuidedEventSource {
+    history: Vec<GuidedMutation>,
+    future: Vec<GuidedMutation>,
+}
+
+/// A view into the current state of the guided character builder, including
+/// any partial or temporarily incomplete state.
+pub struct GuidedView<'source> {
+    character_view: CharacterView<'source>,
+    stage: GuidedStage,
+    bonus_points: i32,
+    exaltation_choice: Option<ExaltationChoice>,
+}
+
+impl GuidedEventSource {
+    /// Derives the current state of the partially-complete character,
+    /// including all state which is character-creation-only (like bonus points)
+    pub fn as_guided_view(&self) -> Result<GuidedView, GuidedError> {
+        let mut guided_view = GuidedView {
+            character_view: CharacterView::default(),
+            stage: GuidedStage::ChooseNameAndConcept,
+            bonus_points: 0,
+            exaltation_choice: None,
+        };
+
+        // Don't use GuidedView::apply_mutation() to avoid redundant bonus
+        // point recalculations
+        for guided_mutation in self.history.iter() {
+            match guided_mutation {
+                GuidedMutation::CharacterMutation(character_mutation) => {
+                    guided_view
+                        .character_view
+                        .apply_mutation(character_mutation)?;
+                }
+                GuidedMutation::SetStage(stage) => {
+                    guided_view.stage = *stage;
+                }
+                GuidedMutation::SetExaltation(exaltation_choice) => {
+                    guided_view.exaltation_choice = Some(*exaltation_choice);
+                }
+            }
+        }
+        guided_view.update_bonus_points();
+
+        Ok(guided_view)
+    }
+}
+
+impl<'source> GuidedView<'source> {
+    fn attributes_buckets(&self) -> (u8, u8, u8) {
+        let physical_attributes = self
+            .character_view
+            .attributes()
+            .dots(AttributeName::Strength)
+            + self
+                .character_view
+                .attributes()
+                .dots(AttributeName::Dexterity)
+            + self
+                .character_view
+                .attributes()
+                .dots(AttributeName::Stamina);
+        let mental_attributes = self
+            .character_view
+            .attributes()
+            .dots(AttributeName::Perception)
+            + self
+                .character_view
+                .attributes()
+                .dots(AttributeName::Intelligence)
+            + self.character_view.attributes().dots(AttributeName::Wits);
+        let social_attributes = self
+            .character_view
+            .attributes()
+            .dots(AttributeName::Charisma)
+            + self
+                .character_view
+                .attributes()
+                .dots(AttributeName::Manipulation)
+            + self
+                .character_view
+                .attributes()
+                .dots(AttributeName::Appearance);
+
+        let primary = physical_attributes
+            .max(mental_attributes)
+            .max(social_attributes)
+            - 3;
+        let tertiary = physical_attributes
+            .min(mental_attributes)
+            .min(social_attributes)
+            - 3;
+        let secondary =
+            physical_attributes + mental_attributes + social_attributes - primary - tertiary - 9;
+
+        (primary, secondary, tertiary)
+    }
+
+    fn mortal_attributes_bonus_points_spent(&self) -> i32 {
+        let (primary, secondary, tertiary) = self.attributes_buckets();
+        ((primary - primary.min(6) + secondary - secondary.min(4)) * 4
+            + (tertiary - tertiary.min(3)) * 3)
+            .into()
+    }
+
+    fn solar_attributes_bonus_points_spent(&self) -> i32 {
+        let (primary, secondary, tertiary) = self.attributes_buckets();
+        ((primary - primary.min(8) + secondary - secondary.min(6)) * 4
+            + (tertiary - tertiary.min(4)) * 3)
+            .into()
+    }
+
+    fn update_bonus_points(&mut self) {
+        if let Some(exaltation_choice) = self.exaltation_choice {
+            match exaltation_choice {
+                ExaltationChoice::Mortal => {
+                    self.bonus_points = 21;
+                    self.bonus_points -= self.mortal_attributes_bonus_points_spent();
+                }
+                ExaltationChoice::Dawn
+                | ExaltationChoice::Zenith
+                | ExaltationChoice::Twilight
+                | ExaltationChoice::Night
+                | ExaltationChoice::Eclipse => {
+                    self.bonus_points = 15;
+                    self.bonus_points -= self.solar_attributes_bonus_points_spent();
+                }
+            }
+        } else {
+            self.bonus_points = 0;
+        }
+    }
+
+    fn validate_stage_complete(&self) -> Result<(), GuidedError> {
+        if !match self.stage {
+            GuidedStage::ChooseNameAndConcept => true,
+            GuidedStage::ChooseExaltation => self.exaltation_choice.is_some(),
+            GuidedStage::ChooseAttributes => {
+                if let Some(exaltation_choice) = self.exaltation_choice {
+                    match exaltation_choice {
+                        ExaltationChoice::Mortal => {
+                            let (primary, secondary, tertiary) = self.attributes_buckets();
+                            primary >= 6 && secondary >= 4 && tertiary >= 3
+                        }
+                        ExaltationChoice::Dawn
+                        | ExaltationChoice::Zenith
+                        | ExaltationChoice::Twilight
+                        | ExaltationChoice::Night
+                        | ExaltationChoice::Eclipse => {
+                            let (primary, secondary, tertiary) = self.attributes_buckets();
+                            primary >= 8 && secondary >= 6 && tertiary >= 4
+                        }
+                    }
+                } else {
+                    return Err(GuidedError::StageOrderError);
+                }
+            }
+        } {
+            Err(GuidedError::StageIncompleteError)
+        } else {
+            Ok(())
+        }
+    }
+
+    /// The number of available Bonus Points to spend.
+    pub fn bonus_points_remaining(&self) -> i32 {
+        self.bonus_points
+    }
+
+    /// Applies a mutation to the character view. \n Note that unlike
+    /// CharacterView::apply_mutation, this operation takes self and not &mut
+    /// self. This is because a CharacterMutation may be valid for a
+    /// CharacterView but invalid for a GuidedView; applying the mutation will
+    /// leave the GuidedView in an invalid state that must be discarded.
+    pub fn apply_mutation(
+        mut self,
+        guided_mutation: &'source GuidedMutation,
+    ) -> Result<Self, GuidedError> {
+        match guided_mutation {
+            GuidedMutation::CharacterMutation(character_mutation) => {
+                self.character_view
+                    .apply_mutation(character_mutation)
+                    .map_err(GuidedError::CharacterMutationError)?;
+                self.update_bonus_points();
+            }
+            GuidedMutation::SetStage(stage) => {
+                self.validate_stage_complete()?;
+
+                match (self.stage, stage) {
+                    (GuidedStage::ChooseNameAndConcept, GuidedStage::ChooseExaltation)
+                    | (GuidedStage::ChooseExaltation, GuidedStage::ChooseAttributes) => Ok(()),
+                    _ => Err(GuidedError::StageOrderError),
+                }?;
+            }
+            GuidedMutation::SetExaltation(exaltation_choice) => {
+                self.exaltation_choice = Some(*exaltation_choice);
+                self.update_bonus_points();
+            }
+        }
+
+        if self.bonus_points < 0 {
+            return Err(GuidedError::InsufficientBonusPoints);
+        }
+
+        Ok(self)
+    }
 }
 
 /// The different phases of a guided character builder.
@@ -41,7 +244,7 @@ pub enum GuidedStage {
     /// The second stage, choosing the Exaltation for the character (or Mortal).
     ChooseExaltation,
     /// The attribute selection stage. Comes after ChooseExaltation for
-    /// Mortals.
+    /// Mortals and Solars.
     ChooseAttributes,
 }
 
@@ -64,7 +267,7 @@ pub enum ExaltationChoice {
 
 /// The possible errors occurring in the guided character builder.
 #[derive(Debug, Error)]
-pub enum GuidedCharacterError {
+pub enum GuidedError {
     /// An error in applying the mutation to the base character
     #[error("Could not apply mutation to base character")]
     CharacterMutationError(#[from] CharacterMutationError),
@@ -74,225 +277,21 @@ pub enum GuidedCharacterError {
     /// An error trying to move because previous stage is not complete
     #[error("Cannot move to the next stage while previous is incomplete")]
     StageIncompleteError,
+    /// An error in trying to spend more bonus points than are available
+    #[error("Cannot spend more bonus points than are available")]
+    InsufficientBonusPoints,
 }
 
-impl GuidedCharacterEventSource {
-    fn mortal_bonus_points_remaining(&self) -> i32 {
-        let mut bonus_points = 21;
-
-        let character_view = self.as_character_view().expect("History should be valid");
-
-        // Attribute bonus points costs
-        let physical_attributes = character_view.attributes().dots(AttributeName::Strength)
-            + character_view.attributes().dots(AttributeName::Dexterity)
-            + character_view.attributes().dots(AttributeName::Stamina);
-        let mental_attributes = character_view.attributes().dots(AttributeName::Perception)
-            + character_view
-                .attributes()
-                .dots(AttributeName::Intelligence)
-            + character_view.attributes().dots(AttributeName::Wits);
-        let social_attributes = character_view.attributes().dots(AttributeName::Charisma)
-            + character_view
-                .attributes()
-                .dots(AttributeName::Manipulation)
-            + character_view.attributes().dots(AttributeName::Appearance);
-
-        let primary = physical_attributes
-            .max(mental_attributes)
-            .max(social_attributes)
-            - 3;
-        let tertiary = physical_attributes
-            .min(mental_attributes)
-            .min(social_attributes)
-            - 3;
-        let secondary =
-            physical_attributes + mental_attributes + social_attributes - primary - tertiary - 9;
-
-        let attributes_cost = (primary - primary.min(6) + secondary - secondary.min(4)) * 4
-            + (tertiary - tertiary.min(3)) * 3;
-
-        bonus_points -= attributes_cost as i32;
-        bonus_points
-    }
-
-    fn solar_bonus_points_remaining(&self) -> i32 {
-        let mut bonus_points = 15;
-        let character_view = self.as_character_view().expect("History should be valid");
-
-        // Attribute bonus points costs
-        let physical_attributes = character_view.attributes().dots(AttributeName::Strength)
-            + character_view.attributes().dots(AttributeName::Dexterity)
-            + character_view.attributes().dots(AttributeName::Stamina);
-        let mental_attributes = character_view.attributes().dots(AttributeName::Perception)
-            + character_view
-                .attributes()
-                .dots(AttributeName::Intelligence)
-            + character_view.attributes().dots(AttributeName::Wits);
-        let social_attributes = character_view.attributes().dots(AttributeName::Charisma)
-            + character_view
-                .attributes()
-                .dots(AttributeName::Manipulation)
-            + character_view.attributes().dots(AttributeName::Appearance);
-
-        let primary = physical_attributes
-            .max(mental_attributes)
-            .max(social_attributes)
-            - 3;
-        let tertiary = physical_attributes
-            .min(mental_attributes)
-            .min(social_attributes)
-            - 3;
-        let secondary =
-            physical_attributes + mental_attributes + social_attributes - primary - tertiary - 9;
-
-        let attributes_cost = (primary - primary.min(8) + secondary - secondary.min(6)) * 4
-            + (tertiary - tertiary.min(4)) * 3;
-
-        bonus_points -= attributes_cost as i32;
-        bonus_points
-    }
-
-    /// The number of character creation Bonus Points remaining. Returns 0
-    /// before ExaltationChoice is selected.
-    pub fn bonus_points_remaining(&self) -> i32 {
-        let maybe_exaltation_choice = self.exaltation_choice();
-        if let Some(exaltation_choice) = maybe_exaltation_choice {
-            match exaltation_choice {
-                ExaltationChoice::Mortal => self.mortal_bonus_points_remaining(),
-                ExaltationChoice::Dawn
-                | ExaltationChoice::Zenith
-                | ExaltationChoice::Twilight
-                | ExaltationChoice::Night
-                | ExaltationChoice::Eclipse => self.solar_bonus_points_remaining(),
-            }
-        } else {
-            0
-        }
-    }
-
-    fn current_stage(&self) -> GuidedStage {
-        self.history
-            .iter()
-            .filter_map(|gcm| {
-                if let GuidedCharacterMutation::SetStage(stage) = gcm {
-                    Some(stage)
-                } else {
-                    None
-                }
-            })
-            .fold(GuidedStage::ChooseNameAndConcept, |_, stage| *stage)
-    }
-
-    fn exaltation_choice(&self) -> Option<ExaltationChoice> {
-        self.history
-            .iter()
-            .filter_map(|gcm| {
-                if let GuidedCharacterMutation::SetExaltation(exaltation_choice) = gcm {
-                    Some(*exaltation_choice)
-                } else {
-                    None
-                }
-            })
-            .next()
-    }
-
-    fn as_character_view(&self) -> Result<CharacterView, GuidedCharacterError> {
-        self.history
-            .iter()
-            .filter_map(|gcm| {
-                if let GuidedCharacterMutation::CharacterMutation(cm) = gcm {
-                    Some(cm)
-                } else {
-                    None
-                }
-            })
-            .fold(Ok(CharacterView::default()), |res, mutation| {
-                res.and_then(|mut view| {
-                    view.apply_mutation(mutation)?;
-                    Ok(view)
-                })
-            })
-            .map_err(GuidedCharacterError::CharacterMutationError)
-    }
-
-    fn check_character_mutation(
-        &self,
-        mutation: &CharacterMutation,
-    ) -> Result<(), GuidedCharacterError> {
-        let character_view = self.as_character_view()?;
-        character_view
-            .check_mutation(mutation)
-            .map_err(GuidedCharacterError::CharacterMutationError)
-    }
-
-    fn validate_stage_complete(&self) -> Result<(), GuidedCharacterError> {
-        let _character_view = self.as_character_view()?;
-        match self.current_stage() {
-            GuidedStage::ChooseNameAndConcept => {
-                if self.history.iter().any(|gcm| {
-                    matches!(
-                        gcm,
-                        GuidedCharacterMutation::CharacterMutation(CharacterMutation::SetName(_),)
-                    )
-                }) {
-                    Ok(())
-                } else {
-                    Err(GuidedCharacterError::StageIncompleteError)
-                }
-            }
-            GuidedStage::ChooseExaltation => {
-                if self
-                    .history
-                    .iter()
-                    .any(|gcm| matches!(gcm, GuidedCharacterMutation::SetExaltation(_)))
-                {
-                    Ok(())
-                } else {
-                    Err(GuidedCharacterError::StageIncompleteError)
-                }
-            }
-            GuidedStage::ChooseAttributes => Ok(()), // TODO
-        }
-    }
-
-    fn check_stage_advance(&self, stage: GuidedStage) -> Result<(), GuidedCharacterError> {
-        self.validate_stage_complete()?;
-
-        match (self.current_stage(), stage) {
-            (GuidedStage::ChooseNameAndConcept, GuidedStage::ChooseExaltation)
-            | (GuidedStage::ChooseExaltation, GuidedStage::ChooseAttributes) => {
-                self.validate_stage_complete()
-            }
-            _ => Err(GuidedCharacterError::StageOrderError),
-        }
-    }
-
+impl GuidedEventSource {
     /// Checks if a GuidedCharacterMutation can be successfully applied.
-    pub fn check_mutation(
-        &self,
-        mutation: &GuidedCharacterMutation,
-    ) -> Result<(), GuidedCharacterError> {
-        match mutation {
-            GuidedCharacterMutation::CharacterMutation(character_mutation) => {
-                self.check_character_mutation(character_mutation)
-            }
-            GuidedCharacterMutation::SetStage(stage) => self.check_stage_advance(*stage),
-            GuidedCharacterMutation::SetExaltation(_) => {
-                if let GuidedStage::ChooseExaltation = self.current_stage() {
-                    Ok(())
-                } else {
-                    Err(GuidedCharacterError::StageOrderError)
-                }
-            }
-        }
+    pub fn check_mutation(&self, mutation: &GuidedMutation) -> Result<(), GuidedError> {
+        self.as_guided_view()?.apply_mutation(mutation)?;
+        Ok(())
     }
 
     /// Apply a mutation, inserting it into the event history. This will erase
     /// all previously undone operations.
-    pub fn apply_mutation(
-        &mut self,
-        mutation: GuidedCharacterMutation,
-    ) -> Result<&mut Self, GuidedCharacterError> {
+    pub fn apply_mutation(&mut self, mutation: GuidedMutation) -> Result<&mut Self, GuidedError> {
         self.check_mutation(&mutation)?;
         self.future = Vec::new();
         self.history.push(mutation);
