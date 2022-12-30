@@ -1,10 +1,10 @@
-use std::collections::{HashSet};
+use std::collections::HashSet;
 
 use thiserror::Error;
 
 use crate::abilities::AbilityName;
 
-use super::{Dawn, Zenith, Twilight, Night, Eclipse, Solar, caste::SolarCaste};
+use super::{caste::SolarCaste, Dawn, Eclipse, Night, Solar, Twilight, Zenith};
 
 pub struct SolarTraitsBuilder {
     pub(in crate::exalt_state::exalt::exalt_type::solar) caste: Option<SolarCaste>,

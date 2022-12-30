@@ -1,7 +1,6 @@
-use std::collections::{HashSet};
+use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
-
 
 mod builder;
 mod caste;
@@ -20,9 +19,20 @@ pub use night::{Night, NightBuilder};
 pub use twilight::{Twilight, TwilightBuilder};
 pub use zenith::{Zenith, ZenithBuilder};
 
-use crate::{exalt_state::{ExaltStateView, ExaltState, exalt::{Exalt, ExaltView}}, guided::ExaltationChoice, CharacterMutationError, abilities::AbilityName};
+use crate::{
+    abilities::AbilityName,
+    exalt_state::{
+        exalt::{Exalt, ExaltView},
+        ExaltState, ExaltStateView,
+    },
+    guided::ExaltationChoice,
+    CharacterMutationError,
+};
 
-use self::{builder::SolarTraitsBuilder, night::NightView, twilight::TwilightView, eclipse::EclipseView, dawn::DawnView, zenith::ZenithView, caste::SolarCaste, caste_view::SolarCasteView};
+use self::{
+    builder::SolarTraitsBuilder, caste::SolarCaste, caste_view::SolarCasteView, dawn::DawnView,
+    eclipse::EclipseView, night::NightView, twilight::TwilightView, zenith::ZenithView,
+};
 
 use super::{ExaltType, ExaltTypeView};
 
@@ -157,10 +167,7 @@ impl<'source> ExaltStateView<'source> {
         }
     }
 
-    pub fn check_set_solar(
-        &self,
-        _solar: &'source Solar,
-    ) -> Result<(), CharacterMutationError> {
+    pub fn check_set_solar(&self, _solar: &'source Solar) -> Result<(), CharacterMutationError> {
         Ok(())
     }
 
@@ -210,7 +217,6 @@ impl Exalt {
         self.exalt_type.solar_traits()
     }
 }
-
 
 impl<'source> ExaltView<'source> {
     pub fn is_solar(&self) -> bool {

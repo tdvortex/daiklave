@@ -65,10 +65,10 @@ pub enum GuidedStage {
     /// but does not purchase any MartialArts dots, specialties, or charms.
     ChooseMartialArtsStyles,
     /// A stage for selecting whether to be a sorcerer or not, and if so, what
-    /// Terrestrial shaping ritual they use, and what their Control Spell is. 
-    /// This purchases either the Mortal Sorcerer merit if mortal, or the 
-    /// Terrestrial Circle Sorcery Charm if Exalted, and forces Occult 3, but 
-    /// does not purchase any non-Control Spells or associated Shaping Ritual 
+    /// Terrestrial shaping ritual they use, and what their Control Spell is.
+    /// This purchases either the Mortal Sorcerer merit if mortal, or the
+    /// Terrestrial Circle Sorcery Charm if Exalted, and forces Occult 3, but
+    /// does not purchase any non-Control Spells or associated Shaping Ritual
     /// merits.
     ChooseSorcery,
 }

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::{MoteState, CommittedMotesId};
+use super::{CommittedMotesId, MoteState};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct MoteCommitmentView<'source> {

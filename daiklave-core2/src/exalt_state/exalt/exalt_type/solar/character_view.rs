@@ -1,6 +1,6 @@
 use crate::{CharacterMutationError, CharacterView};
 
-use super::{SolarView, Solar};
+use super::{Solar, SolarView};
 
 impl<'source> CharacterView<'source> {
     /// Returns true if character is a Solar.

@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// Published Exalted 3e books.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
@@ -17,9 +17,6 @@ pub struct BookReference {
 impl BookReference {
     /// Constructs a new BookReference.
     pub fn new(book: Book, page_number: i16) -> Self {
-        Self {
-            book,
-            page_number,
-        }
+        Self { book, page_number }
     }
 }

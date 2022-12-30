@@ -1,5 +1,5 @@
+use super::{CommittedMotesId, EssenceView, MotePool};
 use crate::{CharacterMutationError, CharacterView};
-use super::{CommittedMotesId, MotePool, EssenceView};
 
 impl<'source> CharacterView<'source> {
     /// None for mortals.

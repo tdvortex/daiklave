@@ -1,6 +1,15 @@
 use std::collections::HashSet;
 
-use daiklave_core2::{guided::{GuidedMutation, begin_guided_builder, GuidedStage, ExaltationChoice}, CharacterMutation, attributes::AttributeName, abilities::{AbilityName, AbilityNameVanilla}, martial_arts::{MartialArtsStyle, MartialArtsStyleId}, book_reference::{BookReference, Book}, weapons::WeaponId, id::UniqueId};
+use daiklave_core2::{
+    abilities::{AbilityName, AbilityNameVanilla},
+    attributes::AttributeName,
+    book_reference::{Book, BookReference},
+    guided::{begin_guided_builder, ExaltationChoice, GuidedMutation, GuidedStage},
+    id::UniqueId,
+    martial_arts::{MartialArtsStyle, MartialArtsStyleId},
+    weapons::WeaponId,
+    CharacterMutation,
+};
 #[test]
 fn test_guided_solar() {
     let mut guided_builder = begin_guided_builder();
@@ -336,10 +345,7 @@ fn test_guided_solar() {
 
     // Add a martial arts style
     let crane_style = MartialArtsStyle::new(
-        Some(BookReference::new(
-            Book::CoreRulebook,
-            443,
-        )),
+        Some(BookReference::new(Book::CoreRulebook, 443)),
         "Crane Style".to_owned(),
         "Crane style is a defensive style, emulating the grace of the \
         crane in avoiding the blows of an enemy. Its students learn \
@@ -362,29 +368,52 @@ fn test_guided_solar() {
         Complementary Abilities: Many Crane stylists use \
         Presence, Performance, or Socialize in combat to sway \
         their opponents into peaceful resolution or compromise, \
-        and later Charms of this style empower such efforts.".to_owned(),
-        HashSet::from([WeaponId(UniqueId::Placeholder(1)), WeaponId(UniqueId::Placeholder(2)), WeaponId(UniqueId::Placeholder(3))]),
-        None
+        and later Charms of this style empower such efforts."
+            .to_owned(),
+        HashSet::from([
+            WeaponId(UniqueId::Placeholder(1)),
+            WeaponId(UniqueId::Placeholder(2)),
+            WeaponId(UniqueId::Placeholder(3)),
+        ]),
+        None,
     );
 
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::AddMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)), crane_style.clone()));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::AddMartialArtsStyle(
+        MartialArtsStyleId(UniqueId::Placeholder(1)),
+        crane_style.clone(),
+    ));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Check can't add martial arts style with the same Id
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::AddMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)), crane_style));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::AddMartialArtsStyle(
+        MartialArtsStyleId(UniqueId::Placeholder(1)),
+        crane_style,
+    ));
     assert!(guided_builder.check_mutation(&mutation).is_err());
 
     // Check Brawl is forced to 1
-    assert_eq!(guided_builder.as_guided_view().unwrap().as_character_view().abilities().dots(AbilityNameVanilla::Brawl), 1);
+    assert_eq!(
+        guided_builder
+            .as_guided_view()
+            .unwrap()
+            .as_character_view()
+            .abilities()
+            .dots(AbilityNameVanilla::Brawl),
+        1
+    );
 
     // Remove a martial arts style
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::RemoveMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1))));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::RemoveMartialArtsStyle(
+        MartialArtsStyleId(UniqueId::Placeholder(1)),
+    ));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Check can't remove absent martial arts style
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::RemoveMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1))));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::RemoveMartialArtsStyle(
+        MartialArtsStyleId(UniqueId::Placeholder(1)),
+    ));
     assert!(guided_builder.check_mutation(&mutation).is_err());
 
     // Undo removal

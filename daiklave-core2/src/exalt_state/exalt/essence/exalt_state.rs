@@ -1,7 +1,8 @@
-use crate::exalt_state::exalt::essence::{MotePool, SpendMotesError, CommittedMotesId, CommitMotesError, RecoverMotesError, UncommitMotesError, SetEssenceRatingError};
-use crate::{
-    CharacterMutationError,
+use crate::exalt_state::exalt::essence::{
+    CommitMotesError, CommittedMotesId, MotePool, RecoverMotesError, SetEssenceRatingError,
+    SpendMotesError, UncommitMotesError,
 };
+use crate::CharacterMutationError;
 
 use crate::exalt_state::ExaltState;
 
@@ -53,9 +54,7 @@ impl ExaltState {
             ExaltState::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
                 CommitMotesError::MortalError,
             )),
-            ExaltState::Exalt(exalt) => {
-                exalt.check_commit_motes(id, name, first, amount)
-            }
+            ExaltState::Exalt(exalt) => exalt.check_commit_motes(id, name, first, amount),
         }
     }
 

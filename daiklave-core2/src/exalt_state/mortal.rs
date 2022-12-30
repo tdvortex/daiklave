@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::martial_arts::{MortalMartialArtistView, MartialArtsStyleId, MortalMartialArtist};
+use crate::martial_arts::{MartialArtsStyleId, MortalMartialArtist, MortalMartialArtistView};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub(crate) struct Mortal {

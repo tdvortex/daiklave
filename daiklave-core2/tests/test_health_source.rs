@@ -1,4 +1,7 @@
-use daiklave_core2::{CharacterEventSource, health::{WoundPenalty, DamageLevel}, CharacterMutation};
+use daiklave_core2::{
+    health::{DamageLevel, WoundPenalty},
+    CharacterEventSource, CharacterMutation,
+};
 
 #[test]
 fn test_health_character_event_source() {

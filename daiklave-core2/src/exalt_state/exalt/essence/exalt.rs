@@ -1,6 +1,12 @@
-use crate::{exalt_state::exalt::{Exalt, exalt_type::ExaltType}, CharacterMutationError};
+use crate::{
+    exalt_state::exalt::{exalt_type::ExaltType, Exalt},
+    CharacterMutationError,
+};
 
-use super::{Essence, MotePool, SpendMotesError, CommittedMotesId, CommitMotesError, UncommitMotesError, MoteCommitment, SetEssenceRatingError};
+use super::{
+    CommitMotesError, CommittedMotesId, Essence, MoteCommitment, MotePool, SetEssenceRatingError,
+    SpendMotesError, UncommitMotesError,
+};
 
 impl Exalt {
     pub fn essence(&self) -> &Essence {

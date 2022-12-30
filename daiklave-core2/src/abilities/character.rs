@@ -4,7 +4,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::{Character, CharacterMutationError};
 
-use super::{error::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError}, AbilityNameVanilla};
+use super::{
+    error::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError},
+    AbilityNameVanilla,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum Ability {

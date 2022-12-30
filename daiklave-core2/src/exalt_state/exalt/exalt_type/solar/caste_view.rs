@@ -1,5 +1,9 @@
 use crate::{
-    exalt_state::exalt::exalt_type::solar::{dawn::DawnView, zenith::ZenithView, twilight::TwilightView, night::NightView, eclipse::EclipseView}, abilities::AbilityName,
+    abilities::AbilityName,
+    exalt_state::exalt::exalt_type::solar::{
+        dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView,
+        zenith::ZenithView,
+    },
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]

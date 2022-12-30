@@ -3,11 +3,17 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
-use abilities::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError, AbilityNameVanilla};
-use attributes::{SetAttributesError, AttributeName};
-use exalt_state::exalt::{exalt_type::solar::Solar, essence::{MotePool, CommittedMotesId, SpendMotesError, CommitMotesError, RecoverMotesError, UncommitMotesError, SetEssenceRatingError}};
-use health::{WoundPenalty, DamageLevel};
-use martial_arts::{MartialArtsStyleId, MartialArtsStyle};
+use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
+use attributes::{AttributeName, SetAttributesError};
+use exalt_state::exalt::{
+    essence::{
+        CommitMotesError, CommittedMotesId, MotePool, RecoverMotesError, SetEssenceRatingError,
+        SpendMotesError, UncommitMotesError,
+    },
+    exalt_type::solar::Solar,
+};
+use health::{DamageLevel, WoundPenalty};
+use martial_arts::{MartialArtsStyle, MartialArtsStyleId};
 use name_and_concept::RemoveConceptError;
 use thiserror::Error;
 
@@ -101,11 +107,11 @@ pub enum CharacterMutation {
     AddSpecialty(AbilityNameVanilla, String),
     /// Removes a specialty from a non-Craft, non-Martial Arts ability.
     RemoveSpecialty(AbilityNameVanilla, String),
-    /// Adds a Martial Arts style to a character. This purchases the 
+    /// Adds a Martial Arts style to a character. This purchases the
     /// MartialArtist merit for the style, but does not grant any Martial Arts
     /// dots or Martial Arts charms.
     AddMartialArtsStyle(MartialArtsStyleId, MartialArtsStyle),
-    /// Removes a Martial Arts style from a character, including the merit, 
+    /// Removes a Martial Arts style from a character, including the merit,
     /// associated ability dots, specialties, and Charms.
     RemoveMartialArtsStyle(MartialArtsStyleId),
 }

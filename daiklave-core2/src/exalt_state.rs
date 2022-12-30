@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// Traits common to all Exalts
 pub mod exalt;
@@ -9,7 +9,7 @@ pub mod mortal;
 use exalt::{Exalt, ExaltView};
 use mortal::{Mortal, MortalView};
 
-use crate::{CharacterMutationError, Character, CharacterView};
+use crate::{Character, CharacterMutationError, CharacterView};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum ExaltState {
@@ -40,7 +40,7 @@ impl ExaltState {
         if self.is_mortal() {
             return Ok(self);
         }
-        
+
         // Preserve martial arts styles
         todo!()
     }
@@ -105,12 +105,11 @@ impl<'source> ExaltStateView<'source> {
         if self.is_mortal() {
             return Ok(self);
         }
-        
+
         // Preserve martial arts styles
         todo!()
     }
 }
-
 
 impl<'source> CharacterView<'source> {
     /// Returns true if character is not Exalted.

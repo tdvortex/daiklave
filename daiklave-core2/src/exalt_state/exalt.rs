@@ -1,4 +1,4 @@
-/// Structs and methods related to the Essence rating and mote pools for a 
+/// Structs and methods related to the Essence rating and mote pools for a
 /// character.
 pub mod essence;
 
@@ -8,9 +8,9 @@ use std::collections::HashMap;
 
 use essence::{Essence, EssenceView};
 use exalt_type::{ExaltType, ExaltTypeView};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{martial_arts::{MartialArtsStyleId, ExaltMartialArtist, ExaltMartialArtistView}};
+use crate::martial_arts::{ExaltMartialArtist, ExaltMartialArtistView, MartialArtsStyleId};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct Exalt {

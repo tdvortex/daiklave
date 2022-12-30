@@ -1,4 +1,4 @@
-use std::{ops::Deref, collections::HashMap};
+use std::{collections::HashMap, ops::Deref};
 
 use serde::{Deserialize, Serialize};
 
@@ -8,16 +8,16 @@ mod character;
 mod character_view;
 mod error;
 mod essence_view;
-mod exalt_state_view;
-mod exalt_state;
 mod exalt;
+mod exalt_state;
+mod exalt_state_view;
 mod exalt_view;
 
 pub use error::{
     CommitMotesError, RecoverMotesError, SetEssenceRatingError, SpendMotesError, UncommitMotesError,
 };
 
-pub(crate) use essence_view::{EssenceView};
+pub(crate) use essence_view::EssenceView;
 
 /// The current state of a character's Essence and motes.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -52,7 +52,7 @@ pub struct Motes {
 }
 
 impl Motes {
-    /// The character's current available and spent peripheral motes. 
+    /// The character's current available and spent peripheral motes.
     pub fn peripheral(&self) -> &MoteState {
         &self.peripheral
     }
@@ -61,7 +61,7 @@ impl Motes {
         &mut self.peripheral
     }
 
-    /// The character's current available and spent personal motes. 
+    /// The character's current available and spent personal motes.
     pub fn personal(&self) -> &MoteState {
         &self.personal
     }
@@ -85,8 +85,6 @@ pub(crate) struct MoteCommitment {
     peripheral: u8,
     personal: u8,
 }
-
-
 
 /// Indicates whether motes are spent/committed from peripheral or peripheral
 /// pool first.
@@ -152,8 +150,6 @@ impl MoteState {
     }
 }
 
-
-
 /// A unique identifier for a mote commitment effect.
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CommittedMotesId(pub UniqueId);
@@ -165,4 +161,3 @@ impl Deref for CommittedMotesId {
         &self.0
     }
 }
-

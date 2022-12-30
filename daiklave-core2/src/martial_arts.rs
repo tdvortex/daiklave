@@ -1,8 +1,19 @@
-use std::{ops::Deref, collections::{HashSet, HashMap}};
+use std::{
+    collections::{HashMap, HashSet},
+    ops::Deref,
+};
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{id::UniqueId, book_reference::BookReference, weapons::WeaponId, armor::ArmorWeight, abilities::{Ability, AbilityView}, charms::{CharmKeyword, CharmCost, CharmActionType}, CharacterView, CharacterMutationError};
+use crate::{
+    abilities::{Ability, AbilityView},
+    armor::ArmorWeight,
+    book_reference::BookReference,
+    charms::{CharmActionType, CharmCost, CharmKeyword},
+    id::UniqueId,
+    weapons::WeaponId,
+    CharacterMutationError, CharacterView,
+};
 
 /// A unique identifier for a Martial Arts style.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -16,7 +27,7 @@ impl Deref for MartialArtsStyleId {
     }
 }
 
-/// A Martial Arts style description. 
+/// A Martial Arts style description.
 #[derive(Debug, Default, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct MartialArtsStyle {
     book_reference: Option<BookReference>,
@@ -129,12 +140,20 @@ pub struct MartialArtsCharm {
 
 impl<'source> CharacterView<'source> {
     /// Checks if a Martial Arts style can be added to the character.
-    pub fn check_add_martial_arts_style(&self, id: MartialArtsStyleId, style: &MartialArtsStyle) -> Result<(), CharacterMutationError> {
+    pub fn check_add_martial_arts_style(
+        &self,
+        id: MartialArtsStyleId,
+        style: &MartialArtsStyle,
+    ) -> Result<(), CharacterMutationError> {
         todo!()
     }
 
     /// Checks if a Martial Arts style can be added to the character.
-    pub fn add_martial_arts_style(&mut self, id: MartialArtsStyleId, style: &MartialArtsStyle) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_martial_arts_style(
+        &mut self,
+        id: MartialArtsStyleId,
+        style: &MartialArtsStyle,
+    ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 }

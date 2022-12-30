@@ -1,6 +1,11 @@
 use crate::{CharacterMutationError, CharacterView};
 
-use super::{error::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError}, abilities_view::AbilitiesView, AbilityNameVanilla, ability_view::AbilityView};
+use super::{
+    abilities_view::AbilitiesView,
+    ability_view::AbilityView,
+    error::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError},
+    AbilityNameVanilla,
+};
 
 impl<'source> CharacterView<'source> {
     /// Get read-only access to a character's Abilities.

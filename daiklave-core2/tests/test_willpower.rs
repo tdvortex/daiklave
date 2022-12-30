@@ -1,4 +1,8 @@
-use daiklave_core2::{Character, abilities::AbilityName, exalt_state::exalt::exalt_type::solar::{Dawn, Solar}, CharacterView, CharacterEventSource, CharacterMutation};
+use daiklave_core2::{
+    abilities::AbilityName,
+    exalt_state::exalt::exalt_type::solar::{Dawn, Solar},
+    Character, CharacterEventSource, CharacterMutation, CharacterView,
+};
 
 #[test]
 fn test_willpower_character() {

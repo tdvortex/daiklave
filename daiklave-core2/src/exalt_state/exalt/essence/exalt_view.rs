@@ -1,6 +1,12 @@
-use crate::{exalt_state::exalt::{ExaltView, exalt_type::ExaltTypeView}, CharacterMutationError};
+use crate::{
+    exalt_state::exalt::{exalt_type::ExaltTypeView, ExaltView},
+    CharacterMutationError,
+};
 
-use super::{MotePool, SpendMotesError, CommittedMotesId, CommitMotesError, UncommitMotesError, SetEssenceRatingError, EssenceView, essence_view::MoteCommitmentView};
+use super::{
+    essence_view::MoteCommitmentView, CommitMotesError, CommittedMotesId, EssenceView, MotePool,
+    SetEssenceRatingError, SpendMotesError, UncommitMotesError,
+};
 
 impl<'source> ExaltView<'source> {
     pub fn essence(&self) -> &EssenceView {

@@ -1,6 +1,9 @@
 use crate::{exalt_state::ExaltStateView, CharacterMutationError};
 
-use super::{EssenceView, MotePool, SpendMotesError, SetEssenceRatingError, UncommitMotesError, CommittedMotesId, RecoverMotesError, CommitMotesError};
+use super::{
+    CommitMotesError, CommittedMotesId, EssenceView, MotePool, RecoverMotesError,
+    SetEssenceRatingError, SpendMotesError, UncommitMotesError,
+};
 
 impl<'source> ExaltStateView<'source> {
     pub(in crate::exalt_state::exalt::essence) fn essence(&self) -> Option<&EssenceView> {
@@ -48,9 +51,7 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
                 CommitMotesError::MortalError,
             )),
-            ExaltStateView::Exalted(exalt) => {
-                exalt.check_commit_motes(id, name, first, amount)
-            }
+            ExaltStateView::Exalted(exalt) => exalt.check_commit_motes(id, name, first, amount),
         }
     }
 

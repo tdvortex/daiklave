@@ -1,4 +1,7 @@
-use daiklave_core2::{CharacterView, health::{WoundPenalty, DamageLevel}};
+use daiklave_core2::{
+    health::{DamageLevel, WoundPenalty},
+    CharacterView,
+};
 
 #[test]
 fn test_health_character_view() {

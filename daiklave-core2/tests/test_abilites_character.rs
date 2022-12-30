@@ -1,4 +1,4 @@
-use daiklave_core2::{Character, abilities::AbilityNameVanilla};
+use daiklave_core2::{abilities::AbilityNameVanilla, Character};
 
 #[test]
 fn test_abilities_character() {

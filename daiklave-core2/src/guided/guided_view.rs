@@ -1,6 +1,12 @@
 use std::collections::HashSet;
 
-use crate::{CharacterView, abilities::AbilityName, exalt_state::exalt::exalt_type::solar::{Solar, Dawn, Zenith, Twilight, Night, Eclipse, validate_solar_caste_ability}, AttributeName};
+use crate::{
+    abilities::AbilityName,
+    exalt_state::exalt::exalt_type::solar::{
+        validate_solar_caste_ability, Dawn, Eclipse, Night, Solar, Twilight, Zenith,
+    },
+    AttributeName, CharacterView,
+};
 
 use super::{
     error::{GuidedError, SolarAbilityError},

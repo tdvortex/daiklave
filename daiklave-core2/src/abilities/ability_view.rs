@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::CharacterMutationError;
 
-use super::{SetAbilityError, AddSpecialtyError, RemoveSpecialtyError};
+use super::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum AbilityView<'source> {
@@ -70,7 +70,10 @@ impl<'source> AbilityView<'source> {
         }
     }
 
-    pub fn remove_specialty(&mut self, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_specialty(
+        &mut self,
+        specialty: &str,
+    ) -> Result<&mut Self, CharacterMutationError> {
         if let AbilityView::NonZero(_, specialties) = self {
             if !specialties.remove(specialty) {
                 Err(CharacterMutationError::RemoveSpecialtyError(

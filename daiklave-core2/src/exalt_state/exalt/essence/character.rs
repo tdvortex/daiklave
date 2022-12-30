@@ -1,6 +1,6 @@
 use crate::{Character, CharacterMutationError};
 
-use super::{MotePool, CommittedMotesId, Essence};
+use super::{CommittedMotesId, Essence, MotePool};
 
 impl Character {
     /// None for mortals.
@@ -93,4 +93,3 @@ impl Character {
         Ok(self)
     }
 }
-
