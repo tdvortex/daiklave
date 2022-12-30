@@ -208,7 +208,7 @@ impl ExaltState {
 
 impl<'source> ExaltStateView<'source> {
     pub fn is_solar(&self) -> bool {
-        if let Self::Exalted(exalt_type) = self {
+        if let Self::Exalt(exalt_type) = self {
             exalt_type.is_solar()
         } else {
             false
@@ -216,7 +216,7 @@ impl<'source> ExaltStateView<'source> {
     }
 
     pub fn solar_traits(&self) -> Option<&SolarView> {
-        if let Self::Exalted(exalt_type) = self {
+        if let Self::Exalt(exalt_type) = self {
             exalt_type.solar_traits()
         } else {
             None
@@ -239,16 +239,16 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(mortal) => {
                 // Default to essence 1
                 // Preserve martial arts styles, with empty Charms set
-                *self = Self::Exalted(ExaltView { 
+                *self = Self::Exalt(ExaltView { 
                     essence: EssenceView::new_solar(1), 
                     martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles).into_iter().map(|(id, mortal_artist)| (id, mortal_artist.into())).collect(), 
                     exalt_type: ExaltTypeView::Solar(solar.as_view())
                 })
             }
-            ExaltStateView::Exalted(exalt) => {
+            ExaltStateView::Exalt(exalt) => {
                 // Preserve essence rating
                 // Preserve martial arts styles (including charms)
-                *self = Self::Exalted(ExaltView {
+                *self = Self::Exalt(ExaltView {
                     essence: EssenceView::new_solar(exalt.essence().rating()),
                     martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles),
                     exalt_type: ExaltTypeView::Solar(solar.as_view()),

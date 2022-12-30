@@ -74,7 +74,9 @@ impl Character {
             CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
                 self.check_remove_specialty(*ability_name, specialty.as_str())
             }
-            CharacterMutation::AddMartialArtsStyle(_, _) => todo!(),
+            CharacterMutation::AddMartialArtsStyle(id, style) => {
+                self.check_add_martial_arts_style(*id, style)
+            }
             CharacterMutation::RemoveMartialArtsStyle(_) => todo!(),
         }
     }
@@ -119,7 +121,9 @@ impl Character {
             CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
                 self.remove_specialty(*ability_name, specialty.as_str())
             }
-            CharacterMutation::AddMartialArtsStyle(_, _) => todo!(),
+            CharacterMutation::AddMartialArtsStyle(id, style) => {
+                self.add_martial_arts_style(*id, style)
+            }
             CharacterMutation::RemoveMartialArtsStyle(_) => todo!(),
         }
     }

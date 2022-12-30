@@ -9,7 +9,7 @@ impl<'source> ExaltStateView<'source> {
     pub(in crate::exalt_state::exalt::essence) fn essence(&self) -> Option<&EssenceView> {
         match self {
             ExaltStateView::Mortal(_) => None,
-            ExaltStateView::Exalted(exalt) => Some(exalt.essence()),
+            ExaltStateView::Exalt(exalt) => Some(exalt.essence()),
         }
     }
 
@@ -22,7 +22,7 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::SpendMotesError(
                 SpendMotesError::MortalError,
             )),
-            ExaltStateView::Exalted(exalt) => exalt.check_spend_motes(first, amount),
+            ExaltStateView::Exalt(exalt) => exalt.check_spend_motes(first, amount),
         }
     }
 
@@ -35,7 +35,7 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::SpendMotesError(
                 SpendMotesError::MortalError,
             )),
-            ExaltStateView::Exalted(exalt) => exalt.spend_motes(first, amount),
+            ExaltStateView::Exalt(exalt) => exalt.spend_motes(first, amount),
         }?;
         Ok(self)
     }
@@ -51,7 +51,7 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
                 CommitMotesError::MortalError,
             )),
-            ExaltStateView::Exalted(exalt) => exalt.check_commit_motes(id, name, first, amount),
+            ExaltStateView::Exalt(exalt) => exalt.check_commit_motes(id, name, first, amount),
         }
     }
 
@@ -66,7 +66,7 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
                 CommitMotesError::MortalError,
             )),
-            ExaltStateView::Exalted(exalt) => exalt.commit_motes(id, name, first, amount),
+            ExaltStateView::Exalt(exalt) => exalt.commit_motes(id, name, first, amount),
         }?;
         Ok(self)
     }
@@ -79,7 +79,7 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
                 RecoverMotesError::MortalError,
             )),
-            ExaltStateView::Exalted(_) => Ok(()),
+            ExaltStateView::Exalt(_) => Ok(()),
         }
     }
 
@@ -91,7 +91,7 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
                 RecoverMotesError::MortalError,
             )),
-            ExaltStateView::Exalted(exalt) => exalt.recover_motes(amount),
+            ExaltStateView::Exalt(exalt) => exalt.recover_motes(amount),
         }?;
         Ok(self)
     }
@@ -104,7 +104,7 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
                 UncommitMotesError::MortalError,
             )),
-            ExaltStateView::Exalted(exalt) => exalt.check_uncommit_motes(id),
+            ExaltStateView::Exalt(exalt) => exalt.check_uncommit_motes(id),
         }
     }
 
@@ -116,7 +116,7 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
                 UncommitMotesError::MortalError,
             )),
-            ExaltStateView::Exalted(exalt) => exalt.uncommit_motes(id),
+            ExaltStateView::Exalt(exalt) => exalt.uncommit_motes(id),
         }?;
         Ok(self)
     }
@@ -129,7 +129,7 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
                 SetEssenceRatingError::MortalError,
             )),
-            ExaltStateView::Exalted(_) => {
+            ExaltStateView::Exalt(_) => {
                 if (1..=5).contains(&rating) {
                     Ok(())
                 } else {
@@ -147,7 +147,7 @@ impl<'source> ExaltStateView<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_essence_rating(rating)?;
         match self {
-            ExaltStateView::Exalted(exalt) => exalt.set_essence_rating(rating),
+            ExaltStateView::Exalt(exalt) => exalt.set_essence_rating(rating),
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
                 SetEssenceRatingError::MortalError,
             )),

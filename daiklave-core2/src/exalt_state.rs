@@ -85,7 +85,7 @@ impl Character {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum ExaltStateView<'source> {
     Mortal(MortalView<'source>),
-    Exalted(ExaltView<'source>),
+    Exalt(ExaltView<'source>),
 }
 
 impl<'source> Default for ExaltStateView<'source> {
@@ -113,7 +113,7 @@ impl<'source> ExaltStateView<'source> {
         }
 
         // Preserve martial arts styles
-        if let ExaltStateView::Exalted(exalt) = self {
+        if let ExaltStateView::Exalt(exalt) = self {
             *self = ExaltStateView::Mortal(MortalView {
                 martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles).into_iter().map(|(id, exalt_artist)| (id, exalt_artist.into())).collect()
             });

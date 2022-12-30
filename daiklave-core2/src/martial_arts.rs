@@ -13,7 +13,7 @@ use crate::{
     charms::{CharmActionType, CharmCost, CharmKeyword},
     id::UniqueId,
     weapons::WeaponId,
-    CharacterMutationError, CharacterView, exalt_state::{ExaltStateView, mortal::MortalView, exalt::ExaltView},
+    CharacterMutationError, CharacterView, exalt_state::{ExaltStateView, mortal::{MortalView, Mortal}, exalt::{ExaltView, Exalt}, ExaltState}, Character,
 };
 
 /// A unique identifier for a Martial Arts style.
@@ -220,14 +220,14 @@ impl<'source> ExaltStateView<'source> {
     pub(crate) fn check_add_martial_arts_style(&self, id: MartialArtsStyleId, style: &MartialArtsStyle) -> Result<(), CharacterMutationError> {
         match self {
             ExaltStateView::Mortal(mortal) => mortal.check_add_martial_arts_style(id, style),
-            ExaltStateView::Exalted(exalt) => exalt.check_add_martial_arts_style(id, style),
+            ExaltStateView::Exalt(exalt) => exalt.check_add_martial_arts_style(id, style),
         }
     }
 
     pub(crate) fn add_martial_arts_style(&mut self, id: MartialArtsStyleId, style: &'source MartialArtsStyle) -> Result<&mut Self, CharacterMutationError> {
         match self {
             ExaltStateView::Mortal(mortal) => {mortal.add_martial_arts_style(id, style)?;}
-            ExaltStateView::Exalted(exalt) => {exalt.add_martial_arts_style(id, style)?;}
+            ExaltStateView::Exalt(exalt) => {exalt.add_martial_arts_style(id, style)?;}
         }
         Ok(self)
     }
@@ -266,6 +266,89 @@ impl<'source> ExaltView<'source> {
         self.martial_arts_styles.insert(id, ExaltMartialArtistView {
             style,
             ability: AbilityView::Zero,
+            charms: HashMap::new(),
+        });
+        Ok(self)
+    }
+}
+
+impl Character {
+    /// Checks if a Martial Arts style can be added to the character.
+    pub fn check_add_martial_arts_style(
+        &self,
+        id: MartialArtsStyleId,
+        style: &MartialArtsStyle,
+    ) -> Result<(), CharacterMutationError> {
+        if self.abilities().dots(AbilityNameVanilla::Brawl) < 1 {
+            return Err(CharacterMutationError::AddMartialArtsStyleError(AddMartialArtsStyleError::PrerequsitesNotMet("Brawl must be 1+ to take Martial Artist merit".to_owned())));
+        }
+
+        self.exalt_state.check_add_martial_arts_style(id, style)
+    }
+
+    /// Checks if a Martial Arts style can be added to the character.
+    pub fn add_martial_arts_style(
+        &mut self,
+        id: MartialArtsStyleId,
+        style: &MartialArtsStyle,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.check_add_martial_arts_style(id, style)?;
+        self.exalt_state.add_martial_arts_style(id, style)?;
+
+        Ok(self)
+    }
+}
+
+impl ExaltState {
+    pub(crate) fn check_add_martial_arts_style(&self, id: MartialArtsStyleId, style: &MartialArtsStyle) -> Result<(), CharacterMutationError> {
+        match self {
+            ExaltState::Mortal(mortal) => mortal.check_add_martial_arts_style(id, style),
+            ExaltState::Exalt(exalt) => exalt.check_add_martial_arts_style(id, style),
+        }
+    }
+
+    pub(crate) fn add_martial_arts_style(&mut self, id: MartialArtsStyleId, style: &MartialArtsStyle) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            ExaltState::Mortal(mortal) => {mortal.add_martial_arts_style(id, style)?;}
+            ExaltState::Exalt(exalt) => {exalt.add_martial_arts_style(id, style)?;}
+        }
+        Ok(self)
+    }
+}
+
+impl Mortal {
+    pub(crate) fn check_add_martial_arts_style(&self, id: MartialArtsStyleId, _style: &MartialArtsStyle) -> Result<(), CharacterMutationError> {
+        if self.martial_arts_styles.contains_key(&id) {
+            Err(CharacterMutationError::AddMartialArtsStyleError(AddMartialArtsStyleError::DuplicateStyle))
+        } else {
+            Ok(())
+        }
+    }
+
+    pub(crate) fn add_martial_arts_style(&mut self, id: MartialArtsStyleId, style: &MartialArtsStyle) -> Result<&mut Self, CharacterMutationError> {
+        self.check_add_martial_arts_style(id, style)?;
+        self.martial_arts_styles.insert(id, MortalMartialArtist {
+            style: style.to_owned(),
+            ability: Ability::Zero
+        });
+        Ok(self)
+    }
+}
+
+impl Exalt {
+    pub(crate) fn check_add_martial_arts_style(&self, id: MartialArtsStyleId, _style: &MartialArtsStyle) -> Result<(), CharacterMutationError> {
+        if self.martial_arts_styles.contains_key(&id) {
+            Err(CharacterMutationError::AddMartialArtsStyleError(AddMartialArtsStyleError::DuplicateStyle))
+        } else {
+            Ok(())
+        }
+    }
+
+    pub(crate) fn add_martial_arts_style(&mut self, id: MartialArtsStyleId, style: &MartialArtsStyle) -> Result<&mut Self, CharacterMutationError> {
+        self.check_add_martial_arts_style(id, style)?;
+        self.martial_arts_styles.insert(id, ExaltMartialArtist {
+            style: style.to_owned(),
+            ability: Ability::Zero,
             charms: HashMap::new(),
         });
         Ok(self)
