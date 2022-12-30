@@ -22,9 +22,18 @@ pub use solar::{
     Zenith, ZenithBuilder,
 };
 
+/// Official page references.
+pub mod book_reference;
+
 /// A character builder with additional logic for bonus points, free starting
 /// dots, and other constraints.
 pub mod guided;
+
+/// Martial Arts style logic
+pub mod martial_arts;
+
+/// Logic for building and equipping weapons
+pub mod weapons;
 
 pub use abilities::{AbilityName, AbilityNameVanilla};
 pub use attributes::{AttributeName, Attributes};
@@ -32,6 +41,7 @@ pub use essence::CommittedMotesId;
 pub use essence::MotePool;
 
 mod abilities;
+mod armor;
 mod attributes;
 mod character;
 mod character_view;

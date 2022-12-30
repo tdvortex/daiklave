@@ -1,7 +1,9 @@
+use std::collections::HashSet;
+
 use daiklave_core2::{
     guided::{begin_guided_builder, ExaltationChoice, GuidedMutation, GuidedStage},
     id::{CharacterId, Id},
-    AbilityName, AttributeName, CharacterMutation,
+    AbilityName, AttributeName, CharacterMutation, weapons::WeaponId, martial_arts::{MartialArtsStyle, MartialArtsStyleId}, book_reference::{BookReference, Book}, AbilityNameVanilla,
 };
 
 #[test]
@@ -339,11 +341,10 @@ fn test_guided_solar() {
 
     // Add a martial arts style
     let crane_style = MartialArtsStyle::new(
-        MartialArtsStyleId(Id::Placeholder(1)),
-        Some(BookReference {
-            book: Book::CoreRulebook,
-            page_number: 443,
-        }),
+        Some(BookReference::new(
+            Book::CoreRulebook,
+            443,
+        )),
         "Crane Style".to_owned(),
         "Crane style is a defensive style, emulating the grace of the \
         crane in avoiding the blows of an enemy. Its students learn \
@@ -371,12 +372,12 @@ fn test_guided_solar() {
         None
     );
 
-    let mutation = GuidedMutation::AddMartialArtsStyle(crane_style.clone());
+    let mutation = GuidedMutation::AddMartialArtsStyle(MartialArtsStyleId(Id::Placeholder(1)), crane_style.clone());
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Check can't add duplicate martial arts style
-    let mutation = GuidedMutation::AddMartialArtsStyle(crane_style);
+    let mutation = GuidedMutation::AddMartialArtsStyle(MartialArtsStyleId(Id::Placeholder(1)), crane_style);
     assert!(guided_builder.check_mutation(&mutation).is_err());
 
     // Check Brawl is forced to 1

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{abilities::AbilityName, id::CharacterId, CharacterMutation, CharacterView};
+use crate::{abilities::AbilityName, id::CharacterId, CharacterMutation, CharacterView, martial_arts::{MartialArtsStyleId, MartialArtsStyle}};
 
 use self::{
     error::{GuidedError, SolarAbilityError},
@@ -41,6 +41,8 @@ pub enum GuidedMutation {
     AddSolarFavoredAbility(AbilityName),
     /// Remove a Solar Favored ability from the guided builder.
     RemoveSolarFavoredAbility(AbilityName),
+    AddMartialArtsStyle(MartialArtsStyleId, MartialArtsStyle),
+    RemoveMartialArtsStyle(MartialArtsStyleId),
 }
 
 /// The different phases of a guided character builder.
@@ -66,6 +68,7 @@ pub enum GuidedStage {
     /// practices. This purchases the MartialArtist merit and forces Brawl 1
     /// but does not purchase any MartialArts dots, specialties, or charms.
     ChooseMartialArtsStyles,
+    ChooseSorcery,
 }
 
 /// The supported options for Exaltations.
@@ -167,6 +170,8 @@ impl GuidedEventSource {
                         return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
                     }
                 }
+                GuidedMutation::AddMartialArtsStyle(id, style) => todo!(),
+                GuidedMutation::RemoveMartialArtsStyle(id) => todo!(),
             }
         }
         guided_view.update_bonus_points();
