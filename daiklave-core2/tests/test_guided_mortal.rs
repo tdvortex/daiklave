@@ -1,7 +1,6 @@
 use std::collections::HashSet;
 
 use daiklave_core2::{
-    abilities::AbilityNameVanilla,
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     guided::{begin_guided_builder, ExaltationChoice, GuidedMutation, GuidedStage},
@@ -185,42 +184,21 @@ fn test_guided_mortal() {
         None,
     );
 
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::AddMartialArtsStyle(
-        MartialArtsStyleId(UniqueId::Placeholder(1)),
-        crane_style.clone(),
-    ));
+    let mutation = GuidedMutation::AddMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)), crane_style.clone());
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Check can't add martial arts style with the same Id
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::AddMartialArtsStyle(
-        MartialArtsStyleId(UniqueId::Placeholder(1)),
-        crane_style,
-    ));
+    let mutation = GuidedMutation::AddMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)), crane_style);
     assert!(guided_builder.check_mutation(&mutation).is_err());
 
-    // Check Brawl is forced to 1
-    assert_eq!(
-        guided_builder
-            .as_guided_view()
-            .unwrap()
-            .as_character_view()
-            .abilities()
-            .dots(AbilityNameVanilla::Brawl),
-        1
-    );
-
     // Remove a martial arts style
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::RemoveMartialArtsStyle(
-        MartialArtsStyleId(UniqueId::Placeholder(1)),
-    ));
+    let mutation = GuidedMutation::RemoveMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Check can't remove absent martial arts style
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::RemoveMartialArtsStyle(
-        MartialArtsStyleId(UniqueId::Placeholder(1)),
-    ));
+    let mutation = GuidedMutation::RemoveMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)));
     assert!(guided_builder.check_mutation(&mutation).is_err());
 
     // Undo removal
@@ -243,10 +221,7 @@ fn test_guided_mortal() {
         HashSet::from([WeaponId(UniqueId::Placeholder(1))]),
         None,
     );
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::AddMartialArtsStyle(
-        MartialArtsStyleId(UniqueId::Placeholder(2)),
-        dummy_style,
-    ));
+    let mutation = GuidedMutation::AddMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(2)), dummy_style);
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 

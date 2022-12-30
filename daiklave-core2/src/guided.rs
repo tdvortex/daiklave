@@ -1,6 +1,6 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, HashMap};
 
-use crate::{abilities::AbilityName, CharacterMutation, CharacterView};
+use crate::{abilities::AbilityName, CharacterMutation, CharacterView, martial_arts::{MartialArtsStyleId, MartialArtsStyle, RemoveMartialArtsStyleError}, CharacterMutationError};
 
 use self::{
     error::{GuidedError, SolarAbilityError},
@@ -39,6 +39,10 @@ pub enum GuidedMutation {
     AddSolarFavoredAbility(AbilityName),
     /// Remove a Solar Favored ability from the guided builder.
     RemoveSolarFavoredAbility(AbilityName),
+    /// Add a Martial Arts style.
+    AddMartialArtsStyle(MartialArtsStyleId, MartialArtsStyle),
+    /// Removes a Martial Arts style. 
+    RemoveMartialArtsStyle(MartialArtsStyleId),
 }
 
 /// The different phases of a guided character builder.
@@ -108,6 +112,7 @@ impl GuidedEventSource {
             solar_caste_abilities: None,
             solar_supernal_ability: None,
             solar_favored_abilities: None,
+            martial_arts_styles: None,
         };
 
         // Don't use GuidedView::apply_mutation() to avoid redundant bonus
@@ -171,6 +176,23 @@ impl GuidedEventSource {
                     } else {
                         return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
                     }
+                }
+                GuidedMutation::AddMartialArtsStyle(id, style) => {
+                    if guided_view.martial_arts_styles.is_none() {
+                        guided_view.martial_arts_styles = Some(HashMap::new());
+                    }
+
+                    if let Some(style_map) = &mut guided_view.martial_arts_styles {
+                        style_map.insert(*id, style);
+                    }
+
+                }
+                GuidedMutation::RemoveMartialArtsStyle(id) => {
+                    if guided_view.martial_arts_styles.is_none() {
+                        return Err(GuidedError::CharacterMutationError(CharacterMutationError::RemoveMartialArtsStyleError(RemoveMartialArtsStyleError::NotFound)));
+                    }
+
+                    guided_view.martial_arts_styles.as_mut().unwrap().remove(id);
                 }
             }
         }

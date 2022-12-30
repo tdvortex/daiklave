@@ -1,11 +1,11 @@
-use std::collections::HashSet;
+use std::{collections::{HashSet, HashMap}};
 
 use crate::{
     abilities::AbilityName,
     exalt_state::exalt::exalt_type::solar::{
         validate_solar_caste_ability, Dawn, Eclipse, Night, Solar, Twilight, Zenith,
     },
-    AttributeName, CharacterView,
+    AttributeName, CharacterView, martial_arts::{MartialArtsStyleId, MartialArtsStyle, AddMartialArtsStyleError, RemoveMartialArtsStyleError}, CharacterMutationError,
 };
 
 use super::{
@@ -23,6 +23,7 @@ pub struct GuidedView<'source> {
     pub(in crate::guided) solar_caste_abilities: Option<HashSet<AbilityName>>,
     pub(in crate::guided) solar_supernal_ability: Option<AbilityName>,
     pub(in crate::guided) solar_favored_abilities: Option<HashSet<AbilityName>>,
+    pub(in crate::guided) martial_arts_styles: Option<HashMap<MartialArtsStyleId, &'source MartialArtsStyle>>,
 }
 
 impl<'source> GuidedView<'source> {
@@ -332,7 +333,7 @@ impl<'source> GuidedView<'source> {
                     Some(5)
                 )
             }
-            GuidedStage::ChooseMartialArtsStyles => todo!(),
+            GuidedStage::ChooseMartialArtsStyles => true,
             GuidedStage::ChooseSorcery => todo!(),
         } {
             Err(GuidedError::StageIncompleteError)
@@ -566,6 +567,24 @@ impl<'source> GuidedView<'source> {
                     .remove(ability)
                 {
                     return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
+                }
+            }
+            GuidedMutation::AddMartialArtsStyle(id, style) => {
+                if let Some(true) = self.martial_arts_styles.as_ref().map(|hashmap| hashmap.contains_key(id)) {
+                    return Err(GuidedError::CharacterMutationError(CharacterMutationError::AddMartialArtsStyleError(AddMartialArtsStyleError::DuplicateStyle)));
+                }
+
+                if self.martial_arts_styles.is_none() {
+                    self.martial_arts_styles = Some(HashMap::new());
+                }
+
+                self.martial_arts_styles.as_mut().unwrap().insert(*id, style);
+            }
+            GuidedMutation::RemoveMartialArtsStyle(id) => {
+                if let Some(true) = self.martial_arts_styles.as_ref().map(|hashmap| hashmap.contains_key(id)) {
+                    self.martial_arts_styles.as_mut().unwrap().remove(id);
+                } else {
+                    return Err(GuidedError::CharacterMutationError(CharacterMutationError::RemoveMartialArtsStyleError(RemoveMartialArtsStyleError::NotFound)));
                 }
             }
         }
