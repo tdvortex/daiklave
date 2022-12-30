@@ -1,4 +1,4 @@
-use daiklave_core2::{AbilityNameVanilla, CharacterEventSource, CharacterMutation};
+use daiklave_core2::{CharacterEventSource, CharacterMutation, abilities::AbilityNameVanilla};
 
 #[test]
 fn test_abilities_character_event_source() {

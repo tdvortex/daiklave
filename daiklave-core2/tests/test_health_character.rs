@@ -1,4 +1,5 @@
-use daiklave_core2::{Character, DamageLevel, WoundPenalty};
+use daiklave_core2::{Character, health::{WoundPenalty, DamageLevel}};
+
 
 #[test]
 fn test_health_character() {

@@ -1,6 +1,6 @@
 use crate::{
     willpower::Willpower,
-    Attributes, CharacterMutation, CharacterMutationError, exalt_state::ExaltStateView, health::Health, abilities::AbilitiesView,
+    CharacterMutation, CharacterMutationError, exalt_state::ExaltStateView, health::Health, abilities::AbilitiesView, attributes::Attributes,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource

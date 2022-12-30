@@ -1,11 +1,6 @@
 use std::collections::HashSet;
 
-use daiklave_core2::{
-    guided::{begin_guided_builder, ExaltationChoice, GuidedMutation, GuidedStage},
-    id::{UniqueId},
-    AbilityName, AttributeName, CharacterMutation, weapons::WeaponId, martial_arts::{MartialArtsStyle, MartialArtsStyleId}, book_reference::{BookReference, Book}, AbilityNameVanilla,
-};
-
+use daiklave_core2::{guided::{GuidedMutation, begin_guided_builder, GuidedStage, ExaltationChoice}, CharacterMutation, attributes::AttributeName, abilities::{AbilityName, AbilityNameVanilla}, martial_arts::{MartialArtsStyle, MartialArtsStyleId}, book_reference::{BookReference, Book}, weapons::WeaponId, id::UniqueId};
 #[test]
 fn test_guided_solar() {
     let mut guided_builder = begin_guided_builder();

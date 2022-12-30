@@ -1,6 +1,4 @@
-use daiklave_core2::{
-    id::UniqueId, AbilityName, CharacterView, CommittedMotesId, Eclipse, MotePool, Solar,
-};
+use daiklave_core2::{CharacterView, exalt_state::exalt::{exalt_type::solar::{Eclipse, Solar}, essence::{MotePool, CommittedMotesId}}, abilities::AbilityName, id::UniqueId};
 
 #[test]
 fn test_essence_character_view() {

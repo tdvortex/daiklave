@@ -1,10 +1,6 @@
 use std::collections::HashSet;
 
-use daiklave_core2::{
-    guided::{begin_guided_builder, ExaltationChoice, GuidedMutation, GuidedStage},
-    id::{UniqueId},
-    AttributeName, CharacterMutation, martial_arts::{MartialArtsStyle, MartialArtsStyleId}, weapons::WeaponId, book_reference::{BookReference, Book}, AbilityNameVanilla,
-};
+use daiklave_core2::{guided::{begin_guided_builder, GuidedMutation, GuidedStage, ExaltationChoice}, CharacterMutation, attributes::AttributeName, martial_arts::{MartialArtsStyle, MartialArtsStyleId}, book_reference::{BookReference, Book}, weapons::WeaponId, id::UniqueId, abilities::AbilityNameVanilla};
 
 #[test]
 fn test_guided_mortal() {
@@ -218,7 +214,7 @@ fn test_guided_mortal() {
         HashSet::from([WeaponId(UniqueId::Placeholder(1))]),
         None
     );
-    let mutation = GuidedMutation::AddMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(2)), dummy_style);
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::AddMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(2)), dummy_style));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 

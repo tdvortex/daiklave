@@ -4,7 +4,7 @@
 //! with full Discord integration for over-the-internet play.
 
 use abilities::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError, AbilityNameVanilla};
-use attributes::SetAttributesError;
+use attributes::{SetAttributesError, AttributeName};
 use exalt_state::exalt::{exalt_type::solar::Solar, essence::{MotePool, CommittedMotesId, SpendMotesError, CommitMotesError, RecoverMotesError, UncommitMotesError, SetEssenceRatingError}};
 use health::{WoundPenalty, DamageLevel};
 use martial_arts::{MartialArtsStyleId, MartialArtsStyle};
@@ -13,6 +13,9 @@ use thiserror::Error;
 
 /// Structs related to a character's Abilities (skills) and specialties.
 pub mod abilities;
+
+/// Structs related to a character's Attributes.
+pub mod attributes;
 
 /// Official page references.
 pub mod book_reference;
@@ -40,10 +43,7 @@ pub mod martial_arts;
 /// Logic for building and equipping weapons
 pub mod weapons;
 
-pub use attributes::{AttributeName, Attributes};
-
 mod armor;
-mod attributes;
 mod character;
 mod character_view;
 mod name_and_concept;

@@ -1,4 +1,4 @@
-use daiklave_core2::{AbilityNameVanilla, CharacterView};
+use daiklave_core2::{CharacterView, abilities::AbilityNameVanilla};
 
 #[test]
 fn test_abilities_character_view() {

@@ -1,7 +1,4 @@
-use daiklave_core2::{
-    id::UniqueId, AbilityName, CharacterEventSource, CharacterMutation, CommittedMotesId, Eclipse,
-    MotePool, Solar,
-};
+use daiklave_core2::{CharacterEventSource, exalt_state::exalt::{exalt_type::solar::{Eclipse, Solar}, essence::{MotePool, CommittedMotesId}}, abilities::AbilityName, CharacterMutation, id::UniqueId};
 
 #[test]
 fn test_essence_character_event_source() {

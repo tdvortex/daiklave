@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     abilities::Abilities, willpower::Willpower,
-    Attributes, CharacterMutation, CharacterMutationError, exalt_state::ExaltState, health::Health,
+    CharacterMutation, CharacterMutationError, exalt_state::ExaltState, health::Health, attributes::Attributes,
 };
 
 /// An owned instance of a full (player) character. This is the format used in

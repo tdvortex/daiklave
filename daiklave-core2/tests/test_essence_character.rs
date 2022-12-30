@@ -1,4 +1,4 @@
-use daiklave_core2::{id::UniqueId, AbilityName, Character, CommittedMotesId, Eclipse, MotePool, Solar};
+use daiklave_core2::{Character, abilities::AbilityName, exalt_state::exalt::{exalt_type::solar::{Eclipse, Solar}, essence::{MotePool, CommittedMotesId}}, id::UniqueId};
 
 #[test]
 fn test_essence_character() {

@@ -1,5 +1,5 @@
 use daiklave_core2::{
-    AttributeName, Character, CharacterEventSource, CharacterMutation, CharacterView,
+    Character, CharacterEventSource, CharacterMutation, CharacterView, attributes::AttributeName,
 };
 
 #[test]
