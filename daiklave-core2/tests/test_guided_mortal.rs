@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use daiklave_core2::{
     guided::{begin_guided_builder, ExaltationChoice, GuidedMutation, GuidedStage},
     id::{CharacterId, Id},
@@ -140,6 +142,101 @@ fn test_guided_mortal() {
 
     // Move on to the next stage
     let mutation = GuidedMutation::SetStage(GuidedStage::ChooseMartialArtsStyles);
+    assert!(guided_builder.check_mutation(&mutation).is_ok());
+    assert!(guided_builder.apply_mutation(mutation).is_ok());
+
+    // Add a martial arts style
+    let crane_style = MartialArtsStyle::new(
+        MartialArtsStyleId(Id::Placeholder(1)),
+        Some(BookReference {
+            book: Book::CoreRulebook,
+            page_number: 443,
+        }),
+        "Crane Style".to_owned(),
+        "Crane style is a defensive style, emulating the grace of the \
+        crane in avoiding the blows of an enemy. Its students learn \
+        not just to fight with physical blows, but to empathize \
+        with her enemy, speaking or debating with him in an \
+        attempt to bring the fight to an end without violence. \
+        However, those who mistake the Crane master's restraint \
+        for weakness find themselves quickly meeting the ground. \
+        When she must, a student of this style can unleash \
+        devastating counterattacks, flowing with the force of an \
+        enemy's blow so she can strike back in turn. \n\
+        Crane Weapons: Crane style practitioners typically dual \
+        wield a war fan and hook sword, using the fan for defense \
+        while disarming enemies with the sword. Unarmed attacks \
+        usually consist of graceful kicks, but a Crane stylist lacking \
+        his usual weapons might use one hand to deliver rapid \
+        chops while holding back the other for powerful lunges \
+        and sweeping blows. \n \
+        Armor: Crane style is incompatible with armor. \n \
+        Complementary Abilities: Many Crane stylists use \
+        Presence, Performance, or Socialize in combat to sway \
+        their opponents into peaceful resolution or compromise, \
+        and later Charms of this style empower such efforts.".to_owned(),
+        HashSet::from([WeaponId(Id::Placeholder(1)), WeaponId(Id::Placeholder(2)), WeaponId(Id::Placeholder(3))]),
+        None
+    );
+
+    let mutation = GuidedMutation::AddMartialArtsStyle(crane_style.clone());
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
+
+    // Check can't add duplicate martial arts style
+    let mutation = GuidedMutation::AddMartialArtsStyle(crane_style);
+    assert!(guided_builder.check_mutation(&mutation).is_err());
+
+    // Check Brawl is forced to 1
+    assert_eq!(guided_builder.as_guided_view().unwrap().as_character_view().abilities().dots(AbilityNameVanilla::Brawl), 1);
+
+    // Remove a martial arts style
+    let mutation = GuidedMutation::RemoveMartialArtsStyle(MartialArtsStyleId(Id::Placeholder(1)));
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
+
+    // Check can't remove absent martial arts style
+    let mutation = GuidedMutation::RemoveMartialArtsStyle(MartialArtsStyleId(Id::Placeholder(1)));
+    assert!(guided_builder.check_mutation(&mutation).is_err());
+
+    // Undo removal
+    assert!(guided_builder.can_undo());
+    assert!(guided_builder.undo());
+
+    // Check martial arts counts against merits budget
+    assert_eq!(
+        guided_builder
+            .as_guided_view()
+            .unwrap()
+            .bonus_points_remaining(),
+        21
+    );
+
+    let dummy_style = MartialArtsStyle::new(
+        MartialArtsStyleId(Id::Placeholder(2)),
+        None,
+        "Dummy style".to_owned(),
+        "Dummy description".to_owned(),
+        HashSet::from([WeaponId(Id::Placeholder(1))]),
+        None
+    );
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
+
+    assert_eq!(
+        guided_builder
+            .as_guided_view()
+            .unwrap()
+            .bonus_points_remaining(),
+        20
+    );
+
+    // Undo dummy style
+    assert!(guided_builder.can_undo());
+    assert!(guided_builder.undo());
+
+    // Move on to the next stage
+    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSorcery);
     assert!(guided_builder.check_mutation(&mutation).is_ok());
     assert!(guided_builder.apply_mutation(mutation).is_ok());
 }
