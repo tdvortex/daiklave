@@ -19,6 +19,7 @@ pub struct GuidedView<'source> {
     pub(in crate::guided) character_view: CharacterView<'source>,
     pub(in crate::guided) stage: GuidedStage,
     pub(in crate::guided) bonus_points: i32,
+    pub(in crate::guided) merit_dots: i32,
     pub(in crate::guided) exaltation_choice: Option<ExaltationChoice>,
     pub(in crate::guided) solar_caste_abilities: Option<HashSet<AbilityName>>,
     pub(in crate::guided) solar_supernal_ability: Option<AbilityName>,
@@ -273,12 +274,23 @@ impl<'source> GuidedView<'source> {
             .into()
     }
 
+    fn mortal_merits_bonus_points_spent(&self) -> i32 {
+        // Mortals get 7 free merit dots, the rest are 1 BP per dot
+        self.merit_dots - self.merit_dots.min(7)
+    }
+
+    fn solal_merits_bonus_points_spent(&self) -> i32 {
+        // Solars get 10 free merit dots, the rest are 1 BP per dot
+        self.merit_dots - self.merit_dots.min(10)
+    }
+
     pub(in crate::guided) fn update_bonus_points(&mut self) {
         if let Some(exaltation_choice) = self.exaltation_choice {
             match exaltation_choice {
                 ExaltationChoice::Mortal => {
                     self.bonus_points = 21;
                     self.bonus_points -= self.mortal_attributes_bonus_points_spent();
+                    self.bonus_points -= self.mortal_merits_bonus_points_spent();
                 }
                 ExaltationChoice::Dawn
                 | ExaltationChoice::Zenith
@@ -287,6 +299,7 @@ impl<'source> GuidedView<'source> {
                 | ExaltationChoice::Eclipse => {
                     self.bonus_points = 15;
                     self.bonus_points -= self.solar_attributes_bonus_points_spent();
+                    self.bonus_points -= self.solal_merits_bonus_points_spent();
                 }
             }
         } else {
@@ -579,10 +592,12 @@ impl<'source> GuidedView<'source> {
                 }
 
                 self.martial_arts_styles.as_mut().unwrap().insert(*id, style);
+                self.merit_dots += 4;
             }
             GuidedMutation::RemoveMartialArtsStyle(id) => {
                 if let Some(true) = self.martial_arts_styles.as_ref().map(|hashmap| hashmap.contains_key(id)) {
                     self.martial_arts_styles.as_mut().unwrap().remove(id);
+                    self.merit_dots -= 4;
                 } else {
                     return Err(GuidedError::CharacterMutationError(CharacterMutationError::RemoveMartialArtsStyleError(RemoveMartialArtsStyleError::NotFound)));
                 }

@@ -108,6 +108,7 @@ impl GuidedEventSource {
             character_view: CharacterView::default(),
             stage: GuidedStage::ChooseNameAndConcept,
             bonus_points: 0,
+            merit_dots: 0,
             exaltation_choice: None,
             solar_caste_abilities: None,
             solar_supernal_ability: None,
@@ -182,10 +183,8 @@ impl GuidedEventSource {
                         guided_view.martial_arts_styles = Some(HashMap::new());
                     }
 
-                    if let Some(style_map) = &mut guided_view.martial_arts_styles {
-                        style_map.insert(*id, style);
-                    }
-
+                    guided_view.martial_arts_styles.as_mut().unwrap().insert(*id, style);
+                    guided_view.merit_dots += 4;
                 }
                 GuidedMutation::RemoveMartialArtsStyle(id) => {
                     if guided_view.martial_arts_styles.is_none() {
@@ -193,6 +192,7 @@ impl GuidedEventSource {
                     }
 
                     guided_view.martial_arts_styles.as_mut().unwrap().remove(id);
+                    guided_view.merit_dots -= 4;
                 }
             }
         }
