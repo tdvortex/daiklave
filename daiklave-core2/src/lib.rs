@@ -3,16 +3,12 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
-use abilities::{
-    Abilities, AbilitiesView, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError,
-};
+use abilities::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 use attributes::SetAttributesError;
 use essence::{CommitMotesError, SpendMotesError};
 use essence::{RecoverMotesError, SetEssenceRatingError, UncommitMotesError};
-use exalt_type::{ExaltState, ExaltStateView};
 use id::{CharacterId, SetIdError};
 use name_and_concept::RemoveConceptError;
-use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 /// Contains the Id enum and a variety of specific Id subtypes, to be used as
@@ -34,10 +30,11 @@ pub use abilities::{AbilityName, AbilityNameVanilla};
 pub use attributes::{AttributeName, Attributes};
 pub use essence::CommittedMotesId;
 pub use essence::MotePool;
-use willpower::Willpower;
 
 mod abilities;
 mod attributes;
+mod character;
+mod character_view;
 mod essence;
 mod exalt_type;
 mod health;
@@ -45,64 +42,9 @@ mod name_and_concept;
 mod solar;
 mod willpower;
 
+pub use character::Character;
+pub use character_view::CharacterView;
 pub use health::{DamageLevel, Health, WoundPenalty};
-/// An owned instance of a full (player) character. This is the format used in
-/// serialization and deserialization.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Character {
-    id: CharacterId,
-    name: String,
-    concept: Option<String>,
-    exalt_state: ExaltState,
-    willpower: Willpower,
-    health: Health,
-    attributes: Attributes,
-    abilities: Abilities,
-}
-
-impl Default for Character {
-    fn default() -> Self {
-        Self {
-            id: Default::default(),
-            name: "New Character".to_owned(),
-            concept: Default::default(),
-            exalt_state: Default::default(),
-            willpower: Default::default(),
-            health: Default::default(),
-            attributes: Default::default(),
-            abilities: Default::default(),
-        }
-    }
-}
-
-/// A borrowed instance of a Character which references a CharacterEventSource
-/// object, using &str instead of String.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CharacterView<'source> {
-    id: CharacterId,
-    name: &'source str,
-    concept: Option<&'source str>,
-    exalt_state: ExaltStateView<'source>,
-    willpower: Willpower,
-    health: Health,
-    attributes: Attributes,
-    abilities: AbilitiesView<'source>,
-}
-
-impl<'source> Default for CharacterView<'source> {
-    fn default() -> Self {
-        Self {
-            id: Default::default(),
-            name: "New Character",
-            concept: Default::default(),
-            exalt_state: Default::default(),
-            willpower: Default::default(),
-            health: Default::default(),
-            attributes: Default::default(),
-            abilities: Default::default(),
-        }
-    }
-}
 
 /// The API for the character, expressed as an owned struct. Each mutation has
 /// an associated pub method on Character and CharacterEventSource which
@@ -155,188 +97,6 @@ pub enum CharacterMutation {
     AddSpecialty(AbilityNameVanilla, String),
     /// Removes a specialty from a non-Craft, non-Martial Arts ability.
     RemoveSpecialty(AbilityNameVanilla, String),
-}
-
-impl Character {
-    /// Checks if a specific CharacterMutation can be safely applied.
-    pub fn check_mutation(
-        &self,
-        mutation: &CharacterMutation,
-    ) -> Result<(), CharacterMutationError> {
-        match mutation {
-            CharacterMutation::SetId(id) => self.check_set_id(*id),
-            CharacterMutation::SetName(name) => self.check_set_name(name.as_str()),
-            CharacterMutation::SetConcept(concept) => self.check_set_concept(concept.as_str()),
-            CharacterMutation::RemoveConcept => self.check_remove_concept(),
-            CharacterMutation::SetMortal => self.check_set_mortal(),
-            CharacterMutation::SetSolar(solar_traits) => self.check_set_solar(solar_traits),
-            CharacterMutation::SpendMotes(first, amount) => self.check_spend_motes(*first, *amount),
-            CharacterMutation::CommitMotes(id, name, first, amount) => {
-                self.check_commit_motes(id, name, *first, *amount)
-            }
-            CharacterMutation::RecoverMotes(amount) => self.check_recover_motes(*amount),
-            CharacterMutation::UncommitMotes(id) => self.check_uncommit_motes(id),
-            CharacterMutation::SetEssenceRating(rating) => self.check_set_essence_rating(*rating),
-            CharacterMutation::SetCurrentWillpower(amount) => {
-                self.check_set_current_willpower(*amount)
-            }
-            CharacterMutation::SetWillpowerRating(dots) => self.check_set_willpower_rating(*dots),
-            CharacterMutation::SetWoundPenalties(wound_penalties) => {
-                self.check_set_wound_penalties(wound_penalties)
-            }
-            CharacterMutation::TakeDamage(damage_level, amount) => {
-                self.check_take_damage(*damage_level, *amount)
-            }
-            CharacterMutation::HealDamage(amount) => self.check_heal_damage(*amount),
-            CharacterMutation::SetAttribute(attribute_name, dots) => {
-                self.check_set_attribute(*attribute_name, *dots)
-            }
-            CharacterMutation::SetAbilityDots(ability_name, dots) => {
-                self.check_set_ability_dots(*ability_name, *dots)
-            }
-            CharacterMutation::AddSpecialty(ability_name, specialty) => {
-                self.check_add_specialty(*ability_name, specialty.as_str())
-            }
-            CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
-                self.check_remove_specialty(*ability_name, specialty.as_str())
-            }
-        }
-    }
-
-    /// Applies a specific CharacterMutation or returns an error.
-    pub fn apply_mutation(
-        &mut self,
-        mutation: &CharacterMutation,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_mutation(mutation)?;
-        match mutation {
-            CharacterMutation::SetId(id) => self.set_id(*id),
-            CharacterMutation::SetName(name) => self.set_name(name.as_str()),
-            CharacterMutation::SetConcept(concept) => self.set_concept(concept.as_str()),
-            CharacterMutation::RemoveConcept => self.remove_concept(),
-            CharacterMutation::SetMortal => self.set_mortal(),
-            CharacterMutation::SetSolar(solar_traits) => self.set_solar(solar_traits),
-            CharacterMutation::SpendMotes(first, amount) => self.spend_motes(*first, *amount),
-            CharacterMutation::CommitMotes(id, name, first, amount) => {
-                self.commit_motes(id, name, *first, *amount)
-            }
-            CharacterMutation::RecoverMotes(amount) => self.recover_motes(*amount),
-            CharacterMutation::UncommitMotes(id) => self.uncommit_motes(id),
-            CharacterMutation::SetEssenceRating(rating) => self.set_essence_rating(*rating),
-            CharacterMutation::SetCurrentWillpower(amount) => self.set_current_willpower(*amount),
-            CharacterMutation::SetWillpowerRating(dots) => self.set_willpower_rating(*dots),
-            CharacterMutation::SetWoundPenalties(wound_penalties) => {
-                self.set_wound_penalties(wound_penalties)
-            }
-            CharacterMutation::TakeDamage(damage_level, amount) => {
-                self.take_damage(*damage_level, *amount)
-            }
-            CharacterMutation::HealDamage(amount) => self.heal_damage(*amount),
-            CharacterMutation::SetAttribute(attribute_name, dots) => {
-                self.set_attribute(*attribute_name, *dots)
-            }
-            CharacterMutation::SetAbilityDots(ability_name, dots) => {
-                self.set_ability_dots(*ability_name, *dots)
-            }
-            CharacterMutation::AddSpecialty(ability_name, specialty) => {
-                self.add_specialty(*ability_name, specialty.as_str())
-            }
-            CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
-                self.remove_specialty(*ability_name, specialty.as_str())
-            }
-        }
-    }
-}
-
-impl<'source> CharacterView<'source> {
-    /// Checks if a specific CharacterMutation can be safely applied.
-    pub fn check_mutation(
-        &self,
-        mutation: &CharacterMutation,
-    ) -> Result<(), CharacterMutationError> {
-        match mutation {
-            CharacterMutation::SetId(id) => self.check_set_id(*id),
-            CharacterMutation::SetName(name) => self.check_set_name(name.as_str()),
-            CharacterMutation::SetConcept(concept) => self.check_set_concept(concept.as_str()),
-            CharacterMutation::RemoveConcept => self.check_remove_concept(),
-            CharacterMutation::SetMortal => self.check_set_mortal(),
-            CharacterMutation::SetSolar(solar_traits) => self.check_set_solar(solar_traits),
-            CharacterMutation::SpendMotes(first, amount) => self.check_spend_motes(*first, *amount),
-            CharacterMutation::CommitMotes(id, name, first, amount) => {
-                self.check_commit_motes(id, name, *first, *amount)
-            }
-            CharacterMutation::RecoverMotes(amount) => self.check_recover_motes(*amount),
-            CharacterMutation::UncommitMotes(id) => self.check_uncommit_motes(id),
-            CharacterMutation::SetEssenceRating(rating) => self.check_set_essence_rating(*rating),
-            CharacterMutation::SetCurrentWillpower(amount) => {
-                self.check_set_current_willpower(*amount)
-            }
-            CharacterMutation::SetWillpowerRating(dots) => self.check_set_willpower_rating(*dots),
-            CharacterMutation::SetWoundPenalties(wound_penalties) => {
-                self.check_set_wound_penalties(wound_penalties)
-            }
-            CharacterMutation::TakeDamage(damage_level, amount) => {
-                self.check_take_damage(*damage_level, *amount)
-            }
-            CharacterMutation::HealDamage(amount) => self.check_heal_damage(*amount),
-            CharacterMutation::SetAttribute(attribute_name, dots) => {
-                self.check_set_attribute(*attribute_name, *dots)
-            }
-            CharacterMutation::SetAbilityDots(ability_name, dots) => {
-                self.check_set_ability_dots(*ability_name, *dots)
-            }
-            CharacterMutation::AddSpecialty(ability_name, specialty) => {
-                self.check_add_specialty(*ability_name, specialty.as_str())
-            }
-            CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
-                self.check_remove_specialty(*ability_name, specialty.as_str())
-            }
-        }
-    }
-
-    /// Applies a specific CharacterMutation or returns an error.
-    pub fn apply_mutation(
-        &mut self,
-        mutation: &'source CharacterMutation,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_mutation(mutation)?;
-        match mutation {
-            CharacterMutation::SetId(id) => self.set_id(*id),
-            CharacterMutation::SetName(name) => self.set_name(name.as_str()),
-            CharacterMutation::SetConcept(concept) => self.set_concept(concept.as_str()),
-            CharacterMutation::RemoveConcept => self.remove_concept(),
-            CharacterMutation::SetMortal => self.set_mortal(),
-            CharacterMutation::SetSolar(solar_traits) => self.set_solar(solar_traits),
-            CharacterMutation::SpendMotes(first, amount) => self.spend_motes(*first, *amount),
-            CharacterMutation::CommitMotes(id, name, first, amount) => {
-                self.commit_motes(id, name, *first, *amount)
-            }
-            CharacterMutation::RecoverMotes(amount) => self.recover_motes(*amount),
-            CharacterMutation::UncommitMotes(id) => self.uncommit_motes(id),
-            CharacterMutation::SetEssenceRating(rating) => self.set_essence_rating(*rating),
-            CharacterMutation::SetCurrentWillpower(amount) => self.set_current_willpower(*amount),
-            CharacterMutation::SetWillpowerRating(dots) => self.set_willpower_rating(*dots),
-            CharacterMutation::SetWoundPenalties(wound_penalties) => {
-                self.set_wound_penalties(wound_penalties)
-            }
-            CharacterMutation::TakeDamage(damage_level, amount) => {
-                self.take_damage(*damage_level, *amount)
-            }
-            CharacterMutation::HealDamage(amount) => self.heal_damage(*amount),
-            CharacterMutation::SetAttribute(attribute_name, dots) => {
-                self.set_attribute(*attribute_name, *dots)
-            }
-            CharacterMutation::SetAbilityDots(ability_name, dots) => {
-                self.set_ability_dots(*ability_name, *dots)
-            }
-            CharacterMutation::AddSpecialty(ability_name, specialty) => {
-                self.add_specialty(*ability_name, specialty.as_str())
-            }
-            CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
-                self.remove_specialty(*ability_name, specialty.as_str())
-            }
-        }
-    }
 }
 
 /// An error representing something that could go wrong with a

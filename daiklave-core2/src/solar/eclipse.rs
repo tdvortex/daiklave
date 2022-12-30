@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::AbilityName;
 
-use super::SolarBuilderError;
+use super::builder::SolarBuilderError;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash, PartialOrd, Ord)]
 pub(crate) enum EclipseAbility {
