@@ -17,7 +17,7 @@ pub use error::{
     CommitMotesError, RecoverMotesError, SetEssenceRatingError, SpendMotesError, UncommitMotesError,
 };
 
-pub(crate) use essence_view::EssenceView;
+pub(crate) use essence_view::{EssenceView, MotesView};
 
 /// The current state of a character's Essence and motes.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

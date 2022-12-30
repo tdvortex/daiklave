@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, HashMap};
 
 use serde::{Deserialize, Serialize};
 
@@ -22,7 +22,7 @@ pub use zenith::{Zenith, ZenithBuilder};
 use crate::{
     abilities::AbilityName,
     exalt_state::{
-        exalt::{Exalt, ExaltView},
+        exalt::{Exalt, ExaltView, essence::{Essence, Motes, MoteState, EssenceView, MotesView}},
         ExaltState, ExaltStateView,
     },
     guided::ExaltationChoice,
@@ -69,6 +69,37 @@ impl Solar {
     /// ability.
     pub fn has_favored_ability(&self, ability: AbilityName) -> bool {
         self.favored_abilities.iter().any(|&a| a == ability)
+    }
+
+    pub(crate) fn as_view(&self) -> SolarView {
+        let caste = match &self.caste {
+            SolarCaste::Dawn(dawn) => SolarCasteView::Dawn(DawnView {
+                caste_not_supernal: dawn.caste_not_supernal,
+                supernal: dawn.supernal,
+            }),
+            SolarCaste::Zenith(zenith) => SolarCasteView::Zenith(ZenithView {
+                caste_not_supernal: zenith.caste_not_supernal,
+                supernal: zenith.supernal,
+            }),
+            SolarCaste::Twilight(twilight) => SolarCasteView::Twilight(TwilightView {
+                caste_not_supernal: twilight.caste_not_supernal,
+                supernal: twilight.supernal,
+            }),
+            SolarCaste::Night(night) => SolarCasteView::Night(NightView {
+                caste_not_supernal: night.caste_not_supernal,
+                supernal: night.supernal,
+            }),
+            SolarCaste::Eclipse(eclipse) => SolarCasteView::Eclipse(EclipseView {
+                caste_not_supernal: eclipse.caste_not_supernal,
+                supernal: eclipse.supernal,
+            }),
+        };
+        let favored_abilities = self.favored_abilities;
+
+        SolarView {
+            caste,
+            favored_abilities,
+        }
     }
 }
 
@@ -146,7 +177,32 @@ impl ExaltState {
     }
 
     pub fn set_solar(&mut self, solar: &Solar) -> Result<&mut Self, CharacterMutationError> {
-        todo!()
+        if self.is_solar() {
+            return Ok(self);
+        }
+
+        match self {
+            ExaltState::Mortal(mortal) => {
+                // Default to essence 1
+                // Preserve martial arts styles, with empty Charms set
+                *self = Self::Exalt(Exalt { 
+                    essence: Essence::new_solar(1), 
+                    martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles).into_iter().map(|(id, mortal_artist)| (id, mortal_artist.into())).collect(), 
+                    exalt_type: ExaltType::Solar(solar.clone())
+                })
+            }
+            ExaltState::Exalt(exalt) => {
+                // Preserve essence rating
+                // Preserve martial arts styles (including charms)
+                *self = Self::Exalt(Exalt {
+                    essence: Essence::new_solar(exalt.essence().rating()),
+                    martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles),
+                    exalt_type: ExaltType::Solar(solar.clone()),
+                });
+            }
+        }
+
+        Ok(self)
     }
 }
 
@@ -175,36 +231,32 @@ impl<'source> ExaltStateView<'source> {
         &mut self,
         solar: &'source Solar,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let caste = match &solar.caste {
-            SolarCaste::Dawn(dawn) => SolarCasteView::Dawn(DawnView {
-                caste_not_supernal: dawn.caste_not_supernal,
-                supernal: dawn.supernal,
-            }),
-            SolarCaste::Zenith(zenith) => SolarCasteView::Zenith(ZenithView {
-                caste_not_supernal: zenith.caste_not_supernal,
-                supernal: zenith.supernal,
-            }),
-            SolarCaste::Twilight(twilight) => SolarCasteView::Twilight(TwilightView {
-                caste_not_supernal: twilight.caste_not_supernal,
-                supernal: twilight.supernal,
-            }),
-            SolarCaste::Night(night) => SolarCasteView::Night(NightView {
-                caste_not_supernal: night.caste_not_supernal,
-                supernal: night.supernal,
-            }),
-            SolarCaste::Eclipse(eclipse) => SolarCasteView::Eclipse(EclipseView {
-                caste_not_supernal: eclipse.caste_not_supernal,
-                supernal: eclipse.supernal,
-            }),
-        };
-        let favored_abilities = solar.favored_abilities;
+        if self.is_solar() {
+            return Ok(self);
+        }
 
-        let solar_traits_view = SolarView {
-            caste,
-            favored_abilities,
-        };
+        match self {
+            ExaltStateView::Mortal(mortal) => {
+                // Default to essence 1
+                // Preserve martial arts styles, with empty Charms set
+                *self = Self::Exalted(ExaltView { 
+                    essence: EssenceView::new_solar(1), 
+                    martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles).into_iter().map(|(id, mortal_artist)| (id, mortal_artist.into())).collect(), 
+                    exalt_type: ExaltTypeView::Solar(solar.as_view())
+                })
+            }
+            ExaltStateView::Exalted(exalt) => {
+                // Preserve essence rating
+                // Preserve martial arts styles (including charms)
+                *self = Self::Exalted(ExaltView {
+                    essence: EssenceView::new_solar(exalt.essence().rating()),
+                    martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles),
+                    exalt_type: ExaltTypeView::Solar(solar.as_view()),
+                });
+            }
+        }
 
-        todo!()
+        Ok(self)
     }
 }
 
@@ -275,4 +327,42 @@ pub(crate) fn validate_solar_caste_ability(
             | (ExaltationChoice::Eclipse, AbilityName::Sail)
             | (ExaltationChoice::Eclipse, AbilityName::Socialize)
     )
+}
+
+impl Essence {
+    pub(crate) fn new_solar(rating: u8) -> Self {
+        Self {
+            rating,
+            motes: Motes {
+                peripheral: MoteState {
+                    available: rating * 7 + 26,
+                    spent: 0,
+                },
+                personal: MoteState {
+                    available: rating * 3 + 10,
+                    spent: 0,
+                },
+                commitments: HashMap::new(),
+            }
+        }
+    }
+}
+
+impl<'source> EssenceView<'source> {
+    pub(crate) fn new_solar(rating: u8) -> Self {
+        Self {
+            rating,
+            motes: MotesView {
+                peripheral: MoteState {
+                    available: rating * 7 + 26,
+                    spent: 0,
+                },
+                personal: MoteState {
+                    available: rating * 3 + 10,
+                    spent: 0,
+                },
+                commitments: HashMap::new(),
+            }
+        }
+    }
 }

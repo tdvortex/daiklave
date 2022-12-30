@@ -89,10 +89,30 @@ pub(crate) struct MortalMartialArtist {
     ability: Ability,
 }
 
+impl From<MortalMartialArtist> for ExaltMartialArtist {
+    fn from(mortal_artist: MortalMartialArtist) -> Self {
+        Self {
+            style: mortal_artist.style,
+            ability: mortal_artist.ability,
+            charms: HashMap::new(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MortalMartialArtistView<'source> {
     style: &'source MartialArtsStyle,
     ability: AbilityView<'source>,
+}
+
+impl<'source> From<MortalMartialArtistView<'source>> for ExaltMartialArtistView<'source> {
+    fn from(mortal_artist: MortalMartialArtistView<'source>) -> Self {
+        Self {
+            style: mortal_artist.style,
+            ability: mortal_artist.ability,
+            charms: HashMap::new(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
