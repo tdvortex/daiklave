@@ -1,5 +1,5 @@
 use crate::{
-    abilities::AbilitiesView, exalt_type::ExaltStateView, id::CharacterId, willpower::Willpower,
+    abilities::AbilitiesView, exalt_type::ExaltStateView, willpower::Willpower,
     Attributes, CharacterMutation, CharacterMutationError, Health,
 };
 
@@ -7,7 +7,6 @@ use crate::{
 /// object, using &str instead of String.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CharacterView<'source> {
-    pub(crate) id: CharacterId,
     pub(crate) name: &'source str,
     pub(crate) concept: Option<&'source str>,
     pub(crate) exalt_state: ExaltStateView<'source>,
@@ -20,7 +19,6 @@ pub struct CharacterView<'source> {
 impl<'source> Default for CharacterView<'source> {
     fn default() -> Self {
         Self {
-            id: Default::default(),
             name: "New Character",
             concept: Default::default(),
             exalt_state: Default::default(),
@@ -39,7 +37,6 @@ impl<'source> CharacterView<'source> {
         mutation: &CharacterMutation,
     ) -> Result<(), CharacterMutationError> {
         match mutation {
-            CharacterMutation::SetId(id) => self.check_set_id(*id),
             CharacterMutation::SetName(name) => self.check_set_name(name.as_str()),
             CharacterMutation::SetConcept(concept) => self.check_set_concept(concept.as_str()),
             CharacterMutation::RemoveConcept => self.check_remove_concept(),
@@ -85,7 +82,6 @@ impl<'source> CharacterView<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_mutation(mutation)?;
         match mutation {
-            CharacterMutation::SetId(id) => self.set_id(*id),
             CharacterMutation::SetName(name) => self.set_name(name.as_str()),
             CharacterMutation::SetConcept(concept) => self.set_concept(concept.as_str()),
             CharacterMutation::RemoveConcept => self.remove_concept(),

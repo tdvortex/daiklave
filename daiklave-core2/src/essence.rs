@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{id::Id, CharacterMutationError};
+use crate::{id::UniqueId, CharacterMutationError};
 
 mod character;
 mod character_view;
@@ -83,10 +83,10 @@ pub(crate) struct MoteCommitmentView<'source> {
 
 /// A unique identifier for a mote commitment effect.
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, Serialize, Deserialize)]
-pub struct CommittedMotesId(pub Id);
+pub struct CommittedMotesId(pub UniqueId);
 
 impl Deref for CommittedMotesId {
-    type Target = Id;
+    type Target = UniqueId;
 
     fn deref(&self) -> &Self::Target {
         &self.0

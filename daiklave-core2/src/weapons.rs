@@ -1,12 +1,12 @@
 use std::ops::Deref;
 
-use crate::id::Id;
+use crate::id::UniqueId;
 
-#[derive(Debug, Default, PartialEq, Eq, Clone, Copy, Hash)]
-pub struct WeaponId(pub Id);
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+pub struct WeaponId(pub UniqueId);
 
 impl Deref for WeaponId {
-    type Target = Id;
+    type Target = UniqueId;
 
     fn deref(&self) -> &Self::Target {
         &self.0

@@ -7,7 +7,7 @@ use crate::{AbilityNameVanilla, Character, CharacterMutationError};
 use super::error::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-enum Ability {
+pub(crate) enum Ability {
     Zero,
     NonZero(u8, HashSet<String>),
 }

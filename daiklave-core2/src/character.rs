@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abilities::Abilities, exalt_type::ExaltState, id::CharacterId, willpower::Willpower,
+    abilities::Abilities, exalt_type::ExaltState, willpower::Willpower,
     Attributes, CharacterMutation, CharacterMutationError, Health,
 };
 
@@ -9,7 +9,6 @@ use crate::{
 /// serialization and deserialization.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Character {
-    pub(crate) id: CharacterId,
     pub(crate) name: String,
     pub(crate) concept: Option<String>,
     pub(crate) exalt_state: ExaltState,
@@ -22,7 +21,6 @@ pub struct Character {
 impl Default for Character {
     fn default() -> Self {
         Self {
-            id: Default::default(),
             name: "New Character".to_owned(),
             concept: Default::default(),
             exalt_state: Default::default(),
@@ -41,7 +39,6 @@ impl Character {
         mutation: &CharacterMutation,
     ) -> Result<(), CharacterMutationError> {
         match mutation {
-            CharacterMutation::SetId(id) => self.check_set_id(*id),
             CharacterMutation::SetName(name) => self.check_set_name(name.as_str()),
             CharacterMutation::SetConcept(concept) => self.check_set_concept(concept.as_str()),
             CharacterMutation::RemoveConcept => self.check_remove_concept(),
@@ -87,7 +84,6 @@ impl Character {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_mutation(mutation)?;
         match mutation {
-            CharacterMutation::SetId(id) => self.set_id(*id),
             CharacterMutation::SetName(name) => self.set_name(name.as_str()),
             CharacterMutation::SetConcept(concept) => self.set_concept(concept.as_str()),
             CharacterMutation::RemoveConcept => self.remove_concept(),

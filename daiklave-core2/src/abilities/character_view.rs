@@ -5,7 +5,7 @@ use crate::{AbilityNameVanilla, CharacterMutationError, CharacterView};
 use super::error::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-enum AbilityView<'source> {
+pub(crate) enum AbilityView<'source> {
     Zero,
     NonZero(u8, HashSet<&'source str>),
 }

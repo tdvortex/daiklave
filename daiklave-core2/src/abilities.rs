@@ -3,6 +3,8 @@ mod character_view;
 mod error;
 
 pub use character::Abilities;
+pub(crate) use character::Ability;
+pub(crate) use character_view::AbilityView;
 pub use character_view::AbilitiesView;
 pub use error::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 use serde::{Deserialize, Serialize};

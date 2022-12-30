@@ -7,7 +7,6 @@ use abilities::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 use attributes::SetAttributesError;
 use essence::{CommitMotesError, SpendMotesError};
 use essence::{RecoverMotesError, SetEssenceRatingError, UncommitMotesError};
-use id::{CharacterId, SetIdError};
 use name_and_concept::RemoveConceptError;
 use thiserror::Error;
 
@@ -62,8 +61,6 @@ pub use health::{DamageLevel, Health, WoundPenalty};
 ///  a "check_" variant which returns Result<(), CharacterMutationError>.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CharacterMutation {
-    /// Set the Character's Id.
-    SetId(CharacterId),
     /// Set the Character's name
     SetName(String),
     /// Set the Character's concept
@@ -113,9 +110,6 @@ pub enum CharacterMutation {
 /// CharacterMutation.
 #[derive(Debug, Error)]
 pub enum CharacterMutationError {
-    /// Error occurring while trying to set CharacterId
-    #[error("Cannot set character Id")]
-    SetIdError(#[from] SetIdError),
     /// Error occurring while trying to remove concept
     #[error("Cannot remove character concept")]
     RemoveConceptError(#[from] RemoveConceptError),

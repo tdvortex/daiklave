@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{abilities::AbilityName, id::CharacterId, CharacterMutation, CharacterView, martial_arts::{MartialArtsStyleId, MartialArtsStyle}};
+use crate::{abilities::AbilityName, CharacterMutation, CharacterView, martial_arts::{MartialArtsStyleId, MartialArtsStyle}};
 
 use self::{
     error::{GuidedError, SolarAbilityError},
@@ -11,11 +11,9 @@ mod error;
 mod guided_view;
 
 /// Initiates a new guided character builder.
-pub fn begin_guided_builder(id: CharacterId) -> GuidedEventSource {
+pub fn begin_guided_builder() -> GuidedEventSource {
     GuidedEventSource {
-        history: vec![GuidedMutation::CharacterMutation(CharacterMutation::SetId(
-            id,
-        ))],
+        history: Vec::new(),
         future: Vec::new(),
     }
 }
