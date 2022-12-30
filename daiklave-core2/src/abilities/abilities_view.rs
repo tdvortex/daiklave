@@ -31,7 +31,7 @@ pub struct AbilitiesView<'source> {
 }
 
 impl<'source> AbilitiesView<'source> {
-    pub fn ability(&self, ability_name: AbilityNameVanilla) -> &AbilityView {
+    pub(crate) fn ability(&self, ability_name: AbilityNameVanilla) -> &AbilityView {
         match ability_name {
             AbilityNameVanilla::Archery => &self.archery,
             AbilityNameVanilla::Athletics => &self.athletics,
@@ -60,7 +60,7 @@ impl<'source> AbilitiesView<'source> {
         }
     }
 
-    pub fn ability_mut(&mut self, ability_name: AbilityNameVanilla) -> &mut AbilityView<'source> {
+    pub(crate) fn ability_mut(&mut self, ability_name: AbilityNameVanilla) -> &mut AbilityView<'source> {
         match ability_name {
             AbilityNameVanilla::Archery => &mut self.archery,
             AbilityNameVanilla::Athletics => &mut self.athletics,

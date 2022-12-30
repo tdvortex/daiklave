@@ -19,6 +19,7 @@ pub use error::{
 
 pub(crate) use essence_view::{EssenceView};
 
+/// The current state of a character's Essence and motes.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Essence {
     pub(crate) rating: u8,
@@ -26,19 +27,23 @@ pub struct Essence {
 }
 
 impl Essence {
+    /// The chacter's Essence dot rating.
     pub fn rating(&self) -> u8 {
         self.rating
     }
 
+    /// The character's current mote pool state.
     pub fn motes(&self) -> &Motes {
         &self.motes
     }
 
-    pub fn motes_mut(&mut self) -> &mut Motes {
+    pub(crate) fn motes_mut(&mut self) -> &mut Motes {
         &mut self.motes
     }
 }
 
+/// The current state of a character's mote balances. Includes both peripheral
+/// and personal mote pools, as well as commitments from both.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Motes {
     pub(crate) peripheral: MoteState,
@@ -47,22 +52,26 @@ pub struct Motes {
 }
 
 impl Motes {
+    /// The character's current available and spent peripheral motes. 
     pub fn peripheral(&self) -> &MoteState {
         &self.peripheral
     }
 
-    pub fn peripheral_mut(&mut self) -> &mut MoteState {
+    pub(crate) fn peripheral_mut(&mut self) -> &mut MoteState {
         &mut self.peripheral
     }
 
+    /// The character's current available and spent personal motes. 
     pub fn personal(&self) -> &MoteState {
         &self.personal
     }
 
-    pub fn personal_mut(&mut self) -> &mut MoteState {
+    pub(crate) fn personal_mut(&mut self) -> &mut MoteState {
         &mut self.personal
     }
 
+    /// An iterator over the character's current mote commitments, structured
+    /// as (id, name, peripheral committed, personal committed).
     pub fn committed(&self) -> impl Iterator<Item = (CommittedMotesId, &str, u8, u8)> {
         self.commitments
             .iter()
@@ -89,6 +98,7 @@ pub enum MotePool {
     Personal,
 }
 
+/// The available and spent motes from either a peripheral or personal pool.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub struct MoteState {
     pub(crate) available: u8,
@@ -96,10 +106,12 @@ pub struct MoteState {
 }
 
 impl MoteState {
+    /// The available motes from the specific pool.
     pub fn available(&self) -> u8 {
         self.available
     }
 
+    /// The spent (but not committed) motes from the specific pool.
     pub fn spent(&self) -> u8 {
         self.spent
     }

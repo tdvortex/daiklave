@@ -1,4 +1,8 @@
+/// Structs and methods related to the Essence rating and mote pools for a 
+/// character.
 pub mod essence;
+
+/// Structs and methods related to various Exalt subtypes (Solar, Lunar, etc).
 pub mod exalt_type;
 use std::collections::HashMap;
 

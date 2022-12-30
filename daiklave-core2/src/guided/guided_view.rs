@@ -562,8 +562,6 @@ impl<'source> GuidedView<'source> {
                     return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
                 }
             }
-            GuidedMutation::AddMartialArtsStyle(id, style) => todo!(),
-            GuidedMutation::RemoveMartialArtsStyle(id) => todo!(),
         }
 
         if self.bonus_points < 0 {

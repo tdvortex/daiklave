@@ -11,19 +11,24 @@ use martial_arts::{MartialArtsStyleId, MartialArtsStyle};
 use name_and_concept::RemoveConceptError;
 use thiserror::Error;
 
+/// Structs related to a character's Abilities (skills) and specialties.
 pub mod abilities;
 
 /// Official page references.
 pub mod book_reference;
 
+/// Resources that are common across multiple types of Charms. Individual Charm
+/// type definitions are recorded separately.
 pub mod charms;
 
+/// Traits which depend on being Mortal or Exalted.
 pub mod exalt_state;
 
 /// A character builder with additional logic for bonus points, free starting
 /// dots, and other constraints.
 pub mod guided;
 
+/// The Health struct and methods related to damage and healing.
 pub mod health;
 
 /// Contains the Id enum and a variety of specific Id subtypes, to be used as
@@ -96,7 +101,12 @@ pub enum CharacterMutation {
     AddSpecialty(AbilityNameVanilla, String),
     /// Removes a specialty from a non-Craft, non-Martial Arts ability.
     RemoveSpecialty(AbilityNameVanilla, String),
+    /// Adds a Martial Arts style to a character. This purchases the 
+    /// MartialArtist merit for the style, but does not grant any Martial Arts
+    /// dots or Martial Arts charms.
     AddMartialArtsStyle(MartialArtsStyleId, MartialArtsStyle),
+    /// Removes a Martial Arts style from a character, including the merit, 
+    /// associated ability dots, specialties, and Charms.
     RemoveMartialArtsStyle(MartialArtsStyleId),
 }
 

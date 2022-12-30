@@ -44,44 +44,32 @@ impl MartialArtsStyle {
         }
     }
 
+    /// The page reference for the style (if any).
     pub fn book_reference(&self) -> Option<BookReference> {
         self.book_reference
     }
 
+    /// The style's name.
     pub fn name(&self) -> &str {
         self.name.as_str()
     }
 
+    /// The style's description.
     pub fn description(&self) -> &str {
         self.description.as_str()
     }
 
+    /// A list of weapon ids, which may be either mortal weapons (e.g. sword)
+    /// or base artifact weapons (e.g. daiklave), usable by the style.
     pub fn usable_weapon_ids(&self) -> impl Iterator<Item = WeaponId> + '_ {
         self.usable_weapons.iter().copied()
     }
 
+    /// The maximum weight of armor which may be worn with the style, or None
+    /// if incompatible with armor.
     pub fn max_armor_weight(&self) -> Option<ArmorWeight> {
         self.max_armor_weight
     }
-
-    pub fn as_view(&self) -> MartialArtsStyleView {
-        MartialArtsStyleView { 
-            book_reference: self.book_reference(),
-            name: self.name(),
-            description: self.description(),
-            usable_weapons: self.usable_weapon_ids().collect(),
-            max_armor_weight: self.max_armor_weight(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct MartialArtsStyleView<'source> {
-    book_reference: Option<BookReference>,
-    name: &'source str,
-    description: &'source str,
-    usable_weapons: HashSet<WeaponId>,
-    max_armor_weight: Option<ArmorWeight>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -92,7 +80,7 @@ pub(crate) struct MortalMartialArtist {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MortalMartialArtistView<'source> {
-    style: MartialArtsStyleView<'source>,
+    style: &'source MartialArtsStyle,
     ability: AbilityView<'source>,
 }
 
@@ -105,9 +93,9 @@ pub(crate) struct ExaltMartialArtist {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ExaltMartialArtistView<'source> {
-    style: MartialArtsStyleView<'source>,
+    style: &'source MartialArtsStyle,
     ability: AbilityView<'source>,
-    charms: HashMap<MartialArtsCharmId, MartialArtsCharmView<'source>>,
+    charms: HashMap<MartialArtsCharmId, &'source MartialArtsCharm>,
 }
 
 /// A unique identifier for a Martial Arts Charm.
@@ -122,6 +110,7 @@ impl Deref for MartialArtsCharmId {
     }
 }
 
+/// A Martial Arts charm.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MartialArtsCharm {
     style: MartialArtsStyleId,
@@ -138,27 +127,13 @@ pub struct MartialArtsCharm {
     duration: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct MartialArtsCharmView<'source> {
-    style: MartialArtsStyleId,
-    book_reference: Option<BookReference>,
-    name: &'source str,
-    summary: Option<&'source str>,
-    description: &'source str,
-    essence_required: u8,
-    ability_required: u8,
-    charms_required: Vec<MartialArtsCharmId>,
-    keywords: Vec<CharmKeyword>,
-    costs: Vec<CharmCost>,
-    action_type: Vec<CharmActionType>,
-    duration: &'source str,
-}
-
 impl<'source> CharacterView<'source> {
+    /// Checks if a Martial Arts style can be added to the character.
     pub fn check_add_martial_arts_style(&self, id: MartialArtsStyleId, style: &MartialArtsStyle) -> Result<(), CharacterMutationError> {
         todo!()
     }
 
+    /// Checks if a Martial Arts style can be added to the character.
     pub fn add_martial_arts_style(&mut self, id: MartialArtsStyleId, style: &MartialArtsStyle) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }

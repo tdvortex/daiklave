@@ -1,6 +1,10 @@
 use serde::{Serialize, Deserialize};
 
+/// Traits common to all Exalts
 pub mod exalt;
+
+/// Traits which are unique to mortals (or which function differently without
+///  Essence)
 pub mod mortal;
 use exalt::{Exalt, ExaltView};
 use mortal::{Mortal, MortalView};

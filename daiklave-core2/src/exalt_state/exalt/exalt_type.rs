@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+/// Solar Exalted, chosen of the Unconquered Sun.
 pub mod solar;
 use solar::{Solar, SolarView};
 
