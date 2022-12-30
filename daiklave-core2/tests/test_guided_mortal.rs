@@ -239,6 +239,6 @@ fn test_guided_mortal() {
 
     // Move on to the next stage
     let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSorcery);
-    assert!(guided_builder.check_mutation(&mutation).is_ok());
+    guided_builder.check_mutation(&mutation).unwrap();
     assert!(guided_builder.apply_mutation(mutation).is_ok());
 }

@@ -381,7 +381,8 @@ impl<'source> GuidedView<'source> {
 
                 match (self.stage, next_stage) {
                     (GuidedStage::ChooseNameAndConcept, GuidedStage::ChooseExaltation)
-                    | (GuidedStage::ChooseExaltation, GuidedStage::ChooseAttributes) => Ok(()),
+                    | (GuidedStage::ChooseExaltation, GuidedStage::ChooseAttributes) 
+                    | (GuidedStage::ChooseMartialArtsStyles, GuidedStage::ChooseSorcery) => Ok(()),
                     (GuidedStage::ChooseAttributes, GuidedStage::ChooseMartialArtsStyles) => {
                         if matches!(self.exaltation_choice, Some(ExaltationChoice::Mortal)) {
                             Ok(())
