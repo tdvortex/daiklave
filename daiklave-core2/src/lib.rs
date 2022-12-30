@@ -13,7 +13,7 @@ use exalt_state::exalt::{
     exalt_type::solar::Solar,
 };
 use health::{DamageLevel, WoundPenalty};
-use martial_arts::{MartialArtsStyle, MartialArtsStyleId};
+use martial_arts::{MartialArtsStyle, MartialArtsStyleId, AddMartialArtsStyleError};
 use name_and_concept::RemoveConceptError;
 use thiserror::Error;
 
@@ -150,6 +150,9 @@ pub enum CharacterMutationError {
     /// Error occurring while trying to remove a specialty
     #[error("Cannot remove specialty")]
     RemoveSpecialtyError(#[from] RemoveSpecialtyError),
+    /// Error occuring while trying to add a Martial Arts style
+    #[error("Cannot add Martial Arts style")]
+    AddMartialArtsStyleError(#[from] AddMartialArtsStyleError),
 }
 
 /// A container to hold a successfully applied sequence of mutations, with
