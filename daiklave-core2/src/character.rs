@@ -77,7 +77,9 @@ impl Character {
             CharacterMutation::AddMartialArtsStyle(id, style) => {
                 self.check_add_martial_arts_style(*id, style)
             }
-            CharacterMutation::RemoveMartialArtsStyle(_) => todo!(),
+            CharacterMutation::RemoveMartialArtsStyle(id) => {
+                self.check_remove_martial_arts_style(*id)
+            }
         }
     }
 
@@ -124,7 +126,9 @@ impl Character {
             CharacterMutation::AddMartialArtsStyle(id, style) => {
                 self.add_martial_arts_style(*id, style)
             }
-            CharacterMutation::RemoveMartialArtsStyle(_) => todo!(),
+            CharacterMutation::RemoveMartialArtsStyle(id) => {
+                self.remove_martial_arts_style(*id)
+            }
         }
     }
 }

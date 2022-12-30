@@ -189,6 +189,15 @@ pub enum AddMartialArtsStyleError {
     DuplicateStyle,
 }
 
+/// An error when tryng to remove a Martial Arts style from a character.
+#[derive(Debug, Error)]
+pub enum RemoveMartialArtsStyleError {
+    /// Can't remove a missing style
+    #[error("Style not found")]
+    NotFound,
+}
+
+
 impl<'source> CharacterView<'source> {
     /// Checks if a Martial Arts style can be added to the character.
     pub fn check_add_martial_arts_style(
@@ -203,7 +212,7 @@ impl<'source> CharacterView<'source> {
         self.exalt_state.check_add_martial_arts_style(id, style)
     }
 
-    /// Checks if a Martial Arts style can be added to the character.
+    /// Adds a Martial Arts style to the character.
     pub fn add_martial_arts_style(
         &mut self,
         id: MartialArtsStyleId,
@@ -212,6 +221,17 @@ impl<'source> CharacterView<'source> {
         self.check_add_martial_arts_style(id, style)?;
         self.exalt_state.add_martial_arts_style(id, style)?;
 
+        Ok(self)
+    }
+
+    /// Checks if a Martial Arts style can be removed from the character.
+    pub fn check_remove_martial_arts_style(&self, id: MartialArtsStyleId) -> Result<(), CharacterMutationError> {
+        self.exalt_state.check_remove_martial_arts_style(id)
+    }
+
+    /// Removes a Martial Arts style from the character.
+    pub fn remove_martial_arts_style(&mut self, id: MartialArtsStyleId) -> Result<&mut Self, CharacterMutationError> {
+        self.exalt_state.remove_martial_arts_style(id)?;
         Ok(self)
     }
 }
@@ -228,6 +248,22 @@ impl<'source> ExaltStateView<'source> {
         match self {
             ExaltStateView::Mortal(mortal) => {mortal.add_martial_arts_style(id, style)?;}
             ExaltStateView::Exalt(exalt) => {exalt.add_martial_arts_style(id, style)?;}
+        }
+        Ok(self)
+    }
+
+
+    pub(crate) fn check_remove_martial_arts_style(&self, id: MartialArtsStyleId) -> Result<(), CharacterMutationError> {
+        match self {
+            ExaltStateView::Mortal(mortal) => mortal.check_remove_martial_arts_style(id),
+            ExaltStateView::Exalt(exalt) => exalt.check_remove_martial_arts_style(id),
+        }
+    }
+
+    pub(crate) fn remove_martial_arts_style(&mut self, id: MartialArtsStyleId) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            ExaltStateView::Mortal(mortal) => {mortal.remove_martial_arts_style(id)?;}
+            ExaltStateView::Exalt(exalt) => {exalt.remove_martial_arts_style(id)?;}
         }
         Ok(self)
     }
@@ -250,6 +286,22 @@ impl<'source> MortalView<'source> {
         });
         Ok(self)
     }
+
+
+    pub(crate) fn check_remove_martial_arts_style(&self, id: MartialArtsStyleId) -> Result<(), CharacterMutationError> {
+        if self.martial_arts_styles.contains_key(&id) {
+            Err(CharacterMutationError::RemoveMartialArtsStyleError(RemoveMartialArtsStyleError::NotFound))
+        } else {
+            Ok(())
+        }
+    }
+
+    pub(crate) fn remove_martial_arts_style(&mut self, id: MartialArtsStyleId) -> Result<&mut Self, CharacterMutationError> {
+        self.check_remove_martial_arts_style(id)?;
+        self.martial_arts_styles.remove(&id);
+        Ok(self)
+
+    }
 }
 
 impl<'source> ExaltView<'source> {
@@ -270,6 +322,21 @@ impl<'source> ExaltView<'source> {
         });
         Ok(self)
     }
+
+    pub(crate) fn check_remove_martial_arts_style(&self, id: MartialArtsStyleId) -> Result<(), CharacterMutationError> {
+        if self.martial_arts_styles.contains_key(&id) {
+            Err(CharacterMutationError::RemoveMartialArtsStyleError(RemoveMartialArtsStyleError::NotFound))
+        } else {
+            Ok(())
+        }
+    }
+
+    pub(crate) fn remove_martial_arts_style(&mut self, id: MartialArtsStyleId) -> Result<&mut Self, CharacterMutationError> {
+        self.check_remove_martial_arts_style(id)?;
+        self.martial_arts_styles.remove(&id);
+        Ok(self)
+
+    }
 }
 
 impl Character {
@@ -286,7 +353,7 @@ impl Character {
         self.exalt_state.check_add_martial_arts_style(id, style)
     }
 
-    /// Checks if a Martial Arts style can be added to the character.
+    /// Adds a Martial Arts style to the character.
     pub fn add_martial_arts_style(
         &mut self,
         id: MartialArtsStyleId,
@@ -295,6 +362,17 @@ impl Character {
         self.check_add_martial_arts_style(id, style)?;
         self.exalt_state.add_martial_arts_style(id, style)?;
 
+        Ok(self)
+    }
+
+    /// Checks if a Martial Arts style can be removed from the character.
+    pub fn check_remove_martial_arts_style(&self, id: MartialArtsStyleId) -> Result<(), CharacterMutationError> {
+        self.exalt_state.check_remove_martial_arts_style(id)
+    }
+
+    /// Removes a Martial Arts style from the character.
+    pub fn remove_martial_arts_style(&mut self, id: MartialArtsStyleId) -> Result<&mut Self, CharacterMutationError> {
+        self.exalt_state.remove_martial_arts_style(id)?;
         Ok(self)
     }
 }
@@ -311,6 +389,21 @@ impl ExaltState {
         match self {
             ExaltState::Mortal(mortal) => {mortal.add_martial_arts_style(id, style)?;}
             ExaltState::Exalt(exalt) => {exalt.add_martial_arts_style(id, style)?;}
+        }
+        Ok(self)
+    }
+
+    pub(crate) fn check_remove_martial_arts_style(&self, id: MartialArtsStyleId) -> Result<(), CharacterMutationError> {
+        match self {
+            ExaltState::Mortal(mortal) => mortal.check_remove_martial_arts_style(id),
+            ExaltState::Exalt(exalt) => exalt.check_remove_martial_arts_style(id),
+        }
+    }
+
+    pub(crate) fn remove_martial_arts_style(&mut self, id: MartialArtsStyleId) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            ExaltState::Mortal(mortal) => {mortal.remove_martial_arts_style(id)?;}
+            ExaltState::Exalt(exalt) => {exalt.remove_martial_arts_style(id)?;}
         }
         Ok(self)
     }
@@ -333,6 +426,21 @@ impl Mortal {
         });
         Ok(self)
     }
+
+    pub(crate) fn check_remove_martial_arts_style(&self, id: MartialArtsStyleId) -> Result<(), CharacterMutationError> {
+        if self.martial_arts_styles.contains_key(&id) {
+            Err(CharacterMutationError::RemoveMartialArtsStyleError(RemoveMartialArtsStyleError::NotFound))
+        } else {
+            Ok(())
+        }
+    }
+
+    pub(crate) fn remove_martial_arts_style(&mut self, id: MartialArtsStyleId) -> Result<&mut Self, CharacterMutationError> {
+        self.check_remove_martial_arts_style(id)?;
+        self.martial_arts_styles.remove(&id);
+        Ok(self)
+
+    }
 }
 
 impl Exalt {
@@ -352,5 +460,20 @@ impl Exalt {
             charms: HashMap::new(),
         });
         Ok(self)
+    }
+
+    pub(crate) fn check_remove_martial_arts_style(&self, id: MartialArtsStyleId) -> Result<(), CharacterMutationError> {
+        if self.martial_arts_styles.contains_key(&id) {
+            Err(CharacterMutationError::RemoveMartialArtsStyleError(RemoveMartialArtsStyleError::NotFound))
+        } else {
+            Ok(())
+        }
+    }
+
+    pub(crate) fn remove_martial_arts_style(&mut self, id: MartialArtsStyleId) -> Result<&mut Self, CharacterMutationError> {
+        self.check_remove_martial_arts_style(id)?;
+        self.martial_arts_styles.remove(&id);
+        Ok(self)
+
     }
 }
