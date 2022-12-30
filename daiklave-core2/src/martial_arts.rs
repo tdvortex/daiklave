@@ -89,30 +89,10 @@ pub(crate) struct MortalMartialArtist {
     ability: Ability,
 }
 
-impl From<MortalMartialArtist> for ExaltMartialArtist {
-    fn from(mortal_artist: MortalMartialArtist) -> Self {
-        Self {
-            style: mortal_artist.style,
-            ability: mortal_artist.ability,
-            charms: HashMap::new(),
-        }
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MortalMartialArtistView<'source> {
     style: &'source MartialArtsStyle,
     ability: AbilityView<'source>,
-}
-
-impl<'source> From<MortalMartialArtistView<'source>> for ExaltMartialArtistView<'source> {
-    fn from(mortal_artist: MortalMartialArtistView<'source>) -> Self {
-        Self {
-            style: mortal_artist.style,
-            ability: mortal_artist.ability,
-            charms: HashMap::new(),
-        }
-    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -128,6 +108,45 @@ pub(crate) struct ExaltMartialArtistView<'source> {
     ability: AbilityView<'source>,
     charms: HashMap<MartialArtsCharmId, &'source MartialArtsCharm>,
 }
+
+impl From<MortalMartialArtist> for ExaltMartialArtist {
+    fn from(mortal_artist: MortalMartialArtist) -> Self {
+        Self {
+            style: mortal_artist.style,
+            ability: mortal_artist.ability,
+            charms: HashMap::new(),
+        }
+    }
+}
+
+impl From<ExaltMartialArtist> for MortalMartialArtist {
+    fn from(exalt_artist: ExaltMartialArtist) -> Self {
+        Self {
+            style: exalt_artist.style,
+            ability: exalt_artist.ability,
+        }
+    }
+}
+
+impl<'source> From<MortalMartialArtistView<'source>> for ExaltMartialArtistView<'source> {
+    fn from(mortal_artist: MortalMartialArtistView<'source>) -> Self {
+        Self {
+            style: mortal_artist.style,
+            ability: mortal_artist.ability,
+            charms: HashMap::new(),
+        }
+    }
+}
+
+impl<'source> From<ExaltMartialArtistView<'source>> for MortalMartialArtistView<'source> {
+    fn from(exalt_artist: ExaltMartialArtistView<'source>) -> Self {
+        Self {
+            style: exalt_artist.style,
+            ability: exalt_artist.ability,
+        }
+    }
+}
+
 
 /// A unique identifier for a Martial Arts Charm.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

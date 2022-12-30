@@ -15,13 +15,13 @@ use crate::martial_arts::{ExaltMartialArtist, ExaltMartialArtistView, MartialArt
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct Exalt {
     essence: Essence,
-    martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist>,
+    pub(crate) martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist>,
     exalt_type: ExaltType,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ExaltView<'source> {
     essence: EssenceView<'source>,
-    martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistView<'source>>,
+    pub(crate) martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistView<'source>>,
     exalt_type: ExaltTypeView,
 }
