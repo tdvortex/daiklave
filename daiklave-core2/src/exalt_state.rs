@@ -44,7 +44,10 @@ impl ExaltState {
         // Preserve martial arts styles
         if let ExaltState::Exalt(exalt) = self {
             *self = ExaltState::Mortal(Mortal {
-                martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles).into_iter().map(|(id, exalt_artist)| (id, exalt_artist.into())).collect()
+                martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles)
+                    .into_iter()
+                    .map(|(id, exalt_artist)| (id, exalt_artist.into()))
+                    .collect(),
             });
         }
 
@@ -115,10 +118,13 @@ impl<'source> ExaltStateView<'source> {
         // Preserve martial arts styles
         if let ExaltStateView::Exalt(exalt) = self {
             *self = ExaltStateView::Mortal(MortalView {
-                martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles).into_iter().map(|(id, exalt_artist)| (id, exalt_artist.into())).collect()
+                martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles)
+                    .into_iter()
+                    .map(|(id, exalt_artist)| (id, exalt_artist.into()))
+                    .collect(),
             });
         }
-        
+
         Ok(self)
     }
 }

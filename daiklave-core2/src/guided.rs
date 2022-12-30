@@ -1,6 +1,10 @@
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap, HashSet};
 
-use crate::{abilities::AbilityName, CharacterMutation, CharacterView, martial_arts::{MartialArtsStyleId, MartialArtsStyle, RemoveMartialArtsStyleError}, CharacterMutationError};
+use crate::{
+    abilities::AbilityName,
+    martial_arts::{MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError},
+    CharacterMutation, CharacterMutationError, CharacterView,
+};
 
 use self::{
     error::{GuidedError, SolarAbilityError},
@@ -41,7 +45,7 @@ pub enum GuidedMutation {
     RemoveSolarFavoredAbility(AbilityName),
     /// Add a Martial Arts style.
     AddMartialArtsStyle(MartialArtsStyleId, MartialArtsStyle),
-    /// Removes a Martial Arts style. 
+    /// Removes a Martial Arts style.
     RemoveMartialArtsStyle(MartialArtsStyleId),
 }
 
@@ -183,12 +187,20 @@ impl GuidedEventSource {
                         guided_view.martial_arts_styles = Some(HashMap::new());
                     }
 
-                    guided_view.martial_arts_styles.as_mut().unwrap().insert(*id, style);
+                    guided_view
+                        .martial_arts_styles
+                        .as_mut()
+                        .unwrap()
+                        .insert(*id, style);
                     guided_view.merit_dots += 4;
                 }
                 GuidedMutation::RemoveMartialArtsStyle(id) => {
                     if guided_view.martial_arts_styles.is_none() {
-                        return Err(GuidedError::CharacterMutationError(CharacterMutationError::RemoveMartialArtsStyleError(RemoveMartialArtsStyleError::NotFound)));
+                        return Err(GuidedError::CharacterMutationError(
+                            CharacterMutationError::RemoveMartialArtsStyleError(
+                                RemoveMartialArtsStyleError::NotFound,
+                            ),
+                        ));
                     }
 
                     guided_view.martial_arts_styles.as_mut().unwrap().remove(id);

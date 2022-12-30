@@ -1,4 +1,4 @@
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap, HashSet};
 
 use serde::{Deserialize, Serialize};
 
@@ -22,7 +22,10 @@ pub use zenith::{Zenith, ZenithBuilder};
 use crate::{
     abilities::AbilityName,
     exalt_state::{
-        exalt::{Exalt, ExaltView, essence::{Essence, Motes, MoteState, EssenceView, MotesView}},
+        exalt::{
+            essence::{Essence, EssenceView, MoteState, Motes, MotesView},
+            Exalt, ExaltView,
+        },
         ExaltState, ExaltStateView,
     },
     guided::ExaltationChoice,
@@ -185,10 +188,13 @@ impl ExaltState {
             ExaltState::Mortal(mortal) => {
                 // Default to essence 1
                 // Preserve martial arts styles, with empty Charms set
-                *self = Self::Exalt(Exalt { 
-                    essence: Essence::new_solar(1), 
-                    martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles).into_iter().map(|(id, mortal_artist)| (id, mortal_artist.into())).collect(), 
-                    exalt_type: ExaltType::Solar(solar.clone())
+                *self = Self::Exalt(Exalt {
+                    essence: Essence::new_solar(1),
+                    martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles)
+                        .into_iter()
+                        .map(|(id, mortal_artist)| (id, mortal_artist.into()))
+                        .collect(),
+                    exalt_type: ExaltType::Solar(solar.clone()),
                 })
             }
             ExaltState::Exalt(exalt) => {
@@ -239,10 +245,13 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(mortal) => {
                 // Default to essence 1
                 // Preserve martial arts styles, with empty Charms set
-                *self = Self::Exalt(ExaltView { 
-                    essence: EssenceView::new_solar(1), 
-                    martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles).into_iter().map(|(id, mortal_artist)| (id, mortal_artist.into())).collect(), 
-                    exalt_type: ExaltTypeView::Solar(solar.as_view())
+                *self = Self::Exalt(ExaltView {
+                    essence: EssenceView::new_solar(1),
+                    martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles)
+                        .into_iter()
+                        .map(|(id, mortal_artist)| (id, mortal_artist.into()))
+                        .collect(),
+                    exalt_type: ExaltTypeView::Solar(solar.as_view()),
                 })
             }
             ExaltStateView::Exalt(exalt) => {
@@ -343,7 +352,7 @@ impl Essence {
                     spent: 0,
                 },
                 commitments: HashMap::new(),
-            }
+            },
         }
     }
 }
@@ -362,7 +371,7 @@ impl<'source> EssenceView<'source> {
                     spent: 0,
                 },
                 commitments: HashMap::new(),
-            }
+            },
         }
     }
 }

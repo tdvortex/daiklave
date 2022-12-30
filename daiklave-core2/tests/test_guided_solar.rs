@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 use daiklave_core2::{
-    abilities::{AbilityName},
+    abilities::AbilityName,
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     guided::{begin_guided_builder, ExaltationChoice, GuidedMutation, GuidedStage},
@@ -378,21 +378,29 @@ fn test_guided_solar() {
         None,
     );
 
-    let mutation = GuidedMutation::AddMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)), crane_style.clone());
+    let mutation = GuidedMutation::AddMartialArtsStyle(
+        MartialArtsStyleId(UniqueId::Placeholder(1)),
+        crane_style.clone(),
+    );
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Check can't add martial arts style with the same Id
-    let mutation = GuidedMutation::AddMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)), crane_style);
+    let mutation = GuidedMutation::AddMartialArtsStyle(
+        MartialArtsStyleId(UniqueId::Placeholder(1)),
+        crane_style,
+    );
     assert!(guided_builder.check_mutation(&mutation).is_err());
 
     // Remove a martial arts style
-    let mutation = GuidedMutation::RemoveMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)));
+    let mutation =
+        GuidedMutation::RemoveMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Check can't remove absent martial arts style
-    let mutation = GuidedMutation::RemoveMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)));
+    let mutation =
+        GuidedMutation::RemoveMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)));
     assert!(guided_builder.check_mutation(&mutation).is_err());
 
     // Undo removal
