@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abilities::Abilities, exalt_type::ExaltState, willpower::Willpower,
-    Attributes, CharacterMutation, CharacterMutationError, Health,
+    abilities::Abilities, willpower::Willpower,
+    Attributes, CharacterMutation, CharacterMutationError, exalt_state::ExaltState, health::Health,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -74,6 +74,8 @@ impl Character {
             CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
                 self.check_remove_specialty(*ability_name, specialty.as_str())
             }
+            CharacterMutation::AddMartialArtsStyle(_, _) => todo!(),
+            CharacterMutation::RemoveMartialArtsStyle(_) => todo!(),
         }
     }
 
@@ -117,6 +119,8 @@ impl Character {
             CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
                 self.remove_specialty(*ability_name, specialty.as_str())
             }
+            CharacterMutation::AddMartialArtsStyle(_, _) => todo!(),
+            CharacterMutation::RemoveMartialArtsStyle(_) => todo!(),
         }
     }
 }

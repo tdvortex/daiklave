@@ -1,4 +1,6 @@
-use crate::{CharacterMutationError, CharacterView, DamageLevel, Health, WoundPenalty};
+use crate::{CharacterMutationError, CharacterView, DamageLevel, WoundPenalty};
+
+use super::Health;
 
 impl<'source> CharacterView<'source> {
     /// Gets the character's health state (read-only).

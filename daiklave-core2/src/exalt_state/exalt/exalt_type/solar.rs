@@ -1,20 +1,11 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashSet};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    essence::{Essence, EssenceView, MoteCommitmentView, MoteState, MotesView},
-    exalt_type::{ExaltState, ExaltStateView, ExaltType, ExaltTypeView},
-    guided::ExaltationChoice,
-    AbilityName, CharacterMutationError, CommittedMotesId,
-};
 
-use self::{
-    builder::SolarTraitsBuilder, character::SolarCaste, character_view::SolarCasteView,
-    dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView,
-    zenith::ZenithView,
-};
 mod builder;
+mod caste;
+mod caste_view;
 mod character;
 mod character_view;
 mod dawn;
@@ -29,10 +20,15 @@ pub use night::{Night, NightBuilder};
 pub use twilight::{Twilight, TwilightBuilder};
 pub use zenith::{Zenith, ZenithBuilder};
 
+use crate::{exalt_state::{ExaltStateView, ExaltState, exalt::{Exalt, ExaltView}}, guided::ExaltationChoice, CharacterMutationError, abilities::AbilityName};
+
+use self::{builder::SolarTraitsBuilder, night::NightView, twilight::TwilightView, eclipse::EclipseView, dawn::DawnView, zenith::ZenithView, caste::SolarCaste, caste_view::SolarCasteView};
+
+use super::{ExaltType, ExaltTypeView};
+
 /// Traits which are unique to being a Solar Exalted.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Solar {
-    pub(crate) essence: Essence,
     caste: SolarCaste,
     favored_abilities: [AbilityName; 5],
 }
@@ -68,13 +64,12 @@ impl Solar {
 
 /// Traits which are unique to being a Solar Exalted, with &str
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SolarView<'source> {
-    pub(crate) essence: EssenceView<'source>,
+pub struct SolarView {
     caste: SolarCasteView,
     favored_abilities: [AbilityName; 5],
 }
 
-impl<'source> SolarView<'source> {
+impl SolarView {
     /// Returns True if the ability is a caste ability for the charcter. Note
     /// that MartialArts is a caste ability if and only if Brawl is a caste
     /// ability.
@@ -107,7 +102,7 @@ impl ExaltType {
     }
 }
 
-impl<'source> ExaltTypeView<'source> {
+impl ExaltTypeView {
     pub fn is_solar(&self) -> bool {
         true
     }
@@ -121,28 +116,27 @@ impl<'source> ExaltTypeView<'source> {
 
 impl ExaltState {
     pub fn is_solar(&self) -> bool {
-        if let Self::Exalted(exalt_type) = self {
-            exalt_type.is_solar()
+        if let Self::Exalt(exalt) = self {
+            exalt.is_solar()
         } else {
             false
         }
     }
 
     pub fn solar_traits(&self) -> Option<&Solar> {
-        if let Self::Exalted(exalt_type) = self {
-            exalt_type.solar_traits()
+        if let Self::Exalt(exalt) = self {
+            exalt.solar_traits()
         } else {
             None
         }
     }
 
-    pub fn check_set_solar(&self, _solar_traits: &Solar) -> Result<(), CharacterMutationError> {
+    pub fn check_set_solar(&self, _solar: &Solar) -> Result<(), CharacterMutationError> {
         Ok(())
     }
 
-    pub fn set_solar(&mut self, solar_traits: &Solar) -> Result<&mut Self, CharacterMutationError> {
-        *self = Self::Exalted(ExaltType::Solar(solar_traits.clone()));
-        Ok(self)
+    pub fn set_solar(&mut self, solar: &Solar) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
     }
 }
 
@@ -165,54 +159,16 @@ impl<'source> ExaltStateView<'source> {
 
     pub fn check_set_solar(
         &self,
-        _solar_traits: &'source Solar,
+        _solar: &'source Solar,
     ) -> Result<(), CharacterMutationError> {
         Ok(())
     }
 
     pub fn set_solar(
         &mut self,
-        solar_traits: &'source Solar,
+        solar: &'source Solar,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let rating = solar_traits.essence.rating();
-
-        let peripheral = {
-            let available = solar_traits.essence.motes().peripheral().available();
-            let spent = solar_traits.essence.motes().peripheral().spent();
-            MoteState { available, spent }
-        };
-
-        let personal = {
-            let available = solar_traits.essence.motes().personal().available();
-            let spent = solar_traits.essence.motes().personal().spent();
-            MoteState { available, spent }
-        };
-
-        let commitments = solar_traits
-            .essence
-            .motes()
-            .committed()
-            .map(|(id, name, peripheral, personal)| {
-                (
-                    id,
-                    MoteCommitmentView {
-                        name,
-                        peripheral,
-                        personal,
-                    },
-                )
-            })
-            .collect::<HashMap<CommittedMotesId, MoteCommitmentView>>();
-
-        let motes = MotesView {
-            peripheral,
-            personal,
-            commitments,
-        };
-
-        let essence = EssenceView { rating, motes };
-
-        let caste = match &solar_traits.caste {
+        let caste = match &solar.caste {
             SolarCaste::Dawn(dawn) => SolarCasteView::Dawn(DawnView {
                 caste_not_supernal: dawn.caste_not_supernal,
                 supernal: dawn.supernal,
@@ -234,16 +190,35 @@ impl<'source> ExaltStateView<'source> {
                 supernal: eclipse.supernal,
             }),
         };
-        let favored_abilities = solar_traits.favored_abilities;
+        let favored_abilities = solar.favored_abilities;
 
         let solar_traits_view = SolarView {
-            essence,
             caste,
             favored_abilities,
         };
 
-        *self = Self::Exalted(ExaltTypeView::Solar(solar_traits_view));
-        Ok(self)
+        todo!()
+    }
+}
+
+impl Exalt {
+    pub fn is_solar(&self) -> bool {
+        self.exalt_type.is_solar()
+    }
+
+    pub fn solar_traits(&self) -> Option<&Solar> {
+        self.exalt_type.solar_traits()
+    }
+}
+
+
+impl<'source> ExaltView<'source> {
+    pub fn is_solar(&self) -> bool {
+        self.exalt_type.is_solar()
+    }
+
+    pub fn solar_traits(&self) -> Option<&SolarView> {
+        self.exalt_type.solar_traits()
     }
 }
 

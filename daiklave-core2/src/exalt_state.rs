@@ -1,22 +1,27 @@
-use serde::{Deserialize, Serialize};
+use serde::{Serialize, Deserialize};
 
-use crate::{solar::SolarView, Character, CharacterMutationError, CharacterView, Solar};
+pub mod exalt;
+pub mod mortal;
+use exalt::{Exalt, ExaltView};
+use mortal::{Mortal, MortalView};
+
+use crate::{CharacterMutationError, Character, CharacterView};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum ExaltState {
-    Mortal,
-    Exalted(ExaltType),
+    Mortal(Mortal),
+    Exalt(Exalt),
 }
 
 impl Default for ExaltState {
     fn default() -> Self {
-        Self::Mortal
+        Self::Mortal(Mortal::default())
     }
 }
 
 impl ExaltState {
     pub fn is_mortal(&self) -> bool {
-        matches!(self, Self::Mortal)
+        matches!(self, Self::Mortal(_))
     }
 
     pub fn is_exalted(&self) -> bool {
@@ -28,50 +33,13 @@ impl ExaltState {
     }
 
     pub fn set_mortal(&mut self) -> Result<&mut Self, CharacterMutationError> {
-        *self = ExaltState::Mortal;
-        Ok(self)
+        if self.is_mortal() {
+            return Ok(self);
+        }
+        
+        // Preserve martial arts styles
+        todo!()
     }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) enum ExaltStateView<'source> {
-    Mortal,
-    Exalted(ExaltTypeView<'source>),
-}
-
-impl<'source> Default for ExaltStateView<'source> {
-    fn default() -> Self {
-        Self::Mortal
-    }
-}
-
-impl<'source> ExaltStateView<'source> {
-    pub fn is_mortal(&self) -> bool {
-        matches!(self, Self::Mortal)
-    }
-
-    pub fn is_exalted(&self) -> bool {
-        !self.is_mortal()
-    }
-
-    pub fn check_set_mortal(&self) -> Result<(), CharacterMutationError> {
-        Ok(())
-    }
-
-    pub fn set_mortal(&mut self) -> Result<&mut Self, CharacterMutationError> {
-        *self = ExaltStateView::Mortal;
-        Ok(self)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) enum ExaltType {
-    Solar(Solar),
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) enum ExaltTypeView<'source> {
-    Solar(SolarView<'source>),
 }
 
 impl Character {
@@ -103,6 +71,42 @@ impl Character {
         Ok(self)
     }
 }
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum ExaltStateView<'source> {
+    Mortal(MortalView<'source>),
+    Exalted(ExaltView<'source>),
+}
+
+impl<'source> Default for ExaltStateView<'source> {
+    fn default() -> Self {
+        Self::Mortal(MortalView::default())
+    }
+}
+
+impl<'source> ExaltStateView<'source> {
+    pub fn is_mortal(&self) -> bool {
+        matches!(self, Self::Mortal(_))
+    }
+
+    pub fn is_exalted(&self) -> bool {
+        !self.is_mortal()
+    }
+
+    pub fn check_set_mortal(&self) -> Result<(), CharacterMutationError> {
+        Ok(())
+    }
+
+    pub fn set_mortal(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        if self.is_mortal() {
+            return Ok(self);
+        }
+        
+        // Preserve martial arts styles
+        todo!()
+    }
+}
+
 
 impl<'source> CharacterView<'source> {
     /// Returns true if character is not Exalted.

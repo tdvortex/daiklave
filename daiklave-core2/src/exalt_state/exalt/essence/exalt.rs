@@ -1,25 +1,17 @@
-use crate::{
-    essence::{CommitMotesError, SetEssenceRatingError, SpendMotesError, UncommitMotesError},
-    exalt_type::ExaltType,
-    CharacterMutationError, CommittedMotesId, MotePool,
-};
+use crate::{exalt_state::exalt::{Exalt, exalt_type::ExaltType}, CharacterMutationError};
 
-use super::{Essence, MoteCommitment};
+use super::{Essence, MotePool, SpendMotesError, CommittedMotesId, CommitMotesError, UncommitMotesError, MoteCommitment, SetEssenceRatingError};
 
-impl ExaltType {
-    pub(in crate::essence) fn essence(&self) -> &Essence {
-        match self {
-            ExaltType::Solar(solar_traits) => &solar_traits.essence,
-        }
+impl Exalt {
+    pub fn essence(&self) -> &Essence {
+        &self.essence
     }
 
-    pub(in crate::essence) fn essence_mut(&mut self) -> &mut Essence {
-        match self {
-            ExaltType::Solar(solar_traits) => &mut solar_traits.essence,
-        }
+    pub fn essence_mut(&mut self) -> &mut Essence {
+        &mut self.essence
     }
 
-    pub(in crate::essence) fn check_spend_motes(
+    pub(in crate::exalt_state::exalt) fn check_spend_motes(
         &self,
         _first: MotePool,
         amount: u8,
@@ -36,7 +28,7 @@ impl ExaltType {
         }
     }
 
-    pub(in crate::essence) fn spend_motes(
+    pub(in crate::exalt_state::exalt) fn spend_motes(
         &mut self,
         first: MotePool,
         amount: u8,
@@ -64,7 +56,7 @@ impl ExaltType {
         Ok(self)
     }
 
-    pub(in crate::essence) fn check_commit_motes(
+    pub(in crate::exalt_state::exalt::essence) fn check_commit_motes(
         &self,
         _id: &CommittedMotesId,
         _name: &str,
@@ -83,7 +75,7 @@ impl ExaltType {
         }
     }
 
-    pub(in crate::essence) fn commit_motes(
+    pub(in crate::exalt_state::exalt::essence) fn commit_motes(
         &mut self,
         id: &CommittedMotesId,
         name: &str,
@@ -121,7 +113,7 @@ impl ExaltType {
         Ok(self)
     }
 
-    pub(in crate::essence) fn recover_motes(
+    pub(in crate::exalt_state::exalt::essence) fn recover_motes(
         &mut self,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -144,7 +136,7 @@ impl ExaltType {
         Ok(self)
     }
 
-    pub(in crate::essence) fn check_uncommit_motes(
+    pub(in crate::exalt_state::exalt::essence) fn check_uncommit_motes(
         &self,
         id: &CommittedMotesId,
     ) -> Result<(), CharacterMutationError> {
@@ -157,7 +149,7 @@ impl ExaltType {
         }
     }
 
-    pub(in crate::essence) fn uncommit_motes(
+    pub(in crate::exalt_state::exalt::essence) fn uncommit_motes(
         &mut self,
         id: &CommittedMotesId,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -182,7 +174,7 @@ impl ExaltType {
         Ok(self)
     }
 
-    pub(in crate::essence) fn set_essence_rating(
+    pub(in crate::exalt_state::exalt::essence) fn set_essence_rating(
         &mut self,
         rating: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -196,7 +188,7 @@ impl ExaltType {
             ));
         }
 
-        let (new_peripheral, new_personal) = match self {
+        let (new_peripheral, new_personal) = match self.exalt_type {
             ExaltType::Solar(_) => (rating * 7 + 26, rating * 3 + 10),
         };
 

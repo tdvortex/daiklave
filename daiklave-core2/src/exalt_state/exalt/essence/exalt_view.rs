@@ -1,28 +1,17 @@
-use crate::{
-    essence::{
-        CommitMotesError, MoteCommitmentView, SetEssenceRatingError, SpendMotesError,
-        UncommitMotesError,
-    },
-    exalt_type::ExaltTypeView,
-    CharacterMutationError, CommittedMotesId, MotePool,
-};
+use crate::{exalt_state::exalt::{ExaltView, exalt_type::ExaltTypeView}, CharacterMutationError};
 
-use super::EssenceView;
+use super::{MotePool, SpendMotesError, CommittedMotesId, CommitMotesError, UncommitMotesError, SetEssenceRatingError, EssenceView, essence_view::MoteCommitmentView};
 
-impl<'source> ExaltTypeView<'source> {
-    pub(in crate::essence) fn essence(&self) -> &EssenceView {
-        match self {
-            ExaltTypeView::Solar(solar_traits) => &solar_traits.essence,
-        }
+impl<'source> ExaltView<'source> {
+    pub fn essence(&self) -> &EssenceView {
+        &self.essence
     }
 
-    pub(in crate::essence) fn essence_mut(&mut self) -> &mut EssenceView<'source> {
-        match self {
-            ExaltTypeView::Solar(solar_traits) => &mut solar_traits.essence,
-        }
+    pub fn essence_mut(&mut self) -> &mut EssenceView<'source> {
+        &mut self.essence
     }
 
-    pub(in crate::essence) fn check_spend_motes(
+    pub(in crate::exalt_state::exalt) fn check_spend_motes(
         &self,
         _first: MotePool,
         amount: u8,
@@ -39,7 +28,7 @@ impl<'source> ExaltTypeView<'source> {
         }
     }
 
-    pub(in crate::essence) fn spend_motes(
+    pub(in crate::exalt_state::exalt) fn spend_motes(
         &mut self,
         first: MotePool,
         amount: u8,
@@ -67,7 +56,7 @@ impl<'source> ExaltTypeView<'source> {
         Ok(self)
     }
 
-    pub(in crate::essence) fn check_commit_motes(
+    pub(in crate::exalt_state::exalt::essence) fn check_commit_motes(
         &self,
         _id: &CommittedMotesId,
         _name: &str,
@@ -86,7 +75,7 @@ impl<'source> ExaltTypeView<'source> {
         }
     }
 
-    pub(in crate::essence) fn commit_motes(
+    pub(in crate::exalt_state::exalt::essence) fn commit_motes(
         &mut self,
         id: &CommittedMotesId,
         name: &'source str,
@@ -94,7 +83,6 @@ impl<'source> ExaltTypeView<'source> {
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_commit_motes(id, name, first, amount)?;
-
         let (peripheral_committed, personal_committed) = if let MotePool::Peripheral = first {
             let peripheral_committed = self.essence().motes().peripheral().available().min(amount);
             let personal_committed = amount - peripheral_committed;
@@ -125,7 +113,7 @@ impl<'source> ExaltTypeView<'source> {
         Ok(self)
     }
 
-    pub(in crate::essence) fn recover_motes(
+    pub(in crate::exalt_state::exalt::essence) fn recover_motes(
         &mut self,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -148,7 +136,7 @@ impl<'source> ExaltTypeView<'source> {
         Ok(self)
     }
 
-    pub(in crate::essence) fn check_uncommit_motes(
+    pub(in crate::exalt_state::exalt::essence) fn check_uncommit_motes(
         &self,
         id: &CommittedMotesId,
     ) -> Result<(), CharacterMutationError> {
@@ -161,7 +149,7 @@ impl<'source> ExaltTypeView<'source> {
         }
     }
 
-    pub(in crate::essence) fn uncommit_motes(
+    pub(in crate::exalt_state::exalt::essence) fn uncommit_motes(
         &mut self,
         id: &CommittedMotesId,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -186,7 +174,7 @@ impl<'source> ExaltTypeView<'source> {
         Ok(self)
     }
 
-    pub(in crate::essence) fn set_essence_rating(
+    pub(in crate::exalt_state::exalt::essence) fn set_essence_rating(
         &mut self,
         rating: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -200,7 +188,7 @@ impl<'source> ExaltTypeView<'source> {
             ));
         }
 
-        let (new_peripheral, new_personal) = match self {
+        let (new_peripheral, new_personal) = match self.exalt_type {
             ExaltTypeView::Solar(_) => (rating * 7 + 26, rating * 3 + 10),
         };
 

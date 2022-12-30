@@ -1,9 +1,11 @@
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub enum Book {
     CoreRulebook,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct BookReference {
     book: Book,
     page_number: i16,

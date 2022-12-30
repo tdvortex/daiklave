@@ -1,17 +1,14 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashSet};
 
 use thiserror::Error;
 
-use crate::{
-    essence::{Essence, MoteState, Motes},
-    AbilityName, Dawn, Eclipse, Night, Solar, Twilight, Zenith,
-};
+use crate::abilities::AbilityName;
 
-use super::character::SolarCaste;
+use super::{Dawn, Zenith, Twilight, Night, Eclipse, Solar, caste::SolarCaste};
 
 pub struct SolarTraitsBuilder {
-    pub(in crate::solar) caste: Option<SolarCaste>,
-    pub(in crate::solar) favored_abilities: HashSet<AbilityName>,
+    pub(in crate::exalt_state::exalt::exalt_type::solar) caste: Option<SolarCaste>,
+    pub(in crate::exalt_state::exalt::exalt_type::solar) favored_abilities: HashSet<AbilityName>,
 }
 
 #[derive(Debug, Error)]
@@ -112,20 +109,6 @@ impl SolarTraitsBuilder {
         arr.sort();
 
         Ok(Solar {
-            essence: Essence {
-                rating: 1,
-                motes: Motes {
-                    peripheral: MoteState {
-                        available: 33,
-                        spent: 0,
-                    },
-                    personal: MoteState {
-                        available: 13,
-                        spent: 0,
-                    },
-                    commitments: HashMap::new(),
-                },
-            },
             caste: self.caste.unwrap(),
             favored_abilities: arr,
         })

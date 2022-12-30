@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use crate::CommittedMotesId;
+use super::CommittedMotesId;
 
 #[derive(Debug, Error)]
 pub enum CommitMotesError {

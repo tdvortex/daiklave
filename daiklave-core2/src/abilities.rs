@@ -1,11 +1,13 @@
+mod ability_view;
+mod abilities_view;
 mod character;
 mod character_view;
 mod error;
 
 pub use character::Abilities;
+pub(crate) use ability_view::AbilityView;
+pub use abilities_view::AbilitiesView;
 pub(crate) use character::Ability;
-pub(crate) use character_view::AbilityView;
-pub use character_view::AbilitiesView;
 pub use error::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 use serde::{Deserialize, Serialize};
 

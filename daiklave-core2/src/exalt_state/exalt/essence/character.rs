@@ -1,13 +1,6 @@
-use std::collections::HashMap;
+use crate::{Character, CharacterMutationError};
 
-use serde::{Deserialize, Serialize};
-
-use crate::{Character, CharacterMutationError, CommittedMotesId, MotePool};
-
-use super::MoteState;
-
-mod exalt_state;
-mod exalt_type;
+use super::{MotePool, CommittedMotesId, Essence};
 
 impl Character {
     /// None for mortals.
@@ -101,60 +94,3 @@ impl Character {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Essence {
-    pub(crate) rating: u8,
-    pub(crate) motes: Motes,
-}
-
-impl Essence {
-    pub fn rating(&self) -> u8 {
-        self.rating
-    }
-
-    pub fn motes(&self) -> &Motes {
-        &self.motes
-    }
-
-    fn motes_mut(&mut self) -> &mut Motes {
-        &mut self.motes
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Motes {
-    pub(crate) peripheral: MoteState,
-    pub(crate) personal: MoteState,
-    pub(crate) commitments: HashMap<CommittedMotesId, MoteCommitment>,
-}
-
-impl Motes {
-    pub fn peripheral(&self) -> &MoteState {
-        &self.peripheral
-    }
-
-    fn peripheral_mut(&mut self) -> &mut MoteState {
-        &mut self.peripheral
-    }
-
-    pub fn personal(&self) -> &MoteState {
-        &self.personal
-    }
-
-    fn personal_mut(&mut self) -> &mut MoteState {
-        &mut self.personal
-    }
-
-    pub fn committed(&self) -> impl Iterator<Item = (CommittedMotesId, &str, u8, u8)> {
-        self.commitments
-            .iter()
-            .map(|(k, v)| (*k, v.name.as_str(), v.peripheral, v.personal))
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
-pub(crate) struct MoteCommitment {
-    name: String,
-    peripheral: u8,
-    personal: u8,
-}

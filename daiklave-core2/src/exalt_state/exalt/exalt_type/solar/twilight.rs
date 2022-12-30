@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
 
-use crate::AbilityName;
+use crate::abilities::AbilityName;
 
 use super::builder::SolarBuilderError;
 

@@ -3,57 +3,49 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
-use abilities::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
+use abilities::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError, AbilityNameVanilla};
 use attributes::SetAttributesError;
-use essence::{CommitMotesError, SpendMotesError};
-use essence::{RecoverMotesError, SetEssenceRatingError, UncommitMotesError};
+use exalt_state::exalt::{exalt_type::solar::Solar, essence::{MotePool, CommittedMotesId, SpendMotesError, CommitMotesError, RecoverMotesError, UncommitMotesError, SetEssenceRatingError}};
+use health::{WoundPenalty, DamageLevel};
+use martial_arts::{MartialArtsStyleId, MartialArtsStyle};
 use name_and_concept::RemoveConceptError;
 use thiserror::Error;
 
-/// Contains the Id enum and a variety of specific Id subtypes, to be used as
-/// unique keys.
-pub mod id;
-
-/// Traits which are unique to being a Solar Exalted.
-pub use solar::Solar;
-pub use solar::{
-    Dawn, DawnBuilder, Eclipse, EclipseBuilder, Night, NightBuilder, Twilight, TwilightBuilder,
-    Zenith, ZenithBuilder,
-};
+pub mod abilities;
 
 /// Official page references.
 pub mod book_reference;
+
+pub mod charms;
+
+pub mod exalt_state;
 
 /// A character builder with additional logic for bonus points, free starting
 /// dots, and other constraints.
 pub mod guided;
 
+pub mod health;
+
+/// Contains the Id enum and a variety of specific Id subtypes, to be used as
+/// unique keys.
+pub mod id;
 /// Martial Arts style logic
 pub mod martial_arts;
 
 /// Logic for building and equipping weapons
 pub mod weapons;
 
-pub use abilities::{AbilityName, AbilityNameVanilla};
 pub use attributes::{AttributeName, Attributes};
-pub use essence::CommittedMotesId;
-pub use essence::MotePool;
 
-mod abilities;
 mod armor;
 mod attributes;
 mod character;
 mod character_view;
-mod essence;
-mod exalt_type;
-mod health;
 mod name_and_concept;
-mod solar;
 mod willpower;
 
 pub use character::Character;
 pub use character_view::CharacterView;
-pub use health::{DamageLevel, Health, WoundPenalty};
 
 /// The API for the character, expressed as an owned struct. Each mutation has
 /// an associated pub method on Character and CharacterEventSource which
@@ -104,6 +96,8 @@ pub enum CharacterMutation {
     AddSpecialty(AbilityNameVanilla, String),
     /// Removes a specialty from a non-Craft, non-Martial Arts ability.
     RemoveSpecialty(AbilityNameVanilla, String),
+    AddMartialArtsStyle(MartialArtsStyleId, MartialArtsStyle),
+    RemoveMartialArtsStyle(MartialArtsStyleId),
 }
 
 /// An error representing something that could go wrong with a

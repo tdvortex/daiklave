@@ -1,6 +1,6 @@
 use crate::{
-    abilities::AbilitiesView, exalt_type::ExaltStateView, willpower::Willpower,
-    Attributes, CharacterMutation, CharacterMutationError, Health,
+    willpower::Willpower,
+    Attributes, CharacterMutation, CharacterMutationError, exalt_state::ExaltStateView, health::Health, abilities::AbilitiesView,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -72,6 +72,10 @@ impl<'source> CharacterView<'source> {
             CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
                 self.check_remove_specialty(*ability_name, specialty.as_str())
             }
+            CharacterMutation::AddMartialArtsStyle(id, style) => {
+                self.check_add_martial_arts_style(*id, style)
+            }
+            CharacterMutation::RemoveMartialArtsStyle(_) => todo!(),
         }
     }
 
@@ -115,6 +119,10 @@ impl<'source> CharacterView<'source> {
             CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
                 self.remove_specialty(*ability_name, specialty.as_str())
             }
+            CharacterMutation::AddMartialArtsStyle(id, style) => {
+                self.add_martial_arts_style(*id, style)
+            }
+            CharacterMutation::RemoveMartialArtsStyle(_) => todo!(),
         }
     }
 }

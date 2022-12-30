@@ -1,16 +1,15 @@
-use crate::{Character, CharacterMutationError, Solar};
+use crate::{CharacterMutationError, CharacterView};
 
-mod caste;
-pub use caste::SolarCaste;
+use super::{SolarView, Solar};
 
-impl Character {
+impl<'source> CharacterView<'source> {
     /// Returns true if character is a Solar.
     pub fn is_solar(&self) -> bool {
         self.exalt_state.is_solar()
     }
 
     /// Returns the character's Solar-specific traits, or None if not a Solar.
-    pub fn solar_traits(&self) -> Option<&Solar> {
+    pub fn solar_traits(&self) -> Option<&SolarView> {
         self.exalt_state.solar_traits()
     }
 
@@ -24,7 +23,10 @@ impl Character {
     /// character was previously mortal, permanent willpower rating is
     /// increased by 2 (reflecting the difference between mortal default and
     /// Exalt default).
-    pub fn set_solar(&mut self, solar_traits: &Solar) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_solar(
+        &mut self,
+        solar_traits: &'source Solar,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_solar(solar_traits)?;
         if self.is_mortal() {
             let new_willpower_rating = self.willpower().rating() + 2;
