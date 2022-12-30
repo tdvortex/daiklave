@@ -218,6 +218,7 @@ fn test_guided_mortal() {
         HashSet::from([WeaponId(Id::Placeholder(1))]),
         None
     );
+    let mutation = GuidedMutation::AddMartialArtsStyle(MartialArtsStyleId(Id::Placeholder(2)), dummy_style);
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
