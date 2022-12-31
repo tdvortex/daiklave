@@ -1,6 +1,6 @@
 use crate::{
     guided::{error::GuidedError, ExaltationChoice, GuidedMutation, GuidedStage},
-    CharacterMutation,
+    CharacterMutation, abilities::AbilityNameVanilla,
 };
 
 use super::GuidedView;
@@ -142,6 +142,31 @@ impl<'source> GuidedView<'source> {
                 self.character_view
                     .set_solar_view(self.solar_traits()?)
                     .map_err(GuidedError::CharacterMutationError)?;
+                Ok(self)
+            }
+            GuidedStage::ChooseSorcery => {
+                if let Some(hashmap) = &self.martial_arts_styles {
+                    if !hashmap.is_empty() {
+                        self.character_view.set_ability_dots(AbilityNameVanilla::Brawl, 1).map_err(GuidedError::CharacterMutationError)?;
+                    }
+                }
+
+                if self.shaping_ritual.is_some() && self.control_spell.is_some() && self.sorcery_archetype.is_some() {
+                    self.character_view.set_ability_dots(AbilityNameVanilla::Occult, 3).map_err(GuidedError::CharacterMutationError)?;
+                }
+
+                if let Some(favored) = &self.solar_favored_abilities {
+                    let favored_vanillas = favored.iter().filter_map(|not_vanilla| if let Ok(vanilla) = (*not_vanilla).try_into() {
+                        Some(vanilla)
+                    } else {
+                        None
+                    }).collect::<Vec<AbilityNameVanilla>>();
+
+                    favored_vanillas.into_iter().fold(Ok(&mut self.character_view), |res_view, vanilla| {
+                        res_view.and_then(|view| view.set_ability_dots(vanilla, 1))
+                    }).map_err(GuidedError::CharacterMutationError)?;
+                }
+
                 Ok(self)
             }
             _ => Ok(self),
