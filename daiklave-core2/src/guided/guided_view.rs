@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::{
-    abilities::AbilityName,
+    abilities::{AbilityName, AbilityNameVanilla},
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError,
     },
@@ -9,7 +9,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    CharacterMutationError, CharacterView,
+    CharacterMutationError, CharacterView, CharacterMutation,
 };
 
 use super::{
@@ -55,6 +55,10 @@ impl<'source> GuidedView<'source> {
 
         match guided_mutation {
             GuidedMutation::CharacterMutation(character_mutation) => {
+                if let CharacterMutation::SetAbilityDots(ability_name_vanilla, dots) = character_mutation {
+                    self.check_abilities_floor(*ability_name_vanilla, *dots)?;
+                }
+
                 self.character_view
                     .apply_mutation(character_mutation)
                     .map_err(GuidedError::CharacterMutationError)?;
@@ -172,5 +176,36 @@ impl<'source> GuidedView<'source> {
                 || self.shaping_ritual.is_some()
                 || self.control_spell.is_some(),
         )
+    }
+
+    fn check_abilities_floor(&self, ability_name_vanilla: AbilityNameVanilla, dots: u8) -> Result<(), GuidedError> {
+        if dots >= 3 {
+            // 3 dots in any ability is enough to cover minimum values
+            return Ok(());
+        }
+        
+        if ability_name_vanilla == AbilityNameVanilla::Occult && self.sorcery_archetype.is_some() {
+            return Err(GuidedError::AbilityMin);
+        } 
+        
+        if dots >= 1 {
+            return Ok(());
+        }
+
+        if ability_name_vanilla == AbilityNameVanilla::Brawl {
+            if let Some(styles) = &self.martial_arts_styles {
+                if !styles.is_empty() {
+                    return Err(GuidedError::AbilityMin);
+                }
+            }
+        }
+        
+        if let Some(favored) = &self.solar_favored_abilities {
+            if favored.contains(&ability_name_vanilla.into()) {
+                return Err(GuidedError::AbilityMin);
+            }
+        }
+
+        Ok(())
     }
 }

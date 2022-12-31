@@ -602,6 +602,7 @@ fn test_guided_solar() {
     );
 
     let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Dodge, 3));
+    guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
         guided_builder
             .as_guided_view()
@@ -636,6 +637,7 @@ fn test_guided_solar() {
     let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Thrown, 2));
     guided_builder.apply_mutation(mutation).unwrap();
     let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots("Armoring".to_owned(), 1));
+    guided_builder.apply_mutation(mutation).unwrap();
     let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();

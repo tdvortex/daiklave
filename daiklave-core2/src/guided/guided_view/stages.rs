@@ -20,6 +20,9 @@ impl<'source> GuidedView<'source> {
                 CharacterMutation::SetAttribute(_, _) => {
                     self.stage == GuidedStage::ChooseAttributes
                 }
+                CharacterMutation::SetAbilityDots(_, _) => {
+                    self.stage == GuidedStage::ChooseAbilities
+                }
                 _ => false,
             },
             GuidedMutation::AdvanceStage => true,

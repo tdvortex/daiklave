@@ -55,4 +55,6 @@ pub enum GuidedError {
     SolarAbilityError(#[from] SolarAbilityError),
     #[error("Could not set a Sorcery value")]
     SorceryError(#[from] SorceryError),
+    #[error("Cannot reduce abilities below required levels for Martial Arts, Sorcery, or Favored abilities")]
+    AbilityMin,
 }
