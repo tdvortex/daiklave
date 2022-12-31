@@ -80,8 +80,12 @@ impl Character {
             CharacterMutation::RemoveMartialArtsStyle(id) => {
                 self.check_remove_martial_arts_style(*id)
             }
-            CharacterMutation::SetMartialArtsDots(_, _) => todo!(),
-            CharacterMutation::SetCraftDots(_, _) => todo!(),
+            CharacterMutation::SetMartialArtsDots(id, dots) => {
+                self.check_set_martial_arts_dots(*id, *dots)
+            }
+            CharacterMutation::SetCraftDots(focus, dots) => {
+                self.check_set_craft_dots(focus.as_str(), *dots)
+            }
         }
     }
 
@@ -129,8 +133,12 @@ impl Character {
                 self.add_martial_arts_style(*id, style)
             }
             CharacterMutation::RemoveMartialArtsStyle(id) => self.remove_martial_arts_style(*id),
-            CharacterMutation::SetMartialArtsDots(_, _) => todo!(),
-            CharacterMutation::SetCraftDots(_, _) => todo!(),
+            CharacterMutation::SetMartialArtsDots(id, dots) => {
+                self.set_martial_arts_dots(*id, *dots)
+            }
+            CharacterMutation::SetCraftDots(focus, dots) => {
+                self.set_craft_dots(focus.as_str(), *dots)
+            }
         }
     }
 }

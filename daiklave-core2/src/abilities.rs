@@ -36,7 +36,7 @@ impl Ability {
         }
     }
 
-    fn set_dots(&mut self, new_dots: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub(crate) fn set_dots(&mut self, new_dots: u8) -> Result<&mut Self, CharacterMutationError> {
         if new_dots > 5 {
             Err(CharacterMutationError::SetAbilityError(
                 SetAbilityError::InvalidRating(new_dots),

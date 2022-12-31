@@ -14,7 +14,7 @@ use exalt_state::exalt::{
 };
 use health::{DamageLevel, WoundPenalty};
 use martial_arts::{
-    AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError,
+    AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError, SetMartialArtsError,
 };
 use name_and_concept::RemoveConceptError;
 use thiserror::Error;
@@ -163,6 +163,8 @@ pub enum CharacterMutationError {
     /// Error occuring while trying to remove a Martial Arts style
     #[error("Cannot remove Martial Arts style")]
     RemoveMartialArtsStyleError(#[from] RemoveMartialArtsStyleError),
+    #[error("Cannot set Martial Arts dots")]
+    SetMartialArtsError(#[from] SetMartialArtsError),
 }
 
 /// A container to hold a successfully applied sequence of mutations, with

@@ -179,6 +179,13 @@ pub enum RemoveMartialArtsStyleError {
     NotFound,
 }
 
+#[derive(Debug, Error)]
+pub enum SetMartialArtsError {
+    /// Can't change dots on a missing style
+    #[error("Style not found")]
+    NotFound,
+}
+
 impl<'source> ExaltStateView<'source> {
     pub(crate) fn check_add_martial_arts_style(
         &self,
@@ -228,6 +235,29 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Exalt(exalt) => {
                 exalt.remove_martial_arts_style(id)?;
             }
+        }
+        Ok(self)
+    }
+
+    fn check_set_martial_arts_dots(
+        &self,
+        id: MartialArtsStyleId,
+        dots: u8
+    ) -> Result<(), CharacterMutationError> {
+        match self {
+            ExaltStateView::Mortal(mortal) => mortal.check_set_martial_arts_dots(id, dots),
+            ExaltStateView::Exalt(exalt) => exalt.check_set_martial_arts_dots(id, dots),
+        }
+    }
+    
+    fn set_martial_arts_dots(
+        &mut self,
+        id: MartialArtsStyleId,
+        dots: u8
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            ExaltStateView::Mortal(mortal) => {mortal.set_martial_arts_dots(id, dots)?;},
+            ExaltStateView::Exalt(exalt) => {exalt.set_martial_arts_dots(id, dots)?;},
         }
         Ok(self)
     }
@@ -282,6 +312,29 @@ impl ExaltState {
             ExaltState::Exalt(exalt) => {
                 exalt.remove_martial_arts_style(id)?;
             }
+        }
+        Ok(self)
+    }
+
+    fn check_set_martial_arts_dots(
+        &self,
+        id: MartialArtsStyleId,
+        dots: u8
+    ) -> Result<(), CharacterMutationError> {
+        match self {
+            ExaltState::Mortal(mortal) => mortal.check_set_martial_arts_dots(id, dots),
+            ExaltState::Exalt(exalt) => exalt.check_set_martial_arts_dots(id, dots),
+        }
+    }
+    
+    fn set_martial_arts_dots(
+        &mut self,
+        id: MartialArtsStyleId,
+        dots: u8
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            ExaltState::Mortal(mortal) => {mortal.set_martial_arts_dots(id, dots)?;},
+            ExaltState::Exalt(exalt) => {exalt.set_martial_arts_dots(id, dots)?;},
         }
         Ok(self)
     }
