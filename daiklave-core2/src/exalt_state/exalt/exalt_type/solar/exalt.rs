@@ -131,9 +131,24 @@ impl<'source> ExaltStateView<'source> {
         Ok(())
     }
 
+    pub fn check_set_solar_view(&self, _solar: &SolarView) -> Result<(), CharacterMutationError> {
+        Ok(())
+    }
+
     pub fn set_solar(
         &mut self,
         solar: &'source Solar,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if self.is_solar() {
+            return Ok(self);
+        }
+
+        self.set_solar_view(solar.as_view())
+    }
+
+    pub fn set_solar_view(
+        &mut self,
+        solar: SolarView,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self.is_solar() {
             return Ok(self);
@@ -149,7 +164,7 @@ impl<'source> ExaltStateView<'source> {
                         .into_iter()
                         .map(|(id, mortal_artist)| (id, mortal_artist.into()))
                         .collect(),
-                    exalt_type: ExaltTypeView::Solar(solar.as_view()),
+                    exalt_type: ExaltTypeView::Solar(solar),
                 })
             }
             ExaltStateView::Exalt(exalt) => {
@@ -158,7 +173,7 @@ impl<'source> ExaltStateView<'source> {
                 *self = Self::Exalt(ExaltView {
                     essence: EssenceView::new_solar(exalt.essence().rating()),
                     martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles),
-                    exalt_type: ExaltTypeView::Solar(solar.as_view()),
+                    exalt_type: ExaltTypeView::Solar(solar),
                 });
             }
         }

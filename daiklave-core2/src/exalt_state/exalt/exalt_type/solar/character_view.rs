@@ -35,4 +35,24 @@ impl<'source> CharacterView<'source> {
         self.exalt_state.set_solar(solar_traits)?;
         Ok(self)
     }
+
+    pub(crate) fn check_set_solar_view(
+        &self,
+        solar_view: &SolarView,
+    ) -> Result<(), CharacterMutationError> {
+        self.exalt_state.check_set_solar_view(solar_view)
+    }
+
+    pub(crate) fn set_solar_view(
+        &mut self,
+        solar_view: SolarView,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.check_set_solar_view(&solar_view)?;
+        if self.is_mortal() {
+            let new_willpower_rating = self.willpower().rating() + 2;
+            self.set_willpower_rating(new_willpower_rating)?;
+        }
+        self.exalt_state.set_solar_view(solar_view)?;
+        Ok(self)
+    }
 }

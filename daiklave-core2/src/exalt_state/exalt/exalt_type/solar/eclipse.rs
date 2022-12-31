@@ -88,6 +88,13 @@ impl EclipseView {
     pub fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
     }
+
+    pub fn to_owned(self) -> Eclipse {
+        Eclipse {
+            caste_not_supernal: self.caste_not_supernal,
+            supernal: self.supernal,
+        }
+    }
 }
 
 /// Builder struct for constructing Eclipse Caste traits.
@@ -161,8 +168,8 @@ impl EclipseBuilder {
         Ok(self)
     }
 
-    /// Completes the build process and returns an Eclipse struct if successful.
-    pub fn build(mut self) -> Result<Eclipse, SolarBuilderError> {
+    /// Completes the build process and returns an EclipseView struct if successful.
+    pub fn build(mut self) -> Result<EclipseView, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));
         }
@@ -183,7 +190,7 @@ impl EclipseBuilder {
         let mut arr = option_arr.map(|opt| opt.unwrap());
         arr.sort();
 
-        Ok(Eclipse {
+        Ok(EclipseView {
             caste_not_supernal: arr,
             supernal,
         })

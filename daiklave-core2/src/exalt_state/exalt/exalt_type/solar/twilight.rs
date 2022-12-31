@@ -88,6 +88,13 @@ impl TwilightView {
     pub fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
     }
+
+    pub fn to_owned(self) -> Twilight {
+        Twilight {
+            caste_not_supernal: self.caste_not_supernal,
+            supernal: self.supernal,
+        }
+    }
 }
 
 /// Builder struct for constructing Twilight Caste traits.
@@ -168,7 +175,7 @@ impl TwilightBuilder {
     }
 
     /// Completes the build process and returns a Twilight struct if successful.
-    pub fn build(mut self) -> Result<Twilight, SolarBuilderError> {
+    pub fn build(mut self) -> Result<TwilightView, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));
         }
@@ -189,7 +196,7 @@ impl TwilightBuilder {
         let mut arr = option_arr.map(|opt| opt.unwrap());
         arr.sort();
 
-        Ok(Twilight {
+        Ok(TwilightView {
             caste_not_supernal: arr,
             supernal,
         })

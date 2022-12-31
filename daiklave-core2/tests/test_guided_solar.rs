@@ -299,7 +299,7 @@ fn test_guided_solar() {
 
     // Check cannot remove a missing favored ability
     assert!(guided_builder
-        .check_mutation(&GuidedMutation::RemoveSolarCasteAbility(AbilityName::Lore))
+        .check_mutation(&GuidedMutation::RemoveSolarFavoredAbility(AbilityName::Lore))
         .is_err());
 
     // Check cannot proceed without 5 favored abilities
@@ -309,24 +309,15 @@ fn test_guided_solar() {
         ))
         .is_err());
 
-    // Finish building solar
-    guided_builder
-        .apply_mutation(GuidedMutation::AddSolarFavoredAbility(
-            AbilityName::Survival,
-        ))
+    // Move on to next stage
+        guided_builder
+        .apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Survival))
         .unwrap();
-    let solar = guided_builder
-        .as_guided_view()
-        .unwrap()
-        .solar_traits()
-        .unwrap();
-    guided_builder
-        .apply_mutation(GuidedMutation::CharacterMutation(
-            CharacterMutation::SetSolar(solar),
-        ))
-        .unwrap();
+    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseMartialArtsStyles);
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
 
-    // After finalizing caste/supernal/favored, should be a valid Solar with
+    // After Solar abilities stage, should be a valid Solar with
     // the correct abilities.
     let guided_view = guided_builder.as_guided_view().unwrap();
     let character_view = guided_view.as_character_view();
@@ -344,11 +335,6 @@ fn test_guided_solar() {
     assert!(solar_traits.has_favored_ability(AbilityName::Socialize));
     assert!(solar_traits.has_favored_ability(AbilityName::Survival));
     assert!(solar_traits.has_favored_ability(AbilityName::Thrown));
-
-    // Move on to next stage
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseMartialArtsStyles);
-    guided_builder.check_mutation(&mutation).unwrap();
-    guided_builder.apply_mutation(mutation).unwrap();
 
     // Add a martial arts style
     let crane_style = MartialArtsStyle::new(

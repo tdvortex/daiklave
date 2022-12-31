@@ -1,30 +1,44 @@
-use crate::{guided::{error::GuidedError, ExaltationChoice, GuidedStage, GuidedMutation}, CharacterMutation};
+use crate::{
+    guided::{error::GuidedError, ExaltationChoice, GuidedMutation, GuidedStage},
+    CharacterMutation,
+};
 
 use super::GuidedView;
 
 impl<'source> GuidedView<'source> {
-    pub(in crate::guided) fn validate_correct_stage(&self, guided_mutation: &GuidedMutation) -> Result<(), GuidedError> {
+    pub(in crate::guided) fn validate_correct_stage(
+        &self,
+        guided_mutation: &GuidedMutation,
+    ) -> Result<(), GuidedError> {
         if match guided_mutation {
-            GuidedMutation::CharacterMutation(mutation) => {
-                match mutation {
-                    CharacterMutation::SetName(_) | CharacterMutation::SetConcept(_) | CharacterMutation::RemoveConcept => {
-                        self.stage == GuidedStage::ChooseNameAndConcept
-                    }
-                    CharacterMutation::SetAttribute(_, _) => {
-                        self.stage == GuidedStage::ChooseAttributes
-                    }
-                    _ => false
+            GuidedMutation::CharacterMutation(mutation) => match mutation {
+                CharacterMutation::SetName(_)
+                | CharacterMutation::SetConcept(_)
+                | CharacterMutation::RemoveConcept => {
+                    self.stage == GuidedStage::ChooseNameAndConcept
                 }
-            }
+                CharacterMutation::SetAttribute(_, _) => {
+                    self.stage == GuidedStage::ChooseAttributes
+                }
+                _ => false,
+            },
             GuidedMutation::SetStage(_) => true,
             GuidedMutation::SetExaltation(_) => self.stage == GuidedStage::ChooseExaltation,
-            GuidedMutation::AddSolarCasteAbility(_) 
-            | GuidedMutation::RemoveSolarCasteAbility(_) => self.stage == GuidedStage::ChooseSolarCasteAbilities,
-            GuidedMutation::SetSolarSupernalAbility(_) => self.stage == GuidedStage::ChooseSolarSupernalAbility,
+            GuidedMutation::AddSolarCasteAbility(_)
+            | GuidedMutation::RemoveSolarCasteAbility(_) => {
+                self.stage == GuidedStage::ChooseSolarCasteAbilities
+            }
+            GuidedMutation::SetSolarSupernalAbility(_) => {
+                self.stage == GuidedStage::ChooseSolarSupernalAbility
+            }
             GuidedMutation::AddSolarFavoredAbility(_)
-            | GuidedMutation::RemoveSolarFavoredAbility(_) => self.stage == GuidedStage::ChooseSolarFavoredAbilities,
+            | GuidedMutation::RemoveSolarFavoredAbility(_) => {
+                self.stage == GuidedStage::ChooseSolarFavoredAbilities
+            }
             GuidedMutation::AddMartialArtsStyle(_, _)
-            | GuidedMutation::RemoveMartialArtsStyle(_) => self.stage == GuidedStage::ChooseMartialArtsStyles,
+            | GuidedMutation::RemoveMartialArtsStyle(_) => {
+                self.stage == GuidedStage::ChooseMartialArtsStyles
+            }
             GuidedMutation::SetSorceryArchetype(_, _)
             | GuidedMutation::SetShapingRitual(_, _)
             | GuidedMutation::SetControlSpell(_, _) => self.stage == GuidedStage::ChooseSorcery,
@@ -34,7 +48,6 @@ impl<'source> GuidedView<'source> {
             Err(GuidedError::StageOrderError)
         }
     }
-
 
     pub(in crate::guided) fn validate_stage_complete(&self) -> Result<(), GuidedError> {
         if !match self.stage {
@@ -123,6 +136,18 @@ impl<'source> GuidedView<'source> {
                 }
             }
             _ => Err(GuidedError::StageOrderError),
+        }
+    }
+
+    pub(in crate::guided) fn finalize_stage(&mut self) -> Result<&mut Self, GuidedError> {
+        match self.stage {
+            GuidedStage::ChooseSolarFavoredAbilities => {
+                self.character_view
+                    .set_solar_view(self.solar_traits()?)
+                    .map_err(GuidedError::CharacterMutationError)?;
+                Ok(self)
+            }
+            _ => Ok(self),
         }
     }
 }

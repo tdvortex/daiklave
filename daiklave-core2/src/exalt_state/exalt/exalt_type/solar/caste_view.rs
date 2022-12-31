@@ -6,6 +6,8 @@ use crate::{
     },
 };
 
+use super::caste::SolarCaste;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SolarCasteView {
     Dawn(DawnView),
@@ -33,6 +35,16 @@ impl SolarCasteView {
             SolarCasteView::Twilight(twilight) => twilight.supernal_ability(),
             SolarCasteView::Night(night) => night.supernal_ability(),
             SolarCasteView::Eclipse(eclipse) => eclipse.supernal_ability(),
+        }
+    }
+
+    pub fn to_owned(self) -> SolarCaste {
+        match self {
+            SolarCasteView::Dawn(view) => SolarCaste::Dawn(view.to_owned()),
+            SolarCasteView::Zenith(view) => SolarCaste::Zenith(view.to_owned()),
+            SolarCasteView::Twilight(view) => SolarCaste::Twilight(view.to_owned()),
+            SolarCasteView::Night(view) => SolarCaste::Night(view.to_owned()),
+            SolarCasteView::Eclipse(view) => SolarCaste::Eclipse(view.to_owned()),
         }
     }
 }

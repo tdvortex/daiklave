@@ -1,12 +1,14 @@
 use crate::{
-    exalt_state::exalt::exalt_type::solar::{Dawn, Eclipse, Night, Solar, Twilight, Zenith},
+    exalt_state::exalt::exalt_type::solar::{
+        Dawn, Eclipse, Night, Solar, SolarView, Twilight, Zenith,
+    },
     guided::{error::GuidedError, guided_view::GuidedView, ExaltationChoice},
 };
 
 impl<'source> GuidedView<'source> {
     /// Returns a new owned Solar object for the previously specified Caste,
     /// Supernal, and Favored abilities.
-    pub fn solar_traits(&self) -> Result<Solar, GuidedError> {
+    pub fn solar_traits(&self) -> Result<SolarView, GuidedError> {
         Ok(match self.exaltation_choice {
             None => return Err(GuidedError::StageOrderError),
             Some(ExaltationChoice::Dawn) => {
@@ -43,7 +45,9 @@ impl<'source> GuidedView<'source> {
                             .add_favored_ability(*ability)
                             .expect("GuidedView should have valid favored abilities");
                     });
-                builder.build().or(Err(GuidedError::StageIncompleteError))?
+                builder
+                    .build_view()
+                    .or(Err(GuidedError::StageIncompleteError))?
             }
             Some(ExaltationChoice::Zenith) => {
                 let zenith = {
@@ -77,7 +81,9 @@ impl<'source> GuidedView<'source> {
                             .add_favored_ability(*ability)
                             .expect("GuidedView should have valid favored abilities");
                     });
-                builder.build().or(Err(GuidedError::StageIncompleteError))?
+                builder
+                    .build_view()
+                    .or(Err(GuidedError::StageIncompleteError))?
             }
             Some(ExaltationChoice::Twilight) => {
                 let twilight = {
@@ -111,7 +117,9 @@ impl<'source> GuidedView<'source> {
                             .add_favored_ability(*ability)
                             .expect("GuidedView should have valid favored abilities");
                     });
-                builder.build().or(Err(GuidedError::StageIncompleteError))?
+                builder
+                    .build_view()
+                    .or(Err(GuidedError::StageIncompleteError))?
             }
             Some(ExaltationChoice::Night) => {
                 let night = {
@@ -145,7 +153,9 @@ impl<'source> GuidedView<'source> {
                             .add_favored_ability(*ability)
                             .expect("GuidedView should have valid favored abilities");
                     });
-                builder.build().or(Err(GuidedError::StageIncompleteError))?
+                builder
+                    .build_view()
+                    .or(Err(GuidedError::StageIncompleteError))?
             }
             Some(ExaltationChoice::Eclipse) => {
                 let eclipse = {
@@ -179,7 +189,9 @@ impl<'source> GuidedView<'source> {
                             .add_favored_ability(*ability)
                             .expect("GuidedView should have valid favored abilities");
                     });
-                builder.build().or(Err(GuidedError::StageIncompleteError))?
+                builder
+                    .build_view()
+                    .or(Err(GuidedError::StageIncompleteError))?
             }
             Some(_) => {
                 return Err(GuidedError::StageOrderError);

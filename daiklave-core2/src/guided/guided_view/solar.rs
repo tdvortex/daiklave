@@ -3,9 +3,7 @@ use std::collections::HashSet;
 use crate::{
     abilities::AbilityName,
     exalt_state::exalt::exalt_type::solar::validate_solar_caste_ability,
-    guided::{
-        error::{GuidedError, SolarAbilityError},
-    },
+    guided::error::{GuidedError, SolarAbilityError},
 };
 
 use super::GuidedView;

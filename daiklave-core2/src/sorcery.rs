@@ -10,6 +10,7 @@ use crate::{
 
 /// A sorcery archetype, representing one path to sorcerous knowledge. This
 /// unlocks various shaping rituals as well as unique merits.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SorceryArchetype {
     name: String,
     book_reference: Option<BookReference>,
@@ -56,6 +57,7 @@ impl Deref for SorceryArchetypeId {
 
 /// A shaping ritual, one method that a sorcerous archetype might use to
 /// generate Sorcerous Motes.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ShapingRitual {
     archetype_id: SorceryArchetypeId,
     book_reference: Option<BookReference>,
@@ -106,6 +108,7 @@ impl Deref for ShapingRitualId {
 
 /// A Sorcery Spell. Note that this is almost never used directly; instead,
 /// it is typically wrapped in TerrestrialSpell, CelestialSpell, or SolarSpell.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Spell {
     name: String,
     book_reference: Option<BookReference>,
@@ -179,6 +182,7 @@ impl Deref for SpellId {
 }
 
 /// A Spell of the first (Terrestrial) Circle. Derefs to Spell.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TerrestrialSpell(Spell);
 
 impl TerrestrialSpell {

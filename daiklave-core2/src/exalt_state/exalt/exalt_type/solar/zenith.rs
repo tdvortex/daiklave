@@ -88,6 +88,13 @@ impl ZenithView {
     pub fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
     }
+
+    pub fn to_owned(self) -> Zenith {
+        Zenith {
+            caste_not_supernal: self.caste_not_supernal,
+            supernal: self.supernal,
+        }
+    }
 }
 
 /// Builder struct for constructing Zenith Caste traits.
@@ -161,8 +168,8 @@ impl ZenithBuilder {
         Ok(self)
     }
 
-    /// Completes the build process and returns a Zenith struct if successful.
-    pub fn build(mut self) -> Result<Zenith, SolarBuilderError> {
+    /// Completes the build process and returns a ZenithView struct if successful.
+    pub fn build(mut self) -> Result<ZenithView, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));
         }
@@ -183,7 +190,7 @@ impl ZenithBuilder {
         let mut arr = option_arr.map(|opt| opt.unwrap());
         arr.sort();
 
-        Ok(Zenith {
+        Ok(ZenithView {
             caste_not_supernal: arr,
             supernal,
         })

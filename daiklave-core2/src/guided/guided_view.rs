@@ -23,6 +23,7 @@ mod stages;
 
 /// A view into the current state of the guided character builder, including
 /// any partial or temporarily incomplete state.
+#[derive(Debug)]
 pub struct GuidedView<'source> {
     pub(in crate::guided) character_view: CharacterView<'source>,
     pub(in crate::guided) stage: GuidedStage,
@@ -62,6 +63,7 @@ impl<'source> GuidedView<'source> {
             GuidedMutation::SetStage(next_stage) => {
                 self.validate_stage_complete()?;
                 self.validate_stage_order(next_stage)?;
+                self.finalize_stage()?;
                 self.stage = *next_stage;
             }
             GuidedMutation::SetExaltation(exaltation_choice) => {

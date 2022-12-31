@@ -88,6 +88,13 @@ impl NightView {
     pub fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
     }
+
+    pub fn to_owned(self) -> Night {
+        Night {
+            caste_not_supernal: self.caste_not_supernal,
+            supernal: self.supernal,
+        }
+    }
 }
 
 /// Builder struct for constructing Night Caste traits.
@@ -164,7 +171,7 @@ impl NightBuilder {
     }
 
     /// Completes the build process and returns a Night struct if successful.
-    pub fn build(mut self) -> Result<Night, SolarBuilderError> {
+    pub fn build(mut self) -> Result<NightView, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));
         }
@@ -185,7 +192,7 @@ impl NightBuilder {
         let mut arr = option_arr.map(|opt| opt.unwrap());
         arr.sort();
 
-        Ok(Night {
+        Ok(NightView {
             caste_not_supernal: arr,
             supernal,
         })

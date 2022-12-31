@@ -119,6 +119,13 @@ impl DawnView {
     pub fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
     }
+
+    pub fn to_owned(self) -> Dawn {
+        Dawn {
+            caste_not_supernal: self.caste_not_supernal,
+            supernal: self.supernal,
+        }
+    }
 }
 
 /// Builder struct for constructing Dawn Caste traits.
@@ -200,8 +207,8 @@ impl DawnBuilder {
         Ok(self)
     }
 
-    /// Completes the build process and returns a Dawn struct if successful.
-    pub fn build(mut self) -> Result<Dawn, SolarBuilderError> {
+    /// Completes the build process and returns a DawnView struct if successful.
+    pub fn build(mut self) -> Result<DawnView, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));
         }
@@ -252,7 +259,7 @@ impl DawnBuilder {
         let mut arr = option_arr.map(|opt| opt.unwrap());
         arr.sort();
 
-        Ok(Dawn {
+        Ok(DawnView {
             caste_not_supernal: arr,
             supernal,
         })
