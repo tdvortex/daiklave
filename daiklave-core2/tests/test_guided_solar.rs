@@ -4,11 +4,16 @@ use daiklave_core2::{
     abilities::AbilityName,
     attributes::AttributeName,
     book_reference::{Book, BookReference},
+    charms::{CharmCost, CharmCostType, CharmKeyword},
     guided::{begin_guided_builder, ExaltationChoice, GuidedMutation, GuidedStage},
     id::UniqueId,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
+    sorcery::{
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, Spell, SpellId,
+        TerrestrialSpell,
+    },
     weapons::WeaponId,
-    CharacterMutation, charms::{CharmCost, CharmCostType, CharmKeyword}, sorcery::{ShapingRitualId, TerrestrialSpell, Spell, SpellId, SorceryArchetype, SorceryArchetypeId, ShapingRitual},
+    CharacterMutation,
 };
 #[test]
 fn test_guided_solar() {
@@ -433,7 +438,8 @@ fn test_guided_solar() {
         face in dreams—perhaps you even summoned her yourself \
         to make your bargain. Through cunning, charisma, or \
         pleasing offerings, you have made a pact with her, taking \
-        the power of the Shadow Lover for your own.".to_owned(),
+        the power of the Shadow Lover for your own."
+            .to_owned(),
     );
     let archetype_id = SorceryArchetypeId(UniqueId::Placeholder(1));
 
@@ -458,7 +464,8 @@ fn test_guided_solar() {
         she may only drain one Intimacy to fuel the casting of a spell, \
         but she may draw power from any available Intimacies when \
         casting her control spell. She cannot draw more than ten \
-        sorcerous motes per scene with this ritual.".to_owned(),
+        sorcerous motes per scene with this ritual."
+            .to_owned(),
     );
     let shaping_ritual_id = ShapingRitualId(UniqueId::Placeholder(1));
 
@@ -467,16 +474,17 @@ fn test_guided_solar() {
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Add control spell
-    let control_spell = TerrestrialSpell::from_spell(
-        Spell::new(
-            "Corrupted Words".to_owned(),
-            Some(BookReference::new(Book::CoreRulebook, 472)),
-            vec![CharmCost::new(CharmCostType::SorcerousMotes, 15), CharmCost::new(CharmCostType::Willpower, 1)],
-            vec![CharmKeyword::Psyche],
-            "Indefinite".to_owned(),
-            "Really long spell description".to_owned(),
-        )
-    );
+    let control_spell = TerrestrialSpell::from_spell(Spell::new(
+        "Corrupted Words".to_owned(),
+        Some(BookReference::new(Book::CoreRulebook, 472)),
+        vec![
+            CharmCost::new(CharmCostType::SorcerousMotes, 15),
+            CharmCost::new(CharmCostType::Willpower, 1),
+        ],
+        vec![CharmKeyword::Psyche],
+        "Indefinite".to_owned(),
+        "Really long spell description".to_owned(),
+    ));
     let control_spell_id = SpellId(UniqueId::Placeholder(1));
 
     let mutation = GuidedMutation::SetControlSpell(control_spell_id, control_spell);

@@ -45,8 +45,8 @@ impl<'source> GuidedView<'source> {
             GuidedStage::ChooseMartialArtsStyles => true,
             GuidedStage::ChooseSorcery => {
                 // Either no sorcery, or all sorcery is specified
-                self.sorcery_archetype.is_some() == self.shaping_ritual.is_some() 
-                && self.shaping_ritual.is_some() == self.control_spell.is_some()
+                self.sorcery_archetype.is_some() == self.shaping_ritual.is_some()
+                    && self.shaping_ritual.is_some() == self.control_spell.is_some()
             }
             GuidedStage::ChooseAbilities => todo!(),
         } {

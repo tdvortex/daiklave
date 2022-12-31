@@ -5,10 +5,17 @@ use crate::{
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError,
     },
-    CharacterMutationError, CharacterView, sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, TerrestrialSpell},
+    sorcery::{
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
+        TerrestrialSpell,
+    },
+    CharacterMutationError, CharacterView,
 };
 
-use super::{error::{GuidedError, SorceryError}, ExaltationChoice, GuidedMutation, GuidedStage};
+use super::{
+    error::{GuidedError, SorceryError},
+    ExaltationChoice, GuidedMutation, GuidedStage,
+};
 
 mod bonus_points;
 mod solar;
@@ -27,7 +34,8 @@ pub struct GuidedView<'source> {
     pub(in crate::guided) solar_favored_abilities: Option<HashSet<AbilityName>>,
     pub(in crate::guided) martial_arts_styles:
         Option<HashMap<MartialArtsStyleId, &'source MartialArtsStyle>>,
-    pub(in crate::guided) sorcery_archetype: Option<(SorceryArchetypeId, &'source SorceryArchetype)>,
+    pub(in crate::guided) sorcery_archetype:
+        Option<(SorceryArchetypeId, &'source SorceryArchetype)>,
     pub(in crate::guided) shaping_ritual: Option<(ShapingRitualId, &'source ShapingRitual)>,
     pub(in crate::guided) control_spell: Option<(SpellId, &'source TerrestrialSpell)>,
 }
@@ -129,7 +137,9 @@ impl<'source> GuidedView<'source> {
                 self.update_bonus_points();
             }
             GuidedMutation::SetShapingRitual(id, shaping_ritual) => {
-                if self.sorcery_archetype.is_none() || shaping_ritual.archetype_id() != self.sorcery_archetype.unwrap().0 {
+                if self.sorcery_archetype.is_none()
+                    || shaping_ritual.archetype_id() != self.sorcery_archetype.unwrap().0
+                {
                     return Err(GuidedError::SorceryError(SorceryError::MissingArchetype));
                 }
 
@@ -157,10 +167,10 @@ impl<'source> GuidedView<'source> {
     }
 
     pub fn charms(&self) -> i32 {
-        if self.sorcery_archetype.is_some() || self.shaping_ritual.is_some() || self.control_spell.is_some() {
-            1
-        } else {
-            0
-        }
+        i32::from(
+            self.sorcery_archetype.is_some()
+                || self.shaping_ritual.is_some()
+                || self.control_spell.is_some(),
+        )
     }
 }

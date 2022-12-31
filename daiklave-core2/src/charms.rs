@@ -96,13 +96,10 @@ pub struct CharmCost {
 }
 
 impl CharmCost {
-    pub fn new(cost_type: CharmCostType,
-        amount: u8) -> Self {
-            Self {
-                cost_type,
-                amount
-            }
-        }
+    /// Creates a new CharmCost
+    pub fn new(cost_type: CharmCostType, amount: u8) -> Self {
+        Self { cost_type, amount }
+    }
 }
 
 /// The type of action necessary to use the Charm

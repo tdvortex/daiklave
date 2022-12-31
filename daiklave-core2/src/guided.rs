@@ -1,15 +1,14 @@
-use std::collections::{HashMap, HashSet};
-
 use crate::{
     abilities::AbilityName,
-    martial_arts::{MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError},
-    CharacterMutation, CharacterMutationError, CharacterView, sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, TerrestrialSpell},
+    martial_arts::{MartialArtsStyle, MartialArtsStyleId},
+    sorcery::{
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
+        TerrestrialSpell,
+    },
+    CharacterMutation, CharacterView,
 };
 
-use self::{
-    error::{GuidedError, SolarAbilityError},
-    guided_view::GuidedView,
-};
+use self::{error::GuidedError, guided_view::GuidedView};
 
 mod error;
 mod guided_view;
@@ -47,8 +46,12 @@ pub enum GuidedMutation {
     AddMartialArtsStyle(MartialArtsStyleId, MartialArtsStyle),
     /// Removes a Martial Arts style.
     RemoveMartialArtsStyle(MartialArtsStyleId),
+    /// Sets the sorcery archetype for the character. Clears any
+    /// previous sorcery archetype and/or shaping ritual.
     SetSorceryArchetype(SorceryArchetypeId, SorceryArchetype),
+    /// Sets the shaping ritual for the character.
     SetShapingRitual(ShapingRitualId, ShapingRitual),
+    /// Sets the control spell for the character.
     SetControlSpell(SpellId, TerrestrialSpell),
 }
 
@@ -82,6 +85,7 @@ pub enum GuidedStage {
     /// does not purchase any non-Control Spells or associated Shaping Ritual
     /// merits.
     ChooseSorcery,
+    /// A stage for
     ChooseAbilities,
 }
 
