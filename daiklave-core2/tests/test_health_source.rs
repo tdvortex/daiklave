@@ -43,8 +43,8 @@ fn test_health_character_event_source() {
         WoundPenalty::Incapacitated,
     ];
     let mutation = CharacterMutation::SetWoundPenalties(new_wound_penalties);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
 
     let mut count = 0;
@@ -73,8 +73,8 @@ fn test_health_character_event_source() {
 
     // Check taking damage
     let mutation = CharacterMutation::TakeDamage(DamageLevel::Bashing, 3);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(
         character_view.health().current_wound_penalty(),
@@ -82,8 +82,8 @@ fn test_health_character_event_source() {
     );
 
     let mutation = CharacterMutation::TakeDamage(DamageLevel::Lethal, 2);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(
         character_view.health().current_wound_penalty(),
@@ -91,8 +91,8 @@ fn test_health_character_event_source() {
     );
 
     let mutation = CharacterMutation::TakeDamage(DamageLevel::Aggravated, 2);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(
         character_view.health().current_wound_penalty(),
@@ -100,8 +100,8 @@ fn test_health_character_event_source() {
     );
 
     let mutation = CharacterMutation::TakeDamage(DamageLevel::Bashing, 1);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     let mut count = 0;
     let expected = vec![
@@ -129,8 +129,8 @@ fn test_health_character_event_source() {
 
     // Check healing
     let mutation = CharacterMutation::HealDamage(2);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(
         character_view.health().current_wound_penalty(),
@@ -138,8 +138,8 @@ fn test_health_character_event_source() {
     );
 
     let mutation = CharacterMutation::HealDamage(3);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(
         character_view.health().current_wound_penalty(),
@@ -147,8 +147,8 @@ fn test_health_character_event_source() {
     );
 
     let mutation = CharacterMutation::HealDamage(3);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     let mut count = 0;
     let expected = vec![

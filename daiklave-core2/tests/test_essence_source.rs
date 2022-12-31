@@ -63,16 +63,16 @@ fn test_essence_character_event_source() {
 
     // Exalts should be able to spend from either peripheral or personal
     let mutation = CharacterMutation::SpendMotes(MotePool::Peripheral, 10);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 23);
     assert_eq!(mote_state.peripheral().spent(), 10);
 
     let mutation = CharacterMutation::SpendMotes(MotePool::Personal, 10);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.personal().available(), 3);
@@ -86,8 +86,8 @@ fn test_essence_character_event_source() {
         MotePool::Peripheral,
         10,
     );
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 13);
@@ -101,8 +101,8 @@ fn test_essence_character_event_source() {
         MotePool::Personal,
         10,
     );
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 6);
@@ -150,8 +150,8 @@ fn test_essence_character_event_source() {
 
     // Recovering essence should refill peripheral first
     let mutation = CharacterMutation::RecoverMotes(10);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
@@ -161,8 +161,8 @@ fn test_essence_character_event_source() {
 
     // ...and personal second
     let mutation = CharacterMutation::RecoverMotes(10);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
@@ -172,8 +172,8 @@ fn test_essence_character_event_source() {
 
     // Uncommitting mote effects should make them spent again
     let mutation = CharacterMutation::UncommitMotes(CommittedMotesId(UniqueId::Placeholder(2)));
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
@@ -194,8 +194,8 @@ fn test_essence_character_event_source() {
     assert_eq!(commits_count, 1);
 
     let mutation = CharacterMutation::UncommitMotes(CommittedMotesId(UniqueId::Placeholder(1)));
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
@@ -215,8 +215,8 @@ fn test_essence_character_event_source() {
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     let mutation = CharacterMutation::SetEssenceRating(2);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(character_view.essence().unwrap().rating(), 2);
     let mote_state = character_view.essence().unwrap().motes();

@@ -48,8 +48,8 @@ fn test_abilities_character_event_source() {
 
     // Check set ability dots
     let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Archery, 1);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(
         character_view.abilities().dots(AbilityNameVanilla::Archery),
@@ -59,8 +59,8 @@ fn test_abilities_character_event_source() {
     // Check add specialty
     let mutation =
         CharacterMutation::AddSpecialty(AbilityNameVanilla::Archery, "Firewands".to_owned());
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(
         character_view
@@ -73,8 +73,8 @@ fn test_abilities_character_event_source() {
     // Check remove specialty
     let mutation =
         CharacterMutation::RemoveSpecialty(AbilityNameVanilla::Archery, "Firewands".to_owned());
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(
         character_view

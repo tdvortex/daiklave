@@ -8,18 +8,18 @@ fn test_name_and_concept_character() {
     assert!(character.concept().is_none());
 
     // Check set name
-    assert!(character.check_set_name("Drifting Leaves").is_ok());
-    assert!(character.set_name("Drifting Leaves").is_ok());
+    character.check_set_name("Drifting Leaves").unwrap();
+    character.set_name("Drifting Leaves").unwrap();
     assert_eq!(character.name(), "Drifting Leaves");
 
     // Check set concept
-    assert!(character.check_set_concept("Wandering ronin").is_ok());
-    assert!(character.set_concept("Wandering ronin").is_ok());
+    character.check_set_concept("Wandering ronin").unwrap();
+    character.set_concept("Wandering ronin").unwrap();
     assert_eq!(character.concept(), Some("Wandering ronin"));
 
     // Check remove concept
-    assert!(character.check_remove_concept().is_ok());
-    assert!(character.remove_concept().is_ok());
+    character.check_remove_concept().unwrap();
+    character.remove_concept().unwrap();
     assert!(character.concept().is_none());
 }
 
@@ -31,18 +31,18 @@ fn test_name_and_concept_character_view() {
     assert!(character_view.concept().is_none());
 
     // Check set name
-    assert!(character_view.check_set_name("Drifting Leaves").is_ok());
-    assert!(character_view.set_name("Drifting Leaves").is_ok());
+    character_view.check_set_name("Drifting Leaves").unwrap();
+    character_view.set_name("Drifting Leaves").unwrap();
     assert_eq!(character_view.name(), "Drifting Leaves");
 
     // Check set concept
-    assert!(character_view.check_set_concept("Wandering ronin").is_ok());
-    assert!(character_view.set_concept("Wandering ronin").is_ok());
+    character_view.check_set_concept("Wandering ronin").unwrap();
+    character_view.set_concept("Wandering ronin").unwrap();
     assert_eq!(character_view.concept(), Some("Wandering ronin"));
 
     // Check remove concept
-    assert!(character_view.check_remove_concept().is_ok());
-    assert!(character_view.remove_concept().is_ok());
+    character_view.check_remove_concept().unwrap();
+    character_view.remove_concept().unwrap();
     assert!(character_view.concept().is_none());
 }
 
@@ -56,22 +56,22 @@ fn test_name_and_concept_character_event_source() {
 
     // Check set name
     let mutation = CharacterMutation::SetName("Drifting Leaves".to_owned());
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(character_view.name(), "Drifting Leaves");
 
     // Check set concept
     let mutation = CharacterMutation::SetConcept("Wandering ronin".to_owned());
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(character_view.concept(), Some("Wandering ronin"));
 
     // Check remove concept
     let mutation = CharacterMutation::RemoveConcept;
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert!(character_view.concept().is_none());
 

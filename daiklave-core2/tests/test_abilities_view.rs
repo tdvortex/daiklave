@@ -46,24 +46,24 @@ fn test_abilities_character_view() {
     }
 
     // Check set ability dots
-    assert!(character_view
+    character_view
         .check_set_ability_dots(AbilityNameVanilla::Archery, 1)
-        .is_ok());
-    assert!(character_view
+        .unwrap();
+    character_view
         .set_ability_dots(AbilityNameVanilla::Archery, 1)
-        .is_ok());
+        .unwrap();
     assert_eq!(
         character_view.abilities().dots(AbilityNameVanilla::Archery),
         1
     );
 
     // Check add specialty
-    assert!(character_view
+    character_view
         .check_add_specialty(AbilityNameVanilla::Archery, "Firewands")
-        .is_ok());
-    assert!(character_view
+        .unwrap();
+    character_view
         .add_specialty(AbilityNameVanilla::Archery, "Firewands")
-        .is_ok());
+        .unwrap();
     assert_eq!(
         character_view
             .abilities()
@@ -73,12 +73,12 @@ fn test_abilities_character_view() {
     );
 
     // Check remove specialty
-    assert!(character_view
+    character_view
         .check_remove_specialty(AbilityNameVanilla::Archery, "Firewands")
-        .is_ok());
-    assert!(character_view
+        .unwrap();
+    character_view
         .remove_specialty(AbilityNameVanilla::Archery, "Firewands")
-        .is_ok());
+        .unwrap();
     assert_eq!(
         character_view
             .abilities()

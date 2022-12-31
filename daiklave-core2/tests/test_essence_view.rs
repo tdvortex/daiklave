@@ -47,7 +47,7 @@ fn test_essence_character_view() {
         });
         builder.build().unwrap()
     };
-    assert!(character_view.set_solar(&solar_traits).is_ok());
+    character_view.set_solar(&solar_traits).unwrap();
     assert!(character_view.essence().is_some());
     assert_eq!(character_view.essence().unwrap().rating(), 1);
     let mote_state = character_view.essence().unwrap().motes();
@@ -59,60 +59,62 @@ fn test_essence_character_view() {
     assert!(mote_state.committed().next().is_none());
 
     // Exalts should be able to spend from either peripheral or personal
-    assert!(character_view
+    character_view
         .check_spend_motes(MotePool::Peripheral, 10)
-        .is_ok());
-    assert!(character_view.spend_motes(MotePool::Peripheral, 10).is_ok());
+        .unwrap();
+    character_view
+        .spend_motes(MotePool::Peripheral, 10)
+        .unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 23);
     assert_eq!(mote_state.peripheral().spent(), 10);
-    assert!(character_view
+    character_view
         .check_spend_motes(MotePool::Personal, 10)
-        .is_ok());
-    assert!(character_view.spend_motes(MotePool::Personal, 10).is_ok());
+        .unwrap();
+    character_view.spend_motes(MotePool::Personal, 10).unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.personal().available(), 3);
     assert_eq!(mote_state.personal().spent(), 10);
 
     // Exalts should be able to commit from either peripheral or personal, with
     // overflow splitting across pools
-    assert!(character_view
+    character_view
         .check_commit_motes(
             &CommittedMotesId(UniqueId::Placeholder(1)),
             "Peripheral motes committed",
             MotePool::Peripheral,
-            10
+            10,
         )
-        .is_ok());
-    assert!(character_view
+        .unwrap();
+    character_view
         .commit_motes(
             &CommittedMotesId(UniqueId::Placeholder(1)),
             "Peripheral motes committed",
             MotePool::Peripheral,
-            10
+            10,
         )
-        .is_ok());
+        .unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 13);
     assert_eq!(mote_state.peripheral().spent(), 10);
     assert_eq!(mote_state.personal().available(), 3);
     assert_eq!(mote_state.personal().spent(), 10);
-    assert!(character_view
+    character_view
         .check_commit_motes(
             &CommittedMotesId(UniqueId::Placeholder(2)),
             "Personal motes committed",
             MotePool::Personal,
-            10
+            10,
         )
-        .is_ok());
-    assert!(character_view
+        .unwrap();
+    character_view
         .commit_motes(
             &CommittedMotesId(UniqueId::Placeholder(2)),
             "Personal motes committed",
             MotePool::Personal,
-            10
+            10,
         )
-        .is_ok());
+        .unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 6);
     assert_eq!(mote_state.peripheral().spent(), 10);
@@ -162,8 +164,8 @@ fn test_essence_character_view() {
         .is_err());
 
     // Recovering essence should refill peripheral first
-    assert!(character_view.check_recover_motes(10).is_ok());
-    assert!(character_view.recover_motes(10).is_ok());
+    character_view.check_recover_motes(10).unwrap();
+    character_view.recover_motes(10).unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
     assert_eq!(mote_state.peripheral().spent(), 0);
@@ -171,8 +173,8 @@ fn test_essence_character_view() {
     assert_eq!(mote_state.personal().spent(), 10);
 
     // ...and personal second
-    assert!(character_view.check_recover_motes(10).is_ok());
-    assert!(character_view.recover_motes(10).is_ok());
+    character_view.check_recover_motes(10).unwrap();
+    character_view.recover_motes(10).unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
     assert_eq!(mote_state.peripheral().spent(), 0);
@@ -180,12 +182,12 @@ fn test_essence_character_view() {
     assert_eq!(mote_state.personal().spent(), 0);
 
     // Uncommitting mote effects should make them spent again
-    assert!(character_view
+    character_view
         .check_uncommit_motes(&CommittedMotesId(UniqueId::Placeholder(2)))
-        .is_ok());
-    assert!(character_view
+        .unwrap();
+    character_view
         .uncommit_motes(&CommittedMotesId(UniqueId::Placeholder(2)))
-        .is_ok());
+        .unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
     assert_eq!(mote_state.peripheral().spent(), 7);
@@ -204,12 +206,12 @@ fn test_essence_character_view() {
     }
     assert_eq!(commits_count, 1);
 
-    assert!(character_view
+    character_view
         .check_uncommit_motes(&CommittedMotesId(UniqueId::Placeholder(1)))
-        .is_ok());
-    assert!(character_view
+        .unwrap();
+    character_view
         .uncommit_motes(&CommittedMotesId(UniqueId::Placeholder(1)))
-        .is_ok());
+        .unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
     assert_eq!(mote_state.peripheral().spent(), 17);
@@ -219,16 +221,16 @@ fn test_essence_character_view() {
 
     // Changing or lowering essence rating should end all mote commitments
     // and refill essence to full
-    assert!(character_view
+    character_view
         .commit_motes(
             &CommittedMotesId(UniqueId::Placeholder(3)),
             "Commitment to clear",
             MotePool::Personal,
-            1
+            1,
         )
-        .is_ok());
-    assert!(character_view.check_set_essence_rating(2).is_ok());
-    assert!(character_view.set_essence_rating(2).is_ok());
+        .unwrap();
+    character_view.check_set_essence_rating(2).unwrap();
+    character_view.set_essence_rating(2).unwrap();
     assert_eq!(character_view.essence().unwrap().rating(), 2);
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 40);

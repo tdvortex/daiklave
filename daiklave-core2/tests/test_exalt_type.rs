@@ -46,13 +46,13 @@ fn test_exalt_type_character() {
         builder.build().unwrap()
     };
 
-    assert!(character.check_set_solar(&solar_traits).is_ok());
-    assert!(character.set_solar(&solar_traits).is_ok());
+    character.check_set_solar(&solar_traits).unwrap();
+    character.set_solar(&solar_traits).unwrap();
     assert!(character.is_solar());
 
     // Confirm toggle to mortal
-    assert!(character.check_set_mortal().is_ok());
-    assert!(character.set_mortal().is_ok());
+    character.check_set_mortal().unwrap();
+    character.set_mortal().unwrap();
     assert!(character.is_mortal());
 }
 
@@ -98,13 +98,13 @@ fn test_exalt_type_character_view() {
         builder.build().unwrap()
     };
 
-    assert!(character_view.check_set_solar(&solar_traits).is_ok());
-    assert!(character_view.set_solar(&solar_traits).is_ok());
+    character_view.check_set_solar(&solar_traits).unwrap();
+    character_view.set_solar(&solar_traits).unwrap();
     assert!(character_view.is_solar());
 
     // Confirm toggle to mortal
-    assert!(character_view.check_set_mortal().is_ok());
-    assert!(character_view.set_mortal().is_ok());
+    character_view.check_set_mortal().unwrap();
+    character_view.set_mortal().unwrap();
     assert!(character_view.is_mortal());
 }
 
@@ -152,15 +152,15 @@ fn test_exalt_type_character_event_source() {
     };
 
     let mutation = CharacterMutation::SetSolar(solar_traits);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert!(character_view.is_solar());
 
     // Check toggle to mortal
     let mutation = CharacterMutation::SetMortal;
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert!(character_view.is_mortal());
 

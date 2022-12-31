@@ -17,19 +17,19 @@ fn test_guided_mortal() {
     // Choose character name
     let mutation =
         GuidedMutation::CharacterMutation(CharacterMutation::SetName("Test Mortal".to_owned()));
-    assert!(guided_builder.check_mutation(&mutation).is_ok());
-    assert!(guided_builder.apply_mutation(mutation).is_ok());
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
 
     // Choose character concept
     let mutation =
         GuidedMutation::CharacterMutation(CharacterMutation::SetConcept("Test Concept".to_owned()));
-    assert!(guided_builder.check_mutation(&mutation).is_ok());
-    assert!(guided_builder.apply_mutation(mutation).is_ok());
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
 
     // Move on to next stage
     let mutation = GuidedMutation::SetStage(GuidedStage::ChooseExaltation);
-    assert!(guided_builder.check_mutation(&mutation).is_ok());
-    assert!(guided_builder.apply_mutation(mutation).is_ok());
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
 
     // Move back to previous stage and undo adding concept
     assert!(guided_builder.can_undo());
@@ -39,8 +39,8 @@ fn test_guided_mortal() {
 
     // Move on to next stage (again)
     let mutation = GuidedMutation::SetStage(GuidedStage::ChooseExaltation);
-    assert!(guided_builder.check_mutation(&mutation).is_ok());
-    assert!(guided_builder.apply_mutation(mutation).is_ok());
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
 
     // Bonus points are not alloted until after choosing exaltation
     assert_eq!(
@@ -53,12 +53,12 @@ fn test_guided_mortal() {
 
     // Choose to be mortal and progress to attributes
     let mutation = GuidedMutation::SetExaltation(ExaltationChoice::Mortal);
-    assert!(guided_builder.check_mutation(&mutation).is_ok());
-    assert!(guided_builder.apply_mutation(mutation).is_ok());
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
 
     let mutation = GuidedMutation::SetStage(GuidedStage::ChooseAttributes);
-    assert!(guided_builder.check_mutation(&mutation).is_ok());
-    assert!(guided_builder.apply_mutation(mutation).is_ok());
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
 
     assert_eq!(
         guided_builder
@@ -82,7 +82,9 @@ fn test_guided_mortal() {
     ]
     .into_iter()
     .map(|cm| GuidedMutation::CharacterMutation(cm))
-    .for_each(|gcm| assert!(guided_builder.apply_mutation(gcm).is_ok()));
+    .for_each(|gcm| {
+        guided_builder.apply_mutation(gcm).unwrap();
+    });
 
     assert_eq!(
         guided_builder
@@ -146,8 +148,8 @@ fn test_guided_mortal() {
 
     // Move on to the next stage
     let mutation = GuidedMutation::SetStage(GuidedStage::ChooseMartialArtsStyles);
-    assert!(guided_builder.check_mutation(&mutation).is_ok());
-    assert!(guided_builder.apply_mutation(mutation).is_ok());
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
 
     // Add a martial arts style
     let crane_style = MartialArtsStyle::new(
@@ -251,5 +253,5 @@ fn test_guided_mortal() {
     // Move on to the next stage
     let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSorcery);
     guided_builder.check_mutation(&mutation).unwrap();
-    assert!(guided_builder.apply_mutation(mutation).is_ok());
+    guided_builder.apply_mutation(mutation).unwrap();
 }

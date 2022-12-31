@@ -17,10 +17,10 @@ fn test_attributes_character() {
     assert_eq!(character.attributes().dots(AttributeName::Wits), 1);
 
     // Check setting attributes
-    assert!(character
+    character
         .check_set_attribute(AttributeName::Strength, 2)
-        .is_ok());
-    assert!(character.set_attribute(AttributeName::Strength, 2).is_ok());
+        .unwrap();
+    character.set_attribute(AttributeName::Strength, 2).unwrap();
     assert_eq!(character.attributes().dots(AttributeName::Strength), 2);
 
     // Check out-of-bounds prevention
@@ -66,12 +66,12 @@ fn test_attributes_character_view() {
     assert_eq!(character_view.attributes().dots(AttributeName::Wits), 1);
 
     // Check setting attributes
-    assert!(character_view
+    character_view
         .check_set_attribute(AttributeName::Strength, 2)
-        .is_ok());
-    assert!(character_view
+        .unwrap();
+    character_view
         .set_attribute(AttributeName::Strength, 2)
-        .is_ok());
+        .unwrap();
     assert_eq!(character_view.attributes().dots(AttributeName::Strength), 2);
 
     // Check out-of-bounds prevention
@@ -119,8 +119,8 @@ fn test_attributes_character_event_source() {
 
     // Check setting attributes
     let mutation = CharacterMutation::SetAttribute(AttributeName::Strength, 2);
-    assert!(character_view.check_mutation(&mutation).is_ok());
-    assert!(event_source.apply_mutation(mutation).is_ok());
+    character_view.check_mutation(&mutation).unwrap();
+    event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
 
     assert_eq!(character_view.attributes().dots(AttributeName::Strength), 2);

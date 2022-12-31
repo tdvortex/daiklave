@@ -41,12 +41,12 @@ fn test_health_character_view() {
         WoundPenalty::MinusFour,
         WoundPenalty::Incapacitated,
     ];
-    assert!(character_view
+    character_view
         .check_set_wound_penalties(&new_wound_penalties)
-        .is_ok());
-    assert!(character_view
+        .unwrap();
+    character_view
         .set_wound_penalties(&new_wound_penalties)
-        .is_ok());
+        .unwrap();
     let mut count = 0;
     let expected = vec![
         (WoundPenalty::Zero, None),
@@ -72,36 +72,36 @@ fn test_health_character_view() {
     );
 
     // Check taking damage
-    assert!(character_view
+    character_view
         .check_take_damage(DamageLevel::Bashing, 3)
-        .is_ok());
-    assert!(character_view.take_damage(DamageLevel::Bashing, 3).is_ok());
+        .unwrap();
+    character_view.take_damage(DamageLevel::Bashing, 3).unwrap();
     assert_eq!(
         character_view.health().current_wound_penalty(),
         WoundPenalty::MinusOne
     );
-    assert!(character_view
+    character_view
         .check_take_damage(DamageLevel::Lethal, 2)
-        .is_ok());
-    assert!(character_view.take_damage(DamageLevel::Lethal, 2).is_ok());
+        .unwrap();
+    character_view.take_damage(DamageLevel::Lethal, 2).unwrap();
     assert_eq!(
         character_view.health().current_wound_penalty(),
         WoundPenalty::MinusTwo
     );
-    assert!(character_view
+    character_view
         .check_take_damage(DamageLevel::Aggravated, 2)
-        .is_ok());
-    assert!(character_view
+        .unwrap();
+    character_view
         .take_damage(DamageLevel::Aggravated, 2)
-        .is_ok());
+        .unwrap();
     assert_eq!(
         character_view.health().current_wound_penalty(),
         WoundPenalty::MinusFour
     );
-    assert!(character_view
+    character_view
         .check_take_damage(DamageLevel::Bashing, 1)
-        .is_ok());
-    assert!(character_view.take_damage(DamageLevel::Bashing, 1).is_ok());
+        .unwrap();
+    character_view.take_damage(DamageLevel::Bashing, 1).unwrap();
 
     let mut count = 0;
     let expected = vec![
@@ -128,20 +128,20 @@ fn test_health_character_view() {
     );
 
     // Check healing
-    assert!(character_view.check_heal_damage(2).is_ok());
-    assert!(character_view.heal_damage(2).is_ok());
+    character_view.check_heal_damage(2).unwrap();
+    character_view.heal_damage(2).unwrap();
     assert_eq!(
         character_view.health().current_wound_penalty(),
         WoundPenalty::MinusTwo
     );
-    assert!(character_view.check_heal_damage(3).is_ok());
-    assert!(character_view.heal_damage(3).is_ok());
+    character_view.check_heal_damage(3).unwrap();
+    character_view.heal_damage(3).unwrap();
     assert_eq!(
         character_view.health().current_wound_penalty(),
         WoundPenalty::MinusOne
     );
-    assert!(character_view.check_heal_damage(3).is_ok());
-    assert!(character_view.heal_damage(3).is_ok());
+    character_view.check_heal_damage(3).unwrap();
+    character_view.heal_damage(3).unwrap();
     let mut count = 0;
     let expected = vec![
         (WoundPenalty::Zero, None),
