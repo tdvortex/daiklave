@@ -57,6 +57,7 @@ pub mod weapons;
 mod armor;
 mod character;
 mod character_view;
+pub(crate) mod craft;
 mod name_and_concept;
 mod willpower;
 

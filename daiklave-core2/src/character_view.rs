@@ -1,6 +1,6 @@
 use crate::{
     abilities::AbilitiesView, attributes::Attributes, exalt_state::ExaltStateView, health::Health,
-    willpower::Willpower, CharacterMutation, CharacterMutationError,
+    willpower::Willpower, CharacterMutation, CharacterMutationError, craft::CraftView,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -14,6 +14,7 @@ pub struct CharacterView<'source> {
     pub(crate) health: Health,
     pub(crate) attributes: Attributes,
     pub(crate) abilities: AbilitiesView<'source>,
+    pub(crate) craft: CraftView<'source>,
 }
 
 impl<'source> Default for CharacterView<'source> {
@@ -26,6 +27,7 @@ impl<'source> Default for CharacterView<'source> {
             health: Default::default(),
             attributes: Default::default(),
             abilities: Default::default(),
+            craft: Default::default(),
         }
     }
 }

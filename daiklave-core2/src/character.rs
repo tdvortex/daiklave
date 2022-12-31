@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     abilities::Abilities, attributes::Attributes, exalt_state::ExaltState, health::Health,
-    willpower::Willpower, CharacterMutation, CharacterMutationError,
+    willpower::Willpower, CharacterMutation, CharacterMutationError, craft::Craft,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -16,6 +16,7 @@ pub struct Character {
     pub(crate) health: Health,
     pub(crate) attributes: Attributes,
     pub(crate) abilities: Abilities,
+    pub(crate) craft: Craft,
 }
 
 impl Default for Character {
@@ -28,6 +29,7 @@ impl Default for Character {
             health: Default::default(),
             attributes: Default::default(),
             abilities: Default::default(),
+            craft: Default::default(),
         }
     }
 }
