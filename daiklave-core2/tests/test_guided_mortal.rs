@@ -9,7 +9,7 @@ use daiklave_core2::{
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, Spell, SpellId,
-        TerrestrialSpell,
+        TerrestrialSpell, SorceryCircle,
     },
     weapons::WeaponId,
     CharacterMutation, abilities::AbilityNameVanilla,
@@ -451,7 +451,7 @@ fn test_guided_mortal() {
     let character_view = guided_view.as_character_view();
     assert_eq!(character_view.martial_arts().style(MartialArtsStyleId(UniqueId::Placeholder(1))).unwrap().name(), "Crane Style");
     assert_eq!(character_view.martial_arts().style(MartialArtsStyleId(UniqueId::Placeholder(1))).unwrap().dots(), 3);
-    assert_eq!(character_view.sorcery().archetype(SorceryArchetypeId(UniqueId::Placeholder(1))).unwrap().name(), "Bargain with Mara");
-    assert_eq!(character_view.sorcery().terrestrial().unwrap().shaping_ritual().description(), shaping_ritual_description);
-    assert_eq!(character_view.sorcery().terrestrial().unwrap().control_spell().name(), "Corrupted Words");
+    assert_eq!(character_view.sorcery().unwrap().archetype(SorceryArchetypeId(UniqueId::Placeholder(1))).unwrap().name(), "Bargain with Mara");
+    assert_eq!(character_view.sorcery().unwrap().shaping_ritual(SorceryCircle::Terrestrial).unwrap().1.description(), shaping_ritual_description);
+    assert_eq!(character_view.sorcery().unwrap().control_spell(SorceryCircle::Terrestrial).unwrap().1.name(), "Corrupted Words");
 }
