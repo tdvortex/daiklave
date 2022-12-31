@@ -43,7 +43,11 @@ impl<'source> GuidedView<'source> {
                 )
             }
             GuidedStage::ChooseMartialArtsStyles => true,
-            GuidedStage::ChooseSorcery => todo!(),
+            GuidedStage::ChooseSorcery => {
+                // Either no sorcery, or all sorcery is specified
+                self.sorcery_archetype.is_some() == self.shaping_ritual.is_some() 
+                && self.shaping_ritual.is_some() == self.control_spell.is_some()
+            }
             GuidedStage::ChooseAbilities => todo!(),
         } {
             Err(GuidedError::StageIncompleteError)
@@ -59,7 +63,8 @@ impl<'source> GuidedView<'source> {
         match (self.stage, next_stage) {
             (GuidedStage::ChooseNameAndConcept, GuidedStage::ChooseExaltation)
             | (GuidedStage::ChooseExaltation, GuidedStage::ChooseAttributes)
-            | (GuidedStage::ChooseMartialArtsStyles, GuidedStage::ChooseSorcery) => Ok(()),
+            | (GuidedStage::ChooseMartialArtsStyles, GuidedStage::ChooseSorcery)
+            | (GuidedStage::ChooseSorcery, GuidedStage::ChooseAbilities) => Ok(()),
             (GuidedStage::ChooseAttributes, GuidedStage::ChooseMartialArtsStyles) => {
                 if matches!(self.exaltation_choice, Some(ExaltationChoice::Mortal)) {
                     Ok(())

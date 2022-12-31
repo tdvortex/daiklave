@@ -122,100 +122,14 @@ impl GuidedEventSource {
             solar_supernal_ability: None,
             solar_favored_abilities: None,
             martial_arts_styles: None,
+            sorcery_archetype: None,
+            shaping_ritual: None,
+            control_spell: None,
         };
 
-        // Don't use GuidedView::apply_mutation() to avoid redundant bonus
-        // point recalculations and unnecessary validity checks
         for guided_mutation in self.history.iter() {
-            match guided_mutation {
-                GuidedMutation::CharacterMutation(character_mutation) => {
-                    guided_view
-                        .character_view
-                        .apply_mutation(character_mutation)?;
-                }
-                GuidedMutation::SetStage(stage) => {
-                    guided_view.stage = *stage;
-                }
-                GuidedMutation::SetExaltation(exaltation_choice) => {
-                    guided_view.exaltation_choice = Some(*exaltation_choice);
-                }
-                GuidedMutation::AddSolarCasteAbility(ability) => {
-                    if guided_view.solar_caste_abilities.is_none() {
-                        guided_view.solar_caste_abilities = Some(HashSet::new());
-                    }
-
-                    guided_view
-                        .solar_caste_abilities
-                        .as_mut()
-                        .unwrap()
-                        .insert(*ability);
-                }
-                GuidedMutation::RemoveSolarCasteAbility(ability) => {
-                    if let Some(abilities) = guided_view.solar_caste_abilities.as_mut() {
-                        if !abilities.remove(ability) {
-                            return Err(GuidedError::SolarAbilityError(
-                                SolarAbilityError::NotFound,
-                            ));
-                        }
-                    } else {
-                        return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
-                    }
-                }
-                GuidedMutation::SetSolarSupernalAbility(ability) => {
-                    guided_view.solar_supernal_ability = Some(*ability);
-                }
-                GuidedMutation::AddSolarFavoredAbility(ability) => {
-                    if guided_view.solar_favored_abilities.is_none() {
-                        guided_view.solar_favored_abilities = Some(HashSet::new());
-                    }
-
-                    guided_view
-                        .solar_favored_abilities
-                        .as_mut()
-                        .unwrap()
-                        .insert(*ability);
-                }
-                GuidedMutation::RemoveSolarFavoredAbility(ability) => {
-                    if let Some(abilities) = guided_view.solar_favored_abilities.as_mut() {
-                        if !abilities.remove(ability) {
-                            return Err(GuidedError::SolarAbilityError(
-                                SolarAbilityError::NotFound,
-                            ));
-                        }
-                    } else {
-                        return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
-                    }
-                }
-                GuidedMutation::AddMartialArtsStyle(id, style) => {
-                    if guided_view.martial_arts_styles.is_none() {
-                        guided_view.martial_arts_styles = Some(HashMap::new());
-                    }
-
-                    guided_view
-                        .martial_arts_styles
-                        .as_mut()
-                        .unwrap()
-                        .insert(*id, style);
-                    guided_view.merit_dots += 4;
-                }
-                GuidedMutation::RemoveMartialArtsStyle(id) => {
-                    if guided_view.martial_arts_styles.is_none() {
-                        return Err(GuidedError::CharacterMutationError(
-                            CharacterMutationError::RemoveMartialArtsStyleError(
-                                RemoveMartialArtsStyleError::NotFound,
-                            ),
-                        ));
-                    }
-
-                    guided_view.martial_arts_styles.as_mut().unwrap().remove(id);
-                    guided_view.merit_dots -= 4;
-                }
-                GuidedMutation::SetSorceryArchetype(_, _) => todo!(),
-                GuidedMutation::SetShapingRitual(_, _) => todo!(),
-                GuidedMutation::SetControlSpell(_, _) => todo!(),
-            }
+            guided_view = guided_view.apply_mutation(guided_mutation)?;
         }
-        guided_view.update_bonus_points();
 
         Ok(guided_view)
     }

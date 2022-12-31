@@ -28,6 +28,12 @@ pub enum SolarAbilityError {
     MartialArts,
 }
 
+#[derive(Debug, Error)]
+pub enum SorceryError {
+    #[error("Must have the correct archetype for the shaping ritual")]
+    MissingArchetype,
+}
+
 /// The possible errors occurring in the guided character builder.
 #[derive(Debug, Error)]
 pub enum GuidedError {
@@ -45,6 +51,8 @@ pub enum GuidedError {
     InsufficientBonusPoints,
     /// An error trying to set or remove a Solar caste, supernal, or favored
     /// ability
-    #[error("Could not add a Solar caste ability")]
+    #[error("Could not add a Solar ability")]
     SolarAbilityError(#[from] SolarAbilityError),
+    #[error("Could not set a Sorcery value")]
+    SorceryError(#[from] SorceryError),
 }

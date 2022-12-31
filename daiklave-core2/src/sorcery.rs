@@ -49,8 +49,13 @@ impl ShapingRitual {
             description
         }
     }
+
+    pub fn archetype_id(&self) -> SorceryArchetypeId {
+        self.archetype_id
+    }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ShapingRitualId(pub UniqueId);
 
 impl Deref for ShapingRitualId {
@@ -90,6 +95,7 @@ impl Spell {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SpellId(pub UniqueId);
 
 impl Deref for SpellId {

@@ -5,10 +5,10 @@ use crate::{
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError,
     },
-    CharacterMutationError, CharacterView,
+    CharacterMutationError, CharacterView, sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, TerrestrialSpell},
 };
 
-use super::{error::GuidedError, ExaltationChoice, GuidedMutation, GuidedStage};
+use super::{error::{GuidedError, SorceryError}, ExaltationChoice, GuidedMutation, GuidedStage};
 
 mod bonus_points;
 mod solar;
@@ -27,6 +27,9 @@ pub struct GuidedView<'source> {
     pub(in crate::guided) solar_favored_abilities: Option<HashSet<AbilityName>>,
     pub(in crate::guided) martial_arts_styles:
         Option<HashMap<MartialArtsStyleId, &'source MartialArtsStyle>>,
+    pub(in crate::guided) sorcery_archetype: Option<(SorceryArchetypeId, &'source SorceryArchetype)>,
+    pub(in crate::guided) shaping_ritual: Option<(ShapingRitualId, &'source ShapingRitual)>,
+    pub(in crate::guided) control_spell: Option<(SpellId, &'source TerrestrialSpell)>,
 }
 
 impl<'source> GuidedView<'source> {
@@ -96,6 +99,7 @@ impl<'source> GuidedView<'source> {
                     .unwrap()
                     .insert(*id, style);
                 self.merit_dots += 4;
+                self.update_bonus_points();
             }
             GuidedMutation::RemoveMartialArtsStyle(id) => {
                 if let Some(true) = self
@@ -105,6 +109,7 @@ impl<'source> GuidedView<'source> {
                 {
                     self.martial_arts_styles.as_mut().unwrap().remove(id);
                     self.merit_dots -= 4;
+                    self.update_bonus_points();
                 } else {
                     return Err(GuidedError::CharacterMutationError(
                         CharacterMutationError::RemoveMartialArtsStyleError(
@@ -113,9 +118,26 @@ impl<'source> GuidedView<'source> {
                     ));
                 }
             }
-            GuidedMutation::SetSorceryArchetype(_, _) => todo!(),
-            GuidedMutation::SetShapingRitual(_, _) => todo!(),
-            GuidedMutation::SetControlSpell(_, _) => todo!(),
+            GuidedMutation::SetSorceryArchetype(id, archetype) => {
+                if let Some(ExaltationChoice::Mortal) = self.exaltation_choice {
+                    if self.sorcery_archetype.is_none() {
+                        self.merit_dots += 5;
+                    }
+                }
+                self.shaping_ritual = None;
+                self.sorcery_archetype = Some((*id, archetype));
+                self.update_bonus_points();
+            }
+            GuidedMutation::SetShapingRitual(id, shaping_ritual) => {
+                if self.sorcery_archetype.is_none() || shaping_ritual.archetype_id() != self.sorcery_archetype.unwrap().0 {
+                    return Err(GuidedError::SorceryError(SorceryError::MissingArchetype));
+                }
+
+                self.shaping_ritual = Some((*id, shaping_ritual));
+            }
+            GuidedMutation::SetControlSpell(id, spell) => {
+                self.control_spell = Some((*id, spell));
+            }
         }
 
         if self.bonus_points < 0 {
