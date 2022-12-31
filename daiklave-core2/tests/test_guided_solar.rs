@@ -8,7 +8,7 @@ use daiklave_core2::{
     id::UniqueId,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     weapons::WeaponId,
-    CharacterMutation,
+    CharacterMutation, charms::{CharmCost, CharmCostType, CharmKeyword},
 };
 #[test]
 fn test_guided_solar() {
@@ -411,6 +411,91 @@ fn test_guided_solar() {
 
     // Move on to the next stage
     let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSorcery);
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
+
+    // Check we can skip ahead directly to abilities
+    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseAbilities);
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
+
+    // Undo, go back to sorcery
+    guided_builder.undo();
+
+    // Add sorcery archetype
+    let archetype = SorceryArchetype::new(
+        "Bargain with Mara".to_owned(),
+        Some(BookReference {
+            book: Book::CoreRulebook,
+            page_number: 466,
+        }),
+        "You have met the demon Mara, the deer-footed creature \
+        of shadows who pursues lovers marked by dark destinies \
+        and feeds them stolen souls. You may have met her as she \
+        sojourned through Creation, or seen her lovely, wicked \
+        face in dreams—perhaps you even summoned her yourself \
+        to make your bargain. Through cunning, charisma, or \
+        pleasing offerings, you have made a pact with her, taking \
+        the power of the Shadow Lover for your own.".to_owned(),
+    );
+    let archetype_id = SorceryArchetypeId(UniqueId::Placeholder(1));
+
+    let mutation = GuidedMutation::SetSorceryArchetype(archetype_id, archetype);
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
+
+    // Add shaping ritual
+    let shaping_ritual = ShapingRitual::new(
+        archetype_id,
+        Some(BookReference {
+            book: Book::CoreRulebook,
+            page_number: 467,
+        }),
+        "Like Mara herself, the sorcerer draws power from those who \
+        love her. The Essence of their adoration is clay in \
+        her hands, taking form in her sorcery. Whenever she \
+        takes a shape sorcery action while within medium range \
+        of a character with an unrequited Tie of love (or a similar \
+        emotion) towards her, she may reap additional sorcerous \
+        motes equal to that Intimacy's value (for example, four motes \
+        from a Defining Tie). Intimacies can only be tapped for \
+        motes in this fashion once per day, and the sorcerer \
+        cannot harvest power from love she reciprocates. Normally \
+        she may only drain one Intimacy to fuel the casting of a spell, \
+        but she may draw power from any available Intimacies when \
+        casting her control spell. She cannot draw more than ten \
+        sorcerous motes per scene with this ritual.".to_owned(),
+    );
+    let shaping_ritual_id = ShapingRitualId(UniqueId::Placeholder(1));
+
+    let mutation = GuidedMutation::SetShapingRitual(shaping_ritual_id, shaping_ritual);
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
+
+    // Add control spell
+    let control_spell = TerrestrialSpell(
+        Spell::new(
+            "Corrupted Words".to_owned(),
+            vec![CharmCost{ cost_type: CharmCostType::SorcerousMotes, amount: 15}, CharmCost {
+                cost_type: CharmCostType::Willpower,
+                amount: 1,
+            }],
+            vec![CharmKeyword::Psyche],
+            "Indefinite".to_owned(),
+            "Really long spell description".to_owned(),
+        )
+    );
+    let control_spell_id = SpellId(UniqueId::Placeholder(1));
+
+    let mutation = GuidedMutation::SetControlSpell(control_spell_id, control_spell);
+    guided_builder.check_mutation(&mutation).unwrap();
+    guided_builder.apply_mutation(mutation).unwrap();
+
+    // Sorcery should count as a single Charm for Exalts
+    assert_eq!(guided_builder.as_guided_view().unwrap().charms(), 1);
+
+    // Move on to the next stage
+    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseAbilities);
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 }
