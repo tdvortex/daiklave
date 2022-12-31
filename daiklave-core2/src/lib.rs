@@ -48,6 +48,8 @@ pub mod id;
 /// Martial Arts style logic
 pub mod martial_arts;
 
+pub mod sorcery;
+
 /// Logic for building and equipping weapons
 pub mod weapons;
 

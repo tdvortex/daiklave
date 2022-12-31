@@ -44,6 +44,7 @@ impl<'source> GuidedView<'source> {
             }
             GuidedStage::ChooseMartialArtsStyles => true,
             GuidedStage::ChooseSorcery => todo!(),
+            GuidedStage::ChooseAbilities => todo!(),
         } {
             Err(GuidedError::StageIncompleteError)
         } else {

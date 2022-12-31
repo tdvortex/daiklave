@@ -95,6 +95,16 @@ pub struct CharmCost {
     amount: u8,
 }
 
+impl CharmCost {
+    pub fn new(cost_type: CharmCostType,
+        amount: u8) -> Self {
+            Self {
+                cost_type,
+                amount
+            }
+        }
+}
+
 /// The type of action necessary to use the Charm
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum CharmActionType {

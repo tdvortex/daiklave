@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use crate::{
     abilities::AbilityName,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError},
-    CharacterMutation, CharacterMutationError, CharacterView,
+    CharacterMutation, CharacterMutationError, CharacterView, sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, TerrestrialSpell},
 };
 
 use self::{
@@ -47,6 +47,9 @@ pub enum GuidedMutation {
     AddMartialArtsStyle(MartialArtsStyleId, MartialArtsStyle),
     /// Removes a Martial Arts style.
     RemoveMartialArtsStyle(MartialArtsStyleId),
+    SetSorceryArchetype(SorceryArchetypeId, SorceryArchetype),
+    SetShapingRitual(ShapingRitualId, ShapingRitual),
+    SetControlSpell(SpellId, TerrestrialSpell),
 }
 
 /// The different phases of a guided character builder.
@@ -79,6 +82,7 @@ pub enum GuidedStage {
     /// does not purchase any non-Control Spells or associated Shaping Ritual
     /// merits.
     ChooseSorcery,
+    ChooseAbilities,
 }
 
 /// The supported options for Exaltations.
@@ -206,6 +210,9 @@ impl GuidedEventSource {
                     guided_view.martial_arts_styles.as_mut().unwrap().remove(id);
                     guided_view.merit_dots -= 4;
                 }
+                GuidedMutation::SetSorceryArchetype(_, _) => todo!(),
+                GuidedMutation::SetShapingRitual(_, _) => todo!(),
+                GuidedMutation::SetControlSpell(_, _) => todo!(),
             }
         }
         guided_view.update_bonus_points();

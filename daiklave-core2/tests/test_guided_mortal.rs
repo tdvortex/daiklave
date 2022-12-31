@@ -7,7 +7,7 @@ use daiklave_core2::{
     id::UniqueId,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     weapons::WeaponId,
-    CharacterMutation, charms::{CharmCost, CharmCostType, CharmKeyword},
+    CharacterMutation, charms::{CharmCost, CharmCostType, CharmKeyword}, sorcery::{SorceryArchetype, SorceryArchetypeId, ShapingRitual, ShapingRitualId, TerrestrialSpell, Spell, SpellId},
 };
 
 #[test]
@@ -266,10 +266,7 @@ fn test_guided_mortal() {
     // Add sorcery archetype
     let archetype = SorceryArchetype::new(
         "Bargain with Mara".to_owned(),
-        Some(BookReference {
-            book: Book::CoreRulebook,
-            page_number: 466,
-        }),
+        Some(BookReference::new(Book::CoreRulebook, 466)),
         "You have met the demon Mara, the deer-footed creature \
         of shadows who pursues lovers marked by dark destinies \
         and feeds them stolen souls. You may have met her as she \
@@ -288,10 +285,7 @@ fn test_guided_mortal() {
     // Add shaping ritual
     let shaping_ritual = ShapingRitual::new(
         archetype_id,
-        Some(BookReference {
-            book: Book::CoreRulebook,
-            page_number: 467,
-        }),
+        Some(BookReference::new(Book::CoreRulebook, 467)),
         "Like Mara herself, the sorcerer draws power from those who \
         love her. The Essence of their adoration is clay in \
         her hands, taking form in her sorcery. Whenever she \
@@ -314,13 +308,11 @@ fn test_guided_mortal() {
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Add control spell
-    let control_spell = TerrestrialSpell(
+    let control_spell = TerrestrialSpell::from_spell(
         Spell::new(
             "Corrupted Words".to_owned(),
-            vec![CharmCost{ cost_type: CharmCostType::SorcerousMotes, amount: 15}, CharmCost {
-                cost_type: CharmCostType::Willpower,
-                amount: 1,
-            }],
+            Some(BookReference::new(Book::CoreRulebook, 472)),
+            vec![CharmCost::new(CharmCostType::SorcerousMotes, 15), CharmCost::new(CharmCostType::Willpower, 1)],
             vec![CharmKeyword::Psyche],
             "Indefinite".to_owned(),
             "Really long spell description".to_owned(),

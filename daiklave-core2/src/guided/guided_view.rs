@@ -113,6 +113,9 @@ impl<'source> GuidedView<'source> {
                     ));
                 }
             }
+            GuidedMutation::SetSorceryArchetype(_, _) => todo!(),
+            GuidedMutation::SetShapingRitual(_, _) => todo!(),
+            GuidedMutation::SetControlSpell(_, _) => todo!(),
         }
 
         if self.bonus_points < 0 {
@@ -125,5 +128,13 @@ impl<'source> GuidedView<'source> {
     /// Gets a read-only view at the partially constructed character.
     pub fn as_character_view(&self) -> &CharacterView {
         &self.character_view
+    }
+
+    pub fn merit_dots(&self) -> i32 {
+        self.merit_dots
+    }
+
+    pub fn charms(&self) -> i32 {
+        todo!()
     }
 }
