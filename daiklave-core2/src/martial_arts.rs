@@ -7,19 +7,23 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::{
-    abilities::{Ability, AbilityNameVanilla, AbilityView},
     armor::ArmorWeight,
     book_reference::BookReference,
     charms::{CharmActionType, CharmCost, CharmKeyword},
-    exalt_state::{
-        exalt::{Exalt, ExaltView},
-        mortal::{Mortal, MortalView},
-        ExaltState, ExaltStateView,
-    },
+    exalt_state::{ExaltState, ExaltStateView},
     id::UniqueId,
     weapons::WeaponId,
-    Character, CharacterMutationError, CharacterView,
+    CharacterMutationError,
 };
+
+mod character;
+mod character_view;
+mod exalt;
+mod mortal;
+
+pub(crate) use exalt::{ExaltMartialArtist, ExaltMartialArtistView};
+
+pub(crate) use self::mortal::{MortalMartialArtist, MortalMartialArtistView};
 
 /// A unique identifier for a Martial Arts style.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -87,32 +91,6 @@ impl MartialArtsStyle {
     pub fn max_armor_weight(&self) -> Option<ArmorWeight> {
         self.max_armor_weight
     }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) struct MortalMartialArtist {
-    style: MartialArtsStyle,
-    ability: Ability,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct MortalMartialArtistView<'source> {
-    style: &'source MartialArtsStyle,
-    ability: AbilityView<'source>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) struct ExaltMartialArtist {
-    style: MartialArtsStyle,
-    ability: Ability,
-    charms: HashMap<MartialArtsCharmId, MartialArtsCharm>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct ExaltMartialArtistView<'source> {
-    style: &'source MartialArtsStyle,
-    ability: AbilityView<'source>,
-    charms: HashMap<MartialArtsCharmId, &'source MartialArtsCharm>,
 }
 
 impl From<MortalMartialArtist> for ExaltMartialArtist {
@@ -201,54 +179,6 @@ pub enum RemoveMartialArtsStyleError {
     NotFound,
 }
 
-impl<'source> CharacterView<'source> {
-    /// Checks if a Martial Arts style can be added to the character.
-    pub fn check_add_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-        style: &MartialArtsStyle,
-    ) -> Result<(), CharacterMutationError> {
-        if self.abilities().dots(AbilityNameVanilla::Brawl) < 1 {
-            return Err(CharacterMutationError::AddMartialArtsStyleError(
-                AddMartialArtsStyleError::PrerequsitesNotMet(
-                    "Brawl must be 1+ to take Martial Artist merit".to_owned(),
-                ),
-            ));
-        }
-
-        self.exalt_state.check_add_martial_arts_style(id, style)
-    }
-
-    /// Adds a Martial Arts style to the character.
-    pub fn add_martial_arts_style(
-        &mut self,
-        id: MartialArtsStyleId,
-        style: &'source MartialArtsStyle,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_add_martial_arts_style(id, style)?;
-        self.exalt_state.add_martial_arts_style(id, style)?;
-
-        Ok(self)
-    }
-
-    /// Checks if a Martial Arts style can be removed from the character.
-    pub fn check_remove_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-    ) -> Result<(), CharacterMutationError> {
-        self.exalt_state.check_remove_martial_arts_style(id)
-    }
-
-    /// Removes a Martial Arts style from the character.
-    pub fn remove_martial_arts_style(
-        &mut self,
-        id: MartialArtsStyleId,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.remove_martial_arts_style(id)?;
-        Ok(self)
-    }
-}
-
 impl<'source> ExaltStateView<'source> {
     pub(crate) fn check_add_martial_arts_style(
         &self,
@@ -303,163 +233,6 @@ impl<'source> ExaltStateView<'source> {
     }
 }
 
-impl<'source> MortalView<'source> {
-    pub(crate) fn check_add_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-        _style: &MartialArtsStyle,
-    ) -> Result<(), CharacterMutationError> {
-        if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::AddMartialArtsStyleError(
-                AddMartialArtsStyleError::DuplicateStyle,
-            ))
-        } else {
-            Ok(())
-        }
-    }
-
-    pub(crate) fn add_martial_arts_style(
-        &mut self,
-        id: MartialArtsStyleId,
-        style: &'source MartialArtsStyle,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_add_martial_arts_style(id, style)?;
-        self.martial_arts_styles.insert(
-            id,
-            MortalMartialArtistView {
-                style,
-                ability: AbilityView::Zero,
-            },
-        );
-        Ok(self)
-    }
-
-    pub(crate) fn check_remove_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-    ) -> Result<(), CharacterMutationError> {
-        if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::RemoveMartialArtsStyleError(
-                RemoveMartialArtsStyleError::NotFound,
-            ))
-        } else {
-            Ok(())
-        }
-    }
-
-    pub(crate) fn remove_martial_arts_style(
-        &mut self,
-        id: MartialArtsStyleId,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_remove_martial_arts_style(id)?;
-        self.martial_arts_styles.remove(&id);
-        Ok(self)
-    }
-}
-
-impl<'source> ExaltView<'source> {
-    pub(crate) fn check_add_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-        _style: &MartialArtsStyle,
-    ) -> Result<(), CharacterMutationError> {
-        if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::AddMartialArtsStyleError(
-                AddMartialArtsStyleError::DuplicateStyle,
-            ))
-        } else {
-            Ok(())
-        }
-    }
-
-    pub(crate) fn add_martial_arts_style(
-        &mut self,
-        id: MartialArtsStyleId,
-        style: &'source MartialArtsStyle,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_add_martial_arts_style(id, style)?;
-        self.martial_arts_styles.insert(
-            id,
-            ExaltMartialArtistView {
-                style,
-                ability: AbilityView::Zero,
-                charms: HashMap::new(),
-            },
-        );
-        Ok(self)
-    }
-
-    pub(crate) fn check_remove_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-    ) -> Result<(), CharacterMutationError> {
-        if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::RemoveMartialArtsStyleError(
-                RemoveMartialArtsStyleError::NotFound,
-            ))
-        } else {
-            Ok(())
-        }
-    }
-
-    pub(crate) fn remove_martial_arts_style(
-        &mut self,
-        id: MartialArtsStyleId,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_remove_martial_arts_style(id)?;
-        self.martial_arts_styles.remove(&id);
-        Ok(self)
-    }
-}
-
-impl Character {
-    /// Checks if a Martial Arts style can be added to the character.
-    pub fn check_add_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-        style: &MartialArtsStyle,
-    ) -> Result<(), CharacterMutationError> {
-        if self.abilities().dots(AbilityNameVanilla::Brawl) < 1 {
-            return Err(CharacterMutationError::AddMartialArtsStyleError(
-                AddMartialArtsStyleError::PrerequsitesNotMet(
-                    "Brawl must be 1+ to take Martial Artist merit".to_owned(),
-                ),
-            ));
-        }
-
-        self.exalt_state.check_add_martial_arts_style(id, style)
-    }
-
-    /// Adds a Martial Arts style to the character.
-    pub fn add_martial_arts_style(
-        &mut self,
-        id: MartialArtsStyleId,
-        style: &MartialArtsStyle,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_add_martial_arts_style(id, style)?;
-        self.exalt_state.add_martial_arts_style(id, style)?;
-
-        Ok(self)
-    }
-
-    /// Checks if a Martial Arts style can be removed from the character.
-    pub fn check_remove_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-    ) -> Result<(), CharacterMutationError> {
-        self.exalt_state.check_remove_martial_arts_style(id)
-    }
-
-    /// Removes a Martial Arts style from the character.
-    pub fn remove_martial_arts_style(
-        &mut self,
-        id: MartialArtsStyleId,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.remove_martial_arts_style(id)?;
-        Ok(self)
-    }
-}
-
 impl ExaltState {
     pub(crate) fn check_add_martial_arts_style(
         &self,
@@ -510,115 +283,6 @@ impl ExaltState {
                 exalt.remove_martial_arts_style(id)?;
             }
         }
-        Ok(self)
-    }
-}
-
-impl Mortal {
-    pub(crate) fn check_add_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-        _style: &MartialArtsStyle,
-    ) -> Result<(), CharacterMutationError> {
-        if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::AddMartialArtsStyleError(
-                AddMartialArtsStyleError::DuplicateStyle,
-            ))
-        } else {
-            Ok(())
-        }
-    }
-
-    pub(crate) fn add_martial_arts_style(
-        &mut self,
-        id: MartialArtsStyleId,
-        style: &MartialArtsStyle,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_add_martial_arts_style(id, style)?;
-        self.martial_arts_styles.insert(
-            id,
-            MortalMartialArtist {
-                style: style.to_owned(),
-                ability: Ability::Zero,
-            },
-        );
-        Ok(self)
-    }
-
-    pub(crate) fn check_remove_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-    ) -> Result<(), CharacterMutationError> {
-        if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::RemoveMartialArtsStyleError(
-                RemoveMartialArtsStyleError::NotFound,
-            ))
-        } else {
-            Ok(())
-        }
-    }
-
-    pub(crate) fn remove_martial_arts_style(
-        &mut self,
-        id: MartialArtsStyleId,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_remove_martial_arts_style(id)?;
-        self.martial_arts_styles.remove(&id);
-        Ok(self)
-    }
-}
-
-impl Exalt {
-    pub(crate) fn check_add_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-        _style: &MartialArtsStyle,
-    ) -> Result<(), CharacterMutationError> {
-        if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::AddMartialArtsStyleError(
-                AddMartialArtsStyleError::DuplicateStyle,
-            ))
-        } else {
-            Ok(())
-        }
-    }
-
-    pub(crate) fn add_martial_arts_style(
-        &mut self,
-        id: MartialArtsStyleId,
-        style: &MartialArtsStyle,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_add_martial_arts_style(id, style)?;
-        self.martial_arts_styles.insert(
-            id,
-            ExaltMartialArtist {
-                style: style.to_owned(),
-                ability: Ability::Zero,
-                charms: HashMap::new(),
-            },
-        );
-        Ok(self)
-    }
-
-    pub(crate) fn check_remove_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-    ) -> Result<(), CharacterMutationError> {
-        if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::RemoveMartialArtsStyleError(
-                RemoveMartialArtsStyleError::NotFound,
-            ))
-        } else {
-            Ok(())
-        }
-    }
-
-    pub(crate) fn remove_martial_arts_style(
-        &mut self,
-        id: MartialArtsStyleId,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_remove_martial_arts_style(id)?;
-        self.martial_arts_styles.remove(&id);
         Ok(self)
     }
 }
