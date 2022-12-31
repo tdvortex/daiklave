@@ -5,7 +5,6 @@ use crate::{
     exalt_state::exalt::exalt_type::solar::validate_solar_caste_ability,
     guided::{
         error::{GuidedError, SolarAbilityError},
-        GuidedStage,
     },
 };
 
@@ -18,10 +17,6 @@ impl<'source> GuidedView<'source> {
         mut self,
         ability: &AbilityName,
     ) -> Result<Self, GuidedError> {
-        if self.stage != GuidedStage::ChooseSolarCasteAbilities {
-            return Err(GuidedError::StageOrderError);
-        }
-
         if self.exaltation_choice.is_none() {
             return Err(GuidedError::StageOrderError);
         }
@@ -65,10 +60,6 @@ impl<'source> GuidedView<'source> {
         mut self,
         ability: &AbilityName,
     ) -> Result<Self, GuidedError> {
-        if self.stage != GuidedStage::ChooseSolarCasteAbilities {
-            return Err(GuidedError::StageOrderError);
-        }
-
         if self.solar_caste_abilities.is_none() {
             return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
         }
@@ -84,12 +75,6 @@ impl<'source> GuidedView<'source> {
         mut self,
         ability: &AbilityName,
     ) -> Result<Self, GuidedError> {
-        if self.stage != GuidedStage::ChooseSolarSupernalAbility
-            || self.solar_caste_abilities.is_none()
-        {
-            return Err(GuidedError::StageOrderError);
-        }
-
         if ability == &AbilityName::MartialArts
             && !self
                 .solar_caste_abilities
@@ -122,10 +107,6 @@ impl<'source> GuidedView<'source> {
         mut self,
         ability: &AbilityName,
     ) -> Result<Self, GuidedError> {
-        if self.stage != GuidedStage::ChooseSolarFavoredAbilities {
-            return Err(GuidedError::StageOrderError);
-        }
-
         if ability == &AbilityName::MartialArts {
             return Err(GuidedError::SolarAbilityError(
                 SolarAbilityError::MartialArts,
@@ -179,10 +160,6 @@ impl<'source> GuidedView<'source> {
         mut self,
         ability: &AbilityName,
     ) -> Result<Self, GuidedError> {
-        if self.stage != GuidedStage::ChooseSolarFavoredAbilities {
-            return Err(GuidedError::StageOrderError);
-        }
-
         if self.solar_favored_abilities.is_none() {
             return Err(GuidedError::SolarAbilityError(SolarAbilityError::NotFound));
         }

@@ -1,8 +1,41 @@
-use crate::guided::{error::GuidedError, ExaltationChoice, GuidedStage};
+use crate::{guided::{error::GuidedError, ExaltationChoice, GuidedStage, GuidedMutation}, CharacterMutation};
 
 use super::GuidedView;
 
 impl<'source> GuidedView<'source> {
+    pub(in crate::guided) fn validate_correct_stage(&self, guided_mutation: &GuidedMutation) -> Result<(), GuidedError> {
+        if match guided_mutation {
+            GuidedMutation::CharacterMutation(mutation) => {
+                match mutation {
+                    CharacterMutation::SetName(_) | CharacterMutation::SetConcept(_) | CharacterMutation::RemoveConcept => {
+                        self.stage == GuidedStage::ChooseNameAndConcept
+                    }
+                    CharacterMutation::SetAttribute(_, _) => {
+                        self.stage == GuidedStage::ChooseAttributes
+                    }
+                    _ => false
+                }
+            }
+            GuidedMutation::SetStage(_) => true,
+            GuidedMutation::SetExaltation(_) => self.stage == GuidedStage::ChooseExaltation,
+            GuidedMutation::AddSolarCasteAbility(_) 
+            | GuidedMutation::RemoveSolarCasteAbility(_) => self.stage == GuidedStage::ChooseSolarCasteAbilities,
+            GuidedMutation::SetSolarSupernalAbility(_) => self.stage == GuidedStage::ChooseSolarSupernalAbility,
+            GuidedMutation::AddSolarFavoredAbility(_)
+            | GuidedMutation::RemoveSolarFavoredAbility(_) => self.stage == GuidedStage::ChooseSolarFavoredAbilities,
+            GuidedMutation::AddMartialArtsStyle(_, _)
+            | GuidedMutation::RemoveMartialArtsStyle(_) => self.stage == GuidedStage::ChooseMartialArtsStyles,
+            GuidedMutation::SetSorceryArchetype(_, _)
+            | GuidedMutation::SetShapingRitual(_, _)
+            | GuidedMutation::SetControlSpell(_, _) => self.stage == GuidedStage::ChooseSorcery,
+        } {
+            Ok(())
+        } else {
+            Err(GuidedError::StageOrderError)
+        }
+    }
+
+
     pub(in crate::guided) fn validate_stage_complete(&self) -> Result<(), GuidedError> {
         if !match self.stage {
             GuidedStage::ChooseNameAndConcept => true,

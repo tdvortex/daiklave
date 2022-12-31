@@ -50,6 +50,8 @@ impl<'source> GuidedView<'source> {
         mut self,
         guided_mutation: &'source GuidedMutation,
     ) -> Result<Self, GuidedError> {
+        self.validate_correct_stage(guided_mutation)?;
+
         match guided_mutation {
             GuidedMutation::CharacterMutation(character_mutation) => {
                 self.character_view
@@ -63,10 +65,6 @@ impl<'source> GuidedView<'source> {
                 self.stage = *next_stage;
             }
             GuidedMutation::SetExaltation(exaltation_choice) => {
-                if self.stage != GuidedStage::ChooseExaltation {
-                    return Err(GuidedError::StageOrderError);
-                }
-
                 self.exaltation_choice = Some(*exaltation_choice);
                 self.update_bonus_points();
             }
