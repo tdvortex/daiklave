@@ -45,7 +45,7 @@ impl<'source> CharacterView<'source> {
 
     pub(crate) fn set_solar_view(
         &mut self,
-        solar_view: SolarView,
+        solar_view: SolarView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_solar_view(&solar_view)?;
         if self.is_mortal() {

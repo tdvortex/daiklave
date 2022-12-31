@@ -2,16 +2,17 @@ use std::collections::HashSet;
 
 use thiserror::Error;
 
-use crate::abilities::AbilityName;
+use crate::{abilities::AbilityName, sorcery::{SolarSorcererView}};
 
 use super::{
     caste_view::SolarCasteView, dawn::DawnView, eclipse::EclipseView, night::NightView,
     twilight::TwilightView, zenith::ZenithView, Solar, SolarView,
 };
 
-pub struct SolarTraitsBuilder {
+pub struct SolarTraitsBuilder<'source> {
     pub(in crate::exalt_state::exalt::exalt_type::solar) caste: Option<SolarCasteView>,
     pub(in crate::exalt_state::exalt::exalt_type::solar) favored_abilities: HashSet<AbilityName>,
+    pub(in crate::exalt_state::exalt::exalt_type::solar) sorcery: Option<SolarSorcererView<'source>>,
 }
 
 #[derive(Debug, Error)]
@@ -28,7 +29,7 @@ pub enum SolarBuilderError {
     InvalidCasteAbility,
 }
 
-impl SolarTraitsBuilder {
+impl<'source> SolarTraitsBuilder<'source> {
     pub fn set_dawn(&mut self, dawn: DawnView) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();
@@ -114,11 +115,12 @@ impl SolarTraitsBuilder {
         Ok(Solar {
             caste: self.caste.unwrap().into_owned(),
             favored_abilities: arr,
+            sorcery: self.sorcery.map(|sorcery| sorcery.into()),
         })
     }
 
     /// Consumes the builder, without cloning.
-    pub fn build_view(self) -> Result<SolarView, SolarBuilderError> {
+    pub fn build_view(self) -> Result<SolarView<'source>, SolarBuilderError> {
         if self.caste.is_none() {
             return Err(SolarBuilderError::MissingField("caste"));
         }
@@ -139,6 +141,7 @@ impl SolarTraitsBuilder {
         Ok(SolarView {
             caste: self.caste.unwrap(),
             favored_abilities: arr,
+            sorcery: self.sorcery,
         })
     }
 }

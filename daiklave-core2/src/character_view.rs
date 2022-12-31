@@ -78,6 +78,8 @@ impl<'source> CharacterView<'source> {
             CharacterMutation::RemoveMartialArtsStyle(id) => {
                 self.check_remove_martial_arts_style(*id)
             }
+            CharacterMutation::SetMartialArtsDots(_, _) => todo!(),
+            CharacterMutation::SetCraftDots(_, _) => todo!(),
         }
     }
 
@@ -125,6 +127,8 @@ impl<'source> CharacterView<'source> {
                 self.add_martial_arts_style(*id, style)
             }
             CharacterMutation::RemoveMartialArtsStyle(id) => self.remove_martial_arts_style(*id),
+            CharacterMutation::SetMartialArtsDots(_, _) => todo!(),
+            CharacterMutation::SetCraftDots(_, _) => todo!(),
         }
     }
 }

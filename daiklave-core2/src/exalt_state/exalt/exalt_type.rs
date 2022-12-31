@@ -10,6 +10,6 @@ pub(crate) enum ExaltType {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) enum ExaltTypeView {
-    Solar(SolarView),
+pub(crate) enum ExaltTypeView<'source> {
+    Solar(SolarView<'source>),
 }

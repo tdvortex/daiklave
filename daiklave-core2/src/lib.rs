@@ -119,6 +119,8 @@ pub enum CharacterMutation {
     /// Removes a Martial Arts style from a character, including the merit,
     /// associated ability dots, specialties, and Charms.
     RemoveMartialArtsStyle(MartialArtsStyleId),
+    SetMartialArtsDots(MartialArtsStyleId, u8),
+    SetCraftDots(String, u8),
 }
 
 /// An error representing something that could go wrong with a

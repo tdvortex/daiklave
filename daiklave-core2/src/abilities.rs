@@ -29,7 +29,7 @@ impl Default for Ability {
 }
 
 impl Ability {
-    fn dots(&self) -> u8 {
+    pub fn dots(&self) -> u8 {
         match self {
             Ability::Zero => 0,
             Ability::NonZero(dots, _) => *dots,
@@ -54,7 +54,7 @@ impl Ability {
         }
     }
 
-    fn specialties(&self) -> impl Iterator<Item = &str> {
+    pub fn specialties(&self) -> impl Iterator<Item = &str> {
         match self {
             Ability::Zero => vec![],
             Ability::NonZero(_, specialties) => specialties.iter().map(|s| s.as_str()).collect(),

@@ -21,7 +21,7 @@ pub use night::{Night, NightBuilder};
 pub use twilight::{Twilight, TwilightBuilder};
 pub use zenith::{Zenith, ZenithBuilder};
 
-use crate::{abilities::AbilityName, guided::ExaltationChoice};
+use crate::{abilities::AbilityName, guided::ExaltationChoice, sorcery::{SolarSorcerer, SolarSorcererView}};
 
 use self::{
     builder::SolarTraitsBuilder, caste::SolarCaste, caste_view::SolarCasteView, dawn::DawnView,
@@ -33,14 +33,16 @@ use self::{
 pub struct Solar {
     caste: SolarCaste,
     favored_abilities: [AbilityName; 5],
+    pub(crate) sorcery: Option<SolarSorcerer>,
 }
 
-impl Solar {
+impl<'source> Solar {
     /// Creates a builder to construct SolarTraits.
-    pub fn builder() -> SolarTraitsBuilder {
+    pub fn builder() -> SolarTraitsBuilder<'source> {
         SolarTraitsBuilder {
             caste: None,
             favored_abilities: HashSet::new(),
+            sorcery: None,
         }
     }
 
@@ -62,8 +64,10 @@ impl Solar {
     pub fn has_favored_ability(&self, ability: AbilityName) -> bool {
         self.favored_abilities.iter().any(|&a| a == ability)
     }
+}
 
-    pub(crate) fn as_view(&self) -> SolarView {
+impl<'char> Solar {
+    pub(crate) fn as_view(&'char self) -> SolarView<'char> {
         let caste = match &self.caste {
             SolarCaste::Dawn(dawn) => SolarCasteView::Dawn(DawnView {
                 caste_not_supernal: dawn.caste_not_supernal,
@@ -87,22 +91,25 @@ impl Solar {
             }),
         };
         let favored_abilities = self.favored_abilities;
+        let sorcery = self.sorcery.as_ref().map(|sorcery| sorcery.as_view());
 
         SolarView {
             caste,
             favored_abilities,
+            sorcery,
         }
     }
 }
 
 /// Traits which are unique to being a Solar Exalted, with &str
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SolarView {
+pub struct SolarView<'source> {
     caste: SolarCasteView,
     favored_abilities: [AbilityName; 5],
+    pub(crate) sorcery: Option<SolarSorcererView<'source>>,
 }
 
-impl SolarView {
+impl<'source> SolarView<'source> {
     /// Returns True if the ability is a caste ability for the charcter. Note
     /// that MartialArts is a caste ability if and only if Brawl is a caste
     /// ability.

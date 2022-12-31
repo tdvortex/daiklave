@@ -1,6 +1,6 @@
 use crate::{abilities::AbilityNameVanilla, CharacterMutationError, CharacterView};
 
-use super::{AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId};
+use super::{AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, MartialArtsView};
 
 impl<'source> CharacterView<'source> {
     /// Checks if a Martial Arts style can be added to the character.
@@ -47,5 +47,12 @@ impl<'source> CharacterView<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exalt_state.remove_martial_arts_style(id)?;
         Ok(self)
+    }
+}
+
+
+impl<'view, 'source> CharacterView<'source> {
+    pub fn martial_arts(&'view self) -> MartialArtsView<'view, 'source> {
+        MartialArtsView(self)
     }
 }

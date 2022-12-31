@@ -44,7 +44,7 @@ impl ExaltType {
     }
 }
 
-impl ExaltTypeView {
+impl<'source> ExaltTypeView<'source> {
     pub fn is_solar(&self) -> bool {
         true
     }
@@ -148,7 +148,7 @@ impl<'source> ExaltStateView<'source> {
 
     pub fn set_solar_view(
         &mut self,
-        solar: SolarView,
+        solar: SolarView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self.is_solar() {
             return Ok(self);

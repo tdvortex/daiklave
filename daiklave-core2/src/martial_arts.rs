@@ -13,7 +13,7 @@ use crate::{
     exalt_state::{ExaltState, ExaltStateView},
     id::UniqueId,
     weapons::WeaponId,
-    CharacterMutationError,
+    CharacterMutationError, CharacterView, Character,
 };
 
 mod character;
@@ -284,5 +284,242 @@ impl ExaltState {
             }
         }
         Ok(self)
+    }
+}
+
+pub struct MartialArtsView<'view, 'source>(&'view CharacterView<'source>);
+
+impl<'view, 'source> MartialArtsView<'view, 'source> {
+    pub fn style(&self, id: MartialArtsStyleId) -> Option<MartialArtistView<'view, 'source>> {
+        self.0.exalt_state.martial_artist(id)
+    }
+}
+
+pub struct MartialArts<'char>(&'char Character);
+
+impl<'char> MartialArts<'char> {
+    pub fn style(&self, id: MartialArtsStyleId) -> Option<MartialArtist<'char>> {
+        self.0.exalt_state.martial_artist(id)
+    }
+}
+
+
+pub struct MartialArtistView<'view, 'source>(MartialArtistViewSwitch<'view, 'source>);
+
+impl<'view, 'source> MartialArtistView<'view, 'source> {
+    pub fn name(&self) -> &'source str {
+        self.0.name()
+    }
+
+    pub fn book_reference(&self) -> Option<BookReference> {
+        self.0.book_reference()
+    }
+
+    pub fn description(&self) -> &'source str {
+        self.0.description()
+    }
+
+    pub fn usable_weapon_ids(&self) -> impl Iterator<Item = WeaponId> + '_ {
+        self.0.usable_weapon_ids()
+    }
+
+    pub fn max_armor_weight(&self) -> Option<ArmorWeight> {
+        self.0.max_armor_weight()
+    }
+
+    pub fn dots(&self) -> u8 {
+        self.0.dots()
+    }
+
+    pub fn specialties(&self) -> impl Iterator<Item = &'source str> {
+        self.0.specialties()
+    }
+
+    pub fn charms(&self) -> impl Iterator<Item = (MartialArtsCharmId, &'source MartialArtsCharm)> + '_ {
+        self.0.charms()
+    }
+}
+
+pub struct MartialArtist<'char>(MartialArtistSwitch<'char>);
+
+impl<'char> MartialArtist<'char> {
+    pub fn name(&self) -> &'char str {
+        self.0.name()
+    }
+
+    pub fn book_reference(&self) -> Option<BookReference> {
+        self.0.book_reference()
+    }
+
+    pub fn description(&self) -> &'char str {
+        self.0.description()
+    }
+
+    pub fn usable_weapon_ids(&self) -> impl Iterator<Item = WeaponId> + '_ {
+        self.0.usable_weapon_ids()
+    }
+
+    pub fn max_armor_weight(&self) -> Option<ArmorWeight> {
+        self.0.max_armor_weight()
+    }
+
+    pub fn dots(&self) -> u8 {
+        self.0.dots()
+    }
+
+    pub fn specialties(&self) -> impl Iterator<Item = &'char str> {
+        self.0.specialties()
+    }
+
+    pub fn charms(&self) -> impl Iterator<Item = (MartialArtsCharmId, &'char MartialArtsCharm)> + '_ {
+        self.0.charms()
+    }
+}
+
+pub(crate) enum MartialArtistViewSwitch<'view, 'source> {
+    Mortal(&'view MortalMartialArtistView<'source>),
+    Exalt(&'view ExaltMartialArtistView<'source>),
+}
+
+impl<'view, 'source> MartialArtistViewSwitch<'view, 'source> {
+    pub fn name(&self) -> &'source str {
+        match self {
+            MartialArtistViewSwitch::Mortal(view) => view.style.name(),
+            MartialArtistViewSwitch::Exalt(view) => view.style.name(),
+        }
+    }
+
+    pub fn book_reference(&self) -> Option<BookReference> {
+        match self {
+            MartialArtistViewSwitch::Mortal(view) => view.style.book_reference(),
+            MartialArtistViewSwitch::Exalt(view) => view.style.book_reference(),
+        }
+    }
+
+    pub fn description(&self) -> &'source str {
+        match self {
+            MartialArtistViewSwitch::Mortal(view) => view.style.description(),
+            MartialArtistViewSwitch::Exalt(view) => view.style.description(),
+        }
+    }
+
+    pub fn usable_weapon_ids(&self) -> impl Iterator<Item = WeaponId> + '_ {
+        match self {
+            MartialArtistViewSwitch::Mortal(view) => view.style.usable_weapon_ids(),
+            MartialArtistViewSwitch::Exalt(view) => view.style.usable_weapon_ids(),
+        }
+    }
+
+    pub fn max_armor_weight(&self) -> Option<ArmorWeight> {
+        match self {
+            MartialArtistViewSwitch::Mortal(view) => view.style.max_armor_weight(),
+            MartialArtistViewSwitch::Exalt(view) => view.style.max_armor_weight(),
+        }
+    }
+
+    pub fn dots(&self) -> u8 {
+        match self {
+            MartialArtistViewSwitch::Mortal(view) => view.ability.dots(),
+            MartialArtistViewSwitch::Exalt(view) => view.ability.dots(),
+        }
+    }
+
+    pub fn specialties(&self) -> impl Iterator<Item = &'source str> {
+        match self {
+            MartialArtistViewSwitch::Mortal(view) => view.ability.specialties(),
+            MartialArtistViewSwitch::Exalt(view) => view.ability.specialties(),
+        }
+    }
+
+    pub fn charms(&self) -> impl Iterator<Item = (MartialArtsCharmId, &'source MartialArtsCharm)> + '_ {
+        match self {
+            MartialArtistViewSwitch::Mortal(_) => Vec::new().into_iter(),
+            MartialArtistViewSwitch::Exalt(view) => view.charms.iter().map(|(k, v)| (*k, *v)).collect::<Vec<(MartialArtsCharmId, &'source MartialArtsCharm)>>().into_iter(),
+        }
+
+        
+    }
+}
+
+pub(crate) enum MartialArtistSwitch<'char> {
+    Mortal(&'char MortalMartialArtist),
+    Exalt(&'char ExaltMartialArtist),
+}
+
+impl<'char> MartialArtistSwitch<'char> {
+    pub fn name(&self) -> &'char str {
+        match self {
+            MartialArtistSwitch::Mortal(view) => view.style.name(),
+            MartialArtistSwitch::Exalt(view) => view.style.name(),
+        }
+    }
+
+    pub fn book_reference(&self) -> Option<BookReference> {
+        match self {
+            MartialArtistSwitch::Mortal(view) => view.style.book_reference(),
+            MartialArtistSwitch::Exalt(view) => view.style.book_reference(),
+        }
+    }
+
+    pub fn description(&self) -> &'char str {
+        match self {
+            MartialArtistSwitch::Mortal(view) => view.style.description(),
+            MartialArtistSwitch::Exalt(view) => view.style.description(),
+        }
+    }
+
+    pub fn usable_weapon_ids(&self) -> impl Iterator<Item = WeaponId> + '_ {
+        match self {
+            MartialArtistSwitch::Mortal(view) => view.style.usable_weapon_ids(),
+            MartialArtistSwitch::Exalt(view) => view.style.usable_weapon_ids(),
+        }
+    }
+
+    pub fn max_armor_weight(&self) -> Option<ArmorWeight> {
+        match self {
+            MartialArtistSwitch::Mortal(view) => view.style.max_armor_weight(),
+            MartialArtistSwitch::Exalt(view) => view.style.max_armor_weight(),
+        }
+    }
+
+    pub fn dots(&self) -> u8 {
+        match self {
+            MartialArtistSwitch::Mortal(view) => view.ability.dots(),
+            MartialArtistSwitch::Exalt(view) => view.ability.dots(),
+        }
+    }
+
+    pub fn specialties(&self) -> impl Iterator<Item = &'char str> {
+        match self {
+            MartialArtistSwitch::Mortal(view) => view.ability.specialties(),
+            MartialArtistSwitch::Exalt(view) => view.ability.specialties(),
+        }
+    }
+
+    pub fn charms(&self) -> impl Iterator<Item = (MartialArtsCharmId, &'char MartialArtsCharm)> + '_ {
+        match self {
+            MartialArtistSwitch::Mortal(_) => Vec::new().into_iter(),
+            MartialArtistSwitch::Exalt(view) => view.charms.iter().map(|(k, v)| (*k, v)).collect::<Vec<(MartialArtsCharmId, &'char MartialArtsCharm)>>().into_iter(),
+        }
+
+        
+    }
+}
+
+impl<'view, 'source> ExaltStateView<'source> {
+    fn martial_artist(&'view self, id: MartialArtsStyleId) -> Option<MartialArtistView<'view, 'source>> {
+        match self {
+            ExaltStateView::Mortal(mortal) => Some(MartialArtistView(MartialArtistViewSwitch::Mortal(mortal.martial_arts_styles.get(&id)?))), 
+            ExaltStateView::Exalt(exalt) => Some(MartialArtistView(MartialArtistViewSwitch::Exalt(exalt.martial_arts_styles.get(&id)?))), 
+        }
+    }
+}
+
+impl<'char> ExaltState {
+    fn martial_artist(&'char self, id: MartialArtsStyleId) -> Option<MartialArtist<'char>> {
+        match self {
+            ExaltState::Mortal(mortal) => Some(MartialArtist(MartialArtistSwitch::Mortal(mortal.martial_arts_styles.get(&id)?))), 
+            ExaltState::Exalt(exalt) => Some(MartialArtist(MartialArtistSwitch::Exalt(exalt.martial_arts_styles.get(&id)?))), 
+        }
     }
 }

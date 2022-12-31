@@ -9,7 +9,9 @@ pub mod mortal;
 use exalt::{Exalt, ExaltView};
 use mortal::{Mortal, MortalView};
 
-use crate::{Character, CharacterMutationError, CharacterView};
+use crate::{Character, CharacterMutationError, CharacterView, sorcery::{SolarSorcerer, SolarSorcererView}};
+
+use self::exalt::exalt_type::{ExaltType, ExaltTypeView};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum ExaltState {
@@ -41,15 +43,43 @@ impl ExaltState {
             return Ok(self);
         }
 
+        let exalt = if let ExaltState::Exalt(exalt) = self {
+            exalt
+        } else {
+            unreachable!()
+        };
+
+        // Preserve Terrestrial circle sorcery
+        let sorcery = {
+            match &exalt.exalt_type {
+                ExaltType::Solar(solar) => {
+                    if let Some(sorcery) = &solar.sorcery {
+                        match sorcery {
+                            SolarSorcerer::Terrestrial(terrestrial) => Some(terrestrial.clone()),
+                            SolarSorcerer::Celestial(celestial) => {
+                                Some(celestial.clone().into())
+                            }
+                            SolarSorcerer::Solar(solar) => {
+                                Some(solar.clone().into())
+                            }
+                        }
+                    } else {
+                        None
+                    }
+                }
+            }
+        };
+
         // Preserve martial arts styles
-        if let ExaltState::Exalt(exalt) = self {
-            *self = ExaltState::Mortal(Mortal {
-                martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles)
-                    .into_iter()
-                    .map(|(id, exalt_artist)| (id, exalt_artist.into()))
-                    .collect(),
-            });
-        }
+        let martial_arts_styles = std::mem::take(&mut exalt.martial_arts_styles)
+            .into_iter()
+            .map(|(id, exalt_artist)| (id, exalt_artist.into()))
+            .collect();
+
+        *self = ExaltState::Mortal(Mortal {
+            martial_arts_styles,
+            sorcery
+        });
 
         Ok(self)
     }
@@ -115,16 +145,43 @@ impl<'source> ExaltStateView<'source> {
             return Ok(self);
         }
 
-        // Preserve martial arts styles
-        if let ExaltStateView::Exalt(exalt) = self {
-            *self = ExaltStateView::Mortal(MortalView {
-                martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles)
-                    .into_iter()
-                    .map(|(id, exalt_artist)| (id, exalt_artist.into()))
-                    .collect(),
-            });
-        }
+        let exalt = if let ExaltStateView::Exalt(exalt) = self {
+            exalt
+        } else {
+            unreachable!()
+        };
 
+        // Preserve Terrestrial circle sorcery
+        let sorcery = {
+            match &exalt.exalt_type {
+                ExaltTypeView::Solar(solar) => {
+                    if let Some(sorcery) = &solar.sorcery {
+                        match sorcery {
+                            SolarSorcererView::Terrestrial(terrestrial) => Some(terrestrial.clone()),
+                            SolarSorcererView::Celestial(celestial) => {
+                                Some(celestial.into())
+                            }
+                            SolarSorcererView::Solar(solar) => {
+                                Some(solar.into())
+                            }
+                        }
+                    } else {
+                        None
+                    }
+                }
+            }
+        };
+
+        // Preserve martial arts styles
+        let martial_arts_styles = std::mem::take(&mut exalt.martial_arts_styles)
+            .into_iter()
+            .map(|(id, exalt_artist)| (id, exalt_artist.into()))
+            .collect();
+
+        *self = ExaltStateView::Mortal(MortalView {
+            martial_arts_styles,
+            sorcery
+        });
         Ok(self)
     }
 }

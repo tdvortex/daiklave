@@ -42,7 +42,7 @@ impl<'source> AbilityView<'source> {
         }
     }
 
-    pub fn specialties(&self) -> impl Iterator<Item = &str> {
+    pub fn specialties(&self) -> impl Iterator<Item = &'source str> {
         match self {
             AbilityView::Zero => vec![],
             AbilityView::NonZero(_, specialties) => specialties.iter().copied().collect(),
