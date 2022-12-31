@@ -89,7 +89,7 @@ impl ZenithView {
         AbilityName::from(self.supernal)
     }
 
-    pub fn to_owned(self) -> Zenith {
+    pub fn into_owned(self) -> Zenith {
         Zenith {
             caste_not_supernal: self.caste_not_supernal,
             supernal: self.supernal,

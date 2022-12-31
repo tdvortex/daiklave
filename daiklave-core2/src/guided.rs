@@ -28,7 +28,7 @@ pub enum GuidedMutation {
     /// Move on to the next stage of the builder. Note that because different
     /// Exalt types have different stages, some stages may be skipped or done
     /// in a different order.
-    SetStage(GuidedStage),
+    AdvanceStage,
     /// Choose a specific Exalt type (or Mortal), without necessarily setting
     /// all exaltations up-front.
     SetExaltation(ExaltationChoice),

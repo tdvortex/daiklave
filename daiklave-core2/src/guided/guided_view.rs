@@ -60,11 +60,11 @@ impl<'source> GuidedView<'source> {
                     .map_err(GuidedError::CharacterMutationError)?;
                 self.update_bonus_points();
             }
-            GuidedMutation::SetStage(next_stage) => {
+            GuidedMutation::AdvanceStage => {
                 self.validate_stage_complete()?;
-                self.validate_stage_order(next_stage)?;
                 self.finalize_stage()?;
-                self.stage = *next_stage;
+
+                self.stage = self.next_stage()?;
             }
             GuidedMutation::SetExaltation(exaltation_choice) => {
                 self.exaltation_choice = Some(*exaltation_choice);

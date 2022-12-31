@@ -4,7 +4,7 @@ use daiklave_core2::{
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     charms::{CharmCost, CharmCostType, CharmKeyword},
-    guided::{begin_guided_builder, ExaltationChoice, GuidedMutation, GuidedStage},
+    guided::{begin_guided_builder, ExaltationChoice, GuidedMutation},
     id::UniqueId,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
@@ -32,7 +32,7 @@ fn test_guided_mortal() {
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Move on to next stage
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseExaltation);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -43,7 +43,7 @@ fn test_guided_mortal() {
     assert!(guided_builder.undo());
 
     // Move on to next stage (again)
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseExaltation);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -61,7 +61,7 @@ fn test_guided_mortal() {
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseAttributes);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -152,7 +152,7 @@ fn test_guided_mortal() {
     );
 
     // Move on to the next stage
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseMartialArtsStyles);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -256,12 +256,12 @@ fn test_guided_mortal() {
     assert!(guided_builder.undo());
 
     // Move on to the next stage
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSorcery);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Check we can skip ahead directly to abilities
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseAbilities);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -336,7 +336,7 @@ fn test_guided_mortal() {
     assert_eq!(guided_builder.as_guided_view().unwrap().merit_dots(), 9);
 
     // Move on to the next stage
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseAbilities);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 }

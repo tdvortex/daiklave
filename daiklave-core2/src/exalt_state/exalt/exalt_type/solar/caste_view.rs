@@ -38,13 +38,13 @@ impl SolarCasteView {
         }
     }
 
-    pub fn to_owned(self) -> SolarCaste {
+    pub fn into_owned(self) -> SolarCaste {
         match self {
-            SolarCasteView::Dawn(view) => SolarCaste::Dawn(view.to_owned()),
-            SolarCasteView::Zenith(view) => SolarCaste::Zenith(view.to_owned()),
-            SolarCasteView::Twilight(view) => SolarCaste::Twilight(view.to_owned()),
-            SolarCasteView::Night(view) => SolarCaste::Night(view.to_owned()),
-            SolarCasteView::Eclipse(view) => SolarCaste::Eclipse(view.to_owned()),
+            SolarCasteView::Dawn(view) => SolarCaste::Dawn(view.into_owned()),
+            SolarCasteView::Zenith(view) => SolarCaste::Zenith(view.into_owned()),
+            SolarCasteView::Twilight(view) => SolarCaste::Twilight(view.into_owned()),
+            SolarCasteView::Night(view) => SolarCaste::Night(view.into_owned()),
+            SolarCasteView::Eclipse(view) => SolarCaste::Eclipse(view.into_owned()),
         }
     }
 }

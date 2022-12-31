@@ -89,7 +89,7 @@ impl EclipseView {
         AbilityName::from(self.supernal)
     }
 
-    pub fn to_owned(self) -> Eclipse {
+    pub fn into_owned(self) -> Eclipse {
         Eclipse {
             caste_not_supernal: self.caste_not_supernal,
             supernal: self.supernal,

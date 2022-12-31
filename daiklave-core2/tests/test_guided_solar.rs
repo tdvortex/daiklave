@@ -5,7 +5,7 @@ use daiklave_core2::{
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     charms::{CharmCost, CharmCostType, CharmKeyword},
-    guided::{begin_guided_builder, ExaltationChoice, GuidedMutation, GuidedStage},
+    guided::{begin_guided_builder, ExaltationChoice, GuidedMutation},
     id::UniqueId,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
@@ -32,7 +32,7 @@ fn test_guided_solar() {
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Move on to next stage
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseExaltation);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -43,7 +43,7 @@ fn test_guided_solar() {
     assert!(guided_builder.undo());
 
     // Move on to next stage (again)
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseExaltation);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -61,7 +61,7 @@ fn test_guided_solar() {
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseAttributes);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -152,7 +152,7 @@ fn test_guided_solar() {
     );
 
     // Move on to next stage
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSolarCasteAbilities);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -209,16 +209,14 @@ fn test_guided_solar() {
 
     // Check cannot proceed without 5 caste abilities
     assert!(guided_builder
-        .check_mutation(&GuidedMutation::SetStage(
-            GuidedStage::ChooseSolarSupernalAbility
-        ))
+        .check_mutation(&GuidedMutation::AdvanceStage)
         .is_err());
 
     // Move on to next stage
     guided_builder
         .apply_mutation(GuidedMutation::AddSolarCasteAbility(AbilityName::Stealth))
         .unwrap();
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSolarSupernalAbility);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -236,7 +234,7 @@ fn test_guided_solar() {
     guided_builder
         .apply_mutation(GuidedMutation::SetSolarSupernalAbility(AbilityName::Dodge))
         .unwrap();
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSolarFavoredAbilities);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -299,21 +297,23 @@ fn test_guided_solar() {
 
     // Check cannot remove a missing favored ability
     assert!(guided_builder
-        .check_mutation(&GuidedMutation::RemoveSolarFavoredAbility(AbilityName::Lore))
+        .check_mutation(&GuidedMutation::RemoveSolarFavoredAbility(
+            AbilityName::Lore
+        ))
         .is_err());
 
     // Check cannot proceed without 5 favored abilities
     assert!(guided_builder
-        .check_mutation(&GuidedMutation::SetStage(
-            GuidedStage::ChooseMartialArtsStyles
-        ))
+        .check_mutation(&GuidedMutation::AdvanceStage)
         .is_err());
 
     // Move on to next stage
-        guided_builder
-        .apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Survival))
+    guided_builder
+        .apply_mutation(GuidedMutation::AddSolarFavoredAbility(
+            AbilityName::Survival,
+        ))
         .unwrap();
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseMartialArtsStyles);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -401,12 +401,12 @@ fn test_guided_solar() {
     assert!(guided_builder.undo());
 
     // Move on to the next stage
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseSorcery);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Check we can skip ahead directly to abilities
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseAbilities);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -481,7 +481,7 @@ fn test_guided_solar() {
     assert_eq!(guided_builder.as_guided_view().unwrap().charms(), 1);
 
     // Move on to the next stage
-    let mutation = GuidedMutation::SetStage(GuidedStage::ChooseAbilities);
+    let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 }

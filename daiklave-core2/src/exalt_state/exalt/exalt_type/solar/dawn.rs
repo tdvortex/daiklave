@@ -120,7 +120,7 @@ impl DawnView {
         AbilityName::from(self.supernal)
     }
 
-    pub fn to_owned(self) -> Dawn {
+    pub fn into_owned(self) -> Dawn {
         Dawn {
             caste_not_supernal: self.caste_not_supernal,
             supernal: self.supernal,

@@ -22,7 +22,7 @@ impl<'source> GuidedView<'source> {
                 }
                 _ => false,
             },
-            GuidedMutation::SetStage(_) => true,
+            GuidedMutation::AdvanceStage => true,
             GuidedMutation::SetExaltation(_) => self.stage == GuidedStage::ChooseExaltation,
             GuidedMutation::AddSolarCasteAbility(_)
             | GuidedMutation::RemoveSolarCasteAbility(_) => {
@@ -102,41 +102,38 @@ impl<'source> GuidedView<'source> {
         }
     }
 
-    pub(in crate::guided) fn validate_stage_order(
-        &self,
-        next_stage: &GuidedStage,
-    ) -> Result<(), GuidedError> {
-        match (self.stage, next_stage) {
-            (GuidedStage::ChooseNameAndConcept, GuidedStage::ChooseExaltation)
-            | (GuidedStage::ChooseExaltation, GuidedStage::ChooseAttributes)
-            | (GuidedStage::ChooseMartialArtsStyles, GuidedStage::ChooseSorcery)
-            | (GuidedStage::ChooseSorcery, GuidedStage::ChooseAbilities) => Ok(()),
-            (GuidedStage::ChooseAttributes, GuidedStage::ChooseMartialArtsStyles) => {
-                if matches!(self.exaltation_choice, Some(ExaltationChoice::Mortal)) {
-                    Ok(())
-                } else {
-                    Err(GuidedError::StageOrderError)
-                }
+    pub(in crate::guided) fn next_stage(&self) -> Result<GuidedStage, GuidedError> {
+        // Mortal order: ChooseNameAndConcept > ChooseExaltation
+        //   > ChooseAttributes > ChooseMartialArtsStyles > ChooseSorcery
+        //   > Choose Abilities
+        // Solar order: ChooseNameAndConcept > ChooseExaltation
+        //   > ChooseAttributes > ChooseSolarCasteAbilities
+        //   > ChooseSolarSupernalAbility > ChooseSolarFavoredAbilities
+        //   > ChooseMartialArtsStyles > ChooseSorcery > Choose Abilities
+        Ok(match (self.stage, self.exaltation_choice) {
+            (GuidedStage::ChooseNameAndConcept, _) => GuidedStage::ChooseExaltation,
+            (GuidedStage::ChooseExaltation, _) => GuidedStage::ChooseAttributes,
+            (GuidedStage::ChooseAttributes, Some(ExaltationChoice::Mortal)) => {
+                GuidedStage::ChooseMartialArtsStyles
             }
-            (GuidedStage::ChooseAttributes, GuidedStage::ChooseSolarCasteAbilities)
-            | (GuidedStage::ChooseSolarCasteAbilities, GuidedStage::ChooseSolarSupernalAbility)
-            | (GuidedStage::ChooseSolarSupernalAbility, GuidedStage::ChooseSolarFavoredAbilities)
-            | (GuidedStage::ChooseSolarFavoredAbilities, GuidedStage::ChooseMartialArtsStyles) => {
-                if matches!(
-                    self.exaltation_choice,
-                    Some(ExaltationChoice::Dawn)
-                        | Some(ExaltationChoice::Zenith)
-                        | Some(ExaltationChoice::Twilight)
-                        | Some(ExaltationChoice::Night)
-                        | Some(ExaltationChoice::Eclipse)
-                ) {
-                    Ok(())
-                } else {
-                    Err(GuidedError::StageOrderError)
-                }
+            (GuidedStage::ChooseAttributes, Some(ExaltationChoice::Dawn))
+            | (GuidedStage::ChooseAttributes, Some(ExaltationChoice::Zenith))
+            | (GuidedStage::ChooseAttributes, Some(ExaltationChoice::Twilight))
+            | (GuidedStage::ChooseAttributes, Some(ExaltationChoice::Night))
+            | (GuidedStage::ChooseAttributes, Some(ExaltationChoice::Eclipse)) => {
+                GuidedStage::ChooseSolarCasteAbilities
             }
-            _ => Err(GuidedError::StageOrderError),
-        }
+            (GuidedStage::ChooseSolarCasteAbilities, _) => GuidedStage::ChooseSolarSupernalAbility,
+            (GuidedStage::ChooseSolarSupernalAbility, _) => {
+                GuidedStage::ChooseSolarFavoredAbilities
+            }
+            (GuidedStage::ChooseSolarFavoredAbilities, _) => GuidedStage::ChooseMartialArtsStyles,
+            (GuidedStage::ChooseMartialArtsStyles, _) => GuidedStage::ChooseSorcery,
+            (GuidedStage::ChooseSorcery, _) => GuidedStage::ChooseAbilities,
+            _ => {
+                return Err(GuidedError::StageOrderError);
+            }
+        })
     }
 
     pub(in crate::guided) fn finalize_stage(&mut self) -> Result<&mut Self, GuidedError> {

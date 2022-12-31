@@ -112,7 +112,7 @@ impl SolarTraitsBuilder {
         arr.sort();
 
         Ok(Solar {
-            caste: self.caste.unwrap().to_owned(),
+            caste: self.caste.unwrap().into_owned(),
             favored_abilities: arr,
         })
     }

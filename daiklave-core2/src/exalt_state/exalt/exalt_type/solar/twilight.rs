@@ -89,7 +89,7 @@ impl TwilightView {
         AbilityName::from(self.supernal)
     }
 
-    pub fn to_owned(self) -> Twilight {
+    pub fn into_owned(self) -> Twilight {
         Twilight {
             caste_not_supernal: self.caste_not_supernal,
             supernal: self.supernal,
