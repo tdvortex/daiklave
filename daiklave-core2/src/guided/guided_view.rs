@@ -157,6 +157,10 @@ impl<'source> GuidedView<'source> {
     }
 
     pub fn charms(&self) -> i32 {
-        todo!()
+        if self.sorcery_archetype.is_some() || self.shaping_ritual.is_some() || self.control_spell.is_some() {
+            1
+        } else {
+            0
+        }
     }
 }
