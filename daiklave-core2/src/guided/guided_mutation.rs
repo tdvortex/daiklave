@@ -1,4 +1,12 @@
-use crate::{CharacterMutation, abilities::AbilityName, martial_arts::{MartialArtsStyleId, MartialArtsStyle}, sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, TerrestrialSpell}};
+use crate::{
+    abilities::AbilityName,
+    martial_arts::{MartialArtsStyle, MartialArtsStyleId},
+    sorcery::{
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
+        TerrestrialSpell,
+    },
+    CharacterMutation,
+};
 
 use super::exaltation_choice::ExaltationChoice;
 

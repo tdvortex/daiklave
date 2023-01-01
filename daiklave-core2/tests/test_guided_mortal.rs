@@ -5,6 +5,7 @@ use daiklave_core2::{
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     charms::{CharmCost, CharmCostType, CharmKeyword},
+    guided::{ExaltationChoice, GuidedEventSource, GuidedMutation},
     id::UniqueId,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
@@ -12,7 +13,7 @@ use daiklave_core2::{
         SpellId, TerrestrialSpell,
     },
     weapons::WeaponId,
-    CharacterMutation, guided::{GuidedEventSource, GuidedMutation, ExaltationChoice},
+    CharacterMutation,
 };
 
 #[test]

@@ -9,4 +9,3 @@ mod solar_view;
 
 pub use solar::Solar;
 pub use solar_view::SolarView;
-

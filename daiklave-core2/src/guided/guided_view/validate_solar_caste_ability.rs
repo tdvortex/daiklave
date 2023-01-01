@@ -1,4 +1,4 @@
-use crate::{guided::exaltation_choice::ExaltationChoice, abilities::AbilityName};
+use crate::{abilities::AbilityName, guided::exaltation_choice::ExaltationChoice};
 
 pub(crate) fn validate_solar_caste_ability(
     exaltation: ExaltationChoice,

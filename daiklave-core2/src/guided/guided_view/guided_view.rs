@@ -1,6 +1,27 @@
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap, HashSet};
 
-use crate::{CharacterView, guided::{error::{GuidedError, SorceryError, SolarAbilityError}, guided_stage::GuidedStage, exaltation_choice::ExaltationChoice, guided_mutation::GuidedMutation}, abilities::{AbilityName, AbilityNameVanilla}, martial_arts::{MartialArtsStyleId, MartialArtsStyle, AddMartialArtsStyleError, RemoveMartialArtsStyleError}, sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, TerrestrialSpell}, CharacterMutation, CharacterMutationError, exaltation::exalt::exalt_type::solar::{SolarView, caste::{dawn::Dawn, zenith::Zenith, twilight::Twilight, night::Night, eclipse::Eclipse}, Solar}, attributes::AttributeName};
+use crate::{
+    abilities::{AbilityName, AbilityNameVanilla},
+    attributes::AttributeName,
+    exaltation::exalt::exalt_type::solar::{
+        caste::{dawn::Dawn, eclipse::Eclipse, night::Night, twilight::Twilight, zenith::Zenith},
+        Solar, SolarView,
+    },
+    guided::{
+        error::{GuidedError, SolarAbilityError, SorceryError},
+        exaltation_choice::ExaltationChoice,
+        guided_mutation::GuidedMutation,
+        guided_stage::GuidedStage,
+    },
+    martial_arts::{
+        AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError,
+    },
+    sorcery::{
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
+        TerrestrialSpell,
+    },
+    CharacterMutation, CharacterMutationError, CharacterView,
+};
 
 use super::validate_solar_caste_ability::validate_solar_caste_ability;
 

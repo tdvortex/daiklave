@@ -6,5 +6,5 @@ mod guided_stage;
 mod guided_view;
 
 pub use event_source::GuidedEventSource;
-pub use guided_mutation::GuidedMutation;
 pub use exaltation_choice::ExaltationChoice;
+pub use guided_mutation::GuidedMutation;

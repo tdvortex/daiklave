@@ -1,4 +1,4 @@
-use super::{wound_penalty::WoundPenalty, damage_level::DamageLevel};
+use super::{damage_level::DamageLevel, wound_penalty::WoundPenalty};
 
 pub(in crate::health) struct HealthIter {
     zero_boxes: u8,

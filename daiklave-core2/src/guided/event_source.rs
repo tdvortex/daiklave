@@ -1,6 +1,9 @@
 use crate::CharacterView;
 
-use super::{guided_mutation::GuidedMutation, guided_view::GuidedView, error::GuidedError, guided_stage::GuidedStage};
+use super::{
+    error::GuidedError, guided_mutation::GuidedMutation, guided_stage::GuidedStage,
+    guided_view::GuidedView,
+};
 
 /// An event-sourced guided character builder, supporting undo/redo.
 #[derive(Debug, Default)]

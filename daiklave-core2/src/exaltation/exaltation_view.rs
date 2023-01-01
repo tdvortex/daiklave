@@ -1,6 +1,17 @@
-use crate::{CharacterMutationError, sorcery::{SolarSorcererView, SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, TerrestrialSpell}, martial_arts::{MartialArtsStyleId, MartialArtsStyle, MartialArtistView}};
+use crate::{
+    martial_arts::{MartialArtistView, MartialArtsStyle, MartialArtsStyleId},
+    sorcery::{
+        ShapingRitual, ShapingRitualId, SolarSorcererView, SorceryArchetype, SorceryArchetypeId,
+        SpellId, TerrestrialSpell,
+    },
+    CharacterMutationError,
+};
 
-use super::{mortal::MortalView, exalt::{ExaltView, exalt_type::ExaltTypeView}, martial_arts::ExaltationMartialArtistView};
+use super::{
+    exalt::{exalt_type::ExaltTypeView, ExaltView},
+    martial_arts::ExaltationMartialArtistView,
+    mortal::MortalView,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum ExaltationView<'source> {
@@ -216,4 +227,3 @@ impl<'view, 'source> ExaltationView<'source> {
         Ok(self)
     }
 }
-

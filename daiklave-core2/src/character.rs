@@ -5,7 +5,7 @@ use crate::{
         Abilities, Ability, AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError,
         SetAbilityError,
     },
-    attributes::Attributes,
+    attributes::{AttributeName, Attributes, SetAttributesError},
     craft::Craft,
     exaltation::{
         exalt::{
@@ -14,7 +14,7 @@ use crate::{
         },
         Exaltation,
     },
-    health::{Health, WoundPenalty, DamageLevel},
+    health::{DamageLevel, Health, WoundPenalty},
     martial_arts::{AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId},
     name_and_concept::RemoveConceptError,
     willpower::Willpower,
@@ -617,6 +617,38 @@ impl Character {
     /// heals before aggravated.
     pub fn heal_damage(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         self.health.heal_damage(amount)?;
+        Ok(self)
+    }
+
+    /// Gets a struct reference for the character's attributes.
+    pub fn attributes(&self) -> &Attributes {
+        &self.attributes
+    }
+
+    /// Validates that the requested dot level is an appropriate attribute
+    /// rating. Attributes must be between 1 and 5 for all player characters.
+    pub fn check_set_attribute(
+        &self,
+        _attribute_name: AttributeName,
+        dots: u8,
+    ) -> Result<(), CharacterMutationError> {
+        if !(1..=5).contains(&dots) {
+            Err(CharacterMutationError::SetAttributesError(
+                SetAttributesError::InvalidRating(dots),
+            ))
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Sets the specified attribute name to the specified dot rating.
+    pub fn set_attribute(
+        &mut self,
+        attribute_name: AttributeName,
+        dots: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.check_set_attribute(attribute_name, dots)?;
+        self.attributes.set_dots(attribute_name, dots)?;
         Ok(self)
     }
 }

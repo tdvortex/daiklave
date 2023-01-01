@@ -5,7 +5,7 @@ use daiklave_core2::{
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     charms::{CharmCost, CharmCostType, CharmKeyword},
-    guided::{ExaltationChoice, GuidedMutation, GuidedEventSource},
+    guided::{ExaltationChoice, GuidedEventSource, GuidedMutation},
     id::UniqueId,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{

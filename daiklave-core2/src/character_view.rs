@@ -3,7 +3,7 @@ use crate::{
         AbilitiesView, AbilityNameVanilla, AbilityView, AddSpecialtyError, RemoveSpecialtyError,
         SetAbilityError,
     },
-    attributes::Attributes,
+    attributes::{AttributeName, Attributes, SetAttributesError},
     craft::CraftView,
     exaltation::{
         exalt::{
@@ -12,6 +12,7 @@ use crate::{
         },
         ExaltationView,
     },
+    health::{DamageLevel, Health, WoundPenalty},
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, MartialArtsView,
     },
@@ -21,7 +22,7 @@ use crate::{
         TerrestrialSpell,
     },
     willpower::Willpower,
-    CharacterMutation, CharacterMutationError, health::{Health, WoundPenalty, DamageLevel},
+    CharacterMutation, CharacterMutationError,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -586,7 +587,7 @@ impl<'source> CharacterView<'source> {
         self.concept = None;
         Ok(self)
     }
-    
+
     /// Returns true if character is not Exalted.
     pub fn is_mortal(&self) -> bool {
         self.exalt_state.is_mortal()
@@ -670,8 +671,39 @@ impl<'source> CharacterView<'source> {
         self.health.heal_damage(amount)?;
         Ok(self)
     }
-}
 
+    /// Gets a struct reference for the character's attributes.
+    pub fn attributes(&self) -> &Attributes {
+        &self.attributes
+    }
+
+    /// Validates that the requested dot level is an appropriate attribute
+    /// rating. Attributes must be between 1 and 5 for all player characters.
+    pub fn check_set_attribute(
+        &self,
+        _attribute_name: AttributeName,
+        dots: u8,
+    ) -> Result<(), CharacterMutationError> {
+        if !(1..=5).contains(&dots) {
+            Err(CharacterMutationError::SetAttributesError(
+                SetAttributesError::InvalidRating(dots),
+            ))
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Sets the specified attribute name to the specified dot rating.
+    pub fn set_attribute(
+        &mut self,
+        attribute_name: AttributeName,
+        dots: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.check_set_attribute(attribute_name, dots)?;
+        self.attributes.set_dots(attribute_name, dots)?;
+        Ok(self)
+    }
+}
 
 impl<'view, 'source> CharacterView<'source> {
     /// Accesses Martial Arts styles, abilities, and Charms.

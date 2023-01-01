@@ -1,8 +1,8 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::CharacterMutationError;
 
-use super::{wound_penalty::WoundPenalty, damage_level::DamageLevel, health_iter::HealthIter};
+use super::{damage_level::DamageLevel, health_iter::HealthIter, wound_penalty::WoundPenalty};
 
 /// Struct for a character's health track.
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
