@@ -18,7 +18,7 @@ use crate::{
     martial_arts::{AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId},
     name_and_concept::RemoveConceptError,
     willpower::Willpower,
-    CharacterMutation, CharacterMutationError,
+    CharacterMutation, CharacterMutationError, sorcery::Sorcery,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -686,5 +686,12 @@ impl Character {
             self.craft.set_dots(focus, dots)?;
             Ok(self)
         }
+    }
+}
+
+impl<'char> Character {
+    /// The character's Sorcery abilities, if any.
+    pub fn sorcery(&'char self) -> Option<Sorcery<'char>> {
+        self.exalt_state.sorcery()
     }
 }

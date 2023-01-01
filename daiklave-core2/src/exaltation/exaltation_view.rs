@@ -2,7 +2,7 @@ use crate::{
     martial_arts::{MartialArtistView, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         ShapingRitual, ShapingRitualId, SolarSorcererView, SorceryArchetype, SorceryArchetypeId,
-        SpellId, TerrestrialSpell,
+        SpellId, TerrestrialSpell, SorceryView, SorceryViewSwitch,
     },
     CharacterMutationError,
 };
@@ -226,4 +226,15 @@ impl<'view, 'source> ExaltationView<'source> {
         }
         Ok(self)
     }
+
+    pub(crate) fn sorcery(&'view self) -> Option<SorceryView<'view, 'source>> {
+        match self {
+            ExaltationView::Mortal(mortal) => mortal
+                .sorcery
+                .as_ref()
+                .map(|terrestrial| SorceryView(SorceryViewSwitch::Mortal(terrestrial))),
+            ExaltationView::Exalt(exalt) => exalt.sorcery(),
+        }
+    }
 }
+

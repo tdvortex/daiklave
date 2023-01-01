@@ -86,4 +86,8 @@ impl<'char> Solar {
 
         SolarView::new(caste, favored_abilities, sorcery)
     }
+
+    pub(crate) fn sorcery(&self) -> Option<&SolarSorcerer> {
+        self.sorcery.as_ref()
+    }
 }

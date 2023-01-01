@@ -19,7 +19,7 @@ use crate::{
     name_and_concept::RemoveConceptError,
     sorcery::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
-        TerrestrialSpell,
+        TerrestrialSpell, SorceryView,
     },
     willpower::Willpower,
     CharacterMutation, CharacterMutationError,
@@ -745,5 +745,10 @@ impl<'view, 'source> CharacterView<'source> {
     /// Accesses Martial Arts styles, abilities, and Charms.
     pub fn martial_arts(&'view self) -> MartialArtsView<'view, 'source> {
         MartialArtsView(self)
+    }
+
+    /// The character's Sorcery abilities, if any.
+    pub fn sorcery(&'view self) -> Option<SorceryView<'view, 'source>> {
+        self.exalt_state.sorcery()
     }
 }

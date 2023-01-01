@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId},
-    sorcery::SolarSorcerer,
+    sorcery::{SolarSorcerer, Sorcery, SorcerySwitch},
     CharacterMutationError,
 };
 
@@ -385,6 +385,15 @@ impl<'char> Exaltation {
                 .copied()
                 .collect::<Vec<MartialArtsStyleId>>()
                 .into_iter(),
+        }
+    }
+
+    pub(crate) fn sorcery(&'char self) -> Option<Sorcery<'char>> {
+        match self {
+            Exaltation::Mortal(mortal) => mortal
+                .sorcery()
+                .map(|terrestrial| Sorcery(SorcerySwitch::Mortal(terrestrial))),
+            Exaltation::Exalt(exalt) => exalt.sorcery(),
         }
     }
 }

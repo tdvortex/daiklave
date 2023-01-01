@@ -8,7 +8,7 @@ use crate::{
         AddMartialArtsStyleError, MartialArtsCharmId, MartialArtsStyle, MartialArtsStyleId,
         RemoveMartialArtsStyleError, SetMartialArtsDotsError,
     },
-    CharacterMutationError,
+    CharacterMutationError, sorcery::{Sorcery, SorcerySwitch, ExaltSorcerySwitch},
 };
 
 use super::{
@@ -424,6 +424,16 @@ impl Exalt {
             Err(CharacterMutationError::SetMartialArtsDotsError(
                 SetMartialArtsDotsError::NotFound,
             ))
+        }
+    }
+}
+
+impl<'char> Exalt {
+    pub(crate) fn sorcery(&'char self) -> Option<Sorcery<'char>> {
+        match self.exalt_type() {
+            ExaltType::Solar(solar) => solar
+                .sorcery()
+                .map(|sorcerer| Sorcery(SorcerySwitch::Exalt(ExaltSorcerySwitch::Solar(sorcerer)))),
         }
     }
 }

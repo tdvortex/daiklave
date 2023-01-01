@@ -8,7 +8,7 @@ use crate::{
     },
     sorcery::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
-        TerrestrialSpell,
+        TerrestrialSpell, SorceryView, ExaltSorceryViewSwitch, SorceryViewSwitch,
     },
     CharacterMutationError,
 };
@@ -450,5 +450,17 @@ impl<'source> ExaltView<'source> {
             }
         }
         Ok(self)
+    }
+}
+
+impl<'view, 'source> ExaltView<'source> {
+    pub(crate) fn sorcery(&'view self) -> Option<SorceryView<'view, 'source>> {
+        match self.exalt_type() {
+            ExaltTypeView::Solar(solar) => solar.sorcery().map(|sorcerer| {
+                SorceryView(SorceryViewSwitch::Exalt(ExaltSorceryViewSwitch::Solar(
+                    sorcerer,
+                )))
+            }),
+        }
     }
 }
