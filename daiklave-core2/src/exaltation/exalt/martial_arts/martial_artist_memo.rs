@@ -30,6 +30,10 @@ impl<'source> ExaltMartialArtistMemo {
     }
 
     pub fn as_ref(&'source self) -> ExaltMartialArtistView<'source> {
-        ExaltMartialArtistView::new(&self.style, self.ability.as_ref(), self.charms.iter().map(|(k, v)| (*k, v)).collect())
+        ExaltMartialArtistView::new(
+            &self.style,
+            self.ability.as_ref(),
+            self.charms.iter().map(|(k, v)| (*k, v)).collect(),
+        )
     }
 }

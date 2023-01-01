@@ -7,8 +7,8 @@ use crate::{
         RemoveMartialArtsStyleError, SetMartialArtsDotsError,
     },
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
-        TerrestrialSpell, circles::terrestrial::sorcerer_view::TerrestrialCircleSorcererView,
+        circles::terrestrial::sorcerer_view::TerrestrialCircleSorcererView, ShapingRitual,
+        ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell,
     },
     CharacterMutationError,
 };
@@ -24,7 +24,10 @@ pub(crate) struct MortalView<'source> {
 impl<'source> MortalView<'source> {
     pub fn as_memo(&self) -> MortalMemo {
         MortalMemo::new(
-            self.martial_arts_styles.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+            self.martial_arts_styles
+                .iter()
+                .map(|(k, v)| (*k, v.as_memo()))
+                .collect(),
             self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
         )
     }
@@ -49,13 +52,8 @@ impl<'source> MortalView<'source> {
         style: &'source MartialArtsStyle,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_add_martial_arts_style(id, style)?;
-        self.martial_arts_styles.insert(
-            id,
-            MortalMartialArtistView::new(
-                style,
-                AbilityView::Zero,
-            )
-        );
+        self.martial_arts_styles
+            .insert(id, MortalMartialArtistView::new(style, AbilityView::Zero));
         Ok(self)
     }
 

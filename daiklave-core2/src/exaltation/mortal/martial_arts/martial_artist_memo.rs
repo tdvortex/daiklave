@@ -1,9 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    abilities::AbilityMemo,
-    martial_arts::MartialArtsStyle,
-};
+use crate::{abilities::AbilityMemo, martial_arts::MartialArtsStyle};
 
 use super::MortalMartialArtistView;
 
@@ -18,16 +15,10 @@ impl<'source> MortalMartialArtistMemo {
         style: MartialArtsStyle,
         ability: AbilityMemo,
     ) -> Self {
-        Self {
-            style,
-            ability,
-        }
+        Self { style, ability }
     }
 
     pub fn as_ref(&'source self) -> MortalMartialArtistView<'source> {
-        MortalMartialArtistView::new(
-            &self.style,
-            self.ability.as_ref(),
-        )
+        MortalMartialArtistView::new(&self.style, self.ability.as_ref())
     }
 }

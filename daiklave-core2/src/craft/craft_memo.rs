@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{abilities::AbilityMemo};
+use crate::abilities::AbilityMemo;
 
 use super::CraftView;
 
@@ -11,6 +11,11 @@ pub(crate) struct CraftMemo(pub(in crate::craft) HashMap<String, AbilityMemo>);
 
 impl<'source> CraftMemo {
     pub fn as_ref(&'source self) -> CraftView<'source> {
-        CraftView(self.0.iter().map(|(k, v)| (k.as_str(), v.as_ref())).collect())
+        CraftView(
+            self.0
+                .iter()
+                .map(|(k, v)| (k.as_str(), v.as_ref()))
+                .collect(),
+        )
     }
 }

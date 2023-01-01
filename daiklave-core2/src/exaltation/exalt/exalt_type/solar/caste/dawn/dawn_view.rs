@@ -1,9 +1,11 @@
 use crate::abilities::AbilityName;
 
 use super::{
-    dawn_caste_ability::DawnCasteAbility, dawn_supernal_ability::DawnSupernalAbility, builder::DawnBuilder, DawnMemo,
+    builder::DawnBuilder, dawn_caste_ability::DawnCasteAbility,
+    dawn_supernal_ability::DawnSupernalAbility, DawnMemo,
 };
 
+/// Caste traits for the Dawn Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DawnView {
     caste_not_supernal: [DawnCasteAbility; 4],
@@ -11,7 +13,7 @@ pub struct DawnView {
 }
 
 impl DawnView {
-    pub(crate) fn new (
+    pub(crate) fn new(
         caste_not_supernal: [DawnCasteAbility; 4],
         supernal: DawnSupernalAbility,
     ) -> Self {
@@ -21,17 +23,16 @@ impl DawnView {
         }
     }
 
+    /// Builder struct for constructing Dawn traits
     pub fn builder() -> DawnBuilder {
         DawnBuilder::default()
     }
 
     pub(crate) fn as_memo(&self) -> DawnMemo {
-        DawnMemo::new(
-            self.caste_not_supernal,
-            self.supernal,
-        )
+        DawnMemo::new(self.caste_not_supernal, self.supernal)
     }
 
+    /// Returns true if the ability is a chosen Caste ability.
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal
@@ -44,6 +45,7 @@ impl DawnView {
         }
     }
 
+    /// Returns the Dawn's Supernal ability.
     pub fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
     }

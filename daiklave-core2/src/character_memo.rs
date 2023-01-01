@@ -1,16 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abilities::{
-        AbilitiesMemo, 
-    },
-    attributes::{Attributes},
-    craft::CraftMemo,
-    exaltation::{
-        ExaltationMemo,
-    },
-    health::{Health},
-    willpower::Willpower, CharacterView,
+    abilities::AbilitiesMemo, attributes::Attributes, craft::CraftMemo, exaltation::ExaltationMemo,
+    health::Health, willpower::Willpower, CharacterView,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -28,8 +20,9 @@ pub struct CharacterMemo {
 }
 
 impl<'source> CharacterMemo {
+    /// Creates a borrowed reference to this owned object.
     pub fn as_ref(&'source self) -> CharacterView<'source> {
-        CharacterView { 
+        CharacterView {
             name: self.name.as_str(),
             concept: self.concept.as_deref(),
             exalt_state: self.exalt_state.as_ref(),

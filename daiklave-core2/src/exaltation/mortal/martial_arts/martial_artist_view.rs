@@ -11,24 +11,18 @@ pub(crate) struct MortalMartialArtistView<'source> {
     ability: AbilityView<'source>,
 }
 
-impl<'view, 'source> MortalMartialArtistView<'source> { 
+impl<'view, 'source> MortalMartialArtistView<'source> {
     pub(in crate::exaltation::mortal) fn new(
         style: &'source MartialArtsStyle,
         ability: AbilityView<'source>,
     ) -> Self {
-        Self {
-            style,
-            ability,
-        }
+        Self { style, ability }
     }
 
     pub fn as_memo(&'view self) -> MortalMartialArtistMemo {
-        MortalMartialArtistMemo::new(
-            self.style.clone(),
-            self.ability.as_memo(),
-        )
+        MortalMartialArtistMemo::new(self.style.clone(), self.ability.as_memo())
     }
-    
+
     pub fn style(&'view self) -> &'source MartialArtsStyle {
         self.style
     }
@@ -41,7 +35,6 @@ impl<'view, 'source> MortalMartialArtistView<'source> {
         &mut self.ability
     }
 }
-
 
 impl<'source> From<ExaltMartialArtistView<'source>> for MortalMartialArtistView<'source> {
     fn from(exalt_artist: ExaltMartialArtistView<'source>) -> Self {

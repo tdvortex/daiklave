@@ -3,8 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    martial_arts::{MartialArtsStyleId,
-    },
+    martial_arts::MartialArtsStyleId,
     sorcery::circles::terrestrial::sorcerer_memo::TerrestrialCircleSorcererMemo,
 };
 
@@ -26,13 +25,16 @@ impl<'source> MortalMemo {
             sorcery,
         }
     }
-    
+
     pub fn as_ref(&'source self) -> MortalView<'source> {
-        MortalView { 
+        MortalView {
             martial_arts_styles: {
-                self.martial_arts_styles.iter().map(|(k, v)| (*k, v.as_ref())).collect()
-            }, 
-            sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_ref()) 
+                self.martial_arts_styles
+                    .iter()
+                    .map(|(k, v)| (*k, v.as_ref()))
+                    .collect()
+            },
+            sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_ref()),
         }
     }
 }

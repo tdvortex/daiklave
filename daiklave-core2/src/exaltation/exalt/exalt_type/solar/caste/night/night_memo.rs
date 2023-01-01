@@ -10,9 +10,9 @@ pub struct NightMemo {
 }
 
 impl<'source> NightMemo {
-    pub(in crate::exaltation::exalt::exalt_type::solar::caste::night) fn new (
+    pub(in crate::exaltation::exalt::exalt_type::solar::caste::night) fn new(
         caste_not_supernal: [NightAbility; 4],
-        supernal: NightAbility,        
+        supernal: NightAbility,
     ) -> Self {
         Self {
             caste_not_supernal,
@@ -20,10 +20,9 @@ impl<'source> NightMemo {
         }
     }
 
-    pub fn as_ref(&'source self) -> NightView {
-        NightView::new(
-            self.caste_not_supernal,
-            self.supernal,
-        )
+    pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(
+        &'source self,
+    ) -> NightView {
+        NightView::new(self.caste_not_supernal, self.supernal)
     }
 }

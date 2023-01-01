@@ -1,6 +1,10 @@
 use crate::exaltation::SorceryViewSwitch;
 
-use super::{archetype_id::SorceryArchetypeId, archetype::SorceryArchetype, shaping_ritual_id::ShapingRitualId, shaping_ritual::ShapingRitual, spell_id::SpellId, spell::Spell, circles::SorceryCircle};
+use super::{
+    archetype::SorceryArchetype, archetype_id::SorceryArchetypeId, circles::SorceryCircle,
+    shaping_ritual::ShapingRitual, shaping_ritual_id::ShapingRitualId, spell::Spell,
+    spell_id::SpellId,
+};
 
 /// A character's Sorcery abilities.
 pub struct SorceryView<'view, 'source>(pub(crate) SorceryViewSwitch<'view, 'source>);

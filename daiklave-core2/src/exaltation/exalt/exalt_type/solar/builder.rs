@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{abilities::AbilityName};
+use crate::abilities::AbilityName;
 
 use super::{
     builder_error::SolarBuilderError,
@@ -8,7 +8,8 @@ use super::{
         dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView,
         zenith::ZenithView, SolarCasteView,
     },
-    solar_view::SolarView, sorcery::SolarSorcererView,
+    solar_view::SolarView,
+    sorcery::SolarSorcererView,
 };
 
 #[derive(Debug, Default)]

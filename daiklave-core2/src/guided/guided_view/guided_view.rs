@@ -4,7 +4,10 @@ use crate::{
     abilities::{AbilityName, AbilityNameVanilla},
     attributes::AttributeName,
     exaltation::exalt::exalt_type::solar::{
-        caste::{dawn::{DawnView}, eclipse::{EclipseView}, night::{NightView}, twilight::{TwilightView}, zenith::{ZenithView}},
+        caste::{
+            dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView,
+            zenith::ZenithView,
+        },
         SolarView,
     },
     guided::{

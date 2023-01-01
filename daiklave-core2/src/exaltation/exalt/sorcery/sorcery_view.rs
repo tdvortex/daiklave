@@ -1,4 +1,10 @@
-use crate::{exaltation::exalt::exalt_type::solar::SolarSorcererView, sorcery::{SorceryArchetypeId, SorceryArchetype, SorceryCircle, ShapingRitualId, ShapingRitual, SpellId, Spell}};
+use crate::{
+    exaltation::exalt::exalt_type::solar::SolarSorcererView,
+    sorcery::{
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle, Spell,
+        SpellId,
+    },
+};
 
 pub(crate) enum ExaltSorceryViewSwitch<'view, 'source> {
     Solar(&'view SolarSorcererView<'source>),

@@ -100,9 +100,6 @@ impl ZenithBuilder {
         let mut caste_not_supernal = option_arr.map(|opt| opt.unwrap());
         caste_not_supernal.sort();
 
-        Ok(ZenithView::new(
-            caste_not_supernal,
-            supernal,
-        ))
+        Ok(ZenithView::new(caste_not_supernal, supernal))
     }
 }

@@ -1,13 +1,14 @@
 use crate::{
     abilities::AbilityName,
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
-        SorceryError, SpellId, TerrestrialSpell, circles::terrestrial::sorcerer_view::TerrestrialCircleSorcererView,
+        circles::terrestrial::sorcerer_view::TerrestrialCircleSorcererView, ShapingRitual,
+        ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryError, SpellId,
+        TerrestrialSpell,
     },
     CharacterMutationError,
 };
 
-use super::{caste::SolarCasteView, sorcery::SolarSorcererView, builder::SolarBuilder, SolarMemo};
+use super::{builder::SolarBuilder, caste::SolarCasteView, sorcery::SolarSorcererView, SolarMemo};
 
 /// Traits which are unique to being a Solar Exalted, with &str
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -35,7 +36,7 @@ impl<'source> SolarView<'source> {
         SolarBuilder::default()
     }
 
-
+    /// Converts a borrowed Solar object and clones it into an owned memo struct.
     pub fn as_memo(&self) -> SolarMemo {
         SolarMemo::new(
             self.caste.as_memo(),
@@ -90,7 +91,6 @@ impl<'source> SolarView<'source> {
             ))
         }
     }
-
 }
 
 impl<'view, 'source> SolarView<'source> {

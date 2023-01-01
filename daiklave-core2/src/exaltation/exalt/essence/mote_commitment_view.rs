@@ -9,6 +9,10 @@ pub(crate) struct MoteCommitmentView<'source> {
 
 impl<'source> MoteCommitmentView<'source> {
     pub fn as_memo(&self) -> MoteCommitmentMemo {
-        MoteCommitmentMemo { name: self.name.to_owned(), peripheral: self.peripheral, personal: self.personal }
+        MoteCommitmentMemo {
+            name: self.name.to_owned(),
+            peripheral: self.peripheral,
+            personal: self.personal,
+        }
     }
 }

@@ -1,10 +1,13 @@
 use std::collections::HashMap;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, circles::{terrestrial::TerrestrialSpell}};
+use crate::sorcery::{
+    circles::terrestrial::TerrestrialSpell, ShapingRitual, ShapingRitualId, SorceryArchetype,
+    SorceryArchetypeId, SpellId,
+};
 
-use super::{spell::CelestialSpell, sorcerer_view::CelestialCircleSorcererView};
+use super::{sorcerer_view::CelestialCircleSorcererView, spell::CelestialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct CelestialCircleSorcererMemo {
@@ -27,14 +30,22 @@ impl<'source> CelestialCircleSorcererMemo {
             circle_archetypes: self.circle_archetypes,
             shaping_ritual_ids: self.shaping_ritual_ids,
             shaping_rituals: {
-                self.shaping_rituals.iter().enumerate().fold([None; 2], |mut opt_arr, (i, el)| {
-                    opt_arr[i] = Some(el);
-                    opt_arr
-                }).map(|opt| opt.unwrap())
+                self.shaping_rituals
+                    .iter()
+                    .enumerate()
+                    .fold([None; 2], |mut opt_arr, (i, el)| {
+                        opt_arr[i] = Some(el);
+                        opt_arr
+                    })
+                    .map(|opt| opt.unwrap())
             },
             terrestrial_control_spell_id: self.terrestrial_control_spell_id,
             terrestrial_control_spell: &self.terrestrial_control_spell,
-            terrestrial_spells: self.terrestrial_spells.iter().map(|(k, v)| (*k, v)).collect(),
+            terrestrial_spells: self
+                .terrestrial_spells
+                .iter()
+                .map(|(k, v)| (*k, v))
+                .collect(),
             celestial_control_spell_id: self.celestial_control_spell_id,
             celestial_control_spell: &self.celestial_control_spell,
             celestial_spells: self.celestial_spells.iter().map(|(k, v)| (*k, v)).collect(),

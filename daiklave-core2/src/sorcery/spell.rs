@@ -1,6 +1,9 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{book_reference::BookReference, charms::{CharmCost, CharmKeyword}};
+use crate::{
+    book_reference::BookReference,
+    charms::{CharmCost, CharmKeyword},
+};
 
 /// A Sorcery Spell. Note that this is almost never used directly; instead,
 /// it is typically wrapped in TerrestrialSpell, CelestialSpell, or SolarSpell.

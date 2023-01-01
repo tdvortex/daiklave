@@ -1,8 +1,15 @@
 use std::collections::HashMap;
 
-use crate::sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, SorceryError, Spell, circles::{celestial::sorcerer_view::CelestialCircleSorcererView, solar::sorcerer_view::SolarCircleSorcererView}};
+use crate::sorcery::{
+    circles::{
+        celestial::sorcerer_view::CelestialCircleSorcererView,
+        solar::sorcerer_view::SolarCircleSorcererView,
+    },
+    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryError, Spell,
+    SpellId,
+};
 
-use super::{TerrestrialSpell, sorcerer_memo::TerrestrialCircleSorcererMemo};
+use super::{sorcerer_memo::TerrestrialCircleSorcererMemo, TerrestrialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TerrestrialCircleSorcererView<'source> {
@@ -47,7 +54,11 @@ impl<'source> TerrestrialCircleSorcererView<'source> {
             shaping_ritual: self.shaping_ritual.to_owned(),
             control_spell_id: self.control_spell_id,
             control_spell: self.control_spell.to_owned(),
-            other_spells: self.other_spells.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
+            other_spells: self
+                .other_spells
+                .iter()
+                .map(|(k, v)| (*k, (*v).to_owned()))
+                .collect(),
         }
     }
 

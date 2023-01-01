@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use super::{mote_commitment_view::MoteCommitmentView, mote_pool::MotePool, MoteCommitmentId, motes_memo::MotesMemo};
+use super::{
+    mote_commitment_view::MoteCommitmentView, mote_pool::MotePool, motes_memo::MotesMemo,
+    MoteCommitmentId,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MotesView<'source> {
@@ -26,10 +29,12 @@ impl<'source> MotesView<'source> {
         MotesMemo::new(
             self.peripheral,
             self.personal,
-            self.commitments.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+            self.commitments
+                .iter()
+                .map(|(k, v)| (*k, v.as_memo()))
+                .collect(),
         )
     }
-
 
     pub fn peripheral(&self) -> &MotePool {
         &self.peripheral
@@ -57,7 +62,9 @@ impl<'source> MotesView<'source> {
         &self.commitments
     }
 
-    pub(crate) fn commitments_mut(&mut self) -> &mut HashMap<MoteCommitmentId, MoteCommitmentView<'source>> {
+    pub(crate) fn commitments_mut(
+        &mut self,
+    ) -> &mut HashMap<MoteCommitmentId, MoteCommitmentView<'source>> {
         &mut self.commitments
     }
 }

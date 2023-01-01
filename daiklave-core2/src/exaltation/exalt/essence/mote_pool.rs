@@ -12,14 +12,8 @@ pub struct MotePool {
 }
 
 impl MotePool {
-    pub(in crate::exaltation::exalt::essence) fn new(
-        available: u8,
-        spent: u8,
-    ) -> Self {
-        Self {
-            available,
-            spent
-        }
+    pub(in crate::exaltation::exalt::essence) fn new(available: u8, spent: u8) -> Self {
+        Self { available, spent }
     }
 
     /// The available motes from the specific pool.

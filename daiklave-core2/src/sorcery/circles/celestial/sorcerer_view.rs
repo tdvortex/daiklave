@@ -1,12 +1,16 @@
 use std::collections::HashMap;
 
-use crate::sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, circles::{terrestrial::TerrestrialSpell, sorcery_circle::SorceryCircle}, Spell};
+use crate::sorcery::{
+    circles::{sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell},
+    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, Spell, SpellId,
+};
 
-use super::{spell::CelestialSpell, sorcerer_memo::CelestialCircleSorcererMemo};
+use super::{sorcerer_memo::CelestialCircleSorcererMemo, spell::CelestialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct CelestialCircleSorcererView<'source> {
-    pub(in crate::sorcery::circles) archetypes: HashMap<SorceryArchetypeId, &'source SorceryArchetype>,
+    pub(in crate::sorcery::circles) archetypes:
+        HashMap<SorceryArchetypeId, &'source SorceryArchetype>,
     pub(in crate::sorcery::circles) circle_archetypes: [SorceryArchetypeId; 2],
     pub(in crate::sorcery::circles) shaping_ritual_ids: [ShapingRitualId; 2],
     pub(in crate::sorcery::circles) shaping_rituals: [&'source ShapingRitual; 2],
@@ -21,21 +25,30 @@ pub(crate) struct CelestialCircleSorcererView<'source> {
 impl<'source> CelestialCircleSorcererView<'source> {
     pub fn as_memo(&self) -> CelestialCircleSorcererMemo {
         CelestialCircleSorcererMemo {
-            archetypes: self.archetypes.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
+            archetypes: self
+                .archetypes
+                .iter()
+                .map(|(k, v)| (*k, (*v).to_owned()))
+                .collect(),
             circle_archetypes: self.circle_archetypes,
             shaping_ritual_ids: self.shaping_ritual_ids,
-            shaping_rituals: {
-                self.shaping_rituals.map(|ptr| ptr.to_owned())
-            },
+            shaping_rituals: { self.shaping_rituals.map(|ptr| ptr.to_owned()) },
             terrestrial_control_spell_id: self.terrestrial_control_spell_id,
             terrestrial_control_spell: self.terrestrial_control_spell.to_owned(),
-            terrestrial_spells: self.terrestrial_spells.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
+            terrestrial_spells: self
+                .terrestrial_spells
+                .iter()
+                .map(|(k, v)| (*k, (*v).to_owned()))
+                .collect(),
             celestial_control_spell_id: self.celestial_control_spell_id,
             celestial_control_spell: self.celestial_control_spell.to_owned(),
-            celestial_spells: self.celestial_spells.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
+            celestial_spells: self
+                .celestial_spells
+                .iter()
+                .map(|(k, v)| (*k, (*v).to_owned()))
+                .collect(),
         }
     }
-
 
     pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&'source SorceryArchetype> {
         if self.circle_archetypes.contains(&id) {

@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use super::{dawn::DawnMemo, eclipse::EclipseMemo, night::NightMemo, twilight::TwilightMemo, zenith::ZenithMemo, SolarCasteView};
+use super::{
+    dawn::DawnMemo, eclipse::EclipseMemo, night::NightMemo, twilight::TwilightMemo,
+    zenith::ZenithMemo, SolarCasteView,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum SolarCasteMemo {

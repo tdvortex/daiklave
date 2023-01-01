@@ -12,4 +12,4 @@ mod sorcery;
 
 pub(crate) use exalt_memo::ExaltMemo;
 pub(crate) use exalt_view::ExaltView;
-pub(crate) use sorcery::{ExaltSorceryViewSwitch};
+pub(crate) use sorcery::ExaltSorceryViewSwitch;

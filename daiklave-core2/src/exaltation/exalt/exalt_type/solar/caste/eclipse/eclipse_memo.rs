@@ -20,10 +20,9 @@ impl<'source> EclipseMemo {
         }
     }
 
-    pub fn as_ref(&'source self) -> EclipseView {
-        EclipseView::new(
-            self.caste_not_supernal,
-            self.supernal,
-        )
+    pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(
+        &'source self,
+    ) -> EclipseView {
+        EclipseView::new(self.caste_not_supernal, self.supernal)
     }
 }

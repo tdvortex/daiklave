@@ -1,4 +1,12 @@
-use crate::sorcery::{circles::{terrestrial::sorcerer_view::TerrestrialCircleSorcererView, celestial::sorcerer_view::CelestialCircleSorcererView, solar::sorcerer_view::SolarCircleSorcererView}, SorceryArchetypeId, SorceryArchetype, SorceryCircle, ShapingRitualId, ShapingRitual, SpellId, Spell};
+use crate::sorcery::{
+    circles::{
+        celestial::sorcerer_view::CelestialCircleSorcererView,
+        solar::sorcerer_view::SolarCircleSorcererView,
+        terrestrial::sorcerer_view::TerrestrialCircleSorcererView,
+    },
+    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle, Spell,
+    SpellId,
+};
 
 use super::SolarSorcererMemo;
 
@@ -12,8 +20,12 @@ pub(crate) enum SolarSorcererView<'source> {
 impl<'source> SolarSorcererView<'source> {
     pub fn as_memo(&self) -> SolarSorcererMemo {
         match self {
-            SolarSorcererView::Terrestrial(view) => SolarSorcererMemo::Terrestrial(Box::new(view.as_memo())),
-            SolarSorcererView::Celestial(view) => SolarSorcererMemo::Celestial(Box::new(view.as_memo())),
+            SolarSorcererView::Terrestrial(view) => {
+                SolarSorcererMemo::Terrestrial(Box::new(view.as_memo()))
+            }
+            SolarSorcererView::Celestial(view) => {
+                SolarSorcererMemo::Celestial(Box::new(view.as_memo()))
+            }
             SolarSorcererView::Solar(view) => SolarSorcererMemo::Solar(Box::new(view.as_memo())),
         }
     }

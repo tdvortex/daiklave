@@ -1,10 +1,12 @@
 use std::collections::HashMap;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId};
+use crate::sorcery::{
+    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
+};
 
-use super::{TerrestrialSpell, sorcerer_view::TerrestrialCircleSorcererView};
+use super::{sorcerer_view::TerrestrialCircleSorcererView, TerrestrialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct TerrestrialCircleSorcererMemo {
@@ -26,7 +28,7 @@ impl<'source> TerrestrialCircleSorcererMemo {
             shaping_ritual: &self.shaping_ritual,
             control_spell_id: self.control_spell_id,
             control_spell: &self.control_spell,
-            other_spells: self.other_spells.iter().map(|(k, v)| (*k, v)).collect()
+            other_spells: self.other_spells.iter().map(|(k, v)| (*k, v)).collect(),
         }
     }
 }

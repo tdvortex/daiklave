@@ -1,16 +1,28 @@
 use crate::{
     martial_arts::{MartialArtistView, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
-        SpellId, TerrestrialSpell, SorceryView,
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryView, SpellId,
+        TerrestrialSpell,
     },
     CharacterMutationError,
 };
 
 use super::{
-    exalt::{exalt_type::{solar::{SolarSorcererView, SolarView, SolarMemo}, ExaltTypeView}, ExaltView, essence::{EssenceView, MotePoolName, SpendMotesError, MoteCommitmentId, CommitMotesError, RecoverMotesError, UncommitMotesError, SetEssenceRatingError}},
+    exalt::{
+        essence::{
+            CommitMotesError, EssenceView, MoteCommitmentId, MotePoolName, RecoverMotesError,
+            SetEssenceRatingError, SpendMotesError, UncommitMotesError,
+        },
+        exalt_type::{
+            solar::{SolarMemo, SolarSorcererView, SolarView},
+            ExaltTypeView,
+        },
+        ExaltView,
+    },
     martial_arts::ExaltationMartialArtistView,
-    mortal::MortalView, sorcery::SorceryViewSwitch, ExaltationMemo,
+    mortal::MortalView,
+    sorcery::SorceryViewSwitch,
+    ExaltationMemo,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -28,8 +40,12 @@ impl<'source> Default for ExaltationView<'source> {
 impl<'source> ExaltationView<'source> {
     pub fn as_memo(&self) -> ExaltationMemo {
         match self {
-            ExaltationView::Mortal(box_view) => ExaltationMemo::Mortal(Box::new(box_view.as_ref().as_memo())),
-            ExaltationView::Exalt(box_view) => ExaltationMemo::Exalt(Box::new(box_view.as_ref().as_memo())),
+            ExaltationView::Mortal(box_view) => {
+                ExaltationMemo::Mortal(Box::new(box_view.as_ref().as_memo()))
+            }
+            ExaltationView::Exalt(box_view) => {
+                ExaltationMemo::Exalt(Box::new(box_view.as_ref().as_memo()))
+            }
         }
     }
 
@@ -260,7 +276,10 @@ impl<'view, 'source> ExaltationView<'source> {
         }
     }
 
-    pub fn check_set_solar(&self, _solar: &'source SolarMemo) -> Result<(), CharacterMutationError> {
+    pub fn check_set_solar(
+        &self,
+        _solar: &'source SolarMemo,
+    ) -> Result<(), CharacterMutationError> {
         Ok(())
     }
 

@@ -1,4 +1,10 @@
-use crate::{sorcery::{circles::terrestrial::sorcerer_view::TerrestrialCircleSorcererView, SorceryArchetypeId, SorceryArchetype, SorceryCircle, ShapingRitualId, ShapingRitual, SpellId, Spell}, exaltation::exalt::ExaltSorceryViewSwitch};
+use crate::{
+    exaltation::exalt::ExaltSorceryViewSwitch,
+    sorcery::{
+        circles::terrestrial::sorcerer_view::TerrestrialCircleSorcererView, ShapingRitual,
+        ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle, Spell, SpellId,
+    },
+};
 
 pub(crate) enum SorceryViewSwitch<'view, 'source> {
     Mortal(&'view TerrestrialCircleSorcererView<'source>),

@@ -3,10 +3,9 @@ pub mod caste;
 
 mod builder;
 mod builder_error;
-mod sorcery;
 mod solar_memo;
 mod solar_view;
-
+mod sorcery;
 
 pub use solar_view::SolarView;
 

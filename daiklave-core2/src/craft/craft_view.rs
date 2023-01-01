@@ -9,7 +9,12 @@ pub struct CraftView<'source>(pub(in crate::craft) HashMap<&'source str, Ability
 
 impl<'source> CraftView<'source> {
     pub(crate) fn as_memo(&self) -> CraftMemo {
-        CraftMemo(self.0.iter().map(|(k, v)| (k.to_string(), v.as_memo())).collect())
+        CraftMemo(
+            self.0
+                .iter()
+                .map(|(k, v)| (k.to_string(), v.as_memo()))
+                .collect(),
+        )
     }
 
     pub fn set_dots(

@@ -1,8 +1,8 @@
 use crate::abilities::AbilityName;
 
 use super::{
-    dawn::DawnView, eclipse::EclipseView, night::NightView,
-    twilight::TwilightView, zenith::ZenithView, SolarCasteMemo,
+    dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView,
+    zenith::ZenithView, SolarCasteMemo,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -24,7 +24,6 @@ impl SolarCasteView {
             SolarCasteView::Eclipse(view) => SolarCasteMemo::Eclipse(view.as_memo()),
         }
     }
-
 
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         match self {

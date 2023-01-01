@@ -1,4 +1,4 @@
-use super::{ability_view::AbilityView, AbilityNameVanilla, AbilitiesMemo};
+use super::{ability_view::AbilityView, AbilitiesMemo, AbilityNameVanilla};
 
 /// A struct representing all non-Craft, non-Martial Arts abilities, including
 /// any specialties.
@@ -59,7 +59,6 @@ impl<'source> AbilitiesView<'source> {
             war: self.war.as_memo(),
         }
     }
-
 
     pub(crate) fn ability(&self, ability_name: AbilityNameVanilla) -> &AbilityView {
         match ability_name {

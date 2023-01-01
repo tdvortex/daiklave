@@ -10,12 +10,8 @@ pub struct EssenceView<'source> {
 
 impl<'source> EssenceView<'source> {
     pub(crate) fn as_memo(&self) -> EssenceMemo {
-        EssenceMemo::new(
-            self.rating,
-            self.motes.as_memo(),
-        )
+        EssenceMemo::new(self.rating, self.motes.as_memo())
     }
-
 
     pub fn rating(&self) -> u8 {
         self.rating
@@ -33,14 +29,8 @@ impl<'source> EssenceView<'source> {
         Self {
             rating,
             motes: MotesView::new(
-                MotePool::new(
-                    rating * 7 + 26,
-                    0
-                ),
-                MotePool::new(
-                    rating * 3 + 10,
-                    0
-                ),
+                MotePool::new(rating * 7 + 26, 0),
+                MotePool::new(rating * 3 + 10, 0),
                 HashMap::new(),
             ),
         }

@@ -102,9 +102,6 @@ impl NightBuilder {
         let mut caste_not_supernal = option_arr.map(|opt| opt.unwrap());
         caste_not_supernal.sort();
 
-        Ok(NightView::new(
-            caste_not_supernal,
-            supernal,
-        ))
+        Ok(NightView::new(caste_not_supernal, supernal))
     }
 }

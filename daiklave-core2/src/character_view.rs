@@ -18,11 +18,11 @@ use crate::{
     },
     name_and_concept::RemoveConceptError,
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
-        SorceryView, TerrestrialSpell,
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryView, SpellId,
+        TerrestrialSpell,
     },
     willpower::Willpower,
-    CharacterMutation, CharacterMutationError, CharacterMemo,
+    CharacterMemo, CharacterMutation, CharacterMutationError,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -55,6 +55,7 @@ impl<'source> Default for CharacterView<'source> {
 }
 
 impl<'source> CharacterView<'source> {
+    /// Clones the character and all contained values into an owned struct.
     pub fn as_memo(&self) -> CharacterMemo {
         CharacterMemo {
             name: self.name.to_string(),
@@ -67,7 +68,6 @@ impl<'source> CharacterView<'source> {
             craft: self.craft.as_memo(),
         }
     }
-
 
     /// Checks if a specific CharacterMutation can be safely applied.
     pub fn check_mutation(

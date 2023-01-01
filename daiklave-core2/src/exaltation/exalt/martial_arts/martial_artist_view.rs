@@ -21,14 +21,21 @@ impl<'view, 'source> ExaltMartialArtistView<'source> {
         ability: AbilityView<'source>,
         charms: HashMap<MartialArtsCharmId, &'source MartialArtsCharm>,
     ) -> Self {
-        Self { style, ability, charms}
+        Self {
+            style,
+            ability,
+            charms,
+        }
     }
 
     pub fn as_memo(&'view self) -> ExaltMartialArtistMemo {
         ExaltMartialArtistMemo::new(
             self.style.to_owned(),
             self.ability.as_memo(),
-            self.charms.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
+            self.charms
+                .iter()
+                .map(|(k, v)| (*k, (*v).to_owned()))
+                .collect(),
         )
     }
 
@@ -44,11 +51,15 @@ impl<'view, 'source> ExaltMartialArtistView<'source> {
         &mut self.ability
     }
 
-    pub fn charms(&'view self) -> impl Iterator<Item = (MartialArtsCharmId, &'source MartialArtsCharm)> + '_ {
+    pub fn charms(
+        &'view self,
+    ) -> impl Iterator<Item = (MartialArtsCharmId, &'source MartialArtsCharm)> + '_ {
         self.charms.iter().map(|(k, v)| (*k, *v))
     }
 
-    pub fn charms_mut(&'view mut self) -> &'view mut HashMap<MartialArtsCharmId, &'source MartialArtsCharm> {
+    pub fn charms_mut(
+        &'view mut self,
+    ) -> &'view mut HashMap<MartialArtsCharmId, &'source MartialArtsCharm> {
         &mut self.charms
     }
 }

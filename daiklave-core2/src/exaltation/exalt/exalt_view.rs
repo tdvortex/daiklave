@@ -2,15 +2,16 @@ use std::collections::HashMap;
 
 use crate::{
     abilities::{AbilityView, SetAbilityError},
+    exaltation::sorcery::SorceryViewSwitch,
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsCharmId, MartialArtsStyle, MartialArtsStyleId,
         RemoveMartialArtsStyleError, SetMartialArtsDotsError,
     },
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
-        TerrestrialSpell, SorceryView,
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryView, SpellId,
+        TerrestrialSpell,
     },
-    CharacterMutationError, exaltation::sorcery::SorceryViewSwitch,
+    CharacterMutationError,
 };
 
 use super::{
@@ -19,7 +20,9 @@ use super::{
         SetEssenceRatingError, SpendMotesError, UncommitMotesError,
     },
     exalt_type::{solar::SolarView, ExaltTypeView},
-    martial_arts::ExaltMartialArtistView, sorcery::ExaltSorceryViewSwitch, ExaltMemo,
+    martial_arts::ExaltMartialArtistView,
+    sorcery::ExaltSorceryViewSwitch,
+    ExaltMemo,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -45,7 +48,10 @@ impl<'source> ExaltView<'source> {
     pub fn as_memo(&self) -> ExaltMemo {
         ExaltMemo::new(
             self.essence.as_memo(),
-            self.martial_arts_styles.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+            self.martial_arts_styles
+                .iter()
+                .map(|(k, v)| (*k, v.as_memo()))
+                .collect(),
             self.exalt_type.as_memo(),
         )
     }
@@ -340,11 +346,7 @@ impl<'source> ExaltView<'source> {
         self.check_add_martial_arts_style(id, style)?;
         self.martial_arts_styles.insert(
             id,
-            ExaltMartialArtistView::new(
-                style,
-                AbilityView::Zero,
-                HashMap::new(),
-            )
+            ExaltMartialArtistView::new(style, AbilityView::Zero, HashMap::new()),
         );
         Ok(self)
     }
