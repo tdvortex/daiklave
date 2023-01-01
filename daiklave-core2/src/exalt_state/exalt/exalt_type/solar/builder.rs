@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use thiserror::Error;
 
-use crate::{abilities::AbilityName, sorcery::{SolarSorcererView}};
+use crate::{abilities::AbilityName, sorcery::SolarSorcererView};
 
 use super::{
     caste_view::SolarCasteView, dawn::DawnView, eclipse::EclipseView, night::NightView,
@@ -12,7 +12,8 @@ use super::{
 pub struct SolarTraitsBuilder<'source> {
     pub(in crate::exalt_state::exalt::exalt_type::solar) caste: Option<SolarCasteView>,
     pub(in crate::exalt_state::exalt::exalt_type::solar) favored_abilities: HashSet<AbilityName>,
-    pub(in crate::exalt_state::exalt::exalt_type::solar) sorcery: Option<SolarSorcererView<'source>>,
+    pub(in crate::exalt_state::exalt::exalt_type::solar) sorcery:
+        Option<SolarSorcererView<'source>>,
 }
 
 #[derive(Debug, Error)]

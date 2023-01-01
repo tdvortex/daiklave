@@ -1,4 +1,4 @@
-use std::{ops::Deref, collections::HashMap};
+use std::{collections::HashMap, ops::Deref};
 
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -6,7 +6,19 @@ use thiserror::Error;
 use crate::{
     book_reference::BookReference,
     charms::{CharmCost, CharmKeyword},
-    id::UniqueId, Character, exalt_state::{ExaltState, exalt::{Exalt, exalt_type::{ExaltType, solar::{Solar, SolarView}, ExaltTypeView}, ExaltView}, ExaltStateView, mortal::{MortalView, Mortal}}, CharacterView, CharacterMutationError,
+    exalt_state::{
+        exalt::{
+            exalt_type::{
+                solar::{Solar, SolarView},
+                ExaltType, ExaltTypeView,
+            },
+            Exalt, ExaltView,
+        },
+        mortal::{Mortal, MortalView},
+        ExaltState, ExaltStateView,
+    },
+    id::UniqueId,
+    Character, CharacterMutationError, CharacterView,
 };
 
 pub enum SorceryCircle {
@@ -349,13 +361,22 @@ impl<'char> CelestialCircleSorcerer {
             archetypes: self.archetypes.iter().map(|(k, v)| (*k, v)).collect(),
             circle_archetypes: self.circle_archetypes,
             shaping_ritual_ids: self.shaping_ritual_ids,
-            shaping_rituals: self.shaping_rituals.iter().enumerate().fold([None; 2], |mut opt_arr, (i, el)| {
-                opt_arr[i] = Some(el);
-                opt_arr
-            }).map(|opt| opt.unwrap()),
+            shaping_rituals: self
+                .shaping_rituals
+                .iter()
+                .enumerate()
+                .fold([None; 2], |mut opt_arr, (i, el)| {
+                    opt_arr[i] = Some(el);
+                    opt_arr
+                })
+                .map(|opt| opt.unwrap()),
             terrestrial_control_spell_id: self.terrestrial_control_spell_id,
             terrestrial_control_spell: &self.terrestrial_control_spell,
-            terrestrial_spells: self.terrestrial_spells.iter().map(|(k, v)| (*k, v)).collect(),
+            terrestrial_spells: self
+                .terrestrial_spells
+                .iter()
+                .map(|(k, v)| (*k, v))
+                .collect(),
             celestial_control_spell_id: self.celestial_control_spell_id,
             celestial_control_spell: &self.celestial_control_spell,
             celestial_spells: self.celestial_spells.iter().map(|(k, v)| (*k, v)).collect(),
@@ -367,7 +388,10 @@ impl From<CelestialCircleSorcerer> for TerrestrialCircleSorcerer {
     fn from(mut celestial: CelestialCircleSorcerer) -> Self {
         Self {
             archetype_id: celestial.circle_archetypes[0],
-            archetype: celestial.archetypes.remove(&celestial.circle_archetypes[0]).expect("Archetypes should be owned"),
+            archetype: celestial
+                .archetypes
+                .remove(&celestial.circle_archetypes[0])
+                .expect("Archetypes should be owned"),
             shaping_ritual_id: celestial.shaping_ritual_ids[0],
             shaping_ritual: celestial.shaping_rituals[0].clone(),
             control_spell_id: celestial.terrestrial_control_spell_id,
@@ -377,11 +401,16 @@ impl From<CelestialCircleSorcerer> for TerrestrialCircleSorcerer {
     }
 }
 
-impl<'view, 'source> From<&'view CelestialCircleSorcererView<'source>> for TerrestrialCircleSorcererView<'source> {
+impl<'view, 'source> From<&'view CelestialCircleSorcererView<'source>>
+    for TerrestrialCircleSorcererView<'source>
+{
     fn from(celestial: &'view CelestialCircleSorcererView<'source>) -> Self {
         Self {
             archetype_id: celestial.circle_archetypes[0],
-            archetype: celestial.archetypes.get(&celestial.circle_archetypes[0]).expect("Archetypes should be owned"),
+            archetype: celestial
+                .archetypes
+                .get(&celestial.circle_archetypes[0])
+                .expect("Archetypes should be owned"),
             shaping_ritual_id: celestial.shaping_ritual_ids[0],
             shaping_ritual: celestial.shaping_rituals[0],
             control_spell_id: celestial.terrestrial_control_spell_id,
@@ -395,7 +424,10 @@ impl From<SolarCircleSorcerer> for TerrestrialCircleSorcerer {
     fn from(mut solar: SolarCircleSorcerer) -> Self {
         Self {
             archetype_id: solar.circle_archetypes[0],
-            archetype: solar.archetypes.remove(&solar.circle_archetypes[0]).expect("Archetypes should be owned"),
+            archetype: solar
+                .archetypes
+                .remove(&solar.circle_archetypes[0])
+                .expect("Archetypes should be owned"),
             shaping_ritual_id: solar.shaping_ritual_ids[0],
             shaping_ritual: solar.shaping_rituals[0].clone(),
             control_spell_id: solar.terrestrial_control_spell_id,
@@ -405,12 +437,16 @@ impl From<SolarCircleSorcerer> for TerrestrialCircleSorcerer {
     }
 }
 
-
-impl<'view, 'source>  From<&'view SolarCircleSorcererView<'source>> for TerrestrialCircleSorcererView<'source> {
+impl<'view, 'source> From<&'view SolarCircleSorcererView<'source>>
+    for TerrestrialCircleSorcererView<'source>
+{
     fn from(solar: &'view SolarCircleSorcererView<'source>) -> Self {
         Self {
             archetype_id: solar.circle_archetypes[0],
-            archetype: solar.archetypes.get(&solar.circle_archetypes[0]).expect("Archetypes should be owned"),
+            archetype: solar
+                .archetypes
+                .get(&solar.circle_archetypes[0])
+                .expect("Archetypes should be owned"),
             shaping_ritual_id: solar.shaping_ritual_ids[0],
             shaping_ritual: solar.shaping_rituals[0],
             control_spell_id: solar.terrestrial_control_spell_id,
@@ -419,7 +455,6 @@ impl<'view, 'source>  From<&'view SolarCircleSorcererView<'source>> for Terrestr
         }
     }
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SolarCircleSorcerer {
@@ -444,13 +479,22 @@ impl<'char> SolarCircleSorcerer {
             archetypes: self.archetypes.iter().map(|(k, v)| (*k, v)).collect(),
             circle_archetypes: self.circle_archetypes,
             shaping_ritual_ids: self.shaping_ritual_ids,
-            shaping_rituals: self.shaping_rituals.iter().enumerate().fold([None; 3], |mut opt_arr, (i, el)| {
-                opt_arr[i] = Some(el);
-                opt_arr
-            }).map(|opt| opt.unwrap()),
+            shaping_rituals: self
+                .shaping_rituals
+                .iter()
+                .enumerate()
+                .fold([None; 3], |mut opt_arr, (i, el)| {
+                    opt_arr[i] = Some(el);
+                    opt_arr
+                })
+                .map(|opt| opt.unwrap()),
             terrestrial_control_spell_id: self.terrestrial_control_spell_id,
             terrestrial_control_spell: &self.terrestrial_control_spell,
-            terrestrial_spells: self.terrestrial_spells.iter().map(|(k, v)| (*k, v)).collect(),
+            terrestrial_spells: self
+                .terrestrial_spells
+                .iter()
+                .map(|(k, v)| (*k, v))
+                .collect(),
             celestial_control_spell_id: self.celestial_control_spell_id,
             celestial_control_spell: &self.celestial_control_spell,
             celestial_spells: self.celestial_spells.iter().map(|(k, v)| (*k, v)).collect(),
@@ -475,8 +519,12 @@ pub(crate) enum SolarSorcerer {
 impl<'char> SolarSorcerer {
     pub fn as_view(&'char self) -> SolarSorcererView<'char> {
         match self {
-            SolarSorcerer::Terrestrial(terrestrial) => SolarSorcererView::Terrestrial(terrestrial.as_view()),
-            SolarSorcerer::Celestial(celestial) => SolarSorcererView::Celestial(celestial.as_view()),
+            SolarSorcerer::Terrestrial(terrestrial) => {
+                SolarSorcererView::Terrestrial(terrestrial.as_view())
+            }
+            SolarSorcerer::Celestial(celestial) => {
+                SolarSorcererView::Celestial(celestial.as_view())
+            }
             SolarSorcerer::Solar(solar) => SolarSorcererView::Solar(solar.as_view()),
         }
     }
@@ -492,7 +540,7 @@ impl<'char> ExaltState {
                     None
                 }
             }
-            ExaltState::Exalt(exalt) => exalt.sorcery()
+            ExaltState::Exalt(exalt) => exalt.sorcery(),
         }
     }
 }
@@ -502,7 +550,9 @@ impl<'char> Exalt {
         match &self.exalt_type {
             ExaltType::Solar(solar) => {
                 if let Some(sorcerer) = solar.sorcery() {
-                    Some(Sorcery(SorcerySwitch::Exalt(ExaltSorcerySwitch::Solar(&sorcerer))))
+                    Some(Sorcery(SorcerySwitch::Exalt(ExaltSorcerySwitch::Solar(
+                        &sorcerer,
+                    ))))
                 } else {
                     None
                 }
@@ -580,7 +630,7 @@ impl<'view, 'source> ExaltStateView<'source> {
                     None
                 }
             }
-            ExaltStateView::Exalt(exalt) => exalt.sorcery()
+            ExaltStateView::Exalt(exalt) => exalt.sorcery(),
         }
     }
 }
@@ -590,7 +640,9 @@ impl<'view, 'source> ExaltView<'source> {
         match &self.exalt_type {
             ExaltTypeView::Solar(solar) => {
                 if let Some(sorcerer) = solar.sorcery() {
-                    Some(SorceryView(SorceryViewSwitch::Exalt(ExaltSorceryViewSwitch::Solar(&sorcerer))))
+                    Some(SorceryView(SorceryViewSwitch::Exalt(
+                        ExaltSorceryViewSwitch::Solar(&sorcerer),
+                    )))
                 } else {
                     None
                 }
@@ -608,7 +660,9 @@ impl<'view, 'source> SolarView<'source> {
 impl<'source> From<SolarSorcererView<'source>> for SolarSorcerer {
     fn from(view: SolarSorcererView) -> Self {
         match view {
-            SolarSorcererView::Terrestrial(terrestrial) => SolarSorcerer::Terrestrial(terrestrial.into()),
+            SolarSorcererView::Terrestrial(terrestrial) => {
+                SolarSorcerer::Terrestrial(terrestrial.into())
+            }
             SolarSorcererView::Celestial(celestial) => SolarSorcerer::Celestial(celestial.into()),
             SolarSorcererView::Solar(solar) => SolarSorcerer::Solar(solar.into()),
         }
@@ -624,7 +678,11 @@ impl<'source> From<TerrestrialCircleSorcererView<'source>> for TerrestrialCircle
             shaping_ritual: view.shaping_ritual.to_owned(),
             control_spell_id: view.control_spell_id,
             control_spell: view.control_spell.to_owned(),
-            other_spells: view.other_spells.into_iter().map(|(k, v)| (k, v.to_owned())).collect(),
+            other_spells: view
+                .other_spells
+                .into_iter()
+                .map(|(k, v)| (k, v.to_owned()))
+                .collect(),
         }
     }
 }
@@ -632,16 +690,28 @@ impl<'source> From<TerrestrialCircleSorcererView<'source>> for TerrestrialCircle
 impl<'source> From<CelestialCircleSorcererView<'source>> for CelestialCircleSorcerer {
     fn from(view: CelestialCircleSorcererView) -> Self {
         Self {
-            archetypes: view.archetypes.into_iter().map(|(k, v)| (k, v.to_owned())).collect(),
+            archetypes: view
+                .archetypes
+                .into_iter()
+                .map(|(k, v)| (k, v.to_owned()))
+                .collect(),
             circle_archetypes: view.circle_archetypes,
             shaping_ritual_ids: view.shaping_ritual_ids,
             shaping_rituals: view.shaping_rituals.map(|ptr| ptr.to_owned()),
             terrestrial_control_spell_id: view.terrestrial_control_spell_id,
             terrestrial_control_spell: view.terrestrial_control_spell.to_owned(),
-            terrestrial_spells: view.terrestrial_spells.into_iter().map(|(k, v)| (k, v.to_owned())).collect(),
+            terrestrial_spells: view
+                .terrestrial_spells
+                .into_iter()
+                .map(|(k, v)| (k, v.to_owned()))
+                .collect(),
             celestial_control_spell_id: view.celestial_control_spell_id,
             celestial_control_spell: view.celestial_control_spell.to_owned(),
-            celestial_spells: view.celestial_spells.into_iter().map(|(k, v)| (k, v.to_owned())).collect(),
+            celestial_spells: view
+                .celestial_spells
+                .into_iter()
+                .map(|(k, v)| (k, v.to_owned()))
+                .collect(),
         }
     }
 }
@@ -649,19 +719,35 @@ impl<'source> From<CelestialCircleSorcererView<'source>> for CelestialCircleSorc
 impl<'source> From<SolarCircleSorcererView<'source>> for SolarCircleSorcerer {
     fn from(view: SolarCircleSorcererView) -> Self {
         Self {
-            archetypes: view.archetypes.into_iter().map(|(k, v)| (k, v.to_owned())).collect(),
+            archetypes: view
+                .archetypes
+                .into_iter()
+                .map(|(k, v)| (k, v.to_owned()))
+                .collect(),
             circle_archetypes: view.circle_archetypes,
             shaping_ritual_ids: view.shaping_ritual_ids,
             shaping_rituals: view.shaping_rituals.map(|ptr| ptr.to_owned()),
             terrestrial_control_spell_id: view.terrestrial_control_spell_id,
             terrestrial_control_spell: view.terrestrial_control_spell.to_owned(),
-            terrestrial_spells: view.terrestrial_spells.into_iter().map(|(k, v)| (k, v.to_owned())).collect(),
+            terrestrial_spells: view
+                .terrestrial_spells
+                .into_iter()
+                .map(|(k, v)| (k, v.to_owned()))
+                .collect(),
             celestial_control_spell_id: view.celestial_control_spell_id,
             celestial_control_spell: view.celestial_control_spell.to_owned(),
-            celestial_spells: view.celestial_spells.into_iter().map(|(k, v)| (k, v.to_owned())).collect(),
+            celestial_spells: view
+                .celestial_spells
+                .into_iter()
+                .map(|(k, v)| (k, v.to_owned()))
+                .collect(),
             solar_control_spell_id: view.solar_control_spell_id,
             solar_control_spell: view.solar_control_spell.to_owned(),
-            solar_spells: view.solar_spells.into_iter().map(|(k, v)| (k, v.to_owned())).collect(),
+            solar_spells: view
+                .solar_spells
+                .into_iter()
+                .map(|(k, v)| (k, v.to_owned()))
+                .collect(),
         }
     }
 }
@@ -671,7 +757,10 @@ impl<'char> Sorcery<'char> {
         self.0.archetype(id)
     }
 
-    pub fn shaping_ritual(&'char self, circle: SorceryCircle) -> Option<(ShapingRitualId, &'char ShapingRitual)> {
+    pub fn shaping_ritual(
+        &'char self,
+        circle: SorceryCircle,
+    ) -> Option<(ShapingRitualId, &'char ShapingRitual)> {
         self.0.shaping_ritual(circle)
     }
 
@@ -685,7 +774,10 @@ impl<'view, 'source> SorceryView<'view, 'source> {
         self.0.archetype(id)
     }
 
-    pub fn shaping_ritual(&self, circle: SorceryCircle) -> Option<(ShapingRitualId, &'source ShapingRitual)> {
+    pub fn shaping_ritual(
+        &self,
+        circle: SorceryCircle,
+    ) -> Option<(ShapingRitualId, &'source ShapingRitual)> {
         self.0.shaping_ritual(circle)
     }
 
@@ -700,17 +792,18 @@ impl<'char> SorcerySwitch<'char> {
             SorcerySwitch::Mortal(terrestrial) => terrestrial.archetype(id),
             SorcerySwitch::Exalt(exalt_switch) => exalt_switch.archetype(id),
         }
-    } 
+    }
 
-    pub fn shaping_ritual(&'char self, circle: SorceryCircle) ->  Option<(ShapingRitualId, &'char ShapingRitual)> {
+    pub fn shaping_ritual(
+        &'char self,
+        circle: SorceryCircle,
+    ) -> Option<(ShapingRitualId, &'char ShapingRitual)> {
         match (self, circle) {
             (SorcerySwitch::Mortal(terrestrial), SorceryCircle::Terrestrial) => {
                 Some(terrestrial.shaping_ritual())
             }
             (SorcerySwitch::Mortal(_), _) => None,
-            (SorcerySwitch::Exalt(exalt_switch), circle) => {
-                exalt_switch.shaping_ritual(circle)
-            }
+            (SorcerySwitch::Exalt(exalt_switch), circle) => exalt_switch.shaping_ritual(circle),
         }
     }
 
@@ -720,9 +813,7 @@ impl<'char> SorcerySwitch<'char> {
                 Some(terrestrial.control_spell())
             }
             (SorcerySwitch::Mortal(_), _) => None,
-            (SorcerySwitch::Exalt(exalt_switch), circle) => {
-                exalt_switch.control_spell(circle)
-            }
+            (SorcerySwitch::Exalt(exalt_switch), circle) => exalt_switch.control_spell(circle),
         }
     }
 }
@@ -735,15 +826,16 @@ impl<'view, 'source> SorceryViewSwitch<'view, 'source> {
         }
     }
 
-    pub fn shaping_ritual(&self, circle: SorceryCircle) ->  Option<(ShapingRitualId, &'source ShapingRitual)> {
+    pub fn shaping_ritual(
+        &self,
+        circle: SorceryCircle,
+    ) -> Option<(ShapingRitualId, &'source ShapingRitual)> {
         match (self, circle) {
             (SorceryViewSwitch::Mortal(terrestrial), SorceryCircle::Terrestrial) => {
                 Some(terrestrial.shaping_ritual())
             }
             (SorceryViewSwitch::Mortal(_), _) => None,
-            (SorceryViewSwitch::Exalt(exalt_switch), circle) => {
-                exalt_switch.shaping_ritual(circle)
-            }
+            (SorceryViewSwitch::Exalt(exalt_switch), circle) => exalt_switch.shaping_ritual(circle),
         }
     }
 
@@ -753,9 +845,7 @@ impl<'view, 'source> SorceryViewSwitch<'view, 'source> {
                 Some(terrestrial.control_spell())
             }
             (SorceryViewSwitch::Mortal(_), _) => None,
-            (SorceryViewSwitch::Exalt(exalt_switch), circle) => {
-                exalt_switch.control_spell(circle)
-            }
+            (SorceryViewSwitch::Exalt(exalt_switch), circle) => exalt_switch.control_spell(circle),
         }
     }
 }
@@ -787,18 +877,31 @@ impl CelestialCircleSorcerer {
         }
     }
 
-    pub fn shaping_ritual(&self, circle: SorceryCircle) -> Option<(ShapingRitualId, &ShapingRitual)> {
+    pub fn shaping_ritual(
+        &self,
+        circle: SorceryCircle,
+    ) -> Option<(ShapingRitualId, &ShapingRitual)> {
         match circle {
-            SorceryCircle::Terrestrial => Some((self.shaping_ritual_ids[0], &self.shaping_rituals[0])),
-            SorceryCircle::Celestial => Some((self.shaping_ritual_ids[1], &self.shaping_rituals[1])),
+            SorceryCircle::Terrestrial => {
+                Some((self.shaping_ritual_ids[0], &self.shaping_rituals[0]))
+            }
+            SorceryCircle::Celestial => {
+                Some((self.shaping_ritual_ids[1], &self.shaping_rituals[1]))
+            }
             SorceryCircle::Solar => None,
         }
     }
 
     pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, &Spell)> {
         match circle {
-            SorceryCircle::Terrestrial => Some((self.terrestrial_control_spell_id, &self.terrestrial_control_spell)),
-            SorceryCircle::Celestial => Some((self.celestial_control_spell_id, &self.celestial_control_spell)),
+            SorceryCircle::Terrestrial => Some((
+                self.terrestrial_control_spell_id,
+                &self.terrestrial_control_spell,
+            )),
+            SorceryCircle::Celestial => Some((
+                self.celestial_control_spell_id,
+                &self.celestial_control_spell,
+            )),
             SorceryCircle::Solar => None,
         }
     }
@@ -823,8 +926,14 @@ impl SolarCircleSorcerer {
 
     pub fn control_spell(&self, circle: SorceryCircle) -> (SpellId, &Spell) {
         match circle {
-            SorceryCircle::Terrestrial => (self.terrestrial_control_spell_id, &self.terrestrial_control_spell),
-            SorceryCircle::Celestial => (self.celestial_control_spell_id, &self.celestial_control_spell),
+            SorceryCircle::Terrestrial => (
+                self.terrestrial_control_spell_id,
+                &self.terrestrial_control_spell,
+            ),
+            SorceryCircle::Celestial => (
+                self.celestial_control_spell_id,
+                &self.celestial_control_spell,
+            ),
             SorceryCircle::Solar => (self.solar_control_spell_id, &self.solar_control_spell),
         }
     }
@@ -879,9 +988,14 @@ impl<'source> CelestialCircleSorcererView<'source> {
         }
     }
 
-    pub fn shaping_ritual(&self, circle: SorceryCircle) -> Option<(ShapingRitualId, &'source ShapingRitual)> {
+    pub fn shaping_ritual(
+        &self,
+        circle: SorceryCircle,
+    ) -> Option<(ShapingRitualId, &'source ShapingRitual)> {
         match circle {
-            SorceryCircle::Terrestrial => Some((self.shaping_ritual_ids[0], self.shaping_rituals[0])),
+            SorceryCircle::Terrestrial => {
+                Some((self.shaping_ritual_ids[0], self.shaping_rituals[0]))
+            }
             SorceryCircle::Celestial => Some((self.shaping_ritual_ids[1], self.shaping_rituals[1])),
             SorceryCircle::Solar => None,
         }
@@ -889,8 +1003,14 @@ impl<'source> CelestialCircleSorcererView<'source> {
 
     pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, &'source Spell)> {
         match circle {
-            SorceryCircle::Terrestrial => Some((self.terrestrial_control_spell_id, self.terrestrial_control_spell)),
-            SorceryCircle::Celestial => Some((self.celestial_control_spell_id, self.celestial_control_spell)),
+            SorceryCircle::Terrestrial => Some((
+                self.terrestrial_control_spell_id,
+                self.terrestrial_control_spell,
+            )),
+            SorceryCircle::Celestial => Some((
+                self.celestial_control_spell_id,
+                self.celestial_control_spell,
+            )),
             SorceryCircle::Solar => None,
         }
     }
@@ -905,7 +1025,10 @@ impl<'source> SolarCircleSorcererView<'source> {
         }
     }
 
-    pub fn shaping_ritual(&self, circle: SorceryCircle) -> (ShapingRitualId, &'source ShapingRitual) {
+    pub fn shaping_ritual(
+        &self,
+        circle: SorceryCircle,
+    ) -> (ShapingRitualId, &'source ShapingRitual) {
         match circle {
             SorceryCircle::Terrestrial => (self.shaping_ritual_ids[0], self.shaping_rituals[0]),
             SorceryCircle::Celestial => (self.shaping_ritual_ids[1], self.shaping_rituals[1]),
@@ -915,8 +1038,14 @@ impl<'source> SolarCircleSorcererView<'source> {
 
     pub fn control_spell(&self, circle: SorceryCircle) -> (SpellId, &'source Spell) {
         match circle {
-            SorceryCircle::Terrestrial => (self.terrestrial_control_spell_id, self.terrestrial_control_spell),
-            SorceryCircle::Celestial => (self.celestial_control_spell_id, self.celestial_control_spell),
+            SorceryCircle::Terrestrial => (
+                self.terrestrial_control_spell_id,
+                self.terrestrial_control_spell,
+            ),
+            SorceryCircle::Celestial => (
+                self.celestial_control_spell_id,
+                self.celestial_control_spell,
+            ),
             SorceryCircle::Solar => (self.solar_control_spell_id, self.solar_control_spell),
         }
     }
@@ -925,25 +1054,22 @@ impl<'source> SolarCircleSorcererView<'source> {
 impl<'char> ExaltSorcerySwitch<'char> {
     pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&SorceryArchetype> {
         match self {
-            ExaltSorcerySwitch::Solar(solar_sorcerer) => {
-                solar_sorcerer.archetype(id)
-            }
+            ExaltSorcerySwitch::Solar(solar_sorcerer) => solar_sorcerer.archetype(id),
         }
     }
 
-    pub fn shaping_ritual(&self, circle: SorceryCircle) ->  Option<(ShapingRitualId, &ShapingRitual)> {
+    pub fn shaping_ritual(
+        &self,
+        circle: SorceryCircle,
+    ) -> Option<(ShapingRitualId, &ShapingRitual)> {
         match self {
-            ExaltSorcerySwitch::Solar(solar_sorcerer) => {
-                solar_sorcerer.shaping_ritual(circle)
-            }
+            ExaltSorcerySwitch::Solar(solar_sorcerer) => solar_sorcerer.shaping_ritual(circle),
         }
     }
 
     pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, &Spell)> {
         match self {
-            ExaltSorcerySwitch::Solar(solar_sorcerer) => {
-                solar_sorcerer.control_spell(circle)
-            }
+            ExaltSorcerySwitch::Solar(solar_sorcerer) => solar_sorcerer.control_spell(circle),
         }
     }
 }
@@ -951,25 +1077,22 @@ impl<'char> ExaltSorcerySwitch<'char> {
 impl<'view, 'source> ExaltSorceryViewSwitch<'view, 'source> {
     pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&'source SorceryArchetype> {
         match self {
-            ExaltSorceryViewSwitch::Solar(solar_sorcerer) => {
-                solar_sorcerer.archetype(id)
-            }
+            ExaltSorceryViewSwitch::Solar(solar_sorcerer) => solar_sorcerer.archetype(id),
         }
     }
 
-    pub fn shaping_ritual(&self, circle: SorceryCircle) ->  Option<(ShapingRitualId, &'source ShapingRitual)> {
+    pub fn shaping_ritual(
+        &self,
+        circle: SorceryCircle,
+    ) -> Option<(ShapingRitualId, &'source ShapingRitual)> {
         match self {
-            ExaltSorceryViewSwitch::Solar(solar_sorcerer) => {
-                solar_sorcerer.shaping_ritual(circle)
-            }
+            ExaltSorceryViewSwitch::Solar(solar_sorcerer) => solar_sorcerer.shaping_ritual(circle),
         }
     }
 
     pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, &'source Spell)> {
         match self {
-            ExaltSorceryViewSwitch::Solar(solar_sorcerer) => {
-                solar_sorcerer.control_spell(circle)
-            }
+            ExaltSorceryViewSwitch::Solar(solar_sorcerer) => solar_sorcerer.control_spell(circle),
         }
     }
 }
@@ -983,9 +1106,14 @@ impl SolarSorcerer {
         }
     }
 
-    pub fn shaping_ritual(&self, circle: SorceryCircle) -> Option<(ShapingRitualId, &ShapingRitual)> {
+    pub fn shaping_ritual(
+        &self,
+        circle: SorceryCircle,
+    ) -> Option<(ShapingRitualId, &ShapingRitual)> {
         match (self, circle) {
-            (SolarSorcerer::Terrestrial(terrestrial), SorceryCircle::Terrestrial) => Some(terrestrial.shaping_ritual()),
+            (SolarSorcerer::Terrestrial(terrestrial), SorceryCircle::Terrestrial) => {
+                Some(terrestrial.shaping_ritual())
+            }
             (SolarSorcerer::Terrestrial(_), _) => None,
             (SolarSorcerer::Celestial(celestial), circle) => celestial.shaping_ritual(circle),
             (SolarSorcerer::Solar(solar), circle) => Some(solar.shaping_ritual(circle)),
@@ -994,7 +1122,9 @@ impl SolarSorcerer {
 
     pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, &Spell)> {
         match (self, circle) {
-            (SolarSorcerer::Terrestrial(terrestrial), SorceryCircle::Terrestrial) => Some(terrestrial.control_spell()),
+            (SolarSorcerer::Terrestrial(terrestrial), SorceryCircle::Terrestrial) => {
+                Some(terrestrial.control_spell())
+            }
             (SolarSorcerer::Terrestrial(_), _) => None,
             (SolarSorcerer::Celestial(celestial), circle) => celestial.control_spell(circle),
             (SolarSorcerer::Solar(solar), circle) => Some(solar.control_spell(circle)),
@@ -1011,9 +1141,14 @@ impl<'source> SolarSorcererView<'source> {
         }
     }
 
-    pub fn shaping_ritual(&self, circle: SorceryCircle) -> Option<(ShapingRitualId, &'source ShapingRitual)> {
+    pub fn shaping_ritual(
+        &self,
+        circle: SorceryCircle,
+    ) -> Option<(ShapingRitualId, &'source ShapingRitual)> {
         match (self, circle) {
-            (SolarSorcererView::Terrestrial(terrestrial), SorceryCircle::Terrestrial) => Some(terrestrial.shaping_ritual()),
+            (SolarSorcererView::Terrestrial(terrestrial), SorceryCircle::Terrestrial) => {
+                Some(terrestrial.shaping_ritual())
+            }
             (SolarSorcererView::Terrestrial(_), _) => None,
             (SolarSorcererView::Celestial(celestial), circle) => celestial.shaping_ritual(circle),
             (SolarSorcererView::Solar(solar), circle) => Some(solar.shaping_ritual(circle)),
@@ -1022,7 +1157,9 @@ impl<'source> SolarSorcererView<'source> {
 
     pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, &'source Spell)> {
         match (self, circle) {
-            (SolarSorcererView::Terrestrial(terrestrial), SorceryCircle::Terrestrial) => Some(terrestrial.control_spell()),
+            (SolarSorcererView::Terrestrial(terrestrial), SorceryCircle::Terrestrial) => {
+                Some(terrestrial.control_spell())
+            }
             (SolarSorcererView::Terrestrial(_), _) => None,
             (SolarSorcererView::Celestial(celestial), circle) => celestial.control_spell(circle),
             (SolarSorcererView::Solar(solar), circle) => Some(solar.control_spell(circle)),
@@ -1032,32 +1169,57 @@ impl<'source> SolarSorcererView<'source> {
 
 impl<'source> CharacterView<'source> {
     pub fn add_terrestrial_sorcery(
-        &mut self, 
+        &mut self,
         archetype_id: SorceryArchetypeId,
         archetype: &'source SorceryArchetype,
         shaping_ritual_id: ShapingRitualId,
         shaping_ritual: &'source ShapingRitual,
         control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell
+        control_spell: &'source TerrestrialSpell,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.add_terrestrial_sorcery(archetype_id, archetype, shaping_ritual_id, shaping_ritual, control_spell_id, control_spell)?;
+        self.exalt_state.add_terrestrial_sorcery(
+            archetype_id,
+            archetype,
+            shaping_ritual_id,
+            shaping_ritual,
+            control_spell_id,
+            control_spell,
+        )?;
         Ok(self)
     }
 }
 
 impl<'source> ExaltStateView<'source> {
     pub fn add_terrestrial_sorcery(
-        &mut self, 
+        &mut self,
         archetype_id: SorceryArchetypeId,
         archetype: &'source SorceryArchetype,
         shaping_ritual_id: ShapingRitualId,
         shaping_ritual: &'source ShapingRitual,
         control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell
+        control_spell: &'source TerrestrialSpell,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltStateView::Mortal(mortal) => {mortal.add_terrestrial_sorcery(archetype_id, archetype, shaping_ritual_id, shaping_ritual, control_spell_id, control_spell)?;}
-            ExaltStateView::Exalt(exalt) => {exalt.add_terrestrial_sorcery(archetype_id, archetype, shaping_ritual_id, shaping_ritual, control_spell_id, control_spell)?;}
+            ExaltStateView::Mortal(mortal) => {
+                mortal.add_terrestrial_sorcery(
+                    archetype_id,
+                    archetype,
+                    shaping_ritual_id,
+                    shaping_ritual,
+                    control_spell_id,
+                    control_spell,
+                )?;
+            }
+            ExaltStateView::Exalt(exalt) => {
+                exalt.add_terrestrial_sorcery(
+                    archetype_id,
+                    archetype,
+                    shaping_ritual_id,
+                    shaping_ritual,
+                    control_spell_id,
+                    control_spell,
+                )?;
+            }
         }
         Ok(self)
     }
@@ -1065,15 +1227,22 @@ impl<'source> ExaltStateView<'source> {
 
 impl<'source> MortalView<'source> {
     pub fn add_terrestrial_sorcery(
-        &mut self, 
+        &mut self,
         archetype_id: SorceryArchetypeId,
         archetype: &'source SorceryArchetype,
         shaping_ritual_id: ShapingRitualId,
         shaping_ritual: &'source ShapingRitual,
         control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell
+        control_spell: &'source TerrestrialSpell,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.sorcery = Some(TerrestrialCircleSorcererView::new(archetype_id, archetype, shaping_ritual_id, shaping_ritual, control_spell_id, control_spell)?);
+        self.sorcery = Some(TerrestrialCircleSorcererView::new(
+            archetype_id,
+            archetype,
+            shaping_ritual_id,
+            shaping_ritual,
+            control_spell_id,
+            control_spell,
+        )?);
 
         Ok(self)
     }
@@ -1081,16 +1250,25 @@ impl<'source> MortalView<'source> {
 
 impl<'source> ExaltView<'source> {
     pub fn add_terrestrial_sorcery(
-        &mut self, 
+        &mut self,
         archetype_id: SorceryArchetypeId,
         archetype: &'source SorceryArchetype,
         shaping_ritual_id: ShapingRitualId,
         shaping_ritual: &'source ShapingRitual,
         control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell
+        control_spell: &'source TerrestrialSpell,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.exalt_type {
-            ExaltTypeView::Solar(solar) => {solar.add_terrestrial_sorcery(archetype_id, archetype, shaping_ritual_id, shaping_ritual, control_spell_id, control_spell)?;}
+            ExaltTypeView::Solar(solar) => {
+                solar.add_terrestrial_sorcery(
+                    archetype_id,
+                    archetype,
+                    shaping_ritual_id,
+                    shaping_ritual,
+                    control_spell_id,
+                    control_spell,
+                )?;
+            }
         }
         Ok(self)
     }
@@ -1098,21 +1276,30 @@ impl<'source> ExaltView<'source> {
 
 impl<'source> SolarView<'source> {
     pub(crate) fn add_terrestrial_sorcery(
-        &mut self, 
+        &mut self,
         archetype_id: SorceryArchetypeId,
         archetype: &'source SorceryArchetype,
         shaping_ritual_id: ShapingRitualId,
         shaping_ritual: &'source ShapingRitual,
         control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell
+        control_spell: &'source TerrestrialSpell,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self.sorcery.is_none() {
-            self.sorcery = Some(
-                SolarSorcererView::Terrestrial(TerrestrialCircleSorcererView::new(archetype_id, archetype, shaping_ritual_id, shaping_ritual, control_spell_id, control_spell)?)
-            );
+            self.sorcery = Some(SolarSorcererView::Terrestrial(
+                TerrestrialCircleSorcererView::new(
+                    archetype_id,
+                    archetype,
+                    shaping_ritual_id,
+                    shaping_ritual,
+                    control_spell_id,
+                    control_spell,
+                )?,
+            ));
             Ok(self)
         } else {
-            Err(CharacterMutationError::AddSorceryCircleError(SorceryError::CircleSequence))
+            Err(CharacterMutationError::AddSorceryCircleError(
+                SorceryError::CircleSequence,
+            ))
         }
     }
 }

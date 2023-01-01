@@ -1,4 +1,4 @@
-use std::collections::{HashMap};
+use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
@@ -73,11 +73,15 @@ impl Exalt {
         dots: u8,
     ) -> Result<(), CharacterMutationError> {
         if dots > 5 {
-            Err(CharacterMutationError::SetAbilityError(SetAbilityError::InvalidRating(dots)))
+            Err(CharacterMutationError::SetAbilityError(
+                SetAbilityError::InvalidRating(dots),
+            ))
         } else if let Some(style) = self.martial_arts_styles.get(&id) {
             Ok(())
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(SetMartialArtsError::NotFound))
+            Err(CharacterMutationError::SetMartialArtsError(
+                SetMartialArtsError::NotFound,
+            ))
         }
     }
 
@@ -87,19 +91,25 @@ impl Exalt {
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         if dots > 5 {
-            Err(CharacterMutationError::SetAbilityError(SetAbilityError::InvalidRating(dots)))
+            Err(CharacterMutationError::SetAbilityError(
+                SetAbilityError::InvalidRating(dots),
+            ))
         } else if let Some(style) = self.martial_arts_styles.get_mut(&id) {
             if dots >= style.ability.dots() {
                 style.ability.set_dots(dots)?;
                 Ok(self)
             } else {
                 // May have to remove charms
-                let mut prereq_charms_map = HashMap::<MartialArtsCharmId, Vec<MartialArtsCharmId>>::new();
+                let mut prereq_charms_map =
+                    HashMap::<MartialArtsCharmId, Vec<MartialArtsCharmId>>::new();
                 let mut removal_stack = Vec::<MartialArtsCharmId>::new();
-    
+
                 for (charm_id, charm) in style.charms.iter() {
                     for prereq_charm_id in charm.charms_required.iter() {
-                        prereq_charms_map.entry(*prereq_charm_id).or_insert(Vec::new()).push(*charm_id);
+                        prereq_charms_map
+                            .entry(*prereq_charm_id)
+                            .or_insert(Vec::new())
+                            .push(*charm_id);
                     }
 
                     if charm.ability_required > dots {
@@ -115,11 +125,13 @@ impl Exalt {
                         }
                     }
                 }
-    
+
                 Ok(self)
-            }       
+            }
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(SetMartialArtsError::NotFound))
+            Err(CharacterMutationError::SetMartialArtsError(
+                SetMartialArtsError::NotFound,
+            ))
         }
     }
 }
@@ -184,11 +196,15 @@ impl<'source> ExaltView<'source> {
         dots: u8,
     ) -> Result<(), CharacterMutationError> {
         if dots > 5 {
-            Err(CharacterMutationError::SetAbilityError(SetAbilityError::InvalidRating(dots)))
+            Err(CharacterMutationError::SetAbilityError(
+                SetAbilityError::InvalidRating(dots),
+            ))
         } else if let Some(_) = self.martial_arts_styles.get(&id) {
             Ok(())
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(SetMartialArtsError::NotFound))
+            Err(CharacterMutationError::SetMartialArtsError(
+                SetMartialArtsError::NotFound,
+            ))
         }
     }
 
@@ -198,16 +214,22 @@ impl<'source> ExaltView<'source> {
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         if dots > 5 {
-            Err(CharacterMutationError::SetAbilityError(SetAbilityError::InvalidRating(dots)))
+            Err(CharacterMutationError::SetAbilityError(
+                SetAbilityError::InvalidRating(dots),
+            ))
         } else if let Some(style) = self.martial_arts_styles.get_mut(&id) {
             if dots < style.ability.dots() {
                 // May have to remove charms
-                let mut prereq_charms_map = HashMap::<MartialArtsCharmId, Vec<MartialArtsCharmId>>::new();
+                let mut prereq_charms_map =
+                    HashMap::<MartialArtsCharmId, Vec<MartialArtsCharmId>>::new();
                 let mut removal_stack = Vec::<MartialArtsCharmId>::new();
-    
+
                 for (charm_id, charm) in style.charms.iter() {
                     for prereq_charm_id in charm.charms_required.iter() {
-                        prereq_charms_map.entry(*prereq_charm_id).or_insert(Vec::new()).push(*charm_id);
+                        prereq_charms_map
+                            .entry(*prereq_charm_id)
+                            .or_insert(Vec::new())
+                            .push(*charm_id);
                     }
 
                     if charm.ability_required > dots {
@@ -227,7 +249,9 @@ impl<'source> ExaltView<'source> {
             style.ability.set_dots(dots)?;
             Ok(self)
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(SetMartialArtsError::NotFound))
+            Err(CharacterMutationError::SetMartialArtsError(
+                SetMartialArtsError::NotFound,
+            ))
         }
     }
 }

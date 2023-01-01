@@ -21,7 +21,11 @@ pub use night::{Night, NightBuilder};
 pub use twilight::{Twilight, TwilightBuilder};
 pub use zenith::{Zenith, ZenithBuilder};
 
-use crate::{abilities::AbilityName, guided::ExaltationChoice, sorcery::{SolarSorcerer, SolarSorcererView}};
+use crate::{
+    abilities::AbilityName,
+    guided::ExaltationChoice,
+    sorcery::{SolarSorcerer, SolarSorcererView},
+};
 
 use self::{
     builder::SolarTraitsBuilder, caste::SolarCaste, caste_view::SolarCasteView, dawn::DawnView,

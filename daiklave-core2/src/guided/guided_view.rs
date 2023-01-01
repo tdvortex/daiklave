@@ -9,7 +9,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    CharacterMutationError, CharacterView, CharacterMutation,
+    CharacterMutation, CharacterMutationError, CharacterView,
 };
 
 use super::{
@@ -55,7 +55,9 @@ impl<'source> GuidedView<'source> {
 
         match guided_mutation {
             GuidedMutation::CharacterMutation(character_mutation) => {
-                if let CharacterMutation::SetAbilityDots(ability_name_vanilla, dots) = character_mutation {
+                if let CharacterMutation::SetAbilityDots(ability_name_vanilla, dots) =
+                    character_mutation
+                {
                     self.check_abilities_floor(*ability_name_vanilla, *dots)?;
                 }
 
@@ -178,21 +180,29 @@ impl<'source> GuidedView<'source> {
         )
     }
 
-    fn check_abilities_floor(&self, ability_name_vanilla: AbilityNameVanilla, dots: u8) -> Result<(), GuidedError> {
+    fn check_abilities_floor(
+        &self,
+        ability_name_vanilla: AbilityNameVanilla,
+        dots: u8,
+    ) -> Result<(), GuidedError> {
         if dots >= 3 {
             // 3 dots in any ability is enough to cover minimum values
             return Ok(());
         }
-        
-        if ability_name_vanilla == AbilityNameVanilla::Occult && self.character_view.sorcery().is_some() {
+
+        if ability_name_vanilla == AbilityNameVanilla::Occult
+            && self.character_view.sorcery().is_some()
+        {
             return Err(GuidedError::AbilityMin);
-        } 
-        
+        }
+
         if dots >= 1 {
             return Ok(());
         }
 
-        if ability_name_vanilla == AbilityNameVanilla::Brawl && self.character_view.martial_arts().iter().next().is_some() {
+        if ability_name_vanilla == AbilityNameVanilla::Brawl
+            && self.character_view.martial_arts().iter().next().is_some()
+        {
             return Err(GuidedError::AbilityMin);
         }
 

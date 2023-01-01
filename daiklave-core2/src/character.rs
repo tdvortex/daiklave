@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abilities::Abilities, attributes::Attributes, exalt_state::ExaltState, health::Health,
-    willpower::Willpower, CharacterMutation, CharacterMutationError, craft::Craft,
+    abilities::Abilities, attributes::Attributes, craft::Craft, exalt_state::ExaltState,
+    health::Health, willpower::Willpower, CharacterMutation, CharacterMutationError,
 };
 
 /// An owned instance of a full (player) character. This is the format used in

@@ -7,7 +7,8 @@ use crate::{
 };
 
 use super::{
-    AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError, SetMartialArtsError,
+    AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError,
+    SetMartialArtsError,
 };
 
 impl Mortal {
@@ -66,25 +67,29 @@ impl Mortal {
     pub(crate) fn check_set_martial_arts_dots(
         &self,
         id: MartialArtsStyleId,
-        dots: u8
+        dots: u8,
     ) -> Result<(), CharacterMutationError> {
         if let Some(style) = self.martial_arts_styles.get(&id) {
             Ok(())
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(SetMartialArtsError::NotFound))
+            Err(CharacterMutationError::SetMartialArtsError(
+                SetMartialArtsError::NotFound,
+            ))
         }
     }
 
     pub(crate) fn set_martial_arts_dots(
         &mut self,
         id: MartialArtsStyleId,
-        dots: u8
+        dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(style) = self.martial_arts_styles.get_mut(&id) {
             // Mortals have no charms to lose if dots are zero
             Ok(self)
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(SetMartialArtsError::NotFound))
+            Err(CharacterMutationError::SetMartialArtsError(
+                SetMartialArtsError::NotFound,
+            ))
         }
     }
 }
@@ -145,26 +150,30 @@ impl<'source> MortalView<'source> {
     pub(crate) fn check_set_martial_arts_dots(
         &self,
         id: MartialArtsStyleId,
-        dots: u8
+        dots: u8,
     ) -> Result<(), CharacterMutationError> {
         if let Some(style) = self.martial_arts_styles.get(&id) {
             Ok(())
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(SetMartialArtsError::NotFound))
+            Err(CharacterMutationError::SetMartialArtsError(
+                SetMartialArtsError::NotFound,
+            ))
         }
     }
 
     pub(crate) fn set_martial_arts_dots(
         &mut self,
         id: MartialArtsStyleId,
-        dots: u8
+        dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(style) = self.martial_arts_styles.get_mut(&id) {
             // Mortals have no charms to lose if dots are zero
             style.ability.set_dots(dots)?;
             Ok(self)
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(SetMartialArtsError::NotFound))
+            Err(CharacterMutationError::SetMartialArtsError(
+                SetMartialArtsError::NotFound,
+            ))
         }
     }
 }

@@ -9,7 +9,10 @@ pub mod mortal;
 use exalt::{Exalt, ExaltView};
 use mortal::{Mortal, MortalView};
 
-use crate::{Character, CharacterMutationError, CharacterView, sorcery::{SolarSorcerer, SolarSorcererView}};
+use crate::{
+    sorcery::{SolarSorcerer, SolarSorcererView},
+    Character, CharacterMutationError, CharacterView,
+};
 
 use self::exalt::exalt_type::{ExaltType, ExaltTypeView};
 
@@ -56,12 +59,8 @@ impl ExaltState {
                     if let Some(sorcery) = &solar.sorcery {
                         match sorcery {
                             SolarSorcerer::Terrestrial(terrestrial) => Some(terrestrial.clone()),
-                            SolarSorcerer::Celestial(celestial) => {
-                                Some(celestial.clone().into())
-                            }
-                            SolarSorcerer::Solar(solar) => {
-                                Some(solar.clone().into())
-                            }
+                            SolarSorcerer::Celestial(celestial) => Some(celestial.clone().into()),
+                            SolarSorcerer::Solar(solar) => Some(solar.clone().into()),
                         }
                     } else {
                         None
@@ -78,7 +77,7 @@ impl ExaltState {
 
         *self = ExaltState::Mortal(Mortal {
             martial_arts_styles,
-            sorcery
+            sorcery,
         });
 
         Ok(self)
@@ -157,13 +156,11 @@ impl<'source> ExaltStateView<'source> {
                 ExaltTypeView::Solar(solar) => {
                     if let Some(sorcery) = &solar.sorcery {
                         match sorcery {
-                            SolarSorcererView::Terrestrial(terrestrial) => Some(terrestrial.clone()),
-                            SolarSorcererView::Celestial(celestial) => {
-                                Some(celestial.into())
+                            SolarSorcererView::Terrestrial(terrestrial) => {
+                                Some(terrestrial.clone())
                             }
-                            SolarSorcererView::Solar(solar) => {
-                                Some(solar.into())
-                            }
+                            SolarSorcererView::Celestial(celestial) => Some(celestial.into()),
+                            SolarSorcererView::Solar(solar) => Some(solar.into()),
                         }
                     } else {
                         None
@@ -180,7 +177,7 @@ impl<'source> ExaltStateView<'source> {
 
         *self = ExaltStateView::Mortal(MortalView {
             martial_arts_styles,
-            sorcery
+            sorcery,
         });
         Ok(self)
     }

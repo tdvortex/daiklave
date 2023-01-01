@@ -14,7 +14,8 @@ use exalt_state::exalt::{
 };
 use health::{DamageLevel, WoundPenalty};
 use martial_arts::{
-    AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError, SetMartialArtsError,
+    AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError,
+    SetMartialArtsError,
 };
 use name_and_concept::RemoveConceptError;
 use sorcery::SorceryError;

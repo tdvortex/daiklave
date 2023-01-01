@@ -1,4 +1,8 @@
-use crate::{attributes::AttributeName, guided::ExaltationChoice, abilities::{AbilityNameVanilla, AbilityName}};
+use crate::{
+    abilities::{AbilityName, AbilityNameVanilla},
+    attributes::AttributeName,
+    guided::ExaltationChoice,
+};
 
 use super::GuidedView;
 
@@ -89,7 +93,12 @@ impl<'source> GuidedView<'source> {
         }
 
         for style_id in self.character_view.martial_arts().iter() {
-            let dots = self.character_view.martial_arts().style(style_id).unwrap().dots();
+            let dots = self
+                .character_view
+                .martial_arts()
+                .style(style_id)
+                .unwrap()
+                .dots();
             three_or_less += dots.min(3);
             more_than_three += dots - dots.min(3);
         }
@@ -110,9 +119,9 @@ impl<'source> GuidedView<'source> {
         }
 
         // Solars get 28 free ability dots with a limit of 3 per skill
-        // Dots above 3 in a skill need to be purchases, as do dots 29+ at 3 
+        // Dots above 3 in a skill need to be purchases, as do dots 29+ at 3
         // or less
-        // Caste or Favored skills cost 1 BP each, non-Caste non-Favored 
+        // Caste or Favored skills cost 1 BP each, non-Caste non-Favored
         // abilities cost 2
         // Efficent allocation puts 28 free dots towards non-C/F skills first
         let mut cf_three_or_less = 0;
@@ -122,10 +131,19 @@ impl<'source> GuidedView<'source> {
 
         for vanilla in AbilityNameVanilla::iter() {
             let dots = self.character_view.abilities().dots(vanilla);
-            if self.character_view.solar_traits().unwrap().has_caste_ability(vanilla.into()) 
-                || self.character_view.solar_traits().unwrap().has_favored_ability(vanilla.into()) {
-                    cf_three_or_less += dots.min(3);
-                    cf_more_than_three += dots - dots.min(3);
+            if self
+                .character_view
+                .solar_traits()
+                .unwrap()
+                .has_caste_ability(vanilla.into())
+                || self
+                    .character_view
+                    .solar_traits()
+                    .unwrap()
+                    .has_favored_ability(vanilla.into())
+            {
+                cf_three_or_less += dots.min(3);
+                cf_more_than_three += dots - dots.min(3);
             } else {
                 not_cf_three_or_less += dots.min(3);
                 not_cf_more_than_three += dots - dots.min(3);
@@ -133,11 +151,25 @@ impl<'source> GuidedView<'source> {
         }
 
         for style_id in self.character_view.martial_arts().iter() {
-            let dots = self.character_view.martial_arts().style(style_id).unwrap().dots();
-            if self.character_view.solar_traits().unwrap().has_caste_ability(AbilityName::Brawl) 
-                || self.character_view.solar_traits().unwrap().has_favored_ability(AbilityName::Brawl) {
-                    cf_three_or_less += dots.min(3);
-                    cf_more_than_three += dots - dots.min(3);
+            let dots = self
+                .character_view
+                .martial_arts()
+                .style(style_id)
+                .unwrap()
+                .dots();
+            if self
+                .character_view
+                .solar_traits()
+                .unwrap()
+                .has_caste_ability(AbilityName::Brawl)
+                || self
+                    .character_view
+                    .solar_traits()
+                    .unwrap()
+                    .has_favored_ability(AbilityName::Brawl)
+            {
+                cf_three_or_less += dots.min(3);
+                cf_more_than_three += dots - dots.min(3);
             } else {
                 not_cf_three_or_less += dots.min(3);
                 not_cf_more_than_three += dots - dots.min(3);
@@ -146,14 +178,23 @@ impl<'source> GuidedView<'source> {
 
         for focus in self.character_view.craft().iter() {
             let dots = self.character_view.craft().dots(focus);
-            if self.character_view.solar_traits().unwrap().has_caste_ability(AbilityName::Craft) 
-            || self.character_view.solar_traits().unwrap().has_favored_ability(AbilityName::Craft) {
+            if self
+                .character_view
+                .solar_traits()
+                .unwrap()
+                .has_caste_ability(AbilityName::Craft)
+                || self
+                    .character_view
+                    .solar_traits()
+                    .unwrap()
+                    .has_favored_ability(AbilityName::Craft)
+            {
                 cf_three_or_less += dots.min(3);
                 cf_more_than_three += dots - dots.min(3);
-        } else {
-            not_cf_three_or_less += dots.min(3);
-            not_cf_more_than_three += dots - dots.min(3);
-        }
+            } else {
+                not_cf_three_or_less += dots.min(3);
+                not_cf_more_than_three += dots - dots.min(3);
+            }
         }
 
         let three_or_less = cf_three_or_less + not_cf_three_or_less;

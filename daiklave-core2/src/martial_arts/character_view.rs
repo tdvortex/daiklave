@@ -52,7 +52,7 @@ impl<'source> CharacterView<'source> {
     pub fn check_set_martial_arts_dots(
         &self,
         id: MartialArtsStyleId,
-        dots: u8
+        dots: u8,
     ) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_set_martial_arts_dots(id, dots)
     }
@@ -60,13 +60,12 @@ impl<'source> CharacterView<'source> {
     pub fn set_martial_arts_dots(
         &mut self,
         id: MartialArtsStyleId,
-        dots: u8
+        dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exalt_state.set_martial_arts_dots(id, dots)?;
         Ok(self)
     }
 }
-
 
 impl<'view, 'source> CharacterView<'source> {
     pub fn martial_arts(&'view self) -> MartialArtsView<'view, 'source> {

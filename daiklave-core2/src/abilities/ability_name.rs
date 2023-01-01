@@ -81,7 +81,8 @@ impl AbilityNameVanilla {
             Self::Survival,
             Self::Thrown,
             Self::War,
-        ].into_iter()
+        ]
+        .into_iter()
     }
 }
 

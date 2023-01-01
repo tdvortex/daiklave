@@ -13,7 +13,7 @@ use crate::{
     exalt_state::{ExaltState, ExaltStateView},
     id::UniqueId,
     weapons::WeaponId,
-    CharacterMutationError, CharacterView, Character,
+    Character, CharacterMutationError, CharacterView,
 };
 
 mod character;
@@ -242,22 +242,26 @@ impl<'source> ExaltStateView<'source> {
     fn check_set_martial_arts_dots(
         &self,
         id: MartialArtsStyleId,
-        dots: u8
+        dots: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
             ExaltStateView::Mortal(mortal) => mortal.check_set_martial_arts_dots(id, dots),
             ExaltStateView::Exalt(exalt) => exalt.check_set_martial_arts_dots(id, dots),
         }
     }
-    
+
     fn set_martial_arts_dots(
         &mut self,
         id: MartialArtsStyleId,
-        dots: u8
+        dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltStateView::Mortal(mortal) => {mortal.set_martial_arts_dots(id, dots)?;},
-            ExaltStateView::Exalt(exalt) => {exalt.set_martial_arts_dots(id, dots)?;},
+            ExaltStateView::Mortal(mortal) => {
+                mortal.set_martial_arts_dots(id, dots)?;
+            }
+            ExaltStateView::Exalt(exalt) => {
+                exalt.set_martial_arts_dots(id, dots)?;
+            }
         }
         Ok(self)
     }
@@ -319,22 +323,26 @@ impl ExaltState {
     fn check_set_martial_arts_dots(
         &self,
         id: MartialArtsStyleId,
-        dots: u8
+        dots: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
             ExaltState::Mortal(mortal) => mortal.check_set_martial_arts_dots(id, dots),
             ExaltState::Exalt(exalt) => exalt.check_set_martial_arts_dots(id, dots),
         }
     }
-    
+
     fn set_martial_arts_dots(
         &mut self,
         id: MartialArtsStyleId,
-        dots: u8
+        dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltState::Mortal(mortal) => {mortal.set_martial_arts_dots(id, dots)?;},
-            ExaltState::Exalt(exalt) => {exalt.set_martial_arts_dots(id, dots)?;},
+            ExaltState::Mortal(mortal) => {
+                mortal.set_martial_arts_dots(id, dots)?;
+            }
+            ExaltState::Exalt(exalt) => {
+                exalt.set_martial_arts_dots(id, dots)?;
+            }
         }
         Ok(self)
     }
@@ -361,8 +369,8 @@ impl<'char> MartialArts<'char> {
 
     pub fn iter(&self) -> impl Iterator<Item = MartialArtsStyleId> {
         self.0.exalt_state.martial_arts_id_iter()
-    }}
-
+    }
+}
 
 pub struct MartialArtistView<'view, 'source>(MartialArtistViewSwitch<'view, 'source>);
 
@@ -395,7 +403,9 @@ impl<'view, 'source> MartialArtistView<'view, 'source> {
         self.0.specialties()
     }
 
-    pub fn charms(&self) -> impl Iterator<Item = (MartialArtsCharmId, &'source MartialArtsCharm)> + '_ {
+    pub fn charms(
+        &self,
+    ) -> impl Iterator<Item = (MartialArtsCharmId, &'source MartialArtsCharm)> + '_ {
         self.0.charms()
     }
 }
@@ -431,7 +441,9 @@ impl<'char> MartialArtist<'char> {
         self.0.specialties()
     }
 
-    pub fn charms(&self) -> impl Iterator<Item = (MartialArtsCharmId, &'char MartialArtsCharm)> + '_ {
+    pub fn charms(
+        &self,
+    ) -> impl Iterator<Item = (MartialArtsCharmId, &'char MartialArtsCharm)> + '_ {
         self.0.charms()
     }
 }
@@ -491,10 +503,17 @@ impl<'view, 'source> MartialArtistViewSwitch<'view, 'source> {
         }
     }
 
-    pub fn charms(&self) -> impl Iterator<Item = (MartialArtsCharmId, &'source MartialArtsCharm)> + '_ {
+    pub fn charms(
+        &self,
+    ) -> impl Iterator<Item = (MartialArtsCharmId, &'source MartialArtsCharm)> + '_ {
         match self {
             MartialArtistViewSwitch::Mortal(_) => Vec::new().into_iter(),
-            MartialArtistViewSwitch::Exalt(view) => view.charms.iter().map(|(k, v)| (*k, *v)).collect::<Vec<(MartialArtsCharmId, &'source MartialArtsCharm)>>().into_iter(),
+            MartialArtistViewSwitch::Exalt(view) => view
+                .charms
+                .iter()
+                .map(|(k, v)| (*k, *v))
+                .collect::<Vec<(MartialArtsCharmId, &'source MartialArtsCharm)>>()
+                .into_iter(),
         }
     }
 }
@@ -554,28 +573,50 @@ impl<'char> MartialArtistSwitch<'char> {
         }
     }
 
-    pub fn charms(&self) -> impl Iterator<Item = (MartialArtsCharmId, &'char MartialArtsCharm)> + '_ {
+    pub fn charms(
+        &self,
+    ) -> impl Iterator<Item = (MartialArtsCharmId, &'char MartialArtsCharm)> + '_ {
         match self {
             MartialArtistSwitch::Mortal(_) => Vec::new().into_iter(),
-            MartialArtistSwitch::Exalt(view) => view.charms.iter().map(|(k, v)| (*k, v)).collect::<Vec<(MartialArtsCharmId, &'char MartialArtsCharm)>>().into_iter(),
+            MartialArtistSwitch::Exalt(view) => view
+                .charms
+                .iter()
+                .map(|(k, v)| (*k, v))
+                .collect::<Vec<(MartialArtsCharmId, &'char MartialArtsCharm)>>()
+                .into_iter(),
         }
-
-        
     }
 }
 
 impl<'view, 'source> ExaltStateView<'source> {
-    fn martial_artist(&'view self, id: MartialArtsStyleId) -> Option<MartialArtistView<'view, 'source>> {
+    fn martial_artist(
+        &'view self,
+        id: MartialArtsStyleId,
+    ) -> Option<MartialArtistView<'view, 'source>> {
         match self {
-            ExaltStateView::Mortal(mortal) => Some(MartialArtistView(MartialArtistViewSwitch::Mortal(mortal.martial_arts_styles.get(&id)?))), 
-            ExaltStateView::Exalt(exalt) => Some(MartialArtistView(MartialArtistViewSwitch::Exalt(exalt.martial_arts_styles.get(&id)?))), 
+            ExaltStateView::Mortal(mortal) => Some(MartialArtistView(
+                MartialArtistViewSwitch::Mortal(mortal.martial_arts_styles.get(&id)?),
+            )),
+            ExaltStateView::Exalt(exalt) => Some(MartialArtistView(
+                MartialArtistViewSwitch::Exalt(exalt.martial_arts_styles.get(&id)?),
+            )),
         }
     }
 
     fn martial_arts_id_iter(&'view self) -> impl Iterator<Item = MartialArtsStyleId> {
         match self {
-            ExaltStateView::Mortal(mortal) => mortal.martial_arts_styles.keys().copied().collect::<Vec<MartialArtsStyleId>>().into_iter(),
-            ExaltStateView::Exalt(exalt) => exalt.martial_arts_styles.keys().copied().collect::<Vec<MartialArtsStyleId>>().into_iter(),
+            ExaltStateView::Mortal(mortal) => mortal
+                .martial_arts_styles
+                .keys()
+                .copied()
+                .collect::<Vec<MartialArtsStyleId>>()
+                .into_iter(),
+            ExaltStateView::Exalt(exalt) => exalt
+                .martial_arts_styles
+                .keys()
+                .copied()
+                .collect::<Vec<MartialArtsStyleId>>()
+                .into_iter(),
         }
     }
 }
@@ -583,15 +624,29 @@ impl<'view, 'source> ExaltStateView<'source> {
 impl<'char> ExaltState {
     fn martial_artist(&'char self, id: MartialArtsStyleId) -> Option<MartialArtist<'char>> {
         match self {
-            ExaltState::Mortal(mortal) => Some(MartialArtist(MartialArtistSwitch::Mortal(mortal.martial_arts_styles.get(&id)?))), 
-            ExaltState::Exalt(exalt) => Some(MartialArtist(MartialArtistSwitch::Exalt(exalt.martial_arts_styles.get(&id)?))), 
+            ExaltState::Mortal(mortal) => Some(MartialArtist(MartialArtistSwitch::Mortal(
+                mortal.martial_arts_styles.get(&id)?,
+            ))),
+            ExaltState::Exalt(exalt) => Some(MartialArtist(MartialArtistSwitch::Exalt(
+                exalt.martial_arts_styles.get(&id)?,
+            ))),
         }
     }
 
     fn martial_arts_id_iter(&'char self) -> impl Iterator<Item = MartialArtsStyleId> {
         match self {
-            ExaltState::Mortal(mortal) => mortal.martial_arts_styles.keys().copied().collect::<Vec<MartialArtsStyleId>>().into_iter(),
-            ExaltState::Exalt(exalt) => exalt.martial_arts_styles.keys().copied().collect::<Vec<MartialArtsStyleId>>().into_iter(),
+            ExaltState::Mortal(mortal) => mortal
+                .martial_arts_styles
+                .keys()
+                .copied()
+                .collect::<Vec<MartialArtsStyleId>>()
+                .into_iter(),
+            ExaltState::Exalt(exalt) => exalt
+                .martial_arts_styles
+                .keys()
+                .copied()
+                .collect::<Vec<MartialArtsStyleId>>()
+                .into_iter(),
         }
     }
 }

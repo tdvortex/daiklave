@@ -1,6 +1,7 @@
 use crate::{
+    abilities::{AbilityName, AbilityNameVanilla},
     guided::{error::GuidedError, ExaltationChoice, GuidedMutation, GuidedStage},
-    CharacterMutation, abilities::{AbilityNameVanilla, AbilityName},
+    CharacterMutation,
 };
 
 use super::GuidedView;
@@ -20,9 +21,9 @@ impl<'source> GuidedView<'source> {
                 CharacterMutation::SetAttribute(_, _) => {
                     self.stage == GuidedStage::ChooseAttributes
                 }
-                CharacterMutation::SetAbilityDots(_, _) 
-                | CharacterMutation::SetMartialArtsDots(_,_) 
-                | CharacterMutation::SetCraftDots(_,_) => {
+                CharacterMutation::SetAbilityDots(_, _)
+                | CharacterMutation::SetMartialArtsDots(_, _)
+                | CharacterMutation::SetCraftDots(_, _) => {
                     self.stage == GuidedStage::ChooseAbilities
                 }
                 _ => false,
@@ -100,18 +101,45 @@ impl<'source> GuidedView<'source> {
                     && self.shaping_ritual.is_some() == self.control_spell.is_some()
             }
             GuidedStage::ChooseAbilities => {
-                 let mut three_or_less: u8 = AbilityNameVanilla::iter().map(|a| self.character_view.abilities().dots(a).min(3)).sum();
-                 three_or_less += self.character_view.craft().iter().map(|focus| self.character_view.craft().dots(focus).min(3)).sum::<u8>();
-                 three_or_less += self.character_view.martial_arts().iter().map(|style_id| self.character_view.martial_arts().style(style_id).unwrap().dots()).sum::<u8>();
+                let mut three_or_less: u8 = AbilityNameVanilla::iter()
+                    .map(|a| self.character_view.abilities().dots(a).min(3))
+                    .sum();
+                three_or_less += self
+                    .character_view
+                    .craft()
+                    .iter()
+                    .map(|focus| self.character_view.craft().dots(focus).min(3))
+                    .sum::<u8>();
+                three_or_less += self
+                    .character_view
+                    .martial_arts()
+                    .iter()
+                    .map(|style_id| {
+                        self.character_view
+                            .martial_arts()
+                            .style(style_id)
+                            .unwrap()
+                            .dots()
+                    })
+                    .sum::<u8>();
 
-                 let craft_favored_met = if self.character_view.solar_traits().map(|solar_traits| solar_traits.has_favored_ability(AbilityName::Craft)).unwrap_or(false) {
-                    self.character_view.craft().iter().map(|focus| self.character_view.craft().dots(focus).min(3)).max().map_or(false, |max_craft| max_craft > 0)
-                 } else {
+                let craft_favored_met = if self
+                    .character_view
+                    .solar_traits()
+                    .map(|solar_traits| solar_traits.has_favored_ability(AbilityName::Craft))
+                    .unwrap_or(false)
+                {
+                    self.character_view
+                        .craft()
+                        .iter()
+                        .map(|focus| self.character_view.craft().dots(focus).min(3))
+                        .max()
+                        .map_or(false, |max_craft| max_craft > 0)
+                } else {
                     true
-                 };
-                
+                };
 
-                 three_or_less == 28 && craft_favored_met
+                three_or_less == 28 && craft_favored_met
             }
             GuidedStage::ChooseMerits => todo!(),
         } {
@@ -164,15 +192,23 @@ impl<'source> GuidedView<'source> {
                     .map_err(GuidedError::CharacterMutationError)?;
 
                 if let Some(favored) = &self.solar_favored_abilities {
-                    let favored_vanillas = favored.iter().filter_map(|not_vanilla| if let Ok(vanilla) = (*not_vanilla).try_into() {
-                        Some(vanilla)
-                    } else {
-                        None
-                    }).collect::<Vec<AbilityNameVanilla>>();
+                    let favored_vanillas = favored
+                        .iter()
+                        .filter_map(|not_vanilla| {
+                            if let Ok(vanilla) = (*not_vanilla).try_into() {
+                                Some(vanilla)
+                            } else {
+                                None
+                            }
+                        })
+                        .collect::<Vec<AbilityNameVanilla>>();
 
-                    favored_vanillas.into_iter().fold(Ok(&mut self.character_view), |res_view, vanilla| {
-                        res_view.and_then(|view| view.set_ability_dots(vanilla, 1))
-                    }).map_err(GuidedError::CharacterMutationError)?;
+                    favored_vanillas
+                        .into_iter()
+                        .fold(Ok(&mut self.character_view), |res_view, vanilla| {
+                            res_view.and_then(|view| view.set_ability_dots(vanilla, 1))
+                        })
+                        .map_err(GuidedError::CharacterMutationError)?;
                 }
 
                 self.solar_caste_abilities = None;
@@ -184,10 +220,14 @@ impl<'source> GuidedView<'source> {
             GuidedStage::ChooseMartialArtsStyles => {
                 if let Some(hashmap) = &self.martial_arts_styles {
                     if !hashmap.is_empty() {
-                        self.character_view.set_ability_dots(AbilityNameVanilla::Brawl, 1).map_err(GuidedError::CharacterMutationError)?;
+                        self.character_view
+                            .set_ability_dots(AbilityNameVanilla::Brawl, 1)
+                            .map_err(GuidedError::CharacterMutationError)?;
 
                         for (style_id, style) in hashmap.iter() {
-                            self.character_view.add_martial_arts_style(*style_id, *style).map_err(GuidedError::CharacterMutationError)?;
+                            self.character_view
+                                .add_martial_arts_style(*style_id, *style)
+                                .map_err(GuidedError::CharacterMutationError)?;
                         }
                     }
                 }
@@ -197,17 +237,29 @@ impl<'source> GuidedView<'source> {
                 Ok(self)
             }
             GuidedStage::ChooseSorcery => {
-                match (self.shaping_ritual, self.control_spell, self.sorcery_archetype) {
-                    (Some((shaping_ritual_id, shaping_ritual)), Some((control_spell_id, control_spell)), Some((archetype_id, archetype))) => {
-                        self.character_view.set_ability_dots(AbilityNameVanilla::Occult, 3).map_err(GuidedError::CharacterMutationError)?;
-                        self.character_view.add_terrestrial_sorcery(
-                            archetype_id,
-                            archetype,
-                            shaping_ritual_id,
-                            shaping_ritual,
-                            control_spell_id,
-                            control_spell,
-                        ).map_err(GuidedError::CharacterMutationError)?;
+                match (
+                    self.shaping_ritual,
+                    self.control_spell,
+                    self.sorcery_archetype,
+                ) {
+                    (
+                        Some((shaping_ritual_id, shaping_ritual)),
+                        Some((control_spell_id, control_spell)),
+                        Some((archetype_id, archetype)),
+                    ) => {
+                        self.character_view
+                            .set_ability_dots(AbilityNameVanilla::Occult, 3)
+                            .map_err(GuidedError::CharacterMutationError)?;
+                        self.character_view
+                            .add_terrestrial_sorcery(
+                                archetype_id,
+                                archetype,
+                                shaping_ritual_id,
+                                shaping_ritual,
+                                control_spell_id,
+                                control_spell,
+                            )
+                            .map_err(GuidedError::CharacterMutationError)?;
                         Ok(self)
                     }
                     (None, None, None) => Ok(self),

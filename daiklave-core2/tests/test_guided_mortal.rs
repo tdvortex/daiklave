@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
 use daiklave_core2::{
+    abilities::AbilityNameVanilla,
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     charms::{CharmCost, CharmCostType, CharmKeyword},
@@ -8,11 +9,11 @@ use daiklave_core2::{
     id::UniqueId,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, Spell, SpellId,
-        TerrestrialSpell, SorceryCircle,
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle, Spell,
+        SpellId, TerrestrialSpell,
     },
     weapons::WeaponId,
-    CharacterMutation, abilities::AbilityNameVanilla,
+    CharacterMutation,
 };
 
 #[test]
@@ -342,21 +343,45 @@ fn test_guided_mortal() {
 
     // Brawl must be 1 to allow MartialArtist
     // Occult must be 3 to allow MortalSorcerer merit
-    let guided_view = guided_builder.as_guided_view().unwrap();    
+    let guided_view = guided_builder.as_guided_view().unwrap();
     let character_view = guided_view.as_character_view();
-    assert_eq!(character_view.abilities().dots(AbilityNameVanilla::Brawl), 1);
-    assert_eq!(character_view.abilities().dots(AbilityNameVanilla::Occult), 3);
+    assert_eq!(
+        character_view.abilities().dots(AbilityNameVanilla::Brawl),
+        1
+    );
+    assert_eq!(
+        character_view.abilities().dots(AbilityNameVanilla::Occult),
+        3
+    );
 
     // Check you can't reduce Brawl to 0 or Occult below 3 if you have Martial
     // Arts styles or Sorcery
-    assert!(guided_builder.check_mutation(&GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Brawl, 0))).is_err());
-    assert!(guided_builder.check_mutation(&GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 2))).is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::CharacterMutation(
+            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Brawl, 0)
+        ))
+        .is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::CharacterMutation(
+            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 2)
+        ))
+        .is_err());
 
     // Check you can't add dots to an unowned Martial Arts style
-    assert!(guided_builder.check_mutation(&GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(MartialArtsStyleId(UniqueId::Placeholder(666)), 1))).is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::CharacterMutation(
+            CharacterMutation::SetMartialArtsDots(
+                MartialArtsStyleId(UniqueId::Placeholder(666)),
+                1
+            )
+        ))
+        .is_err());
 
     // Check purchasing dots above 3 costs bonus points even if free dots remain
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Awareness, 4));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Awareness,
+        4,
+    ));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
@@ -367,11 +392,22 @@ fn test_guided_mortal() {
         17
     );
 
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(MartialArtsStyleId(UniqueId::Placeholder(1)), 4));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(
+        MartialArtsStyleId(UniqueId::Placeholder(1)),
+        4,
+    ));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
-        guided_builder.as_guided_view().unwrap().as_character_view().martial_arts().style(MartialArtsStyleId(UniqueId::Placeholder(1))).unwrap().dots(), 4
+        guided_builder
+            .as_guided_view()
+            .unwrap()
+            .as_character_view()
+            .martial_arts()
+            .style(MartialArtsStyleId(UniqueId::Placeholder(1)))
+            .unwrap()
+            .dots(),
+        4
     );
     assert_eq!(
         guided_builder
@@ -381,7 +417,10 @@ fn test_guided_mortal() {
         15
     );
 
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots("Armoring".to_owned(), 4));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots(
+        "Armoring".to_owned(),
+        4,
+    ));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
@@ -393,9 +432,15 @@ fn test_guided_mortal() {
     );
 
     // Check purchasing 28 dots of abilities, all 3 or below, costs no bonus points
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(MartialArtsStyleId(UniqueId::Placeholder(1)), 3));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(
+        MartialArtsStyleId(UniqueId::Placeholder(1)),
+        3,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots("Armoring".to_owned(), 3));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots(
+        "Armoring".to_owned(),
+        3,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
     [
         (AbilityNameVanilla::Archery, 3),
@@ -405,10 +450,15 @@ fn test_guided_mortal() {
         (AbilityNameVanilla::Bureaucracy, 3),
         (AbilityNameVanilla::Dodge, 3),
         (AbilityNameVanilla::Occult, 3),
-        (AbilityNameVanilla::Integrity, 1)
-    ].into_iter()
-        .map(|(ability_name, dots)| GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(ability_name, dots)))
-        .fold(&mut guided_builder, |builder, mutation| builder.apply_mutation(mutation).unwrap());
+        (AbilityNameVanilla::Integrity, 1),
+    ]
+    .into_iter()
+    .map(|(ability_name, dots)| {
+        GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(ability_name, dots))
+    })
+    .fold(&mut guided_builder, |builder, mutation| {
+        builder.apply_mutation(mutation).unwrap()
+    });
     assert_eq!(
         guided_builder
             .as_guided_view()
@@ -418,7 +468,10 @@ fn test_guided_mortal() {
     );
 
     // Check purchasing more than 28 dots of abilities costs bonus points even at 3 or below
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Integrity, 2));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Integrity,
+        2,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
         guided_builder
@@ -427,11 +480,16 @@ fn test_guided_mortal() {
             .bonus_points_remaining(),
         17
     );
-    
+
     // Check can't advance with less than 28 free dots (even with 28 total dots)
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Archery, 1));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Archery,
+        1,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
-    assert!(guided_builder.check_mutation(&GuidedMutation::AdvanceStage).is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::AdvanceStage)
+        .is_err());
 
     guided_builder.undo();
     guided_builder.undo();
@@ -450,11 +508,51 @@ fn test_guided_mortal() {
     );
 
     // After advancing, should have actual Martial Arts and Sorcery in character view
-    let guided_view = guided_builder.as_guided_view().unwrap();    
+    let guided_view = guided_builder.as_guided_view().unwrap();
     let character_view = guided_view.as_character_view();
-    assert_eq!(character_view.martial_arts().style(MartialArtsStyleId(UniqueId::Placeholder(1))).unwrap().name(), "Crane Style");
-    assert_eq!(character_view.martial_arts().style(MartialArtsStyleId(UniqueId::Placeholder(1))).unwrap().dots(), 3);
-    assert_eq!(character_view.sorcery().unwrap().archetype(SorceryArchetypeId(UniqueId::Placeholder(1))).unwrap().name(), "Bargain with Mara");
-    assert_eq!(character_view.sorcery().unwrap().shaping_ritual(SorceryCircle::Terrestrial).unwrap().1.description(), shaping_ritual_description);
-    assert_eq!(character_view.sorcery().unwrap().control_spell(SorceryCircle::Terrestrial).unwrap().1.name(), "Corrupted Words");
+    assert_eq!(
+        character_view
+            .martial_arts()
+            .style(MartialArtsStyleId(UniqueId::Placeholder(1)))
+            .unwrap()
+            .name(),
+        "Crane Style"
+    );
+    assert_eq!(
+        character_view
+            .martial_arts()
+            .style(MartialArtsStyleId(UniqueId::Placeholder(1)))
+            .unwrap()
+            .dots(),
+        3
+    );
+    assert_eq!(
+        character_view
+            .sorcery()
+            .unwrap()
+            .archetype(SorceryArchetypeId(UniqueId::Placeholder(1)))
+            .unwrap()
+            .name(),
+        "Bargain with Mara"
+    );
+    assert_eq!(
+        character_view
+            .sorcery()
+            .unwrap()
+            .shaping_ritual(SorceryCircle::Terrestrial)
+            .unwrap()
+            .1
+            .description(),
+        shaping_ritual_description
+    );
+    assert_eq!(
+        character_view
+            .sorcery()
+            .unwrap()
+            .control_spell(SorceryCircle::Terrestrial)
+            .unwrap()
+            .1
+            .name(),
+        "Corrupted Words"
+    );
 }

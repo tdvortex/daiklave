@@ -8,11 +8,11 @@ use crate::sorcery::{TerrestrialCircleSorcerer, TerrestrialCircleSorcererView};
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub(crate) struct Mortal {
     pub martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtist>,
-    pub sorcery: Option<TerrestrialCircleSorcerer>, 
+    pub sorcery: Option<TerrestrialCircleSorcerer>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct MortalView<'source> {
     pub martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtistView<'source>>,
-    pub sorcery: Option<TerrestrialCircleSorcererView<'source>>, 
+    pub sorcery: Option<TerrestrialCircleSorcererView<'source>>,
 }

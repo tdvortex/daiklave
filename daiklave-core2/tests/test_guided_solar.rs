@@ -9,8 +9,8 @@ use daiklave_core2::{
     id::UniqueId,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, Spell, SpellId,
-        TerrestrialSpell, SorceryCircle,
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle, Spell,
+        SpellId, TerrestrialSpell,
     },
     weapons::WeaponId,
     CharacterMutation,
@@ -485,27 +485,85 @@ fn test_guided_solar() {
     // All non-Craft Favored abilities must be 1+
     let guided_view = guided_builder.as_guided_view().unwrap();
     let character_view = guided_view.as_character_view();
-    assert_eq!(character_view.abilities().dots(AbilityNameVanilla::Brawl), 1);
-    assert_eq!(character_view.abilities().dots(AbilityNameVanilla::Occult), 3);
-    assert_eq!(character_view.abilities().dots(AbilityNameVanilla::Linguistics), 1);
-    assert_eq!(character_view.abilities().dots(AbilityNameVanilla::Socialize), 1);
-    assert_eq!(character_view.abilities().dots(AbilityNameVanilla::Survival), 1);
-    assert_eq!(character_view.abilities().dots(AbilityNameVanilla::Thrown), 1);
+    assert_eq!(
+        character_view.abilities().dots(AbilityNameVanilla::Brawl),
+        1
+    );
+    assert_eq!(
+        character_view.abilities().dots(AbilityNameVanilla::Occult),
+        3
+    );
+    assert_eq!(
+        character_view
+            .abilities()
+            .dots(AbilityNameVanilla::Linguistics),
+        1
+    );
+    assert_eq!(
+        character_view
+            .abilities()
+            .dots(AbilityNameVanilla::Socialize),
+        1
+    );
+    assert_eq!(
+        character_view
+            .abilities()
+            .dots(AbilityNameVanilla::Survival),
+        1
+    );
+    assert_eq!(
+        character_view.abilities().dots(AbilityNameVanilla::Thrown),
+        1
+    );
 
     // Check you can't reduce any of these values to below the minimum threshold
-    assert!(guided_builder.check_mutation(&GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Brawl, 0))).is_err());
-    assert!(guided_builder.check_mutation(&GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 2))).is_err());
-    assert!(guided_builder.check_mutation(&GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Linguistics, 0))).is_err());
-    assert!(guided_builder.check_mutation(&GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Socialize, 0))).is_err());
-    assert!(guided_builder.check_mutation(&GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Survival, 0))).is_err());
-    assert!(guided_builder.check_mutation(&GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Thrown, 0))).is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::CharacterMutation(
+            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Brawl, 0)
+        ))
+        .is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::CharacterMutation(
+            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 2)
+        ))
+        .is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::CharacterMutation(
+            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Linguistics, 0)
+        ))
+        .is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::CharacterMutation(
+            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Socialize, 0)
+        ))
+        .is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::CharacterMutation(
+            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Survival, 0)
+        ))
+        .is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::CharacterMutation(
+            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Thrown, 0)
+        ))
+        .is_err());
 
     // Check you can't add dots to an unowned Martial Arts style
-    assert!(guided_builder.check_mutation(&GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(MartialArtsStyleId(UniqueId::Placeholder(666)), 1))).is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::CharacterMutation(
+            CharacterMutation::SetMartialArtsDots(
+                MartialArtsStyleId(UniqueId::Placeholder(666)),
+                1
+            )
+        ))
+        .is_err());
 
     // Check purchasing dots above 3 costs bonus points even if free dots remain
     // Cost should be 2 BP per dot for non-Caste, non-Favored abilities and 1 BP per dot for Caste or Favored
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Thrown, 4));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Thrown,
+        4,
+    ));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
@@ -516,7 +574,10 @@ fn test_guided_solar() {
         14
     );
 
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Presence, 4));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Presence,
+        4,
+    ));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
@@ -527,7 +588,10 @@ fn test_guided_solar() {
         12
     );
 
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(MartialArtsStyleId(UniqueId::Placeholder(1)), 4));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(
+        MartialArtsStyleId(UniqueId::Placeholder(1)),
+        4,
+    ));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
@@ -538,7 +602,10 @@ fn test_guided_solar() {
         10
     );
 
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots("Armoring".to_owned(), 4));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots(
+        "Armoring".to_owned(),
+        4,
+    ));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
@@ -550,9 +617,15 @@ fn test_guided_solar() {
     );
 
     // Check purchasing 28 dots of abilities, all 3 or below, costs no bonus points
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(MartialArtsStyleId(UniqueId::Placeholder(1)), 3));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(
+        MartialArtsStyleId(UniqueId::Placeholder(1)),
+        3,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots("Armoring".to_owned(), 1)); // (F)
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots(
+        "Armoring".to_owned(),
+        1,
+    )); // (F)
     guided_builder.apply_mutation(mutation).unwrap();
     [
         // Brawl 1
@@ -567,13 +640,22 @@ fn test_guided_solar() {
         (AbilityNameVanilla::Ride, 3),
         (AbilityNameVanilla::Sail, 3),
         (AbilityNameVanilla::War, 1),
-    ].into_iter()
-        .map(|(ability_name, dots)| GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(ability_name, dots)))
-        .fold(&mut guided_builder, |builder, mutation| builder.apply_mutation(mutation).unwrap());
-    
-    dbg!(guided_builder.as_guided_view().unwrap().as_character_view().abilities());
-    
-        assert_eq!(
+    ]
+    .into_iter()
+    .map(|(ability_name, dots)| {
+        GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(ability_name, dots))
+    })
+    .fold(&mut guided_builder, |builder, mutation| {
+        builder.apply_mutation(mutation).unwrap()
+    });
+
+    dbg!(guided_builder
+        .as_guided_view()
+        .unwrap()
+        .as_character_view()
+        .abilities());
+
+    assert_eq!(
         guided_builder
             .as_guided_view()
             .unwrap()
@@ -583,7 +665,10 @@ fn test_guided_solar() {
 
     // Check purchasing more than 28 dots of abilities costs bonus points even at 3 or below
     // Get the caste/solar discount on only as many dots as you actually have in caste/favored
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Medicine, 3));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Medicine,
+        3,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
         guided_builder
@@ -593,7 +678,10 @@ fn test_guided_solar() {
         12
     );
 
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Bureaucracy, 3));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Bureaucracy,
+        3,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
         guided_builder
@@ -603,7 +691,10 @@ fn test_guided_solar() {
         8
     );
 
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Dodge, 3));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Dodge,
+        3,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
         guided_builder
@@ -614,31 +705,65 @@ fn test_guided_solar() {
     );
 
     // Check can't advance with less than 28 free dots (even if 28 dots total)
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Medicine, 0));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Medicine,
+        0,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Bureaucracy, 0));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Bureaucracy,
+        0,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Sail, 0));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Sail,
+        0,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::War, 0));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::War,
+        0,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Dodge, 4));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Dodge,
+        4,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
-    assert!(guided_builder.check_mutation(&GuidedMutation::AdvanceStage).is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::AdvanceStage)
+        .is_err());
 
     // Check can't advance if Craft is a Favored ability and you don't have a Craft ability
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Dodge, 3));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Dodge,
+        3,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Thrown, 3));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Thrown,
+        3,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots("Armoring".to_owned(), 0));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots(
+        "Armoring".to_owned(),
+        0,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
-    assert!(guided_builder.check_mutation(&GuidedMutation::AdvanceStage).is_err());
+    assert!(guided_builder
+        .check_mutation(&GuidedMutation::AdvanceStage)
+        .is_err());
 
     // Move on to the next stage
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Thrown, 2));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+        AbilityNameVanilla::Thrown,
+        2,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots("Armoring".to_owned(), 1));
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots(
+        "Armoring".to_owned(),
+        1,
+    ));
     guided_builder.apply_mutation(mutation).unwrap();
     let mutation = GuidedMutation::AdvanceStage;
     guided_builder.check_mutation(&mutation).unwrap();
@@ -653,11 +778,51 @@ fn test_guided_solar() {
     );
 
     // After advancing, should have actual Martial Arts and Sorcery in character view
-    let guided_view = guided_builder.as_guided_view().unwrap();    
+    let guided_view = guided_builder.as_guided_view().unwrap();
     let character_view = guided_view.as_character_view();
-    assert_eq!(character_view.martial_arts().style(MartialArtsStyleId(UniqueId::Placeholder(1))).unwrap().name(), "Crane Style");
-    assert_eq!(character_view.martial_arts().style(MartialArtsStyleId(UniqueId::Placeholder(1))).unwrap().dots(), 3);
-    assert_eq!(character_view.sorcery().unwrap().archetype(SorceryArchetypeId(UniqueId::Placeholder(1))).unwrap().name(), "Bargain with Mara");
-    assert_eq!(character_view.sorcery().unwrap().shaping_ritual(SorceryCircle::Terrestrial).unwrap().1.description(), shaping_ritual_description);
-    assert_eq!(character_view.sorcery().unwrap().control_spell(SorceryCircle::Terrestrial).unwrap().1.name(), "Corrupted Words");
+    assert_eq!(
+        character_view
+            .martial_arts()
+            .style(MartialArtsStyleId(UniqueId::Placeholder(1)))
+            .unwrap()
+            .name(),
+        "Crane Style"
+    );
+    assert_eq!(
+        character_view
+            .martial_arts()
+            .style(MartialArtsStyleId(UniqueId::Placeholder(1)))
+            .unwrap()
+            .dots(),
+        3
+    );
+    assert_eq!(
+        character_view
+            .sorcery()
+            .unwrap()
+            .archetype(SorceryArchetypeId(UniqueId::Placeholder(1)))
+            .unwrap()
+            .name(),
+        "Bargain with Mara"
+    );
+    assert_eq!(
+        character_view
+            .sorcery()
+            .unwrap()
+            .shaping_ritual(SorceryCircle::Terrestrial)
+            .unwrap()
+            .1
+            .description(),
+        shaping_ritual_description
+    );
+    assert_eq!(
+        character_view
+            .sorcery()
+            .unwrap()
+            .control_spell(SorceryCircle::Terrestrial)
+            .unwrap()
+            .1
+            .name(),
+        "Corrupted Words"
+    );
 }
