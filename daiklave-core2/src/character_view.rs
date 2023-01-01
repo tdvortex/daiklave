@@ -1,6 +1,6 @@
 use crate::{
     abilities::{AbilitiesView, SetAbilityError, AbilityView, AddSpecialtyError, RemoveSpecialtyError, AbilityNameVanilla}, attributes::Attributes, craft::CraftView,
-    exalt_state::{ExaltStateView, exalt::{essence::{EssenceView, MotePoolName, MoteCommitmentId}, exalt_type::solar::{Solar, SolarView}}}, health::Health, willpower::Willpower, CharacterMutation,
+    exaltation::{ExaltStateView, exalt::{essence::{EssenceView, MotePoolName, MoteCommitmentId}, exalt_type::solar::{Solar, SolarView}}}, health::Health, willpower::Willpower, CharacterMutation,
     CharacterMutationError,
 };
 

@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     abilities::{Ability, AbilityView, SetAbilityError},
-    exalt_state::exalt::{Exalt, ExaltView},
+    exaltation::exalt::{Exalt, ExaltView},
     CharacterMutationError,
 };
 

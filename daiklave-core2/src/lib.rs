@@ -5,7 +5,7 @@
 
 use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 use attributes::{AttributeName, SetAttributesError};
-use exalt_state::exalt::{
+use exaltation::exalt::{
     essence::{
         CommitMotesError, MoteCommitmentId, MotePoolName, RecoverMotesError, SetEssenceRatingError,
         SpendMotesError, UncommitMotesError,
@@ -35,7 +35,7 @@ pub mod book_reference;
 pub mod charms;
 
 /// Traits which depend on being Mortal or Exalted.
-pub mod exalt_state;
+pub mod exaltation;
 
 /// A character builder with additional logic for bonus points, free starting
 /// dots, and other constraints.

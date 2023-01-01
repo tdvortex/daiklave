@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{abilities::AbilityName, exalt_state::exalt::exalt_type::solar::builder_error::SolarBuilderError};
+use crate::{abilities::AbilityName, exaltation::exalt::exalt_type::solar::builder_error::SolarBuilderError};
 
 use super::{DawnCasteAbility, DawnSupernalAbility, DawnView};
 

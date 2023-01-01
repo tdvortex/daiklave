@@ -10,7 +10,7 @@ use crate::{
     armor::ArmorWeight,
     book_reference::BookReference,
     charms::{CharmActionType, CharmCost, CharmKeyword},
-    exalt_state::{ExaltState, ExaltStateView},
+    exaltation::{ExaltState, ExaltStateView},
     id::UniqueId,
     weapons::WeaponId,
     Character, CharacterMutationError, CharacterView,

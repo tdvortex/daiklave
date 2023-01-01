@@ -1,6 +1,6 @@
 use daiklave_core2::{
     abilities::AbilityName,
-    exalt_state::exalt::{
+    exaltation::exalt::{
         essence::{MoteCommitmentId, MotePoolName},
         exalt_type::solar::{Eclipse, Solar},
     },

@@ -3,19 +3,31 @@ use std::collections::HashSet;
 use crate::{abilities::AbilityName, sorcery::SolarSorcererView};
 
 use super::{
-    caste_view::SolarCasteView, dawn::DawnView, eclipse::EclipseView, night::NightView,
-    twilight::TwilightView, zenith::ZenithView, Solar, SolarView, builder_error::SolarBuilderError,
+    eclipse::EclipseView, night::NightView,
+    twilight::TwilightView, zenith::ZenithView, Solar, SolarView, builder_error::SolarBuilderError, caste::{SolarCasteView, dawn::DawnView},
 };
 
 pub struct SolarBuilder<'source> {
-    pub(in crate::exalt_state::exalt::exalt_type::solar) caste: Option<SolarCasteView>,
-    pub(in crate::exalt_state::exalt::exalt_type::solar) favored_abilities: HashSet<AbilityName>,
-    pub(in crate::exalt_state::exalt::exalt_type::solar) sorcery:
+    caste: Option<SolarCasteView>,
+    favored_abilities: HashSet<AbilityName>,
+    sorcery:
         Option<SolarSorcererView<'source>>,
 }
 
 
 impl<'source> SolarBuilder<'source> {
+    pub(crate) fn new(
+        caste: Option<SolarCasteView>,
+        favored_abilities: HashSet<AbilityName>,
+        sorcery:Option<SolarSorcererView<'source>>,
+    ) -> Self {
+        Self {
+            caste,
+            favored_abilities,
+            sorcery,
+        }
+    }
+
     pub fn set_dawn(&mut self, dawn: DawnView) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();

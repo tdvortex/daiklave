@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::exalt_state::exalt::exalt_type::solar::dawn::{DawnCasteAbility, DawnSupernalAbility};
+use crate::exaltation::exalt::exalt_type::solar::caste::dawn::{DawnCasteAbility, DawnSupernalAbility};
 
 use super::AbilityNameVanilla;
 

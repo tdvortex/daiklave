@@ -1,5 +1,5 @@
 use crate::{
-    exalt_state::{
+    exaltation::{
         exalt::{
             essence::{Essence, EssenceView, MotePoolName, SpendMotesError, MoteCommitmentId, CommitMotesError, MoteCommitment, UncommitMotesError, SetEssenceRatingError, RecoverMotesError},
             exalt_type::{ExaltType, ExaltTypeView},

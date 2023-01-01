@@ -6,7 +6,7 @@ use thiserror::Error;
 use crate::{
     book_reference::BookReference,
     charms::{CharmCost, CharmKeyword},
-    exalt_state::{
+    exaltation::{
         exalt::{
             exalt_type::{
                 solar::{Solar, SolarView},

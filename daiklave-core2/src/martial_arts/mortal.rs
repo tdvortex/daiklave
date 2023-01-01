@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     abilities::{Ability, AbilityView},
-    exalt_state::mortal::{Mortal, MortalView},
+    exaltation::mortal::{Mortal, MortalView},
     CharacterMutationError,
 };
 

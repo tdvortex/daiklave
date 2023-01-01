@@ -2,18 +2,17 @@ use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
 
+/// Traits relating to specific Solar castes.
+pub mod caste;
+
 mod builder;
 mod builder_error;
-mod caste;
-mod caste_view;
-pub(crate) mod dawn;
 mod eclipse;
 mod exalt;
 mod night;
 mod twilight;
 mod zenith;
 
-pub use dawn::{Dawn, DawnBuilder};
 pub use eclipse::{Eclipse, EclipseBuilder};
 pub use night::{Night, NightBuilder};
 pub use twilight::{Twilight, TwilightBuilder};
@@ -26,8 +25,8 @@ use crate::{
 };
 
 use self::{
-    builder::SolarBuilder, caste::SolarCaste, caste_view::SolarCasteView, dawn::DawnView,
-    eclipse::EclipseView, night::NightView, twilight::TwilightView, zenith::ZenithView,
+    builder::SolarBuilder,
+    eclipse::EclipseView, night::NightView, twilight::TwilightView, zenith::ZenithView, caste::{SolarCaste, SolarCasteView, dawn::DawnView},
 };
 
 /// Traits which are unique to being a Solar Exalted.
@@ -41,11 +40,11 @@ pub struct Solar {
 impl<'source> Solar {
     /// Creates a builder to construct SolarTraits.
     pub fn builder() -> SolarBuilder<'source> {
-        SolarBuilder {
-            caste: None,
-            favored_abilities: HashSet::new(),
-            sorcery: None,
-        }
+        SolarBuilder::new(
+            None,
+            HashSet::new(),
+            None,
+        )
     }
 
     /// Returns True if the ability is a caste ability for the charcter. Note

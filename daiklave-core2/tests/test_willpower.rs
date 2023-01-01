@@ -1,7 +1,6 @@
 use daiklave_core2::{
     abilities::AbilityName,
-    exalt_state::exalt::exalt_type::solar::{Dawn, Solar},
-    Character, CharacterEventSource, CharacterMutation, CharacterView,
+    Character, CharacterEventSource, CharacterMutation, CharacterView, exaltation::exalt::exalt_type::solar::{caste::dawn::Dawn, Solar},
 };
 
 #[test]

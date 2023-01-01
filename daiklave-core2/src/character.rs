@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abilities::{Abilities, AbilityNameVanilla, SetAbilityError, Ability, AddSpecialtyError, RemoveSpecialtyError}, attributes::Attributes, craft::Craft, exalt_state::{ExaltState, exalt::{essence::{Essence, MotePoolName, MoteCommitmentId}, exalt_type::solar::Solar}},
+    abilities::{Abilities, AbilityNameVanilla, SetAbilityError, Ability, AddSpecialtyError, RemoveSpecialtyError}, attributes::Attributes, craft::Craft, exaltation::{ExaltState, exalt::{essence::{Essence, MotePoolName, MoteCommitmentId}, exalt_type::solar::Solar}},
     health::Health, willpower::Willpower, CharacterMutation, CharacterMutationError,
 };
 
