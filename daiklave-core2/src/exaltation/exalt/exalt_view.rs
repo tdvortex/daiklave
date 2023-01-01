@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use crate::{
     abilities::{AbilityView, SetAbilityError},
     martial_arts::{
-        AddMartialArtsStyleError, ExaltMartialArtistView, MartialArtsCharmId, MartialArtsStyle,
-        MartialArtsStyleId, RemoveMartialArtsStyleError, SetMartialArtsDotsError,
+        AddMartialArtsStyleError, MartialArtsCharmId, MartialArtsStyle, MartialArtsStyleId,
+        RemoveMartialArtsStyleError, SetMartialArtsDotsError,
     },
     sorcery::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
@@ -19,6 +19,7 @@ use super::{
         SetEssenceRatingError, SpendMotesError, UncommitMotesError,
     },
     exalt_type::{solar::SolarView, ExaltTypeView},
+    martial_arts::ExaltMartialArtistView,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]

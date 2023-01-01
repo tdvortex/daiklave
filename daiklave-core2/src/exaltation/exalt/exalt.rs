@@ -5,8 +5,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     abilities::{Ability, SetAbilityError},
     martial_arts::{
-        AddMartialArtsStyleError, ExaltMartialArtist, MartialArtsCharmId, MartialArtsStyle,
-        MartialArtsStyleId, RemoveMartialArtsStyleError, SetMartialArtsDotsError,
+        AddMartialArtsStyleError, MartialArtsCharmId, MartialArtsStyle, MartialArtsStyleId,
+        RemoveMartialArtsStyleError, SetMartialArtsDotsError,
     },
     CharacterMutationError,
 };
@@ -17,6 +17,7 @@ use super::{
         SetEssenceRatingError, SpendMotesError, UncommitMotesError,
     },
     exalt_type::{solar::Solar, ExaltType},
+    martial_arts::ExaltMartialArtist,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

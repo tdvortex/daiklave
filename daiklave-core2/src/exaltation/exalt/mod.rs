@@ -7,6 +7,7 @@ pub mod exalt_type;
 
 mod exalt;
 mod exalt_view;
+pub(crate) mod martial_arts;
 
 pub(crate) use exalt::Exalt;
 pub(crate) use exalt_view::ExaltView;

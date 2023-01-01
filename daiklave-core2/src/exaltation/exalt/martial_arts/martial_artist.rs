@@ -2,11 +2,10 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::abilities::Ability;
-
-use super::{
-    charm::MartialArtsCharm, charm_id::MartialArtsCharmId,
-    mortal_martial_artist::MortalMartialArtist, style::MartialArtsStyle,
+use crate::{
+    abilities::Ability,
+    exaltation::mortal::martial_arts::MortalMartialArtist,
+    martial_arts::{MartialArtsCharm, MartialArtsCharmId, MartialArtsStyle},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

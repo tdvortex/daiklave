@@ -1,10 +1,9 @@
 use std::collections::HashMap;
 
-use crate::abilities::AbilityView;
-
-use super::{
-    charm::MartialArtsCharm, charm_id::MartialArtsCharmId,
-    mortal_martial_artist_view::MortalMartialArtistView, style::MartialArtsStyle,
+use crate::{
+    abilities::AbilityView,
+    exaltation::mortal::martial_arts::MortalMartialArtistView,
+    martial_arts::{MartialArtsCharm, MartialArtsCharmId, MartialArtsStyle},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]

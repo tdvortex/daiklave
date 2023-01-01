@@ -1,12 +1,12 @@
-use crate::{armor::ArmorWeight, book_reference::BookReference, weapons::WeaponId};
-
-use super::{
-    charm::MartialArtsCharm, charm_id::MartialArtsCharmId,
-    martial_artist_switch::MartialArtistSwitch,
+use crate::{
+    armor::ArmorWeight, book_reference::BookReference,
+    exaltation::martial_arts::ExaltationMartialArtist, weapons::WeaponId,
 };
 
+use super::{charm::MartialArtsCharm, charm_id::MartialArtsCharmId};
+
 /// A specific Martial Arts style as known by a character.
-pub struct MartialArtist<'char>(pub(crate) MartialArtistSwitch<'char>);
+pub struct MartialArtist<'char>(pub(crate) ExaltationMartialArtist<'char>);
 
 impl<'char> MartialArtist<'char> {
     /// The style's name.

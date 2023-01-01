@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use crate::abilities::Ability;
-
-use super::{exalt_martial_artist::ExaltMartialArtist, style::MartialArtsStyle};
+use crate::{
+    abilities::Ability, exaltation::exalt::martial_arts::ExaltMartialArtist,
+    martial_arts::MartialArtsStyle,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MortalMartialArtist {

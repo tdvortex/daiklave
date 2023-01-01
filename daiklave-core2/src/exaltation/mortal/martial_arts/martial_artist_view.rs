@@ -1,6 +1,7 @@
-use crate::abilities::AbilityView;
-
-use super::{exalt_martial_artist_view::ExaltMartialArtistView, style::MartialArtsStyle};
+use crate::{
+    abilities::AbilityView, exaltation::exalt::martial_arts::ExaltMartialArtistView,
+    martial_arts::MartialArtsStyle,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MortalMartialArtistView<'source> {
