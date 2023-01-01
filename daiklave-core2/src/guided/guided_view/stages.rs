@@ -147,18 +147,6 @@ impl<'source> GuidedView<'source> {
                 self.character_view
                     .set_solar_view(self.solar_traits()?)
                     .map_err(GuidedError::CharacterMutationError)?;
-                Ok(self)
-            }
-            GuidedStage::ChooseSorcery => {
-                if let Some(hashmap) = &self.martial_arts_styles {
-                    if !hashmap.is_empty() {
-                        self.character_view.set_ability_dots(AbilityNameVanilla::Brawl, 1).map_err(GuidedError::CharacterMutationError)?;
-                    }
-                }
-
-                if self.shaping_ritual.is_some() && self.control_spell.is_some() && self.sorcery_archetype.is_some() {
-                    self.character_view.set_ability_dots(AbilityNameVanilla::Occult, 3).map_err(GuidedError::CharacterMutationError)?;
-                }
 
                 if let Some(favored) = &self.solar_favored_abilities {
                     let favored_vanillas = favored.iter().filter_map(|not_vanilla| if let Ok(vanilla) = (*not_vanilla).try_into() {
@@ -172,7 +160,44 @@ impl<'source> GuidedView<'source> {
                     }).map_err(GuidedError::CharacterMutationError)?;
                 }
 
+                self.solar_caste_abilities = None;
+                self.solar_supernal_ability = None;
+                self.solar_favored_abilities = None;
+
                 Ok(self)
+            }
+            GuidedStage::ChooseMartialArtsStyles => {
+                if let Some(hashmap) = &self.martial_arts_styles {
+                    if !hashmap.is_empty() {
+                        self.character_view.set_ability_dots(AbilityNameVanilla::Brawl, 1).map_err(GuidedError::CharacterMutationError)?;
+
+                        for (style_id, style) in hashmap.iter() {
+                            self.character_view.add_martial_arts_style(*style_id, *style).map_err(GuidedError::CharacterMutationError)?;
+                        }
+                    }
+                }
+
+                self.martial_arts_styles = None;
+
+                Ok(self)
+            }
+            GuidedStage::ChooseSorcery => {
+                match (self.shaping_ritual, self.control_spell, self.sorcery_archetype) {
+                    (Some((shaping_ritual_id, shaping_ritual)), Some((control_spell_id, control_spell)), Some((archetype_id, archetype))) => {
+                        self.character_view.set_ability_dots(AbilityNameVanilla::Occult, 3).map_err(GuidedError::CharacterMutationError)?;
+                        self.character_view.add_terrestrial_sorcery(
+                            archetype_id,
+                            archetype,
+                            shaping_ritual_id,
+                            shaping_ritual,
+                            control_spell_id,
+                            control_spell,
+                        ).map_err(GuidedError::CharacterMutationError)?;
+                        Ok(self)
+                    }
+                    (None, None, None) => Ok(self),
+                    _ => Err(GuidedError::StageIncompleteError),
+                }
             }
             _ => Ok(self),
         }

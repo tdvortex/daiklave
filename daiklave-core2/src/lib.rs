@@ -17,6 +17,7 @@ use martial_arts::{
     AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError, SetMartialArtsError,
 };
 use name_and_concept::RemoveConceptError;
+use sorcery::SorceryError;
 use thiserror::Error;
 
 /// Structs related to a character's Abilities (skills) and specialties.
@@ -166,6 +167,8 @@ pub enum CharacterMutationError {
     RemoveMartialArtsStyleError(#[from] RemoveMartialArtsStyleError),
     #[error("Cannot set Martial Arts dots")]
     SetMartialArtsError(#[from] SetMartialArtsError),
+    #[error("Cannot add Sorcery circle")]
+    AddSorceryCircleError(#[from] SorceryError),
 }
 
 /// A container to hold a successfully applied sequence of mutations, with
