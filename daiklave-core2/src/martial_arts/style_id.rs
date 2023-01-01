@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::id::UniqueId;
+use crate::unique_id::UniqueId;
 
 /// A unique identifier for a Martial Arts style.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

@@ -4,7 +4,7 @@ use daiklave_core2::{
         essence::{MoteCommitmentId, MotePoolName},
         exalt_type::solar::{caste::eclipse::Eclipse, Solar},
     },
-    id::UniqueId,
+    unique_id::UniqueId,
     Character,
 };
 

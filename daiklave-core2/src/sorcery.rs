@@ -13,7 +13,7 @@ use crate::{
         },
         Exaltation, ExaltationView,
     },
-    id::UniqueId,
+    unique_id::UniqueId,
     Character, CharacterView,
 };
 

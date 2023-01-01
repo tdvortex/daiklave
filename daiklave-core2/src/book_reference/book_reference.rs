@@ -1,11 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-/// Published Exalted 3e books.
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
-pub enum Book {
-    /// The core rulebook.
-    CoreRulebook,
-}
+use super::Book;
 
 /// A reference to a specific page of a specific Exalted 3e book.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]

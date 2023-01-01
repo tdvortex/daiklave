@@ -6,12 +6,12 @@ use daiklave_core2::{
     book_reference::{Book, BookReference},
     charms::{CharmCost, CharmCostType, CharmKeyword},
     guided::{ExaltationChoice, GuidedEventSource, GuidedMutation},
-    id::UniqueId,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle, Spell,
         SpellId, TerrestrialSpell,
     },
+    unique_id::UniqueId,
     weapons::WeaponId,
     CharacterMutation,
 };

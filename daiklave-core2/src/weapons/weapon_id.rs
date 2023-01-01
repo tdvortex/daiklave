@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::id::UniqueId;
+use crate::unique_id::UniqueId;
 
 /// A unique identifier for either a mortal weapon (e.g. sword) or a base
 /// artifact weapon (e.g. daiklave)

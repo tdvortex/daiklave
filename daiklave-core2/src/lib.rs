@@ -44,11 +44,11 @@ pub mod guided;
 /// The Health struct and methods related to damage and healing.
 pub mod health;
 
-/// Contains the Id enum and a variety of specific Id subtypes, to be used as
-/// unique keys.
-pub mod id;
 /// Martial Arts style logic
 pub mod martial_arts;
+/// Contains the Id enum and a variety of specific Id subtypes, to be used as
+/// unique keys.
+pub mod unique_id;
 
 /// Sorcery logic
 pub mod sorcery;
