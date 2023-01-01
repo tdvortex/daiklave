@@ -1,6 +1,6 @@
 use crate::abilities::AbilityName;
 
-use super::{twilight_memo::TwilightMemo, twilight_ability::TwilightAbility};
+use super::{twilight_ability::TwilightAbility, builder::TwilightBuilder};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TwilightView {
@@ -9,6 +9,20 @@ pub struct TwilightView {
 }
 
 impl TwilightView {
+    pub(crate) fn new (
+        caste_not_supernal: [TwilightAbility; 4],
+        supernal: TwilightAbility,
+    ) -> Self {
+        Self {
+            caste_not_supernal,
+            supernal,
+        }
+    }
+
+    pub fn builder() -> TwilightBuilder {
+        TwilightBuilder::default()
+    }
+
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal
@@ -23,12 +37,5 @@ impl TwilightView {
 
     pub fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
-    }
-
-    pub fn into_owned(self) -> TwilightMemo {
-        TwilightMemo {
-            caste_not_supernal: self.caste_not_supernal,
-            supernal: self.supernal,
-        }
     }
 }

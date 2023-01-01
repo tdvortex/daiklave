@@ -1,3 +1,4 @@
+/// Traits for the Solar Exalted
 pub mod solar;
 
 mod exalt_type_memo;

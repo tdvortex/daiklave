@@ -12,5 +12,5 @@ mod sorcery;
 
 pub(crate) use exaltation_memo::ExaltationMemo;
 pub(crate) use exaltation_view::ExaltationView;
-pub(crate) use martial_arts::{ExaltationMartialArtistMemo, ExaltationMartialArtistView};
-pub(crate) use sorcery::{SorcerySwitchMemo, SorceryViewSwitch};
+pub(crate) use martial_arts::{ExaltationMartialArtistView};
+pub(crate) use sorcery::{SorceryViewSwitch};

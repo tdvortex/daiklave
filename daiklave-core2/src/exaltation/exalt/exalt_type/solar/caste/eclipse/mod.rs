@@ -5,4 +5,4 @@ mod eclipse_view;
 
 pub use eclipse_memo::EclipseMemo;
 pub(crate) use eclipse_ability::EclipseAbility;
-pub(crate) use eclipse_view::EclipseView;
+pub use eclipse_view::EclipseView;

@@ -3,7 +3,7 @@ use crate::{
         AbilitiesView, AbilityNameVanilla, AbilityView, AddSpecialtyError, RemoveSpecialtyError,
         SetAbilityError,
     },
-    attributes::{AttributeName, AttributesMemo, SetAttributesError},
+    attributes::{AttributeName, Attributes, SetAttributesError},
     craft::CraftView,
     exaltation::{
         exalt::{
@@ -34,7 +34,7 @@ pub struct CharacterView<'source> {
     pub(crate) exalt_state: ExaltationView<'source>,
     pub(crate) willpower: Willpower,
     pub(crate) health: Health,
-    pub(crate) attributes: AttributesMemo,
+    pub(crate) attributes: Attributes,
     pub(crate) abilities: AbilitiesView<'source>,
     pub(crate) craft: CraftView<'source>,
 }
@@ -673,7 +673,7 @@ impl<'source> CharacterView<'source> {
     }
 
     /// Gets a struct reference for the character's attributes.
-    pub fn attributes(&self) -> &AttributesMemo {
+    pub fn attributes(&self) -> &Attributes {
         &self.attributes
     }
 

@@ -187,19 +187,6 @@ pub struct CharacterEventSource {
 }
 
 impl CharacterEventSource {
-    /// Constructs an owned Character from the event source history. Returns the
-    /// default character if no events in the history.
-    pub fn as_character(&self) -> Result<CharacterMemo, CharacterMutationError> {
-        self.history
-            .iter()
-            .fold(Ok(CharacterMemo::default()), |res, mutation| {
-                res.and_then(|mut character| {
-                    character.apply_mutation(mutation)?;
-                    Ok(character)
-                })
-            })
-    }
-
     /// Constructs a borrowed CharacterView from the event source history.
     /// Returns the default character if no events in the history.
     pub fn as_character_view(&self) -> Result<CharacterView, CharacterMutationError> {

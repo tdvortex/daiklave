@@ -1,68 +1,8 @@
 use daiklave_core2::{
     abilities::AbilityName,
-    exaltation::exalt::exalt_type::solar::{caste::dawn::DawnMemo, SolarMemo},
-    CharacterMemo, CharacterEventSource, CharacterMutation, CharacterView,
+    exaltation::exalt::exalt_type::solar::{caste::dawn::{DawnView}, SolarView},
+    CharacterEventSource, CharacterMutation, CharacterView,
 };
-
-#[test]
-fn test_willpower_character() {
-    // Check default (mortal)
-    let mut character = CharacterMemo::default();
-    assert_eq!(character.willpower().rating(), 3);
-    assert_eq!(character.willpower().current(), 3);
-
-    // Check default (exalt)
-    let dawn = {
-        let mut builder = DawnMemo::builder();
-        [
-            AbilityName::Dodge,
-            AbilityName::Resistance,
-            AbilityName::Awareness,
-            AbilityName::War,
-        ]
-        .into_iter()
-        .for_each(|ability| {
-            builder.add_caste_ability(ability).unwrap();
-        });
-        builder
-            .set_supernal_ability(AbilityName::MartialArts)
-            .unwrap();
-        builder.build().unwrap()
-    };
-
-    let solar_traits = {
-        let mut builder = SolarMemo::builder();
-        builder.set_dawn(dawn);
-        [
-            AbilityName::Presence,
-            AbilityName::Socialize,
-            AbilityName::Linguistics,
-            AbilityName::Medicine,
-            AbilityName::Performance,
-        ]
-        .into_iter()
-        .for_each(|ability| {
-            builder.add_favored_ability(ability).unwrap();
-        });
-        builder.build().unwrap()
-    };
-
-    character.set_solar(&solar_traits).unwrap();
-    assert_eq!(character.willpower().rating(), 5);
-    assert_eq!(character.willpower().current(), 5);
-
-    // Check modifying current willpower
-    character.check_set_current_willpower(3).unwrap();
-    character.set_current_willpower(3).unwrap();
-    assert_eq!(character.willpower().rating(), 5);
-    assert_eq!(character.willpower().current(), 3);
-
-    // Check modifying willpower rating
-    character.check_set_willpower_rating(7).unwrap();
-    character.set_willpower_rating(7).unwrap();
-    assert_eq!(character.willpower().rating(), 7);
-    assert_eq!(character.willpower().current(), 7);
-}
 
 #[test]
 fn test_willpower_character_view() {
@@ -73,7 +13,7 @@ fn test_willpower_character_view() {
 
     // Check default (exalt)
     let dawn = {
-        let mut builder = DawnMemo::builder();
+        let mut builder = DawnView::builder();
         [
             AbilityName::Dodge,
             AbilityName::Resistance,
@@ -91,7 +31,7 @@ fn test_willpower_character_view() {
     };
 
     let solar_traits = {
-        let mut builder = SolarMemo::builder();
+        let mut builder = SolarView::builder();
         builder.set_dawn(dawn);
         [
             AbilityName::Presence,
@@ -104,7 +44,7 @@ fn test_willpower_character_view() {
         .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
-        builder.build().unwrap()
+        builder.build_view().unwrap().as_memo()
     };
 
     character_view.set_solar(&solar_traits).unwrap();
@@ -134,7 +74,7 @@ fn test_willpower_character_event_source() {
 
     // Check default (exalt)
     let dawn = {
-        let mut builder = DawnMemo::builder();
+        let mut builder = DawnView::builder();
         [
             AbilityName::Dodge,
             AbilityName::Resistance,
@@ -152,7 +92,7 @@ fn test_willpower_character_event_source() {
     };
 
     let solar_traits = {
-        let mut builder = SolarMemo::builder();
+        let mut builder = SolarView::builder();
         builder.set_dawn(dawn);
         [
             AbilityName::Presence,
@@ -165,7 +105,7 @@ fn test_willpower_character_event_source() {
         .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
-        builder.build().unwrap()
+        builder.build_view().unwrap().as_memo()
     };
 
     let mutation = CharacterMutation::SetSolar(Box::new(solar_traits));

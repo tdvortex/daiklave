@@ -1,21 +1,12 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abilities::AbilityMemo, exaltation::exalt::martial_arts::ExaltMartialArtistMemo,
+    abilities::AbilityMemo,
     martial_arts::MartialArtsStyle,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) struct MortalMartialArtist {
+pub(crate) struct MortalMartialArtistMemo {
     pub style: MartialArtsStyle,
     pub ability: AbilityMemo,
-}
-
-impl From<ExaltMartialArtistMemo> for MortalMartialArtist {
-    fn from(exalt_artist: ExaltMartialArtistMemo) -> Self {
-        Self {
-            style: exalt_artist.style,
-            ability: exalt_artist.ability,
-        }
-    }
 }

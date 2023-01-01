@@ -7,7 +7,7 @@ use crate::{
     CharacterMutationError,
 };
 
-use super::{caste::SolarCasteView, sorcery::SolarSorcererView};
+use super::{caste::SolarCasteView, sorcery::SolarSorcererView, builder::SolarBuilder, SolarMemo};
 
 /// Traits which are unique to being a Solar Exalted, with &str
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -28,6 +28,11 @@ impl<'source> SolarView<'source> {
             favored_abilities,
             sorcery,
         }
+    }
+
+    /// Starts building a set of Solar traits
+    pub fn builder() -> SolarBuilder<'source> {
+        SolarBuilder::default()
     }
 
     /// Returns True if the ability is a caste ability for the charcter. Note
@@ -75,6 +80,10 @@ impl<'source> SolarView<'source> {
                 SorceryError::CircleSequence,
             ))
         }
+    }
+
+    pub fn as_memo(&self) -> SolarMemo {
+        todo!()
     }
 }
 

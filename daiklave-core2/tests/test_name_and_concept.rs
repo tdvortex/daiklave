@@ -1,27 +1,4 @@
-use daiklave_core2::{CharacterMemo, CharacterEventSource, CharacterMutation, CharacterView};
-
-#[test]
-fn test_name_and_concept_character() {
-    // Check default name and concept
-    let mut character = CharacterMemo::default();
-    assert_eq!(character.name(), "New Character");
-    assert!(character.concept().is_none());
-
-    // Check set name
-    character.check_set_name("Drifting Leaves").unwrap();
-    character.set_name("Drifting Leaves").unwrap();
-    assert_eq!(character.name(), "Drifting Leaves");
-
-    // Check set concept
-    character.check_set_concept("Wandering ronin").unwrap();
-    character.set_concept("Wandering ronin").unwrap();
-    assert_eq!(character.concept(), Some("Wandering ronin"));
-
-    // Check remove concept
-    character.check_remove_concept().unwrap();
-    character.remove_concept().unwrap();
-    assert!(character.concept().is_none());
-}
+use daiklave_core2::{CharacterEventSource, CharacterMutation, CharacterView};
 
 #[test]
 fn test_name_and_concept_character_view() {

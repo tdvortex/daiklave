@@ -5,4 +5,4 @@ mod zenith_view;
 
 pub use zenith_memo::ZenithMemo;
 pub(crate) use zenith_ability::ZenithAbility;
-pub(crate) use zenith_view::ZenithView;
+pub use zenith_view::ZenithView;

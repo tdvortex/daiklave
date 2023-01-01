@@ -2,7 +2,7 @@ use daiklave_core2::{
     abilities::AbilityName,
     exaltation::exalt::{
         essence::{MoteCommitmentId, MotePoolName},
-        exalt_type::solar::{caste::eclipse::EclipseMemo, SolarMemo},
+        exalt_type::solar::{caste::eclipse::{EclipseView}, SolarView},
     },
     unique_id::UniqueId,
     CharacterView,
@@ -16,7 +16,7 @@ fn test_essence_character_view() {
 
     // Exalts (including Solars) should have essence
     let eclipse = {
-        let mut builder = EclipseMemo::builder();
+        let mut builder = EclipseView::builder();
         [
             AbilityName::Larceny,
             AbilityName::Linguistics,
@@ -32,7 +32,7 @@ fn test_essence_character_view() {
     };
 
     let solar_traits = {
-        let mut builder = SolarMemo::builder();
+        let mut builder = SolarView::builder();
         builder.set_eclipse(eclipse);
         [
             AbilityName::Archery,
@@ -45,7 +45,7 @@ fn test_essence_character_view() {
         .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
-        builder.build().unwrap()
+        builder.build_view().unwrap().as_memo()
     };
     character_view.set_solar(&solar_traits).unwrap();
     assert!(character_view.essence().is_some());

@@ -1,60 +1,8 @@
 use daiklave_core2::{
     abilities::AbilityName,
-    exaltation::exalt::exalt_type::solar::{caste::twilight::TwilightMemo, SolarMemo},
-    CharacterMemo, CharacterEventSource, CharacterMutation, CharacterView,
+    exaltation::exalt::exalt_type::solar::{caste::twilight::{TwilightView}, SolarView},
+    CharacterEventSource, CharacterMutation, CharacterView,
 };
-
-#[test]
-fn test_exalt_type_character() {
-    // Confirm default is mortal
-    let mut character = CharacterMemo::default();
-    assert!(character.is_mortal());
-
-    // Confirm toggle to solar
-    let twilight = {
-        let mut builder = TwilightMemo::builder();
-        [
-            AbilityName::Bureaucracy,
-            AbilityName::Craft,
-            AbilityName::Integrity,
-            AbilityName::Investigation,
-        ]
-        .into_iter()
-        .for_each(|ability| {
-            builder.add_caste_ability(ability).unwrap();
-        });
-        builder
-            .set_supernal_ability(AbilityName::Linguistics)
-            .unwrap();
-        builder.build().unwrap()
-    };
-
-    let solar_traits = {
-        let mut builder = SolarMemo::builder();
-        builder.set_twilight(twilight);
-        [
-            AbilityName::Archery,
-            AbilityName::Athletics,
-            AbilityName::Awareness,
-            AbilityName::Brawl,
-            AbilityName::Dodge,
-        ]
-        .into_iter()
-        .for_each(|ability| {
-            builder.add_favored_ability(ability).unwrap();
-        });
-        builder.build().unwrap()
-    };
-
-    character.check_set_solar(&solar_traits).unwrap();
-    character.set_solar(&solar_traits).unwrap();
-    assert!(character.is_solar());
-
-    // Confirm toggle to mortal
-    character.check_set_mortal().unwrap();
-    character.set_mortal().unwrap();
-    assert!(character.is_mortal());
-}
 
 #[test]
 fn test_exalt_type_character_view() {
@@ -64,7 +12,7 @@ fn test_exalt_type_character_view() {
 
     // Confirm toggle to solar
     let twilight = {
-        let mut builder = TwilightMemo::builder();
+        let mut builder = TwilightView::builder();
         [
             AbilityName::Bureaucracy,
             AbilityName::Craft,
@@ -82,7 +30,7 @@ fn test_exalt_type_character_view() {
     };
 
     let solar_traits = {
-        let mut builder = SolarMemo::builder();
+        let mut builder = SolarView::builder();
         builder.set_twilight(twilight);
         [
             AbilityName::Archery,
@@ -95,7 +43,7 @@ fn test_exalt_type_character_view() {
         .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
-        builder.build().unwrap()
+        builder.build_view().unwrap().as_memo()
     };
 
     character_view.check_set_solar(&solar_traits).unwrap();
@@ -117,7 +65,7 @@ fn test_exalt_type_character_event_source() {
 
     // Check toggle to solar
     let twilight = {
-        let mut builder = TwilightMemo::builder();
+        let mut builder = TwilightView::builder();
         [
             AbilityName::Bureaucracy,
             AbilityName::Craft,
@@ -135,7 +83,7 @@ fn test_exalt_type_character_event_source() {
     };
 
     let solar_traits = {
-        let mut builder = SolarMemo::builder();
+        let mut builder = SolarView::builder();
         builder.set_twilight(twilight);
         [
             AbilityName::Archery,
@@ -148,7 +96,7 @@ fn test_exalt_type_character_event_source() {
         .for_each(|ability| {
             builder.add_favored_ability(ability).unwrap();
         });
-        builder.build().unwrap()
+        builder.build_view().unwrap().as_memo()
     };
 
     let mutation = CharacterMutation::SetSolar(Box::new(solar_traits));

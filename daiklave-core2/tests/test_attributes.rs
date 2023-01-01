@@ -1,36 +1,6 @@
 use daiklave_core2::{
-    attributes::AttributeName, CharacterMemo, CharacterEventSource, CharacterMutation, CharacterView,
+    attributes::AttributeName, CharacterEventSource, CharacterMutation, CharacterView,
 };
-
-#[test]
-fn test_attributes_character() {
-    // Check default attributes
-    let mut character = CharacterMemo::default();
-    assert_eq!(character.attributes().dots(AttributeName::Strength), 1);
-    assert_eq!(character.attributes().dots(AttributeName::Dexterity), 1);
-    assert_eq!(character.attributes().dots(AttributeName::Stamina), 1);
-    assert_eq!(character.attributes().dots(AttributeName::Charisma), 1);
-    assert_eq!(character.attributes().dots(AttributeName::Manipulation), 1);
-    assert_eq!(character.attributes().dots(AttributeName::Appearance), 1);
-    assert_eq!(character.attributes().dots(AttributeName::Perception), 1);
-    assert_eq!(character.attributes().dots(AttributeName::Intelligence), 1);
-    assert_eq!(character.attributes().dots(AttributeName::Wits), 1);
-
-    // Check setting attributes
-    character
-        .check_set_attribute(AttributeName::Strength, 2)
-        .unwrap();
-    character.set_attribute(AttributeName::Strength, 2).unwrap();
-    assert_eq!(character.attributes().dots(AttributeName::Strength), 2);
-
-    // Check out-of-bounds prevention
-    assert!(character
-        .check_set_attribute(AttributeName::Dexterity, 0)
-        .is_err());
-    assert!(character
-        .check_set_attribute(AttributeName::Dexterity, 6)
-        .is_err());
-}
 
 #[test]
 fn test_attributes_character_view() {

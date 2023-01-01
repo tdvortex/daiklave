@@ -5,4 +5,4 @@ mod night_view;
 
 pub use night_memo::NightMemo;
 pub(crate) use night_ability::NightAbility;
-pub(crate) use night_view::NightView;
+pub use night_view::NightView;

@@ -97,12 +97,12 @@ impl EclipseBuilder {
             option_arr[i] = Some(dawn_ability);
         }
 
-        let mut arr = option_arr.map(|opt| opt.unwrap());
-        arr.sort();
+        let mut caste_not_supernal = option_arr.map(|opt| opt.unwrap());
+        caste_not_supernal.sort();
 
-        Ok(EclipseView {
-            caste_not_supernal: arr,
+        Ok(EclipseView::new(
+            caste_not_supernal,
             supernal,
-        })
+        ))
     }
 }

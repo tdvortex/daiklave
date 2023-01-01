@@ -1,14 +1,29 @@
 use crate::abilities::AbilityName;
 
-use super::{ZenithMemo, ZenithAbility};
+use super::{ZenithAbility, builder::ZenithBuilder};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ZenithView {
-    pub(crate) caste_not_supernal: [ZenithAbility; 4],
-    pub(crate) supernal: ZenithAbility,
+    caste_not_supernal: [ZenithAbility; 4],
+    supernal: ZenithAbility,
 }
 
 impl ZenithView {
+    pub(crate) fn new (
+        caste_not_supernal: [ZenithAbility; 4],
+        supernal: ZenithAbility,
+    ) -> Self {
+        Self {
+            caste_not_supernal,
+            supernal,
+        }
+    }
+
+
+    pub fn builder() -> ZenithBuilder {
+        ZenithBuilder::default()
+    }
+
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal
@@ -23,12 +38,5 @@ impl ZenithView {
 
     pub fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
-    }
-
-    pub fn into_owned(self) -> ZenithMemo {
-        ZenithMemo {
-            caste_not_supernal: self.caste_not_supernal,
-            supernal: self.supernal,
-        }
     }
 }

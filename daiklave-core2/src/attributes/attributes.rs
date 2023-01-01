@@ -7,7 +7,7 @@ use super::{attribute_name::AttributeName, SetAttributesError};
 /// Struct representing a character's nine core Attributes (Strength, Intelligence,
 /// etc.)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub struct AttributesMemo {
+pub struct Attributes {
     strength: u8,
     dexterity: u8,
     stamina: u8,
@@ -19,7 +19,7 @@ pub struct AttributesMemo {
     wits: u8,
 }
 
-impl Default for AttributesMemo {
+impl Default for Attributes {
     fn default() -> Self {
         Self {
             strength: 1,
@@ -35,7 +35,7 @@ impl Default for AttributesMemo {
     }
 }
 
-impl AttributesMemo {
+impl Attributes {
     /// Returns the dot value for the specific attribute.
     pub fn dots(&self, attribute_name: AttributeName) -> u8 {
         match attribute_name {

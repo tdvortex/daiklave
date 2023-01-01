@@ -7,7 +7,8 @@ mod sorcery;
 mod solar_memo;
 mod solar_view;
 
-pub use solar_memo::SolarMemo;
+
 pub use solar_view::SolarView;
 
+pub use solar_memo::SolarMemo;
 pub(crate) use sorcery::{SolarSorcererMemo, SolarSorcererView};

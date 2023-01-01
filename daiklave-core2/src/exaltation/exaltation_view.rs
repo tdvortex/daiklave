@@ -269,7 +269,7 @@ impl<'view, 'source> ExaltationView<'source> {
             return Ok(self);
         }
 
-        self.set_solar_view(solar.as_view())
+        self.set_solar_view(solar.as_solar())
     }
 
     pub fn set_solar_view(

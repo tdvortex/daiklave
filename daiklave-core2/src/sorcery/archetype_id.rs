@@ -4,7 +4,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::unique_id::UniqueId;
 
-// A unique Id for a Sorcery Archetype
+/// A unique Id for a Sorcery Archetype
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SorceryArchetypeId(pub UniqueId);
 

@@ -5,4 +5,4 @@ mod twilight_view;
 
 pub use twilight_memo::TwilightMemo;
 pub(crate) use twilight_ability::TwilightAbility;
-pub(crate) use twilight_view::TwilightView;
+pub use twilight_view::TwilightView;

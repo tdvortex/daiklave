@@ -4,8 +4,8 @@ use crate::{
     abilities::{AbilityName, AbilityNameVanilla},
     attributes::AttributeName,
     exaltation::exalt::exalt_type::solar::{
-        caste::{dawn::DawnMemo, eclipse::EclipseMemo, night::NightMemo, twilight::TwilightMemo, zenith::ZenithMemo},
-        SolarMemo, SolarView,
+        caste::{dawn::{DawnView}, eclipse::{EclipseView}, night::{NightView}, twilight::{TwilightView}, zenith::{ZenithView}},
+        SolarView,
     },
     guided::{
         error::{GuidedError, SolarAbilityError, SorceryError},
@@ -226,7 +226,7 @@ impl<'source> GuidedView<'source> {
             None => return Err(GuidedError::StageOrderError),
             Some(ExaltationChoice::Dawn) => {
                 let dawn = {
-                    let mut builder = DawnMemo::builder();
+                    let mut builder = DawnView::builder();
                     self.solar_caste_abilities
                         .as_ref()
                         .ok_or(GuidedError::StageIncompleteError)?
@@ -247,7 +247,7 @@ impl<'source> GuidedView<'source> {
                     builder.build().or(Err(GuidedError::StageIncompleteError))?
                 };
 
-                let mut builder = SolarMemo::builder();
+                let mut builder = SolarView::builder();
                 builder.set_dawn(dawn);
                 self.solar_favored_abilities
                     .as_ref()
@@ -264,7 +264,7 @@ impl<'source> GuidedView<'source> {
             }
             Some(ExaltationChoice::Zenith) => {
                 let zenith = {
-                    let mut builder = ZenithMemo::builder();
+                    let mut builder = ZenithView::builder();
                     self.solar_caste_abilities
                         .as_ref()
                         .ok_or(GuidedError::StageIncompleteError)?
@@ -283,7 +283,7 @@ impl<'source> GuidedView<'source> {
                     builder.build().or(Err(GuidedError::StageIncompleteError))?
                 };
 
-                let mut builder = SolarMemo::builder();
+                let mut builder = SolarView::builder();
                 builder.set_zenith(zenith);
                 self.solar_favored_abilities
                     .as_ref()
@@ -300,7 +300,7 @@ impl<'source> GuidedView<'source> {
             }
             Some(ExaltationChoice::Twilight) => {
                 let twilight = {
-                    let mut builder = TwilightMemo::builder();
+                    let mut builder = TwilightView::builder();
                     self.solar_caste_abilities
                         .as_ref()
                         .ok_or(GuidedError::StageIncompleteError)?
@@ -319,7 +319,7 @@ impl<'source> GuidedView<'source> {
                     builder.build().or(Err(GuidedError::StageIncompleteError))?
                 };
 
-                let mut builder = SolarMemo::builder();
+                let mut builder = SolarView::builder();
                 builder.set_twilight(twilight);
                 self.solar_favored_abilities
                     .as_ref()
@@ -336,7 +336,7 @@ impl<'source> GuidedView<'source> {
             }
             Some(ExaltationChoice::Night) => {
                 let night = {
-                    let mut builder = NightMemo::builder();
+                    let mut builder = NightView::builder();
                     self.solar_caste_abilities
                         .as_ref()
                         .ok_or(GuidedError::StageIncompleteError)?
@@ -355,7 +355,7 @@ impl<'source> GuidedView<'source> {
                     builder.build().or(Err(GuidedError::StageIncompleteError))?
                 };
 
-                let mut builder = SolarMemo::builder();
+                let mut builder = SolarView::builder();
                 builder.set_night(night);
                 self.solar_favored_abilities
                     .as_ref()
@@ -372,7 +372,7 @@ impl<'source> GuidedView<'source> {
             }
             Some(ExaltationChoice::Eclipse) => {
                 let eclipse = {
-                    let mut builder = EclipseMemo::builder();
+                    let mut builder = EclipseView::builder();
                     self.solar_caste_abilities
                         .as_ref()
                         .ok_or(GuidedError::StageIncompleteError)?
@@ -391,7 +391,7 @@ impl<'source> GuidedView<'source> {
                     builder.build().or(Err(GuidedError::StageIncompleteError))?
                 };
 
-                let mut builder = SolarMemo::builder();
+                let mut builder = SolarView::builder();
                 builder.set_eclipse(eclipse);
                 self.solar_favored_abilities
                     .as_ref()
