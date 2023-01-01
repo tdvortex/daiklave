@@ -184,7 +184,7 @@ impl<'source> GuidedView<'source> {
             return Ok(());
         }
         
-        if ability_name_vanilla == AbilityNameVanilla::Occult && self.sorcery_archetype.is_some() {
+        if ability_name_vanilla == AbilityNameVanilla::Occult && self.character_view.sorcery().is_some() {
             return Err(GuidedError::AbilityMin);
         } 
         
@@ -192,12 +192,8 @@ impl<'source> GuidedView<'source> {
             return Ok(());
         }
 
-        if ability_name_vanilla == AbilityNameVanilla::Brawl {
-            if let Some(styles) = &self.martial_arts_styles {
-                if !styles.is_empty() {
-                    return Err(GuidedError::AbilityMin);
-                }
-            }
+        if ability_name_vanilla == AbilityNameVanilla::Brawl && self.character_view.martial_arts().iter().next().is_some() {
+            return Err(GuidedError::AbilityMin);
         }
         
         if let Some(favored) = &self.solar_favored_abilities {

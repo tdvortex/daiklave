@@ -6,7 +6,7 @@ use thiserror::Error;
 use crate::{
     book_reference::BookReference,
     charms::{CharmCost, CharmKeyword},
-    id::UniqueId, Character, exalt_state::{ExaltState, exalt::{Exalt, exalt_type::{ExaltType, solar::{Solar, SolarView}, ExaltTypeView}, ExaltView}, ExaltStateView, mortal::MortalView}, CharacterView, CharacterMutationError,
+    id::UniqueId, Character, exalt_state::{ExaltState, exalt::{Exalt, exalt_type::{ExaltType, solar::{Solar, SolarView}, ExaltTypeView}, ExaltView}, ExaltStateView, mortal::{MortalView, Mortal}}, CharacterView, CharacterMutationError,
 };
 
 pub enum SorceryCircle {
