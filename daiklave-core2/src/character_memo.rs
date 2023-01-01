@@ -10,7 +10,7 @@ use crate::{
         ExaltationMemo,
     },
     health::{Health},
-    willpower::Willpower,
+    willpower::Willpower, CharacterView,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -25,4 +25,19 @@ pub struct CharacterMemo {
     attributes: Attributes,
     abilities: AbilitiesMemo,
     craft: CraftMemo,
+}
+
+impl<'source> CharacterMemo {
+    pub fn as_ref(&'source self) -> CharacterView<'source> {
+        CharacterView { 
+            name: self.name.as_str(),
+            concept: self.concept.as_deref(),
+            exalt_state: self.exalt_state.as_ref(),
+            willpower: self.willpower,
+            health: self.health,
+            attributes: self.attributes,
+            abilities: self.abilities.as_ref(),
+            craft: self.craft.as_ref(),
+        }
+    }
 }

@@ -1,5 +1,3 @@
-use std::borrow::Borrow;
-
 use serde::{Deserialize, Serialize};
 
 use crate::{abilities::AbilityName};
@@ -18,7 +16,11 @@ pub struct SolarMemo {
 }
 
 impl<'source> SolarMemo {
-    pub fn as_solar(&'source self) -> SolarView<'source> {
-        todo!()
+    pub fn as_ref(&'source self) -> SolarView<'source> {
+        SolarView {
+            caste: self.caste.as_ref(),
+            favored_abilities: self.favored_abilities,
+            sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_ref()),
+        }
     }
 }

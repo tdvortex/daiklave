@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::{abilities::AbilityView, CharacterMutationError};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub struct CraftView<'source>(HashMap<&'source str, AbilityView<'source>>);
+pub struct CraftView<'source>(pub(in crate::craft) HashMap<&'source str, AbilityView<'source>>);
 
 impl<'source> CraftView<'source> {
     pub fn set_dots(
