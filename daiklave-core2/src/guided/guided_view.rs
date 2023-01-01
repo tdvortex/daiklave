@@ -195,9 +195,9 @@ impl<'source> GuidedView<'source> {
         if ability_name_vanilla == AbilityNameVanilla::Brawl && self.character_view.martial_arts().iter().next().is_some() {
             return Err(GuidedError::AbilityMin);
         }
-        
-        if let Some(favored) = &self.solar_favored_abilities {
-            if favored.contains(&ability_name_vanilla.into()) {
+
+        if let Some(solar_traits) = self.character_view.solar_traits() {
+            if solar_traits.has_favored_ability(ability_name_vanilla.into()) {
                 return Err(GuidedError::AbilityMin);
             }
         }

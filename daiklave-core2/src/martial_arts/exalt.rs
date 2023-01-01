@@ -200,10 +200,7 @@ impl<'source> ExaltView<'source> {
         if dots > 5 {
             Err(CharacterMutationError::SetAbilityError(SetAbilityError::InvalidRating(dots)))
         } else if let Some(style) = self.martial_arts_styles.get_mut(&id) {
-            if dots >= style.ability.dots() {
-                style.ability.set_dots(dots)?;
-                Ok(self)
-            } else {
+            if dots < style.ability.dots() {
                 // May have to remove charms
                 let mut prereq_charms_map = HashMap::<MartialArtsCharmId, Vec<MartialArtsCharmId>>::new();
                 let mut removal_stack = Vec::<MartialArtsCharmId>::new();
@@ -226,9 +223,9 @@ impl<'source> ExaltView<'source> {
                         }
                     }
                 }
-    
-                Ok(self)
-            }       
+            }
+            style.ability.set_dots(dots)?;
+            Ok(self)
         } else {
             Err(CharacterMutationError::SetMartialArtsError(SetMartialArtsError::NotFound))
         }

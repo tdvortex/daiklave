@@ -257,7 +257,7 @@ fn test_guided_solar() {
         .apply_mutation(GuidedMutation::AddSolarFavoredAbility(AbilityName::Craft))
         .unwrap();
     guided_builder
-        .check_mutation(&GuidedMutation::AddSolarFavoredAbility(
+        .apply_mutation(GuidedMutation::AddSolarFavoredAbility(
             AbilityName::Linguistics,
         ))
         .unwrap();
@@ -567,11 +567,13 @@ fn test_guided_solar() {
         (AbilityNameVanilla::Ride, 3),
         (AbilityNameVanilla::Sail, 3),
         (AbilityNameVanilla::War, 1),
-
     ].into_iter()
         .map(|(ability_name, dots)| GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(ability_name, dots)))
         .fold(&mut guided_builder, |builder, mutation| builder.apply_mutation(mutation).unwrap());
-    assert_eq!(
+    
+    dbg!(guided_builder.as_guided_view().unwrap().as_character_view().abilities());
+    
+        assert_eq!(
         guided_builder
             .as_guided_view()
             .unwrap()

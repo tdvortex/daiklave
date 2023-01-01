@@ -104,6 +104,11 @@ impl<'source> GuidedView<'source> {
     }
 
     fn solar_ability_bonus_points_spent(&self) -> i32 {
+        if self.character_view.solar_traits().is_none() {
+            // Solar traits are set before abilities
+            return 0;
+        }
+
         // Solars get 28 free ability dots with a limit of 3 per skill
         // Dots above 3 in a skill need to be purchases, as do dots 29+ at 3 
         // or less

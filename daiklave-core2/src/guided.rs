@@ -85,8 +85,8 @@ pub enum GuidedStage {
     /// does not purchase any non-Control Spells or associated Shaping Ritual
     /// merits.
     ChooseSorcery,
-    /// A stage for
     ChooseAbilities,
+    ChooseMerits,
 }
 
 /// The supported options for Exaltations.

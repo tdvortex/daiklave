@@ -1,6 +1,6 @@
 use crate::{
     guided::{error::GuidedError, ExaltationChoice, GuidedMutation, GuidedStage},
-    CharacterMutation, abilities::AbilityNameVanilla,
+    CharacterMutation, abilities::{AbilityNameVanilla, AbilityName},
 };
 
 use super::GuidedView;
@@ -104,8 +104,16 @@ impl<'source> GuidedView<'source> {
                  three_or_less += self.character_view.craft().iter().map(|focus| self.character_view.craft().dots(focus).min(3)).sum::<u8>();
                  three_or_less += self.character_view.martial_arts().iter().map(|style_id| self.character_view.martial_arts().style(style_id).unwrap().dots()).sum::<u8>();
 
-                 three_or_less == 28
+                 let craft_favored_met = if self.character_view.solar_traits().map(|solar_traits| solar_traits.has_favored_ability(AbilityName::Craft)).unwrap_or(false) {
+                    self.character_view.craft().iter().map(|focus| self.character_view.craft().dots(focus).min(3)).max().map_or(false, |max_craft| max_craft > 0)
+                 } else {
+                    true
+                 };
+                
+
+                 three_or_less == 28 && craft_favored_met
             }
+            GuidedStage::ChooseMerits => todo!(),
         } {
             Err(GuidedError::StageIncompleteError)
         } else {
@@ -141,6 +149,7 @@ impl<'source> GuidedView<'source> {
             (GuidedStage::ChooseSolarFavoredAbilities, _) => GuidedStage::ChooseMartialArtsStyles,
             (GuidedStage::ChooseMartialArtsStyles, _) => GuidedStage::ChooseSorcery,
             (GuidedStage::ChooseSorcery, _) => GuidedStage::ChooseAbilities,
+            (GuidedStage::ChooseAbilities, _) => GuidedStage::ChooseMerits,
             _ => {
                 return Err(GuidedError::StageOrderError);
             }
