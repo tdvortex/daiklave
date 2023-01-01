@@ -2,21 +2,21 @@ use daiklave_core2::{
     abilities::AbilityName,
     exaltation::exalt::{
         essence::{MoteCommitmentId, MotePoolName},
-        exalt_type::solar::{caste::eclipse::Eclipse, Solar},
+        exalt_type::solar::{caste::eclipse::EclipseMemo, SolarMemo},
     },
     unique_id::UniqueId,
-    Character,
+    CharacterMemo,
 };
 
 #[test]
 fn test_essence_character() {
     // Mortals should not have essence
-    let mut character = Character::default();
+    let mut character = CharacterMemo::default();
     assert!(character.essence().is_none());
 
     // Exalts (including Solars) should have essence
     let eclipse = {
-        let mut builder = Eclipse::builder();
+        let mut builder = EclipseMemo::builder();
         [
             AbilityName::Larceny,
             AbilityName::Linguistics,
@@ -32,7 +32,7 @@ fn test_essence_character() {
     };
 
     let solar_traits = {
-        let mut builder = Solar::builder();
+        let mut builder = SolarMemo::builder();
         builder.set_eclipse(eclipse);
         [
             AbilityName::Archery,

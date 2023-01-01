@@ -13,8 +13,8 @@ pub mod twilight;
 /// Zenith Caste, leaders and priests
 pub mod zenith;
 
-mod caste;
+mod caste_memo;
 mod caste_view;
 
-pub(crate) use caste::SolarCaste;
+pub(crate) use caste_memo::SolarCasteMemo;
 pub(crate) use caste_view::SolarCasteView;

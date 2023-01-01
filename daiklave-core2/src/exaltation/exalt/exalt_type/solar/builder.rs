@@ -8,7 +8,7 @@ use super::{
         dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView,
         zenith::ZenithView, SolarCasteView,
     },
-    solar::Solar,
+    solar_memo::SolarMemo,
     solar_view::SolarView, sorcery::SolarSorcererView,
 };
 
@@ -84,7 +84,7 @@ impl<'source> SolarBuilder<'source> {
     }
 
     /// Consumes the builder to finalize Solar, cloning into an owned object.
-    pub fn build(self) -> Result<Solar, SolarBuilderError> {
+    pub fn build(self) -> Result<SolarMemo, SolarBuilderError> {
         if self.caste.is_none() {
             return Err(SolarBuilderError::MissingField("caste"));
         }
@@ -102,7 +102,7 @@ impl<'source> SolarBuilder<'source> {
         let mut arr = option_arr.map(|el| el.unwrap());
         arr.sort();
 
-        Ok(Solar::new(
+        Ok(SolarMemo::new(
             self.caste.unwrap().into_owned(),
             arr,
             self.sorcery.map(|sorcery| sorcery.into()),

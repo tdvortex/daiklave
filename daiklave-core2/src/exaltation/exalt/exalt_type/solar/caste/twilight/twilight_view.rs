@@ -1,6 +1,6 @@
 use crate::abilities::AbilityName;
 
-use super::{twilight::Twilight, twilight_ability::TwilightAbility};
+use super::{twilight_memo::TwilightMemo, twilight_ability::TwilightAbility};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TwilightView {
@@ -25,8 +25,8 @@ impl TwilightView {
         AbilityName::from(self.supernal)
     }
 
-    pub fn into_owned(self) -> Twilight {
-        Twilight {
+    pub fn into_owned(self) -> TwilightMemo {
+        TwilightMemo {
             caste_not_supernal: self.caste_not_supernal,
             supernal: self.supernal,
         }

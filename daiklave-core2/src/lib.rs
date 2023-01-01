@@ -10,7 +10,7 @@ use exaltation::exalt::{
         CommitMotesError, MoteCommitmentId, MotePoolName, RecoverMotesError, SetEssenceRatingError,
         SpendMotesError, UncommitMotesError,
     },
-    exalt_type::solar::Solar,
+    exalt_type::solar::SolarMemo,
 };
 use health::{DamageLevel, WoundPenalty};
 use martial_arts::{
@@ -57,13 +57,13 @@ pub mod sorcery;
 pub mod weapons;
 
 mod armor;
-mod character;
+mod character_memo;
 mod character_view;
 pub(crate) mod craft;
 mod name_and_concept;
 mod willpower;
 
-pub use character::Character;
+pub use character_memo::CharacterMemo;
 pub use character_view::CharacterView;
 
 /// The API for the character, expressed as an owned struct. Each mutation has
@@ -81,7 +81,7 @@ pub enum CharacterMutation {
     /// Set character to be mortal
     SetMortal,
     /// Set character to be Solar
-    SetSolar(Box<Solar>),
+    SetSolar(Box<SolarMemo>),
     /// Spend motes, starting with one pool
     SpendMotes(MotePoolName, u8),
     /// Commit motes into a persistent effect, starting with one pool
@@ -189,10 +189,10 @@ pub struct CharacterEventSource {
 impl CharacterEventSource {
     /// Constructs an owned Character from the event source history. Returns the
     /// default character if no events in the history.
-    pub fn as_character(&self) -> Result<Character, CharacterMutationError> {
+    pub fn as_character(&self) -> Result<CharacterMemo, CharacterMutationError> {
         self.history
             .iter()
-            .fold(Ok(Character::default()), |res, mutation| {
+            .fold(Ok(CharacterMemo::default()), |res, mutation| {
                 res.and_then(|mut character| {
                     character.apply_mutation(mutation)?;
                     Ok(character)

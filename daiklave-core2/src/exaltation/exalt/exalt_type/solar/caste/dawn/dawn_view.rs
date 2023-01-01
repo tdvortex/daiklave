@@ -1,7 +1,7 @@
 use crate::abilities::AbilityName;
 
 use super::{
-    dawn::Dawn, dawn_caste_ability::DawnCasteAbility, dawn_supernal_ability::DawnSupernalAbility,
+    dawn_memo::DawnMemo, dawn_caste_ability::DawnCasteAbility, dawn_supernal_ability::DawnSupernalAbility,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -27,8 +27,8 @@ impl DawnView {
         AbilityName::from(self.supernal)
     }
 
-    pub fn into_owned(self) -> Dawn {
-        Dawn {
+    pub fn into_owned(self) -> DawnMemo {
+        DawnMemo {
             caste_not_supernal: self.caste_not_supernal,
             supernal: self.supernal,
         }

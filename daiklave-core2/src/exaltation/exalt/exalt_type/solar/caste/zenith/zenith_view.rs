@@ -1,6 +1,6 @@
 use crate::abilities::AbilityName;
 
-use super::{Zenith, ZenithAbility};
+use super::{ZenithMemo, ZenithAbility};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ZenithView {
@@ -25,8 +25,8 @@ impl ZenithView {
         AbilityName::from(self.supernal)
     }
 
-    pub fn into_owned(self) -> Zenith {
-        Zenith {
+    pub fn into_owned(self) -> ZenithMemo {
+        ZenithMemo {
             caste_not_supernal: self.caste_not_supernal,
             supernal: self.supernal,
         }

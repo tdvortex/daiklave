@@ -1,18 +1,18 @@
 use daiklave_core2::{
     abilities::AbilityName,
-    exaltation::exalt::exalt_type::solar::{caste::twilight::Twilight, Solar},
-    Character, CharacterEventSource, CharacterMutation, CharacterView,
+    exaltation::exalt::exalt_type::solar::{caste::twilight::TwilightMemo, SolarMemo},
+    CharacterMemo, CharacterEventSource, CharacterMutation, CharacterView,
 };
 
 #[test]
 fn test_exalt_type_character() {
     // Confirm default is mortal
-    let mut character = Character::default();
+    let mut character = CharacterMemo::default();
     assert!(character.is_mortal());
 
     // Confirm toggle to solar
     let twilight = {
-        let mut builder = Twilight::builder();
+        let mut builder = TwilightMemo::builder();
         [
             AbilityName::Bureaucracy,
             AbilityName::Craft,
@@ -30,7 +30,7 @@ fn test_exalt_type_character() {
     };
 
     let solar_traits = {
-        let mut builder = Solar::builder();
+        let mut builder = SolarMemo::builder();
         builder.set_twilight(twilight);
         [
             AbilityName::Archery,
@@ -64,7 +64,7 @@ fn test_exalt_type_character_view() {
 
     // Confirm toggle to solar
     let twilight = {
-        let mut builder = Twilight::builder();
+        let mut builder = TwilightMemo::builder();
         [
             AbilityName::Bureaucracy,
             AbilityName::Craft,
@@ -82,7 +82,7 @@ fn test_exalt_type_character_view() {
     };
 
     let solar_traits = {
-        let mut builder = Solar::builder();
+        let mut builder = SolarMemo::builder();
         builder.set_twilight(twilight);
         [
             AbilityName::Archery,
@@ -117,7 +117,7 @@ fn test_exalt_type_character_event_source() {
 
     // Check toggle to solar
     let twilight = {
-        let mut builder = Twilight::builder();
+        let mut builder = TwilightMemo::builder();
         [
             AbilityName::Bureaucracy,
             AbilityName::Craft,
@@ -135,7 +135,7 @@ fn test_exalt_type_character_event_source() {
     };
 
     let solar_traits = {
-        let mut builder = Solar::builder();
+        let mut builder = SolarMemo::builder();
         builder.set_twilight(twilight);
         [
             AbilityName::Archery,

@@ -3,12 +3,11 @@ pub mod caste;
 
 mod builder;
 mod builder_error;
-mod exalt;
 mod sorcery;
-mod solar;
+mod solar_memo;
 mod solar_view;
 
-pub use solar::Solar;
+pub use solar_memo::SolarMemo;
 pub use solar_view::SolarView;
 
-pub(crate) use sorcery::{SolarSorcerer, SolarSorcererView};
+pub(crate) use sorcery::{SolarSorcererMemo, SolarSorcererView};

@@ -5,12 +5,12 @@ pub mod exalt;
 ///  Essence)
 pub mod mortal;
 
-mod exaltation;
+mod exaltation_memo;
 mod exaltation_view;
 mod martial_arts;
 mod sorcery;
 
-pub(crate) use exaltation::Exaltation;
+pub(crate) use exaltation_memo::ExaltationMemo;
 pub(crate) use exaltation_view::ExaltationView;
-pub(crate) use martial_arts::{ExaltationMartialArtist, ExaltationMartialArtistView};
-pub(crate) use sorcery::{SorcerySwitch, SorceryViewSwitch};
+pub(crate) use martial_arts::{ExaltationMartialArtistMemo, ExaltationMartialArtistView};
+pub(crate) use sorcery::{SorcerySwitchMemo, SorceryViewSwitch};

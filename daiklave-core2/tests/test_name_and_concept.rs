@@ -1,9 +1,9 @@
-use daiklave_core2::{Character, CharacterEventSource, CharacterMutation, CharacterView};
+use daiklave_core2::{CharacterMemo, CharacterEventSource, CharacterMutation, CharacterView};
 
 #[test]
 fn test_name_and_concept_character() {
     // Check default name and concept
-    let mut character = Character::default();
+    let mut character = CharacterMemo::default();
     assert_eq!(character.name(), "New Character");
     assert!(character.concept().is_none());
 

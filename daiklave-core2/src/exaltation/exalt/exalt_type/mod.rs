@@ -1,17 +1,7 @@
-use serde::{Deserialize, Serialize};
-
-/// Solar Exalted, chosen of the Unconquered Sun.
 pub mod solar;
-use solar::Solar;
 
-use self::solar::SolarView;
+mod exalt_type_memo;
+mod exalt_type_view;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) enum ExaltType {
-    Solar(Solar),
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) enum ExaltTypeView<'source> {
-    Solar(SolarView<'source>),
-}
+pub(crate) use exalt_type_memo::ExaltTypeMemo;
+pub(crate) use exalt_type_view::ExaltTypeView;

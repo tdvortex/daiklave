@@ -1,6 +1,6 @@
 use crate::abilities::AbilityName;
 
-use super::{Eclipse, EclipseAbility};
+use super::{EclipseMemo, EclipseAbility};
 
 /// Caste traits for the Eclipse Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -28,8 +28,8 @@ impl EclipseView {
         AbilityName::from(self.supernal)
     }
 
-    pub(crate) fn into_owned(self) -> Eclipse {
-        Eclipse {
+    pub(crate) fn into_owned(self) -> EclipseMemo {
+        EclipseMemo {
             caste_not_supernal: self.caste_not_supernal,
             supernal: self.supernal,
         }

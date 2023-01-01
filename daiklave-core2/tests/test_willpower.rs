@@ -1,19 +1,19 @@
 use daiklave_core2::{
     abilities::AbilityName,
-    exaltation::exalt::exalt_type::solar::{caste::dawn::Dawn, Solar},
-    Character, CharacterEventSource, CharacterMutation, CharacterView,
+    exaltation::exalt::exalt_type::solar::{caste::dawn::DawnMemo, SolarMemo},
+    CharacterMemo, CharacterEventSource, CharacterMutation, CharacterView,
 };
 
 #[test]
 fn test_willpower_character() {
     // Check default (mortal)
-    let mut character = Character::default();
+    let mut character = CharacterMemo::default();
     assert_eq!(character.willpower().rating(), 3);
     assert_eq!(character.willpower().current(), 3);
 
     // Check default (exalt)
     let dawn = {
-        let mut builder = Dawn::builder();
+        let mut builder = DawnMemo::builder();
         [
             AbilityName::Dodge,
             AbilityName::Resistance,
@@ -31,7 +31,7 @@ fn test_willpower_character() {
     };
 
     let solar_traits = {
-        let mut builder = Solar::builder();
+        let mut builder = SolarMemo::builder();
         builder.set_dawn(dawn);
         [
             AbilityName::Presence,
@@ -73,7 +73,7 @@ fn test_willpower_character_view() {
 
     // Check default (exalt)
     let dawn = {
-        let mut builder = Dawn::builder();
+        let mut builder = DawnMemo::builder();
         [
             AbilityName::Dodge,
             AbilityName::Resistance,
@@ -91,7 +91,7 @@ fn test_willpower_character_view() {
     };
 
     let solar_traits = {
-        let mut builder = Solar::builder();
+        let mut builder = SolarMemo::builder();
         builder.set_dawn(dawn);
         [
             AbilityName::Presence,
@@ -134,7 +134,7 @@ fn test_willpower_character_event_source() {
 
     // Check default (exalt)
     let dawn = {
-        let mut builder = Dawn::builder();
+        let mut builder = DawnMemo::builder();
         [
             AbilityName::Dodge,
             AbilityName::Resistance,
@@ -152,7 +152,7 @@ fn test_willpower_character_event_source() {
     };
 
     let solar_traits = {
-        let mut builder = Solar::builder();
+        let mut builder = SolarMemo::builder();
         builder.set_dawn(dawn);
         [
             AbilityName::Presence,

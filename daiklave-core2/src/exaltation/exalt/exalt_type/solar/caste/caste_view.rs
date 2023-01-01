@@ -1,7 +1,7 @@
 use crate::abilities::AbilityName;
 
 use super::{
-    caste::SolarCaste, dawn::DawnView, eclipse::EclipseView, night::NightView,
+    caste_memo::SolarCasteMemo, dawn::DawnView, eclipse::EclipseView, night::NightView,
     twilight::TwilightView, zenith::ZenithView,
 };
 
@@ -35,13 +35,13 @@ impl SolarCasteView {
         }
     }
 
-    pub fn into_owned(self) -> SolarCaste {
+    pub fn into_owned(self) -> SolarCasteMemo {
         match self {
-            SolarCasteView::Dawn(view) => SolarCaste::Dawn(view.into_owned()),
-            SolarCasteView::Zenith(view) => SolarCaste::Zenith(view.into_owned()),
-            SolarCasteView::Twilight(view) => SolarCaste::Twilight(view.into_owned()),
-            SolarCasteView::Night(view) => SolarCaste::Night(view.into_owned()),
-            SolarCasteView::Eclipse(view) => SolarCaste::Eclipse(view.into_owned()),
+            SolarCasteView::Dawn(view) => SolarCasteMemo::Dawn(view.into_owned()),
+            SolarCasteView::Zenith(view) => SolarCasteMemo::Zenith(view.into_owned()),
+            SolarCasteView::Twilight(view) => SolarCasteMemo::Twilight(view.into_owned()),
+            SolarCasteView::Night(view) => SolarCasteMemo::Night(view.into_owned()),
+            SolarCasteView::Eclipse(view) => SolarCasteMemo::Eclipse(view.into_owned()),
         }
     }
 }

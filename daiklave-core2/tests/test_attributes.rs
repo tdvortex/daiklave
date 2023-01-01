@@ -1,11 +1,11 @@
 use daiklave_core2::{
-    attributes::AttributeName, Character, CharacterEventSource, CharacterMutation, CharacterView,
+    attributes::AttributeName, CharacterMemo, CharacterEventSource, CharacterMutation, CharacterView,
 };
 
 #[test]
 fn test_attributes_character() {
     // Check default attributes
-    let mut character = Character::default();
+    let mut character = CharacterMemo::default();
     assert_eq!(character.attributes().dots(AttributeName::Strength), 1);
     assert_eq!(character.attributes().dots(AttributeName::Dexterity), 1);
     assert_eq!(character.attributes().dots(AttributeName::Stamina), 1);

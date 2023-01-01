@@ -1,8 +1,8 @@
 mod builder;
-mod zenith;
+mod zenith_memo;
 mod zenith_ability;
 mod zenith_view;
 
-pub use zenith::Zenith;
+pub use zenith_memo::ZenithMemo;
 pub(crate) use zenith_ability::ZenithAbility;
 pub(crate) use zenith_view::ZenithView;

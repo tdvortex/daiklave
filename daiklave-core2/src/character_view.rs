@@ -3,12 +3,12 @@ use crate::{
         AbilitiesView, AbilityNameVanilla, AbilityView, AddSpecialtyError, RemoveSpecialtyError,
         SetAbilityError,
     },
-    attributes::{AttributeName, Attributes, SetAttributesError},
+    attributes::{AttributeName, AttributesMemo, SetAttributesError},
     craft::CraftView,
     exaltation::{
         exalt::{
             essence::{EssenceView, MoteCommitmentId, MotePoolName},
-            exalt_type::solar::{Solar, SolarView},
+            exalt_type::solar::{SolarMemo, SolarView},
         },
         ExaltationView,
     },
@@ -34,7 +34,7 @@ pub struct CharacterView<'source> {
     pub(crate) exalt_state: ExaltationView<'source>,
     pub(crate) willpower: Willpower,
     pub(crate) health: Health,
-    pub(crate) attributes: Attributes,
+    pub(crate) attributes: AttributesMemo,
     pub(crate) abilities: AbilitiesView<'source>,
     pub(crate) craft: CraftView<'source>,
 }
@@ -404,7 +404,7 @@ impl<'source> CharacterView<'source> {
 
     /// Checks if character can be turned into a Solar Exalted with given
     /// traits.
-    pub fn check_set_solar(&self, solar_traits: &Solar) -> Result<(), CharacterMutationError> {
+    pub fn check_set_solar(&self, solar_traits: &SolarMemo) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_set_solar(solar_traits)
     }
 
@@ -414,7 +414,7 @@ impl<'source> CharacterView<'source> {
     /// Exalt default).
     pub fn set_solar(
         &mut self,
-        solar_traits: &'source Solar,
+        solar_traits: &'source SolarMemo,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_solar(solar_traits)?;
         if self.is_mortal() {
@@ -673,7 +673,7 @@ impl<'source> CharacterView<'source> {
     }
 
     /// Gets a struct reference for the character's attributes.
-    pub fn attributes(&self) -> &Attributes {
+    pub fn attributes(&self) -> &AttributesMemo {
         &self.attributes
     }
 
