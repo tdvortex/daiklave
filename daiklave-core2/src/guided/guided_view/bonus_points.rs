@@ -1,4 +1,4 @@
-use crate::{attributes::AttributeName, guided::ExaltationChoice};
+use crate::{attributes::AttributeName, guided::ExaltationChoice, abilities::{AbilityNameVanilla, AbilityName}};
 
 use super::GuidedView;
 
@@ -71,9 +71,91 @@ impl<'source> GuidedView<'source> {
         self.merit_dots - self.merit_dots.min(7)
     }
 
-    fn solal_merits_bonus_points_spent(&self) -> i32 {
+    fn solar_merits_bonus_points_spent(&self) -> i32 {
         // Solars get 10 free merit dots, the rest are 1 BP per dot
         self.merit_dots - self.merit_dots.min(10)
+    }
+
+    fn mortal_ability_bonus_points_spent(&self) -> i32 {
+        // Mortals get 28 free ability dots with a limit of 3 per skill
+        // Dots at 4 or 5, or 29+ total, are 2 each
+        let mut three_or_less = 0;
+        let mut more_than_three = 0;
+
+        for vanilla in AbilityNameVanilla::iter() {
+            let dots = self.character_view.abilities().dots(vanilla);
+            three_or_less += dots.min(3);
+            more_than_three += dots - dots.min(3);
+        }
+
+        for style_id in self.character_view.martial_arts().iter() {
+            let dots = self.character_view.martial_arts().style(style_id).unwrap().dots();
+            three_or_less += dots.min(3);
+            more_than_three += dots - dots.min(3);
+        }
+
+        for focus in self.character_view.craft().iter() {
+            let dots = self.character_view.craft().dots(focus);
+            three_or_less += dots.min(3);
+            more_than_three += dots - dots.min(3);
+        }
+
+        (2 * (three_or_less - 28.min(three_or_less) + more_than_three)) as i32
+    }
+
+    fn solar_ability_bonus_points_spent(&self) -> i32 {
+        // Solars get 28 free ability dots with a limit of 3 per skill
+        // Dots above 3 in a skill need to be purchases, as do dots 29+ at 3 
+        // or less
+        // Caste or Favored skills cost 1 BP each, non-Caste non-Favored 
+        // abilities cost 2
+        // Efficent allocation puts 28 free dots towards non-C/F skills first
+        let mut cf_three_or_less = 0;
+        let mut cf_more_than_three = 0;
+        let mut not_cf_three_or_less = 0;
+        let mut not_cf_more_than_three = 0;
+
+        for vanilla in AbilityNameVanilla::iter() {
+            let dots = self.character_view.abilities().dots(vanilla);
+            if self.character_view.solar_traits().unwrap().has_caste_ability(vanilla.into()) 
+                || self.character_view.solar_traits().unwrap().has_favored_ability(vanilla.into()) {
+                    cf_three_or_less += dots.min(3);
+                    cf_more_than_three += dots - dots.min(3);
+            } else {
+                not_cf_three_or_less += dots.min(3);
+                not_cf_more_than_three += dots - dots.min(3);
+            }
+        }
+
+        for style_id in self.character_view.martial_arts().iter() {
+            let dots = self.character_view.martial_arts().style(style_id).unwrap().dots();
+            if self.character_view.solar_traits().unwrap().has_caste_ability(AbilityName::Brawl) 
+                || self.character_view.solar_traits().unwrap().has_favored_ability(AbilityName::Brawl) {
+                    cf_three_or_less += dots.min(3);
+                    cf_more_than_three += dots - dots.min(3);
+            } else {
+                not_cf_three_or_less += dots.min(3);
+                not_cf_more_than_three += dots - dots.min(3);
+            }
+        }
+
+        for focus in self.character_view.craft().iter() {
+            let dots = self.character_view.craft().dots(focus);
+            if self.character_view.solar_traits().unwrap().has_caste_ability(AbilityName::Craft) 
+            || self.character_view.solar_traits().unwrap().has_favored_ability(AbilityName::Craft) {
+                cf_three_or_less += dots.min(3);
+                cf_more_than_three += dots - dots.min(3);
+        } else {
+            not_cf_three_or_less += dots.min(3);
+            not_cf_more_than_three += dots - dots.min(3);
+        }
+        }
+
+        let three_or_less = cf_three_or_less + not_cf_three_or_less;
+        let over_28 = three_or_less - 28.min(three_or_less);
+        let discount = over_28.min(cf_three_or_less);
+
+        (2 * (over_28 + not_cf_more_than_three) + cf_more_than_three - discount) as i32
     }
 
     pub(in crate::guided) fn update_bonus_points(&mut self) {
@@ -82,6 +164,7 @@ impl<'source> GuidedView<'source> {
                 ExaltationChoice::Mortal => {
                     self.bonus_points = 21;
                     self.bonus_points -= self.mortal_attributes_bonus_points_spent();
+                    self.bonus_points -= self.mortal_ability_bonus_points_spent();
                     self.bonus_points -= self.mortal_merits_bonus_points_spent();
                 }
                 ExaltationChoice::Dawn
@@ -91,7 +174,8 @@ impl<'source> GuidedView<'source> {
                 | ExaltationChoice::Eclipse => {
                     self.bonus_points = 15;
                     self.bonus_points -= self.solar_attributes_bonus_points_spent();
-                    self.bonus_points -= self.solal_merits_bonus_points_spent();
+                    self.bonus_points -= self.solar_ability_bonus_points_spent();
+                    self.bonus_points -= self.solar_merits_bonus_points_spent();
                 }
             }
         } else {

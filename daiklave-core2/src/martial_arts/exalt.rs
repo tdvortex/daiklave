@@ -185,7 +185,7 @@ impl<'source> ExaltView<'source> {
     ) -> Result<(), CharacterMutationError> {
         if dots > 5 {
             Err(CharacterMutationError::SetAbilityError(SetAbilityError::InvalidRating(dots)))
-        } else if let Some(style) = self.martial_arts_styles.get(&id) {
+        } else if let Some(_) = self.martial_arts_styles.get(&id) {
             Ok(())
         } else {
             Err(CharacterMutationError::SetMartialArtsError(SetMartialArtsError::NotFound))

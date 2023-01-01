@@ -17,6 +17,14 @@ impl Craft {
         }
         Ok(self)
     }
+
+    pub fn dots(&self, focus: &str) -> u8 {
+        self.0.get(focus).map_or(0, |ability| ability.dots())
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &str> {
+        self.0.keys().map(|s| s.as_str())
+    }
 }
 
 impl Character {
@@ -50,9 +58,21 @@ impl<'source> CraftView<'source> {
         }
         Ok(self)
     }
+
+    pub fn dots(&self, focus: &str) -> u8 {
+        self.0.get(focus).map_or(0, |ability| ability.dots())
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &str> {
+        self.0.keys().map(|ptr| *ptr)
+    }
 }
 
 impl<'source> CharacterView<'source> {
+    pub fn craft(&self) -> &CraftView {
+        &self.craft
+    }
+
     pub fn check_set_craft_dots(&self, focus: &str, dots: u8) -> Result<(), CharacterMutationError> {
         if dots > 5 {
             Err(CharacterMutationError::SetAbilityError(SetAbilityError::InvalidRating(dots)))

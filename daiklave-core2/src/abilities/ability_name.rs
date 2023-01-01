@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use crate::CharacterMutationError;
 /// This is used to identify all ability ratings that must exist for a
 /// character. It excludes all Craft abilities and MartialArts styles.
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, PartialOrd, Ord)]
@@ -53,6 +52,37 @@ pub enum AbilityNameVanilla {
     Thrown,
     /// War
     War,
+}
+
+impl AbilityNameVanilla {
+    pub fn iter() -> impl Iterator<Item = AbilityNameVanilla> {
+        [
+            Self::Archery,
+            Self::Athletics,
+            Self::Awareness,
+            Self::Brawl,
+            Self::Bureaucracy,
+            Self::Dodge,
+            Self::Integrity,
+            Self::Investigation,
+            Self::Larceny,
+            Self::Linguistics,
+            Self::Lore,
+            Self::Medicine,
+            Self::Melee,
+            Self::Occult,
+            Self::Performance,
+            Self::Presence,
+            Self::Resistance,
+            Self::Ride,
+            Self::Sail,
+            Self::Socialize,
+            Self::Stealth,
+            Self::Survival,
+            Self::Thrown,
+            Self::War,
+        ].into_iter()
+    }
 }
 
 /// This is used to identify all abilities, treating all Craft abilities as

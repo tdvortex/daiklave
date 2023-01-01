@@ -364,18 +364,21 @@ fn test_guided_mortal() {
             .as_guided_view()
             .unwrap()
             .bonus_points_remaining(),
-        19
+        17
     );
 
     let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(MartialArtsStyleId(UniqueId::Placeholder(1)), 4));
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
     assert_eq!(
+        guided_builder.as_guided_view().unwrap().as_character_view().martial_arts().style(MartialArtsStyleId(UniqueId::Placeholder(1))).unwrap().dots(), 4
+    );
+    assert_eq!(
         guided_builder
             .as_guided_view()
             .unwrap()
             .bonus_points_remaining(),
-        17
+        15
     );
 
     let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetCraftDots("Armoring".to_owned(), 4));
@@ -386,7 +389,7 @@ fn test_guided_mortal() {
             .as_guided_view()
             .unwrap()
             .bonus_points_remaining(),
-        15
+        13
     );
 
     // Check purchasing 28 dots of abilities, all 3 or below, costs no bonus points
@@ -411,7 +414,7 @@ fn test_guided_mortal() {
             .as_guided_view()
             .unwrap()
             .bonus_points_remaining(),
-        21
+        19
     );
 
     // Check purchasing more than 28 dots of abilities costs bonus points even at 3 or below
@@ -422,7 +425,7 @@ fn test_guided_mortal() {
             .as_guided_view()
             .unwrap()
             .bonus_points_remaining(),
-        19
+        17
     );
     
     // Check can't advance with less than 28 free dots (even with 28 total dots)
@@ -443,7 +446,7 @@ fn test_guided_mortal() {
             .as_guided_view()
             .unwrap()
             .bonus_points_remaining(),
-        21
+        19
     );
 
     // After advancing, should have actual Martial Arts and Sorcery in character view

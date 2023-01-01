@@ -161,6 +161,7 @@ impl<'source> MortalView<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(style) = self.martial_arts_styles.get_mut(&id) {
             // Mortals have no charms to lose if dots are zero
+            style.ability.set_dots(dots)?;
             Ok(self)
         } else {
             Err(CharacterMutationError::SetMartialArtsError(SetMartialArtsError::NotFound))
