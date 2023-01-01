@@ -1,8 +1,11 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::abilities::AbilityName;
 
-use super::{dawn_caste_ability::DawnCasteAbility, dawn_supernal_ability::DawnSupernalAbility, builder::DawnBuilder};
+use super::{
+    builder::DawnBuilder, dawn_caste_ability::DawnCasteAbility,
+    dawn_supernal_ability::DawnSupernalAbility,
+};
 
 /// Caste traits for the Dawn Caste Solar. Note that because of
 /// Brawl/MartialArts, Dawns have 5 possible Caste abilities but 6 possible

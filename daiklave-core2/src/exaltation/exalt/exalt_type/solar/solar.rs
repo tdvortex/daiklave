@@ -1,8 +1,15 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::{abilities::AbilityName, sorcery::SolarSorcerer};
 
-use super::{caste::{SolarCaste, SolarCasteView, dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView, zenith::ZenithView}, builder::SolarBuilder, SolarView};
+use super::{
+    builder::SolarBuilder,
+    caste::{
+        dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView,
+        zenith::ZenithView, SolarCaste, SolarCasteView,
+    },
+    solar_view::SolarView,
+};
 
 /// Traits which are unique to being a Solar Exalted.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -16,7 +23,7 @@ impl<'source> Solar {
     pub(crate) fn new(
         caste: SolarCaste,
         favored_abilities: [AbilityName; 5],
-        sorcery: Option<SolarSorcerer>
+        sorcery: Option<SolarSorcerer>,
     ) -> Self {
         Self {
             caste,
@@ -77,10 +84,6 @@ impl<'char> Solar {
         let favored_abilities = self.favored_abilities;
         let sorcery = self.sorcery.as_ref().map(|sorcery| sorcery.as_view());
 
-        SolarView {
-            caste,
-            favored_abilities,
-            sorcery,
-        }
+        SolarView::new(caste, favored_abilities, sorcery)
     }
 }

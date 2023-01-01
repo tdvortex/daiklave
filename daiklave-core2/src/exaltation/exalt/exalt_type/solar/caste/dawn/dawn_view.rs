@@ -1,6 +1,8 @@
 use crate::abilities::AbilityName;
 
-use super::{dawn::Dawn, dawn_caste_ability::DawnCasteAbility, dawn_supernal_ability::DawnSupernalAbility};
+use super::{
+    dawn::Dawn, dawn_caste_ability::DawnCasteAbility, dawn_supernal_ability::DawnSupernalAbility,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DawnView {

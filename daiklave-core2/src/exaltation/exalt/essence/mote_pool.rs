@@ -1,8 +1,8 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::CharacterMutationError;
 
-use super::{SpendMotesError, CommitMotesError};
+use super::{CommitMotesError, SpendMotesError};
 
 /// The available and spent motes from either a peripheral or personal pool.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]

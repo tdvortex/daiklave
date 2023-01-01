@@ -1,28 +1,19 @@
 use crate::{
     exaltation::{
         exalt::{
-            essence::{Essence, EssenceView, MotePoolName, SpendMotesError, MoteCommitmentId, CommitMotesError, UncommitMotesError, SetEssenceRatingError, RecoverMotesError},
+            essence::{
+                CommitMotesError, EssenceView, MoteCommitmentId, MotePoolName, RecoverMotesError,
+                SetEssenceRatingError, SpendMotesError, UncommitMotesError,
+            },
             exalt_type::{ExaltType, ExaltTypeView},
-            Exalt, ExaltView,
+            exalt_view::ExaltView,
         },
-        ExaltState, ExaltStateView,
+        ExaltStateView,
     },
     CharacterMutationError,
 };
 
-use super::{solar::Solar, SolarView};
-
-
-
-impl<'source> ExaltView<'source> {
-    pub fn is_solar(&self) -> bool {
-        self.exalt_type.is_solar()
-    }
-
-    pub fn solar_traits(&self) -> Option<&SolarView> {
-        self.exalt_type.solar_traits()
-    }
-}
+use super::{solar::Solar, solar_view::SolarView};
 
 impl ExaltType {
     pub fn is_solar(&self) -> bool {
@@ -45,60 +36,6 @@ impl<'source> ExaltTypeView<'source> {
         match self {
             ExaltTypeView::Solar(solar_traits) => Some(solar_traits),
         }
-    }
-}
-
-impl ExaltState {
-    pub fn is_solar(&self) -> bool {
-        if let Self::Exalt(exalt) = self {
-            exalt.is_solar()
-        } else {
-            false
-        }
-    }
-
-    pub fn solar_traits(&self) -> Option<&Solar> {
-        if let Self::Exalt(exalt) = self {
-            exalt.solar_traits()
-        } else {
-            None
-        }
-    }
-
-    pub fn check_set_solar(&self, _solar: &Solar) -> Result<(), CharacterMutationError> {
-        Ok(())
-    }
-
-    pub fn set_solar(&mut self, solar: &Solar) -> Result<&mut Self, CharacterMutationError> {
-        if self.is_solar() {
-            return Ok(self);
-        }
-
-        match self {
-            ExaltState::Mortal(mortal) => {
-                // Default to essence 1
-                // Preserve martial arts styles, with empty Charms set
-                *self = Self::Exalt(Box::new(Exalt {
-                    essence: Essence::new_solar(1),
-                    martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles)
-                        .into_iter()
-                        .map(|(id, mortal_artist)| (id, mortal_artist.into()))
-                        .collect(),
-                    exalt_type: ExaltType::Solar(solar.clone()),
-                }))
-            }
-            ExaltState::Exalt(exalt) => {
-                // Preserve essence rating
-                // Preserve martial arts styles (including charms)
-                *self = Self::Exalt(Box::new(Exalt {
-                    essence: Essence::new_solar(exalt.essence().rating()),
-                    martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles),
-                    exalt_type: ExaltType::Solar(solar.clone()),
-                }));
-            }
-        }
-
-        Ok(self)
     }
 }
 
@@ -150,23 +87,23 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(mortal) => {
                 // Default to essence 1
                 // Preserve martial arts styles, with empty Charms set
-                *self = Self::Exalt(Box::new(ExaltView {
-                    essence: EssenceView::new_solar(1),
-                    martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles)
+                *self = Self::Exalt(Box::new(ExaltView::new(
+                    EssenceView::new_solar(1),
+                    std::mem::take(&mut mortal.martial_arts_styles)
                         .into_iter()
                         .map(|(id, mortal_artist)| (id, mortal_artist.into()))
                         .collect(),
-                    exalt_type: ExaltTypeView::Solar(solar),
-                }))
+                    ExaltTypeView::Solar(solar),
+                )))
             }
             ExaltStateView::Exalt(exalt) => {
                 // Preserve essence rating
                 // Preserve martial arts styles (including charms)
-                *self = Self::Exalt(Box::new(ExaltView {
-                    essence: EssenceView::new_solar(exalt.essence().rating()),
-                    martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles),
-                    exalt_type: ExaltTypeView::Solar(solar),
-                }));
+                *self = Self::Exalt(Box::new(ExaltView::new(
+                    EssenceView::new_solar(exalt.essence().rating()),
+                    std::mem::take(exalt.martial_arts_styles_mut()),
+                    ExaltTypeView::Solar(solar),
+                )));
             }
         }
 
@@ -238,10 +175,7 @@ impl<'source> ExaltStateView<'source> {
         Ok(self)
     }
 
-    pub fn check_recover_motes(
-        &self,
-        _amount: u8,
-    ) -> Result<(), CharacterMutationError> {
+    pub fn check_recover_motes(&self, _amount: u8) -> Result<(), CharacterMutationError> {
         match self {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
                 RecoverMotesError::MortalError,
@@ -250,10 +184,7 @@ impl<'source> ExaltStateView<'source> {
         }
     }
 
-    pub fn recover_motes(
-        &mut self,
-        amount: u8,
-    ) -> Result<&mut Self, CharacterMutationError> {
+    pub fn recover_motes(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         match self {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
                 RecoverMotesError::MortalError,
@@ -288,10 +219,7 @@ impl<'source> ExaltStateView<'source> {
         Ok(self)
     }
 
-    pub fn check_set_essence_rating(
-        &self,
-        rating: u8,
-    ) -> Result<(), CharacterMutationError> {
+    pub fn check_set_essence_rating(&self, rating: u8) -> Result<(), CharacterMutationError> {
         match self {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
                 SetEssenceRatingError::MortalError,
@@ -308,10 +236,7 @@ impl<'source> ExaltStateView<'source> {
         }
     }
 
-    pub fn set_essence_rating(
-        &mut self,
-        rating: u8,
-    ) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_essence_rating(&mut self, rating: u8) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_essence_rating(rating)?;
         match self {
             ExaltStateView::Exalt(exalt) => exalt.set_essence_rating(rating),

@@ -1,6 +1,9 @@
-use crate::{abilities::AbilityName};
+use crate::abilities::AbilityName;
 
-use super::{dawn::DawnView, caste::SolarCaste, eclipse::EclipseView, night::NightView, twilight::TwilightView, zenith::ZenithView};
+use super::{
+    caste::SolarCaste, dawn::DawnView, eclipse::EclipseView, night::NightView,
+    twilight::TwilightView, zenith::ZenithView,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SolarCasteView {

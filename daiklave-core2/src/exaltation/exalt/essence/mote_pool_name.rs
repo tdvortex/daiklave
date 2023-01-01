@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// Indicates whether motes are spent/committed from peripheral or peripheral
 /// pool first.

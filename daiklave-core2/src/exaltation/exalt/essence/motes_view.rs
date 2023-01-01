@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::{MoteCommitmentId, mote_commitment_view::MoteCommitmentView, mote_pool::MotePool};
+use super::{mote_commitment_view::MoteCommitmentView, mote_pool::MotePool, MoteCommitmentId};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MotesView<'source> {

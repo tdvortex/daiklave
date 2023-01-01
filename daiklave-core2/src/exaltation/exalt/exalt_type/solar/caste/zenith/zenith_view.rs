@@ -1,6 +1,6 @@
 use crate::abilities::AbilityName;
 
-use super::{ZenithAbility, Zenith};
+use super::{Zenith, ZenithAbility};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ZenithView {

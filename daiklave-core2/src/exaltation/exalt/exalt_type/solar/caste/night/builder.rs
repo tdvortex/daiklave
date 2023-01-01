@@ -1,6 +1,8 @@
 use std::collections::HashSet;
 
-use crate::{abilities::AbilityName, exaltation::exalt::exalt_type::solar::builder_error::SolarBuilderError};
+use crate::{
+    abilities::AbilityName, exaltation::exalt::exalt_type::solar::builder_error::SolarBuilderError,
+};
 
 use super::{night_ability::NightAbility, night_view::NightView};
 

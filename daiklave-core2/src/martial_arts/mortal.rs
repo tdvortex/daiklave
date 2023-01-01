@@ -179,14 +179,5 @@ impl<'source> MortalView<'source> {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) struct MortalMartialArtist {
-    pub style: MartialArtsStyle,
-    pub ability: Ability,
-}
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct MortalMartialArtistView<'source> {
-    pub style: &'source MartialArtsStyle,
-    pub ability: AbilityView<'source>,
-}
+

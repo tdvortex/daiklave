@@ -8,17 +8,13 @@ use crate::{
     charms::{CharmCost, CharmKeyword},
     exaltation::{
         exalt::{
-            exalt_type::{
-                solar::{Solar, SolarView},
-                ExaltType, ExaltTypeView,
-            },
+            exalt_type::{solar::Solar, ExaltType, ExaltTypeView},
             Exalt, ExaltView,
         },
-        mortal::MortalView,
         ExaltState, ExaltStateView,
     },
     id::UniqueId,
-    Character, CharacterMutationError, CharacterView,
+    Character, CharacterView,
 };
 
 /// One of the three tiers of Sorcery.
@@ -548,8 +544,7 @@ impl<'char> ExaltState {
     fn sorcery(&'char self) -> Option<Sorcery<'char>> {
         match self {
             ExaltState::Mortal(mortal) => mortal
-                .sorcery
-                .as_ref()
+                .sorcery()
                 .map(|terrestrial| Sorcery(SorcerySwitch::Mortal(terrestrial))),
             ExaltState::Exalt(exalt) => exalt.sorcery(),
         }
@@ -558,7 +553,7 @@ impl<'char> ExaltState {
 
 impl<'char> Exalt {
     fn sorcery(&'char self) -> Option<Sorcery<'char>> {
-        match &self.exalt_type {
+        match self.exalt_type() {
             ExaltType::Solar(solar) => solar
                 .sorcery()
                 .map(|sorcerer| Sorcery(SorcerySwitch::Exalt(ExaltSorcerySwitch::Solar(sorcerer)))),
@@ -639,7 +634,7 @@ impl<'view, 'source> ExaltStateView<'source> {
 
 impl<'view, 'source> ExaltView<'source> {
     fn sorcery(&'view self) -> Option<SorceryView<'view, 'source>> {
-        match &self.exalt_type {
+        match self.exalt_type() {
             ExaltTypeView::Solar(solar) => solar.sorcery().map(|sorcerer| {
                 SorceryView(SorceryViewSwitch::Exalt(ExaltSorceryViewSwitch::Solar(
                     sorcerer,
@@ -649,19 +644,15 @@ impl<'view, 'source> ExaltView<'source> {
     }
 }
 
-impl<'view, 'source> SolarView<'source> {
-    fn sorcery(&'view self) -> Option<&'view SolarSorcererView<'source>> {
-        self.sorcery.as_ref()
-    }
-}
-
 impl<'source> From<SolarSorcererView<'source>> for SolarSorcerer {
     fn from(view: SolarSorcererView) -> Self {
         match view {
             SolarSorcererView::Terrestrial(terrestrial) => {
                 SolarSorcerer::Terrestrial(Box::new(terrestrial.into()))
             }
-            SolarSorcererView::Celestial(celestial) => SolarSorcerer::Celestial(Box::new(celestial.into())),
+            SolarSorcererView::Celestial(celestial) => {
+                SolarSorcerer::Celestial(Box::new(celestial.into()))
+            }
             SolarSorcererView::Solar(solar) => SolarSorcerer::Solar(Box::new(solar.into())),
         }
     }
@@ -1167,145 +1158,6 @@ impl<'source> SolarSorcererView<'source> {
             (SolarSorcererView::Terrestrial(_), _) => None,
             (SolarSorcererView::Celestial(celestial), circle) => celestial.control_spell(circle),
             (SolarSorcererView::Solar(solar), circle) => Some(solar.control_spell(circle)),
-        }
-    }
-}
-
-impl<'source> CharacterView<'source> {
-    /// If the character was not already a sorcerer, adds the first circle of
-    /// sorcery.
-    pub fn add_terrestrial_sorcery(
-        &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: &'source SorceryArchetype,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.add_terrestrial_sorcery(
-            archetype_id,
-            archetype,
-            shaping_ritual_id,
-            shaping_ritual,
-            control_spell_id,
-            control_spell,
-        )?;
-        Ok(self)
-    }
-}
-
-impl<'source> ExaltStateView<'source> {
-    pub fn add_terrestrial_sorcery(
-        &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: &'source SorceryArchetype,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        match self {
-            ExaltStateView::Mortal(mortal) => {
-                mortal.add_terrestrial_sorcery(
-                    archetype_id,
-                    archetype,
-                    shaping_ritual_id,
-                    shaping_ritual,
-                    control_spell_id,
-                    control_spell,
-                )?;
-            }
-            ExaltStateView::Exalt(exalt) => {
-                exalt.add_terrestrial_sorcery(
-                    archetype_id,
-                    archetype,
-                    shaping_ritual_id,
-                    shaping_ritual,
-                    control_spell_id,
-                    control_spell,
-                )?;
-            }
-        }
-        Ok(self)
-    }
-}
-
-impl<'source> MortalView<'source> {
-    pub fn add_terrestrial_sorcery(
-        &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: &'source SorceryArchetype,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.sorcery = Some(TerrestrialCircleSorcererView::new(
-            archetype_id,
-            archetype,
-            shaping_ritual_id,
-            shaping_ritual,
-            control_spell_id,
-            control_spell,
-        )?);
-
-        Ok(self)
-    }
-}
-
-impl<'source> ExaltView<'source> {
-    pub fn add_terrestrial_sorcery(
-        &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: &'source SorceryArchetype,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        match &mut self.exalt_type {
-            ExaltTypeView::Solar(solar) => {
-                solar.add_terrestrial_sorcery(
-                    archetype_id,
-                    archetype,
-                    shaping_ritual_id,
-                    shaping_ritual,
-                    control_spell_id,
-                    control_spell,
-                )?;
-            }
-        }
-        Ok(self)
-    }
-}
-
-impl<'source> SolarView<'source> {
-    pub(crate) fn add_terrestrial_sorcery(
-        &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: &'source SorceryArchetype,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        if self.sorcery.is_none() {
-            self.sorcery = Some(SolarSorcererView::Terrestrial(
-                TerrestrialCircleSorcererView::new(
-                    archetype_id,
-                    archetype,
-                    shaping_ritual_id,
-                    shaping_ritual,
-                    control_spell_id,
-                    control_spell,
-                )?,
-            ));
-            Ok(self)
-        } else {
-            Err(CharacterMutationError::AddSorceryCircleError(
-                SorceryError::CircleSequence,
-            ))
         }
     }
 }

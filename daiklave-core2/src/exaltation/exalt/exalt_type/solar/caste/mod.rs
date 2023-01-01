@@ -16,5 +16,5 @@ pub mod zenith;
 mod caste;
 mod caste_view;
 
-pub(crate) use caste_view::SolarCasteView;
 pub(crate) use caste::SolarCaste;
+pub(crate) use caste_view::SolarCasteView;

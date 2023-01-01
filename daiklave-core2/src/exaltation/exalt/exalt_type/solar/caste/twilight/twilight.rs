@@ -1,8 +1,8 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::abilities::AbilityName;
 
-use super::{twilight_ability::TwilightAbility, builder::TwilightBuilder};
+use super::{builder::TwilightBuilder, twilight_ability::TwilightAbility};
 
 /// Caste traits for the Twilight Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

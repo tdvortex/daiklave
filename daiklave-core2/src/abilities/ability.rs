@@ -1,10 +1,10 @@
 use std::collections::HashSet;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::CharacterMutationError;
 
-use super::{SetAbilityError, AddSpecialtyError, RemoveSpecialtyError};
+use super::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum Ability {
@@ -52,7 +52,10 @@ impl Ability {
         .into_iter()
     }
 
-    pub fn add_specialty(&mut self, new_specialty: &str) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_specialty(
+        &mut self,
+        new_specialty: &str,
+    ) -> Result<&mut Self, CharacterMutationError> {
         if let Ability::NonZero(_, specialties) = self {
             if specialties.contains(new_specialty) {
                 Err(CharacterMutationError::AddSpecialtyError(
@@ -69,7 +72,10 @@ impl Ability {
         }
     }
 
-    pub fn remove_specialty(&mut self, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_specialty(
+        &mut self,
+        specialty: &str,
+    ) -> Result<&mut Self, CharacterMutationError> {
         if let Ability::NonZero(_, specialties) = self {
             if !specialties.remove(specialty) {
                 Err(CharacterMutationError::RemoveSpecialtyError(

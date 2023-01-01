@@ -1,6 +1,6 @@
 use crate::abilities::AbilityName;
 
-use super::{EclipseAbility, Eclipse};
+use super::{Eclipse, EclipseAbility};
 
 /// Caste traits for the Eclipse Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq)]

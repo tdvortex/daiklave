@@ -1,6 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-use crate::exaltation::exalt::exalt_type::solar::caste::{dawn::{DawnCasteAbility, DawnSupernalAbility}, eclipse::EclipseAbility, night::NightAbility, twilight::TwilightAbility, zenith::ZenithAbility};
+use crate::exaltation::exalt::exalt_type::solar::caste::{
+    dawn::{DawnCasteAbility, DawnSupernalAbility},
+    eclipse::EclipseAbility,
+    night::NightAbility,
+    twilight::TwilightAbility,
+    zenith::ZenithAbility,
+};
 
 use super::AbilityNameVanilla;
 

@@ -1,8 +1,8 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::abilities::AbilityName;
 
-use super::{EclipseAbility, builder::EclipseBuilder};
+use super::{builder::EclipseBuilder, EclipseAbility};
 
 /// Caste traits for the Eclipse Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

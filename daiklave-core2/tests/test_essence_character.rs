@@ -2,7 +2,7 @@ use daiklave_core2::{
     abilities::AbilityName,
     exaltation::exalt::{
         essence::{MoteCommitmentId, MotePoolName},
-        exalt_type::solar::{Solar, caste::eclipse::Eclipse},
+        exalt_type::solar::{caste::eclipse::Eclipse, Solar},
     },
     id::UniqueId,
     Character,
@@ -67,7 +67,9 @@ fn test_essence_character() {
     let mote_state = character.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 23);
     assert_eq!(mote_state.peripheral().spent(), 10);
-    character.check_spend_motes(MotePoolName::Personal, 10).unwrap();
+    character
+        .check_spend_motes(MotePoolName::Personal, 10)
+        .unwrap();
     character.spend_motes(MotePoolName::Personal, 10).unwrap();
     let mote_state = character.essence().unwrap().motes();
     assert_eq!(mote_state.personal().available(), 3);

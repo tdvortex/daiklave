@@ -1,6 +1,6 @@
 use crate::abilities::AbilityName;
 
-use super::{twilight_ability::TwilightAbility, twilight::Twilight};
+use super::{twilight::Twilight, twilight_ability::TwilightAbility};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TwilightView {

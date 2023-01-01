@@ -1,6 +1,6 @@
 use crate::abilities::AbilityName;
 
-use super::{night_ability::NightAbility, night::Night};
+use super::{night::Night, night_ability::NightAbility};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NightView {

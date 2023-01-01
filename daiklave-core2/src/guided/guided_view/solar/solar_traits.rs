@@ -1,6 +1,7 @@
 use crate::{
     exaltation::exalt::exalt_type::solar::{
-        Solar, SolarView, caste::{dawn::Dawn, eclipse::Eclipse, night::Night, twilight::Twilight, zenith::Zenith},
+        caste::{dawn::Dawn, eclipse::Eclipse, night::Night, twilight::Twilight, zenith::Zenith},
+        Solar, SolarView,
     },
     guided::{error::GuidedError, guided_view::GuidedView, ExaltationChoice},
 };

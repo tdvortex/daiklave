@@ -1,8 +1,24 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abilities::{Abilities, AbilityNameVanilla, SetAbilityError, Ability, AddSpecialtyError, RemoveSpecialtyError}, attributes::Attributes, craft::Craft, exaltation::{ExaltState, exalt::{essence::{Essence, MotePoolName, MoteCommitmentId}, exalt_type::solar::Solar}},
-    health::Health, willpower::Willpower, CharacterMutation, CharacterMutationError,
+    abilities::{
+        Abilities, Ability, AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError,
+        SetAbilityError,
+    },
+    attributes::Attributes,
+    craft::Craft,
+    exaltation::{
+        exalt::{
+            essence::{Essence, MoteCommitmentId, MotePoolName},
+            exalt_type::solar::Solar,
+        },
+        ExaltState,
+    },
+    health::Health,
+    martial_arts::{AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId},
+    name_and_concept::RemoveConceptError,
+    willpower::Willpower,
+    CharacterMutation, CharacterMutationError,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -399,6 +415,124 @@ impl Character {
             self.set_willpower_rating(new_willpower_rating)?;
         }
         self.exalt_state.set_solar(solar_traits)?;
+        Ok(self)
+    }
+
+    /// Checks if a Martial Arts style can be added to the character.
+    pub fn check_add_martial_arts_style(
+        &self,
+        id: MartialArtsStyleId,
+        style: &MartialArtsStyle,
+    ) -> Result<(), CharacterMutationError> {
+        if self.abilities().dots(AbilityNameVanilla::Brawl) < 1 {
+            return Err(CharacterMutationError::AddMartialArtsStyleError(
+                AddMartialArtsStyleError::PrerequsitesNotMet(
+                    "Brawl must be 1+ to take Martial Artist merit".to_owned(),
+                ),
+            ));
+        }
+
+        self.exalt_state.check_add_martial_arts_style(id, style)
+    }
+
+    /// Adds a Martial Arts style to the character.
+    pub fn add_martial_arts_style(
+        &mut self,
+        id: MartialArtsStyleId,
+        style: &MartialArtsStyle,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.check_add_martial_arts_style(id, style)?;
+        self.exalt_state.add_martial_arts_style(id, style)?;
+
+        Ok(self)
+    }
+
+    /// Checks if a Martial Arts style can be removed from the character.
+    pub fn check_remove_martial_arts_style(
+        &self,
+        id: MartialArtsStyleId,
+    ) -> Result<(), CharacterMutationError> {
+        self.exalt_state.check_remove_martial_arts_style(id)
+    }
+
+    /// Removes a Martial Arts style from the character.
+    pub fn remove_martial_arts_style(
+        &mut self,
+        id: MartialArtsStyleId,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.exalt_state.remove_martial_arts_style(id)?;
+        Ok(self)
+    }
+
+    /// Checks if the ability dots for the specified Martial Arts style
+    /// can be set to a given value.
+    pub fn check_set_martial_arts_dots(
+        &self,
+        id: MartialArtsStyleId,
+        dots: u8,
+    ) -> Result<(), CharacterMutationError> {
+        self.exalt_state.check_set_martial_arts_dots(id, dots)
+    }
+
+    /// Sets the ability dots for a specific Martial Arts style.
+    pub fn set_martial_arts_dots(
+        &mut self,
+        id: MartialArtsStyleId,
+        dots: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.exalt_state.set_martial_arts_dots(id, dots)?;
+        Ok(self)
+    }
+
+    /// Returns the character's name.
+    pub fn name(&self) -> &str {
+        self.name.as_str()
+    }
+
+    /// Returns the character's concept (if any).
+    pub fn concept(&self) -> Option<&str> {
+        self.concept.as_deref()
+    }
+
+    /// Checks if the character's name can be changed.
+    pub fn check_set_name(&self, _name: &str) -> Result<(), CharacterMutationError> {
+        Ok(())
+    }
+
+    /// Checks if the character's concept can be set.
+    pub fn check_set_concept(&self, _concept: &str) -> Result<(), CharacterMutationError> {
+        Ok(())
+    }
+
+    /// Checks if the character's concept can be removed.
+    pub fn check_remove_concept(&self) -> Result<(), CharacterMutationError> {
+        if self.concept().is_none() {
+            Err(CharacterMutationError::RemoveConceptError(
+                RemoveConceptError::NoConcept,
+            ))
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Sets the character's name.
+    pub fn set_name(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
+        self.check_set_name(name)?;
+        self.name = name.to_owned();
+        Ok(self)
+    }
+
+    /// Sets the character to the given concept.
+    pub fn set_concept(&mut self, concept: &str) -> Result<&mut Self, CharacterMutationError> {
+        self.check_set_concept(concept)?;
+        self.concept = Some(concept.to_owned());
+        Ok(self)
+    }
+
+    /// Removes the character's concept.
+    pub fn remove_concept(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        self.check_remove_concept()?;
+        self.concept = None;
         Ok(self)
     }
 }

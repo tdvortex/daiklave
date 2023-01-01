@@ -1,8 +1,8 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::abilities::AbilityName;
 
-use super::{ZenithAbility, builder::ZenithBuilder};
+use super::{builder::ZenithBuilder, ZenithAbility};
 
 /// Caste traits for the Zenith Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

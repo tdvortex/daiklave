@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use super::{motes::Motes, mote_pool::MotePool};
+use super::{mote_pool::MotePool, motes::Motes};
 
 /// The current state of a character's Essence and motes.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

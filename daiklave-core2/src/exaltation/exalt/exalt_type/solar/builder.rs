@@ -3,17 +3,21 @@ use std::collections::HashSet;
 use crate::{abilities::AbilityName, sorcery::SolarSorcererView};
 
 use super::{
-    SolarView, builder_error::SolarBuilderError, caste::{SolarCasteView, dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView, zenith::ZenithView}, solar::Solar,
+    builder_error::SolarBuilderError,
+    caste::{
+        dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView,
+        zenith::ZenithView, SolarCasteView,
+    },
+    solar::Solar,
+    solar_view::SolarView,
 };
 
 #[derive(Debug, Default)]
 pub struct SolarBuilder<'source> {
     caste: Option<SolarCasteView>,
     favored_abilities: HashSet<AbilityName>,
-    sorcery:
-        Option<SolarSorcererView<'source>>,
+    sorcery: Option<SolarSorcererView<'source>>,
 }
-
 
 impl<'source> SolarBuilder<'source> {
     pub fn set_dawn(&mut self, dawn: DawnView) -> &mut Self {
@@ -124,10 +128,6 @@ impl<'source> SolarBuilder<'source> {
         let mut arr = option_arr.map(|el| el.unwrap());
         arr.sort();
 
-        Ok(SolarView {
-            caste: self.caste.unwrap(),
-            favored_abilities: arr,
-            sorcery: self.sorcery,
-        })
+        Ok(SolarView::new(self.caste.unwrap(), arr, self.sorcery))
     }
 }

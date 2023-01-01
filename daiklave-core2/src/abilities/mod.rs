@@ -12,4 +12,4 @@ pub(crate) use ability::Ability;
 pub use ability_name::AbilityName;
 pub use ability_name_vanilla::AbilityNameVanilla;
 pub(crate) use ability_view::AbilityView;
-pub(crate) use error::{AddSpecialtyError, SetAbilityError, RemoveSpecialtyError};
+pub(crate) use error::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};

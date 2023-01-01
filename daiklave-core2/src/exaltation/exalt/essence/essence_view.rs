@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::{motes_view::MotesView, mote_pool::MotePool};
+use super::{mote_pool::MotePool, motes_view::MotesView};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EssenceView<'source> {
@@ -20,7 +20,7 @@ impl<'source> EssenceView<'source> {
     pub fn motes_mut(&mut self) -> &mut MotesView<'source> {
         &mut self.motes
     }
-    
+
     pub(crate) fn new_solar(rating: u8) -> Self {
         Self {
             rating,
@@ -38,4 +38,3 @@ impl<'source> EssenceView<'source> {
         }
     }
 }
-

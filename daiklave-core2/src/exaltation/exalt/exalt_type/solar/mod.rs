@@ -5,45 +5,12 @@ mod builder;
 mod builder_error;
 mod exalt;
 mod solar;
+mod solar_view;
 
 pub use solar::Solar;
+pub use solar_view::SolarView;
 
-use crate::{
-    abilities::AbilityName,
-    guided::ExaltationChoice,
-    sorcery::{SolarSorcererView},
-};
-
-use self::caste::SolarCasteView;
-
-/// Traits which are unique to being a Solar Exalted, with &str
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SolarView<'source> {
-    caste: SolarCasteView,
-    favored_abilities: [AbilityName; 5],
-    pub(crate) sorcery: Option<SolarSorcererView<'source>>,
-}
-
-impl<'source> SolarView<'source> {
-    /// Returns True if the ability is a caste ability for the charcter. Note
-    /// that MartialArts is a caste ability if and only if Brawl is a caste
-    /// ability.
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        self.caste.has_caste_ability(ability)
-    }
-
-    /// Returns the Solar's supernal ability.
-    pub fn supernal_ability(&self) -> AbilityName {
-        self.caste.supernal_ability()
-    }
-
-    /// Returns True if the ability is a favored ability for the charcter. Note
-    /// that MartialArts is a favored ability if and only if Brawl is a favored
-    /// ability.
-    pub fn has_favored_ability(&self, ability: AbilityName) -> bool {
-        self.favored_abilities.iter().any(|&a| a == ability)
-    }
-}
+use crate::{abilities::AbilityName, guided::ExaltationChoice};
 
 pub(crate) fn validate_solar_caste_ability(
     exaltation: ExaltationChoice,

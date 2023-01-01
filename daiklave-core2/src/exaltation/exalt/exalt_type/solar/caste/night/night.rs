@@ -1,8 +1,8 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::abilities::AbilityName;
 
-use super::{night_ability::NightAbility, builder::NightBuilder};
+use super::{builder::NightBuilder, night_ability::NightAbility};
 
 /// Caste traits for the Night Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

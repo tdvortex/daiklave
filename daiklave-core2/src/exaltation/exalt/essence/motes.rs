@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use super::{MoteCommitmentId, MoteCommitment, mote_pool::MotePool};
+use super::{mote_pool::MotePool, MoteCommitment, MoteCommitmentId};
 
 /// The current state of a character's mote balances. Includes both peripheral
 /// and personal mote pools, as well as commitments from both.
