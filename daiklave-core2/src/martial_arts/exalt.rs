@@ -10,7 +10,7 @@ use crate::{
 
 use super::{
     AddMartialArtsStyleError, MartialArtsCharm, MartialArtsCharmId, MartialArtsStyle,
-    MartialArtsStyleId, RemoveMartialArtsStyleError, SetMartialArtsError,
+    MartialArtsStyleId, RemoveMartialArtsStyleError, SetMartialArtsDotsError,
 };
 
 impl Exalt {
@@ -76,11 +76,11 @@ impl Exalt {
             Err(CharacterMutationError::SetAbilityError(
                 SetAbilityError::InvalidRating(dots),
             ))
-        } else if let Some(style) = self.martial_arts_styles.get(&id) {
+        } else if let Some(_) = self.martial_arts_styles.get(&id) {
             Ok(())
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(
-                SetMartialArtsError::NotFound,
+            Err(CharacterMutationError::SetMartialArtsDotsError(
+                SetMartialArtsDotsError::NotFound,
             ))
         }
     }
@@ -129,8 +129,8 @@ impl Exalt {
                 Ok(self)
             }
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(
-                SetMartialArtsError::NotFound,
+            Err(CharacterMutationError::SetMartialArtsDotsError(
+                SetMartialArtsDotsError::NotFound,
             ))
         }
     }
@@ -202,8 +202,8 @@ impl<'source> ExaltView<'source> {
         } else if let Some(_) = self.martial_arts_styles.get(&id) {
             Ok(())
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(
-                SetMartialArtsError::NotFound,
+            Err(CharacterMutationError::SetMartialArtsDotsError(
+                SetMartialArtsDotsError::NotFound,
             ))
         }
     }
@@ -249,8 +249,8 @@ impl<'source> ExaltView<'source> {
             style.ability.set_dots(dots)?;
             Ok(self)
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(
-                SetMartialArtsError::NotFound,
+            Err(CharacterMutationError::SetMartialArtsDotsError(
+                SetMartialArtsDotsError::NotFound,
             ))
         }
     }

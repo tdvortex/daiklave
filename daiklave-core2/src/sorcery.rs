@@ -14,16 +14,22 @@ use crate::{
             },
             Exalt, ExaltView,
         },
-        mortal::{Mortal, MortalView},
+        mortal::MortalView,
         ExaltState, ExaltStateView,
     },
     id::UniqueId,
     Character, CharacterMutationError, CharacterView,
 };
 
+/// One of the three tiers of Sorcery.
 pub enum SorceryCircle {
+    /// The first and lowest circle. Usable by everyone, including some mortals
     Terrestrial,
+    /// The second circle, usable by Solars (and Abyssals and Infernals), 
+    /// Lunars, Sidereals, and Getimians.
     Celestial,
+    /// The third and highest circle, usable only by the most skilled of the 
+    /// Solars.
     Solar,
 }
 
@@ -258,19 +264,23 @@ impl Deref for SolarSpell {
 }
 
 impl<'char> Character {
+    /// The character's Sorcery abilities, if any.
     pub fn sorcery(&'char self) -> Option<Sorcery<'char>> {
         self.exalt_state.sorcery()
     }
 }
 
 impl<'view, 'source> CharacterView<'source> {
+    /// The character's Sorcery abilities, if any.
     pub fn sorcery(&'view self) -> Option<SorceryView<'view, 'source>> {
         self.exalt_state.sorcery()
     }
 }
 
+/// A character's Sorcery abilities.
 pub struct Sorcery<'char>(SorcerySwitch<'char>);
 
+/// A character's Sorcery abilities.
 pub struct SorceryView<'view, 'source>(SorceryViewSwitch<'view, 'source>);
 
 enum SorcerySwitch<'char> {
@@ -283,10 +293,14 @@ enum SorceryViewSwitch<'view, 'source> {
     Exalt(ExaltSorceryViewSwitch<'view, 'source>),
 }
 
+/// Errors related to adding Sorcery to a character.
 #[derive(Debug, Error)]
 pub enum SorceryError {
+    /// Shaping rituals require specific sorcerous archetypes to use.
     #[error("Missing an archetype for a shaping ritual")]
     MissingArchetype,
+    /// Characters must progress through the circles in order, including in
+    /// reverse if the player changes their mind.
     #[error("Sorcery must progress as None <-> Terrestrial <-> Celestial <-> Solar only")]
     CircleSequence,
 }
@@ -303,7 +317,7 @@ pub(crate) struct TerrestrialCircleSorcerer {
 }
 
 impl TerrestrialCircleSorcerer {
-    pub fn new(
+    pub fn _new(
         archetype_id: SorceryArchetypeId,
         archetype: SorceryArchetype,
         shaping_ritual_id: ShapingRitualId,
@@ -753,10 +767,12 @@ impl<'source> From<SolarCircleSorcererView<'source>> for SolarCircleSorcerer {
 }
 
 impl<'char> Sorcery<'char> {
+    /// The details of a specific sorcerous archetype, if it exists.
     pub fn archetype(&'char self, id: SorceryArchetypeId) -> Option<&'char SorceryArchetype> {
         self.0.archetype(id)
     }
 
+    /// The shaping ritual the character learned at a specific circle induction.
     pub fn shaping_ritual(
         &'char self,
         circle: SorceryCircle,
@@ -764,16 +780,19 @@ impl<'char> Sorcery<'char> {
         self.0.shaping_ritual(circle)
     }
 
+    /// The control spell the character learned at a specific circle induction.
     pub fn control_spell(&'char self, circle: SorceryCircle) -> Option<(SpellId, &'char Spell)> {
         self.0.control_spell(circle)
     }
 }
 
 impl<'view, 'source> SorceryView<'view, 'source> {
+    /// The details of a specific sorcerous archetype, if it exists.
     pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&'source SorceryArchetype> {
         self.0.archetype(id)
     }
 
+    /// The shaping ritual the character learned at a specific circle induction.
     pub fn shaping_ritual(
         &self,
         circle: SorceryCircle,
@@ -781,6 +800,7 @@ impl<'view, 'source> SorceryView<'view, 'source> {
         self.0.shaping_ritual(circle)
     }
 
+    /// The control spell the character learned at a specific circle induction.
     pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, &'source Spell)> {
         self.0.control_spell(circle)
     }
@@ -1168,6 +1188,8 @@ impl<'source> SolarSorcererView<'source> {
 }
 
 impl<'source> CharacterView<'source> {
+    /// If the character was not already a sorcerer, adds the first circle of
+    /// sorcery.
     pub fn add_terrestrial_sorcery(
         &mut self,
         archetype_id: SorceryArchetypeId,

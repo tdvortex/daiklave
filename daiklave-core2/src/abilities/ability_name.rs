@@ -55,6 +55,8 @@ pub enum AbilityNameVanilla {
 }
 
 impl AbilityNameVanilla {
+    /// Iterates over all ability names except for Craft and Martial Arts,
+    /// in alphabetical order.
     pub fn iter() -> impl Iterator<Item = AbilityNameVanilla> {
         [
             Self::Archery,

@@ -49,6 +49,8 @@ impl<'source> CharacterView<'source> {
         Ok(self)
     }
 
+    /// Checks if the ability dots for the specified Martial Arts style
+    /// can be set to a given value.
     pub fn check_set_martial_arts_dots(
         &self,
         id: MartialArtsStyleId,
@@ -57,6 +59,7 @@ impl<'source> CharacterView<'source> {
         self.exalt_state.check_set_martial_arts_dots(id, dots)
     }
 
+    /// Sets the ability dots for a specific Martial Arts style.
     pub fn set_martial_arts_dots(
         &mut self,
         id: MartialArtsStyleId,
@@ -68,6 +71,7 @@ impl<'source> CharacterView<'source> {
 }
 
 impl<'view, 'source> CharacterView<'source> {
+    /// Accesses Martial Arts styles, abilities, and Charms.
     pub fn martial_arts(&'view self) -> MartialArtsView<'view, 'source> {
         MartialArtsView(self)
     }

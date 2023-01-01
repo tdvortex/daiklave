@@ -8,7 +8,7 @@ use crate::{
 
 use super::{
     AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError,
-    SetMartialArtsError,
+    SetMartialArtsDotsError,
 };
 
 impl Mortal {
@@ -67,13 +67,13 @@ impl Mortal {
     pub(crate) fn check_set_martial_arts_dots(
         &self,
         id: MartialArtsStyleId,
-        dots: u8,
+        _dots: u8,
     ) -> Result<(), CharacterMutationError> {
-        if let Some(style) = self.martial_arts_styles.get(&id) {
+        if self.martial_arts_styles.contains_key(&id) {
             Ok(())
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(
-                SetMartialArtsError::NotFound,
+            Err(CharacterMutationError::SetMartialArtsDotsError(
+                SetMartialArtsDotsError::NotFound,
             ))
         }
     }
@@ -85,10 +85,11 @@ impl Mortal {
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(style) = self.martial_arts_styles.get_mut(&id) {
             // Mortals have no charms to lose if dots are zero
+            style.ability.set_dots(dots)?;
             Ok(self)
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(
-                SetMartialArtsError::NotFound,
+            Err(CharacterMutationError::SetMartialArtsDotsError(
+                SetMartialArtsDotsError::NotFound,
             ))
         }
     }
@@ -150,13 +151,13 @@ impl<'source> MortalView<'source> {
     pub(crate) fn check_set_martial_arts_dots(
         &self,
         id: MartialArtsStyleId,
-        dots: u8,
+        _dots: u8,
     ) -> Result<(), CharacterMutationError> {
-        if let Some(style) = self.martial_arts_styles.get(&id) {
+        if self.martial_arts_styles.contains_key(&id) {
             Ok(())
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(
-                SetMartialArtsError::NotFound,
+            Err(CharacterMutationError::SetMartialArtsDotsError(
+                SetMartialArtsDotsError::NotFound,
             ))
         }
     }
@@ -171,8 +172,8 @@ impl<'source> MortalView<'source> {
             style.ability.set_dots(dots)?;
             Ok(self)
         } else {
-            Err(CharacterMutationError::SetMartialArtsError(
-                SetMartialArtsError::NotFound,
+            Err(CharacterMutationError::SetMartialArtsDotsError(
+                SetMartialArtsDotsError::NotFound,
             ))
         }
     }

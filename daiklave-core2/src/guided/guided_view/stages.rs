@@ -141,7 +141,7 @@ impl<'source> GuidedView<'source> {
 
                 three_or_less == 28 && craft_favored_met
             }
-            GuidedStage::ChooseMerits => todo!(),
+            GuidedStage::ChooseSpecialties => todo!(),
         } {
             Err(GuidedError::StageIncompleteError)
         } else {
@@ -177,7 +177,7 @@ impl<'source> GuidedView<'source> {
             (GuidedStage::ChooseSolarFavoredAbilities, _) => GuidedStage::ChooseMartialArtsStyles,
             (GuidedStage::ChooseMartialArtsStyles, _) => GuidedStage::ChooseSorcery,
             (GuidedStage::ChooseSorcery, _) => GuidedStage::ChooseAbilities,
-            (GuidedStage::ChooseAbilities, _) => GuidedStage::ChooseMerits,
+            (GuidedStage::ChooseAbilities, _) => GuidedStage::ChooseSpecialties,
             _ => {
                 return Err(GuidedError::StageOrderError);
             }

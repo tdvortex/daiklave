@@ -34,9 +34,15 @@ impl Craft {
 }
 
 impl Character {
+    /// The character's Craft abilities and specialties.
+    pub fn craft(&self) -> &Craft {
+        &self.craft
+    }
+
+    /// Checks if a Craft ability can be set to the specified dots.
     pub fn check_set_craft_dots(
         &self,
-        focus: &str,
+        _focus: &str,
         dots: u8,
     ) -> Result<(), CharacterMutationError> {
         if dots > 5 {
@@ -48,6 +54,7 @@ impl Character {
         }
     }
 
+    /// Sets a specific Craft focus area to the specified dots.
     pub fn set_craft_dots(
         &mut self,
         focus: &str,
@@ -58,7 +65,7 @@ impl Character {
                 SetAbilityError::InvalidRating(dots),
             ))
         } else {
-            self.craft.set_dots(focus, dots);
+            self.craft.set_dots(focus, dots)?;
             Ok(self)
         }
     }
@@ -94,13 +101,15 @@ impl<'source> CraftView<'source> {
 }
 
 impl<'source> CharacterView<'source> {
+    /// The character's Craft abilities and specialties.
     pub fn craft(&self) -> &CraftView {
         &self.craft
     }
 
+    /// Checks if a Craft ability can be set to the specified dots.
     pub fn check_set_craft_dots(
         &self,
-        focus: &str,
+        _focus: &str,
         dots: u8,
     ) -> Result<(), CharacterMutationError> {
         if dots > 5 {
@@ -112,6 +121,7 @@ impl<'source> CharacterView<'source> {
         }
     }
 
+    /// Sets a specific Craft focus area to the specified dots.
     pub fn set_craft_dots(
         &mut self,
         focus: &'source str,
@@ -122,7 +132,7 @@ impl<'source> CharacterView<'source> {
                 SetAbilityError::InvalidRating(dots),
             ))
         } else {
-            self.craft.set_dots(focus, dots);
+            self.craft.set_dots(focus, dots)?;
             Ok(self)
         }
     }

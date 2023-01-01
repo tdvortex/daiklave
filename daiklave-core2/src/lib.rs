@@ -15,7 +15,7 @@ use exalt_state::exalt::{
 use health::{DamageLevel, WoundPenalty};
 use martial_arts::{
     AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError,
-    SetMartialArtsError,
+    SetMartialArtsDotsError,
 };
 use name_and_concept::RemoveConceptError;
 use sorcery::SorceryError;
@@ -122,7 +122,9 @@ pub enum CharacterMutation {
     /// Removes a Martial Arts style from a character, including the merit,
     /// associated ability dots, specialties, and Charms.
     RemoveMartialArtsStyle(MartialArtsStyleId),
+    /// Sets the Ability dots for a specific Martial Arts style.
     SetMartialArtsDots(MartialArtsStyleId, u8),
+    /// Sets the Craft dots for a particular focus area.
     SetCraftDots(String, u8),
 }
 
@@ -142,7 +144,7 @@ pub enum CharacterMutationError {
     /// Error occurring while trying to recover motes
     #[error("Cannot recover motes")]
     RecoverMotesError(#[from] RecoverMotesError),
-    /// Error occuring while trying to uncommit motes
+    /// Error occurring while trying to uncommit motes
     #[error("Cannot uncommit motes")]
     UncommitMotesError(#[from] UncommitMotesError),
     /// Error occurring while trying to set essence rating
@@ -160,14 +162,16 @@ pub enum CharacterMutationError {
     /// Error occurring while trying to remove a specialty
     #[error("Cannot remove specialty")]
     RemoveSpecialtyError(#[from] RemoveSpecialtyError),
-    /// Error occuring while trying to add a Martial Arts style
+    /// Error occurring while trying to add a Martial Arts style
     #[error("Cannot add Martial Arts style")]
     AddMartialArtsStyleError(#[from] AddMartialArtsStyleError),
-    /// Error occuring while trying to remove a Martial Arts style
+    /// Error occurring while trying to remove a Martial Arts style
     #[error("Cannot remove Martial Arts style")]
     RemoveMartialArtsStyleError(#[from] RemoveMartialArtsStyleError),
+    /// Error occurring while trying to set Martial Arts dots
     #[error("Cannot set Martial Arts dots")]
-    SetMartialArtsError(#[from] SetMartialArtsError),
+    SetMartialArtsDotsError(#[from] SetMartialArtsDotsError),
+    /// Error occurring while trying to add a Sorcery circle
     #[error("Cannot add Sorcery circle")]
     AddSorceryCircleError(#[from] SorceryError),
 }

@@ -85,8 +85,11 @@ pub enum GuidedStage {
     /// does not purchase any non-Control Spells or associated Shaping Ritual
     /// merits.
     ChooseSorcery,
+    /// The stage for choosing Ability dot values, including Martial Arts and
+    /// Craft.
     ChooseAbilities,
-    ChooseMerits,
+    /// The stage for choosing Specialties for your abilities.
+    ChooseSpecialties,
 }
 
 /// The supported options for Exaltations.
