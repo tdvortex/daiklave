@@ -1,12 +1,10 @@
 use std::collections::HashSet;
 
-use thiserror::Error;
-
 use crate::{abilities::AbilityName, sorcery::SolarSorcererView};
 
 use super::{
     caste_view::SolarCasteView, dawn::DawnView, eclipse::EclipseView, night::NightView,
-    twilight::TwilightView, zenith::ZenithView, Solar, SolarView,
+    twilight::TwilightView, zenith::ZenithView, Solar, SolarView, builder_error::SolarBuilderError,
 };
 
 pub struct SolarTraitsBuilder<'source> {
@@ -16,19 +14,6 @@ pub struct SolarTraitsBuilder<'source> {
         Option<SolarSorcererView<'source>>,
 }
 
-#[derive(Debug, Error)]
-pub enum SolarBuilderError {
-    #[error("Caste and Favored abilities must be unique")]
-    UniqueCasteAndFavored,
-    #[error("Required field missing: {0}")]
-    MissingField(&'static str),
-    #[error("Must have 5 Caste and 5 Favored abilities")]
-    CasteAndFavoredCount,
-    #[error("Martial Arts cannot be a Caste or Favored ability")]
-    MartialArts,
-    #[error("Must use correct caste abilities")]
-    InvalidCasteAbility,
-}
 
 impl<'source> SolarTraitsBuilder<'source> {
     pub fn set_dawn(&mut self, dawn: DawnView) -> &mut Self {

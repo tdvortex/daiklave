@@ -4,20 +4,17 @@ use serde::{Deserialize, Serialize};
 
 use crate::{id::UniqueId, CharacterMutationError};
 
-mod character;
-mod character_view;
 mod error;
 mod essence_view;
-mod exalt;
-mod exalt_state;
-mod exalt_state_view;
-mod exalt_view;
+mod mote_commitment_view;
+pub(crate) use mote_commitment_view::MoteCommitmentView;
+mod motes_view;
 
 pub use error::{
     CommitMotesError, RecoverMotesError, SetEssenceRatingError, SpendMotesError, UncommitMotesError,
 };
 
-pub(crate) use essence_view::{EssenceView, MotesView};
+pub(crate) use essence_view::{EssenceView};
 
 /// The current state of a character's Essence and motes.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -39,6 +36,23 @@ impl Essence {
 
     pub(crate) fn motes_mut(&mut self) -> &mut Motes {
         &mut self.motes
+    }
+
+    pub(crate) fn new_solar(rating: u8) -> Self {
+        Self {
+            rating,
+            motes: Motes {
+                peripheral: MoteState {
+                    available: rating * 7 + 26,
+                    spent: 0,
+                },
+                personal: MoteState {
+                    available: rating * 3 + 10,
+                    spent: 0,
+                },
+                commitments: HashMap::new(),
+            },
+        }
     }
 }
 
@@ -81,9 +95,9 @@ impl Motes {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub(crate) struct MoteCommitment {
-    name: String,
-    peripheral: u8,
-    personal: u8,
+    pub name: String,
+    pub peripheral: u8,
+    pub personal: u8,
 }
 
 /// Indicates whether motes are spent/committed from peripheral or peripheral
@@ -114,7 +128,8 @@ impl MoteState {
         self.spent
     }
 
-    fn spend(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+    /// Spend a number of motes, shifting them from available to spent.
+    pub fn spend(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         if amount > self.available {
             Err(CharacterMutationError::SpendMotesError(
                 SpendMotesError::InsufficientMotes(amount, self.available),
@@ -126,7 +141,9 @@ impl MoteState {
         }
     }
 
-    fn commit(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+    /// Commit a number of motes, removing the from the pool and locking them
+    /// inside the committed effect.
+    pub fn commit(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         if amount > self.available {
             Err(CharacterMutationError::CommitMotesError(
                 CommitMotesError::InsufficientMotes(self.available, amount),
@@ -137,14 +154,17 @@ impl MoteState {
         }
     }
 
-    fn recover(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+    /// Recover spent motes, shifting them from spent to available.
+    pub fn recover(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         let recovered = amount.min(self.spent);
         self.spent -= recovered;
         self.available += recovered;
         Ok(self)
     }
 
-    fn uncommit(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+    /// Recover motes from a commitment effect, adding these to spent, where
+    /// they can later be recovered.
+    pub fn uncommit(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         self.spent += amount;
         Ok(self)
     }

@@ -1,7 +1,6 @@
+mod ability_name_vanilla;
 mod abilities_view;
 mod ability_view;
-mod character;
-mod character_view;
 mod error;
 
 use std::collections::HashSet;
@@ -11,7 +10,8 @@ pub(crate) use ability_view::AbilityView;
 pub use error::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 
 mod ability_name;
-pub use ability_name::{AbilityName, AbilityNameVanilla};
+pub use ability_name::{AbilityName};
+pub use ability_name_vanilla::{AbilityNameVanilla};
 use serde::{Deserialize, Serialize};
 
 use crate::CharacterMutationError;
@@ -36,7 +36,7 @@ impl Ability {
         }
     }
 
-    pub(crate) fn set_dots(&mut self, new_dots: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_dots(&mut self, new_dots: u8) -> Result<&mut Self, CharacterMutationError> {
         if new_dots > 5 {
             Err(CharacterMutationError::SetAbilityError(
                 SetAbilityError::InvalidRating(new_dots),
@@ -62,7 +62,7 @@ impl Ability {
         .into_iter()
     }
 
-    fn add_specialty(&mut self, new_specialty: &str) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_specialty(&mut self, new_specialty: &str) -> Result<&mut Self, CharacterMutationError> {
         if let Ability::NonZero(_, specialties) = self {
             if specialties.contains(new_specialty) {
                 Err(CharacterMutationError::AddSpecialtyError(
@@ -79,7 +79,7 @@ impl Ability {
         }
     }
 
-    fn remove_specialty(&mut self, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_specialty(&mut self, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
         if let Ability::NonZero(_, specialties) = self {
             if !specialties.remove(specialty) {
                 Err(CharacterMutationError::RemoveSpecialtyError(
@@ -127,7 +127,7 @@ pub struct Abilities {
 }
 
 impl Abilities {
-    fn ability(&self, ability_name: AbilityNameVanilla) -> &Ability {
+    pub(crate) fn ability(&self, ability_name: AbilityNameVanilla) -> &Ability {
         match ability_name {
             AbilityNameVanilla::Archery => &self.archery,
             AbilityNameVanilla::Athletics => &self.athletics,
@@ -156,7 +156,7 @@ impl Abilities {
         }
     }
 
-    fn ability_mut(&mut self, ability_name: AbilityNameVanilla) -> &mut Ability {
+    pub(crate) fn ability_mut(&mut self, ability_name: AbilityNameVanilla) -> &mut Ability {
         match ability_name {
             AbilityNameVanilla::Archery => &mut self.archery,
             AbilityNameVanilla::Athletics => &mut self.athletics,

@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::abilities::AbilityName;
 
-use super::builder::SolarBuilderError;
+use super::builder_error::SolarBuilderError;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash, PartialOrd, Ord)]
 pub(crate) enum DawnCasteAbility {

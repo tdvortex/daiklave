@@ -3,13 +3,11 @@ use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
 
 mod builder;
+mod builder_error;
 mod caste;
 mod caste_view;
-mod character;
-mod character_view;
 mod dawn;
 mod eclipse;
-mod essence;
 mod exalt;
 mod night;
 mod twilight;
