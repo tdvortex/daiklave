@@ -1,6 +1,6 @@
 use crate::abilities::AbilityName;
 
-use super::{night_ability::NightAbility, builder::NightBuilder};
+use super::{night_ability::NightAbility, builder::NightBuilder, NightMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NightView {
@@ -21,6 +21,13 @@ impl NightView {
 
     pub fn builder() -> NightBuilder {
         NightBuilder::default()
+    }
+
+    pub(crate) fn as_memo(&self) -> NightMemo {
+        NightMemo::new(
+            self.caste_not_supernal,
+            self.supernal,
+        )
     }
 
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {

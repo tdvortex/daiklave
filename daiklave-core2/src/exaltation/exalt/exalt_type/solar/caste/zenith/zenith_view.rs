@@ -1,6 +1,6 @@
 use crate::abilities::AbilityName;
 
-use super::{ZenithAbility, builder::ZenithBuilder};
+use super::{ZenithAbility, builder::ZenithBuilder, ZenithMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ZenithView {
@@ -19,9 +19,15 @@ impl ZenithView {
         }
     }
 
-
     pub fn builder() -> ZenithBuilder {
         ZenithBuilder::default()
+    }
+
+    pub(crate) fn as_memo(&self) -> ZenithMemo {
+        ZenithMemo::new(
+            self.caste_not_supernal,
+            self.supernal,
+        )
     }
 
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {

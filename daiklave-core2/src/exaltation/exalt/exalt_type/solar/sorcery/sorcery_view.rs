@@ -1,5 +1,7 @@
 use crate::sorcery::{circles::{terrestrial::sorcerer_view::TerrestrialCircleSorcererView, celestial::sorcerer_view::CelestialCircleSorcererView, solar::sorcerer_view::SolarCircleSorcererView}, SorceryArchetypeId, SorceryArchetype, SorceryCircle, ShapingRitualId, ShapingRitual, SpellId, Spell};
 
+use super::SolarSorcererMemo;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum SolarSorcererView<'source> {
     Terrestrial(TerrestrialCircleSorcererView<'source>),
@@ -8,6 +10,14 @@ pub(crate) enum SolarSorcererView<'source> {
 }
 
 impl<'source> SolarSorcererView<'source> {
+    pub fn as_memo(&self) -> SolarSorcererMemo {
+        match self {
+            SolarSorcererView::Terrestrial(view) => SolarSorcererMemo::Terrestrial(Box::new(view.as_memo())),
+            SolarSorcererView::Celestial(view) => SolarSorcererMemo::Celestial(Box::new(view.as_memo())),
+            SolarSorcererView::Solar(view) => SolarSorcererMemo::Solar(Box::new(view.as_memo())),
+        }
+    }
+
     pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&'source SorceryArchetype> {
         match self {
             SolarSorcererView::Terrestrial(terrestrial) => terrestrial.archetype(id),

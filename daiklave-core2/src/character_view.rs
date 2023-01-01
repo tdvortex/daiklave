@@ -22,7 +22,7 @@ use crate::{
         SorceryView, TerrestrialSpell,
     },
     willpower::Willpower,
-    CharacterMutation, CharacterMutationError,
+    CharacterMutation, CharacterMutationError, CharacterMemo,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -55,6 +55,20 @@ impl<'source> Default for CharacterView<'source> {
 }
 
 impl<'source> CharacterView<'source> {
+    pub fn as_memo(&self) -> CharacterMemo {
+        CharacterMemo {
+            name: self.name.to_string(),
+            concept: self.concept.map(|s| s.to_string()),
+            exalt_state: self.exalt_state.as_memo(),
+            willpower: self.willpower,
+            health: self.health,
+            attributes: self.attributes,
+            abilities: self.abilities.as_memo(),
+            craft: self.craft.as_memo(),
+        }
+    }
+
+
     /// Checks if a specific CharacterMutation can be safely applied.
     pub fn check_mutation(
         &self,

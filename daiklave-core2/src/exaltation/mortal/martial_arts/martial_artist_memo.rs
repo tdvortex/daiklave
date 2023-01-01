@@ -14,10 +14,20 @@ pub(crate) struct MortalMartialArtistMemo {
 }
 
 impl<'source> MortalMartialArtistMemo {
-    pub fn as_ref(&'source self) -> MortalMartialArtistView<'source> {
-        MortalMartialArtistView {
-            style: &self.style,
-            ability: self.ability.as_ref(),
+    pub(in crate::exaltation::mortal::martial_arts) fn new(
+        style: MartialArtsStyle,
+        ability: AbilityMemo,
+    ) -> Self {
+        Self {
+            style,
+            ability,
         }
+    }
+
+    pub fn as_ref(&'source self) -> MortalMartialArtistView<'source> {
+        MortalMartialArtistView::new(
+            &self.style,
+            self.ability.as_ref(),
+        )
     }
 }

@@ -2,17 +2,17 @@ use std::collections::HashMap;
 
 use crate::sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, SorceryError, Spell, circles::{celestial::sorcerer_view::CelestialCircleSorcererView, solar::sorcerer_view::SolarCircleSorcererView}};
 
-use super::TerrestrialSpell;
+use super::{TerrestrialSpell, sorcerer_memo::TerrestrialCircleSorcererMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TerrestrialCircleSorcererView<'source> {
-    pub(crate) archetype_id: SorceryArchetypeId,
-    pub(crate) archetype: &'source SorceryArchetype,
-    pub(crate) shaping_ritual_id: ShapingRitualId,
-    pub(crate) shaping_ritual: &'source ShapingRitual,
-    pub(crate) control_spell_id: SpellId,
-    pub(crate) control_spell: &'source TerrestrialSpell,
-    pub(crate) other_spells: HashMap<SpellId, &'source TerrestrialSpell>,
+    pub(in crate::sorcery::circles) archetype_id: SorceryArchetypeId,
+    pub(in crate::sorcery::circles) archetype: &'source SorceryArchetype,
+    pub(in crate::sorcery::circles) shaping_ritual_id: ShapingRitualId,
+    pub(in crate::sorcery::circles) shaping_ritual: &'source ShapingRitual,
+    pub(in crate::sorcery::circles) control_spell_id: SpellId,
+    pub(in crate::sorcery::circles) control_spell: &'source TerrestrialSpell,
+    pub(in crate::sorcery::circles) other_spells: HashMap<SpellId, &'source TerrestrialSpell>,
 }
 
 impl<'source> TerrestrialCircleSorcererView<'source> {
@@ -38,6 +38,19 @@ impl<'source> TerrestrialCircleSorcererView<'source> {
             other_spells: HashMap::new(),
         })
     }
+
+    pub fn as_memo(&self) -> TerrestrialCircleSorcererMemo {
+        TerrestrialCircleSorcererMemo {
+            archetype_id: self.archetype_id,
+            archetype: self.archetype.to_owned(),
+            shaping_ritual_id: self.shaping_ritual_id,
+            shaping_ritual: self.shaping_ritual.to_owned(),
+            control_spell_id: self.control_spell_id,
+            control_spell: self.control_spell.to_owned(),
+            other_spells: self.other_spells.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
+        }
+    }
+
     pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&'source SorceryArchetype> {
         if id == self.archetype_id {
             Some(self.archetype)

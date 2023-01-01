@@ -12,11 +12,23 @@ pub(crate) struct MotesMemo {
 }
 
 impl<'source> MotesMemo {
-    pub fn as_ref(&'source self) -> MotesView<'source> {
-        MotesView { 
-            peripheral: self.peripheral, 
-            personal: self.personal, 
-            commitments: self.commitments.iter().map(|(k, v)| (*k, v.as_ref())).collect(),
+    pub(in crate::exaltation::exalt::essence) fn new(
+        peripheral: MotePool,
+        personal: MotePool,
+        commitments: HashMap<MoteCommitmentId, MoteCommitmentMemo>,
+    ) -> Self {
+        Self {
+            peripheral,
+            personal,
+            commitments,
         }
+    }
+
+    pub fn as_ref(&'source self) -> MotesView<'source> {
+        MotesView::new(
+            self.peripheral, 
+            self.personal, 
+            self.commitments.iter().map(|(k, v)| (*k, v.as_ref())).collect(),
+        ) 
     }
 }

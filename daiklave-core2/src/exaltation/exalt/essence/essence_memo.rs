@@ -9,6 +9,13 @@ pub(crate) struct EssenceMemo {
 }
 
 impl<'source> EssenceMemo {
+    pub fn new(
+        rating: u8,
+        motes: MotesMemo,
+    ) -> Self {
+        Self { rating, motes}
+    }
+
     pub fn as_ref(&'source self) -> EssenceView<'source> {
         EssenceView { 
             rating: self.rating, 

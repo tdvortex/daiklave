@@ -10,10 +10,20 @@ pub struct EclipseMemo {
 }
 
 impl<'source> EclipseMemo {
-    pub fn as_ref(&'source self) -> EclipseView {
-        EclipseView {
-            caste_not_supernal: self.caste_not_supernal,
-            supernal: self.supernal,
+    pub(in crate::exaltation::exalt::exalt_type::solar::caste::eclipse) fn new(
+        caste_not_supernal: [EclipseAbility; 4],
+        supernal: EclipseAbility,
+    ) -> Self {
+        Self {
+            caste_not_supernal,
+            supernal,
         }
+    }
+
+    pub fn as_ref(&'source self) -> EclipseView {
+        EclipseView::new(
+            self.caste_not_supernal,
+            self.supernal,
+        )
     }
 }

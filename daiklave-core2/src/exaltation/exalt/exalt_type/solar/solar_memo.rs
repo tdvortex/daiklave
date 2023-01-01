@@ -16,11 +16,19 @@ pub struct SolarMemo {
 }
 
 impl<'source> SolarMemo {
-    pub fn as_ref(&'source self) -> SolarView<'source> {
-        SolarView {
-            caste: self.caste.as_ref(),
-            favored_abilities: self.favored_abilities,
-            sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_ref()),
+    pub(in crate::exaltation::exalt::exalt_type::solar) fn new(
+        caste: SolarCasteMemo,
+        favored_abilities: [AbilityName; 5],
+        sorcery: Option<SolarSorcererMemo>,
+    ) -> Self {
+        Self {
+            caste,
+            favored_abilities,
+            sorcery,
         }
+    }
+
+    pub fn as_ref(&'source self) -> SolarView<'source> {
+        SolarView::new(self.caste.as_ref(), self.favored_abilities, self.sorcery.as_ref().map(|sorcery| sorcery.as_ref()))
     }
 }

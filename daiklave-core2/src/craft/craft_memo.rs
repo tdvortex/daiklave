@@ -7,7 +7,7 @@ use crate::{abilities::AbilityMemo};
 use super::CraftView;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
-pub(crate) struct CraftMemo(HashMap<String, AbilityMemo>);
+pub(crate) struct CraftMemo(pub(in crate::craft) HashMap<String, AbilityMemo>);
 
 impl<'source> CraftMemo {
     pub fn as_ref(&'source self) -> CraftView<'source> {

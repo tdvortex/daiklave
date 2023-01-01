@@ -1,7 +1,7 @@
 use crate::abilities::AbilityName;
 
 use super::{
-    dawn_caste_ability::DawnCasteAbility, dawn_supernal_ability::DawnSupernalAbility, builder::DawnBuilder,
+    dawn_caste_ability::DawnCasteAbility, dawn_supernal_ability::DawnSupernalAbility, builder::DawnBuilder, DawnMemo,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -23,6 +23,13 @@ impl DawnView {
 
     pub fn builder() -> DawnBuilder {
         DawnBuilder::default()
+    }
+
+    pub(crate) fn as_memo(&self) -> DawnMemo {
+        DawnMemo::new(
+            self.caste_not_supernal,
+            self.supernal,
+        )
     }
 
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {

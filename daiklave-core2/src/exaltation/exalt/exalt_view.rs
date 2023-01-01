@@ -19,7 +19,7 @@ use super::{
         SetEssenceRatingError, SpendMotesError, UncommitMotesError,
     },
     exalt_type::{solar::SolarView, ExaltTypeView},
-    martial_arts::ExaltMartialArtistView, sorcery::ExaltSorceryViewSwitch,
+    martial_arts::ExaltMartialArtistView, sorcery::ExaltSorceryViewSwitch, ExaltMemo,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -40,6 +40,14 @@ impl<'source> ExaltView<'source> {
             martial_arts_styles,
             exalt_type,
         }
+    }
+
+    pub fn as_memo(&self) -> ExaltMemo {
+        ExaltMemo::new(
+            self.essence.as_memo(),
+            self.martial_arts_styles.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+            self.exalt_type.as_memo(),
+        )
     }
 
     pub fn exalt_type(&self) -> &ExaltTypeView<'source> {
@@ -163,7 +171,7 @@ impl<'source> ExaltView<'source> {
         };
         self.essence_mut()
             .motes_mut()
-            .commitments
+            .commitments_mut()
             .insert(*id, commitment);
         Ok(self)
     }
@@ -192,7 +200,7 @@ impl<'source> ExaltView<'source> {
         &self,
         id: &MoteCommitmentId,
     ) -> Result<(), CharacterMutationError> {
-        if !self.essence().motes().commitments.contains_key(id) {
+        if !self.essence().motes().commitments().contains_key(id) {
             Err(CharacterMutationError::UncommitMotesError(
                 UncommitMotesError::NotFound(*id),
             ))
@@ -208,7 +216,7 @@ impl<'source> ExaltView<'source> {
         let commitment = self
             .essence_mut()
             .motes_mut()
-            .commitments
+            .commitments_mut()
             .remove(id)
             .ok_or({
                 CharacterMutationError::UncommitMotesError(UncommitMotesError::NotFound(*id))
@@ -332,11 +340,11 @@ impl<'source> ExaltView<'source> {
         self.check_add_martial_arts_style(id, style)?;
         self.martial_arts_styles.insert(
             id,
-            ExaltMartialArtistView {
+            ExaltMartialArtistView::new(
                 style,
-                ability: AbilityView::Zero,
-                charms: HashMap::new(),
-            },
+                AbilityView::Zero,
+                HashMap::new(),
+            )
         );
         Ok(self)
     }
@@ -391,27 +399,27 @@ impl<'source> ExaltView<'source> {
                 SetAbilityError::InvalidRating(dots),
             ))
         } else if let Some(style) = self.martial_arts_styles.get_mut(&id) {
-            if dots < style.ability.dots() {
+            if dots < style.ability().dots() {
                 // May have to remove charms
                 let mut prereq_charms_map =
                     HashMap::<MartialArtsCharmId, Vec<MartialArtsCharmId>>::new();
                 let mut removal_stack = Vec::<MartialArtsCharmId>::new();
 
-                for (charm_id, charm) in style.charms.iter() {
+                for (charm_id, charm) in style.charms() {
                     for prereq_charm_id in charm.charms_required() {
                         prereq_charms_map
                             .entry(prereq_charm_id)
                             .or_default()
-                            .push(*charm_id);
+                            .push(charm_id);
                     }
 
                     if charm.ability_required() > dots {
-                        removal_stack.push(*charm_id);
+                        removal_stack.push(charm_id);
                     }
                 }
 
                 while let Some(id_to_remove) = removal_stack.pop() {
-                    style.charms.remove(&id_to_remove);
+                    style.charms_mut().remove(&id_to_remove);
                     if let Some(dependents) = prereq_charms_map.remove(&id_to_remove) {
                         for dependent_id in dependents.iter() {
                             removal_stack.push(*dependent_id);
@@ -419,7 +427,7 @@ impl<'source> ExaltView<'source> {
                     }
                 }
             }
-            style.ability.set_dots(dots)?;
+            style.ability_mut().set_dots(dots)?;
             Ok(self)
         } else {
             Err(CharacterMutationError::SetMartialArtsDotsError(

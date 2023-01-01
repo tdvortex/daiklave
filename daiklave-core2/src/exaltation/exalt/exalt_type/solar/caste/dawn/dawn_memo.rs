@@ -13,10 +13,17 @@ pub struct DawnMemo {
 }
 
 impl<'source> DawnMemo {
+    pub(in crate::exaltation::exalt::exalt_type::solar::caste::dawn) fn new (
+        caste_not_supernal: [DawnCasteAbility; 4],
+        supernal: DawnSupernalAbility,
+    ) -> Self {
+        Self { caste_not_supernal, supernal }
+    }
+
     pub fn as_ref(&'source self) -> DawnView {
-        DawnView {
-            caste_not_supernal: self.caste_not_supernal,
-            supernal: self.supernal,
-        }
+        DawnView::new(
+            self.caste_not_supernal,
+            self.supernal,
+        )
     }
 }

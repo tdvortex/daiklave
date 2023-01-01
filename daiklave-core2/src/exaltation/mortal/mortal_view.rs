@@ -13,7 +13,7 @@ use crate::{
     CharacterMutationError,
 };
 
-use super::martial_arts::MortalMartialArtistView;
+use super::{martial_arts::MortalMartialArtistView, MortalMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct MortalView<'source> {
@@ -22,6 +22,13 @@ pub(crate) struct MortalView<'source> {
 }
 
 impl<'source> MortalView<'source> {
+    pub fn as_memo(&self) -> MortalMemo {
+        MortalMemo::new(
+            self.martial_arts_styles.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+            self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
+        )
+    }
+
     pub(crate) fn check_add_martial_arts_style(
         &self,
         id: MartialArtsStyleId,
@@ -44,10 +51,10 @@ impl<'source> MortalView<'source> {
         self.check_add_martial_arts_style(id, style)?;
         self.martial_arts_styles.insert(
             id,
-            MortalMartialArtistView {
+            MortalMartialArtistView::new(
                 style,
-                ability: AbilityView::Zero,
-            },
+                AbilityView::Zero,
+            )
         );
         Ok(self)
     }
@@ -95,7 +102,7 @@ impl<'source> MortalView<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(style) = self.martial_arts_styles.get_mut(&id) {
             // Mortals have no charms to lose if dots are zero
-            style.ability.set_dots(dots)?;
+            style.ability_mut().set_dots(dots)?;
             Ok(self)
         } else {
             Err(CharacterMutationError::SetMartialArtsDotsError(

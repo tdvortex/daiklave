@@ -17,11 +17,19 @@ pub(crate) struct ExaltMartialArtistMemo {
 }
 
 impl<'source> ExaltMartialArtistMemo {
-    pub fn as_ref(&'source self) -> ExaltMartialArtistView<'source> {
-        ExaltMartialArtistView { 
-            style: &self.style, 
-            ability: self.ability.as_ref(), 
-            charms: self.charms.iter().map(|(k, v)| (*k, v)).collect(),
+    pub(in crate::exaltation::exalt::martial_arts) fn new(
+        style: MartialArtsStyle,
+        ability: AbilityMemo,
+        charms: HashMap<MartialArtsCharmId, MartialArtsCharm>,
+    ) -> Self {
+        Self {
+            style,
+            ability,
+            charms,
         }
+    }
+
+    pub fn as_ref(&'source self) -> ExaltMartialArtistView<'source> {
+        ExaltMartialArtistView::new(&self.style, self.ability.as_ref(), self.charms.iter().map(|(k, v)| (*k, v)).collect())
     }
 }

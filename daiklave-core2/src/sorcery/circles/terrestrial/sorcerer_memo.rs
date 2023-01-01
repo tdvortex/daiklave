@@ -8,13 +8,13 @@ use super::{TerrestrialSpell, sorcerer_view::TerrestrialCircleSorcererView};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct TerrestrialCircleSorcererMemo {
-    archetype_id: SorceryArchetypeId,
-    archetype: SorceryArchetype,
-    shaping_ritual_id: ShapingRitualId,
-    shaping_ritual: ShapingRitual,
-    control_spell_id: SpellId,
-    control_spell: TerrestrialSpell,
-    other_spells: HashMap<SpellId, TerrestrialSpell>,
+    pub(in crate::sorcery::circles) archetype_id: SorceryArchetypeId,
+    pub(in crate::sorcery::circles) archetype: SorceryArchetype,
+    pub(in crate::sorcery::circles) shaping_ritual_id: ShapingRitualId,
+    pub(in crate::sorcery::circles) shaping_ritual: ShapingRitual,
+    pub(in crate::sorcery::circles) control_spell_id: SpellId,
+    pub(in crate::sorcery::circles) control_spell: TerrestrialSpell,
+    pub(in crate::sorcery::circles) other_spells: HashMap<SpellId, TerrestrialSpell>,
 }
 
 impl<'source> TerrestrialCircleSorcererMemo {

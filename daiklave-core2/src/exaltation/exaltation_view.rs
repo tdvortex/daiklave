@@ -10,7 +10,7 @@ use crate::{
 use super::{
     exalt::{exalt_type::{solar::{SolarSorcererView, SolarView, SolarMemo}, ExaltTypeView}, ExaltView, essence::{EssenceView, MotePoolName, SpendMotesError, MoteCommitmentId, CommitMotesError, RecoverMotesError, UncommitMotesError, SetEssenceRatingError}},
     martial_arts::ExaltationMartialArtistView,
-    mortal::MortalView, sorcery::SorceryViewSwitch,
+    mortal::MortalView, sorcery::SorceryViewSwitch, ExaltationMemo,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -26,6 +26,13 @@ impl<'source> Default for ExaltationView<'source> {
 }
 
 impl<'source> ExaltationView<'source> {
+    pub fn as_memo(&self) -> ExaltationMemo {
+        match self {
+            ExaltationView::Mortal(box_view) => ExaltationMemo::Mortal(Box::new(box_view.as_ref().as_memo())),
+            ExaltationView::Exalt(box_view) => ExaltationMemo::Exalt(Box::new(box_view.as_ref().as_memo())),
+        }
+    }
+
     pub fn is_mortal(&self) -> bool {
         matches!(self, Self::Mortal(_))
     }

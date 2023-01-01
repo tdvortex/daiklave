@@ -2,10 +2,16 @@ use std::collections::HashMap;
 
 use crate::{abilities::AbilityView, CharacterMutationError};
 
+use super::CraftMemo;
+
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct CraftView<'source>(pub(in crate::craft) HashMap<&'source str, AbilityView<'source>>);
 
 impl<'source> CraftView<'source> {
+    pub(crate) fn as_memo(&self) -> CraftMemo {
+        CraftMemo(self.0.iter().map(|(k, v)| (k.to_string(), v.as_memo())).collect())
+    }
+
     pub fn set_dots(
         &mut self,
         focus: &'source str,

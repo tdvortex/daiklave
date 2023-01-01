@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::CharacterMutationError;
 
-use super::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
+use super::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError, AbilityMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum AbilityView<'source> {
@@ -17,6 +17,14 @@ impl<'source> Default for AbilityView<'source> {
 }
 
 impl<'source> AbilityView<'source> {
+    pub fn as_memo(&self) -> AbilityMemo {
+        match self {
+            AbilityView::Zero => AbilityMemo::Zero,
+            AbilityView::NonZero(dots, specialties) => AbilityMemo::NonZero(*dots, specialties.iter().map(|s| s.to_string()).collect()),
+        }
+    }
+
+
     pub fn dots(&self) -> u8 {
         match self {
             AbilityView::Zero => 0,

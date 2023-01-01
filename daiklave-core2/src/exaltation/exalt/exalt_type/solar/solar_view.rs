@@ -35,6 +35,15 @@ impl<'source> SolarView<'source> {
         SolarBuilder::default()
     }
 
+
+    pub fn as_memo(&self) -> SolarMemo {
+        SolarMemo::new(
+            self.caste.as_memo(),
+            self.favored_abilities,
+            self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
+        )
+    }
+
     /// Returns True if the ability is a caste ability for the charcter. Note
     /// that MartialArts is a caste ability if and only if Brawl is a caste
     /// ability.
@@ -82,9 +91,6 @@ impl<'source> SolarView<'source> {
         }
     }
 
-    pub fn as_memo(&self) -> SolarMemo {
-        todo!()
-    }
 }
 
 impl<'view, 'source> SolarView<'source> {

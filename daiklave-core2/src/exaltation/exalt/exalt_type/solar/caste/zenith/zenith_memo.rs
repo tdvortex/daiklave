@@ -10,10 +10,17 @@ pub struct ZenithMemo {
 }
 
 impl<'source> ZenithMemo {
+    pub(in crate::exaltation::exalt::exalt_type::solar::caste::zenith) fn new(
+        caste_not_supernal: [ZenithAbility; 4],
+        supernal: ZenithAbility,
+    ) -> Self {
+        Self { caste_not_supernal, supernal }
+    }
+
     pub fn as_ref(&'source self) -> ZenithView {
-        ZenithView {
-            caste_not_supernal: self.caste_not_supernal,
-            supernal: self.supernal,
-        }
+        ZenithView::new(
+            self.caste_not_supernal,
+            self.supernal,
+        )
     }
 }

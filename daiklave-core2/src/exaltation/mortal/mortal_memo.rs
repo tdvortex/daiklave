@@ -17,6 +17,16 @@ pub(crate) struct MortalMemo {
 }
 
 impl<'source> MortalMemo {
+    pub fn new(
+        martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtistMemo>,
+        sorcery: Option<TerrestrialCircleSorcererMemo>,
+    ) -> Self {
+        Self {
+            martial_arts_styles,
+            sorcery,
+        }
+    }
+    
     pub fn as_ref(&'source self) -> MortalView<'source> {
         MortalView { 
             martial_arts_styles: {

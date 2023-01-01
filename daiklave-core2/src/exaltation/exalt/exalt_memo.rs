@@ -22,11 +22,19 @@ pub(crate) struct ExaltMemo {
 }
 
 impl<'source> ExaltMemo {
-    pub fn as_ref(&'source self) -> ExaltView<'source> {
-        ExaltView {
-            essence: self.essence.as_ref(),
-            martial_arts_styles: self.martial_arts_styles.iter().map(|(k, v)| (*k, v.as_ref())).collect(),
-            exalt_type: self.exalt_type.as_ref(),
+    pub(in crate::exaltation::exalt) fn new(
+        essence: EssenceMemo,
+        martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistMemo>,
+        exalt_type: ExaltTypeMemo,
+    ) -> Self {
+        Self {
+            essence,
+            martial_arts_styles,
+            exalt_type,
         }
+    }
+
+    pub fn as_ref(&'source self) -> ExaltView<'source> {
+        ExaltView::new(self.essence.as_ref(), self.martial_arts_styles.iter().map(|(k, v)| (*k, v.as_ref())).collect(), self.exalt_type.as_ref())
     }
 }

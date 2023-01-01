@@ -7,11 +7,21 @@ use super::{CommitMotesError, SpendMotesError};
 /// The available and spent motes from either a peripheral or personal pool.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub struct MotePool {
-    pub(crate) available: u8,
-    pub(crate) spent: u8,
+    available: u8,
+    spent: u8,
 }
 
 impl MotePool {
+    pub(in crate::exaltation::exalt::essence) fn new(
+        available: u8,
+        spent: u8,
+    ) -> Self {
+        Self {
+            available,
+            spent
+        }
+    }
+
     /// The available motes from the specific pool.
     pub fn available(&self) -> u8 {
         self.available

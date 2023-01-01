@@ -17,14 +17,14 @@ use crate::{
 /// serialization and deserialization.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CharacterMemo {
-    name: String,
-    concept: Option<String>,
-    exalt_state: ExaltationMemo,
-    willpower: Willpower,
-    health: Health,
-    attributes: Attributes,
-    abilities: AbilitiesMemo,
-    craft: CraftMemo,
+    pub(crate) name: String,
+    pub(crate) concept: Option<String>,
+    pub(crate) exalt_state: ExaltationMemo,
+    pub(crate) willpower: Willpower,
+    pub(crate) health: Health,
+    pub(crate) attributes: Attributes,
+    pub(crate) abilities: AbilitiesMemo,
+    pub(crate) craft: CraftMemo,
 }
 
 impl<'source> CharacterMemo {

@@ -1,6 +1,6 @@
 use crate::abilities::AbilityName;
 
-use super::{EclipseAbility, builder::EclipseBuilder};
+use super::{EclipseAbility, builder::EclipseBuilder, EclipseMemo};
 
 /// Caste traits for the Eclipse Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -22,6 +22,13 @@ impl EclipseView {
 
     pub fn builder() -> EclipseBuilder {
         EclipseBuilder::default()
+    }
+
+    pub(crate) fn as_memo(&self) -> EclipseMemo {
+        EclipseMemo::new(
+            self.caste_not_supernal,
+            self.supernal,
+        )
     }
 
     /// Returns true if the ability is a chosen Caste ability.

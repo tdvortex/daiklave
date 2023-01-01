@@ -9,19 +9,19 @@ use super::{SolarSpell, sorcerer_view::SolarCircleSorcererView};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SolarCircleSorcererMemo {
-    archetypes: HashMap<SorceryArchetypeId, SorceryArchetype>,
-    circle_archetypes: [SorceryArchetypeId; 3],
-    shaping_ritual_ids: [ShapingRitualId; 3],
-    shaping_rituals: [ShapingRitual; 3],
-    terrestrial_control_spell_id: SpellId,
-    terrestrial_control_spell: TerrestrialSpell,
-    terrestrial_spells: HashMap<SpellId, TerrestrialSpell>,
-    celestial_control_spell_id: SpellId,
-    celestial_control_spell: CelestialSpell,
-    celestial_spells: HashMap<SpellId, CelestialSpell>,
-    solar_control_spell_id: SpellId,
-    solar_control_spell: SolarSpell,
-    solar_spells: HashMap<SpellId, SolarSpell>,
+    pub(in crate::sorcery::circles) archetypes: HashMap<SorceryArchetypeId, SorceryArchetype>,
+    pub(in crate::sorcery::circles) circle_archetypes: [SorceryArchetypeId; 3],
+    pub(in crate::sorcery::circles) shaping_ritual_ids: [ShapingRitualId; 3],
+    pub(in crate::sorcery::circles) shaping_rituals: [ShapingRitual; 3],
+    pub(in crate::sorcery::circles) terrestrial_control_spell_id: SpellId,
+    pub(in crate::sorcery::circles) terrestrial_control_spell: TerrestrialSpell,
+    pub(in crate::sorcery::circles) terrestrial_spells: HashMap<SpellId, TerrestrialSpell>,
+    pub(in crate::sorcery::circles) celestial_control_spell_id: SpellId,
+    pub(in crate::sorcery::circles) celestial_control_spell: CelestialSpell,
+    pub(in crate::sorcery::circles) celestial_spells: HashMap<SpellId, CelestialSpell>,
+    pub(in crate::sorcery::circles) solar_control_spell_id: SpellId,
+    pub(in crate::sorcery::circles) solar_control_spell: SolarSpell,
+    pub(in crate::sorcery::circles) solar_spells: HashMap<SpellId, SolarSpell>,
 }
 
 impl<'source> SolarCircleSorcererMemo {
