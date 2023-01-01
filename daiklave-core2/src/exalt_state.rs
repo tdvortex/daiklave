@@ -18,13 +18,13 @@ use self::exalt::exalt_type::{ExaltType, ExaltTypeView};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum ExaltState {
-    Mortal(Mortal),
-    Exalt(Exalt),
+    Mortal(Box<Mortal>),
+    Exalt(Box<Exalt>),
 }
 
 impl Default for ExaltState {
     fn default() -> Self {
-        Self::Mortal(Mortal::default())
+        Self::Mortal(Box::new(Mortal::default()))
     }
 }
 
@@ -58,9 +58,9 @@ impl ExaltState {
                 ExaltType::Solar(solar) => {
                     if let Some(sorcery) = &solar.sorcery {
                         match sorcery {
-                            SolarSorcerer::Terrestrial(terrestrial) => Some(terrestrial.clone()),
-                            SolarSorcerer::Celestial(celestial) => Some(celestial.clone().into()),
-                            SolarSorcerer::Solar(solar) => Some(solar.clone().into()),
+                            SolarSorcerer::Terrestrial(terrestrial) => Some((**terrestrial).clone()),
+                            SolarSorcerer::Celestial(celestial) => Some((**celestial).clone().into()),
+                            SolarSorcerer::Solar(solar) => Some((**solar).clone().into()),
                         }
                     } else {
                         None
@@ -75,10 +75,10 @@ impl ExaltState {
             .map(|(id, exalt_artist)| (id, exalt_artist.into()))
             .collect();
 
-        *self = ExaltState::Mortal(Mortal {
+        *self = ExaltState::Mortal(Box::new(Mortal {
             martial_arts_styles,
             sorcery,
-        });
+        }));
 
         Ok(self)
     }
@@ -116,13 +116,13 @@ impl Character {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum ExaltStateView<'source> {
-    Mortal(MortalView<'source>),
-    Exalt(ExaltView<'source>),
+    Mortal(Box<MortalView<'source>>),
+    Exalt(Box<ExaltView<'source>>),
 }
 
 impl<'source> Default for ExaltStateView<'source> {
     fn default() -> Self {
-        Self::Mortal(MortalView::default())
+        Self::Mortal(Box::new(MortalView::default()))
     }
 }
 
@@ -175,10 +175,10 @@ impl<'source> ExaltStateView<'source> {
             .map(|(id, exalt_artist)| (id, exalt_artist.into()))
             .collect();
 
-        *self = ExaltStateView::Mortal(MortalView {
+        *self = ExaltStateView::Mortal(Box::new(MortalView {
             martial_arts_styles,
             sorcery,
-        });
+        }));
         Ok(self)
     }
 }

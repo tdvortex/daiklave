@@ -81,7 +81,7 @@ pub enum CharacterMutation {
     /// Set character to be mortal
     SetMortal,
     /// Set character to be Solar
-    SetSolar(Solar),
+    SetSolar(Box<Solar>),
     /// Spend motes, starting with one pool
     SpendMotes(MotePool, u8),
     /// Commit motes into a persistent effect, starting with one pool

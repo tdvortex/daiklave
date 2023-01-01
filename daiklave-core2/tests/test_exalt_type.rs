@@ -151,7 +151,7 @@ fn test_exalt_type_character_event_source() {
         builder.build().unwrap()
     };
 
-    let mutation = CharacterMutation::SetSolar(solar_traits);
+    let mutation = CharacterMutation::SetSolar(Box::new(solar_traits));
     character_view.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();

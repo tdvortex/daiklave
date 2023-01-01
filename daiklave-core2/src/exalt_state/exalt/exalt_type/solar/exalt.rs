@@ -86,23 +86,23 @@ impl ExaltState {
             ExaltState::Mortal(mortal) => {
                 // Default to essence 1
                 // Preserve martial arts styles, with empty Charms set
-                *self = Self::Exalt(Exalt {
+                *self = Self::Exalt(Box::new(Exalt {
                     essence: Essence::new_solar(1),
                     martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles)
                         .into_iter()
                         .map(|(id, mortal_artist)| (id, mortal_artist.into()))
                         .collect(),
                     exalt_type: ExaltType::Solar(solar.clone()),
-                })
+                }))
             }
             ExaltState::Exalt(exalt) => {
                 // Preserve essence rating
                 // Preserve martial arts styles (including charms)
-                *self = Self::Exalt(Exalt {
+                *self = Self::Exalt(Box::new(Exalt {
                     essence: Essence::new_solar(exalt.essence().rating()),
                     martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles),
                     exalt_type: ExaltType::Solar(solar.clone()),
-                });
+                }));
             }
         }
 
@@ -158,23 +158,23 @@ impl<'source> ExaltStateView<'source> {
             ExaltStateView::Mortal(mortal) => {
                 // Default to essence 1
                 // Preserve martial arts styles, with empty Charms set
-                *self = Self::Exalt(ExaltView {
+                *self = Self::Exalt(Box::new(ExaltView {
                     essence: EssenceView::new_solar(1),
                     martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles)
                         .into_iter()
                         .map(|(id, mortal_artist)| (id, mortal_artist.into()))
                         .collect(),
                     exalt_type: ExaltTypeView::Solar(solar),
-                })
+                }))
             }
             ExaltStateView::Exalt(exalt) => {
                 // Preserve essence rating
                 // Preserve martial arts styles (including charms)
-                *self = Self::Exalt(ExaltView {
+                *self = Self::Exalt(Box::new(ExaltView {
                     essence: EssenceView::new_solar(exalt.essence().rating()),
                     martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles),
                     exalt_type: ExaltTypeView::Solar(solar),
-                });
+                }));
             }
         }
 

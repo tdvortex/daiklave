@@ -168,7 +168,7 @@ fn test_willpower_character_event_source() {
         builder.build().unwrap()
     };
 
-    let mutation = CharacterMutation::SetSolar(solar_traits);
+    let mutation = CharacterMutation::SetSolar(Box::new(solar_traits));
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(character_view.willpower().rating(), 5);

@@ -525,9 +525,9 @@ enum ExaltSorcerySwitch<'char> {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum SolarSorcerer {
-    Terrestrial(TerrestrialCircleSorcerer),
-    Celestial(CelestialCircleSorcerer),
-    Solar(SolarCircleSorcerer),
+    Terrestrial(Box<TerrestrialCircleSorcerer>),
+    Celestial(Box<CelestialCircleSorcerer>),
+    Solar(Box<SolarCircleSorcerer>),
 }
 
 impl<'char> SolarSorcerer {
@@ -659,10 +659,10 @@ impl<'source> From<SolarSorcererView<'source>> for SolarSorcerer {
     fn from(view: SolarSorcererView) -> Self {
         match view {
             SolarSorcererView::Terrestrial(terrestrial) => {
-                SolarSorcerer::Terrestrial(terrestrial.into())
+                SolarSorcerer::Terrestrial(Box::new(terrestrial.into()))
             }
-            SolarSorcererView::Celestial(celestial) => SolarSorcerer::Celestial(celestial.into()),
-            SolarSorcererView::Solar(solar) => SolarSorcerer::Solar(solar.into()),
+            SolarSorcererView::Celestial(celestial) => SolarSorcerer::Celestial(Box::new(celestial.into())),
+            SolarSorcererView::Solar(solar) => SolarSorcerer::Solar(Box::new(solar.into())),
         }
     }
 }
