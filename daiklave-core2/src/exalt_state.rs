@@ -14,7 +14,7 @@ use crate::{
     Character, CharacterMutationError, CharacterView,
 };
 
-use self::exalt::{exalt_type::{ExaltType, ExaltTypeView}, essence::{Essence, MotePool, SpendMotesError, CommittedMotesId, CommitMotesError, RecoverMotesError, UncommitMotesError, SetEssenceRatingError}};
+use self::exalt::{exalt_type::{ExaltType, ExaltTypeView}, essence::{Essence, MotePoolName, SpendMotesError, MoteCommitmentId, CommitMotesError, RecoverMotesError, UncommitMotesError, SetEssenceRatingError}};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum ExaltState {
@@ -92,7 +92,7 @@ impl ExaltState {
 
     pub fn check_spend_motes(
         &self,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
@@ -105,7 +105,7 @@ impl ExaltState {
 
     pub fn spend_motes(
         &mut self,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
@@ -119,9 +119,9 @@ impl ExaltState {
 
     pub fn check_commit_motes(
         &self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
         name: &str,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
@@ -134,9 +134,9 @@ impl ExaltState {
 
     pub fn commit_motes(
         &mut self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
         name: &str,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
@@ -175,7 +175,7 @@ impl ExaltState {
 
     pub fn check_uncommit_motes(
         &self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
     ) -> Result<(), CharacterMutationError> {
         match self {
             ExaltState::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
@@ -187,7 +187,7 @@ impl ExaltState {
 
     pub fn uncommit_motes(
         &mut self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             ExaltState::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(

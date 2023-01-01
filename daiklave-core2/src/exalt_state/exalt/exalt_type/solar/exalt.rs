@@ -1,7 +1,7 @@
 use crate::{
     exalt_state::{
         exalt::{
-            essence::{Essence, EssenceView, MotePool, SpendMotesError, CommittedMotesId, CommitMotesError, MoteCommitment, UncommitMotesError, SetEssenceRatingError, RecoverMotesError},
+            essence::{Essence, EssenceView, MotePoolName, SpendMotesError, MoteCommitmentId, CommitMotesError, MoteCommitment, UncommitMotesError, SetEssenceRatingError, RecoverMotesError},
             exalt_type::{ExaltType, ExaltTypeView},
             Exalt, ExaltView,
         },
@@ -31,7 +31,7 @@ impl Exalt {
 
     pub fn check_spend_motes(
         &self,
-        _first: MotePool,
+        _first: MotePoolName,
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         let total_available = self.essence().motes().peripheral().available()
@@ -48,12 +48,12 @@ impl Exalt {
 
     pub fn spend_motes(
         &mut self,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_spend_motes(first, amount)?;
 
-        let (peripheral_spent, personal_spent) = if let MotePool::Peripheral = first {
+        let (peripheral_spent, personal_spent) = if let MotePoolName::Peripheral = first {
             let peripheral_spent = self.essence().motes().peripheral().available().min(amount);
             let personal_spent = amount - peripheral_spent;
             (peripheral_spent, personal_spent)
@@ -76,9 +76,9 @@ impl Exalt {
 
     pub fn check_commit_motes(
         &self,
-        _id: &CommittedMotesId,
+        _id: &MoteCommitmentId,
         _name: &str,
-        _first: MotePool,
+        _first: MotePoolName,
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         let total_available = self.essence().motes().peripheral().available()
@@ -95,13 +95,13 @@ impl Exalt {
 
     pub fn commit_motes(
         &mut self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
         name: &str,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_commit_motes(id, name, first, amount)?;
-        let (peripheral_committed, personal_committed) = if let MotePool::Peripheral = first {
+        let (peripheral_committed, personal_committed) = if let MotePoolName::Peripheral = first {
             let peripheral_committed = self.essence().motes().peripheral().available().min(amount);
             let personal_committed = amount - peripheral_committed;
             (peripheral_committed, personal_committed)
@@ -156,7 +156,7 @@ impl Exalt {
 
     pub fn check_uncommit_motes(
         &self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
     ) -> Result<(), CharacterMutationError> {
         if !self.essence().motes().commitments.contains_key(id) {
             Err(CharacterMutationError::UncommitMotesError(
@@ -169,7 +169,7 @@ impl Exalt {
 
     pub fn uncommit_motes(
         &mut self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
     ) -> Result<&mut Self, CharacterMutationError> {
         let commitment = self
             .essence_mut()
@@ -215,7 +215,7 @@ impl Exalt {
             .motes()
             .committed()
             .map(|x| x.0)
-            .collect::<Vec<CommittedMotesId>>();
+            .collect::<Vec<MoteCommitmentId>>();
         for id in committed_ids {
             self.uncommit_motes(&id).unwrap();
         }
@@ -441,7 +441,7 @@ impl<'source> ExaltStateView<'source> {
 
     pub fn check_spend_motes(
         &self,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
@@ -454,7 +454,7 @@ impl<'source> ExaltStateView<'source> {
 
     pub fn spend_motes(
         &mut self,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
@@ -468,9 +468,9 @@ impl<'source> ExaltStateView<'source> {
 
     pub fn check_commit_motes(
         &self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
         name: &str,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
@@ -483,9 +483,9 @@ impl<'source> ExaltStateView<'source> {
 
     pub fn commit_motes(
         &mut self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
         name: &'source str,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
@@ -524,7 +524,7 @@ impl<'source> ExaltStateView<'source> {
 
     pub fn check_uncommit_motes(
         &self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
     ) -> Result<(), CharacterMutationError> {
         match self {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
@@ -536,7 +536,7 @@ impl<'source> ExaltStateView<'source> {
 
     pub fn uncommit_motes(
         &mut self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             ExaltStateView::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(

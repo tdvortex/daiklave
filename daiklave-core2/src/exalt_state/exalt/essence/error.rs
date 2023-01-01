@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use super::CommittedMotesId;
+use super::MoteCommitmentId;
 
 /// An error when trying to commit motes to an ongoing effect.
 #[derive(Debug, Error)]
@@ -29,7 +29,7 @@ pub enum UncommitMotesError {
     MortalError,
     /// Cannot uncommit an effect that does not exist.
     #[error("Mote commitment id {0:?} not found")]
-    NotFound(CommittedMotesId),
+    NotFound(MoteCommitmentId),
 }
 
 /// An error when trying to set the essence rating of a character.

@@ -7,7 +7,7 @@ use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, Set
 use attributes::{AttributeName, SetAttributesError};
 use exalt_state::exalt::{
     essence::{
-        CommitMotesError, CommittedMotesId, MotePool, RecoverMotesError, SetEssenceRatingError,
+        CommitMotesError, MoteCommitmentId, MotePoolName, RecoverMotesError, SetEssenceRatingError,
         SpendMotesError, UncommitMotesError,
     },
     exalt_type::solar::Solar,
@@ -83,13 +83,13 @@ pub enum CharacterMutation {
     /// Set character to be Solar
     SetSolar(Box<Solar>),
     /// Spend motes, starting with one pool
-    SpendMotes(MotePool, u8),
+    SpendMotes(MotePoolName, u8),
     /// Commit motes into a persistent effect, starting with one pool
-    CommitMotes(CommittedMotesId, String, MotePool, u8),
+    CommitMotes(MoteCommitmentId, String, MotePoolName, u8),
     /// Recover motes, always starting from peripheral
     RecoverMotes(u8),
     /// Uncommit motes from a peristent effect
-    UncommitMotes(CommittedMotesId),
+    UncommitMotes(MoteCommitmentId),
     /// Set the Essence rating of the character. Note: also ends all mote
     /// commitments and recovers all motes.
     SetEssenceRating(u8),

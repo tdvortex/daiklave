@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::exalt_state::exalt::exalt_type::solar::dawn::{DawnCasteAbility, DawnSupernalAbility};
+
 use super::AbilityNameVanilla;
 
 /// This is used to identify all abilities, treating all Craft abilities as
@@ -87,6 +89,37 @@ impl From<AbilityNameVanilla> for AbilityName {
             AbilityNameVanilla::Survival => Self::Survival,
             AbilityNameVanilla::Thrown => Self::Thrown,
             AbilityNameVanilla::War => Self::War,
+        }
+    }
+}
+
+impl From<DawnCasteAbility> for AbilityName {
+    fn from(value: DawnCasteAbility) -> Self {
+        match value {
+            DawnCasteAbility::Archery => Self::Archery,
+            DawnCasteAbility::Awareness => Self::Awareness,
+            DawnCasteAbility::Brawl => Self::Brawl,
+            DawnCasteAbility::Dodge => Self::Dodge,
+            DawnCasteAbility::Melee => Self::Melee,
+            DawnCasteAbility::Resistance => Self::Resistance,
+            DawnCasteAbility::Thrown => Self::Thrown,
+            DawnCasteAbility::War => Self::War,
+        }
+    }
+}
+
+impl From<DawnSupernalAbility> for AbilityName {
+    fn from(value: DawnSupernalAbility) -> Self {
+        match value {
+            DawnSupernalAbility::Archery => Self::Archery,
+            DawnSupernalAbility::Awareness => Self::Awareness,
+            DawnSupernalAbility::Brawl => Self::Brawl,
+            DawnSupernalAbility::Dodge => Self::Dodge,
+            DawnSupernalAbility::MartialArts => Self::MartialArts,
+            DawnSupernalAbility::Melee => Self::Melee,
+            DawnSupernalAbility::Resistance => Self::Resistance,
+            DawnSupernalAbility::Thrown => Self::Thrown,
+            DawnSupernalAbility::War => Self::War,
         }
     }
 }

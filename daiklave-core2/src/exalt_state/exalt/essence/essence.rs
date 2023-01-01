@@ -1,30 +1,35 @@
 use std::collections::HashMap;
 
-use super::{motes_view::MotesView, mote_pool::MotePool};
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct EssenceView<'source> {
+use super::{motes::Motes, mote_pool::MotePool};
+
+/// The current state of a character's Essence and motes.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Essence {
     pub(crate) rating: u8,
-    pub(crate) motes: MotesView<'source>,
+    pub(crate) motes: Motes,
 }
 
-impl<'source> EssenceView<'source> {
+impl Essence {
+    /// The chacter's Essence dot rating.
     pub fn rating(&self) -> u8 {
         self.rating
     }
 
-    pub fn motes(&self) -> &MotesView {
+    /// The character's current mote pool state.
+    pub fn motes(&self) -> &Motes {
         &self.motes
     }
 
-    pub fn motes_mut(&mut self) -> &mut MotesView<'source> {
+    pub(crate) fn motes_mut(&mut self) -> &mut Motes {
         &mut self.motes
     }
-    
+
     pub(crate) fn new_solar(rating: u8) -> Self {
         Self {
             rating,
-            motes: MotesView {
+            motes: Motes {
                 peripheral: MotePool {
                     available: rating * 7 + 26,
                     spent: 0,
@@ -38,4 +43,3 @@ impl<'source> EssenceView<'source> {
         }
     }
 }
-

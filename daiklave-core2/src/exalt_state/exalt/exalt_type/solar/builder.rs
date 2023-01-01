@@ -7,7 +7,7 @@ use super::{
     twilight::TwilightView, zenith::ZenithView, Solar, SolarView, builder_error::SolarBuilderError,
 };
 
-pub struct SolarTraitsBuilder<'source> {
+pub struct SolarBuilder<'source> {
     pub(in crate::exalt_state::exalt::exalt_type::solar) caste: Option<SolarCasteView>,
     pub(in crate::exalt_state::exalt::exalt_type::solar) favored_abilities: HashSet<AbilityName>,
     pub(in crate::exalt_state::exalt::exalt_type::solar) sorcery:
@@ -15,7 +15,7 @@ pub struct SolarTraitsBuilder<'source> {
 }
 
 
-impl<'source> SolarTraitsBuilder<'source> {
+impl<'source> SolarBuilder<'source> {
     pub fn set_dawn(&mut self, dawn: DawnView) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();

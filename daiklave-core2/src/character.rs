@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abilities::{Abilities, AbilityNameVanilla, SetAbilityError, Ability, AddSpecialtyError, RemoveSpecialtyError}, attributes::Attributes, craft::Craft, exalt_state::{ExaltState, exalt::{essence::{Essence, MotePool, CommittedMotesId}, exalt_type::solar::Solar}},
+    abilities::{Abilities, AbilityNameVanilla, SetAbilityError, Ability, AddSpecialtyError, RemoveSpecialtyError}, attributes::Attributes, craft::Craft, exalt_state::{ExaltState, exalt::{essence::{Essence, MotePoolName, MoteCommitmentId}, exalt_type::solar::Solar}},
     health::Health, willpower::Willpower, CharacterMutation, CharacterMutationError,
 };
 
@@ -290,7 +290,7 @@ impl Character {
     /// Checks if the requested amount of motes can be spent.
     pub fn check_spend_motes(
         &self,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_spend_motes(first, amount)
@@ -299,7 +299,7 @@ impl Character {
     /// Spends motes, starting with the specified pool first.
     pub fn spend_motes(
         &mut self,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exalt_state.spend_motes(first, amount)?;
@@ -309,9 +309,9 @@ impl Character {
     /// Checks if the requested mote commitment would be possible.
     pub fn check_commit_motes(
         &self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
         name: &str,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_commit_motes(id, name, first, amount)
@@ -321,9 +321,9 @@ impl Character {
     /// packages them into a commitment package to be later uncommitted.
     pub fn commit_motes(
         &mut self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
         name: &str,
-        first: MotePool,
+        first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exalt_state.commit_motes(id, name, first, amount)?;
@@ -345,7 +345,7 @@ impl Character {
     /// Checks if a committed mote effect can be uncommitted.
     pub fn check_uncommit_motes(
         &self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
     ) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_uncommit_motes(id)
     }
@@ -354,7 +354,7 @@ impl Character {
     /// as spent motes to be later recovered.
     pub fn uncommit_motes(
         &mut self,
-        id: &CommittedMotesId,
+        id: &MoteCommitmentId,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exalt_state.uncommit_motes(id)?;
         Ok(self)

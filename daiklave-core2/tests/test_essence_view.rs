@@ -1,7 +1,7 @@
 use daiklave_core2::{
     abilities::AbilityName,
     exalt_state::exalt::{
-        essence::{CommittedMotesId, MotePool},
+        essence::{MoteCommitmentId, MotePoolName},
         exalt_type::solar::{Eclipse, Solar},
     },
     id::UniqueId,
@@ -60,18 +60,18 @@ fn test_essence_character_view() {
 
     // Exalts should be able to spend from either peripheral or personal
     character_view
-        .check_spend_motes(MotePool::Peripheral, 10)
+        .check_spend_motes(MotePoolName::Peripheral, 10)
         .unwrap();
     character_view
-        .spend_motes(MotePool::Peripheral, 10)
+        .spend_motes(MotePoolName::Peripheral, 10)
         .unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 23);
     assert_eq!(mote_state.peripheral().spent(), 10);
     character_view
-        .check_spend_motes(MotePool::Personal, 10)
+        .check_spend_motes(MotePoolName::Personal, 10)
         .unwrap();
-    character_view.spend_motes(MotePool::Personal, 10).unwrap();
+    character_view.spend_motes(MotePoolName::Personal, 10).unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.personal().available(), 3);
     assert_eq!(mote_state.personal().spent(), 10);
@@ -80,17 +80,17 @@ fn test_essence_character_view() {
     // overflow splitting across pools
     character_view
         .check_commit_motes(
-            &CommittedMotesId(UniqueId::Placeholder(1)),
+            &MoteCommitmentId(UniqueId::Placeholder(1)),
             "Peripheral motes committed",
-            MotePool::Peripheral,
+            MotePoolName::Peripheral,
             10,
         )
         .unwrap();
     character_view
         .commit_motes(
-            &CommittedMotesId(UniqueId::Placeholder(1)),
+            &MoteCommitmentId(UniqueId::Placeholder(1)),
             "Peripheral motes committed",
-            MotePool::Peripheral,
+            MotePoolName::Peripheral,
             10,
         )
         .unwrap();
@@ -101,17 +101,17 @@ fn test_essence_character_view() {
     assert_eq!(mote_state.personal().spent(), 10);
     character_view
         .check_commit_motes(
-            &CommittedMotesId(UniqueId::Placeholder(2)),
+            &MoteCommitmentId(UniqueId::Placeholder(2)),
             "Personal motes committed",
-            MotePool::Personal,
+            MotePoolName::Personal,
             10,
         )
         .unwrap();
     character_view
         .commit_motes(
-            &CommittedMotesId(UniqueId::Placeholder(2)),
+            &MoteCommitmentId(UniqueId::Placeholder(2)),
             "Personal motes committed",
-            MotePool::Personal,
+            MotePoolName::Personal,
             10,
         )
         .unwrap();
@@ -123,11 +123,11 @@ fn test_essence_character_view() {
     let mut commits_count = 0;
     for (id, name, peripheral_committed, personal_committed) in mote_state.committed() {
         commits_count += 1;
-        if id == CommittedMotesId(UniqueId::Placeholder(1)) {
+        if id == MoteCommitmentId(UniqueId::Placeholder(1)) {
             assert_eq!(name, "Peripheral motes committed");
             assert_eq!(peripheral_committed, 10);
             assert_eq!(personal_committed, 0);
-        } else if id == CommittedMotesId(UniqueId::Placeholder(2)) {
+        } else if id == MoteCommitmentId(UniqueId::Placeholder(2)) {
             assert_eq!(name, "Personal motes committed");
             assert_eq!(peripheral_committed, 7);
             assert_eq!(personal_committed, 3);
@@ -139,26 +139,26 @@ fn test_essence_character_view() {
 
     // Exalts should not be able to spend more motes than they have available
     assert!(character_view
-        .check_spend_motes(MotePool::Peripheral, 255)
+        .check_spend_motes(MotePoolName::Peripheral, 255)
         .is_err());
     assert!(character_view
-        .check_spend_motes(MotePool::Personal, 255)
+        .check_spend_motes(MotePoolName::Personal, 255)
         .is_err());
 
     // Exalts should not be able to commit more motes than they have available
     assert!(character_view
         .check_commit_motes(
-            &CommittedMotesId(UniqueId::Placeholder(3)),
+            &MoteCommitmentId(UniqueId::Placeholder(3)),
             "Invalid commit",
-            MotePool::Peripheral,
+            MotePoolName::Peripheral,
             255
         )
         .is_err());
     assert!(character_view
         .check_commit_motes(
-            &CommittedMotesId(UniqueId::Placeholder(3)),
+            &MoteCommitmentId(UniqueId::Placeholder(3)),
             "Invalid commit",
-            MotePool::Personal,
+            MotePoolName::Personal,
             255
         )
         .is_err());
@@ -183,10 +183,10 @@ fn test_essence_character_view() {
 
     // Uncommitting mote effects should make them spent again
     character_view
-        .check_uncommit_motes(&CommittedMotesId(UniqueId::Placeholder(2)))
+        .check_uncommit_motes(&MoteCommitmentId(UniqueId::Placeholder(2)))
         .unwrap();
     character_view
-        .uncommit_motes(&CommittedMotesId(UniqueId::Placeholder(2)))
+        .uncommit_motes(&MoteCommitmentId(UniqueId::Placeholder(2)))
         .unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
@@ -196,7 +196,7 @@ fn test_essence_character_view() {
     let mut commits_count = 0;
     for (id, name, peripheral_committed, personal_committed) in mote_state.committed() {
         commits_count += 1;
-        if id == CommittedMotesId(UniqueId::Placeholder(1)) {
+        if id == MoteCommitmentId(UniqueId::Placeholder(1)) {
             assert_eq!(name, "Peripheral motes committed");
             assert_eq!(peripheral_committed, 10);
             assert_eq!(personal_committed, 0);
@@ -207,10 +207,10 @@ fn test_essence_character_view() {
     assert_eq!(commits_count, 1);
 
     character_view
-        .check_uncommit_motes(&CommittedMotesId(UniqueId::Placeholder(1)))
+        .check_uncommit_motes(&MoteCommitmentId(UniqueId::Placeholder(1)))
         .unwrap();
     character_view
-        .uncommit_motes(&CommittedMotesId(UniqueId::Placeholder(1)))
+        .uncommit_motes(&MoteCommitmentId(UniqueId::Placeholder(1)))
         .unwrap();
     let mote_state = character_view.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
@@ -223,9 +223,9 @@ fn test_essence_character_view() {
     // and refill essence to full
     character_view
         .commit_motes(
-            &CommittedMotesId(UniqueId::Placeholder(3)),
+            &MoteCommitmentId(UniqueId::Placeholder(3)),
             "Commitment to clear",
-            MotePool::Personal,
+            MotePoolName::Personal,
             1,
         )
         .unwrap();

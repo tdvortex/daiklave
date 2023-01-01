@@ -6,7 +6,7 @@ mod builder;
 mod builder_error;
 mod caste;
 mod caste_view;
-mod dawn;
+pub(crate) mod dawn;
 mod eclipse;
 mod exalt;
 mod night;
@@ -26,7 +26,7 @@ use crate::{
 };
 
 use self::{
-    builder::SolarTraitsBuilder, caste::SolarCaste, caste_view::SolarCasteView, dawn::DawnView,
+    builder::SolarBuilder, caste::SolarCaste, caste_view::SolarCasteView, dawn::DawnView,
     eclipse::EclipseView, night::NightView, twilight::TwilightView, zenith::ZenithView,
 };
 
@@ -40,8 +40,8 @@ pub struct Solar {
 
 impl<'source> Solar {
     /// Creates a builder to construct SolarTraits.
-    pub fn builder() -> SolarTraitsBuilder<'source> {
-        SolarTraitsBuilder {
+    pub fn builder() -> SolarBuilder<'source> {
+        SolarBuilder {
             caste: None,
             favored_abilities: HashSet::new(),
             sorcery: None,
