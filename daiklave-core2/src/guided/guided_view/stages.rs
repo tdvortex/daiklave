@@ -99,7 +99,13 @@ impl<'source> GuidedView<'source> {
                 self.sorcery_archetype.is_some() == self.shaping_ritual.is_some()
                     && self.shaping_ritual.is_some() == self.control_spell.is_some()
             }
-            GuidedStage::ChooseAbilities => todo!(),
+            GuidedStage::ChooseAbilities => {
+                 let mut three_or_less: u8 = AbilityNameVanilla::iter().map(|a| self.character_view.abilities().dots(a).min(3)).sum();
+                 three_or_less += self.character_view.craft().iter().map(|focus| self.character_view.craft().dots(focus).min(3)).sum::<u8>();
+                 three_or_less += self.character_view.martial_arts().iter().map(|style_id| self.character_view.martial_arts().style(style_id).unwrap().dots()).sum::<u8>();
+
+                 three_or_less == 28
+            }
         } {
             Err(GuidedError::StageIncompleteError)
         } else {
