@@ -1,4 +1,4 @@
-use super::{terrestrial_circle_sorcerer_view::TerrestrialCircleSorcererView, celestial_circle_sorcerer_view::CelestialCircleSorcererView, solar_circle_sorcerer_view::SolarCircleSorcererView, archetype_id::SorceryArchetypeId, archetype::SorceryArchetype, sorcery_circle::SorceryCircle, shaping_ritual_id::ShapingRitualId, shaping_ritual::ShapingRitual, spell_id::SpellId, spell::Spell};
+use crate::sorcery::{circles::{terrestrial::sorcerer_view::TerrestrialCircleSorcererView, celestial::sorcerer_view::CelestialCircleSorcererView, solar::sorcerer_view::SolarCircleSorcererView}, SorceryArchetypeId, SorceryArchetype, SorceryCircle, ShapingRitualId, ShapingRitual, SpellId, Spell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum SolarSorcererView<'source> {

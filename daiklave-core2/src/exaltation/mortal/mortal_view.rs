@@ -8,7 +8,7 @@ use crate::{
     },
     sorcery::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
-        TerrestrialCircleSorcererView, TerrestrialSpell,
+        TerrestrialSpell, circles::terrestrial::sorcerer_view::TerrestrialCircleSorcererView,
     },
     CharacterMutationError,
 };

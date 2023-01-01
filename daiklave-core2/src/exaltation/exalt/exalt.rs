@@ -8,7 +8,7 @@ use crate::{
         AddMartialArtsStyleError, MartialArtsCharmId, MartialArtsStyle, MartialArtsStyleId,
         RemoveMartialArtsStyleError, SetMartialArtsDotsError,
     },
-    CharacterMutationError, sorcery::{Sorcery, SorcerySwitch, ExaltSorcerySwitch},
+    CharacterMutationError, sorcery::{Sorcery}, exaltation::sorcery::SorcerySwitch,
 };
 
 use super::{
@@ -17,7 +17,7 @@ use super::{
         SetEssenceRatingError, SpendMotesError, UncommitMotesError,
     },
     exalt_type::{solar::Solar, ExaltType},
-    martial_arts::ExaltMartialArtist,
+    martial_arts::ExaltMartialArtist, sorcery::ExaltSorcerySwitch,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

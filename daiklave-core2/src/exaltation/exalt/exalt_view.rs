@@ -8,9 +8,9 @@ use crate::{
     },
     sorcery::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
-        TerrestrialSpell, SorceryView, ExaltSorceryViewSwitch, SorceryViewSwitch,
+        TerrestrialSpell, SorceryView,
     },
-    CharacterMutationError,
+    CharacterMutationError, exaltation::sorcery::SorceryViewSwitch,
 };
 
 use super::{
@@ -19,7 +19,7 @@ use super::{
         SetEssenceRatingError, SpendMotesError, UncommitMotesError,
     },
     exalt_type::{solar::SolarView, ExaltTypeView},
-    martial_arts::ExaltMartialArtistView,
+    martial_arts::ExaltMartialArtistView, sorcery::ExaltSorceryViewSwitch,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]

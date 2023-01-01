@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 
-use super::{archetype_id::SorceryArchetypeId, archetype::SorceryArchetype, shaping_ritual_id::ShapingRitualId, shaping_ritual::ShapingRitual, spell_id::SpellId, terrestrial_spell::TerrestrialSpell, celestial_spell::CelestialSpell, solar_spell::SolarSpell, sorcery_circle::SorceryCircle, spell::Spell};
+use crate::sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, circles::{terrestrial::TerrestrialSpell, celestial::CelestialSpell, sorcery_circle::SorceryCircle}, Spell};
+
+use super::SolarSpell;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct SolarCircleSorcererView<'source> {

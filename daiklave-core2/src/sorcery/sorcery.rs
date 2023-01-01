@@ -1,4 +1,6 @@
-use super::{sorcery_switch::SorcerySwitch, archetype_id::SorceryArchetypeId, archetype::SorceryArchetype, sorcery_circle::SorceryCircle, shaping_ritual_id::ShapingRitualId, shaping_ritual::ShapingRitual, spell_id::SpellId, spell::Spell};
+use crate::exaltation::SorcerySwitch;
+
+use super::{SorceryArchetypeId, SorceryArchetype, circles::SorceryCircle, ShapingRitualId, ShapingRitual, SpellId, Spell};
 
 /// A character's Sorcery abilities.
 pub struct Sorcery<'char>(pub(crate) SorcerySwitch<'char>);

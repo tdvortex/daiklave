@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{abilities::AbilityName, sorcery::SolarSorcerer};
+use crate::{abilities::AbilityName};
 
 use super::{
     builder::SolarBuilder,
@@ -8,7 +8,7 @@ use super::{
         dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView,
         zenith::ZenithView, SolarCaste, SolarCasteView,
     },
-    solar_view::SolarView,
+    solar_view::SolarView, sorcery::SolarSorcerer,
 };
 
 /// Traits which are unique to being a Solar Exalted.

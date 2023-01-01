@@ -7,7 +7,10 @@ pub mod mortal;
 
 mod exaltation;
 mod exaltation_view;
-pub(crate) mod martial_arts;
+mod martial_arts;
+mod sorcery;
 
 pub(crate) use exaltation::Exaltation;
 pub(crate) use exaltation_view::ExaltationView;
+pub(crate) use martial_arts::{ExaltationMartialArtist, ExaltationMartialArtistView};
+pub(crate) use sorcery::{SorcerySwitch, SorceryViewSwitch};

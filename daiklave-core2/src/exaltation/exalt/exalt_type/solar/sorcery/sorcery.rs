@@ -1,6 +1,8 @@
 use serde::{Serialize, Deserialize};
 
-use super::{terrestrial_circle_sorcerer::TerrestrialCircleSorcerer, celestial_circle_sorcerer::CelestialCircleSorcerer, solar_circle_sorcerer::SolarCircleSorcerer, archetype_id::SorceryArchetypeId, archetype::SorceryArchetype, sorcery_circle::SorceryCircle, shaping_ritual_id::ShapingRitualId, shaping_ritual::ShapingRitual, spell_id::SpellId, spell::Spell, solar_sorcerer_view::SolarSorcererView};
+use crate::sorcery::{circles::{terrestrial::sorcerer::TerrestrialCircleSorcerer, celestial::sorcerer::CelestialCircleSorcerer, solar::sorcerer::SolarCircleSorcerer}, SorceryArchetypeId, SorceryArchetype, SorceryCircle, ShapingRitualId, ShapingRitual, SpellId, Spell};
+
+use super::sorcery_view::SolarSorcererView;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum SolarSorcerer {

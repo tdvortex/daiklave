@@ -1,4 +1,4 @@
-use super::{terrestrial_circle_sorcerer::TerrestrialCircleSorcerer, archetype_id::SorceryArchetypeId, archetype::SorceryArchetype, sorcery_circle::SorceryCircle, shaping_ritual_id::ShapingRitualId, shaping_ritual::ShapingRitual, spell_id::SpellId, spell::Spell, exalt_sorcery_switch::ExaltSorcerySwitch};
+use crate::{sorcery::{circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, SorceryArchetypeId, SorceryArchetype, SorceryCircle, ShapingRitualId, ShapingRitual, SpellId, Spell}, exaltation::exalt::ExaltSorcerySwitch};
 
 pub(crate) enum SorcerySwitch<'char> {
     Mortal(&'char TerrestrialCircleSorcerer),

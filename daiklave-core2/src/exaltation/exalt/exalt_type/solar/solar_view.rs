@@ -1,13 +1,13 @@
 use crate::{
     abilities::AbilityName,
     sorcery::{
-        ShapingRitual, ShapingRitualId, SolarSorcererView, SorceryArchetype, SorceryArchetypeId,
-        SorceryError, SpellId, TerrestrialCircleSorcererView, TerrestrialSpell,
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
+        SorceryError, SpellId, TerrestrialSpell, circles::terrestrial::sorcerer_view::TerrestrialCircleSorcererView,
     },
     CharacterMutationError,
 };
 
-use super::caste::SolarCasteView;
+use super::{caste::SolarCasteView, sorcery::SolarSorcererView};
 
 /// Traits which are unique to being a Solar Exalted, with &str
 #[derive(Debug, Clone, PartialEq, Eq)]

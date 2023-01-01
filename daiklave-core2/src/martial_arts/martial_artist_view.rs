@@ -1,6 +1,6 @@
 use crate::{
     armor::ArmorWeight, book_reference::BookReference,
-    exaltation::martial_arts::ExaltationMartialArtistView, weapons::WeaponId,
+    exaltation::ExaltationMartialArtistView, weapons::WeaponId,
 };
 
 use super::{charm::MartialArtsCharm, charm_id::MartialArtsCharmId};

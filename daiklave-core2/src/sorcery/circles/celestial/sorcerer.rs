@@ -2,26 +2,25 @@ use std::collections::HashMap;
 
 use serde::{Serialize, Deserialize};
 
-use super::{archetype_id::SorceryArchetypeId, archetype::SorceryArchetype, shaping_ritual_id::ShapingRitualId, shaping_ritual::ShapingRitual, spell_id::SpellId, terrestrial_spell::TerrestrialSpell, celestial_spell::CelestialSpell, solar_spell::SolarSpell, sorcery_circle::SorceryCircle, spell::Spell, solar_circle_sorcerer_view::SolarCircleSorcererView};
+use crate::sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, circles::{terrestrial::TerrestrialSpell, sorcery_circle::SorceryCircle}, Spell};
+
+use super::{spell::CelestialSpell, sorcerer_view::CelestialCircleSorcererView};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) struct SolarCircleSorcerer {
+pub(crate) struct CelestialCircleSorcerer {
     pub(crate) archetypes: HashMap<SorceryArchetypeId, SorceryArchetype>,
-    pub(crate) circle_archetypes: [SorceryArchetypeId; 3],
-    pub(crate) shaping_ritual_ids: [ShapingRitualId; 3],
-    pub(crate) shaping_rituals: [ShapingRitual; 3],
+    pub(crate) circle_archetypes: [SorceryArchetypeId; 2],
+    pub(crate) shaping_ritual_ids: [ShapingRitualId; 2],
+    pub(crate) shaping_rituals: [ShapingRitual; 2],
     pub(crate) terrestrial_control_spell_id: SpellId,
     pub(crate) terrestrial_control_spell: TerrestrialSpell,
     pub(crate) terrestrial_spells: HashMap<SpellId, TerrestrialSpell>,
     pub(crate) celestial_control_spell_id: SpellId,
     pub(crate) celestial_control_spell: CelestialSpell,
     pub(crate) celestial_spells: HashMap<SpellId, CelestialSpell>,
-    pub(crate) solar_control_spell_id: SpellId,
-    pub(crate) solar_control_spell: SolarSpell,
-    pub(crate) solar_spells: HashMap<SpellId, SolarSpell>,
 }
 
-impl SolarCircleSorcerer {
+impl CelestialCircleSorcerer {
     pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&SorceryArchetype> {
         if self.circle_archetypes.contains(&id) {
             self.archetypes.get(&id)
@@ -30,32 +29,39 @@ impl SolarCircleSorcerer {
         }
     }
 
-    pub fn shaping_ritual(&self, circle: SorceryCircle) -> (ShapingRitualId, &ShapingRitual) {
+    pub fn shaping_ritual(
+        &self,
+        circle: SorceryCircle,
+    ) -> Option<(ShapingRitualId, &ShapingRitual)> {
         match circle {
-            SorceryCircle::Terrestrial => (self.shaping_ritual_ids[0], &self.shaping_rituals[0]),
-            SorceryCircle::Celestial => (self.shaping_ritual_ids[1], &self.shaping_rituals[1]),
-            SorceryCircle::Solar => (self.shaping_ritual_ids[2], &self.shaping_rituals[2]),
+            SorceryCircle::Terrestrial => {
+                Some((self.shaping_ritual_ids[0], &self.shaping_rituals[0]))
+            }
+            SorceryCircle::Celestial => {
+                Some((self.shaping_ritual_ids[1], &self.shaping_rituals[1]))
+            }
+            SorceryCircle::Solar => None,
         }
     }
 
-    pub fn control_spell(&self, circle: SorceryCircle) -> (SpellId, &Spell) {
+    pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, &Spell)> {
         match circle {
-            SorceryCircle::Terrestrial => (
+            SorceryCircle::Terrestrial => Some((
                 self.terrestrial_control_spell_id,
                 &self.terrestrial_control_spell,
-            ),
-            SorceryCircle::Celestial => (
+            )),
+            SorceryCircle::Celestial => Some((
                 self.celestial_control_spell_id,
                 &self.celestial_control_spell,
-            ),
-            SorceryCircle::Solar => (self.solar_control_spell_id, &self.solar_control_spell),
+            )),
+            SorceryCircle::Solar => None,
         }
     }
 }
 
-impl<'char> SolarCircleSorcerer {
-    pub(crate) fn as_view(&'char self) -> SolarCircleSorcererView<'char> {
-        SolarCircleSorcererView {
+impl<'char> CelestialCircleSorcerer {
+    pub(crate) fn as_view(&'char self) -> CelestialCircleSorcererView<'char> {
+        CelestialCircleSorcererView {
             archetypes: self.archetypes.iter().map(|(k, v)| (*k, v)).collect(),
             circle_archetypes: self.circle_archetypes,
             shaping_ritual_ids: self.shaping_ritual_ids,
@@ -63,7 +69,7 @@ impl<'char> SolarCircleSorcerer {
                 .shaping_rituals
                 .iter()
                 .enumerate()
-                .fold([None; 3], |mut opt_arr, (i, el)| {
+                .fold([None; 2], |mut opt_arr, (i, el)| {
                     opt_arr[i] = Some(el);
                     opt_arr
                 })
@@ -78,15 +84,12 @@ impl<'char> SolarCircleSorcerer {
             celestial_control_spell_id: self.celestial_control_spell_id,
             celestial_control_spell: &self.celestial_control_spell,
             celestial_spells: self.celestial_spells.iter().map(|(k, v)| (*k, v)).collect(),
-            solar_control_spell_id: self.solar_control_spell_id,
-            solar_control_spell: &self.solar_control_spell,
-            solar_spells: self.solar_spells.iter().map(|(k, v)| (*k, v)).collect(),
         }
     }
 }
 
-impl<'source> From<SolarCircleSorcererView<'source>> for SolarCircleSorcerer {
-    fn from(view: SolarCircleSorcererView) -> Self {
+impl<'source> From<CelestialCircleSorcererView<'source>> for CelestialCircleSorcerer {
+    fn from(view: CelestialCircleSorcererView) -> Self {
         Self {
             archetypes: view
                 .archetypes
@@ -107,13 +110,6 @@ impl<'source> From<SolarCircleSorcererView<'source>> for SolarCircleSorcerer {
             celestial_control_spell: view.celestial_control_spell.to_owned(),
             celestial_spells: view
                 .celestial_spells
-                .into_iter()
-                .map(|(k, v)| (k, v.to_owned()))
-                .collect(),
-            solar_control_spell_id: view.solar_control_spell_id,
-            solar_control_spell: view.solar_control_spell.to_owned(),
-            solar_spells: view
-                .solar_spells
                 .into_iter()
                 .map(|(k, v)| (k, v.to_owned()))
                 .collect(),

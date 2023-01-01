@@ -2,7 +2,9 @@ use std::collections::HashMap;
 
 use serde::{Serialize, Deserialize};
 
-use super::{archetype_id::SorceryArchetypeId, archetype::SorceryArchetype, shaping_ritual_id::ShapingRitualId, shaping_ritual::ShapingRitual, spell_id::SpellId, terrestrial_spell::TerrestrialSpell, error::SorceryError, spell::Spell, terrestrial_circle_sorcerer_view::TerrestrialCircleSorcererView, celestial_circle_sorcerer::CelestialCircleSorcerer, solar_circle_sorcerer::SolarCircleSorcerer};
+use crate::sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, SorceryError, Spell, circles::{celestial::sorcerer::CelestialCircleSorcerer, solar::sorcerer::SolarCircleSorcerer}};
+
+use super::{TerrestrialSpell, sorcerer_view::TerrestrialCircleSorcererView};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct TerrestrialCircleSorcerer {

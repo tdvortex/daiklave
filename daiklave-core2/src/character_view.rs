@@ -19,7 +19,7 @@ use crate::{
     name_and_concept::RemoveConceptError,
     sorcery::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
-        TerrestrialSpell, SorceryView,
+        SorceryView, TerrestrialSpell,
     },
     willpower::Willpower,
     CharacterMutation, CharacterMutationError,

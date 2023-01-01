@@ -1,16 +1,16 @@
 use crate::{
     martial_arts::{MartialArtistView, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        ShapingRitual, ShapingRitualId, SolarSorcererView, SorceryArchetype, SorceryArchetypeId,
-        SpellId, TerrestrialSpell, SorceryView, SorceryViewSwitch,
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
+        SpellId, TerrestrialSpell, SorceryView,
     },
     CharacterMutationError,
 };
 
 use super::{
-    exalt::{exalt_type::ExaltTypeView, ExaltView},
+    exalt::{exalt_type::{ExaltTypeView, solar::SolarSorcererView}, ExaltView},
     martial_arts::ExaltationMartialArtistView,
-    mortal::MortalView,
+    mortal::MortalView, sorcery::SorceryViewSwitch,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]

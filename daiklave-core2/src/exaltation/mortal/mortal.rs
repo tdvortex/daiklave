@@ -8,8 +8,7 @@ use crate::{
         AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId,
         RemoveMartialArtsStyleError, SetMartialArtsDotsError,
     },
-    sorcery::TerrestrialCircleSorcerer,
-    CharacterMutationError,
+    CharacterMutationError, sorcery::circles::terrestrial::sorcerer::TerrestrialCircleSorcerer,
 };
 
 use super::martial_arts::MortalMartialArtist;

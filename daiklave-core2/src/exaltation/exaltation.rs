@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId},
-    sorcery::{SolarSorcerer, Sorcery, SorcerySwitch},
+    sorcery::{Sorcery},
     CharacterMutationError,
 };
 
@@ -12,11 +12,11 @@ use super::{
             CommitMotesError, Essence, MoteCommitmentId, MotePoolName, RecoverMotesError,
             SetEssenceRatingError, SpendMotesError, UncommitMotesError,
         },
-        exalt_type::{solar::Solar, ExaltType},
+        exalt_type::{solar::{Solar, SolarSorcerer}, ExaltType},
         Exalt,
     },
     martial_arts::ExaltationMartialArtist,
-    mortal::Mortal,
+    mortal::Mortal, sorcery::SorcerySwitch,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

@@ -8,6 +8,8 @@ pub mod exalt_type;
 mod exalt;
 mod exalt_view;
 pub(crate) mod martial_arts;
+mod sorcery;
 
 pub(crate) use exalt::Exalt;
 pub(crate) use exalt_view::ExaltView;
+pub(crate) use sorcery::{ExaltSorcerySwitch, ExaltSorceryViewSwitch};
