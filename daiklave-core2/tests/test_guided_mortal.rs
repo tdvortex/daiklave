@@ -5,7 +5,6 @@ use daiklave_core2::{
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     charms::{CharmCost, CharmCostType, CharmKeyword},
-    guided::{begin_guided_builder, ExaltationChoice, GuidedMutation},
     id::UniqueId,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
@@ -13,12 +12,12 @@ use daiklave_core2::{
         SpellId, TerrestrialSpell,
     },
     weapons::WeaponId,
-    CharacterMutation,
+    CharacterMutation, guided::{GuidedEventSource, GuidedMutation, ExaltationChoice},
 };
 
 #[test]
 fn test_guided_mortal() {
-    let mut guided_builder = begin_guided_builder();
+    let mut guided_builder = GuidedEventSource::default();
 
     // Choose character name
     let mutation =

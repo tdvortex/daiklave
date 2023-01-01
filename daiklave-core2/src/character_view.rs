@@ -10,9 +10,8 @@ use crate::{
             essence::{EssenceView, MoteCommitmentId, MotePoolName},
             exalt_type::solar::{Solar, SolarView},
         },
-        ExaltStateView,
+        ExaltationView,
     },
-    health::Health,
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, MartialArtsView,
     },
@@ -22,7 +21,7 @@ use crate::{
         TerrestrialSpell,
     },
     willpower::Willpower,
-    CharacterMutation, CharacterMutationError,
+    CharacterMutation, CharacterMutationError, health::{Health, WoundPenalty, DamageLevel},
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -31,7 +30,7 @@ use crate::{
 pub struct CharacterView<'source> {
     pub(crate) name: &'source str,
     pub(crate) concept: Option<&'source str>,
-    pub(crate) exalt_state: ExaltStateView<'source>,
+    pub(crate) exalt_state: ExaltationView<'source>,
     pub(crate) willpower: Willpower,
     pub(crate) health: Health,
     pub(crate) attributes: Attributes,
@@ -587,7 +586,92 @@ impl<'source> CharacterView<'source> {
         self.concept = None;
         Ok(self)
     }
+    
+    /// Returns true if character is not Exalted.
+    pub fn is_mortal(&self) -> bool {
+        self.exalt_state.is_mortal()
+    }
+
+    /// Returns true if character is an Exalt.
+    pub fn is_exalted(&self) -> bool {
+        self.exalt_state.is_exalted()
+    }
+
+    /// Checks if character can be de-Exalted and set to be mortal.
+    pub fn check_set_mortal(&self) -> Result<(), CharacterMutationError> {
+        self.exalt_state.check_set_mortal()
+    }
+
+    /// De-Exalts character, setting them to be mortal. This also reduces their
+    /// permanent willpower rating by 2 (reflecting the difference between
+    /// mortal default and Exalt default).
+    pub fn set_mortal(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        if self.is_mortal() {
+            return Ok(self);
+        }
+        self.exalt_state.set_mortal()?;
+        let new_willpower_rating = self.willpower().rating().max(2) - 2;
+        self.set_willpower_rating(new_willpower_rating)?;
+        Ok(self)
+    }
+
+    /// Gets the character's health state (read-only).
+    pub fn health(&self) -> &Health {
+        &self.health
+    }
+
+    /// Checks if wound penalties can be set to a specific level.
+    pub fn check_set_wound_penalties(
+        &self,
+        _new_wound_penalties: &[WoundPenalty],
+    ) -> Result<(), CharacterMutationError> {
+        Ok(())
+    }
+
+    /// Sets a character's health track to be the specified set of wound
+    /// penalies. Additionally heals all damage.
+    pub fn set_wound_penalties(
+        &mut self,
+        new_wound_penalties: &[WoundPenalty],
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.health.set_wound_penalties(new_wound_penalties)?;
+        Ok(self)
+    }
+
+    /// Checks if character can be assigned an amount and type of damage.
+    pub fn check_take_damage(
+        &self,
+        _damage_level: DamageLevel,
+        _6amount: u8,
+    ) -> Result<(), CharacterMutationError> {
+        Ok(())
+    }
+
+    /// Adds damage to character (including overflow rollovers). Caps out at
+    /// being full up with aggravated.
+    pub fn take_damage(
+        &mut self,
+        damage_level: DamageLevel,
+        amount: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.health.take_damage(damage_level, amount)?;
+        Ok(self)
+    }
+
+    /// Checks if the character can heal the specified amount of damage.
+    pub fn check_heal_damage(&self, _amount: u8) -> Result<(), CharacterMutationError> {
+        Ok(())
+    }
+
+    /// Heals a character for the specified amount of damage (capped at the
+    /// amount of damage they actually have). Bashing heals before lethal which
+    /// heals before aggravated.
+    pub fn heal_damage(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+        self.health.heal_damage(amount)?;
+        Ok(self)
+    }
 }
+
 
 impl<'view, 'source> CharacterView<'source> {
     /// Accesses Martial Arts styles, abilities, and Charms.

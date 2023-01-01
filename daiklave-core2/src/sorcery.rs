@@ -11,7 +11,7 @@ use crate::{
             exalt_type::{solar::Solar, ExaltType, ExaltTypeView},
             Exalt, ExaltView,
         },
-        ExaltState, ExaltStateView,
+        Exaltation, ExaltationView,
     },
     id::UniqueId,
     Character, CharacterView,
@@ -540,13 +540,13 @@ impl<'char> SolarSorcerer {
     }
 }
 
-impl<'char> ExaltState {
+impl<'char> Exaltation {
     fn sorcery(&'char self) -> Option<Sorcery<'char>> {
         match self {
-            ExaltState::Mortal(mortal) => mortal
+            Exaltation::Mortal(mortal) => mortal
                 .sorcery()
                 .map(|terrestrial| Sorcery(SorcerySwitch::Mortal(terrestrial))),
-            ExaltState::Exalt(exalt) => exalt.sorcery(),
+            Exaltation::Exalt(exalt) => exalt.sorcery(),
         }
     }
 }
@@ -620,14 +620,14 @@ pub(crate) struct SolarCircleSorcererView<'source> {
     solar_spells: HashMap<SpellId, &'source SolarSpell>,
 }
 
-impl<'view, 'source> ExaltStateView<'source> {
+impl<'view, 'source> ExaltationView<'source> {
     fn sorcery(&'view self) -> Option<SorceryView<'view, 'source>> {
         match self {
-            ExaltStateView::Mortal(mortal) => mortal
+            ExaltationView::Mortal(mortal) => mortal
                 .sorcery
                 .as_ref()
                 .map(|terrestrial| SorceryView(SorceryViewSwitch::Mortal(terrestrial))),
-            ExaltStateView::Exalt(exalt) => exalt.sorcery(),
+            ExaltationView::Exalt(exalt) => exalt.sorcery(),
         }
     }
 }

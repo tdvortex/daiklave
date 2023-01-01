@@ -8,7 +8,7 @@ use crate::{
             exalt_type::{ExaltType, ExaltTypeView},
             exalt_view::ExaltView,
         },
-        ExaltStateView,
+        ExaltationView,
     },
     CharacterMutationError,
 };
@@ -39,7 +39,7 @@ impl<'source> ExaltTypeView<'source> {
     }
 }
 
-impl<'source> ExaltStateView<'source> {
+impl<'source> ExaltationView<'source> {
     pub fn is_solar(&self) -> bool {
         if let Self::Exalt(exalt_type) = self {
             exalt_type.is_solar()
@@ -84,7 +84,7 @@ impl<'source> ExaltStateView<'source> {
         }
 
         match self {
-            ExaltStateView::Mortal(mortal) => {
+            ExaltationView::Mortal(mortal) => {
                 // Default to essence 1
                 // Preserve martial arts styles, with empty Charms set
                 *self = Self::Exalt(Box::new(ExaltView::new(
@@ -96,7 +96,7 @@ impl<'source> ExaltStateView<'source> {
                     ExaltTypeView::Solar(solar),
                 )))
             }
-            ExaltStateView::Exalt(exalt) => {
+            ExaltationView::Exalt(exalt) => {
                 // Preserve essence rating
                 // Preserve martial arts styles (including charms)
                 *self = Self::Exalt(Box::new(ExaltView::new(
@@ -112,8 +112,8 @@ impl<'source> ExaltStateView<'source> {
 
     pub fn essence(&self) -> Option<&EssenceView> {
         match self {
-            ExaltStateView::Mortal(_) => None,
-            ExaltStateView::Exalt(exalt) => Some(exalt.essence()),
+            ExaltationView::Mortal(_) => None,
+            ExaltationView::Exalt(exalt) => Some(exalt.essence()),
         }
     }
 
@@ -123,10 +123,10 @@ impl<'source> ExaltStateView<'source> {
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltStateView::Mortal(_) => Err(CharacterMutationError::SpendMotesError(
+            ExaltationView::Mortal(_) => Err(CharacterMutationError::SpendMotesError(
                 SpendMotesError::MortalError,
             )),
-            ExaltStateView::Exalt(exalt) => exalt.check_spend_motes(first, amount),
+            ExaltationView::Exalt(exalt) => exalt.check_spend_motes(first, amount),
         }
     }
 
@@ -136,10 +136,10 @@ impl<'source> ExaltStateView<'source> {
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltStateView::Mortal(_) => Err(CharacterMutationError::SpendMotesError(
+            ExaltationView::Mortal(_) => Err(CharacterMutationError::SpendMotesError(
                 SpendMotesError::MortalError,
             )),
-            ExaltStateView::Exalt(exalt) => exalt.spend_motes(first, amount),
+            ExaltationView::Exalt(exalt) => exalt.spend_motes(first, amount),
         }?;
         Ok(self)
     }
@@ -152,10 +152,10 @@ impl<'source> ExaltStateView<'source> {
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltStateView::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
+            ExaltationView::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
                 CommitMotesError::MortalError,
             )),
-            ExaltStateView::Exalt(exalt) => exalt.check_commit_motes(id, name, first, amount),
+            ExaltationView::Exalt(exalt) => exalt.check_commit_motes(id, name, first, amount),
         }
     }
 
@@ -167,29 +167,29 @@ impl<'source> ExaltStateView<'source> {
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltStateView::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
+            ExaltationView::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
                 CommitMotesError::MortalError,
             )),
-            ExaltStateView::Exalt(exalt) => exalt.commit_motes(id, name, first, amount),
+            ExaltationView::Exalt(exalt) => exalt.commit_motes(id, name, first, amount),
         }?;
         Ok(self)
     }
 
     pub fn check_recover_motes(&self, _amount: u8) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltStateView::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
+            ExaltationView::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
                 RecoverMotesError::MortalError,
             )),
-            ExaltStateView::Exalt(_) => Ok(()),
+            ExaltationView::Exalt(_) => Ok(()),
         }
     }
 
     pub fn recover_motes(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltStateView::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
+            ExaltationView::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
                 RecoverMotesError::MortalError,
             )),
-            ExaltStateView::Exalt(exalt) => exalt.recover_motes(amount),
+            ExaltationView::Exalt(exalt) => exalt.recover_motes(amount),
         }?;
         Ok(self)
     }
@@ -199,10 +199,10 @@ impl<'source> ExaltStateView<'source> {
         id: &MoteCommitmentId,
     ) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltStateView::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
+            ExaltationView::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
                 UncommitMotesError::MortalError,
             )),
-            ExaltStateView::Exalt(exalt) => exalt.check_uncommit_motes(id),
+            ExaltationView::Exalt(exalt) => exalt.check_uncommit_motes(id),
         }
     }
 
@@ -211,20 +211,20 @@ impl<'source> ExaltStateView<'source> {
         id: &MoteCommitmentId,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltStateView::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
+            ExaltationView::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
                 UncommitMotesError::MortalError,
             )),
-            ExaltStateView::Exalt(exalt) => exalt.uncommit_motes(id),
+            ExaltationView::Exalt(exalt) => exalt.uncommit_motes(id),
         }?;
         Ok(self)
     }
 
     pub fn check_set_essence_rating(&self, rating: u8) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltStateView::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
+            ExaltationView::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
                 SetEssenceRatingError::MortalError,
             )),
-            ExaltStateView::Exalt(_) => {
+            ExaltationView::Exalt(_) => {
                 if (1..=5).contains(&rating) {
                     Ok(())
                 } else {
@@ -239,8 +239,8 @@ impl<'source> ExaltStateView<'source> {
     pub fn set_essence_rating(&mut self, rating: u8) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_essence_rating(rating)?;
         match self {
-            ExaltStateView::Exalt(exalt) => exalt.set_essence_rating(rating),
-            ExaltStateView::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
+            ExaltationView::Exalt(exalt) => exalt.set_essence_rating(rating),
+            ExaltationView::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
                 SetEssenceRatingError::MortalError,
             )),
         }?;

@@ -5,7 +5,7 @@ use daiklave_core2::{
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     charms::{CharmCost, CharmCostType, CharmKeyword},
-    guided::{begin_guided_builder, ExaltationChoice, GuidedMutation},
+    guided::{ExaltationChoice, GuidedMutation, GuidedEventSource},
     id::UniqueId,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
@@ -17,7 +17,7 @@ use daiklave_core2::{
 };
 #[test]
 fn test_guided_solar() {
-    let mut guided_builder = begin_guided_builder();
+    let mut guided_builder = GuidedEventSource::default();
 
     // Choose character name
     let mutation =

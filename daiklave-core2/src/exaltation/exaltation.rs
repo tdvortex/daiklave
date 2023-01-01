@@ -20,18 +20,18 @@ use super::{
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) enum ExaltState {
+pub(crate) enum Exaltation {
     Mortal(Box<Mortal>),
     Exalt(Box<Exalt>),
 }
 
-impl Default for ExaltState {
+impl Default for Exaltation {
     fn default() -> Self {
         Self::Mortal(Box::new(Mortal::default()))
     }
 }
 
-impl ExaltState {
+impl Exaltation {
     pub fn is_mortal(&self) -> bool {
         matches!(self, Self::Mortal(_))
     }
@@ -49,7 +49,7 @@ impl ExaltState {
             return Ok(self);
         }
 
-        let exalt = if let ExaltState::Exalt(exalt) = self {
+        let exalt = if let Exaltation::Exalt(exalt) = self {
             exalt
         } else {
             unreachable!()
@@ -82,15 +82,15 @@ impl ExaltState {
             .map(|(id, exalt_artist)| (id, exalt_artist.into()))
             .collect();
 
-        *self = ExaltState::Mortal(Box::new(Mortal::new(martial_arts_styles, sorcery)));
+        *self = Exaltation::Mortal(Box::new(Mortal::new(martial_arts_styles, sorcery)));
 
         Ok(self)
     }
 
     pub fn essence(&self) -> Option<&Essence> {
         match self {
-            ExaltState::Mortal(_) => None,
-            ExaltState::Exalt(exalt) => Some(exalt.essence()),
+            Exaltation::Mortal(_) => None,
+            Exaltation::Exalt(exalt) => Some(exalt.essence()),
         }
     }
 
@@ -100,10 +100,10 @@ impl ExaltState {
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltState::Mortal(_) => Err(CharacterMutationError::SpendMotesError(
+            Exaltation::Mortal(_) => Err(CharacterMutationError::SpendMotesError(
                 SpendMotesError::MortalError,
             )),
-            ExaltState::Exalt(exalt) => exalt.check_spend_motes(first, amount),
+            Exaltation::Exalt(exalt) => exalt.check_spend_motes(first, amount),
         }
     }
 
@@ -113,10 +113,10 @@ impl ExaltState {
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltState::Mortal(_) => Err(CharacterMutationError::SpendMotesError(
+            Exaltation::Mortal(_) => Err(CharacterMutationError::SpendMotesError(
                 SpendMotesError::MortalError,
             )),
-            ExaltState::Exalt(exalt) => exalt.spend_motes(first, amount),
+            Exaltation::Exalt(exalt) => exalt.spend_motes(first, amount),
         }?;
         Ok(self)
     }
@@ -129,10 +129,10 @@ impl ExaltState {
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltState::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
+            Exaltation::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
                 CommitMotesError::MortalError,
             )),
-            ExaltState::Exalt(exalt) => exalt.check_commit_motes(id, name, first, amount),
+            Exaltation::Exalt(exalt) => exalt.check_commit_motes(id, name, first, amount),
         }
     }
 
@@ -144,29 +144,29 @@ impl ExaltState {
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltState::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
+            Exaltation::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
                 CommitMotesError::MortalError,
             )),
-            ExaltState::Exalt(exalt) => exalt.commit_motes(id, name, first, amount),
+            Exaltation::Exalt(exalt) => exalt.commit_motes(id, name, first, amount),
         }?;
         Ok(self)
     }
 
     pub fn check_recover_motes(&self, _amount: u8) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltState::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
+            Exaltation::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
                 RecoverMotesError::MortalError,
             )),
-            ExaltState::Exalt(_) => Ok(()),
+            Exaltation::Exalt(_) => Ok(()),
         }
     }
 
     pub fn recover_motes(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltState::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
+            Exaltation::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
                 RecoverMotesError::MortalError,
             )),
-            ExaltState::Exalt(exalt_type) => exalt_type.recover_motes(amount),
+            Exaltation::Exalt(exalt_type) => exalt_type.recover_motes(amount),
         }?;
         Ok(self)
     }
@@ -176,10 +176,10 @@ impl ExaltState {
         id: &MoteCommitmentId,
     ) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltState::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
+            Exaltation::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
                 UncommitMotesError::MortalError,
             )),
-            ExaltState::Exalt(exalt_type) => exalt_type.check_uncommit_motes(id),
+            Exaltation::Exalt(exalt_type) => exalt_type.check_uncommit_motes(id),
         }
     }
 
@@ -188,20 +188,20 @@ impl ExaltState {
         id: &MoteCommitmentId,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltState::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
+            Exaltation::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
                 UncommitMotesError::MortalError,
             )),
-            ExaltState::Exalt(exalt_type) => exalt_type.uncommit_motes(id),
+            Exaltation::Exalt(exalt_type) => exalt_type.uncommit_motes(id),
         }?;
         Ok(self)
     }
 
     pub fn check_set_essence_rating(&self, rating: u8) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltState::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
+            Exaltation::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
                 SetEssenceRatingError::MortalError,
             )),
-            ExaltState::Exalt(_) => {
+            Exaltation::Exalt(_) => {
                 if (1..=5).contains(&rating) {
                     Ok(())
                 } else {
@@ -216,8 +216,8 @@ impl ExaltState {
     pub fn set_essence_rating(&mut self, rating: u8) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_essence_rating(rating)?;
         match self {
-            ExaltState::Exalt(exalt_type) => exalt_type.set_essence_rating(rating),
-            ExaltState::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
+            Exaltation::Exalt(exalt_type) => exalt_type.set_essence_rating(rating),
+            Exaltation::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
                 SetEssenceRatingError::MortalError,
             )),
         }?;
@@ -230,8 +230,8 @@ impl ExaltState {
         style: &MartialArtsStyle,
     ) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltState::Mortal(mortal) => mortal.check_add_martial_arts_style(id, style),
-            ExaltState::Exalt(exalt) => exalt.check_add_martial_arts_style(id, style),
+            Exaltation::Mortal(mortal) => mortal.check_add_martial_arts_style(id, style),
+            Exaltation::Exalt(exalt) => exalt.check_add_martial_arts_style(id, style),
         }
     }
 
@@ -241,10 +241,10 @@ impl ExaltState {
         style: &MartialArtsStyle,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltState::Mortal(mortal) => {
+            Exaltation::Mortal(mortal) => {
                 mortal.add_martial_arts_style(id, style)?;
             }
-            ExaltState::Exalt(exalt) => {
+            Exaltation::Exalt(exalt) => {
                 exalt.add_martial_arts_style(id, style)?;
             }
         }
@@ -256,8 +256,8 @@ impl ExaltState {
         id: MartialArtsStyleId,
     ) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltState::Mortal(mortal) => mortal.check_remove_martial_arts_style(id),
-            ExaltState::Exalt(exalt) => exalt.check_remove_martial_arts_style(id),
+            Exaltation::Mortal(mortal) => mortal.check_remove_martial_arts_style(id),
+            Exaltation::Exalt(exalt) => exalt.check_remove_martial_arts_style(id),
         }
     }
 
@@ -266,10 +266,10 @@ impl ExaltState {
         id: MartialArtsStyleId,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltState::Mortal(mortal) => {
+            Exaltation::Mortal(mortal) => {
                 mortal.remove_martial_arts_style(id)?;
             }
-            ExaltState::Exalt(exalt) => {
+            Exaltation::Exalt(exalt) => {
                 exalt.remove_martial_arts_style(id)?;
             }
         }
@@ -282,8 +282,8 @@ impl ExaltState {
         dots: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
-            ExaltState::Mortal(mortal) => mortal.check_set_martial_arts_dots(id, dots),
-            ExaltState::Exalt(exalt) => exalt.check_set_martial_arts_dots(id, dots),
+            Exaltation::Mortal(mortal) => mortal.check_set_martial_arts_dots(id, dots),
+            Exaltation::Exalt(exalt) => exalt.check_set_martial_arts_dots(id, dots),
         }
     }
 
@@ -293,10 +293,10 @@ impl ExaltState {
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            ExaltState::Mortal(mortal) => {
+            Exaltation::Mortal(mortal) => {
                 mortal.set_martial_arts_dots(id, dots)?;
             }
-            ExaltState::Exalt(exalt) => {
+            Exaltation::Exalt(exalt) => {
                 exalt.set_martial_arts_dots(id, dots)?;
             }
         }
@@ -329,7 +329,7 @@ impl ExaltState {
         }
 
         match self {
-            ExaltState::Mortal(mortal) => {
+            Exaltation::Mortal(mortal) => {
                 // Default to essence 1
                 // Preserve martial arts styles, with empty Charms set
                 *self = Self::Exalt(Box::new(Exalt::new(
@@ -341,7 +341,7 @@ impl ExaltState {
                     ExaltType::Solar(solar.clone()),
                 )))
             }
-            ExaltState::Exalt(exalt) => {
+            Exaltation::Exalt(exalt) => {
                 // Preserve essence rating
                 // Preserve martial arts styles (including charms)
                 *self = Self::Exalt(Box::new(Exalt::new(
@@ -356,16 +356,16 @@ impl ExaltState {
     }
 }
 
-impl<'char> ExaltState {
+impl<'char> Exaltation {
     pub(crate) fn martial_artist(
         &'char self,
         id: MartialArtsStyleId,
     ) -> Option<MartialArtist<'char>> {
         match self {
-            ExaltState::Mortal(mortal) => Some(MartialArtist(ExaltationMartialArtist::Mortal(
+            Exaltation::Mortal(mortal) => Some(MartialArtist(ExaltationMartialArtist::Mortal(
                 mortal.martial_arts_styles().get(&id)?,
             ))),
-            ExaltState::Exalt(exalt) => Some(MartialArtist(ExaltationMartialArtist::Exalt(
+            Exaltation::Exalt(exalt) => Some(MartialArtist(ExaltationMartialArtist::Exalt(
                 exalt.martial_arts_styles().get(&id)?,
             ))),
         }
@@ -373,13 +373,13 @@ impl<'char> ExaltState {
 
     pub(crate) fn martial_arts_id_iter(&'char self) -> impl Iterator<Item = MartialArtsStyleId> {
         match self {
-            ExaltState::Mortal(mortal) => mortal
+            Exaltation::Mortal(mortal) => mortal
                 .martial_arts_styles()
                 .keys()
                 .copied()
                 .collect::<Vec<MartialArtsStyleId>>()
                 .into_iter(),
-            ExaltState::Exalt(exalt) => exalt
+            Exaltation::Exalt(exalt) => exalt
                 .martial_arts_styles()
                 .keys()
                 .copied()

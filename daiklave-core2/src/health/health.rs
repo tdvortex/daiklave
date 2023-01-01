@@ -1,35 +1,8 @@
-use serde::{Deserialize, Serialize};
+use serde::{Serialize, Deserialize};
 
 use crate::CharacterMutationError;
 
-mod character;
-mod character_view;
-
-/// The possible wound penalty levels for a health box or character
-#[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Clone, Copy)]
-pub enum WoundPenalty {
-    /// -0 wound penalty
-    Zero,
-    /// -1 wound penalty
-    MinusOne,
-    /// -2 wound penalty
-    MinusTwo,
-    /// -4 wound penalty
-    MinusFour,
-    /// Incapacitated-level wound penalty
-    Incapacitated,
-}
-
-/// The three levels of damage severity
-#[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Clone, Copy)]
-pub enum DamageLevel {
-    /// Bashing damage \[/\]
-    Bashing,
-    /// Lethal damage \[X\]
-    Lethal,
-    /// Aggravated damage \[∗\]
-    Aggravated,
-}
+use super::{wound_penalty::WoundPenalty, damage_level::DamageLevel, health_iter::HealthIter};
 
 /// Struct for a character's health track.
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
@@ -65,16 +38,16 @@ impl Health {
     /// worse damage types (Agg, Lethal) appear before lighter wound penalties
     /// (Bashing, no damage)
     pub fn iter(&self) -> impl Iterator<Item = (WoundPenalty, Option<DamageLevel>)> {
-        HealthIter {
-            zero_boxes: self.zero_boxes,
-            minus_one_boxes: self.minus_one_boxes,
-            minus_two_boxes: self.minus_two_boxes,
-            minus_four_boxes: self.minus_four_boxes,
-            incapacitated_boxes: self.incapacitated_boxes,
-            bashing_damage: self.bashing_damage,
-            lethal_damage: self.lethal_damage,
-            aggravated_damage: self.aggravated_damage,
-        }
+        HealthIter::new(
+            self.zero_boxes,
+            self.minus_one_boxes,
+            self.minus_two_boxes,
+            self.minus_four_boxes,
+            self.incapacitated_boxes,
+            self.bashing_damage,
+            self.lethal_damage,
+            self.aggravated_damage,
+        )
     }
 
     /// The character's current wound penalty, given their current damage
@@ -106,8 +79,7 @@ impl Health {
         }
     }
 
-    ///
-    fn set_wound_penalties(
+    pub(crate) fn set_wound_penalties(
         &mut self,
         new_wound_penalties: &[WoundPenalty],
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -141,7 +113,7 @@ impl Health {
         Ok(self)
     }
 
-    fn take_damage(
+    pub(crate) fn take_damage(
         &mut self,
         damage_level: DamageLevel,
         amount: u8,
@@ -190,7 +162,7 @@ impl Health {
         Ok(self)
     }
 
-    fn heal_damage(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub(crate) fn heal_damage(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         if amount == 0 {
             return Ok(self);
         }
@@ -213,56 +185,5 @@ impl Health {
         self.aggravated_damage -= aggravated_healed;
 
         Ok(self)
-    }
-}
-
-struct HealthIter {
-    zero_boxes: u8,
-    minus_one_boxes: u8,
-    minus_two_boxes: u8,
-    minus_four_boxes: u8,
-    incapacitated_boxes: u8,
-    bashing_damage: u8,
-    lethal_damage: u8,
-    aggravated_damage: u8,
-}
-
-impl Iterator for HealthIter {
-    type Item = (WoundPenalty, Option<DamageLevel>);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let wound_penalty = if self.zero_boxes > 0 {
-            self.zero_boxes -= 1;
-            WoundPenalty::Zero
-        } else if self.minus_one_boxes > 0 {
-            self.minus_one_boxes -= 1;
-            WoundPenalty::MinusOne
-        } else if self.minus_two_boxes > 0 {
-            self.minus_two_boxes -= 1;
-            WoundPenalty::MinusTwo
-        } else if self.minus_four_boxes > 0 {
-            self.minus_four_boxes -= 1;
-            WoundPenalty::MinusFour
-        } else if self.incapacitated_boxes > 0 {
-            self.incapacitated_boxes -= 1;
-            WoundPenalty::Incapacitated
-        } else {
-            return None;
-        };
-
-        let maybe_damage = if self.aggravated_damage > 0 {
-            self.aggravated_damage -= 1;
-            Some(DamageLevel::Aggravated)
-        } else if self.lethal_damage > 0 {
-            self.lethal_damage -= 1;
-            Some(DamageLevel::Lethal)
-        } else if self.bashing_damage > 0 {
-            self.bashing_damage -= 1;
-            Some(DamageLevel::Bashing)
-        } else {
-            None
-        };
-
-        Some((wound_penalty, maybe_damage))
     }
 }
