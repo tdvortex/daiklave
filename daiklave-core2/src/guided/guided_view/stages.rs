@@ -192,7 +192,7 @@ impl<'source> GuidedView<'source> {
                     .map_err(GuidedError::CharacterMutationError)?;
 
                 if let Some(favored) = &self.solar_favored_abilities {
-                    let favored_vanillas = favored
+                    favored
                         .iter()
                         .filter_map(|not_vanilla| {
                             if let Ok(vanilla) = (*not_vanilla).try_into() {
@@ -201,10 +201,6 @@ impl<'source> GuidedView<'source> {
                                 None
                             }
                         })
-                        .collect::<Vec<AbilityNameVanilla>>();
-
-                    favored_vanillas
-                        .into_iter()
                         .fold(Ok(&mut self.character_view), |res_view, vanilla| {
                             res_view.and_then(|view| view.set_ability_dots(vanilla, 1))
                         })
@@ -226,7 +222,7 @@ impl<'source> GuidedView<'source> {
 
                         for (style_id, style) in hashmap.iter() {
                             self.character_view
-                                .add_martial_arts_style(*style_id, *style)
+                                .add_martial_arts_style(*style_id, style)
                                 .map_err(GuidedError::CharacterMutationError)?;
                         }
                     }

@@ -76,7 +76,7 @@ impl Exalt {
             Err(CharacterMutationError::SetAbilityError(
                 SetAbilityError::InvalidRating(dots),
             ))
-        } else if let Some(_) = self.martial_arts_styles.get(&id) {
+        } else if self.martial_arts_styles.contains_key(&id) {
             Ok(())
         } else {
             Err(CharacterMutationError::SetMartialArtsDotsError(
@@ -108,7 +108,7 @@ impl Exalt {
                     for prereq_charm_id in charm.charms_required.iter() {
                         prereq_charms_map
                             .entry(*prereq_charm_id)
-                            .or_insert(Vec::new())
+                            .or_default()
                             .push(*charm_id);
                     }
 
@@ -199,7 +199,7 @@ impl<'source> ExaltView<'source> {
             Err(CharacterMutationError::SetAbilityError(
                 SetAbilityError::InvalidRating(dots),
             ))
-        } else if let Some(_) = self.martial_arts_styles.get(&id) {
+        } else if self.martial_arts_styles.contains_key(&id) {
             Ok(())
         } else {
             Err(CharacterMutationError::SetMartialArtsDotsError(
@@ -228,7 +228,7 @@ impl<'source> ExaltView<'source> {
                     for prereq_charm_id in charm.charms_required.iter() {
                         prereq_charms_map
                             .entry(*prereq_charm_id)
-                            .or_insert(Vec::new())
+                            .or_default()
                             .push(*charm_id);
                     }
 

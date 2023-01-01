@@ -96,7 +96,7 @@ impl<'source> CraftView<'source> {
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &str> {
-        self.0.keys().map(|ptr| *ptr)
+        self.0.keys().copied()
     }
 }
 

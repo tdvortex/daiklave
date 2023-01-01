@@ -25,10 +25,10 @@ use crate::{
 pub enum SorceryCircle {
     /// The first and lowest circle. Usable by everyone, including some mortals
     Terrestrial,
-    /// The second circle, usable by Solars (and Abyssals and Infernals), 
+    /// The second circle, usable by Solars (and Abyssals and Infernals),
     /// Lunars, Sidereals, and Getimians.
     Celestial,
-    /// The third and highest circle, usable only by the most skilled of the 
+    /// The third and highest circle, usable only by the most skilled of the
     /// Solars.
     Solar,
 }
@@ -547,13 +547,10 @@ impl<'char> SolarSorcerer {
 impl<'char> ExaltState {
     fn sorcery(&'char self) -> Option<Sorcery<'char>> {
         match self {
-            ExaltState::Mortal(mortal) => {
-                if let Some(terrestrial) = &mortal.sorcery {
-                    Some(Sorcery(SorcerySwitch::Mortal(&terrestrial)))
-                } else {
-                    None
-                }
-            }
+            ExaltState::Mortal(mortal) => mortal
+                .sorcery
+                .as_ref()
+                .map(|terrestrial| Sorcery(SorcerySwitch::Mortal(terrestrial))),
             ExaltState::Exalt(exalt) => exalt.sorcery(),
         }
     }
@@ -562,15 +559,9 @@ impl<'char> ExaltState {
 impl<'char> Exalt {
     fn sorcery(&'char self) -> Option<Sorcery<'char>> {
         match &self.exalt_type {
-            ExaltType::Solar(solar) => {
-                if let Some(sorcerer) = solar.sorcery() {
-                    Some(Sorcery(SorcerySwitch::Exalt(ExaltSorcerySwitch::Solar(
-                        &sorcerer,
-                    ))))
-                } else {
-                    None
-                }
-            }
+            ExaltType::Solar(solar) => solar
+                .sorcery()
+                .map(|sorcerer| Sorcery(SorcerySwitch::Exalt(ExaltSorcerySwitch::Solar(sorcerer)))),
         }
     }
 }
@@ -637,13 +628,10 @@ pub(crate) struct SolarCircleSorcererView<'source> {
 impl<'view, 'source> ExaltStateView<'source> {
     fn sorcery(&'view self) -> Option<SorceryView<'view, 'source>> {
         match self {
-            ExaltStateView::Mortal(mortal) => {
-                if let Some(terrestrial) = &mortal.sorcery {
-                    Some(SorceryView(SorceryViewSwitch::Mortal(&terrestrial)))
-                } else {
-                    None
-                }
-            }
+            ExaltStateView::Mortal(mortal) => mortal
+                .sorcery
+                .as_ref()
+                .map(|terrestrial| SorceryView(SorceryViewSwitch::Mortal(terrestrial))),
             ExaltStateView::Exalt(exalt) => exalt.sorcery(),
         }
     }
@@ -652,15 +640,11 @@ impl<'view, 'source> ExaltStateView<'source> {
 impl<'view, 'source> ExaltView<'source> {
     fn sorcery(&'view self) -> Option<SorceryView<'view, 'source>> {
         match &self.exalt_type {
-            ExaltTypeView::Solar(solar) => {
-                if let Some(sorcerer) = solar.sorcery() {
-                    Some(SorceryView(SorceryViewSwitch::Exalt(
-                        ExaltSorceryViewSwitch::Solar(&sorcerer),
-                    )))
-                } else {
-                    None
-                }
-            }
+            ExaltTypeView::Solar(solar) => solar.sorcery().map(|sorcerer| {
+                SorceryView(SorceryViewSwitch::Exalt(ExaltSorceryViewSwitch::Solar(
+                    sorcerer,
+                )))
+            }),
         }
     }
 }
@@ -984,18 +968,18 @@ impl<'source> TerrestrialCircleSorcererView<'source> {
     }
     pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&'source SorceryArchetype> {
         if id == self.archetype_id {
-            Some(&self.archetype)
+            Some(self.archetype)
         } else {
             None
         }
     }
 
     pub fn shaping_ritual(&self) -> (ShapingRitualId, &'source ShapingRitual) {
-        (self.shaping_ritual_id, &self.shaping_ritual)
+        (self.shaping_ritual_id, self.shaping_ritual)
     }
 
     pub fn control_spell(&self) -> (SpellId, &'source Spell) {
-        (self.control_spell_id, &self.control_spell)
+        (self.control_spell_id, self.control_spell)
     }
 }
 
