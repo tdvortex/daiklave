@@ -2,7 +2,7 @@ use daiklave_core2::{
     abilities::AbilityName,
     exaltation::exalt::{
         essence::{MoteCommitmentId, MotePoolName},
-        exalt_type::solar::{Eclipse, Solar},
+        exalt_type::solar::{Solar, caste::eclipse::Eclipse},
     },
     id::UniqueId,
     CharacterView,

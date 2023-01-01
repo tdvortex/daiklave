@@ -1,104 +1,11 @@
 use std::collections::HashSet;
 
-use serde::{Deserialize, Serialize};
+use crate::{abilities::AbilityName, exaltation::exalt::exalt_type::solar::builder_error::SolarBuilderError};
 
-use crate::abilities::AbilityName;
-
-use super::builder_error::SolarBuilderError;
-
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash, PartialOrd, Ord)]
-pub(crate) enum NightAbility {
-    Athletics,
-    Awareness,
-    Dodge,
-    Investigation,
-    Larceny,
-    Ride,
-    Stealth,
-    Socialize,
-}
-
-impl From<NightAbility> for AbilityName {
-    fn from(value: NightAbility) -> Self {
-        match value {
-            NightAbility::Athletics => Self::Athletics,
-            NightAbility::Awareness => Self::Awareness,
-            NightAbility::Dodge => Self::Dodge,
-            NightAbility::Investigation => Self::Investigation,
-            NightAbility::Larceny => Self::Larceny,
-            NightAbility::Ride => Self::Ride,
-            NightAbility::Stealth => Self::Stealth,
-            NightAbility::Socialize => Self::Socialize,
-        }
-    }
-}
-
-/// Caste traits for the Night Caste Solar.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Night {
-    pub(crate) caste_not_supernal: [NightAbility; 4],
-    pub(crate) supernal: NightAbility,
-}
-
-impl Night {
-    /// Builder method
-    pub fn builder() -> NightBuilder {
-        NightBuilder {
-            caste_not_supernal: HashSet::new(),
-            supernal: None,
-        }
-    }
-
-    pub(crate) fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self
-            .caste_not_supernal
-            .iter()
-            .any(|night_ability| AbilityName::from(*night_ability) == ability)
-        {
-            true
-        } else {
-            AbilityName::from(self.supernal) == ability
-        }
-    }
-
-    pub(crate) fn supernal_ability(&self) -> AbilityName {
-        AbilityName::from(self.supernal)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct NightView {
-    pub(crate) caste_not_supernal: [NightAbility; 4],
-    pub(crate) supernal: NightAbility,
-}
-
-impl NightView {
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self
-            .caste_not_supernal
-            .iter()
-            .any(|night_ability| AbilityName::from(*night_ability) == ability)
-        {
-            true
-        } else {
-            AbilityName::from(self.supernal) == ability
-        }
-    }
-
-    pub fn supernal_ability(&self) -> AbilityName {
-        AbilityName::from(self.supernal)
-    }
-
-    pub fn into_owned(self) -> Night {
-        Night {
-            caste_not_supernal: self.caste_not_supernal,
-            supernal: self.supernal,
-        }
-    }
-}
+use super::{night_ability::NightAbility, night_view::NightView};
 
 /// Builder struct for constructing Night Caste traits.
+#[derive(Debug, Default)]
 pub struct NightBuilder {
     caste_not_supernal: HashSet<NightAbility>,
     supernal: Option<NightAbility>,

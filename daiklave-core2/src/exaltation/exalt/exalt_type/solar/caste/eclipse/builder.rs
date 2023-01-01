@@ -1,104 +1,11 @@
 use std::collections::HashSet;
 
-use serde::{Deserialize, Serialize};
+use crate::{abilities::AbilityName, exaltation::exalt::exalt_type::solar::builder_error::SolarBuilderError};
 
-use crate::abilities::AbilityName;
-
-use super::builder_error::SolarBuilderError;
-
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash, PartialOrd, Ord)]
-pub(crate) enum EclipseAbility {
-    Bureaucracy,
-    Larceny,
-    Linguistics,
-    Occult,
-    Presence,
-    Ride,
-    Sail,
-    Socialize,
-}
-
-impl From<EclipseAbility> for AbilityName {
-    fn from(value: EclipseAbility) -> Self {
-        match value {
-            EclipseAbility::Bureaucracy => Self::Bureaucracy,
-            EclipseAbility::Larceny => Self::Larceny,
-            EclipseAbility::Linguistics => Self::Linguistics,
-            EclipseAbility::Occult => Self::Occult,
-            EclipseAbility::Presence => Self::Presence,
-            EclipseAbility::Ride => Self::Ride,
-            EclipseAbility::Sail => Self::Sail,
-            EclipseAbility::Socialize => Self::Socialize,
-        }
-    }
-}
-
-/// Caste traits for the Eclipse Caste Solar.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Eclipse {
-    pub(crate) caste_not_supernal: [EclipseAbility; 4],
-    pub(crate) supernal: EclipseAbility,
-}
-
-impl Eclipse {
-    /// Builder method
-    pub fn builder() -> EclipseBuilder {
-        EclipseBuilder {
-            caste_not_supernal: HashSet::new(),
-            supernal: None,
-        }
-    }
-
-    pub(crate) fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self
-            .caste_not_supernal
-            .iter()
-            .any(|eclipse_ability| AbilityName::from(*eclipse_ability) == ability)
-        {
-            true
-        } else {
-            AbilityName::from(self.supernal) == ability
-        }
-    }
-
-    pub(crate) fn supernal_ability(&self) -> AbilityName {
-        AbilityName::from(self.supernal)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct EclipseView {
-    pub(crate) caste_not_supernal: [EclipseAbility; 4],
-    pub(crate) supernal: EclipseAbility,
-}
-
-impl EclipseView {
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self
-            .caste_not_supernal
-            .iter()
-            .any(|eclipse_ability| AbilityName::from(*eclipse_ability) == ability)
-        {
-            true
-        } else {
-            AbilityName::from(self.supernal) == ability
-        }
-    }
-
-    pub fn supernal_ability(&self) -> AbilityName {
-        AbilityName::from(self.supernal)
-    }
-
-    pub fn into_owned(self) -> Eclipse {
-        Eclipse {
-            caste_not_supernal: self.caste_not_supernal,
-            supernal: self.supernal,
-        }
-    }
-}
+use super::{EclipseAbility, EclipseView};
 
 /// Builder struct for constructing Eclipse Caste traits.
+#[derive(Debug, Default)]
 pub struct EclipseBuilder {
     caste_not_supernal: HashSet<EclipseAbility>,
     supernal: Option<EclipseAbility>,

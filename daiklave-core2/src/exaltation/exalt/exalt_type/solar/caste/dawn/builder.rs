@@ -5,9 +5,10 @@ use crate::{abilities::AbilityName, exaltation::exalt::exalt_type::solar::builde
 use super::{DawnCasteAbility, DawnSupernalAbility, DawnView};
 
 /// Builder struct for constructing Dawn Caste traits.
+#[derive(Debug, Default)]
 pub struct DawnBuilder {
-    pub(crate) caste_not_supernal: HashSet<DawnCasteAbility>,
-    pub(crate) supernal: Option<DawnSupernalAbility>,
+    caste_not_supernal: HashSet<DawnCasteAbility>,
+    supernal: Option<DawnSupernalAbility>,
 }
 
 impl DawnBuilder {

@@ -1,104 +1,11 @@
 use std::collections::HashSet;
 
-use serde::{Deserialize, Serialize};
+use crate::{abilities::AbilityName, exaltation::exalt::exalt_type::solar::builder_error::SolarBuilderError};
 
-use crate::abilities::AbilityName;
-
-use super::builder_error::SolarBuilderError;
-
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, PartialOrd, Ord, Hash)]
-pub(crate) enum TwilightAbility {
-    Bureaucracy,
-    Craft,
-    Integrity,
-    Investigation,
-    Linguistics,
-    Lore,
-    Medicine,
-    Occult,
-}
-
-impl From<TwilightAbility> for AbilityName {
-    fn from(value: TwilightAbility) -> Self {
-        match value {
-            TwilightAbility::Bureaucracy => Self::Bureaucracy,
-            TwilightAbility::Craft => Self::Craft,
-            TwilightAbility::Integrity => Self::Integrity,
-            TwilightAbility::Investigation => Self::Investigation,
-            TwilightAbility::Linguistics => Self::Linguistics,
-            TwilightAbility::Lore => Self::Lore,
-            TwilightAbility::Medicine => Self::Medicine,
-            TwilightAbility::Occult => Self::Occult,
-        }
-    }
-}
-
-/// Caste traits for the Twilight Caste Solar.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Twilight {
-    pub(crate) caste_not_supernal: [TwilightAbility; 4],
-    pub(crate) supernal: TwilightAbility,
-}
-
-impl Twilight {
-    /// Builder method
-    pub fn builder() -> TwilightBuilder {
-        TwilightBuilder {
-            caste_not_supernal: HashSet::new(),
-            supernal: None,
-        }
-    }
-
-    pub(crate) fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self
-            .caste_not_supernal
-            .iter()
-            .any(|twilight_ability| AbilityName::from(*twilight_ability) == ability)
-        {
-            true
-        } else {
-            AbilityName::from(self.supernal) == ability
-        }
-    }
-
-    pub(crate) fn supernal_ability(&self) -> AbilityName {
-        AbilityName::from(self.supernal)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TwilightView {
-    pub(crate) caste_not_supernal: [TwilightAbility; 4],
-    pub(crate) supernal: TwilightAbility,
-}
-
-impl TwilightView {
-    pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self
-            .caste_not_supernal
-            .iter()
-            .any(|twilight_ability| AbilityName::from(*twilight_ability) == ability)
-        {
-            true
-        } else {
-            AbilityName::from(self.supernal) == ability
-        }
-    }
-
-    pub fn supernal_ability(&self) -> AbilityName {
-        AbilityName::from(self.supernal)
-    }
-
-    pub fn into_owned(self) -> Twilight {
-        Twilight {
-            caste_not_supernal: self.caste_not_supernal,
-            supernal: self.supernal,
-        }
-    }
-}
+use super::{twilight_ability::TwilightAbility, twilight_view::TwilightView};
 
 /// Builder struct for constructing Twilight Caste traits.
+#[derive(Debug, Default)]
 pub struct TwilightBuilder {
     caste_not_supernal: HashSet<TwilightAbility>,
     supernal: Option<TwilightAbility>,

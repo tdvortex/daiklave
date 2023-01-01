@@ -1,8 +1,8 @@
 use serde::{Serialize, Deserialize};
 
-use crate::{exaltation::exalt::exalt_type::solar::{Twilight, Zenith, Night, Eclipse}, abilities::AbilityName};
+use crate::{abilities::AbilityName};
 
-use super::dawn::Dawn;
+use super::{dawn::Dawn, eclipse::Eclipse, night::Night, twilight::Twilight, zenith::Zenith};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SolarCaste {

@@ -1,6 +1,6 @@
-use crate::{exaltation::exalt::exalt_type::solar::{zenith::ZenithView, twilight::TwilightView, night::NightView, eclipse::EclipseView}, abilities::AbilityName};
+use crate::{abilities::AbilityName};
 
-use super::{dawn::DawnView, caste::SolarCaste};
+use super::{dawn::DawnView, caste::SolarCaste, eclipse::EclipseView, night::NightView, twilight::TwilightView, zenith::ZenithView};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SolarCasteView {

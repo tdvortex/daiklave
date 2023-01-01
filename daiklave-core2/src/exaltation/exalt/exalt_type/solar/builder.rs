@@ -3,10 +3,10 @@ use std::collections::HashSet;
 use crate::{abilities::AbilityName, sorcery::SolarSorcererView};
 
 use super::{
-    eclipse::EclipseView, night::NightView,
-    twilight::TwilightView, zenith::ZenithView, Solar, SolarView, builder_error::SolarBuilderError, caste::{SolarCasteView, dawn::DawnView},
+    SolarView, builder_error::SolarBuilderError, caste::{SolarCasteView, dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView, zenith::ZenithView}, solar::Solar,
 };
 
+#[derive(Debug, Default)]
 pub struct SolarBuilder<'source> {
     caste: Option<SolarCasteView>,
     favored_abilities: HashSet<AbilityName>,
@@ -16,18 +16,6 @@ pub struct SolarBuilder<'source> {
 
 
 impl<'source> SolarBuilder<'source> {
-    pub(crate) fn new(
-        caste: Option<SolarCasteView>,
-        favored_abilities: HashSet<AbilityName>,
-        sorcery:Option<SolarSorcererView<'source>>,
-    ) -> Self {
-        Self {
-            caste,
-            favored_abilities,
-            sorcery,
-        }
-    }
-
     pub fn set_dawn(&mut self, dawn: DawnView) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();
@@ -110,11 +98,11 @@ impl<'source> SolarBuilder<'source> {
         let mut arr = option_arr.map(|el| el.unwrap());
         arr.sort();
 
-        Ok(Solar {
-            caste: self.caste.unwrap().into_owned(),
-            favored_abilities: arr,
-            sorcery: self.sorcery.map(|sorcery| sorcery.into()),
-        })
+        Ok(Solar::new(
+            self.caste.unwrap().into_owned(),
+            arr,
+            self.sorcery.map(|sorcery| sorcery.into()),
+        ))
     }
 
     /// Consumes the builder, without cloning.

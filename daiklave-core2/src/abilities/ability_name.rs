@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::exaltation::exalt::exalt_type::solar::caste::dawn::{DawnCasteAbility, DawnSupernalAbility};
+use crate::exaltation::exalt::exalt_type::solar::caste::{dawn::{DawnCasteAbility, DawnSupernalAbility}, eclipse::EclipseAbility, night::NightAbility, twilight::TwilightAbility, zenith::ZenithAbility};
 
 use super::AbilityNameVanilla;
 
@@ -120,6 +120,66 @@ impl From<DawnSupernalAbility> for AbilityName {
             DawnSupernalAbility::Resistance => Self::Resistance,
             DawnSupernalAbility::Thrown => Self::Thrown,
             DawnSupernalAbility::War => Self::War,
+        }
+    }
+}
+
+impl From<EclipseAbility> for AbilityName {
+    fn from(value: EclipseAbility) -> Self {
+        match value {
+            EclipseAbility::Bureaucracy => Self::Bureaucracy,
+            EclipseAbility::Larceny => Self::Larceny,
+            EclipseAbility::Linguistics => Self::Linguistics,
+            EclipseAbility::Occult => Self::Occult,
+            EclipseAbility::Presence => Self::Presence,
+            EclipseAbility::Ride => Self::Ride,
+            EclipseAbility::Sail => Self::Sail,
+            EclipseAbility::Socialize => Self::Socialize,
+        }
+    }
+}
+
+impl From<NightAbility> for AbilityName {
+    fn from(value: NightAbility) -> Self {
+        match value {
+            NightAbility::Athletics => Self::Athletics,
+            NightAbility::Awareness => Self::Awareness,
+            NightAbility::Dodge => Self::Dodge,
+            NightAbility::Investigation => Self::Investigation,
+            NightAbility::Larceny => Self::Larceny,
+            NightAbility::Ride => Self::Ride,
+            NightAbility::Stealth => Self::Stealth,
+            NightAbility::Socialize => Self::Socialize,
+        }
+    }
+}
+
+impl From<TwilightAbility> for AbilityName {
+    fn from(value: TwilightAbility) -> Self {
+        match value {
+            TwilightAbility::Bureaucracy => Self::Bureaucracy,
+            TwilightAbility::Craft => Self::Craft,
+            TwilightAbility::Integrity => Self::Integrity,
+            TwilightAbility::Investigation => Self::Investigation,
+            TwilightAbility::Linguistics => Self::Linguistics,
+            TwilightAbility::Lore => Self::Lore,
+            TwilightAbility::Medicine => Self::Medicine,
+            TwilightAbility::Occult => Self::Occult,
+        }
+    }
+}
+
+impl From<ZenithAbility> for AbilityName {
+    fn from(value: ZenithAbility) -> Self {
+        match value {
+            ZenithAbility::Athletics => Self::Athletics,
+            ZenithAbility::Integrity => Self::Integrity,
+            ZenithAbility::Performance => Self::Performance,
+            ZenithAbility::Lore => Self::Lore,
+            ZenithAbility::Presence => Self::Presence,
+            ZenithAbility::Resistance => Self::Resistance,
+            ZenithAbility::Survival => Self::Survival,
+            ZenithAbility::War => Self::War,
         }
     }
 }

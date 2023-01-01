@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use serde::{Serialize, Deserialize};
 
 use crate::abilities::AbilityName;
@@ -18,10 +16,7 @@ pub struct Dawn {
 impl Dawn {
     /// Builder method
     pub fn builder() -> DawnBuilder {
-        DawnBuilder {
-            caste_not_supernal: HashSet::new(),
-            supernal: None,
-        }
+        DawnBuilder::default()
     }
 
     pub(crate) fn has_caste_ability(&self, ability: AbilityName) -> bool {
