@@ -45,16 +45,16 @@ impl Health {
     /// worse damage types (Agg, Lethal) appear before lighter wound penalties
     /// (Bashing, no damage)
     pub fn iter(&self) -> impl Iterator<Item = (WoundPenalty, Option<DamageLevel>)> {
-        HealthIter::new(
-            self.zero_boxes,
-            self.minus_one_boxes,
-            self.minus_two_boxes,
-            self.minus_four_boxes,
-            self.incapacitated_boxes,
-            self.bashing_damage,
-            self.lethal_damage,
-            self.aggravated_damage,
-        )
+        HealthIter {
+            zero_boxes: self.zero_boxes,
+            minus_one_boxes: self.minus_one_boxes,
+            minus_two_boxes: self.minus_two_boxes,
+            minus_four_boxes: self.minus_four_boxes,
+            incapacitated_boxes: self.incapacitated_boxes,
+            bashing_damage: self.bashing_damage,
+            lethal_damage: self.lethal_damage,
+            aggravated_damage: self.aggravated_damage,
+        }
     }
 
     /// The character's current wound penalty, given their current damage

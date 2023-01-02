@@ -18,7 +18,7 @@ impl GuidedEventSource {
     pub fn as_guided_view(&self) -> Result<GuidedState, GuidedError> {
         let mut guided_view = GuidedState {
             character_view: Character::default(),
-            stage: GuidedStage::ChooseNameAndConcept,
+            stage: GuidedStage::NameAndConcept,
             bonus_points: 0,
             merit_dots: 0,
             exaltation_choice: None,

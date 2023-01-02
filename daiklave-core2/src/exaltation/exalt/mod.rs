@@ -5,7 +5,6 @@ pub mod essence;
 /// Structs and methods related to various Exalt subtypes (Solar, Lunar, etc).
 pub mod exalt_type;
 
-mod exalt;
 mod exalt_memo;
 pub(crate) mod martial_arts;
 mod sorcery;

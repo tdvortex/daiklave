@@ -1,38 +1,14 @@
 use super::{damage_level::DamageLevel, wound_penalty::WoundPenalty};
 
 pub(in crate::health) struct HealthIter {
-    zero_boxes: u8,
-    minus_one_boxes: u8,
-    minus_two_boxes: u8,
-    minus_four_boxes: u8,
-    incapacitated_boxes: u8,
-    bashing_damage: u8,
-    lethal_damage: u8,
-    aggravated_damage: u8,
-}
-
-impl HealthIter {
-    pub fn new(
-        zero_boxes: u8,
-        minus_one_boxes: u8,
-        minus_two_boxes: u8,
-        minus_four_boxes: u8,
-        incapacitated_boxes: u8,
-        bashing_damage: u8,
-        lethal_damage: u8,
-        aggravated_damage: u8,
-    ) -> Self {
-        Self {
-            zero_boxes,
-            minus_one_boxes,
-            minus_two_boxes,
-            minus_four_boxes,
-            incapacitated_boxes,
-            bashing_damage,
-            lethal_damage,
-            aggravated_damage,
-        }
-    }
+    pub(in crate::health) zero_boxes: u8,
+    pub(in crate::health) minus_one_boxes: u8,
+    pub(in crate::health) minus_two_boxes: u8,
+    pub(in crate::health) minus_four_boxes: u8,
+    pub(in crate::health) incapacitated_boxes: u8,
+    pub(in crate::health) bashing_damage: u8,
+    pub(in crate::health) lethal_damage: u8,
+    pub(in crate::health) aggravated_damage: u8,
 }
 
 impl Iterator for HealthIter {

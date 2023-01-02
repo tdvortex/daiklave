@@ -810,39 +810,33 @@ impl<'source> GuidedState<'source> {
             GuidedMutation::CharacterMutation(mutation) => match mutation {
                 CharacterMutation::SetName(_)
                 | CharacterMutation::SetConcept(_)
-                | CharacterMutation::RemoveConcept => {
-                    self.stage == GuidedStage::ChooseNameAndConcept
-                }
-                CharacterMutation::SetAttribute(_, _) => {
-                    self.stage == GuidedStage::ChooseAttributes
-                }
+                | CharacterMutation::RemoveConcept => self.stage == GuidedStage::NameAndConcept,
+                CharacterMutation::SetAttribute(_, _) => self.stage == GuidedStage::Attributes,
                 CharacterMutation::SetAbilityDots(_, _)
                 | CharacterMutation::SetMartialArtsDots(_, _)
-                | CharacterMutation::SetCraftDots(_, _) => {
-                    self.stage == GuidedStage::ChooseAbilities
-                }
+                | CharacterMutation::SetCraftDots(_, _) => self.stage == GuidedStage::Abilities,
                 _ => false,
             },
             GuidedMutation::AdvanceStage => true,
-            GuidedMutation::SetExaltation(_) => self.stage == GuidedStage::ChooseExaltation,
+            GuidedMutation::SetExaltation(_) => self.stage == GuidedStage::Exaltation,
             GuidedMutation::AddSolarCasteAbility(_)
             | GuidedMutation::RemoveSolarCasteAbility(_) => {
-                self.stage == GuidedStage::ChooseSolarCasteAbilities
+                self.stage == GuidedStage::SolarCasteAbilities
             }
             GuidedMutation::SetSolarSupernalAbility(_) => {
-                self.stage == GuidedStage::ChooseSolarSupernalAbility
+                self.stage == GuidedStage::SolarSupernalAbility
             }
             GuidedMutation::AddSolarFavoredAbility(_)
             | GuidedMutation::RemoveSolarFavoredAbility(_) => {
-                self.stage == GuidedStage::ChooseSolarFavoredAbilities
+                self.stage == GuidedStage::SolarFavoredAbilities
             }
             GuidedMutation::AddMartialArtsStyle(_, _)
             | GuidedMutation::RemoveMartialArtsStyle(_) => {
-                self.stage == GuidedStage::ChooseMartialArtsStyles
+                self.stage == GuidedStage::MartialArtsStyles
             }
             GuidedMutation::SetSorceryArchetype(_, _)
             | GuidedMutation::SetShapingRitual(_, _)
-            | GuidedMutation::SetControlSpell(_, _) => self.stage == GuidedStage::ChooseSorcery,
+            | GuidedMutation::SetControlSpell(_, _) => self.stage == GuidedStage::Sorcery,
         } {
             Ok(())
         } else {
@@ -852,9 +846,9 @@ impl<'source> GuidedState<'source> {
 
     pub(in crate::guided) fn validate_stage_complete(&self) -> Result<(), GuidedError> {
         if !match self.stage {
-            GuidedStage::ChooseNameAndConcept => true,
-            GuidedStage::ChooseExaltation => self.exaltation_choice.is_some(),
-            GuidedStage::ChooseAttributes => {
+            GuidedStage::NameAndConcept => true,
+            GuidedStage::Exaltation => self.exaltation_choice.is_some(),
+            GuidedStage::Attributes => {
                 if let Some(exaltation_choice) = self.exaltation_choice {
                     match exaltation_choice {
                         ExaltationChoice::Mortal => {
@@ -874,28 +868,28 @@ impl<'source> GuidedState<'source> {
                     return Err(GuidedError::StageOrderError);
                 }
             }
-            GuidedStage::ChooseSolarCasteAbilities => {
+            GuidedStage::SolarCasteAbilities => {
                 matches!(
                     self.solar_caste_abilities.as_ref().map(|v| v.len()),
                     Some(5)
                 )
             }
-            GuidedStage::ChooseSolarSupernalAbility => {
+            GuidedStage::SolarSupernalAbility => {
                 matches!(self.solar_supernal_ability, Some(_))
             }
-            GuidedStage::ChooseSolarFavoredAbilities => {
+            GuidedStage::SolarFavoredAbilities => {
                 matches!(
                     self.solar_favored_abilities.as_ref().map(|v| v.len()),
                     Some(5)
                 )
             }
-            GuidedStage::ChooseMartialArtsStyles => true,
-            GuidedStage::ChooseSorcery => {
+            GuidedStage::MartialArtsStyles => true,
+            GuidedStage::Sorcery => {
                 // Either no sorcery, or all sorcery is specified
                 self.sorcery_archetype.is_some() == self.shaping_ritual.is_some()
                     && self.shaping_ritual.is_some() == self.control_spell.is_some()
             }
-            GuidedStage::ChooseAbilities => {
+            GuidedStage::Abilities => {
                 let mut three_or_less: u8 = AbilityNameVanilla::iter()
                     .map(|a| self.character_view.abilities().dots(a).min(3))
                     .sum();
@@ -936,7 +930,7 @@ impl<'source> GuidedState<'source> {
 
                 three_or_less == 28 && craft_favored_met
             }
-            GuidedStage::ChooseSpecialties => todo!(),
+            GuidedStage::Specialties => todo!(),
         } {
             Err(GuidedError::StageIncompleteError)
         } else {
@@ -953,26 +947,24 @@ impl<'source> GuidedState<'source> {
         //   > ChooseSolarSupernalAbility > ChooseSolarFavoredAbilities
         //   > ChooseMartialArtsStyles > ChooseSorcery > Choose Abilities
         Ok(match (self.stage, self.exaltation_choice) {
-            (GuidedStage::ChooseNameAndConcept, _) => GuidedStage::ChooseExaltation,
-            (GuidedStage::ChooseExaltation, _) => GuidedStage::ChooseAttributes,
-            (GuidedStage::ChooseAttributes, Some(ExaltationChoice::Mortal)) => {
-                GuidedStage::ChooseMartialArtsStyles
+            (GuidedStage::NameAndConcept, _) => GuidedStage::Exaltation,
+            (GuidedStage::Exaltation, _) => GuidedStage::Attributes,
+            (GuidedStage::Attributes, Some(ExaltationChoice::Mortal)) => {
+                GuidedStage::MartialArtsStyles
             }
-            (GuidedStage::ChooseAttributes, Some(ExaltationChoice::Dawn))
-            | (GuidedStage::ChooseAttributes, Some(ExaltationChoice::Zenith))
-            | (GuidedStage::ChooseAttributes, Some(ExaltationChoice::Twilight))
-            | (GuidedStage::ChooseAttributes, Some(ExaltationChoice::Night))
-            | (GuidedStage::ChooseAttributes, Some(ExaltationChoice::Eclipse)) => {
-                GuidedStage::ChooseSolarCasteAbilities
+            (GuidedStage::Attributes, Some(ExaltationChoice::Dawn))
+            | (GuidedStage::Attributes, Some(ExaltationChoice::Zenith))
+            | (GuidedStage::Attributes, Some(ExaltationChoice::Twilight))
+            | (GuidedStage::Attributes, Some(ExaltationChoice::Night))
+            | (GuidedStage::Attributes, Some(ExaltationChoice::Eclipse)) => {
+                GuidedStage::SolarCasteAbilities
             }
-            (GuidedStage::ChooseSolarCasteAbilities, _) => GuidedStage::ChooseSolarSupernalAbility,
-            (GuidedStage::ChooseSolarSupernalAbility, _) => {
-                GuidedStage::ChooseSolarFavoredAbilities
-            }
-            (GuidedStage::ChooseSolarFavoredAbilities, _) => GuidedStage::ChooseMartialArtsStyles,
-            (GuidedStage::ChooseMartialArtsStyles, _) => GuidedStage::ChooseSorcery,
-            (GuidedStage::ChooseSorcery, _) => GuidedStage::ChooseAbilities,
-            (GuidedStage::ChooseAbilities, _) => GuidedStage::ChooseSpecialties,
+            (GuidedStage::SolarCasteAbilities, _) => GuidedStage::SolarSupernalAbility,
+            (GuidedStage::SolarSupernalAbility, _) => GuidedStage::SolarFavoredAbilities,
+            (GuidedStage::SolarFavoredAbilities, _) => GuidedStage::MartialArtsStyles,
+            (GuidedStage::MartialArtsStyles, _) => GuidedStage::Sorcery,
+            (GuidedStage::Sorcery, _) => GuidedStage::Abilities,
+            (GuidedStage::Abilities, _) => GuidedStage::Specialties,
             _ => {
                 return Err(GuidedError::StageOrderError);
             }
@@ -981,7 +973,7 @@ impl<'source> GuidedState<'source> {
 
     pub(in crate::guided) fn finalize_stage(&mut self) -> Result<&mut Self, GuidedError> {
         match self.stage {
-            GuidedStage::ChooseSolarFavoredAbilities => {
+            GuidedStage::SolarFavoredAbilities => {
                 self.character_view
                     .set_solar_view(self.solar_traits()?)
                     .map_err(GuidedError::CharacterMutationError)?;
@@ -1008,7 +1000,7 @@ impl<'source> GuidedState<'source> {
 
                 Ok(self)
             }
-            GuidedStage::ChooseMartialArtsStyles => {
+            GuidedStage::MartialArtsStyles => {
                 if let Some(hashmap) = &self.martial_arts_styles {
                     if !hashmap.is_empty() {
                         self.character_view
@@ -1027,7 +1019,7 @@ impl<'source> GuidedState<'source> {
 
                 Ok(self)
             }
-            GuidedStage::ChooseSorcery => {
+            GuidedStage::Sorcery => {
                 match (
                     self.shaping_ritual,
                     self.control_spell,
