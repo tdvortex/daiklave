@@ -1,20 +1,180 @@
+use std::collections::{HashMap, HashSet};
+
+use crate::{unique_id::UniqueId, book_reference::BookReference};
+
+enum WeaponId {
+    BaseWeaponId(BaseWeaponId),
+    ArtifactWeaponId(ArtifactWeaponId),
+}
+
 mod weapon_id;
 
-use std::collections::{HashSet, HashMap};
-
 pub use weapon_id::BaseWeaponId;
+struct ArtifactWeaponId(UniqueId);
 
-use crate::book_reference::BookReference;
 
-use self::weapon_id::ArtifactWeaponId;
-
-enum RangeBand {
-    Close,
-    Short,
-    Medium,
-    Long,
-    Extreme
+struct MortalWeapons<'source> {
+    equipped: MortalEquippedWeapons<'source>,
+    unequipped: MortalUnequippedWeapons<'source>,
 }
+
+struct ExaltWeapons<'source> {
+    equipped: ExaltEquippedWeapons<'source>,
+    unequipped: ExaltUnequippedWeapons<'source>,
+}
+
+struct MortalEquippedWeapons<'source> {
+    handless_mundane: HashMap<BaseWeaponId, HandlessMundaneWeapon<'source>>,
+    handless_artifact: HashMap<ArtifactWeaponId, HandlessArtifactWeaponNoAttunement<'source>>,
+    hands: MortalHands<'source>,
+}
+
+struct MortalUnequippedWeapons<'source> {
+    mundane: HashMap<BaseWeaponId, NonnaturalMundaneWeapon<'source>>,
+    artifact: HashMap<ArtifactWeaponId, NonnaturalArtifactWeaponNoAttunement<'source>>,
+}
+
+struct ExaltEquippedWeapons<'source> {
+    handless_mundane: HashMap<BaseWeaponId, HandlessMundaneWeapon<'source>>,
+    handless_artifact: HashMap<ArtifactWeaponId, HandlessArtifactWeapon<'source>>,
+    hands: ExaltHands<'source>,
+}
+
+struct ExaltUnequippedWeapons<'source> {
+    mundane: HashMap<BaseWeaponId, NonnaturalMundaneWeapon<'source>>,
+    artifact: HashMap<ArtifactWeaponId, NonnaturalArtifactWeapon<'source>>,
+}
+
+enum NonnaturalMundaneWeapon<'source> {
+    Worn(WornMundaneWeapon<'source>),
+    OneHanded(OneHandedMundaneWeapon<'source>),
+    TwoHanded(TwoHandedMundaneWeapon<'source>),
+}
+
+enum NonnaturalArtifactWeaponNoAttunement<'source> {
+    Worn(WornArtifactWeapon<'source>),
+    OneHanded(OneHandedArtifactWeapon<'source>),
+    TwoHanded(TwoHandedArtifactWeapon<'source>),
+}
+
+enum NonnaturalArtifactWeapon<'source> {
+    Worn(WornArtifactWeapon<'source>, Option<u8>),
+    OneHanded(OneHandedArtifactWeapon<'source>, Option<u8>),
+    TwoHanded(TwoHandedArtifactWeapon<'source>, Option<u8>),
+}
+
+enum HandlessArtifactWeaponNoAttunement<'source> {
+    Natural(NaturalArtifactWeapon<'source>),
+    Worn(WornArtifactWeapon<'source>),
+}
+
+enum HandlessArtifactWeapon<'source> {
+    Natural(NaturalArtifactWeapon<'source>, Option<u8>),
+    Worn(WornArtifactWeapon<'source>, Option<u8>),
+
+}
+
+
+
+
+enum HandlessMundaneWeapon<'source> {
+    Natural(NaturalMundaneWeapon<'source>),
+    Worn(WornMundaneWeapon<'source>),
+}
+
+
+
+struct BaseWeapon<'source> {
+    name: &'source str,
+    book_reference: Option<BookReference>,
+    weight_class: WeaponWeightClass,
+    range_bands: WeaponRange,
+    primary_ability: WeaponAbility,
+    damage_type: WeaponDamageType,
+    tags: HashSet<WeaponTag>,
+}
+
+struct MundaneWeaponCore<'source>(BaseWeapon<'source>);
+struct BaseArtifactWeapon<'source>(BaseWeapon<'source>);
+
+struct NamedArtifactWeapon<'source> {
+    name: &'source str,
+    book_reference: Option<BookReference>,
+    merit_dots: u8,
+    base_weapon_id: BaseWeaponId,
+    base_weapon: BaseArtifactWeapon<'source>,
+    lore: Option<String>,
+    powers: Option<String>,
+    hearthstone_slots: Vec<Option<OwnedHearthstone<'source>>>,
+}
+
+struct OwnedHearthstone<'source> {
+    hearthstone: Hearthstone<'source>,
+    manse: Option<&'source str>,
+}
+
+struct Hearthstone<'source> {
+    name: &'source str,
+    book_reference: Option<BookReference>,
+    geomancy_level: GeomancyLevel,
+    lore: Option<String>,
+    powers: Option<String>,
+}
+
+
+enum MortalHands<'source> {
+    Empty,
+    MainHand(EquippedOneHandedWeaponNoAttunement<'source>),
+    OffHand(EquippedOneHandedWeaponNoAttunement<'source>),
+    Both([EquippedOneHandedWeaponNoAttunement<'source>; 2]),
+    TwoHanded(EquippedTwoHandedWeaponNoAttunement<'source>),
+}
+
+enum ExaltHands<'source> {
+    Empty,
+    MainHand(EquippedOneHandedWeapon<'source>),
+    OffHand(EquippedOneHandedWeapon<'source>),
+    Both([EquippedOneHandedWeapon<'source>; 2]),
+    TwoHanded(EquippedTwoHandedWeapon<'source>),
+}
+
+enum EquippedOneHandedWeaponNoAttunement<'source> {
+    Mundane(BaseWeaponId, OneHandedMundaneWeapon<'source>),
+    Artifact(ArtifactWeaponId, OneHandedArtifactWeapon<'source>),
+}
+
+enum EquippedOneHandedWeapon<'source> {
+    Mundane(BaseWeaponId, OneHandedMundaneWeapon<'source>),
+    Artifact(ArtifactWeaponId, OneHandedArtifactWeapon<'source>, Option<u8>),
+}
+
+enum EquippedTwoHandedWeaponNoAttunement<'source> {
+    Mundane(BaseWeaponId, TwoHandedMundaneWeapon<'source>),
+    Artifact(ArtifactWeaponId, TwoHandedArtifactWeapon<'source>),
+}
+
+enum EquippedTwoHandedWeapon<'source> {
+    Mundane(BaseWeaponId, TwoHandedMundaneWeapon<'source>),
+    Artifact(ArtifactWeaponId, TwoHandedArtifactWeapon<'source>, Option<u8>),
+}
+
+struct NaturalMundaneWeapon<'source>(MundaneWeaponCore<'source>);
+struct WornMundaneWeapon<'source>(MundaneWeaponCore<'source>);
+
+struct OneHandedMundaneWeapon<'source>(MundaneWeaponCore<'source>);
+struct TwoHandedMundaneWeapon<'source>(MundaneWeaponCore<'source>);
+
+enum MundaneWeapon<'source> {
+    Natural(NaturalMundaneWeapon<'source>),
+    Worn(WornMundaneWeapon<'source>),
+    OneHanded(OneHandedMundaneWeapon<'source>),
+    TwoHanded(TwoHandedMundaneWeapon<'source>),
+}
+
+struct NaturalArtifactWeapon<'source>(NamedArtifactWeapon<'source>);
+struct WornArtifactWeapon<'source>(NamedArtifactWeapon<'source>);
+struct OneHandedArtifactWeapon<'source>(NamedArtifactWeapon<'source>);
+struct TwoHandedArtifactWeapon<'source>(NamedArtifactWeapon<'source>);
 
 enum WeaponWeightClass {
     Light,
@@ -22,12 +182,19 @@ enum WeaponWeightClass {
     Heavy,
 }
 
-enum PrimaryAttack {
+enum WeaponRange {
+    ContactOnly,
+    Throwable(RangeBand),
+    Archery(RangeBand),
+}
+
+enum WeaponAbility {
     Brawl,
     Melee,
-    MeleeOrThrown(RangeBand),
-    ThrownOnly(RangeBand),
-    Archery(RangeBand),
+    MeleeOrThrown,
+    ThrownOnly,
+    Archery,
+    MartialArtsOnly,
 }
 
 enum WeaponDamageType {
@@ -62,168 +229,15 @@ enum WeaponTag {
     Worn,
 }
 
-
-struct BaseWeapon<'source> {
-    name: &'source str,
-    book_reference: Option<BookReference>,
-    primary_attack: PrimaryAttack,
-    weight_class: WeaponWeightClass,
-    damage_type: WeaponDamageType,
-    tags: HashSet<WeaponTag>,
-}
-
-struct OneHandedNonArtifactWeapon<'source>(BaseWeapon<'source>);
-
-struct TwoHandedNonArtifactWeapon<'source>(BaseWeapon<'source>);
-
-enum NonArtifactWeapon<'source> {
-    OneHanded(OneHandedNonArtifactWeapon<'source>),
-    TwoHanded(TwoHandedNonArtifactWeapon<'source>),
-}
-
-struct OneHandedBaseArtifactWeapon<'source>(BaseWeapon<'source>);
-
-struct TwoHandedBaseArtifactWeapon<'source>(BaseWeapon<'source>);
-
-enum MagicMaterial {
-    RedJade,
-    BlueJade,
-    WhiteJade,
-    GreenJade,
-    BlackJade,
-    Orichalcum,
-    Moonsilver,
-    Soulsteel,
-    Starmetal,
-}
-
-struct OneHandedArtifactWeapon<'source> {
-    name: &'source str,
-    book_reference: Option<BookReference>,
-    merit_dots: u8,
-    base_weapon_id: BaseWeaponId,
-    base_weapon: OneHandedBaseArtifactWeapon<'source>,
-    magic_material: MagicMaterial,
-    lore: Option<&'source str>,
-    powers: Option<&'source str>,
-    hearthstone_slots: Vec<Option<OwnedHearthstone<'source>>>,
-}
-
-struct TwoHandedArtifactWeapon<'source> {
-    name: &'source str,
-    book_reference: Option<BookReference>,
-    merit_dots: u8,
-    base_weapon_id: BaseWeaponId,
-    base_weapon: TwoHandedBaseArtifactWeapon<'source>,
-    magic_material: MagicMaterial,
-    lore: Option<&'source str>,
-    powers: Option<&'source str>,
-    hearthstone_slots: Vec<Option<OwnedHearthstone<'source>>>,
+enum RangeBand {
+    Close,
+    Short,
+    Medium,
+    Long,
+    Extreme
 }
 
 enum GeomancyLevel {
     Standard,
     Greater,
-}
-
-enum HearthstoneCategory {
-    Air,
-    Earth,
-    Fire,
-    Water,
-    Wood,
-    Solar,
-    Sidereal,
-    Lunar,
-    Abyssal,
-}
-
-enum HearthstoneKeyword {
-    Linked,
-    Steady,
-    Dependent,
-    ManseBorn,
-    WildBorn,
-}
-
-struct Hearthstone<'source> {
-    name: &'source str,
-    book_reference: Option<BookReference>,
-    category: HearthstoneCategory,
-    keywords: Vec<HearthstoneKeyword>,
-    geomancy_level: GeomancyLevel,
-    lore: Option<&'source str>,
-    powers: Option<&'source str>,
-}
-
-struct OwnedHearthstone<'source> {
-    hearthstone: Hearthstone<'source>,
-    manse: Option<&'source str>,
-}
-
-pub struct MortalWeapons<'source> {
-    equipped: MortalWeaponsEquipped<'source>,
-    unequipped_nonartifacts: Vec<(BaseWeaponId, NonArtifactWeapon<'source>)>,
-    unequipped_artifacts: HashMap<ArtifactWeaponId, UnattunedArtifactWeapon<'source>>,
-}
-
-pub struct ExaltWeapons<'source> {
-    equipped: ExaltWeaponsEquipped<'source>,
-    unequipped_nonartifacts: Vec<(BaseWeaponId, NonArtifactWeapon<'source>)>,
-    unequipped_artifacts: HashMap<ArtifactWeaponId, ArtifactWeapon<'source>>,
-}
-
-
-enum MortalWeaponsEquipped<'source> {
-    None,
-    MainHandOnly(OneHandedUnattunedWeapon<'source>),
-    OffHandOnly(OneHandedUnattunedWeapon<'source>),
-    TwoHanded(TwoHandedUnattunedWeapon<'source>),
-    Both(OneHandedUnattunedWeapon<'source>, OneHandedUnattunedWeapon<'source>),
-}
-
-enum ExaltWeaponsEquipped<'source> {
-    None,
-    MainHandOnly(OneHandedWeapon<'source>),
-    OffHandOnly(OneHandedWeapon<'source>),
-    TwoHanded(TwoHandedUnattunedWeapon<'source>),
-    Both(OneHandedWeapon<'source>, OneHandedWeapon<'source>),
-}
-
-
-enum OneHandedUnattunedWeapon<'source> {
-    NonArtifact(OneHandedNonArtifactWeapon<'source>),
-    Artifact(OneHandedArtifactWeapon<'source>),
-}
-
-enum TwoHandedUnattunedWeapon<'source> {
-    NonArtifact(TwoHandedNonArtifactWeapon<'source>),
-    Artifact(TwoHandedArtifactWeapon<'source>),
-}
-
-enum UnattunedArtifactWeapon<'source> {
-    OneHanded(OneHandedArtifactWeapon<'source>),
-    TwoHanded(TwoHandedArtifactWeapon<'source>),
-}
-
-struct AttunedArtifactWeapon<'source> {
-    personal_committed: u8,
-    weapon: UnattunedArtifactWeapon<'source>,
-}
-
-enum ArtifactWeapon<'source> {
-    Attuned(AttunedArtifactWeapon<'source>),
-    Unattuned(UnattunedArtifactWeapon<'source>),
-}
-
-enum OneHandedWeapon<'source> {
-    NonArtifact(OneHandedNonArtifactWeapon<'source>),
-    UnattunedArtifact(OneHandedArtifactWeapon<'source>),
-    AttunedArtifact(u8, OneHandedArtifactWeapon<'source>),
-}
-
-enum TwoHandedWeapon<'source> {
-    NonArtifact(TwoHandedNonArtifactWeapon<'source>),
-    UnattunedArtifact(TwoHandedArtifactWeapon<'source>),
-    AttunedArtifact(u8, TwoHandedArtifactWeapon<'source>),
 }
