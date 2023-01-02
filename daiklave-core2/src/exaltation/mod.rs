@@ -202,30 +202,38 @@ impl<'view, 'source> Exaltation<'source> {
         id: MartialArtsStyleId,
     ) -> Option<MartialArtist<'view, 'source>> {
         match self {
-            Exaltation::Mortal(mortal) => Some(MartialArtist(ExaltationMartialArtist::Mortal(
-                mortal.martial_arts_styles.get(&id)?,
-            ))),
-            Exaltation::Exalt(exalt) => Some(MartialArtist(ExaltationMartialArtist::Exalt(
-                exalt.martial_arts_styles().get(&id)?,
-            ))),
+            Exaltation::Mortal(mortal) => Some(MartialArtist::new(
+                id,
+                ExaltationMartialArtist::Mortal(mortal.martial_arts_styles.get(&id)?),
+            )),
+            Exaltation::Exalt(exalt) => Some(MartialArtist::new(
+                id,
+                ExaltationMartialArtist::Exalt(exalt.martial_arts_styles().get(&id)?),
+            )),
         }
     }
 
     pub(crate) fn martial_arts_id_iter(&'view self) -> impl Iterator<Item = MartialArtsStyleId> {
-        match self {
+        let mut ids = match self {
             Exaltation::Mortal(mortal) => mortal
                 .martial_arts_styles
                 .keys()
                 .copied()
-                .collect::<Vec<MartialArtsStyleId>>()
-                .into_iter(),
+                .collect::<Vec<MartialArtsStyleId>>(),
             Exaltation::Exalt(exalt) => exalt
                 .martial_arts_styles()
                 .keys()
                 .copied()
-                .collect::<Vec<MartialArtsStyleId>>()
-                .into_iter(),
-        }
+                .collect::<Vec<MartialArtsStyleId>>(),
+        };
+
+        ids.sort_by(|a, b| {
+            self.martial_artist(*a)
+                .unwrap()
+                .name()
+                .cmp(self.martial_artist(*b).unwrap().name())
+        });
+        ids.into_iter()
     }
 
     pub fn add_terrestrial_sorcery(

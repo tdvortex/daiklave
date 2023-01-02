@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    abilities::Ability,
+    abilities::AbilityRating,
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId,
         RemoveMartialArtsStyleError, SetMartialArtsDotsError,
@@ -53,7 +53,7 @@ impl<'source> MortalView<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_add_martial_arts_style(id, style)?;
         self.martial_arts_styles
-            .insert(id, MortalMartialArtistView::new(style, Ability::Zero));
+            .insert(id, MortalMartialArtistView::new(style, AbilityRating::Zero));
         Ok(self)
     }
 

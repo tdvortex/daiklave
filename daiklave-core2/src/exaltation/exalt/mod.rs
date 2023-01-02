@@ -15,7 +15,7 @@ pub(crate) use sorcery::ExaltSorcery;
 use std::collections::HashMap;
 
 use crate::{
-    abilities::{Ability, SetAbilityError},
+    abilities::{AbilityRating, SetAbilityError},
     exaltation::sorcery::ExaltationSorcery,
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsCharmId, MartialArtsStyle, MartialArtsStyleId,
@@ -356,7 +356,7 @@ impl<'source> Exalt<'source> {
         self.check_add_martial_arts_style(id, style)?;
         self.martial_arts_styles.insert(
             id,
-            ExaltMartialArtist::new(style, Ability::Zero, HashMap::new()),
+            ExaltMartialArtist::new(style, AbilityRating::Zero, HashMap::new()),
         );
         Ok(self)
     }

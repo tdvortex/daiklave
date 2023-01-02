@@ -346,11 +346,17 @@ fn test_guided_mortal() {
     let guided_view = guided_builder.as_guided_view().unwrap();
     let character_view = guided_view.as_character_view();
     assert_eq!(
-        character_view.abilities().dots(AbilityNameVanilla::Brawl),
+        character_view
+            .abilities()
+            .get(AbilityNameVanilla::Brawl)
+            .dots(),
         1
     );
     assert_eq!(
-        character_view.abilities().dots(AbilityNameVanilla::Occult),
+        character_view
+            .abilities()
+            .get(AbilityNameVanilla::Occult)
+            .dots(),
         3
     );
 
@@ -406,6 +412,7 @@ fn test_guided_mortal() {
             .martial_arts()
             .style(MartialArtsStyleId(UniqueId::Placeholder(1)))
             .unwrap()
+            .ability()
             .dots(),
         4
     );
@@ -523,6 +530,7 @@ fn test_guided_mortal() {
             .martial_arts()
             .style(MartialArtsStyleId(UniqueId::Placeholder(1)))
             .unwrap()
+            .ability()
             .dots(),
         3
     );

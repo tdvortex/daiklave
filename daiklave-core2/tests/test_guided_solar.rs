@@ -486,33 +486,45 @@ fn test_guided_solar() {
     let guided_view = guided_builder.as_guided_view().unwrap();
     let character_view = guided_view.as_character_view();
     assert_eq!(
-        character_view.abilities().dots(AbilityNameVanilla::Brawl),
+        character_view
+            .abilities()
+            .get(AbilityNameVanilla::Brawl)
+            .dots(),
         1
     );
     assert_eq!(
-        character_view.abilities().dots(AbilityNameVanilla::Occult),
+        character_view
+            .abilities()
+            .get(AbilityNameVanilla::Occult)
+            .dots(),
         3
     );
     assert_eq!(
         character_view
             .abilities()
-            .dots(AbilityNameVanilla::Linguistics),
+            .get(AbilityNameVanilla::Linguistics)
+            .dots(),
         1
     );
     assert_eq!(
         character_view
             .abilities()
-            .dots(AbilityNameVanilla::Socialize),
+            .get(AbilityNameVanilla::Socialize)
+            .dots(),
         1
     );
     assert_eq!(
         character_view
             .abilities()
-            .dots(AbilityNameVanilla::Survival),
+            .get(AbilityNameVanilla::Survival)
+            .dots(),
         1
     );
     assert_eq!(
-        character_view.abilities().dots(AbilityNameVanilla::Thrown),
+        character_view
+            .abilities()
+            .get(AbilityNameVanilla::Thrown)
+            .dots(),
         1
     );
 
@@ -648,12 +660,6 @@ fn test_guided_solar() {
     .fold(&mut guided_builder, |builder, mutation| {
         builder.apply_mutation(mutation).unwrap()
     });
-
-    dbg!(guided_builder
-        .as_guided_view()
-        .unwrap()
-        .as_character_view()
-        .abilities());
 
     assert_eq!(
         guided_builder
@@ -793,6 +799,7 @@ fn test_guided_solar() {
             .martial_arts()
             .style(MartialArtsStyleId(UniqueId::Placeholder(1)))
             .unwrap()
+            .ability()
             .dots(),
         3
     );

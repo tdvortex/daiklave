@@ -654,25 +654,8 @@ impl<'source> GuidedState<'source> {
         let mut three_or_less = 0;
         let mut more_than_three = 0;
 
-        for vanilla in AbilityNameVanilla::iter() {
-            let dots = self.character_view.abilities().dots(vanilla);
-            three_or_less += dots.min(3);
-            more_than_three += dots - dots.min(3);
-        }
-
-        for style_id in self.character_view.martial_arts().iter() {
-            let dots = self
-                .character_view
-                .martial_arts()
-                .style(style_id)
-                .unwrap()
-                .dots();
-            three_or_less += dots.min(3);
-            more_than_three += dots - dots.min(3);
-        }
-
-        for focus in self.character_view.craft().iter() {
-            let dots = self.character_view.craft().dots(focus);
+        for ability in self.character_view.abilities().iter() {
+            let dots = ability.dots();
             three_or_less += dots.min(3);
             more_than_three += dots - dots.min(3);
         }
@@ -685,6 +668,7 @@ impl<'source> GuidedState<'source> {
             // Solar traits are set before abilities
             return 0;
         }
+        let solar_traits = self.character_view.solar_traits().unwrap();
 
         // Solars get 28 free ability dots with a limit of 3 per skill
         // Dots above 3 in a skill need to be purchases, as do dots 29+ at 3
@@ -697,65 +681,10 @@ impl<'source> GuidedState<'source> {
         let mut not_cf_three_or_less = 0;
         let mut not_cf_more_than_three = 0;
 
-        for vanilla in AbilityNameVanilla::iter() {
-            let dots = self.character_view.abilities().dots(vanilla);
-            if self
-                .character_view
-                .solar_traits()
-                .unwrap()
-                .has_caste_ability(vanilla.into())
-                || self
-                    .character_view
-                    .solar_traits()
-                    .unwrap()
-                    .has_favored_ability(vanilla.into())
-            {
-                cf_three_or_less += dots.min(3);
-                cf_more_than_three += dots - dots.min(3);
-            } else {
-                not_cf_three_or_less += dots.min(3);
-                not_cf_more_than_three += dots - dots.min(3);
-            }
-        }
-
-        for style_id in self.character_view.martial_arts().iter() {
-            let dots = self
-                .character_view
-                .martial_arts()
-                .style(style_id)
-                .unwrap()
-                .dots();
-            if self
-                .character_view
-                .solar_traits()
-                .unwrap()
-                .has_caste_ability(AbilityName::Brawl)
-                || self
-                    .character_view
-                    .solar_traits()
-                    .unwrap()
-                    .has_favored_ability(AbilityName::Brawl)
-            {
-                cf_three_or_less += dots.min(3);
-                cf_more_than_three += dots - dots.min(3);
-            } else {
-                not_cf_three_or_less += dots.min(3);
-                not_cf_more_than_three += dots - dots.min(3);
-            }
-        }
-
-        for focus in self.character_view.craft().iter() {
-            let dots = self.character_view.craft().dots(focus);
-            if self
-                .character_view
-                .solar_traits()
-                .unwrap()
-                .has_caste_ability(AbilityName::Craft)
-                || self
-                    .character_view
-                    .solar_traits()
-                    .unwrap()
-                    .has_favored_ability(AbilityName::Craft)
+        for ability in self.character_view.abilities().iter() {
+            let dots = ability.dots();
+            if solar_traits.has_caste_ability(ability.name())
+                || solar_traits.has_favored_ability(ability.name())
             {
                 cf_three_or_less += dots.min(3);
                 cf_more_than_three += dots - dots.min(3);
@@ -890,25 +819,13 @@ impl<'source> GuidedState<'source> {
                     && self.shaping_ritual.is_some() == self.control_spell.is_some()
             }
             GuidedStage::Abilities => {
-                let mut three_or_less: u8 = AbilityNameVanilla::iter()
-                    .map(|a| self.character_view.abilities().dots(a).min(3))
-                    .sum();
-                three_or_less += self
+                let three_or_less = self
                     .character_view
-                    .craft()
+                    .abilities()
                     .iter()
-                    .map(|focus| self.character_view.craft().dots(focus).min(3))
-                    .sum::<u8>();
-                three_or_less += self
-                    .character_view
-                    .martial_arts()
-                    .iter()
-                    .map(|style_id| {
-                        self.character_view
-                            .martial_arts()
-                            .style(style_id)
-                            .unwrap()
-                            .dots()
+                    .map(|ability| {
+                        let dots = ability.dots();
+                        dots.min(3)
                     })
                     .sum::<u8>();
 

@@ -1,55 +1,64 @@
 use crate::{
-    armor::ArmorWeight, book_reference::BookReference, exaltation::ExaltationMartialArtist,
-    weapons::WeaponId,
+    abilities::Ability, armor::ArmorWeight, book_reference::BookReference,
+    exaltation::ExaltationMartialArtist, weapons::WeaponId,
 };
 
-use super::{charm::MartialArtsCharm, charm_id::MartialArtsCharmId};
+use super::{charm::MartialArtsCharm, charm_id::MartialArtsCharmId, MartialArtsStyleId};
+
+use crate::abilities::AbilityType;
 
 /// A specific Martial Arts style as known by a character.
-pub struct MartialArtist<'view, 'source>(pub(crate) ExaltationMartialArtist<'view, 'source>);
+pub struct MartialArtist<'view, 'source> {
+    id: MartialArtsStyleId,
+    maybe_exalt: ExaltationMartialArtist<'view, 'source>,
+}
 
 impl<'view, 'source> MartialArtist<'view, 'source> {
+    pub(crate) fn new(
+        id: MartialArtsStyleId,
+        maybe_exalt: ExaltationMartialArtist<'view, 'source>,
+    ) -> Self {
+        Self { id, maybe_exalt }
+    }
+
     /// The style's name.
     pub fn name(&self) -> &'source str {
-        self.0.name()
+        self.maybe_exalt.name()
     }
 
     /// The book reference for the style.
     pub fn book_reference(&self) -> Option<BookReference> {
-        self.0.book_reference()
+        self.maybe_exalt.book_reference()
     }
 
     /// The style's description.
     pub fn description(&self) -> &'source str {
-        self.0.description()
+        self.maybe_exalt.description()
     }
 
     /// All of the base weapon Ids usable by the style. This is the base weapon
     /// (e.g. "sword" or "daiklave"), not any specific unique artifact weapon.
     pub fn usable_weapon_ids(&self) -> impl Iterator<Item = WeaponId> + '_ {
-        self.0.usable_weapon_ids()
+        self.maybe_exalt.usable_weapon_ids()
     }
 
     /// If the style is usable with armor, gives the heaviest weight category
     /// allowed.
     pub fn max_armor_weight(&self) -> Option<ArmorWeight> {
-        self.0.max_armor_weight()
+        self.maybe_exalt.max_armor_weight()
     }
 
-    /// The number of ability dots the character possesses in the skill.
-    pub fn dots(&self) -> u8 {
-        self.0.dots()
-    }
-
-    /// Any specialties the character has in this Martial Arts style.
-    pub fn specialties(&self) -> impl Iterator<Item = &'source str> {
-        self.0.specialties()
+    pub fn ability(&'view self) -> Ability<'view, 'source> {
+        Ability(AbilityType::MartialArts(
+            self.id,
+            self.maybe_exalt.ability_rating(),
+        ))
     }
 
     /// All of the Charms the character has for this style.
     pub fn charms(
         &self,
     ) -> impl Iterator<Item = (MartialArtsCharmId, &'source MartialArtsCharm)> + '_ {
-        self.0.charms()
+        self.maybe_exalt.charms()
     }
 }

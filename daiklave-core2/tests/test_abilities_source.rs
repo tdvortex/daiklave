@@ -34,13 +34,14 @@ fn test_abilities_character_event_source() {
 
     for (ability_name_vanilla, expected_dots, expected_specialties) in expected.iter() {
         assert_eq!(
-            character_view.abilities().dots(*ability_name_vanilla),
+            character_view.abilities().get(*ability_name_vanilla).dots(),
             *expected_dots
         );
         assert_eq!(
             character_view
                 .abilities()
-                .specialties(*ability_name_vanilla)
+                .get(*ability_name_vanilla)
+                .specialties()
                 .next(),
             *expected_specialties
         );
@@ -52,7 +53,10 @@ fn test_abilities_character_event_source() {
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(
-        character_view.abilities().dots(AbilityNameVanilla::Archery),
+        character_view
+            .abilities()
+            .get(AbilityNameVanilla::Archery)
+            .dots(),
         1
     );
 
@@ -65,7 +69,8 @@ fn test_abilities_character_event_source() {
     assert_eq!(
         character_view
             .abilities()
-            .specialties(AbilityNameVanilla::Archery)
+            .get(AbilityNameVanilla::Archery)
+            .specialties()
             .next(),
         Some("Firewands")
     );
@@ -79,7 +84,8 @@ fn test_abilities_character_event_source() {
     assert_eq!(
         character_view
             .abilities()
-            .specialties(AbilityNameVanilla::Archery)
+            .get(AbilityNameVanilla::Archery)
+            .specialties()
             .next(),
         None
     );
@@ -110,7 +116,8 @@ fn test_abilities_character_event_source() {
     assert_eq!(
         character_view
             .abilities()
-            .specialties(AbilityNameVanilla::Archery)
+            .get(AbilityNameVanilla::Archery)
+            .specialties()
             .next(),
         None
     );

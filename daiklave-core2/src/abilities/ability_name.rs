@@ -22,10 +22,10 @@ pub enum AbilityName {
     Awareness,
     /// Brawl
     Brawl,
-    /// Craft
-    Craft,
     /// Bureaucracy
     Bureaucracy,
+    /// Craft
+    Craft,
     /// Dodge
     Dodge,
     /// Integrity

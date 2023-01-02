@@ -71,7 +71,13 @@ impl<'source> Solar<'source> {
     /// that MartialArts is a favored ability if and only if Brawl is a favored
     /// ability.
     pub fn has_favored_ability(&self, ability: AbilityName) -> bool {
-        self.favored_abilities.iter().any(|&a| a == ability)
+        let search_ability = if ability == AbilityName::MartialArts {
+            AbilityName::Brawl
+        } else {
+            ability
+        };
+
+        self.favored_abilities.iter().any(|&a| a == search_ability)
     }
 
     pub(crate) fn add_terrestrial_sorcery(

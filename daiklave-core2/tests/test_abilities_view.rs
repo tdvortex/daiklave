@@ -33,13 +33,14 @@ fn test_abilities_character_view() {
 
     for (ability_name_vanilla, expected_dots, expected_specialties) in expected.iter() {
         assert_eq!(
-            character_view.abilities().dots(*ability_name_vanilla),
+            character_view.abilities().get(*ability_name_vanilla).dots(),
             *expected_dots
         );
         assert_eq!(
             character_view
                 .abilities()
-                .specialties(*ability_name_vanilla)
+                .get(*ability_name_vanilla)
+                .specialties()
                 .next(),
             *expected_specialties
         );
@@ -53,7 +54,10 @@ fn test_abilities_character_view() {
         .set_ability_dots(AbilityNameVanilla::Archery, 1)
         .unwrap();
     assert_eq!(
-        character_view.abilities().dots(AbilityNameVanilla::Archery),
+        character_view
+            .abilities()
+            .get(AbilityNameVanilla::Archery)
+            .dots(),
         1
     );
 
@@ -67,7 +71,8 @@ fn test_abilities_character_view() {
     assert_eq!(
         character_view
             .abilities()
-            .specialties(AbilityNameVanilla::Archery)
+            .get(AbilityNameVanilla::Archery)
+            .specialties()
             .next(),
         Some("Firewands")
     );
@@ -82,7 +87,8 @@ fn test_abilities_character_view() {
     assert_eq!(
         character_view
             .abilities()
-            .specialties(AbilityNameVanilla::Archery)
+            .get(AbilityNameVanilla::Archery)
+            .specialties()
             .next(),
         None
     );
@@ -112,7 +118,8 @@ fn test_abilities_character_view() {
     assert_eq!(
         character_view
             .abilities()
-            .specialties(AbilityNameVanilla::Archery)
+            .get(AbilityNameVanilla::Archery)
+            .specialties()
             .next(),
         None
     );

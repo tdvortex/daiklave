@@ -1,7 +1,7 @@
 use crate::{
     abilities::{
-        AbilitiesVanilla, Ability, AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError,
-        SetAbilityError,
+        Abilities, AbilitiesVanilla, AbilityNameVanilla, AbilityRating, AddSpecialtyError,
+        RemoveSpecialtyError, SetAbilityError,
     },
     attributes::{AttributeName, Attributes, SetAttributesError},
     craft::Craft,
@@ -52,7 +52,7 @@ impl<'source> Default for Character<'source> {
     }
 }
 
-impl<'source> Character<'source> {
+impl<'view, 'source> Character<'source> {
     /// Clones the character and all contained values into an owned struct.
     pub fn as_memo(&self) -> CharacterMemo {
         CharacterMemo {
@@ -212,9 +212,13 @@ impl<'source> Character<'source> {
         Ok(self)
     }
 
-    /// Get read-only access to a character's Abilities.
-    pub fn abilities(&self) -> &AbilitiesVanilla {
+    pub(crate) fn vanilla_abilities(&'view self) -> &'view AbilitiesVanilla<'source> {
         &self.abilities
+    }
+
+    /// Get read-only access to a character’s Abilities.
+    pub fn abilities(&'view self) -> Abilities<'view, 'source> {
+        Abilities(self)
     }
 
     /// Check if an ability's dots can be set to a specific level.
@@ -240,7 +244,7 @@ impl<'source> Character<'source> {
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_ability_dots(ability_name, dots)?;
-        self.abilities.ability_mut(ability_name).set_dots(dots)?;
+        self.abilities.get_mut(ability_name).set_dots(dots)?;
         Ok(self)
     }
 
@@ -251,7 +255,7 @@ impl<'source> Character<'source> {
         ability_name: AbilityNameVanilla,
         specialty: &str,
     ) -> Result<(), CharacterMutationError> {
-        if let Ability::NonZero(_, specialties) = self.abilities().ability(ability_name) {
+        if let AbilityRating::NonZero(_, specialties) = self.vanilla_abilities().get(ability_name) {
             if specialties.contains(specialty) {
                 Err(CharacterMutationError::AddSpecialtyError(
                     AddSpecialtyError::DuplicateSpecialty,
@@ -274,7 +278,7 @@ impl<'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_add_specialty(ability_name, specialty)?;
         self.abilities
-            .ability_mut(ability_name)
+            .get_mut(ability_name)
             .add_specialty(specialty)?;
         Ok(self)
     }
@@ -286,7 +290,7 @@ impl<'source> Character<'source> {
         ability_name: AbilityNameVanilla,
         specialty: &str,
     ) -> Result<(), CharacterMutationError> {
-        if let Ability::NonZero(_, specialties) = self.abilities().ability(ability_name) {
+        if let AbilityRating::NonZero(_, specialties) = self.vanilla_abilities().get(ability_name) {
             if !specialties.contains(specialty) {
                 Err(CharacterMutationError::RemoveSpecialtyError(
                     RemoveSpecialtyError::NotFound,
@@ -309,7 +313,7 @@ impl<'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_remove_specialty(ability_name, specialty)?;
         self.abilities
-            .ability_mut(ability_name)
+            .get_mut(ability_name)
             .remove_specialty(specialty)?;
         Ok(self)
     }
@@ -463,7 +467,7 @@ impl<'source> Character<'source> {
         id: MartialArtsStyleId,
         style: &MartialArtsStyle,
     ) -> Result<(), CharacterMutationError> {
-        if self.abilities().dots(AbilityNameVanilla::Brawl) < 1 {
+        if self.abilities().get(AbilityNameVanilla::Brawl).dots() < 1 {
             return Err(CharacterMutationError::AddMartialArtsStyleError(
                 AddMartialArtsStyleError::PrerequsitesNotMet(
                     "Brawl must be 1+ to take Martial Artist merit".to_owned(),
@@ -717,7 +721,7 @@ impl<'source> Character<'source> {
     }
 
     /// The character's Craft abilities and specialties.
-    pub fn craft(&self) -> &Craft {
+    pub fn craft(&'view self) -> &'view Craft<'source> {
         &self.craft
     }
 
@@ -751,9 +755,7 @@ impl<'source> Character<'source> {
             Ok(self)
         }
     }
-}
 
-impl<'view, 'source> Character<'source> {
     /// Accesses Martial Arts styles, abilities, and Charms.
     pub fn martial_arts(&'view self) -> MartialArts<'view, 'source> {
         MartialArts(self)

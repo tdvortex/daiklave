@@ -1,19 +1,19 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{abilities::AbilityMemo, martial_arts::MartialArtsStyle};
+use crate::{abilities::AbilityRatingMemo, martial_arts::MartialArtsStyle};
 
 use super::MortalMartialArtistView;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MortalMartialArtistMemo {
     style: MartialArtsStyle,
-    ability: AbilityMemo,
+    ability: AbilityRatingMemo,
 }
 
 impl<'source> MortalMartialArtistMemo {
     pub(in crate::exaltation::mortal::martial_arts) fn new(
         style: MartialArtsStyle,
-        ability: AbilityMemo,
+        ability: AbilityRatingMemo,
     ) -> Self {
         Self { style, ability }
     }

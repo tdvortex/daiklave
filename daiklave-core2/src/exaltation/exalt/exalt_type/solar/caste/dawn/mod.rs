@@ -38,17 +38,19 @@ impl Dawn {
         DawnMemo::new(self.caste_not_supernal, self.supernal)
     }
 
-    /// Returns true if the ability is a chosen Caste ability.
+    /// Returns true if the ability is a chosen Caste ability. If Brawl is a
+    /// Caste ability, then Martial Arts is also a Caste ability.
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        if self
-            .caste_not_supernal
-            .iter()
-            .any(|dawn_caste_ability| AbilityName::from(*dawn_caste_ability) == ability)
-        {
-            true
+        let search_ability = if ability == AbilityName::MartialArts {
+            AbilityName::Brawl
         } else {
-            AbilityName::from(self.supernal) == ability
-        }
+            ability
+        };
+
+        self.caste_not_supernal
+            .iter()
+            .any(|dawn_caste_ability| AbilityName::from(*dawn_caste_ability) == search_ability)
+            || AbilityName::from(self.supernal) == search_ability
     }
 
     /// Returns the Dawn's Supernal ability.

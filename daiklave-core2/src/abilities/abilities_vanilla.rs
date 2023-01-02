@@ -1,36 +1,36 @@
-use super::{ability::Ability, AbilitiesMemo, AbilityNameVanilla};
+use super::{ability_rating::AbilityRating, AbilitiesMemo, AbilityNameVanilla};
 
 /// A struct representing all non-Craft, non-Martial Arts abilities, including
 /// any specialties.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub struct AbilitiesVanilla<'source> {
-    pub(in crate::abilities) archery: Ability<'source>,
-    pub(in crate::abilities) athletics: Ability<'source>,
-    pub(in crate::abilities) awareness: Ability<'source>,
-    pub(in crate::abilities) brawl: Ability<'source>,
-    pub(in crate::abilities) bureaucracy: Ability<'source>,
-    pub(in crate::abilities) dodge: Ability<'source>,
-    pub(in crate::abilities) integrity: Ability<'source>,
-    pub(in crate::abilities) investigation: Ability<'source>,
-    pub(in crate::abilities) larceny: Ability<'source>,
-    pub(in crate::abilities) linguistics: Ability<'source>,
-    pub(in crate::abilities) lore: Ability<'source>,
-    pub(in crate::abilities) medicine: Ability<'source>,
-    pub(in crate::abilities) melee: Ability<'source>,
-    pub(in crate::abilities) occult: Ability<'source>,
-    pub(in crate::abilities) performance: Ability<'source>,
-    pub(in crate::abilities) presence: Ability<'source>,
-    pub(in crate::abilities) resistance: Ability<'source>,
-    pub(in crate::abilities) ride: Ability<'source>,
-    pub(in crate::abilities) sail: Ability<'source>,
-    pub(in crate::abilities) socialize: Ability<'source>,
-    pub(in crate::abilities) stealth: Ability<'source>,
-    pub(in crate::abilities) survival: Ability<'source>,
-    pub(in crate::abilities) thrown: Ability<'source>,
-    pub(in crate::abilities) war: Ability<'source>,
+pub(crate) struct AbilitiesVanilla<'source> {
+    pub(in crate::abilities) archery: AbilityRating<'source>,
+    pub(in crate::abilities) athletics: AbilityRating<'source>,
+    pub(in crate::abilities) awareness: AbilityRating<'source>,
+    pub(in crate::abilities) brawl: AbilityRating<'source>,
+    pub(in crate::abilities) bureaucracy: AbilityRating<'source>,
+    pub(in crate::abilities) dodge: AbilityRating<'source>,
+    pub(in crate::abilities) integrity: AbilityRating<'source>,
+    pub(in crate::abilities) investigation: AbilityRating<'source>,
+    pub(in crate::abilities) larceny: AbilityRating<'source>,
+    pub(in crate::abilities) linguistics: AbilityRating<'source>,
+    pub(in crate::abilities) lore: AbilityRating<'source>,
+    pub(in crate::abilities) medicine: AbilityRating<'source>,
+    pub(in crate::abilities) melee: AbilityRating<'source>,
+    pub(in crate::abilities) occult: AbilityRating<'source>,
+    pub(in crate::abilities) performance: AbilityRating<'source>,
+    pub(in crate::abilities) presence: AbilityRating<'source>,
+    pub(in crate::abilities) resistance: AbilityRating<'source>,
+    pub(in crate::abilities) ride: AbilityRating<'source>,
+    pub(in crate::abilities) sail: AbilityRating<'source>,
+    pub(in crate::abilities) socialize: AbilityRating<'source>,
+    pub(in crate::abilities) stealth: AbilityRating<'source>,
+    pub(in crate::abilities) survival: AbilityRating<'source>,
+    pub(in crate::abilities) thrown: AbilityRating<'source>,
+    pub(in crate::abilities) war: AbilityRating<'source>,
 }
 
-impl<'source> AbilitiesVanilla<'source> {
+impl<'view, 'source> AbilitiesVanilla<'source> {
     pub(crate) fn as_memo(&self) -> AbilitiesMemo {
         AbilitiesMemo {
             archery: self.archery.as_memo(),
@@ -60,7 +60,10 @@ impl<'source> AbilitiesVanilla<'source> {
         }
     }
 
-    pub(crate) fn ability(&self, ability_name: AbilityNameVanilla) -> &Ability {
+    pub(crate) fn get(
+        &'view self,
+        ability_name: AbilityNameVanilla,
+    ) -> &'view AbilityRating<'source> {
         match ability_name {
             AbilityNameVanilla::Archery => &self.archery,
             AbilityNameVanilla::Athletics => &self.athletics,
@@ -89,10 +92,10 @@ impl<'source> AbilitiesVanilla<'source> {
         }
     }
 
-    pub(crate) fn ability_mut(
+    pub(crate) fn get_mut(
         &mut self,
         ability_name: AbilityNameVanilla,
-    ) -> &mut Ability<'source> {
+    ) -> &mut AbilityRating<'source> {
         match ability_name {
             AbilityNameVanilla::Archery => &mut self.archery,
             AbilityNameVanilla::Athletics => &mut self.athletics,
@@ -121,13 +124,13 @@ impl<'source> AbilitiesVanilla<'source> {
         }
     }
 
-    /// Get the dot rating for a specific (non-Craft, non-MA) ability.
-    pub fn dots(&self, ability_name: AbilityNameVanilla) -> u8 {
-        self.ability(ability_name).dots()
-    }
+    // /// Get the dot rating for a specific (non-Craft, non-MA) ability.
+    // pub fn dots(&self, ability_name: AbilityNameVanilla) -> u8 {
+    //     self.get(ability_name).dots()
+    // }
 
-    /// Get an iterator for all specialties associated with a specific ability.
-    pub fn specialties(&self, ability_name: AbilityNameVanilla) -> impl Iterator<Item = &str> {
-        self.ability(ability_name).specialties()
-    }
+    // /// Get an iterator for all specialties associated with a specific ability.
+    // pub fn specialties(&self, ability_name: AbilityNameVanilla) -> impl Iterator<Item = &str> {
+    //     self.get(ability_name).specialties()
+    // }
 }

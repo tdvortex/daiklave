@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abilities::AbilityMemo,
+    abilities::AbilityRatingMemo,
     martial_arts::{MartialArtsCharm, MartialArtsCharmId, MartialArtsStyle},
 };
 
@@ -12,14 +12,14 @@ use super::ExaltMartialArtist;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct ExaltMartialArtistMemo {
     style: MartialArtsStyle,
-    ability: AbilityMemo,
+    ability: AbilityRatingMemo,
     charms: HashMap<MartialArtsCharmId, MartialArtsCharm>,
 }
 
 impl<'source> ExaltMartialArtistMemo {
     pub(in crate::exaltation::exalt::martial_arts) fn new(
         style: MartialArtsStyle,
-        ability: AbilityMemo,
+        ability: AbilityRatingMemo,
         charms: HashMap<MartialArtsCharmId, MartialArtsCharm>,
     ) -> Self {
         Self {

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    abilities::Ability,
+    abilities::AbilityRating,
     exaltation::mortal::martial_arts::MortalMartialArtistView,
     martial_arts::{MartialArtsCharm, MartialArtsCharmId, MartialArtsStyle},
 };
@@ -11,14 +11,14 @@ use super::ExaltMartialArtistMemo;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ExaltMartialArtist<'source> {
     style: &'source MartialArtsStyle,
-    ability: Ability<'source>,
+    ability: AbilityRating<'source>,
     charms: HashMap<MartialArtsCharmId, &'source MartialArtsCharm>,
 }
 
 impl<'view, 'source> ExaltMartialArtist<'source> {
     pub fn new(
         style: &'source MartialArtsStyle,
-        ability: Ability<'source>,
+        ability: AbilityRating<'source>,
         charms: HashMap<MartialArtsCharmId, &'source MartialArtsCharm>,
     ) -> Self {
         Self {
@@ -43,11 +43,11 @@ impl<'view, 'source> ExaltMartialArtist<'source> {
         self.style
     }
 
-    pub fn ability(&'view self) -> &'view Ability<'source> {
+    pub fn ability(&'view self) -> &'view AbilityRating<'source> {
         &self.ability
     }
 
-    pub fn ability_mut(&'view mut self) -> &'view mut Ability<'source> {
+    pub fn ability_mut(&'view mut self) -> &'view mut AbilityRating<'source> {
         &mut self.ability
     }
 

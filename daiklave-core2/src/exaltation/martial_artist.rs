@@ -1,4 +1,5 @@
 use crate::{
+    abilities::AbilityRating,
     armor::ArmorWeight,
     book_reference::BookReference,
     exaltation::{
@@ -49,17 +50,10 @@ impl<'view, 'source> ExaltationMartialArtist<'view, 'source> {
         }
     }
 
-    pub fn dots(&self) -> u8 {
+    pub fn ability_rating(&self) -> &'view AbilityRating<'source> {
         match self {
-            ExaltationMartialArtist::Mortal(view) => view.ability().dots(),
-            ExaltationMartialArtist::Exalt(view) => view.ability().dots(),
-        }
-    }
-
-    pub fn specialties(&self) -> impl Iterator<Item = &'source str> {
-        match self {
-            ExaltationMartialArtist::Mortal(view) => view.ability().specialties(),
-            ExaltationMartialArtist::Exalt(view) => view.ability().specialties(),
+            ExaltationMartialArtist::Mortal(view) => view.ability(),
+            ExaltationMartialArtist::Exalt(view) => view.ability(),
         }
     }
 

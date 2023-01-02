@@ -4,9 +4,9 @@ use std::collections::HashMap;
 
 pub(crate) use craft_memo::CraftMemo;
 
-use crate::{abilities::Ability, CharacterMutationError};
+use crate::{abilities::AbilityRating, CharacterMutationError};
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub struct Craft<'source>(pub(in crate::craft) HashMap<&'source str, Ability<'source>>);
+pub struct Craft<'source>(pub(crate) HashMap<&'source str, AbilityRating<'source>>);
 
 impl<'source> Craft<'source> {
     pub(crate) fn as_memo(&self) -> CraftMemo {
@@ -28,7 +28,7 @@ impl<'source> Craft<'source> {
         } else {
             self.0
                 .entry(focus)
-                .or_insert(Ability::Zero)
+                .or_insert(AbilityRating::Zero)
                 .set_dots(dots)?;
         }
         Ok(self)
@@ -38,7 +38,9 @@ impl<'source> Craft<'source> {
         self.0.get(focus).map_or(0, |ability| ability.dots())
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &str> {
-        self.0.keys().copied()
+    pub fn iter(&self) -> impl Iterator<Item = &'source str> + '_ {
+        let mut vec: Vec<&str> = self.0.keys().copied().collect();
+        vec.sort();
+        vec.into_iter()
     }
 }
