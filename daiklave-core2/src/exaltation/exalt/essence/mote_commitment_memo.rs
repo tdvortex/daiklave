@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::MoteCommitmentView;
+use super::MoteCommitment;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub(crate) struct MoteCommitmentMemo {
@@ -10,8 +10,8 @@ pub(crate) struct MoteCommitmentMemo {
 }
 
 impl<'source> MoteCommitmentMemo {
-    pub fn as_ref(&'source self) -> MoteCommitmentView<'source> {
-        MoteCommitmentView {
+    pub fn as_ref(&'source self) -> MoteCommitment<'source> {
+        MoteCommitment {
             name: self.name.as_str(),
             peripheral: self.peripheral,
             personal: self.personal,

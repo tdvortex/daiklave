@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{ability_memo::AbilityMemo, AbilitiesView};
+use super::{ability_memo::AbilityMemo, AbilitiesVanilla};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct AbilitiesMemo {
@@ -31,8 +31,8 @@ pub(crate) struct AbilitiesMemo {
 }
 
 impl<'source> AbilitiesMemo {
-    pub fn as_ref(&'source self) -> AbilitiesView<'source> {
-        AbilitiesView {
+    pub fn as_ref(&'source self) -> AbilitiesVanilla<'source> {
+        AbilitiesVanilla {
             archery: self.archery.as_ref(),
             athletics: self.athletics.as_ref(),
             awareness: self.awareness.as_ref(),

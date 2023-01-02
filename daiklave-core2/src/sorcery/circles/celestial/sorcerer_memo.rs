@@ -7,7 +7,7 @@ use crate::sorcery::{
     SorceryArchetypeId, SpellId,
 };
 
-use super::{sorcerer_view::CelestialCircleSorcererView, spell::CelestialSpell};
+use super::{sorcerer::CelestialCircleSorcerer, spell::CelestialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct CelestialCircleSorcererMemo {
@@ -24,8 +24,8 @@ pub(crate) struct CelestialCircleSorcererMemo {
 }
 
 impl<'source> CelestialCircleSorcererMemo {
-    pub fn as_ref(&'source self) -> CelestialCircleSorcererView<'source> {
-        CelestialCircleSorcererView {
+    pub fn as_ref(&'source self) -> CelestialCircleSorcerer<'source> {
+        CelestialCircleSorcerer {
             archetypes: self.archetypes.iter().map(|(k, v)| (*k, v)).collect(),
             circle_archetypes: self.circle_archetypes,
             shaping_ritual_ids: self.shaping_ritual_ids,

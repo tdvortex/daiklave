@@ -1,5 +1,5 @@
 use crate::{
-    abilities::AbilityView, exaltation::exalt::martial_arts::ExaltMartialArtistView,
+    abilities::Ability, exaltation::exalt::martial_arts::ExaltMartialArtist,
     martial_arts::MartialArtsStyle,
 };
 
@@ -8,13 +8,13 @@ use super::MortalMartialArtistMemo;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MortalMartialArtistView<'source> {
     style: &'source MartialArtsStyle,
-    ability: AbilityView<'source>,
+    ability: Ability<'source>,
 }
 
 impl<'view, 'source> MortalMartialArtistView<'source> {
     pub(in crate::exaltation::mortal) fn new(
         style: &'source MartialArtsStyle,
-        ability: AbilityView<'source>,
+        ability: Ability<'source>,
     ) -> Self {
         Self { style, ability }
     }
@@ -27,17 +27,17 @@ impl<'view, 'source> MortalMartialArtistView<'source> {
         self.style
     }
 
-    pub fn ability(&'view self) -> &'view AbilityView<'source> {
+    pub fn ability(&'view self) -> &'view Ability<'source> {
         &self.ability
     }
 
-    pub fn ability_mut(&'view mut self) -> &'view mut AbilityView<'source> {
+    pub fn ability_mut(&'view mut self) -> &'view mut Ability<'source> {
         &mut self.ability
     }
 }
 
-impl<'source> From<ExaltMartialArtistView<'source>> for MortalMartialArtistView<'source> {
-    fn from(exalt_artist: ExaltMartialArtistView<'source>) -> Self {
+impl<'source> From<ExaltMartialArtist<'source>> for MortalMartialArtistView<'source> {
+    fn from(exalt_artist: ExaltMartialArtist<'source>) -> Self {
         Self {
             style: exalt_artist.style(),
             ability: exalt_artist.ability().to_owned(),

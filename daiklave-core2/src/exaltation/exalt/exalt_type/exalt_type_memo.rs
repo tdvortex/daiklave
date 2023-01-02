@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{solar::SolarMemo, ExaltTypeView};
+use super::{solar::SolarMemo, ExaltType};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum ExaltTypeMemo {
@@ -8,9 +8,9 @@ pub(crate) enum ExaltTypeMemo {
 }
 
 impl<'source> ExaltTypeMemo {
-    pub fn as_ref(&'source self) -> ExaltTypeView<'source> {
+    pub fn as_ref(&'source self) -> ExaltType<'source> {
         match self {
-            ExaltTypeMemo::Solar(memo) => ExaltTypeView::Solar(memo.as_ref()),
+            ExaltTypeMemo::Solar(memo) => ExaltType::Solar(memo.as_ref()),
         }
     }
 }

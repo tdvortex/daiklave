@@ -2,7 +2,7 @@ use daiklave_core2::{
     abilities::AbilityName,
     exaltation::exalt::{
         essence::{MoteCommitmentId, MotePoolName},
-        exalt_type::solar::{caste::eclipse::EclipseView, SolarView},
+        exalt_type::solar::{caste::eclipse::Eclipse, Solar},
     },
     unique_id::UniqueId,
     CharacterEventSource, CharacterMutation,
@@ -17,7 +17,7 @@ fn test_essence_character_event_source() {
 
     // Exalts (including Solars) should have essence
     let eclipse = {
-        let mut builder = EclipseView::builder();
+        let mut builder = Eclipse::builder();
         [
             AbilityName::Larceny,
             AbilityName::Linguistics,
@@ -33,7 +33,7 @@ fn test_essence_character_event_source() {
     };
 
     let solar_traits = {
-        let mut builder = SolarView::builder();
+        let mut builder = Solar::builder();
         builder.set_eclipse(eclipse);
         [
             AbilityName::Archery,

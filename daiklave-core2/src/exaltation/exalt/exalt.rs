@@ -1,14 +1,14 @@
 use std::collections::HashMap;
 
 use crate::{
-    abilities::{AbilityView, SetAbilityError},
-    exaltation::sorcery::SorceryViewSwitch,
+    abilities::{Ability, SetAbilityError},
+    exaltation::sorcery::ExaltationSorcery,
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsCharmId, MartialArtsStyle, MartialArtsStyleId,
         RemoveMartialArtsStyleError, SetMartialArtsDotsError,
     },
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryView, SpellId,
+        ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
     CharacterMutationError,
@@ -16,27 +16,27 @@ use crate::{
 
 use super::{
     essence::{
-        CommitMotesError, EssenceView, MoteCommitmentId, MoteCommitmentView, MotePoolName,
+        CommitMotesError, Essence, MoteCommitment, MoteCommitmentId, MotePoolName,
         SetEssenceRatingError, SpendMotesError, UncommitMotesError,
     },
-    exalt_type::{solar::SolarView, ExaltTypeView},
-    martial_arts::ExaltMartialArtistView,
-    sorcery::ExaltSorceryViewSwitch,
+    exalt_type::{solar::Solar, ExaltType},
+    martial_arts::ExaltMartialArtist,
+    sorcery::ExaltSorcery,
     ExaltMemo,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct ExaltView<'source> {
-    essence: EssenceView<'source>,
-    martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistView<'source>>,
-    exalt_type: ExaltTypeView<'source>,
+pub(crate) struct Exalt<'source> {
+    essence: Essence<'source>,
+    martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
+    exalt_type: ExaltType<'source>,
 }
 
-impl<'source> ExaltView<'source> {
+impl<'source> Exalt<'source> {
     pub fn new(
-        essence: EssenceView<'source>,
-        martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistView<'source>>,
-        exalt_type: ExaltTypeView<'source>,
+        essence: Essence<'source>,
+        martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
+        exalt_type: ExaltType<'source>,
     ) -> Self {
         Self {
             essence,
@@ -56,27 +56,25 @@ impl<'source> ExaltView<'source> {
         )
     }
 
-    pub fn exalt_type(&self) -> &ExaltTypeView<'source> {
+    pub fn exalt_type(&self) -> &ExaltType<'source> {
         &self.exalt_type
     }
 
-    pub fn essence(&self) -> &EssenceView {
+    pub fn essence(&self) -> &Essence {
         &self.essence
     }
 
-    pub fn essence_mut(&mut self) -> &mut EssenceView<'source> {
+    pub fn essence_mut(&mut self) -> &mut Essence<'source> {
         &mut self.essence
     }
 
-    pub fn martial_arts_styles(
-        &self,
-    ) -> &HashMap<MartialArtsStyleId, ExaltMartialArtistView<'source>> {
+    pub fn martial_arts_styles(&self) -> &HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>> {
         &self.martial_arts_styles
     }
 
     pub fn martial_arts_styles_mut(
         &mut self,
-    ) -> &mut HashMap<MartialArtsStyleId, ExaltMartialArtistView<'source>> {
+    ) -> &mut HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>> {
         &mut self.martial_arts_styles
     }
 
@@ -170,7 +168,7 @@ impl<'source> ExaltView<'source> {
             .motes_mut()
             .personal_mut()
             .commit(personal_committed)?;
-        let commitment = MoteCommitmentView {
+        let commitment = MoteCommitment {
             name,
             peripheral: peripheral_committed,
             personal: personal_committed,
@@ -252,7 +250,7 @@ impl<'source> ExaltView<'source> {
         }
 
         let (new_peripheral, new_personal) = match self.exalt_type {
-            ExaltTypeView::Solar(_) => (rating * 7 + 26, rating * 3 + 10),
+            ExaltType::Solar(_) => (rating * 7 + 26, rating * 3 + 10),
         };
 
         let committed_ids = self
@@ -311,7 +309,7 @@ impl<'source> ExaltView<'source> {
                 .unwrap();
         }
 
-        self.essence_mut().rating = rating;
+        *self.essence_mut().rating_mut() = rating;
 
         Ok(self)
     }
@@ -320,7 +318,7 @@ impl<'source> ExaltView<'source> {
         self.exalt_type.is_solar()
     }
 
-    pub fn solar_traits(&self) -> Option<&SolarView> {
+    pub fn solar_traits(&self) -> Option<&Solar> {
         self.exalt_type.solar_traits()
     }
 
@@ -346,7 +344,7 @@ impl<'source> ExaltView<'source> {
         self.check_add_martial_arts_style(id, style)?;
         self.martial_arts_styles.insert(
             id,
-            ExaltMartialArtistView::new(style, AbilityView::Zero, HashMap::new()),
+            ExaltMartialArtist::new(style, Ability::Zero, HashMap::new()),
         );
         Ok(self)
     }
@@ -448,7 +446,7 @@ impl<'source> ExaltView<'source> {
         control_spell: &'source TerrestrialSpell,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.exalt_type {
-            ExaltTypeView::Solar(solar) => {
+            ExaltType::Solar(solar) => {
                 solar.add_terrestrial_sorcery(
                     archetype_id,
                     archetype,
@@ -463,14 +461,12 @@ impl<'source> ExaltView<'source> {
     }
 }
 
-impl<'view, 'source> ExaltView<'source> {
-    pub(crate) fn sorcery(&'view self) -> Option<SorceryView<'view, 'source>> {
+impl<'view, 'source> Exalt<'source> {
+    pub(crate) fn sorcery(&'view self) -> Option<Sorcery<'view, 'source>> {
         match self.exalt_type() {
-            ExaltTypeView::Solar(solar) => solar.sorcery().map(|sorcerer| {
-                SorceryView(SorceryViewSwitch::Exalt(ExaltSorceryViewSwitch::Solar(
-                    sorcerer,
-                )))
-            }),
+            ExaltType::Solar(solar) => solar
+                .sorcery()
+                .map(|sorcerer| Sorcery(ExaltationSorcery::Exalt(ExaltSorcery::Solar(sorcerer)))),
         }
     }
 }

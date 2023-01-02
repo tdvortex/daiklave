@@ -1,22 +1,21 @@
 use std::collections::HashMap;
 
 use super::{
-    mote_commitment_view::MoteCommitmentView, mote_pool::MotePool, motes_memo::MotesMemo,
-    MoteCommitmentId,
+    mote_commitment::MoteCommitment, mote_pool::MotePool, motes_memo::MotesMemo, MoteCommitmentId,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct MotesView<'source> {
+pub struct Motes<'source> {
     peripheral: MotePool,
     personal: MotePool,
-    commitments: HashMap<MoteCommitmentId, MoteCommitmentView<'source>>,
+    commitments: HashMap<MoteCommitmentId, MoteCommitment<'source>>,
 }
 
-impl<'source> MotesView<'source> {
+impl<'source> Motes<'source> {
     pub(in crate::exaltation::exalt::essence) fn new(
         peripheral: MotePool,
         personal: MotePool,
-        commitments: HashMap<MoteCommitmentId, MoteCommitmentView<'source>>,
+        commitments: HashMap<MoteCommitmentId, MoteCommitment<'source>>,
     ) -> Self {
         Self {
             peripheral,
@@ -58,13 +57,13 @@ impl<'source> MotesView<'source> {
             .map(|(k, v)| (*k, v.name, v.peripheral, v.personal))
     }
 
-    pub(crate) fn commitments(&self) -> &HashMap<MoteCommitmentId, MoteCommitmentView<'source>> {
+    pub(crate) fn commitments(&self) -> &HashMap<MoteCommitmentId, MoteCommitment<'source>> {
         &self.commitments
     }
 
     pub(crate) fn commitments_mut(
         &mut self,
-    ) -> &mut HashMap<MoteCommitmentId, MoteCommitmentView<'source>> {
+    ) -> &mut HashMap<MoteCommitmentId, MoteCommitment<'source>> {
         &mut self.commitments
     }
 }

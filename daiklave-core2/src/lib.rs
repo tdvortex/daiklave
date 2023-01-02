@@ -57,14 +57,14 @@ pub mod sorcery;
 pub mod weapons;
 
 mod armor;
+mod character;
 mod character_memo;
-mod character_view;
 pub(crate) mod craft;
 mod name_and_concept;
 mod willpower;
 
+pub use character::Character;
 pub use character_memo::CharacterMemo;
-pub use character_view::CharacterView;
 
 /// The API for the character, expressed as an owned struct. Each mutation has
 /// an associated pub method on Character and CharacterEventSource which
@@ -189,10 +189,10 @@ pub struct CharacterEventSource {
 impl CharacterEventSource {
     /// Constructs a borrowed CharacterView from the event source history.
     /// Returns the default character if no events in the history.
-    pub fn as_character_view(&self) -> Result<CharacterView, CharacterMutationError> {
+    pub fn as_character_view(&self) -> Result<Character, CharacterMutationError> {
         self.history
             .iter()
-            .fold(Ok(CharacterView::default()), |res, mutation| {
+            .fold(Ok(Character::default()), |res, mutation| {
                 res.and_then(|mut view| {
                     view.apply_mutation(mutation)?;
                     Ok(view)

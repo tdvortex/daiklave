@@ -1,12 +1,12 @@
 use daiklave_core2::{
     health::{DamageLevel, WoundPenalty},
-    CharacterView,
+    Character,
 };
 
 #[test]
 fn test_health_character_view() {
     // Check default health
-    let mut character_view = CharacterView::default();
+    let mut character_view = Character::default();
     let mut count = 0;
     let expected = vec![
         (WoundPenalty::Zero, None),

@@ -1,24 +1,22 @@
 use crate::{
     abilities::{
-        AbilitiesView, AbilityNameVanilla, AbilityView, AddSpecialtyError, RemoveSpecialtyError,
+        AbilitiesVanilla, Ability, AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError,
         SetAbilityError,
     },
     attributes::{AttributeName, Attributes, SetAttributesError},
-    craft::CraftView,
+    craft::Craft,
     exaltation::{
         exalt::{
-            essence::{EssenceView, MoteCommitmentId, MotePoolName},
-            exalt_type::solar::{SolarMemo, SolarView},
+            essence::{Essence, MoteCommitmentId, MotePoolName},
+            exalt_type::solar::{Solar, SolarMemo},
         },
-        ExaltationView,
+        Exaltation,
     },
     health::{DamageLevel, Health, WoundPenalty},
-    martial_arts::{
-        AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, MartialArtsView,
-    },
+    martial_arts::{AddMartialArtsStyleError, MartialArts, MartialArtsStyle, MartialArtsStyleId},
     name_and_concept::RemoveConceptError,
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryView, SpellId,
+        ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
     willpower::Willpower,
@@ -28,18 +26,18 @@ use crate::{
 /// A borrowed instance of a Character which references a CharacterEventSource
 /// object, using &str instead of String.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CharacterView<'source> {
+pub struct Character<'source> {
     pub(crate) name: &'source str,
     pub(crate) concept: Option<&'source str>,
-    pub(crate) exalt_state: ExaltationView<'source>,
+    pub(crate) exalt_state: Exaltation<'source>,
     pub(crate) willpower: Willpower,
     pub(crate) health: Health,
     pub(crate) attributes: Attributes,
-    pub(crate) abilities: AbilitiesView<'source>,
-    pub(crate) craft: CraftView<'source>,
+    pub(crate) abilities: AbilitiesVanilla<'source>,
+    pub(crate) craft: Craft<'source>,
 }
 
-impl<'source> Default for CharacterView<'source> {
+impl<'source> Default for Character<'source> {
     fn default() -> Self {
         Self {
             name: "New Character",
@@ -54,7 +52,7 @@ impl<'source> Default for CharacterView<'source> {
     }
 }
 
-impl<'source> CharacterView<'source> {
+impl<'source> Character<'source> {
     /// Clones the character and all contained values into an owned struct.
     pub fn as_memo(&self) -> CharacterMemo {
         CharacterMemo {
@@ -215,7 +213,7 @@ impl<'source> CharacterView<'source> {
     }
 
     /// Get read-only access to a character's Abilities.
-    pub fn abilities(&self) -> &AbilitiesView {
+    pub fn abilities(&self) -> &AbilitiesVanilla {
         &self.abilities
     }
 
@@ -253,7 +251,7 @@ impl<'source> CharacterView<'source> {
         ability_name: AbilityNameVanilla,
         specialty: &str,
     ) -> Result<(), CharacterMutationError> {
-        if let AbilityView::NonZero(_, specialties) = self.abilities().ability(ability_name) {
+        if let Ability::NonZero(_, specialties) = self.abilities().ability(ability_name) {
             if specialties.contains(specialty) {
                 Err(CharacterMutationError::AddSpecialtyError(
                     AddSpecialtyError::DuplicateSpecialty,
@@ -288,7 +286,7 @@ impl<'source> CharacterView<'source> {
         ability_name: AbilityNameVanilla,
         specialty: &str,
     ) -> Result<(), CharacterMutationError> {
-        if let AbilityView::NonZero(_, specialties) = self.abilities().ability(ability_name) {
+        if let Ability::NonZero(_, specialties) = self.abilities().ability(ability_name) {
             if !specialties.contains(specialty) {
                 Err(CharacterMutationError::RemoveSpecialtyError(
                     RemoveSpecialtyError::NotFound,
@@ -317,7 +315,7 @@ impl<'source> CharacterView<'source> {
     }
 
     /// None for mortals.
-    pub fn essence(&self) -> Option<&EssenceView> {
+    pub fn essence(&self) -> Option<&Essence> {
         self.exalt_state.essence()
     }
 
@@ -412,7 +410,7 @@ impl<'source> CharacterView<'source> {
     }
 
     /// Returns the character's Solar-specific traits, or None if not a Solar.
-    pub fn solar_traits(&self) -> Option<&SolarView> {
+    pub fn solar_traits(&self) -> Option<&Solar> {
         self.exalt_state.solar_traits()
     }
 
@@ -441,14 +439,14 @@ impl<'source> CharacterView<'source> {
 
     pub(crate) fn check_set_solar_view(
         &self,
-        solar_view: &SolarView,
+        solar_view: &Solar,
     ) -> Result<(), CharacterMutationError> {
         self.exalt_state.check_set_solar_view(solar_view)
     }
 
     pub(crate) fn set_solar_view(
         &mut self,
-        solar_view: SolarView<'source>,
+        solar_view: Solar<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_solar_view(&solar_view)?;
         if self.is_mortal() {
@@ -719,7 +717,7 @@ impl<'source> CharacterView<'source> {
     }
 
     /// The character's Craft abilities and specialties.
-    pub fn craft(&self) -> &CraftView {
+    pub fn craft(&self) -> &Craft {
         &self.craft
     }
 
@@ -755,14 +753,14 @@ impl<'source> CharacterView<'source> {
     }
 }
 
-impl<'view, 'source> CharacterView<'source> {
+impl<'view, 'source> Character<'source> {
     /// Accesses Martial Arts styles, abilities, and Charms.
-    pub fn martial_arts(&'view self) -> MartialArtsView<'view, 'source> {
-        MartialArtsView(self)
+    pub fn martial_arts(&'view self) -> MartialArts<'view, 'source> {
+        MartialArts(self)
     }
 
     /// The character's Sorcery abilities, if any.
-    pub fn sorcery(&'view self) -> Option<SorceryView<'view, 'source>> {
+    pub fn sorcery(&'view self) -> Option<Sorcery<'view, 'source>> {
         self.exalt_state.sorcery()
     }
 }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{EclipseAbility, EclipseView};
+use super::{Eclipse, EclipseAbility};
 
 /// An owned copy of Eclipse Solar traits
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -20,9 +20,7 @@ impl<'source> EclipseMemo {
         }
     }
 
-    pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(
-        &'source self,
-    ) -> EclipseView {
-        EclipseView::new(self.caste_not_supernal, self.supernal)
+    pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(&'source self) -> Eclipse {
+        Eclipse::new(self.caste_not_supernal, self.supernal)
     }
 }

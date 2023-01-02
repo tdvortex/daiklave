@@ -1,35 +1,30 @@
 use std::collections::HashMap;
 
 use crate::sorcery::{
-    circles::{
-        celestial::CelestialSpell, sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell,
-    },
+    circles::{sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell},
     ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, Spell, SpellId,
 };
 
-use super::{sorcerer_memo::SolarCircleSorcererMemo, SolarSpell};
+use super::{sorcerer_memo::CelestialCircleSorcererMemo, spell::CelestialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct SolarCircleSorcererView<'source> {
+pub(crate) struct CelestialCircleSorcerer<'source> {
     pub(in crate::sorcery::circles) archetypes:
         HashMap<SorceryArchetypeId, &'source SorceryArchetype>,
-    pub(in crate::sorcery::circles) circle_archetypes: [SorceryArchetypeId; 3],
-    pub(in crate::sorcery::circles) shaping_ritual_ids: [ShapingRitualId; 3],
-    pub(in crate::sorcery::circles) shaping_rituals: [&'source ShapingRitual; 3],
+    pub(in crate::sorcery::circles) circle_archetypes: [SorceryArchetypeId; 2],
+    pub(in crate::sorcery::circles) shaping_ritual_ids: [ShapingRitualId; 2],
+    pub(in crate::sorcery::circles) shaping_rituals: [&'source ShapingRitual; 2],
     pub(in crate::sorcery::circles) terrestrial_control_spell_id: SpellId,
     pub(in crate::sorcery::circles) terrestrial_control_spell: &'source TerrestrialSpell,
     pub(in crate::sorcery::circles) terrestrial_spells: HashMap<SpellId, &'source TerrestrialSpell>,
     pub(in crate::sorcery::circles) celestial_control_spell_id: SpellId,
     pub(in crate::sorcery::circles) celestial_control_spell: &'source CelestialSpell,
     pub(in crate::sorcery::circles) celestial_spells: HashMap<SpellId, &'source CelestialSpell>,
-    pub(in crate::sorcery::circles) solar_control_spell_id: SpellId,
-    pub(in crate::sorcery::circles) solar_control_spell: &'source SolarSpell,
-    pub(in crate::sorcery::circles) solar_spells: HashMap<SpellId, &'source SolarSpell>,
 }
 
-impl<'source> SolarCircleSorcererView<'source> {
-    pub fn as_memo(&self) -> SolarCircleSorcererMemo {
-        SolarCircleSorcererMemo {
+impl<'source> CelestialCircleSorcerer<'source> {
+    pub fn as_memo(&self) -> CelestialCircleSorcererMemo {
+        CelestialCircleSorcererMemo {
             archetypes: self
                 .archetypes
                 .iter()
@@ -52,13 +47,6 @@ impl<'source> SolarCircleSorcererView<'source> {
                 .iter()
                 .map(|(k, v)| (*k, (*v).to_owned()))
                 .collect(),
-            solar_control_spell_id: self.solar_control_spell_id,
-            solar_control_spell: self.solar_control_spell.to_owned(),
-            solar_spells: self
-                .solar_spells
-                .iter()
-                .map(|(k, v)| (*k, (*v).to_owned()))
-                .collect(),
         }
     }
 
@@ -73,25 +61,27 @@ impl<'source> SolarCircleSorcererView<'source> {
     pub fn shaping_ritual(
         &self,
         circle: SorceryCircle,
-    ) -> (ShapingRitualId, &'source ShapingRitual) {
+    ) -> Option<(ShapingRitualId, &'source ShapingRitual)> {
         match circle {
-            SorceryCircle::Terrestrial => (self.shaping_ritual_ids[0], self.shaping_rituals[0]),
-            SorceryCircle::Celestial => (self.shaping_ritual_ids[1], self.shaping_rituals[1]),
-            SorceryCircle::Solar => (self.shaping_ritual_ids[2], self.shaping_rituals[2]),
+            SorceryCircle::Terrestrial => {
+                Some((self.shaping_ritual_ids[0], self.shaping_rituals[0]))
+            }
+            SorceryCircle::Celestial => Some((self.shaping_ritual_ids[1], self.shaping_rituals[1])),
+            SorceryCircle::Solar => None,
         }
     }
 
-    pub fn control_spell(&self, circle: SorceryCircle) -> (SpellId, &'source Spell) {
+    pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, &'source Spell)> {
         match circle {
-            SorceryCircle::Terrestrial => (
+            SorceryCircle::Terrestrial => Some((
                 self.terrestrial_control_spell_id,
                 self.terrestrial_control_spell,
-            ),
-            SorceryCircle::Celestial => (
+            )),
+            SorceryCircle::Celestial => Some((
                 self.celestial_control_spell_id,
                 self.celestial_control_spell,
-            ),
-            SorceryCircle::Solar => (self.solar_control_spell_id, self.solar_control_spell),
+            )),
+            SorceryCircle::Solar => None,
         }
     }
 }

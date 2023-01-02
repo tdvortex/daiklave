@@ -1,9 +1,9 @@
-use daiklave_core2::{abilities::AbilityNameVanilla, CharacterView};
+use daiklave_core2::{abilities::AbilityNameVanilla, Character};
 
 #[test]
 fn test_abilities_character_view() {
     // Check default abilities
-    let mut character_view = CharacterView::default();
+    let mut character_view = Character::default();
     let expected: Vec<(AbilityNameVanilla, u8, Option<&str>)> = vec![
         (AbilityNameVanilla::Archery, 0, None),
         (AbilityNameVanilla::Athletics, 0, None),

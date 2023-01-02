@@ -1,18 +1,18 @@
 use daiklave_core2::{
     abilities::AbilityName,
-    exaltation::exalt::exalt_type::solar::{caste::twilight::TwilightView, SolarView},
-    CharacterEventSource, CharacterMutation, CharacterView,
+    exaltation::exalt::exalt_type::solar::{caste::twilight::Twilight, Solar},
+    Character, CharacterEventSource, CharacterMutation,
 };
 
 #[test]
 fn test_exalt_type_character_view() {
     // Confirm default is mortal
-    let mut character_view = CharacterView::default();
+    let mut character_view = Character::default();
     assert!(character_view.is_mortal());
 
     // Confirm toggle to solar
     let twilight = {
-        let mut builder = TwilightView::builder();
+        let mut builder = Twilight::builder();
         [
             AbilityName::Bureaucracy,
             AbilityName::Craft,
@@ -30,7 +30,7 @@ fn test_exalt_type_character_view() {
     };
 
     let solar_traits = {
-        let mut builder = SolarView::builder();
+        let mut builder = Solar::builder();
         builder.set_twilight(twilight);
         [
             AbilityName::Archery,
@@ -65,7 +65,7 @@ fn test_exalt_type_character_event_source() {
 
     // Check toggle to solar
     let twilight = {
-        let mut builder = TwilightView::builder();
+        let mut builder = Twilight::builder();
         [
             AbilityName::Bureaucracy,
             AbilityName::Craft,
@@ -83,7 +83,7 @@ fn test_exalt_type_character_event_source() {
     };
 
     let solar_traits = {
-        let mut builder = SolarView::builder();
+        let mut builder = Solar::builder();
         builder.set_twilight(twilight);
         [
             AbilityName::Archery,

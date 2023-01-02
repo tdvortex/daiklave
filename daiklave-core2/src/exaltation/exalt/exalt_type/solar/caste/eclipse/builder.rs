@@ -4,7 +4,7 @@ use crate::{
     abilities::AbilityName, exaltation::exalt::exalt_type::solar::builder_error::SolarBuilderError,
 };
 
-use super::{EclipseAbility, EclipseView};
+use super::{Eclipse, EclipseAbility};
 
 /// Builder struct for constructing Eclipse Caste traits.
 #[derive(Debug, Default)]
@@ -79,7 +79,7 @@ impl EclipseBuilder {
     }
 
     /// Completes the build process and returns an EclipseView struct if successful.
-    pub fn build(mut self) -> Result<EclipseView, SolarBuilderError> {
+    pub fn build(mut self) -> Result<Eclipse, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));
         }
@@ -100,6 +100,6 @@ impl EclipseBuilder {
         let mut caste_not_supernal = option_arr.map(|opt| opt.unwrap());
         caste_not_supernal.sort();
 
-        Ok(EclipseView::new(caste_not_supernal, supernal))
+        Ok(Eclipse::new(caste_not_supernal, supernal))
     }
 }

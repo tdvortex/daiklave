@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    abilities::AbilityView,
+    abilities::Ability,
     exaltation::mortal::martial_arts::MortalMartialArtistView,
     martial_arts::{MartialArtsCharm, MartialArtsCharmId, MartialArtsStyle},
 };
@@ -9,16 +9,16 @@ use crate::{
 use super::ExaltMartialArtistMemo;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct ExaltMartialArtistView<'source> {
+pub(crate) struct ExaltMartialArtist<'source> {
     style: &'source MartialArtsStyle,
-    ability: AbilityView<'source>,
+    ability: Ability<'source>,
     charms: HashMap<MartialArtsCharmId, &'source MartialArtsCharm>,
 }
 
-impl<'view, 'source> ExaltMartialArtistView<'source> {
+impl<'view, 'source> ExaltMartialArtist<'source> {
     pub fn new(
         style: &'source MartialArtsStyle,
-        ability: AbilityView<'source>,
+        ability: Ability<'source>,
         charms: HashMap<MartialArtsCharmId, &'source MartialArtsCharm>,
     ) -> Self {
         Self {
@@ -43,11 +43,11 @@ impl<'view, 'source> ExaltMartialArtistView<'source> {
         self.style
     }
 
-    pub fn ability(&'view self) -> &'view AbilityView<'source> {
+    pub fn ability(&'view self) -> &'view Ability<'source> {
         &self.ability
     }
 
-    pub fn ability_mut(&'view mut self) -> &'view mut AbilityView<'source> {
+    pub fn ability_mut(&'view mut self) -> &'view mut Ability<'source> {
         &mut self.ability
     }
 
@@ -64,7 +64,7 @@ impl<'view, 'source> ExaltMartialArtistView<'source> {
     }
 }
 
-impl<'source> From<MortalMartialArtistView<'source>> for ExaltMartialArtistView<'source> {
+impl<'source> From<MortalMartialArtistView<'source>> for ExaltMartialArtist<'source> {
     fn from(mortal_artist: MortalMartialArtistView<'source>) -> Self {
         Self {
             style: mortal_artist.style(),

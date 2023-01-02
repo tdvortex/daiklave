@@ -1,19 +1,19 @@
 use daiklave_core2::{
     abilities::AbilityName,
-    exaltation::exalt::exalt_type::solar::{caste::dawn::DawnView, SolarView},
-    CharacterEventSource, CharacterMutation, CharacterView,
+    exaltation::exalt::exalt_type::solar::{caste::dawn::Dawn, Solar},
+    Character, CharacterEventSource, CharacterMutation,
 };
 
 #[test]
 fn test_willpower_character_view() {
     // Check default (mortal)
-    let mut character_view = CharacterView::default();
+    let mut character_view = Character::default();
     assert_eq!(character_view.willpower().rating(), 3);
     assert_eq!(character_view.willpower().current(), 3);
 
     // Check default (exalt)
     let dawn = {
-        let mut builder = DawnView::builder();
+        let mut builder = Dawn::builder();
         [
             AbilityName::Dodge,
             AbilityName::Resistance,
@@ -31,7 +31,7 @@ fn test_willpower_character_view() {
     };
 
     let solar_traits = {
-        let mut builder = SolarView::builder();
+        let mut builder = Solar::builder();
         builder.set_dawn(dawn);
         [
             AbilityName::Presence,
@@ -74,7 +74,7 @@ fn test_willpower_character_event_source() {
 
     // Check default (exalt)
     let dawn = {
-        let mut builder = DawnView::builder();
+        let mut builder = Dawn::builder();
         [
             AbilityName::Dodge,
             AbilityName::Resistance,
@@ -92,7 +92,7 @@ fn test_willpower_character_event_source() {
     };
 
     let solar_traits = {
-        let mut builder = SolarView::builder();
+        let mut builder = Solar::builder();
         builder.set_dawn(dawn);
         [
             AbilityName::Presence,

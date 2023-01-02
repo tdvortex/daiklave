@@ -1,36 +1,36 @@
-use super::{ability_view::AbilityView, AbilitiesMemo, AbilityNameVanilla};
+use super::{ability::Ability, AbilitiesMemo, AbilityNameVanilla};
 
 /// A struct representing all non-Craft, non-Martial Arts abilities, including
 /// any specialties.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub struct AbilitiesView<'source> {
-    pub(in crate::abilities) archery: AbilityView<'source>,
-    pub(in crate::abilities) athletics: AbilityView<'source>,
-    pub(in crate::abilities) awareness: AbilityView<'source>,
-    pub(in crate::abilities) brawl: AbilityView<'source>,
-    pub(in crate::abilities) bureaucracy: AbilityView<'source>,
-    pub(in crate::abilities) dodge: AbilityView<'source>,
-    pub(in crate::abilities) integrity: AbilityView<'source>,
-    pub(in crate::abilities) investigation: AbilityView<'source>,
-    pub(in crate::abilities) larceny: AbilityView<'source>,
-    pub(in crate::abilities) linguistics: AbilityView<'source>,
-    pub(in crate::abilities) lore: AbilityView<'source>,
-    pub(in crate::abilities) medicine: AbilityView<'source>,
-    pub(in crate::abilities) melee: AbilityView<'source>,
-    pub(in crate::abilities) occult: AbilityView<'source>,
-    pub(in crate::abilities) performance: AbilityView<'source>,
-    pub(in crate::abilities) presence: AbilityView<'source>,
-    pub(in crate::abilities) resistance: AbilityView<'source>,
-    pub(in crate::abilities) ride: AbilityView<'source>,
-    pub(in crate::abilities) sail: AbilityView<'source>,
-    pub(in crate::abilities) socialize: AbilityView<'source>,
-    pub(in crate::abilities) stealth: AbilityView<'source>,
-    pub(in crate::abilities) survival: AbilityView<'source>,
-    pub(in crate::abilities) thrown: AbilityView<'source>,
-    pub(in crate::abilities) war: AbilityView<'source>,
+pub struct AbilitiesVanilla<'source> {
+    pub(in crate::abilities) archery: Ability<'source>,
+    pub(in crate::abilities) athletics: Ability<'source>,
+    pub(in crate::abilities) awareness: Ability<'source>,
+    pub(in crate::abilities) brawl: Ability<'source>,
+    pub(in crate::abilities) bureaucracy: Ability<'source>,
+    pub(in crate::abilities) dodge: Ability<'source>,
+    pub(in crate::abilities) integrity: Ability<'source>,
+    pub(in crate::abilities) investigation: Ability<'source>,
+    pub(in crate::abilities) larceny: Ability<'source>,
+    pub(in crate::abilities) linguistics: Ability<'source>,
+    pub(in crate::abilities) lore: Ability<'source>,
+    pub(in crate::abilities) medicine: Ability<'source>,
+    pub(in crate::abilities) melee: Ability<'source>,
+    pub(in crate::abilities) occult: Ability<'source>,
+    pub(in crate::abilities) performance: Ability<'source>,
+    pub(in crate::abilities) presence: Ability<'source>,
+    pub(in crate::abilities) resistance: Ability<'source>,
+    pub(in crate::abilities) ride: Ability<'source>,
+    pub(in crate::abilities) sail: Ability<'source>,
+    pub(in crate::abilities) socialize: Ability<'source>,
+    pub(in crate::abilities) stealth: Ability<'source>,
+    pub(in crate::abilities) survival: Ability<'source>,
+    pub(in crate::abilities) thrown: Ability<'source>,
+    pub(in crate::abilities) war: Ability<'source>,
 }
 
-impl<'source> AbilitiesView<'source> {
+impl<'source> AbilitiesVanilla<'source> {
     pub(crate) fn as_memo(&self) -> AbilitiesMemo {
         AbilitiesMemo {
             archery: self.archery.as_memo(),
@@ -60,7 +60,7 @@ impl<'source> AbilitiesView<'source> {
         }
     }
 
-    pub(crate) fn ability(&self, ability_name: AbilityNameVanilla) -> &AbilityView {
+    pub(crate) fn ability(&self, ability_name: AbilityNameVanilla) -> &Ability {
         match ability_name {
             AbilityNameVanilla::Archery => &self.archery,
             AbilityNameVanilla::Athletics => &self.athletics,
@@ -92,7 +92,7 @@ impl<'source> AbilitiesView<'source> {
     pub(crate) fn ability_mut(
         &mut self,
         ability_name: AbilityNameVanilla,
-    ) -> &mut AbilityView<'source> {
+    ) -> &mut Ability<'source> {
         match ability_name {
             AbilityNameVanilla::Archery => &mut self.archery,
             AbilityNameVanilla::Athletics => &mut self.athletics,

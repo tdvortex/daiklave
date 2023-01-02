@@ -1,16 +1,14 @@
 use crate::{
-    armor::ArmorWeight, book_reference::BookReference, exaltation::ExaltationMartialArtistView,
+    armor::ArmorWeight, book_reference::BookReference, exaltation::ExaltationMartialArtist,
     weapons::WeaponId,
 };
 
 use super::{charm::MartialArtsCharm, charm_id::MartialArtsCharmId};
 
 /// A specific Martial Arts style as known by a character.
-pub struct MartialArtistView<'view, 'source>(
-    pub(crate) ExaltationMartialArtistView<'view, 'source>,
-);
+pub struct MartialArtist<'view, 'source>(pub(crate) ExaltationMartialArtist<'view, 'source>);
 
-impl<'view, 'source> MartialArtistView<'view, 'source> {
+impl<'view, 'source> MartialArtist<'view, 'source> {
     /// The style's name.
     pub fn name(&self) -> &'source str {
         self.0.name()

@@ -6,7 +6,7 @@ use crate::sorcery::{
     ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
 };
 
-use super::{sorcerer_view::TerrestrialCircleSorcererView, TerrestrialSpell};
+use super::{sorcerer::TerrestrialCircleSorcerer, TerrestrialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct TerrestrialCircleSorcererMemo {
@@ -20,8 +20,8 @@ pub(crate) struct TerrestrialCircleSorcererMemo {
 }
 
 impl<'source> TerrestrialCircleSorcererMemo {
-    pub fn as_ref(&'source self) -> TerrestrialCircleSorcererView<'source> {
-        TerrestrialCircleSorcererView {
+    pub fn as_ref(&'source self) -> TerrestrialCircleSorcerer<'source> {
+        TerrestrialCircleSorcerer {
             archetype_id: self.archetype_id,
             archetype: &self.archetype,
             shaping_ritual_id: self.shaping_ritual_id,

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{night_ability::NightAbility, NightView};
+use super::{night_ability::NightAbility, Night};
 
 /// An owned copy of Night Solar traits
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -20,9 +20,7 @@ impl<'source> NightMemo {
         }
     }
 
-    pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(
-        &'source self,
-    ) -> NightView {
-        NightView::new(self.caste_not_supernal, self.supernal)
+    pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(&'source self) -> Night {
+        Night::new(self.caste_not_supernal, self.supernal)
     }
 }

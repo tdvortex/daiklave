@@ -7,7 +7,7 @@ use crate::{
     martial_arts::{MartialArtsCharm, MartialArtsCharmId, MartialArtsStyle},
 };
 
-use super::ExaltMartialArtistView;
+use super::ExaltMartialArtist;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct ExaltMartialArtistMemo {
@@ -29,8 +29,8 @@ impl<'source> ExaltMartialArtistMemo {
         }
     }
 
-    pub fn as_ref(&'source self) -> ExaltMartialArtistView<'source> {
-        ExaltMartialArtistView::new(
+    pub fn as_ref(&'source self) -> ExaltMartialArtist<'source> {
+        ExaltMartialArtist::new(
             &self.style,
             self.ability.as_ref(),
             self.charms.iter().map(|(k, v)| (*k, v)).collect(),

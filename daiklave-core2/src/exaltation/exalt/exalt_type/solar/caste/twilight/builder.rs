@@ -4,7 +4,7 @@ use crate::{
     abilities::AbilityName, exaltation::exalt::exalt_type::solar::builder_error::SolarBuilderError,
 };
 
-use super::{twilight_ability::TwilightAbility, twilight_view::TwilightView};
+use super::{twilight_ability::TwilightAbility, Twilight};
 
 /// Builder struct for constructing Twilight Caste traits.
 #[derive(Debug, Default)]
@@ -85,7 +85,7 @@ impl TwilightBuilder {
     }
 
     /// Completes the build process and returns a Twilight struct if successful.
-    pub fn build(mut self) -> Result<TwilightView, SolarBuilderError> {
+    pub fn build(mut self) -> Result<Twilight, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));
         }
@@ -106,6 +106,6 @@ impl TwilightBuilder {
         let mut caste_not_supernal = option_arr.map(|opt| opt.unwrap());
         caste_not_supernal.sort();
 
-        Ok(TwilightView::new(caste_not_supernal, supernal))
+        Ok(Twilight::new(caste_not_supernal, supernal))
     }
 }

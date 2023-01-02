@@ -5,8 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::martial_arts::MartialArtsStyleId;
 
 use super::{
-    essence::EssenceMemo, exalt_type::ExaltTypeMemo, martial_arts::ExaltMartialArtistMemo,
-    ExaltView,
+    essence::EssenceMemo, exalt_type::ExaltTypeMemo, martial_arts::ExaltMartialArtistMemo, Exalt,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -29,8 +28,8 @@ impl<'source> ExaltMemo {
         }
     }
 
-    pub fn as_ref(&'source self) -> ExaltView<'source> {
-        ExaltView::new(
+    pub fn as_ref(&'source self) -> Exalt<'source> {
+        Exalt::new(
             self.essence.as_ref(),
             self.martial_arts_styles
                 .iter()

@@ -5,63 +5,62 @@ use crate::abilities::AbilityName;
 use super::{
     builder_error::SolarBuilderError,
     caste::{
-        dawn::DawnView, eclipse::EclipseView, night::NightView, twilight::TwilightView,
-        zenith::ZenithView, SolarCasteView,
+        dawn::Dawn, eclipse::Eclipse, night::Night, twilight::Twilight, zenith::Zenith, SolarCaste,
     },
-    solar_view::SolarView,
     sorcery::SolarSorcererView,
+    Solar,
 };
 
 #[derive(Debug, Default)]
 pub struct SolarBuilder<'source> {
-    caste: Option<SolarCasteView>,
+    caste: Option<SolarCaste>,
     favored_abilities: HashSet<AbilityName>,
     sorcery: Option<SolarSorcererView<'source>>,
 }
 
 impl<'source> SolarBuilder<'source> {
-    pub fn set_dawn(&mut self, dawn: DawnView) -> &mut Self {
+    pub fn set_dawn(&mut self, dawn: Dawn) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();
         }
 
-        self.caste = Some(SolarCasteView::Dawn(dawn));
+        self.caste = Some(SolarCaste::Dawn(dawn));
         self
     }
 
-    pub fn set_zenith(&mut self, zenith: ZenithView) -> &mut Self {
+    pub fn set_zenith(&mut self, zenith: Zenith) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();
         }
 
-        self.caste = Some(SolarCasteView::Zenith(zenith));
+        self.caste = Some(SolarCaste::Zenith(zenith));
         self
     }
 
-    pub fn set_twilight(&mut self, twilight: TwilightView) -> &mut Self {
+    pub fn set_twilight(&mut self, twilight: Twilight) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();
         }
 
-        self.caste = Some(SolarCasteView::Twilight(twilight));
+        self.caste = Some(SolarCaste::Twilight(twilight));
         self
     }
 
-    pub fn set_night(&mut self, night: NightView) -> &mut Self {
+    pub fn set_night(&mut self, night: Night) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();
         }
 
-        self.caste = Some(SolarCasteView::Night(night));
+        self.caste = Some(SolarCaste::Night(night));
         self
     }
 
-    pub fn set_eclipse(&mut self, eclipse: EclipseView) -> &mut Self {
+    pub fn set_eclipse(&mut self, eclipse: Eclipse) -> &mut Self {
         if !self.favored_abilities.is_empty() {
             self.favored_abilities.clear();
         }
 
-        self.caste = Some(SolarCasteView::Eclipse(eclipse));
+        self.caste = Some(SolarCaste::Eclipse(eclipse));
         self
     }
 
@@ -84,7 +83,7 @@ impl<'source> SolarBuilder<'source> {
     }
 
     /// Consumes the builder, without cloning.
-    pub fn build_view(self) -> Result<SolarView<'source>, SolarBuilderError> {
+    pub fn build_view(self) -> Result<Solar<'source>, SolarBuilderError> {
         if self.caste.is_none() {
             return Err(SolarBuilderError::MissingField("caste"));
         }
@@ -102,6 +101,6 @@ impl<'source> SolarBuilder<'source> {
         let mut arr = option_arr.map(|el| el.unwrap());
         arr.sort();
 
-        Ok(SolarView::new(self.caste.unwrap(), arr, self.sorcery))
+        Ok(Solar::new(self.caste.unwrap(), arr, self.sorcery))
     }
 }

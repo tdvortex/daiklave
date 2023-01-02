@@ -1,4 +1,4 @@
-use super::{twilight_ability::TwilightAbility, TwilightView};
+use super::{twilight_ability::TwilightAbility, Twilight};
 use serde::{Deserialize, Serialize};
 
 /// An owned copy of Twilight Solar traits
@@ -21,7 +21,7 @@ impl<'source> TwilightMemo {
 
     pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(
         &'source self,
-    ) -> TwilightView {
-        TwilightView::new(self.caste_not_supernal, self.supernal)
+    ) -> Twilight {
+        Twilight::new(self.caste_not_supernal, self.supernal)
     }
 }

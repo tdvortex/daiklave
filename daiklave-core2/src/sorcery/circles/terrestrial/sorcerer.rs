@@ -1,10 +1,7 @@
 use std::collections::HashMap;
 
 use crate::sorcery::{
-    circles::{
-        celestial::sorcerer_view::CelestialCircleSorcererView,
-        solar::sorcerer_view::SolarCircleSorcererView,
-    },
+    circles::{celestial::sorcerer::CelestialCircleSorcerer, solar::sorcerer::SolarCircleSorcerer},
     ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryError, Spell,
     SpellId,
 };
@@ -12,7 +9,7 @@ use crate::sorcery::{
 use super::{sorcerer_memo::TerrestrialCircleSorcererMemo, TerrestrialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct TerrestrialCircleSorcererView<'source> {
+pub(crate) struct TerrestrialCircleSorcerer<'source> {
     pub(in crate::sorcery::circles) archetype_id: SorceryArchetypeId,
     pub(in crate::sorcery::circles) archetype: &'source SorceryArchetype,
     pub(in crate::sorcery::circles) shaping_ritual_id: ShapingRitualId,
@@ -22,7 +19,7 @@ pub(crate) struct TerrestrialCircleSorcererView<'source> {
     pub(in crate::sorcery::circles) other_spells: HashMap<SpellId, &'source TerrestrialSpell>,
 }
 
-impl<'source> TerrestrialCircleSorcererView<'source> {
+impl<'source> TerrestrialCircleSorcerer<'source> {
     pub fn new(
         archetype_id: SorceryArchetypeId,
         archetype: &'source SorceryArchetype,
@@ -79,10 +76,10 @@ impl<'source> TerrestrialCircleSorcererView<'source> {
     }
 }
 
-impl<'view, 'source> From<&'view CelestialCircleSorcererView<'source>>
-    for TerrestrialCircleSorcererView<'source>
+impl<'view, 'source> From<&'view CelestialCircleSorcerer<'source>>
+    for TerrestrialCircleSorcerer<'source>
 {
-    fn from(celestial: &'view CelestialCircleSorcererView<'source>) -> Self {
+    fn from(celestial: &'view CelestialCircleSorcerer<'source>) -> Self {
         Self {
             archetype_id: celestial.circle_archetypes[0],
             archetype: celestial
@@ -98,10 +95,10 @@ impl<'view, 'source> From<&'view CelestialCircleSorcererView<'source>>
     }
 }
 
-impl<'view, 'source> From<&'view SolarCircleSorcererView<'source>>
-    for TerrestrialCircleSorcererView<'source>
+impl<'view, 'source> From<&'view SolarCircleSorcerer<'source>>
+    for TerrestrialCircleSorcerer<'source>
 {
-    fn from(solar: &'view SolarCircleSorcererView<'source>) -> Self {
+    fn from(solar: &'view SolarCircleSorcerer<'source>) -> Self {
         Self {
             archetype_id: solar.circle_archetypes[0],
             archetype: solar

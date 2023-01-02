@@ -6,14 +6,14 @@ use crate::{
     },
 };
 
-pub(crate) enum ExaltSorceryViewSwitch<'view, 'source> {
+pub(crate) enum ExaltSorcery<'view, 'source> {
     Solar(&'view SolarSorcererView<'source>),
 }
 
-impl<'view, 'source> ExaltSorceryViewSwitch<'view, 'source> {
+impl<'view, 'source> ExaltSorcery<'view, 'source> {
     pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&'source SorceryArchetype> {
         match self {
-            ExaltSorceryViewSwitch::Solar(solar_sorcerer) => solar_sorcerer.archetype(id),
+            ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer.archetype(id),
         }
     }
 
@@ -22,13 +22,13 @@ impl<'view, 'source> ExaltSorceryViewSwitch<'view, 'source> {
         circle: SorceryCircle,
     ) -> Option<(ShapingRitualId, &'source ShapingRitual)> {
         match self {
-            ExaltSorceryViewSwitch::Solar(solar_sorcerer) => solar_sorcerer.shaping_ritual(circle),
+            ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer.shaping_ritual(circle),
         }
     }
 
     pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, &'source Spell)> {
         match self {
-            ExaltSorceryViewSwitch::Solar(solar_sorcerer) => solar_sorcerer.control_spell(circle),
+            ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer.control_spell(circle),
         }
     }
 }

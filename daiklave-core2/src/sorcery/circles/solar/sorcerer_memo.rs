@@ -7,7 +7,7 @@ use crate::sorcery::{
     ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
 };
 
-use super::{sorcerer_view::SolarCircleSorcererView, SolarSpell};
+use super::{sorcerer::SolarCircleSorcerer, SolarSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SolarCircleSorcererMemo {
@@ -27,8 +27,8 @@ pub(crate) struct SolarCircleSorcererMemo {
 }
 
 impl<'source> SolarCircleSorcererMemo {
-    pub fn as_ref(&'source self) -> SolarCircleSorcererView<'source> {
-        SolarCircleSorcererView {
+    pub fn as_ref(&'source self) -> SolarCircleSorcerer<'source> {
+        SolarCircleSorcerer {
             archetypes: self.archetypes.iter().map(|(k, v)| (*k, v)).collect(),
             circle_archetypes: self.circle_archetypes,
             shaping_ritual_ids: self.shaping_ritual_ids,

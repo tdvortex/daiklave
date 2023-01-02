@@ -1,8 +1,8 @@
-use crate::CharacterView;
+use crate::Character;
 
 use super::{
     error::GuidedError, guided_mutation::GuidedMutation, guided_stage::GuidedStage,
-    guided_view::GuidedView,
+    guided_state::GuidedState,
 };
 
 /// An event-sourced guided character builder, supporting undo/redo.
@@ -15,9 +15,9 @@ pub struct GuidedEventSource {
 impl GuidedEventSource {
     /// Derives the current state of the partially-complete character,
     /// including all state which is character-creation-only (like bonus points)
-    pub fn as_guided_view(&self) -> Result<GuidedView, GuidedError> {
-        let mut guided_view = GuidedView {
-            character_view: CharacterView::default(),
+    pub fn as_guided_view(&self) -> Result<GuidedState, GuidedError> {
+        let mut guided_view = GuidedState {
+            character_view: Character::default(),
             stage: GuidedStage::ChooseNameAndConcept,
             bonus_points: 0,
             merit_dots: 0,

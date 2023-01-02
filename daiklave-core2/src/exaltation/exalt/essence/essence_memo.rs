@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{motes_memo::MotesMemo, EssenceView};
+use super::{motes_memo::MotesMemo, Essence};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct EssenceMemo {
@@ -13,8 +13,8 @@ impl<'source> EssenceMemo {
         Self { rating, motes }
     }
 
-    pub fn as_ref(&'source self) -> EssenceView<'source> {
-        EssenceView {
+    pub fn as_ref(&'source self) -> Essence<'source> {
+        Essence {
             rating: self.rating,
             motes: self.motes.as_ref(),
         }

@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
 
-use super::AbilityView;
+use super::Ability;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum AbilityMemo {
@@ -11,11 +11,11 @@ pub(crate) enum AbilityMemo {
 }
 
 impl<'source> AbilityMemo {
-    pub fn as_ref(&'source self) -> AbilityView<'source> {
+    pub fn as_ref(&'source self) -> Ability<'source> {
         match self {
-            AbilityMemo::Zero => AbilityView::Zero,
+            AbilityMemo::Zero => Ability::Zero,
             AbilityMemo::NonZero(dots, hashset) => {
-                AbilityView::NonZero(*dots, hashset.iter().map(|s| s.as_str()).collect())
+                Ability::NonZero(*dots, hashset.iter().map(|s| s.as_str()).collect())
             }
         }
     }

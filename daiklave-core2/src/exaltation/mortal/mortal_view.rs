@@ -1,14 +1,14 @@
 use std::collections::HashMap;
 
 use crate::{
-    abilities::AbilityView,
+    abilities::Ability,
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId,
         RemoveMartialArtsStyleError, SetMartialArtsDotsError,
     },
     sorcery::{
-        circles::terrestrial::sorcerer_view::TerrestrialCircleSorcererView, ShapingRitual,
-        ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell,
+        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
+        SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell,
     },
     CharacterMutationError,
 };
@@ -18,7 +18,7 @@ use super::{martial_arts::MortalMartialArtistView, MortalMemo};
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct MortalView<'source> {
     pub martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtistView<'source>>,
-    pub sorcery: Option<TerrestrialCircleSorcererView<'source>>,
+    pub sorcery: Option<TerrestrialCircleSorcerer<'source>>,
 }
 
 impl<'source> MortalView<'source> {
@@ -53,7 +53,7 @@ impl<'source> MortalView<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_add_martial_arts_style(id, style)?;
         self.martial_arts_styles
-            .insert(id, MortalMartialArtistView::new(style, AbilityView::Zero));
+            .insert(id, MortalMartialArtistView::new(style, Ability::Zero));
         Ok(self)
     }
 
@@ -118,7 +118,7 @@ impl<'source> MortalView<'source> {
         control_spell_id: SpellId,
         control_spell: &'source TerrestrialSpell,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.sorcery = Some(TerrestrialCircleSorcererView::new(
+        self.sorcery = Some(TerrestrialCircleSorcerer::new(
             archetype_id,
             archetype,
             shaping_ritual_id,

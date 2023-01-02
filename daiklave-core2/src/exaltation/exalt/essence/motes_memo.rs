@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use super::{mote_pool::MotePool, motes_view::MotesView, MoteCommitmentId, MoteCommitmentMemo};
+use super::{mote_pool::MotePool, motes::Motes, MoteCommitmentId, MoteCommitmentMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MotesMemo {
@@ -24,8 +24,8 @@ impl<'source> MotesMemo {
         }
     }
 
-    pub fn as_ref(&'source self) -> MotesView<'source> {
-        MotesView::new(
+    pub fn as_ref(&'source self) -> Motes<'source> {
+        Motes::new(
             self.peripheral,
             self.personal,
             self.commitments

@@ -4,7 +4,7 @@ use crate::{
     abilities::AbilityName, exaltation::exalt::exalt_type::solar::builder_error::SolarBuilderError,
 };
 
-use super::{night_ability::NightAbility, night_view::NightView};
+use super::{night_ability::NightAbility, Night};
 
 /// Builder struct for constructing Night Caste traits.
 #[derive(Debug, Default)]
@@ -81,7 +81,7 @@ impl NightBuilder {
     }
 
     /// Completes the build process and returns a Night struct if successful.
-    pub fn build(mut self) -> Result<NightView, SolarBuilderError> {
+    pub fn build(mut self) -> Result<Night, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));
         }
@@ -102,6 +102,6 @@ impl NightBuilder {
         let mut caste_not_supernal = option_arr.map(|opt| opt.unwrap());
         caste_not_supernal.sort();
 
-        Ok(NightView::new(caste_not_supernal, supernal))
+        Ok(Night::new(caste_not_supernal, supernal))
     }
 }

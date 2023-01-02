@@ -4,7 +4,7 @@ use crate::{
     abilities::AbilityName, exaltation::exalt::exalt_type::solar::builder_error::SolarBuilderError,
 };
 
-use super::{ZenithAbility, ZenithView};
+use super::{Zenith, ZenithAbility};
 
 /// Builder struct for constructing Zenith Caste traits.
 #[derive(Debug, Default)]
@@ -79,7 +79,7 @@ impl ZenithBuilder {
     }
 
     /// Completes the build process and returns a ZenithView struct if successful.
-    pub fn build(mut self) -> Result<ZenithView, SolarBuilderError> {
+    pub fn build(mut self) -> Result<Zenith, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));
         }
@@ -100,6 +100,6 @@ impl ZenithBuilder {
         let mut caste_not_supernal = option_arr.map(|opt| opt.unwrap());
         caste_not_supernal.sort();
 
-        Ok(ZenithView::new(caste_not_supernal, supernal))
+        Ok(Zenith::new(caste_not_supernal, supernal))
     }
 }

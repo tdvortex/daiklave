@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{ZenithAbility, ZenithView};
+use super::{Zenith, ZenithAbility};
 
 /// An owned copy of Zenith Solar traits
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -20,9 +20,7 @@ impl<'source> ZenithMemo {
         }
     }
 
-    pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(
-        &'source self,
-    ) -> ZenithView {
-        ZenithView::new(self.caste_not_supernal, self.supernal)
+    pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(&'source self) -> Zenith {
+        Zenith::new(self.caste_not_supernal, self.supernal)
     }
 }

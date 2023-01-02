@@ -4,7 +4,7 @@ use crate::{
     abilities::AbilityName, exaltation::exalt::exalt_type::solar::builder_error::SolarBuilderError,
 };
 
-use super::{DawnCasteAbility, DawnSupernalAbility, DawnView};
+use super::{Dawn, DawnCasteAbility, DawnSupernalAbility};
 
 /// Builder struct for constructing Dawn Caste traits.
 #[derive(Debug, Default)]
@@ -87,7 +87,7 @@ impl DawnBuilder {
     }
 
     /// Completes the build process and returns a DawnView struct if successful.
-    pub fn build(mut self) -> Result<DawnView, SolarBuilderError> {
+    pub fn build(mut self) -> Result<Dawn, SolarBuilderError> {
         if self.supernal.is_none() {
             return Err(SolarBuilderError::MissingField("supernal"));
         }
@@ -138,6 +138,6 @@ impl DawnBuilder {
         let mut caste_not_supernal = option_arr.map(|opt| opt.unwrap());
         caste_not_supernal.sort();
 
-        Ok(DawnView::new(caste_not_supernal, supernal))
+        Ok(Dawn::new(caste_not_supernal, supernal))
     }
 }

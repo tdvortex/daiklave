@@ -5,22 +5,22 @@ use crate::CharacterMutationError;
 use super::{AbilityMemo, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) enum AbilityView<'source> {
+pub(crate) enum Ability<'source> {
     Zero,
     NonZero(u8, HashSet<&'source str>),
 }
 
-impl<'source> Default for AbilityView<'source> {
+impl<'source> Default for Ability<'source> {
     fn default() -> Self {
         Self::Zero
     }
 }
 
-impl<'source> AbilityView<'source> {
+impl<'source> Ability<'source> {
     pub fn as_memo(&self) -> AbilityMemo {
         match self {
-            AbilityView::Zero => AbilityMemo::Zero,
-            AbilityView::NonZero(dots, specialties) => {
+            Ability::Zero => AbilityMemo::Zero,
+            Ability::NonZero(dots, specialties) => {
                 AbilityMemo::NonZero(*dots, specialties.iter().map(|s| s.to_string()).collect())
             }
         }
@@ -28,8 +28,8 @@ impl<'source> AbilityView<'source> {
 
     pub fn dots(&self) -> u8 {
         match self {
-            AbilityView::Zero => 0,
-            AbilityView::NonZero(dots, _) => *dots,
+            Ability::Zero => 0,
+            Ability::NonZero(dots, _) => *dots,
         }
     }
 
@@ -39,22 +39,22 @@ impl<'source> AbilityView<'source> {
                 SetAbilityError::InvalidRating(new_dots),
             ))
         } else if new_dots == 0 {
-            *self = AbilityView::Zero;
+            *self = Ability::Zero;
             Ok(self)
-        } else if let AbilityView::NonZero(dots, _) = self {
+        } else if let Ability::NonZero(dots, _) = self {
             *dots = new_dots;
             Ok(self)
         } else {
             // Was zero, now is non zero
-            *self = AbilityView::NonZero(new_dots, HashSet::new());
+            *self = Ability::NonZero(new_dots, HashSet::new());
             Ok(self)
         }
     }
 
     pub fn specialties(&self) -> impl Iterator<Item = &'source str> {
         match self {
-            AbilityView::Zero => vec![],
-            AbilityView::NonZero(_, specialties) => specialties.iter().copied().collect(),
+            Ability::Zero => vec![],
+            Ability::NonZero(_, specialties) => specialties.iter().copied().collect(),
         }
         .into_iter()
     }
@@ -63,7 +63,7 @@ impl<'source> AbilityView<'source> {
         &mut self,
         new_specialty: &'source str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if let AbilityView::NonZero(_, specialties) = self {
+        if let Ability::NonZero(_, specialties) = self {
             if specialties.contains(new_specialty) {
                 Err(CharacterMutationError::AddSpecialtyError(
                     AddSpecialtyError::DuplicateSpecialty,
@@ -83,7 +83,7 @@ impl<'source> AbilityView<'source> {
         &mut self,
         specialty: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if let AbilityView::NonZero(_, specialties) = self {
+        if let Ability::NonZero(_, specialties) = self {
             if !specialties.remove(specialty) {
                 Err(CharacterMutationError::RemoveSpecialtyError(
                     RemoveSpecialtyError::NotFound,
