@@ -48,6 +48,8 @@ impl<'view, 'source> MartialArtist<'view, 'source> {
         self.maybe_exalt.max_armor_weight()
     }
 
+    /// The details of the Martial Arts ability the character has for this
+    /// style, including rating and specialties.
     pub fn ability(&'view self) -> Ability<'view, 'source> {
         Ability(AbilityType::MartialArts(
             self.id,

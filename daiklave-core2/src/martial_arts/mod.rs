@@ -11,7 +11,7 @@ pub(crate) use error::{
     AddMartialArtsStyleError, RemoveMartialArtsStyleError, SetMartialArtsDotsError,
 };
 
-pub(crate) use martial_artist::MartialArtist;
+pub use martial_artist::MartialArtist;
 pub use style::MartialArtsStyle;
 pub use style_id::MartialArtsStyleId;
 
