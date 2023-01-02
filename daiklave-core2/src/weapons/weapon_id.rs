@@ -17,6 +17,7 @@ impl Deref for BaseWeaponId {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub struct ArtifactWeaponId(pub UniqueId);
 
 impl Deref for ArtifactWeaponId {
@@ -27,7 +28,29 @@ impl Deref for ArtifactWeaponId {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub enum WeaponId {
     NonArtifact(BaseWeaponId),
     Artifact(ArtifactWeaponId),
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
+pub enum ArtifactId {
+    Weapon(ArtifactWeaponId),
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
+pub struct HearthstoneId(pub UniqueId);
+
+impl Deref for HearthstoneId {
+    type Target = UniqueId;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+pub enum EvokableItemId {
+    Hearthstone(HearthstoneId),
+    Artifact(ArtifactId),
 }

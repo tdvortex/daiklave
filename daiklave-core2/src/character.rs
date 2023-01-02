@@ -758,7 +758,7 @@ impl<'view, 'source> Character<'source> {
 
     /// Accesses Martial Arts styles, abilities, and Charms.
     pub fn martial_arts(&'view self) -> MartialArts<'view, 'source> {
-        MartialArts(self)
+        MartialArts(&self.exalt_state)
     }
 
     /// The character's Sorcery abilities, if any.
