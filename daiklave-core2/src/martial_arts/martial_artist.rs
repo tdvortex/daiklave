@@ -1,6 +1,6 @@
 use crate::{
     abilities::Ability, armor::ArmorWeight, book_reference::BookReference,
-    exaltation::ExaltationMartialArtist, weapons::WeaponId,
+    exaltation::ExaltationMartialArtist, weapons::BaseWeaponId,
 };
 
 use super::{charm::MartialArtsCharm, charm_id::MartialArtsCharmId, MartialArtsStyleId};
@@ -38,7 +38,7 @@ impl<'view, 'source> MartialArtist<'view, 'source> {
 
     /// All of the base weapon Ids usable by the style. This is the base weapon
     /// (e.g. "sword" or "daiklave"), not any specific unique artifact weapon.
-    pub fn usable_weapon_ids(&self) -> impl Iterator<Item = WeaponId> + '_ {
+    pub fn usable_weapon_ids(&self) -> impl Iterator<Item = BaseWeaponId> + '_ {
         self.maybe_exalt.usable_weapon_ids()
     }
 

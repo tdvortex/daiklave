@@ -12,7 +12,7 @@ use daiklave_core2::{
         SpellId, TerrestrialSpell,
     },
     unique_id::UniqueId,
-    weapons::WeaponId,
+    weapons::BaseWeaponId,
     CharacterMutation,
 };
 #[test]
@@ -359,9 +359,9 @@ fn test_guided_solar() {
         and later Charms of this style empower such efforts."
             .to_owned(),
         HashSet::from([
-            WeaponId(UniqueId::Placeholder(1)),
-            WeaponId(UniqueId::Placeholder(2)),
-            WeaponId(UniqueId::Placeholder(3)),
+            BaseWeaponId(UniqueId::Placeholder(1)),
+            BaseWeaponId(UniqueId::Placeholder(2)),
+            BaseWeaponId(UniqueId::Placeholder(3)),
         ]),
         None,
     );

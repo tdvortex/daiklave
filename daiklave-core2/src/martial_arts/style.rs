@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{armor::ArmorWeight, book_reference::BookReference, weapons::WeaponId};
+use crate::{armor::ArmorWeight, book_reference::BookReference, weapons::BaseWeaponId};
 
 /// A Martial Arts style description.
 #[derive(Debug, Default, PartialEq, Eq, Clone, Serialize, Deserialize)]
@@ -10,7 +10,7 @@ pub struct MartialArtsStyle {
     book_reference: Option<BookReference>,
     name: String,
     description: String,
-    usable_weapons: HashSet<WeaponId>,
+    usable_weapons: HashSet<BaseWeaponId>,
     max_armor_weight: Option<ArmorWeight>,
 }
 
@@ -20,7 +20,7 @@ impl MartialArtsStyle {
         book_reference: Option<BookReference>,
         name: String,
         description: String,
-        usable_weapons: HashSet<WeaponId>,
+        usable_weapons: HashSet<BaseWeaponId>,
         max_armor_weight: Option<ArmorWeight>,
     ) -> Self {
         Self {
@@ -49,7 +49,7 @@ impl MartialArtsStyle {
 
     /// A list of weapon ids, which may be either mortal weapons (e.g. sword)
     /// or base artifact weapons (e.g. daiklave), usable by the style.
-    pub fn usable_weapon_ids(&self) -> impl Iterator<Item = WeaponId> + '_ {
+    pub fn usable_weapon_ids(&self) -> impl Iterator<Item = BaseWeaponId> + '_ {
         self.usable_weapons.iter().copied()
     }
 

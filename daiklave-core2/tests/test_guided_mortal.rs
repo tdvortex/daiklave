@@ -12,7 +12,7 @@ use daiklave_core2::{
         SpellId, TerrestrialSpell,
     },
     unique_id::UniqueId,
-    weapons::WeaponId,
+    weapons::BaseWeaponId,
     CharacterMutation,
 };
 
@@ -185,9 +185,9 @@ fn test_guided_mortal() {
         and later Charms of this style empower such efforts."
             .to_owned(),
         HashSet::from([
-            WeaponId(UniqueId::Placeholder(1)),
-            WeaponId(UniqueId::Placeholder(2)),
-            WeaponId(UniqueId::Placeholder(3)),
+            BaseWeaponId(UniqueId::Placeholder(1)),
+            BaseWeaponId(UniqueId::Placeholder(2)),
+            BaseWeaponId(UniqueId::Placeholder(3)),
         ]),
         None,
     );
@@ -234,7 +234,7 @@ fn test_guided_mortal() {
         None,
         "Dummy style".to_owned(),
         "Dummy description".to_owned(),
-        HashSet::from([WeaponId(UniqueId::Placeholder(1))]),
+        HashSet::from([BaseWeaponId(UniqueId::Placeholder(1))]),
         None,
     );
     let mutation = GuidedMutation::AddMartialArtsStyle(
