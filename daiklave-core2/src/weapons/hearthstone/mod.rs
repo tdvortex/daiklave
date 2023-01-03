@@ -10,15 +10,41 @@ mod keyword;
 mod owned;
 
 
-pub(in crate::weapons) use owned::OwnedHearthstone;
+pub(in crate::weapons) use owned::{OwnedHearthstone, OwnedHearthstoneMemo};
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(in crate::weapons) struct Hearthstone<'source> {
     name: &'source str,
     book_reference: Option<BookReference>,
     geomancy_level: GeomancyLevel,
     category: HearthstoneCategory,
-    keywords: HashSet<HearthstoneKeyword>,
+    keywords: &'source HashSet<HearthstoneKeyword>,
     lore: Option<&'source str>,
     powers: Option<&'source str>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub(in crate::weapons) struct HearthstoneMemo {
+    name: String,
+    book_reference: Option<BookReference>,
+    geomancy_level: GeomancyLevel,
+    category: HearthstoneCategory,
+    keywords: HashSet<HearthstoneKeyword>,
+    lore: Option<String>,
+    powers: Option<String>,
+}
+
+impl<'source> HearthstoneMemo {
+    pub fn as_ref(&'source self) -> Hearthstone<'source> {
+        Hearthstone { 
+            name: self.name.as_str(), 
+            book_reference: self.book_reference,
+            geomancy_level: self.geomancy_level,
+            category: self.category,
+            keywords: &self.keywords,
+            lore: self.lore.as_deref(),
+            powers: self.powers.as_deref(),
+        }
+    }
 }

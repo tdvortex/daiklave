@@ -346,6 +346,7 @@ impl<'view, 'source> Exaltation<'source> {
                     Essence::new_solar(exalt.essence().rating()),
                     std::mem::take(exalt.martial_arts_styles_mut()),
                     ExaltType::Solar(solar),
+                    std::mem::take(exalt.weapons_mut())
                 )));
             }
         }

@@ -9,13 +9,13 @@ mod worn;
 
 use std::ops::Deref;
 
-pub(in crate::weapons) use handless::{HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement};
-pub use one_handed::OneHandedArtifactWeapon;
-pub use two_handed::TwoHandedArtifactWeapon;
-pub(in crate::weapons) use nonnatural::{NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement};
-pub use natural::NaturalArtifactWeapon;
-pub use worn::WornArtifactWeapon;
-pub use base::BaseArtifactWeapon;
+pub(in crate::weapons) use handless::{HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement, HandlessArtifactWeaponMemo};
+pub use one_handed::{OneHandedArtifactWeapon, OneHandedArtifactWeaponMemo};
+pub use two_handed::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo};
+pub(in crate::weapons) use nonnatural::{NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement, NonnaturalArtifactWeaponMemo};
+pub use natural::{NaturalArtifactWeapon, NaturalArtifactWeaponMemo};
+pub use worn::{WornArtifactWeapon, WornArtifactWeaponMemo};
+pub use base::{BaseArtifactWeapon, BaseArtifactWeaponMemo};
 
 use self::named::NamedArtifactWeapon;
 

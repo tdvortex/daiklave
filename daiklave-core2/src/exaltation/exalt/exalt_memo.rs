@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::martial_arts::MartialArtsStyleId;
+use crate::{martial_arts::MartialArtsStyleId, weapons::exalt::ExaltWeaponsMemo};
 
 use super::{
     essence::EssenceMemo, exalt_type::ExaltTypeMemo, martial_arts::ExaltMartialArtistMemo, Exalt,
@@ -13,6 +13,7 @@ pub(crate) struct ExaltMemo {
     essence: EssenceMemo,
     martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistMemo>,
     exalt_type: ExaltTypeMemo,
+    weapons: ExaltWeaponsMemo,
 }
 
 impl<'source> ExaltMemo {
@@ -20,11 +21,13 @@ impl<'source> ExaltMemo {
         essence: EssenceMemo,
         martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistMemo>,
         exalt_type: ExaltTypeMemo,
+        weapons: ExaltWeaponsMemo,
     ) -> Self {
         Self {
             essence,
             martial_arts_styles,
             exalt_type,
+            weapons,
         }
     }
 
@@ -36,6 +39,7 @@ impl<'source> ExaltMemo {
                 .map(|(k, v)| (*k, v.as_ref()))
                 .collect(),
             self.exalt_type.as_ref(),
+            self.weapons.as_ref(),
         )
     }
 }

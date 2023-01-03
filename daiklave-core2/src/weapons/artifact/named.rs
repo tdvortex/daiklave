@@ -1,7 +1,10 @@
-use crate::{book_reference::BookReference, weapons::{BaseWeaponId, hearthstone::OwnedHearthstone, base::BaseWeapon}};
+use serde::{Serialize, Deserialize};
 
-use super::base::BaseArtifactWeapon;
+use crate::{book_reference::BookReference, weapons::{BaseWeaponId, hearthstone::{OwnedHearthstone, OwnedHearthstoneMemo}, base::BaseWeapon}};
 
+use super::base::{BaseArtifactWeapon, BaseArtifactWeaponMemo};
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::weapons::artifact) struct NamedArtifactWeapon<'source> {
     name: &'source str,
     book_reference: Option<BookReference>,
@@ -44,5 +47,32 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
 
     pub fn slotted_heathstones(&'view self) -> impl Iterator<Item = &'view OwnedHearthstone<'source>> + '_ {
         self.hearthstone_slots.iter().filter_map(|maybe_hearthstone| maybe_hearthstone.as_ref())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub(in crate::weapons::artifact) struct NamedArtifactWeaponMemo {
+    name: String,
+    book_reference: Option<BookReference>,
+    merit_dots: u8,
+    base_weapon_id: BaseWeaponId,
+    base_weapon: BaseArtifactWeaponMemo,
+    lore: Option<String>,
+    powers: Option<String>,
+    hearthstone_slots: Vec<Option<OwnedHearthstoneMemo>>,
+}
+
+impl<'source> NamedArtifactWeaponMemo {
+    pub fn as_ref(&'source self) -> NamedArtifactWeapon<'source> {
+        NamedArtifactWeapon {
+            name: self.name.as_str(),
+            book_reference: self.book_reference,
+            merit_dots: self.merit_dots,
+            base_weapon_id: self.base_weapon_id,
+            base_weapon: self.base_weapon.as_ref(),
+            lore: self.lore.as_deref(),
+            powers: self.powers.as_deref(),
+            hearthstone_slots: self.hearthstone_slots.iter().map(|option| option.as_ref().map(|memo| memo.as_ref())).collect(),
+        }
     }
 }

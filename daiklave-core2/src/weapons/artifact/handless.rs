@@ -1,9 +1,12 @@
 use std::ops::Deref;
 
+use serde::{Serialize, Deserialize};
+
 use crate::exaltation::exalt::essence::MoteCommitment;
 
-use super::{natural::NaturalArtifactWeapon, worn::WornArtifactWeapon, named::NamedArtifactWeapon};
+use super::{natural::{NaturalArtifactWeapon, NaturalArtifactWeaponMemo}, worn::{WornArtifactWeapon, WornArtifactWeaponMemo}, named::NamedArtifactWeapon};
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::weapons) struct HandlessArtifactWeapon<'source>(HandlessArtifactWeaponNoAttunement<'source>, Option<u8>);
 
 impl<'source> HandlessArtifactWeapon<'source> {
@@ -30,7 +33,7 @@ impl<'source> Deref for HandlessArtifactWeapon<'source> {
     }
 }
 
-
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::weapons) enum HandlessArtifactWeaponNoAttunement<'source> {
     Natural(NaturalArtifactWeapon<'source>),
     Worn(WornArtifactWeapon<'source>),
@@ -46,3 +49,30 @@ impl<'source> Deref for HandlessArtifactWeaponNoAttunement<'source> {
         }
     }
 }
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub(in crate::weapons) struct HandlessArtifactWeaponMemo(HandlessArtifactWeaponNoAttunementMemo, Option<u8>);
+
+impl<'source> HandlessArtifactWeaponMemo {
+    pub fn as_ref(&'source self) -> HandlessArtifactWeapon<'source> {
+        HandlessArtifactWeapon(self.0.as_ref(), self.1)
+    }
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub(in crate::weapons) enum HandlessArtifactWeaponNoAttunementMemo {
+    Natural(NaturalArtifactWeaponMemo),
+    Worn(WornArtifactWeaponMemo),
+}
+
+impl<'source> HandlessArtifactWeaponNoAttunementMemo {
+    pub fn as_ref(&'source self) -> HandlessArtifactWeaponNoAttunement<'source> {
+        match self {
+            HandlessArtifactWeaponNoAttunementMemo::Natural(memo) => HandlessArtifactWeaponNoAttunement::Natural(memo.as_ref()),
+            HandlessArtifactWeaponNoAttunementMemo::Worn(memo) => HandlessArtifactWeaponNoAttunement::Worn(memo.as_ref()),
+        }
+    }
+}
+

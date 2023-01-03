@@ -8,12 +8,12 @@ mod worn;
 
 use std::ops::Deref;
 
-pub(in crate::weapons) use handless::HandlessMundaneWeapon;
-pub(in crate::weapons) use nonnatural::NonnaturalMundaneWeapon;
-pub use one_handed::OneHandedMundaneWeapon;
-pub use two_handed::TwoHandedMundaneWeapon;
-pub use natural::NaturalMundaneWeapon;
-pub use worn::WornMundaneWeapon;
+pub(in crate::weapons) use handless::{HandlessMundaneWeapon, HandlessMundaneWeaponMemo};
+pub(in crate::weapons) use nonnatural::{NonnaturalMundaneWeapon, NonnaturalMundaneWeaponMemo};
+pub use one_handed::{OneHandedMundaneWeapon, OneHandedMundaneWeaponMemo};
+pub use two_handed::{TwoHandedMundaneWeapon, TwoHandedMundaneWeaponMemo};
+pub use natural::{NaturalMundaneWeapon, NaturalMundaneWeaponMemo};
+pub use worn::{WornMundaneWeapon, WornMundaneWeaponMemo};
 
 use super::base::BaseWeapon;
 

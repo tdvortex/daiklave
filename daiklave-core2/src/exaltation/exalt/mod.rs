@@ -25,7 +25,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    CharacterMutationError,
+    CharacterMutationError, weapons::exalt::ExaltWeapons,
 };
 
 use self::{
@@ -42,6 +42,7 @@ pub(crate) struct Exalt<'source> {
     essence: Essence<'source>,
     martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
     exalt_type: ExaltType<'source>,
+    weapons: ExaltWeapons<'source>,
 }
 
 impl<'source> Exalt<'source> {
@@ -49,11 +50,13 @@ impl<'source> Exalt<'source> {
         essence: Essence<'source>,
         martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
         exalt_type: ExaltType<'source>,
+        weapons: ExaltWeapons<'source>,
     ) -> Self {
         Self {
             essence,
             martial_arts_styles,
             exalt_type,
+            weapons,
         }
     }
 
@@ -65,6 +68,7 @@ impl<'source> Exalt<'source> {
                 .map(|(k, v)| (*k, v.as_memo()))
                 .collect(),
             self.exalt_type.as_memo(),
+            self.weapons.as_memo(),
         )
     }
 
@@ -88,6 +92,14 @@ impl<'source> Exalt<'source> {
         &mut self,
     ) -> &mut HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>> {
         &mut self.martial_arts_styles
+    }
+
+    pub fn weapons(&self) -> &ExaltWeapons<'source> {
+        &self.weapons
+    }
+
+    pub fn weapons_mut(&mut self) -> &mut ExaltWeapons<'source> {
+        &mut self.weapons
     }
 
     pub fn check_spend_motes(

@@ -4,7 +4,7 @@ mod equipped;
 mod hands;
 mod unequipped;
 
-struct MortalWeapons<'source> {
+pub(crate) struct MortalWeapons<'source> {
     equipped: MortalEquippedWeapons<'source>,
     unequipped: MortalUnequippedWeapons<'source>,
 }
