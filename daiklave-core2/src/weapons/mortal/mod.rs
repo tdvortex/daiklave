@@ -5,6 +5,8 @@ pub(in crate::weapons) use equipped::MortalEquippedWeapons;
 pub(in crate::weapons) use unequipped::MortalUnequippedWeapons;
 pub(in crate::weapons) use hands::MortalHands;
 
+use super::exalt::ExaltWeapons;
+
 mod equipped;
 mod hands;
 mod unequipped;
@@ -13,6 +15,15 @@ mod unequipped;
 pub(crate) struct MortalWeapons<'source> {
     pub equipped: MortalEquippedWeapons<'source>,
     pub unequipped: MortalUnequippedWeapons<'source>,
+}
+
+impl<'source> From<ExaltWeapons<'source>> for MortalWeapons<'source> {
+    fn from(exalt: ExaltWeapons<'source>) -> Self {
+        Self {
+            equipped: exalt.equipped.into(),
+            unequipped: exalt.unequipped.into(),
+        }
+    }
 }
 
 impl<'source> MortalWeapons<'source> {

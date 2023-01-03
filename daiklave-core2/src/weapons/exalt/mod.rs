@@ -1,6 +1,10 @@
 use serde::{Serialize, Deserialize};
 
-use self::{equipped::{ExaltEquippedWeapons, ExaltEquippedWeaponsMemo}, unequipped::{ExaltUnequippedWeapons, ExaltUnequippedWeaponsMemo}};
+use self::{equipped::{ExaltEquippedWeaponsMemo}, unequipped::{ExaltUnequippedWeaponsMemo}};
+
+pub(in crate::weapons) use equipped::ExaltEquippedWeapons;
+pub(in crate::weapons) use hands::ExaltHands;
+pub(in crate::weapons) use unequipped::ExaltUnequippedWeapons;
 
 use super::mortal::MortalWeapons;
 
@@ -31,9 +35,6 @@ impl<'source> From<MortalWeapons<'source>> for ExaltWeapons<'source> {
         }
     }
 }
-
-
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct ExaltWeaponsMemo {

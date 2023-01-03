@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::weapons::equipped::{EquippedOneHandedWeaponNoAttunement, EquippedTwoHandedWeaponNoAttunement, EquippedOneHandedWeaponNoAttunementMemo, EquippedTwoHandedWeaponNoAttunementMemo};
+use crate::weapons::{equipped::{EquippedOneHandedWeaponNoAttunement, EquippedTwoHandedWeaponNoAttunement, EquippedOneHandedWeaponNoAttunementMemo, EquippedTwoHandedWeaponNoAttunementMemo, EquippedOneHandedWeapon, EquippedTwoHandedWeapon}, exalt::ExaltHands};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::weapons) enum MortalHands<'source> {
@@ -9,6 +9,38 @@ pub(in crate::weapons) enum MortalHands<'source> {
     OffHand(EquippedOneHandedWeaponNoAttunement<'source>),
     Both([EquippedOneHandedWeaponNoAttunement<'source>; 2]),
     TwoHanded(EquippedTwoHandedWeaponNoAttunement<'source>),
+}
+
+impl<'source> From<ExaltHands<'source>> for MortalHands<'source> {
+    fn from(hands: ExaltHands<'source>) -> Self {
+        match hands {
+            ExaltHands::Empty => MortalHands::Empty,
+            ExaltHands::MainHand(attuned) => MortalHands::MainHand(
+                match attuned {
+                    EquippedOneHandedWeapon::Mundane(id, mundane) => EquippedOneHandedWeaponNoAttunement::Mundane(id, mundane),
+                    EquippedOneHandedWeapon::Artifact(id, artifact, _) => EquippedOneHandedWeaponNoAttunement::Artifact(id, artifact),
+                }
+            ),
+            ExaltHands::OffHand(attuned) => MortalHands::OffHand(
+                match attuned {
+                    EquippedOneHandedWeapon::Mundane(id, mundane) => EquippedOneHandedWeaponNoAttunement::Mundane(id, mundane),
+                    EquippedOneHandedWeapon::Artifact(id, artifact, _) => EquippedOneHandedWeaponNoAttunement::Artifact(id, artifact),
+                }
+            ),
+            ExaltHands::Both(arr) => MortalHands::Both(arr.map(|attuned| {
+                match attuned {
+                    EquippedOneHandedWeapon::Mundane(id, mundane) => EquippedOneHandedWeaponNoAttunement::Mundane(id, mundane),
+                    EquippedOneHandedWeapon::Artifact(id, artifact, _) => EquippedOneHandedWeaponNoAttunement::Artifact(id, artifact),
+                }
+            })),
+            ExaltHands::TwoHanded(attuned) => MortalHands::TwoHanded(
+                match attuned {
+                    EquippedTwoHandedWeapon::Mundane(id, mundane) => EquippedTwoHandedWeaponNoAttunement::Mundane(id, mundane),
+                    EquippedTwoHandedWeapon::Artifact(id, artifact, _) => EquippedTwoHandedWeaponNoAttunement::Artifact(id, artifact),
+                }
+            ),
+        }
+    }
 }
 
 impl<'source> Default for MortalHands<'source> {

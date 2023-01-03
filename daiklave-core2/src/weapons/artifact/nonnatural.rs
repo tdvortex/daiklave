@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 use super::{worn::{WornArtifactWeapon, WornArtifactWeaponMemo}, one_handed::OneHandedArtifactWeapon, two_handed::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo}, named::NamedArtifactWeapon, OneHandedArtifactWeaponMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::weapons) struct NonnaturalArtifactWeapon<'source>(NonnaturalArtifactWeaponNoAttunement<'source>, Option<u8>);
+pub(in crate::weapons) struct NonnaturalArtifactWeapon<'source>(pub NonnaturalArtifactWeaponNoAttunement<'source>, Option<u8>);
 
 impl<'source> NonnaturalArtifactWeapon<'source> {
     pub fn as_memo(&self) -> NonnaturalArtifactWeaponMemo {

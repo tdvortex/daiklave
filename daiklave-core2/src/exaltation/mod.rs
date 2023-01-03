@@ -110,7 +110,7 @@ impl<'source> Exaltation<'source> {
             .collect();
 
         // Remove all artifact attunements
-        let weapons = std::mem::take(exalt.as_mut().weapons_mut()).into();
+        let weapons = std::mem::take(exalt.weapons_mut()).into();
 
         *self = Exaltation::Mortal(Box::new(Mortal {
             martial_arts_styles,

@@ -2,12 +2,21 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::weapons::{BaseWeaponId, ArtifactWeaponId, mundane::{NonnaturalMundaneWeapon, NonnaturalMundaneWeaponMemo}, artifact::{NonnaturalArtifactWeaponNoAttunement, NonnaturalArtifactWeaponNoAttunementMemo}};
+use crate::weapons::{BaseWeaponId, ArtifactWeaponId, mundane::{NonnaturalMundaneWeapon, NonnaturalMundaneWeaponMemo}, artifact::{NonnaturalArtifactWeaponNoAttunement, NonnaturalArtifactWeaponNoAttunementMemo}, exalt::ExaltUnequippedWeapons};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(in crate::weapons) struct MortalUnequippedWeapons<'source> {
     pub mundane: HashMap<BaseWeaponId, NonnaturalMundaneWeapon<'source>>,
     pub artifact: HashMap<ArtifactWeaponId, NonnaturalArtifactWeaponNoAttunement<'source>>,
+}
+
+impl<'source> From<ExaltUnequippedWeapons<'source>> for MortalUnequippedWeapons<'source> {
+    fn from(exalt: ExaltUnequippedWeapons<'source>) -> Self {
+        Self {
+            mundane: exalt.mundane,
+            artifact: exalt.artifact.into_iter().map(|(k, v)| (k, v.0)).collect(),
+        }
+    }
 }
 
 impl<'source> MortalUnequippedWeapons<'source> {

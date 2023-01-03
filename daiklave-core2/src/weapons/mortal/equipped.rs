@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Serialize, Deserialize};
 
-use crate::weapons::{BaseWeaponId, ArtifactWeaponId, artifact::{HandlessArtifactWeaponNoAttunement, HandlessArtifactWeaponNoAttunementMemo}, mundane::{HandlessMundaneWeapon, HandlessMundaneWeaponMemo}};
+use crate::weapons::{BaseWeaponId, ArtifactWeaponId, artifact::{HandlessArtifactWeaponNoAttunement, HandlessArtifactWeaponNoAttunementMemo}, mundane::{HandlessMundaneWeapon, HandlessMundaneWeaponMemo}, exalt::ExaltEquippedWeapons};
 
 use super::hands::{MortalHands, MortalHandsMemo};
 
@@ -23,6 +23,15 @@ impl<'source> MortalEquippedWeapons<'source> {
     }
 }
 
+impl<'source> From<ExaltEquippedWeapons<'source>> for MortalEquippedWeapons<'source> {
+    fn from(exalt: ExaltEquippedWeapons<'source>) -> Self {
+        Self {
+            handless_mundane: exalt.handless_mundane,
+            handless_artifact: exalt.handless_artifact.into_iter().map(|(k, v)| (k, v.0)).collect(),
+            hands: exalt.hands.into(),
+        }
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(in crate::weapons::mortal) struct MortalEquippedWeaponsMemo {
