@@ -18,6 +18,18 @@ pub(in crate::weapons) struct BaseWeapon<'source> {
 }
 
 impl<'source> BaseWeapon<'source> {
+    pub fn as_memo(&self) -> BaseWeaponMemo {
+        BaseWeaponMemo { 
+            name: self.name.to_string(), 
+            book_reference: self.book_reference, 
+            weight_class: self.weight_class, 
+            range_bands: self.range_bands, 
+            primary_ability: self.primary_ability, 
+            damage_type: self.damage_type, 
+            tags: self.tags.to_owned() 
+        }
+    }
+
     pub fn name(&self) -> &'source str {
         self.name
     }

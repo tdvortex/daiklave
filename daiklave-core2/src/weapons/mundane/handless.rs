@@ -8,6 +8,15 @@ pub(in crate::weapons) enum HandlessMundaneWeapon<'source> {
     Worn(WornMundaneWeapon<'source>),
 }
 
+impl<'source> HandlessMundaneWeapon<'source> {
+    pub fn as_memo(&self) -> HandlessMundaneWeaponMemo {
+        match self {
+            HandlessMundaneWeapon::Natural(view) => HandlessMundaneWeaponMemo::Natural(view.as_memo()),
+            HandlessMundaneWeapon::Worn(view) => HandlessMundaneWeaponMemo::Worn(view.as_memo()),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(in crate::weapons) enum HandlessMundaneWeaponMemo {
     Natural(NaturalMundaneWeaponMemo),

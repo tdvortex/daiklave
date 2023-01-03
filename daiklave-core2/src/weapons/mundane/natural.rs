@@ -17,6 +17,12 @@ impl<'source> Deref for NaturalMundaneWeapon<'source> {
     }
 }
 
+impl<'source> NaturalMundaneWeapon<'source> {
+    pub fn as_memo(&'source self) -> NaturalMundaneWeaponMemo {
+        NaturalMundaneWeaponMemo(self.0.as_memo())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct NaturalMundaneWeaponMemo(BaseMundaneWeaponMemo);
 

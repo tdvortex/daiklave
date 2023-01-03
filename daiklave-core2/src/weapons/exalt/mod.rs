@@ -12,6 +12,15 @@ pub(crate) struct ExaltWeapons<'source> {
     unequipped: ExaltUnequippedWeapons<'source>,
 }
 
+impl<'source> ExaltWeapons<'source> {
+    pub fn as_memo(&'source self) -> ExaltWeaponsMemo {
+        ExaltWeaponsMemo { 
+            equipped: self.equipped.as_memo(),
+            unequipped: self.unequipped.as_memo(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct ExaltWeaponsMemo {
     equipped: ExaltEquippedWeaponsMemo,
@@ -21,8 +30,8 @@ pub(crate) struct ExaltWeaponsMemo {
 impl<'source> ExaltWeaponsMemo {
     pub fn as_ref(&'source self) -> ExaltWeapons<'source> {
         ExaltWeapons { 
-            equipped: self.equipped.as_memo(),
-            unequipped: self.unequipped.as_memo(),
+            equipped: self.equipped.as_ref(),
+            unequipped: self.unequipped.as_ref(),
         }
     }
 }

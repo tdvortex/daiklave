@@ -10,8 +10,26 @@ pub(in crate::weapons::exalt) struct ExaltUnequippedWeapons<'source> {
     artifact: HashMap<ArtifactWeaponId, NonnaturalArtifactWeapon<'source>>,
 }
 
+impl<'source> ExaltUnequippedWeapons<'source> {
+    pub fn as_memo(&self) -> ExaltUnequippedWeaponsMemo {
+        ExaltUnequippedWeaponsMemo {
+            mundane: self.mundane.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+            artifact: self.artifact.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(in crate::weapons::exalt) struct ExaltUnequippedWeaponsMemo {
     mundane: HashMap<BaseWeaponId, NonnaturalMundaneWeaponMemo>,
     artifact: HashMap<ArtifactWeaponId, NonnaturalArtifactWeaponMemo>,
+}
+
+impl<'source> ExaltUnequippedWeaponsMemo {
+    pub fn as_ref(&'source self) -> ExaltUnequippedWeapons<'source> {
+        ExaltUnequippedWeapons {
+            mundane: self.mundane.iter().map(|(k, v)| (*k, v.as_ref())).collect(),
+            artifact: self.artifact.iter().map(|(k, v)| (*k, v.as_ref())).collect(),
+        }
+    }
 }

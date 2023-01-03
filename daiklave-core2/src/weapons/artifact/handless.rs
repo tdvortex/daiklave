@@ -10,6 +10,10 @@ use super::{natural::{NaturalArtifactWeapon, NaturalArtifactWeaponMemo}, worn::{
 pub(in crate::weapons) struct HandlessArtifactWeapon<'source>(HandlessArtifactWeaponNoAttunement<'source>, Option<u8>);
 
 impl<'source> HandlessArtifactWeapon<'source> {
+    pub fn as_memo(&self) -> HandlessArtifactWeaponMemo {
+        HandlessArtifactWeaponMemo(self.0.as_memo(), self.1)
+    }
+
     pub fn is_attuned(&self) -> bool {
         self.1.is_some()
     }
@@ -37,6 +41,15 @@ impl<'source> Deref for HandlessArtifactWeapon<'source> {
 pub(in crate::weapons) enum HandlessArtifactWeaponNoAttunement<'source> {
     Natural(NaturalArtifactWeapon<'source>),
     Worn(WornArtifactWeapon<'source>),
+}
+
+impl<'source> HandlessArtifactWeaponNoAttunement<'source> {
+    pub fn as_memo(&self) -> HandlessArtifactWeaponNoAttunementMemo {
+        match self {
+            HandlessArtifactWeaponNoAttunement::Natural(view) => HandlessArtifactWeaponNoAttunementMemo::Natural(view.as_memo()),
+            HandlessArtifactWeaponNoAttunement::Worn(view) => HandlessArtifactWeaponNoAttunementMemo::Worn(view.as_memo()),
+        }
+    }
 }
 
 impl<'source> Deref for HandlessArtifactWeaponNoAttunement<'source> {

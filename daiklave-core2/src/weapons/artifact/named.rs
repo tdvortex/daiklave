@@ -17,6 +17,21 @@ pub(in crate::weapons::artifact) struct NamedArtifactWeapon<'source> {
 }
 
 impl<'view, 'source> NamedArtifactWeapon<'source> {
+    pub fn as_memo(&self) -> NamedArtifactWeaponMemo {
+        NamedArtifactWeaponMemo {
+            name: self.name.to_string(),
+            book_reference: self.book_reference,
+            merit_dots: self.merit_dots,
+            base_weapon_id: self.base_weapon_id,
+            base_weapon: self.base_weapon.as_memo(),
+            lore: self.lore.map(|s| s.to_string()),
+            powers: self.powers.map(|s| s.to_string()),
+            hearthstone_slots: self.hearthstone_slots.iter().map(|option| option.map(|hearthstone| hearthstone.as_memo())).collect(),
+        }
+    }
+
+
+
     pub fn name(&self) -> &'source str {
         self.name
     }

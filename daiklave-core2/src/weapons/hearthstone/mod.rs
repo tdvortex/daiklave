@@ -24,6 +24,19 @@ pub(in crate::weapons) struct Hearthstone<'source> {
     powers: Option<&'source str>,
 }
 
+impl<'source> Hearthstone<'source> {
+    pub fn as_memo(&self) -> HearthstoneMemo {
+        HearthstoneMemo { name: self.name.to_string(), 
+            book_reference: self.book_reference, 
+            geomancy_level: self.geomancy_level, 
+            category: self.category, 
+            keywords: self.keywords.to_owned(), 
+            lore: self.lore.map(|s| s.to_string()), 
+            powers: self.powers.map(|s| s.to_string())
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(in crate::weapons) struct HearthstoneMemo {
     name: String,

@@ -15,6 +15,12 @@ impl<'source> Deref for OneHandedArtifactWeapon<'source> {
     }
 }
 
+impl<'source> OneHandedArtifactWeapon<'source> {
+    pub fn as_memo(&'source self) -> OneHandedArtifactWeaponMemo {
+        OneHandedArtifactWeaponMemo(self.0.as_memo())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct OneHandedArtifactWeaponMemo(NamedArtifactWeaponMemo);
 

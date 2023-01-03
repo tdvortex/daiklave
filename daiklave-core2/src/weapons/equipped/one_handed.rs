@@ -13,6 +13,15 @@ pub(in crate::weapons) enum EquippedOneHandedWeapon<'source> {
     Artifact(ArtifactWeaponId, OneHandedArtifactWeapon<'source>, Option<u8>),
 }
 
+impl<'source> EquippedOneHandedWeapon<'source> {
+    pub fn as_memo(&'source self) -> EquippedOneHandedWeaponMemo {
+        match self {
+            EquippedOneHandedWeapon::Mundane(id, view) => EquippedOneHandedWeaponMemo::Mundane(*id, view.as_memo()),
+            EquippedOneHandedWeapon::Artifact(id, view, attunement) => EquippedOneHandedWeaponMemo::Artifact(*id, view.as_memo(), *attunement)
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(in crate::weapons) enum EquippedOneHandedWeaponMemo {
     Mundane(BaseWeaponId, OneHandedMundaneWeaponMemo),

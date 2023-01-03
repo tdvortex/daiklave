@@ -15,6 +15,12 @@ impl<'source> Deref for BaseMundaneWeapon<'source> {
     }
 }
 
+impl<'source> BaseMundaneWeapon<'source> {
+    pub fn as_memo(&self) -> BaseMundaneWeaponMemo {
+        BaseMundaneWeaponMemo(self.0.as_memo())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(in crate::weapons::mundane) struct BaseMundaneWeaponMemo(BaseWeaponMemo);
 

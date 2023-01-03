@@ -4,7 +4,7 @@ use serde::{Serialize, Deserialize};
 
 use super::{Hearthstone, HearthstoneMemo};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct OwnedHearthstone<'source> {
     hearthstone: Hearthstone<'source>,
     manse: Option<&'source str>,
@@ -15,6 +15,12 @@ impl<'source> Deref for OwnedHearthstone<'source> {
 
     fn deref(&self) -> &Self::Target {
         &self.hearthstone
+    }
+}
+
+impl<'source> OwnedHearthstone<'source> {
+    pub fn as_memo(&'source self) -> OwnedHearthstoneMemo {
+        OwnedHearthstoneMemo { hearthstone: self.hearthstone.as_memo(), manse: self.manse.map(|s| s.to_string()) }
     }
 }
 
