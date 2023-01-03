@@ -2,9 +2,34 @@ use serde::{Serialize, Deserialize};
 
 use crate::weapons::{BaseWeaponId, ArtifactWeaponId, mundane::{TwoHandedMundaneWeapon, TwoHandedMundaneWeaponMemo}, artifact::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo}};
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::weapons) enum EquippedTwoHandedWeaponNoAttunement<'source> {
     Mundane(BaseWeaponId, TwoHandedMundaneWeapon<'source>),
     Artifact(ArtifactWeaponId, TwoHandedArtifactWeapon<'source>),
+}
+
+impl<'source> EquippedTwoHandedWeaponNoAttunement<'source> {
+    pub fn as_memo(&self) -> EquippedTwoHandedWeaponNoAttunementMemo {
+        match self {
+            EquippedTwoHandedWeaponNoAttunement::Mundane(id, view) => EquippedTwoHandedWeaponNoAttunementMemo::Mundane(*id, view.as_memo()),
+            EquippedTwoHandedWeaponNoAttunement::Artifact(id, view) => EquippedTwoHandedWeaponNoAttunementMemo::Artifact(*id, view.as_memo()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub(in crate::weapons) enum EquippedTwoHandedWeaponNoAttunementMemo {
+    Mundane(BaseWeaponId, TwoHandedMundaneWeaponMemo),
+    Artifact(ArtifactWeaponId, TwoHandedArtifactWeaponMemo),
+}
+
+impl<'source> EquippedTwoHandedWeaponNoAttunementMemo {
+    pub fn as_ref(&'source self) -> EquippedTwoHandedWeaponNoAttunement<'source> {
+        match self {
+            EquippedTwoHandedWeaponNoAttunementMemo::Mundane(id, memo) => EquippedTwoHandedWeaponNoAttunement::Mundane(*id, memo.as_ref()),
+            EquippedTwoHandedWeaponNoAttunementMemo::Artifact(id, memo) => EquippedTwoHandedWeaponNoAttunement::Artifact(*id, memo.as_ref()),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

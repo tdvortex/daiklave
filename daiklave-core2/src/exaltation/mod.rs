@@ -34,18 +34,18 @@ use self::{
         },
         Exalt,
     },
-    mortal::MortalView,
+    mortal::Mortal,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum Exaltation<'source> {
-    Mortal(Box<MortalView<'source>>),
+    Mortal(Box<Mortal<'source>>),
     Exalt(Box<Exalt<'source>>),
 }
 
 impl<'source> Default for Exaltation<'source> {
     fn default() -> Self {
-        Self::Mortal(Box::new(MortalView::default()))
+        Self::Mortal(Box::new(Mortal::default()))
     }
 }
 
@@ -109,9 +109,13 @@ impl<'source> Exaltation<'source> {
             .map(|(id, exalt_artist)| (id, exalt_artist.into()))
             .collect();
 
-        *self = Exaltation::Mortal(Box::new(MortalView {
+        // Remove all artifact attunements
+        let weapons = std::mem::take(exalt.as_mut().weapons_mut()).into();
+
+        *self = Exaltation::Mortal(Box::new(Mortal {
             martial_arts_styles,
             sorcery,
+            weapons,
         }));
         Ok(self)
     }
@@ -337,6 +341,7 @@ impl<'view, 'source> Exaltation<'source> {
                         .map(|(id, mortal_artist)| (id, mortal_artist.into()))
                         .collect(),
                     ExaltType::Solar(solar),
+                    std::mem::take(&mut mortal.weapons).into()
                 )))
             }
             Exaltation::Exalt(exalt) => {
