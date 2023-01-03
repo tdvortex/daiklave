@@ -1,6 +1,9 @@
 use serde::{Serialize, Deserialize};
 
-use self::{equipped::{MortalEquippedWeapons, MortalEquippedWeaponsMemo}, unequipped::{MortalUnequippedWeapons, MortalUnequippedWeaponsMemo}};
+use self::{equipped::{MortalEquippedWeaponsMemo}, unequipped::{MortalUnequippedWeaponsMemo}};
+pub(in crate::weapons) use equipped::MortalEquippedWeapons;
+pub(in crate::weapons) use unequipped::MortalUnequippedWeapons;
+pub(in crate::weapons) use hands::MortalHands;
 
 mod equipped;
 mod hands;
@@ -8,8 +11,8 @@ mod unequipped;
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct MortalWeapons<'source> {
-    equipped: MortalEquippedWeapons<'source>,
-    unequipped: MortalUnequippedWeapons<'source>,
+    pub equipped: MortalEquippedWeapons<'source>,
+    pub unequipped: MortalUnequippedWeapons<'source>,
 }
 
 impl<'source> MortalWeapons<'source> {

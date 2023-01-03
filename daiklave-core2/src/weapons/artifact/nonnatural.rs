@@ -13,6 +13,12 @@ impl<'source> NonnaturalArtifactWeapon<'source> {
     }
 }
 
+impl<'source> From<NonnaturalArtifactWeaponNoAttunement<'source>> for NonnaturalArtifactWeapon<'source> {
+    fn from(unattuned: NonnaturalArtifactWeaponNoAttunement<'source>) -> Self {
+        Self(unattuned, None)
+    }
+}
+
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::weapons) enum NonnaturalArtifactWeaponNoAttunement<'source> {

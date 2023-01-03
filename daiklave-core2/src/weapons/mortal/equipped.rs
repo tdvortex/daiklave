@@ -7,10 +7,10 @@ use crate::weapons::{BaseWeaponId, ArtifactWeaponId, artifact::{HandlessArtifact
 use super::hands::{MortalHands, MortalHandsMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub(in crate::weapons::mortal) struct MortalEquippedWeapons<'source> {
-    handless_mundane: HashMap<BaseWeaponId, HandlessMundaneWeapon<'source>>,
-    handless_artifact: HashMap<ArtifactWeaponId, HandlessArtifactWeaponNoAttunement<'source>>,
-    hands: MortalHands<'source>,
+pub(in crate::weapons) struct MortalEquippedWeapons<'source> {
+    pub handless_mundane: HashMap<BaseWeaponId, HandlessMundaneWeapon<'source>>,
+    pub handless_artifact: HashMap<ArtifactWeaponId, HandlessArtifactWeaponNoAttunement<'source>>,
+    pub hands: MortalHands<'source>,
 }
 
 impl<'source> MortalEquippedWeapons<'source> {

@@ -7,7 +7,7 @@ use crate::exaltation::exalt::essence::MoteCommitment;
 use super::{natural::{NaturalArtifactWeapon, NaturalArtifactWeaponMemo}, worn::{WornArtifactWeapon, WornArtifactWeaponMemo}, named::NamedArtifactWeapon};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::weapons) struct HandlessArtifactWeapon<'source>(HandlessArtifactWeaponNoAttunement<'source>, Option<u8>);
+pub(in crate::weapons) struct HandlessArtifactWeapon<'source>(pub HandlessArtifactWeaponNoAttunement<'source>, pub Option<u8>);
 
 impl<'source> HandlessArtifactWeapon<'source> {
     pub fn as_memo(&self) -> HandlessArtifactWeaponMemo {

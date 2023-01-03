@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::weapons::equipped::{EquippedOneHandedWeapon, EquippedTwoHandedWeapon, EquippedOneHandedWeaponMemo, EquippedTwoHandedWeaponMemo};
+use crate::weapons::{equipped::{EquippedOneHandedWeapon, EquippedTwoHandedWeapon, EquippedOneHandedWeaponMemo, EquippedTwoHandedWeaponMemo}, mortal::MortalHands};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::weapons::exalt) enum ExaltHands<'source> {
@@ -9,6 +9,18 @@ pub(in crate::weapons::exalt) enum ExaltHands<'source> {
     OffHand(EquippedOneHandedWeapon<'source>),
     Both([EquippedOneHandedWeapon<'source>; 2]),
     TwoHanded(EquippedTwoHandedWeapon<'source>),
+}
+
+impl<'source> From<MortalHands<'source>> for ExaltHands<'source> {
+    fn from(hands: MortalHands<'source>) -> Self {
+        match hands {
+            MortalHands::Empty => ExaltHands::Empty,
+            MortalHands::MainHand(unattuned) => ExaltHands::MainHand(unattuned.into()),
+            MortalHands::OffHand(unattuned) => ExaltHands::OffHand(unattuned.into()),
+            MortalHands::Both(arr) => ExaltHands::Both(arr.map(|unattuned| unattuned.into())),
+            MortalHands::TwoHanded(unattuned) => ExaltHands::TwoHanded(unattuned.into()),
+        }
+    }
 }
 
 impl<'source> Default for ExaltHands<'source> {

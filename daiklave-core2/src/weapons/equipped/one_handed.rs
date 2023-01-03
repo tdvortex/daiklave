@@ -41,6 +41,15 @@ pub(in crate::weapons) enum EquippedOneHandedWeapon<'source> {
     Artifact(ArtifactWeaponId, OneHandedArtifactWeapon<'source>, Option<u8>),
 }
 
+impl<'source> From<EquippedOneHandedWeaponNoAttunement<'source>> for EquippedOneHandedWeapon<'source> {
+    fn from(unattuned: EquippedOneHandedWeaponNoAttunement<'source>) -> Self {
+        match unattuned {
+            EquippedOneHandedWeaponNoAttunement::Mundane(id, mundane) => Self::Mundane(id, mundane),
+            EquippedOneHandedWeaponNoAttunement::Artifact(id, artifact) => Self::Artifact(id, artifact, None),
+        }
+    }
+}
+
 impl<'source> EquippedOneHandedWeapon<'source> {
     pub fn as_memo(&'source self) -> EquippedOneHandedWeaponMemo {
         match self {
