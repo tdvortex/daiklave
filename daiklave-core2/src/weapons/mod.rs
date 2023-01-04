@@ -27,9 +27,11 @@ use self::{
 pub(crate) use unarmed::unarmed;
 pub use weight_class::WeaponWeightClass;
 
+/// The interface for a character's weapons.
 pub struct Weapons<'view, 'source>(&'view Exaltation<'source>);
 
 impl<'view, 'source> Weapons<'view, 'source> {
+    /// Retrieves the details for a specific weapon, if it exists.
     pub fn get(&self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             Some(unarmed())
@@ -38,73 +40,105 @@ impl<'view, 'source> Weapons<'view, 'source> {
         }
     }
 
+    /// Iterates over all of the weapons the character possesses by ID.
     pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
         self.0.iter_weapons()
     }
 }
 
+/// The position of an equipped weapon.
 pub enum Equipped {
+    /// Natural weapons are always equipped.
     Natural,
+    /// Worn weapons may be equipped without using a hand.
     Worn,
+    /// One-handed weapons may be wielded in the main hand.
     MainHand,
+    /// One-handed weapons may be wielded in the off hand.
     OffHand,
+    /// Two-handed weapons require two hands to wield.
     TwoHanded,
 }
 
+/// For one-handed weapons, the position of that weapon.
 pub enum EquipHand {
+    /// Wielded in the main hand
     MainHand,
+    /// Wielded in the off hand
     OffHand,
 }
 
+/// The interface for a specific individual weapon
 pub struct Weapon<'view, 'source>(WeaponType<'view, 'source>);
 
 impl<'view, 'source> Weapon<'view, 'source> {
+    /// The weapon's Id
     pub fn id(&self) -> WeaponId {
         self.0.id()
     }
 
+    /// Returns true if the weapon is an artifact weapon
     pub fn is_artifact(&self) -> bool {
         self.0.is_artifact()
     }
 
+    /// Returns true if the weapon is currently attuned
     pub fn is_attuned(&self) -> bool {
         self.0.is_attuned()
     }
 
+    /// If the weapon is equipped (or natural) then returns an enum
+    /// detailing that position; if unequipped, returns None
     pub fn is_equipped(&self) -> Option<Equipped> {
         self.0.is_equipped()
     }
 
+    /// If the weapon is currently attuned, returns the commitment. Also
+    /// returns the artifact weapon Id for later unattunement.
     pub fn mote_commitment(&self) -> Option<(ArtifactWeaponId, MoteCommitment<'source>)> {
         self.0.mote_commitment()
     }
 
+    /// The name of the weapon, which is either the name of a generic mundane
+    /// weapon like "sword" or the specific name of a unique artifact weapon,
+    /// like "Volcano Cutter"
     pub fn name(&self) -> &'source str {
         self.0.name()
     }
 
+    /// The book reference for the item
     pub fn book_reference(&self) -> Option<BookReference> {
         self.0.book_reference()
     }
 
+    /// If the weapon is an artifact, it may have a lore description. Always
+    /// None for mundane weapons.
     pub fn lore(&self) -> Option<&'source str> {
         self.0.lore()
     }
 
+    /// If the weapon is an artifact, it may have unique powers. Always None
+    /// for mundane weapons.
     pub fn powers(&self) -> Option<&'source str> {
         self.0.powers()
     }
 
+    /// The number of hearthstone slots (occupied and unoccupied) in the
+    /// weapon. Always 0 for mundane weapons.
     pub fn hearthstone_slots(&self) -> u8 {
         self.0.hearthstone_slots()
     }
 
+    /// An iterator over all of the hearthstones currently slotted into the
+    /// artifact weapon. Returns an empty iterator for mundane weapons.
     pub fn slotted_heathstones(
         &'view self,
     ) -> impl Iterator<Item = &'view OwnedHearthstone<'source>> + '_ {
         self.0.slotted_hearthstones()
     }
 
+    /// If the weapon is an artifact weapon, returns the base weapon and its Id.
+    /// For example, the base weapon for "Volcano Cutter" would be "daiklave".
     pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, BaseWeapon<'source>)> {
         self.0.base_artifact_weapon()
     }

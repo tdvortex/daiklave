@@ -2,8 +2,6 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::exaltation::exalt::essence::MoteCommitment;
-
 use super::{
     named::NamedArtifactWeapon,
     natural::{NaturalArtifactWeapon, NaturalArtifactWeaponMemo},
@@ -19,18 +17,6 @@ pub(crate) struct HandlessArtifactWeapon<'source>(
 impl<'source> HandlessArtifactWeapon<'source> {
     pub fn as_memo(&self) -> HandlessArtifactWeaponMemo {
         HandlessArtifactWeaponMemo(self.0.as_memo(), self.1)
-    }
-
-    pub fn is_attuned(&self) -> bool {
-        self.1.is_some()
-    }
-
-    pub fn motes_committed(&self) -> Option<MoteCommitment<'source>> {
-        self.1.map(|personal_committed| MoteCommitment {
-            name: self.0.name(),
-            peripheral: 5 - 5.min(personal_committed),
-            personal: 5.min(personal_committed),
-        })
     }
 }
 

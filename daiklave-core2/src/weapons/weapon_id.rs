@@ -17,6 +17,7 @@ impl Deref for BaseWeaponId {
     }
 }
 
+/// A magic, Essence-empowered weapon.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub struct ArtifactWeaponId(pub UniqueId);
 
@@ -28,15 +29,22 @@ impl Deref for ArtifactWeaponId {
     }
 }
 
+/// The Id for a weapon.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub enum WeaponId {
+    /// All characters have the Unarmed weapon for free, and it cannot
+    /// be removed.
     Unarmed,
+    /// A mundane weapon without artifact traits.
     Mundane(BaseWeaponId),
+    /// A unique magical weapon.
     Artifact(ArtifactWeaponId),
 }
 
+/// The Id for a magical creation (weapon, armor, warstrider, or wonder).
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub enum ArtifactId {
+    /// An artifact weapon's Id.
     Weapon(ArtifactWeaponId),
 }
 
@@ -51,7 +59,10 @@ impl Deref for HearthstoneId {
     }
 }
 
-pub enum EvokableItemId {
+/// The Id for an item which is capable of having Evocations.
+pub enum _EvokableItemId {
+    /// Hearthstones may have unlockable Evocations.
     Hearthstone(HearthstoneId),
+    /// Artifacts may have unlockable Evocations.
     Artifact(ArtifactId),
 }
