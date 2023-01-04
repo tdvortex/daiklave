@@ -25,7 +25,8 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    CharacterMutationError, weapons::{exalt::ExaltWeapons, WeaponId, Weapon},
+    weapons::{exalt::ExaltWeapons, Weapon, WeaponId},
+    CharacterMutationError,
 };
 
 use self::{
@@ -103,7 +104,7 @@ impl<'view, 'source> Exalt<'source> {
             Some(crate::weapons::unarmed())
         } else {
             self.weapons.get_weapon(weapon_id)
-        }        
+        }
     }
 
     pub fn iter_weapons(&self) -> impl Iterator<Item = WeaponId> + '_ {

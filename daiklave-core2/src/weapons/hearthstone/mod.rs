@@ -2,16 +2,17 @@ use std::collections::HashSet;
 
 use crate::book_reference::BookReference;
 
-use self::{geomancy_level::GeomancyLevel, category::HearthstoneCategory, keyword::HearthstoneKeyword};
+use self::{
+    category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword,
+};
 
 mod category;
 mod geomancy_level;
 mod keyword;
 mod owned;
 
-
 pub(in crate::weapons) use owned::{OwnedHearthstone, OwnedHearthstoneMemo};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct Hearthstone<'source> {
@@ -26,13 +27,14 @@ pub(crate) struct Hearthstone<'source> {
 
 impl<'source> Hearthstone<'source> {
     pub fn as_memo(&self) -> HearthstoneMemo {
-        HearthstoneMemo { name: self.name.to_string(), 
-            book_reference: self.book_reference, 
-            geomancy_level: self.geomancy_level, 
-            category: self.category, 
-            keywords: self.keywords.to_owned(), 
-            lore: self.lore.map(|s| s.to_string()), 
-            powers: self.powers.map(|s| s.to_string())
+        HearthstoneMemo {
+            name: self.name.to_string(),
+            book_reference: self.book_reference,
+            geomancy_level: self.geomancy_level,
+            category: self.category,
+            keywords: self.keywords.to_owned(),
+            lore: self.lore.map(|s| s.to_string()),
+            powers: self.powers.map(|s| s.to_string()),
         }
     }
 }
@@ -50,8 +52,8 @@ pub(crate) struct HearthstoneMemo {
 
 impl<'source> HearthstoneMemo {
     pub fn as_ref(&'source self) -> Hearthstone<'source> {
-        Hearthstone { 
-            name: self.name.as_str(), 
+        Hearthstone {
+            name: self.name.as_str(),
             book_reference: self.book_reference,
             geomancy_level: self.geomancy_level,
             category: self.category,

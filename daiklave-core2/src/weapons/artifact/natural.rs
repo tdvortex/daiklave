@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use super::named::{NamedArtifactWeapon, NamedArtifactWeaponMemo};
 

@@ -4,7 +4,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     martial_arts::MartialArtsStyleId,
-    sorcery::circles::terrestrial::sorcerer_memo::TerrestrialCircleSorcererMemo, weapons::mortal::MortalWeaponsMemo,
+    sorcery::circles::terrestrial::sorcerer_memo::TerrestrialCircleSorcererMemo,
+    weapons::mortal::MortalWeaponsMemo,
 };
 
 use super::{martial_arts::MortalMartialArtistMemo, Mortal};

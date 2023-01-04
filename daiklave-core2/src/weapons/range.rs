@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub(in crate::weapons) enum WeaponRange {
@@ -13,5 +13,5 @@ pub enum RangeBand {
     Short,
     Medium,
     Long,
-    Extreme
+    Extreme,
 }

@@ -13,13 +13,19 @@ mod unarmed;
 mod weapon_id;
 mod weight_class;
 
-pub use weapon_id::{BaseWeaponId, ArtifactWeaponId, ArtifactId, WeaponId};
+pub use weapon_id::{ArtifactId, ArtifactWeaponId, BaseWeaponId, WeaponId};
 
-use crate::{exaltation::{Exaltation, exalt::essence::MoteCommitment}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    exaltation::{exalt::essence::MoteCommitment, Exaltation},
+};
 
-use self::{artifact::{ArtifactWeapon}, mundane::MundaneWeapon, hearthstone::{OwnedHearthstone}, base::BaseWeapon};
-pub use weight_class::WeaponWeightClass;
+use self::{
+    artifact::ArtifactWeapon, base::BaseWeapon, hearthstone::OwnedHearthstone,
+    mundane::MundaneWeapon,
+};
 pub(crate) use unarmed::unarmed;
+pub use weight_class::WeaponWeightClass;
 
 pub struct Weapons<'view, 'source>(&'view Exaltation<'source>);
 
@@ -93,7 +99,9 @@ impl<'view, 'source> Weapon<'view, 'source> {
         self.0.hearthstone_slots()
     }
 
-    pub fn slotted_heathstones(&'view self) -> impl Iterator<Item = &'view OwnedHearthstone<'source>> + '_ {
+    pub fn slotted_heathstones(
+        &'view self,
+    ) -> impl Iterator<Item = &'view OwnedHearthstone<'source>> + '_ {
         self.0.slotted_hearthstones()
     }
 
@@ -171,22 +179,31 @@ impl<'view, 'source> WeaponType<'view, 'source> {
     pub fn hearthstone_slots(&self) -> u8 {
         match self {
             WeaponType::Mundane(_, _) => 0,
-            WeaponType::Artifact(_, artifact, _) => (*artifact).hearthstone_slots().min(u8::MAX as usize) as u8,
+            WeaponType::Artifact(_, artifact, _) => {
+                (*artifact).hearthstone_slots().min(u8::MAX as usize) as u8
+            }
         }
     }
 
-    pub fn slotted_hearthstones(&'view self) -> impl Iterator<Item = &'view OwnedHearthstone<'source>> {
+    pub fn slotted_hearthstones(
+        &'view self,
+    ) -> impl Iterator<Item = &'view OwnedHearthstone<'source>> {
         match self {
             WeaponType::Mundane(_, _) => Vec::new().into_iter(),
-            WeaponType::Artifact(_, artifact, _) => (*artifact).slotted_heathstones().collect::<Vec<&'view OwnedHearthstone>>().into_iter(),
+            WeaponType::Artifact(_, artifact, _) => (*artifact)
+                .slotted_heathstones()
+                .collect::<Vec<&'view OwnedHearthstone>>()
+                .into_iter(),
         }
     }
 
     pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, BaseWeapon<'source>)> {
         match self {
             WeaponType::Mundane(_, _) => None,
-            WeaponType::Artifact(_, artifact, _) => Some(((*artifact).base_artifact_weapon_id(), (*artifact).base_artifact_weapon()))
+            WeaponType::Artifact(_, artifact, _) => Some((
+                (*artifact).base_artifact_weapon_id(),
+                (*artifact).base_artifact_weapon(),
+            )),
         }
     }
 }
-

@@ -1,12 +1,12 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use self::{equipped::{ExaltEquippedWeaponsMemo}, unequipped::{ExaltUnequippedWeaponsMemo}};
+use self::{equipped::ExaltEquippedWeaponsMemo, unequipped::ExaltUnequippedWeaponsMemo};
 
 pub(in crate::weapons) use equipped::ExaltEquippedWeapons;
 pub(in crate::weapons) use hands::ExaltHands;
 pub(in crate::weapons) use unequipped::ExaltUnequippedWeapons;
 
-use super::{mortal::MortalWeapons, WeaponId, Weapon};
+use super::{mortal::MortalWeapons, Weapon, WeaponId};
 
 mod equipped;
 mod hands;
@@ -20,7 +20,7 @@ pub(crate) struct ExaltWeapons<'source> {
 
 impl<'view, 'source> ExaltWeapons<'source> {
     pub fn as_memo(&'source self) -> ExaltWeaponsMemo {
-        ExaltWeaponsMemo { 
+        ExaltWeaponsMemo {
             equipped: self.equipped.as_memo(),
             unequipped: self.unequipped.as_memo(),
         }
@@ -30,7 +30,9 @@ impl<'view, 'source> ExaltWeapons<'source> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             Some(crate::weapons::unarmed())
         } else {
-            self.equipped.get_weapon(weapon_id).or_else(|| self.unequipped.get_weapon(weapon_id))
+            self.equipped
+                .get_weapon(weapon_id)
+                .or_else(|| self.unequipped.get_weapon(weapon_id))
         }
     }
 
@@ -56,7 +58,7 @@ pub(crate) struct ExaltWeaponsMemo {
 
 impl<'source> ExaltWeaponsMemo {
     pub fn as_ref(&'source self) -> ExaltWeapons<'source> {
-        ExaltWeapons { 
+        ExaltWeapons {
             equipped: self.equipped.as_ref(),
             unequipped: self.unequipped.as_ref(),
         }

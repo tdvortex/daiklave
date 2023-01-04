@@ -75,11 +75,20 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
 
     pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
         let unarmed_iter = std::iter::once(WeaponId::Unarmed);
-        let handless_mundane_iter = self.handless_mundane.iter().map(|(base_id, _)| WeaponId::Mundane(*base_id));
-        let handless_artifact_iter = self.handless_artifact.iter().map(|(artifact_id, _)| WeaponId::Artifact(*artifact_id));
+        let handless_mundane_iter = self
+            .handless_mundane
+            .iter()
+            .map(|(base_id, _)| WeaponId::Mundane(*base_id));
+        let handless_artifact_iter = self
+            .handless_artifact
+            .iter()
+            .map(|(artifact_id, _)| WeaponId::Artifact(*artifact_id));
         let hands_iter = self.hands.iter();
 
-        unarmed_iter.chain(handless_artifact_iter).chain(handless_mundane_iter).chain(hands_iter)
+        unarmed_iter
+            .chain(handless_artifact_iter)
+            .chain(handless_mundane_iter)
+            .chain(hands_iter)
     }
 }
 

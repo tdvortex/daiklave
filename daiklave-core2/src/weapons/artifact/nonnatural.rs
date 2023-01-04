@@ -1,11 +1,20 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use super::{worn::{WornArtifactWeapon, WornArtifactWeaponMemo}, one_handed::OneHandedArtifactWeapon, two_handed::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo}, named::NamedArtifactWeapon, OneHandedArtifactWeaponMemo};
+use super::{
+    named::NamedArtifactWeapon,
+    one_handed::OneHandedArtifactWeapon,
+    two_handed::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo},
+    worn::{WornArtifactWeapon, WornArtifactWeaponMemo},
+    OneHandedArtifactWeaponMemo,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct NonnaturalArtifactWeapon<'source>(pub NonnaturalArtifactWeaponNoAttunement<'source>, pub Option<u8>);
+pub(crate) struct NonnaturalArtifactWeapon<'source>(
+    pub NonnaturalArtifactWeaponNoAttunement<'source>,
+    pub Option<u8>,
+);
 
 impl<'source> NonnaturalArtifactWeapon<'source> {
     pub fn as_memo(&self) -> NonnaturalArtifactWeaponMemo {
@@ -13,12 +22,13 @@ impl<'source> NonnaturalArtifactWeapon<'source> {
     }
 }
 
-impl<'source> From<NonnaturalArtifactWeaponNoAttunement<'source>> for NonnaturalArtifactWeapon<'source> {
+impl<'source> From<NonnaturalArtifactWeaponNoAttunement<'source>>
+    for NonnaturalArtifactWeapon<'source>
+{
     fn from(unattuned: NonnaturalArtifactWeaponNoAttunement<'source>) -> Self {
         Self(unattuned, None)
     }
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum NonnaturalArtifactWeaponNoAttunement<'source> {
@@ -42,9 +52,15 @@ impl<'source> Deref for NonnaturalArtifactWeaponNoAttunement<'source> {
 impl<'source> NonnaturalArtifactWeaponNoAttunement<'source> {
     pub fn as_memo(&self) -> NonnaturalArtifactWeaponNoAttunementMemo {
         match self {
-            NonnaturalArtifactWeaponNoAttunement::Worn(view) => NonnaturalArtifactWeaponNoAttunementMemo::Worn(view.as_memo()),
-            NonnaturalArtifactWeaponNoAttunement::OneHanded(view) => NonnaturalArtifactWeaponNoAttunementMemo::OneHanded(view.as_memo()),
-            NonnaturalArtifactWeaponNoAttunement::TwoHanded(view) => NonnaturalArtifactWeaponNoAttunementMemo::TwoHanded(view.as_memo()),
+            NonnaturalArtifactWeaponNoAttunement::Worn(view) => {
+                NonnaturalArtifactWeaponNoAttunementMemo::Worn(view.as_memo())
+            }
+            NonnaturalArtifactWeaponNoAttunement::OneHanded(view) => {
+                NonnaturalArtifactWeaponNoAttunementMemo::OneHanded(view.as_memo())
+            }
+            NonnaturalArtifactWeaponNoAttunement::TwoHanded(view) => {
+                NonnaturalArtifactWeaponNoAttunementMemo::TwoHanded(view.as_memo())
+            }
         }
     }
 }
@@ -59,15 +75,24 @@ pub(crate) enum NonnaturalArtifactWeaponNoAttunementMemo {
 impl<'source> NonnaturalArtifactWeaponNoAttunementMemo {
     pub fn as_ref(&'source self) -> NonnaturalArtifactWeaponNoAttunement<'source> {
         match self {
-            NonnaturalArtifactWeaponNoAttunementMemo::Worn(memo) => NonnaturalArtifactWeaponNoAttunement::Worn(memo.as_ref()),
-            NonnaturalArtifactWeaponNoAttunementMemo::OneHanded(memo) => NonnaturalArtifactWeaponNoAttunement::OneHanded(memo.as_ref()),
-            NonnaturalArtifactWeaponNoAttunementMemo::TwoHanded(memo) => NonnaturalArtifactWeaponNoAttunement::TwoHanded(memo.as_ref()),
+            NonnaturalArtifactWeaponNoAttunementMemo::Worn(memo) => {
+                NonnaturalArtifactWeaponNoAttunement::Worn(memo.as_ref())
+            }
+            NonnaturalArtifactWeaponNoAttunementMemo::OneHanded(memo) => {
+                NonnaturalArtifactWeaponNoAttunement::OneHanded(memo.as_ref())
+            }
+            NonnaturalArtifactWeaponNoAttunementMemo::TwoHanded(memo) => {
+                NonnaturalArtifactWeaponNoAttunement::TwoHanded(memo.as_ref())
+            }
         }
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) struct NonnaturalArtifactWeaponMemo(NonnaturalArtifactWeaponNoAttunementMemo, Option<u8>);
+pub(crate) struct NonnaturalArtifactWeaponMemo(
+    NonnaturalArtifactWeaponNoAttunementMemo,
+    Option<u8>,
+);
 
 impl<'source> NonnaturalArtifactWeaponMemo {
     pub fn as_ref(&'source self) -> NonnaturalArtifactWeapon<'source> {

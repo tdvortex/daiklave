@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use super::{Hearthstone, HearthstoneMemo};
 
@@ -10,7 +10,10 @@ pub struct OwnedHearthstone<'source> {
 
 impl<'source> OwnedHearthstone<'source> {
     pub fn as_memo(&'source self) -> OwnedHearthstoneMemo {
-        OwnedHearthstoneMemo { hearthstone: self.hearthstone.as_memo(), manse: self.manse.map(|s| s.to_string()) }
+        OwnedHearthstoneMemo {
+            hearthstone: self.hearthstone.as_memo(),
+            manse: self.manse.map(|s| s.to_string()),
+        }
     }
 }
 
@@ -22,6 +25,9 @@ pub struct OwnedHearthstoneMemo {
 
 impl<'source> OwnedHearthstoneMemo {
     pub fn as_ref(&'source self) -> OwnedHearthstone<'source> {
-        OwnedHearthstone { hearthstone: self.hearthstone.as_ref(), manse: self.manse.as_deref() }
+        OwnedHearthstone {
+            hearthstone: self.hearthstone.as_ref(),
+            manse: self.manse.as_deref(),
+        }
     }
 }

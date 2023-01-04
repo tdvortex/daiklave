@@ -1,7 +1,7 @@
 mod base;
 mod handless;
-mod nonnatural;
 mod natural;
+mod nonnatural;
 mod one_handed;
 mod two_handed;
 mod worn;
@@ -9,13 +9,13 @@ mod worn;
 use std::ops::Deref;
 
 pub(in crate::weapons) use handless::{HandlessMundaneWeapon, HandlessMundaneWeaponMemo};
+pub(in crate::weapons) use natural::NaturalMundaneWeapon;
 pub(in crate::weapons) use nonnatural::{NonnaturalMundaneWeapon, NonnaturalMundaneWeaponMemo};
 pub(in crate::weapons) use one_handed::{OneHandedMundaneWeapon, OneHandedMundaneWeaponMemo};
 pub(in crate::weapons) use two_handed::{TwoHandedMundaneWeapon, TwoHandedMundaneWeaponMemo};
-pub(in crate::weapons) use natural::{NaturalMundaneWeapon};
 pub(in crate::weapons) use worn::{WornMundaneWeapon, WornMundaneWeaponMemo};
 
-use super::{base::BaseWeapon, Equipped, EquipHand};
+use super::{base::BaseWeapon, EquipHand, Equipped};
 
 pub(in crate::weapons) enum MundaneWeapon<'source> {
     Natural(NaturalMundaneWeapon<'source>),
@@ -41,21 +41,25 @@ impl<'source> MundaneWeapon<'source> {
     pub fn is_equipped(&self) -> Option<Equipped> {
         match self {
             MundaneWeapon::Natural(_) => Some(Equipped::Natural),
-            MundaneWeapon::Worn(_, is_equipped) => if *is_equipped {
-                Some(Equipped::Worn)
-            } else {
-                None
-            },
+            MundaneWeapon::Worn(_, is_equipped) => {
+                if *is_equipped {
+                    Some(Equipped::Worn)
+                } else {
+                    None
+                }
+            }
             MundaneWeapon::OneHanded(_, maybe_hand) => match maybe_hand {
                 None => None,
                 Some(EquipHand::MainHand) => Some(Equipped::MainHand),
                 Some(EquipHand::OffHand) => Some(Equipped::OffHand),
+            },
+            MundaneWeapon::TwoHanded(_, is_equipped) => {
+                if *is_equipped {
+                    Some(Equipped::TwoHanded)
+                } else {
+                    None
+                }
             }
-            MundaneWeapon::TwoHanded(_, is_equipped) => if *is_equipped {
-                Some(Equipped::TwoHanded)
-            } else {
-                None
-            }, 
         }
     }
 }

@@ -19,7 +19,8 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    CharacterMutationError, weapons::{WeaponId, Weapon},
+    weapons::{Weapon, WeaponId},
+    CharacterMutationError,
 };
 
 use self::{
@@ -82,9 +83,15 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn iter_weapons(&self) -> impl Iterator<Item = WeaponId> {
         match self {
-            Exaltation::Mortal(box_mortal) => box_mortal.as_ref().iter_weapons().collect::<Vec<WeaponId>>(),
-            Exaltation::Exalt(box_exalt) => box_exalt.as_ref().iter_weapons().collect::<Vec<WeaponId>>(),
-        }.into_iter()
+            Exaltation::Mortal(box_mortal) => box_mortal
+                .as_ref()
+                .iter_weapons()
+                .collect::<Vec<WeaponId>>(),
+            Exaltation::Exalt(box_exalt) => {
+                box_exalt.as_ref().iter_weapons().collect::<Vec<WeaponId>>()
+            }
+        }
+        .into_iter()
     }
 
     pub fn check_set_mortal(&self) -> Result<(), CharacterMutationError> {
@@ -359,7 +366,7 @@ impl<'view, 'source> Exaltation<'source> {
                         .map(|(id, mortal_artist)| (id, mortal_artist.into()))
                         .collect(),
                     ExaltType::Solar(solar),
-                    std::mem::take(&mut mortal.weapons).into()
+                    std::mem::take(&mut mortal.weapons).into(),
                 )))
             }
             Exaltation::Exalt(exalt) => {
@@ -369,7 +376,7 @@ impl<'view, 'source> Exaltation<'source> {
                     Essence::new_solar(exalt.essence().rating()),
                     std::mem::take(exalt.martial_arts_styles_mut()),
                     ExaltType::Solar(solar),
-                    std::mem::take(exalt.weapons_mut())
+                    std::mem::take(exalt.weapons_mut()),
                 )));
             }
         }

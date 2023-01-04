@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use super::named::{NamedArtifactWeapon, NamedArtifactWeaponMemo};
 
@@ -20,7 +20,6 @@ impl<'source> WornArtifactWeapon<'source> {
         WornArtifactWeaponMemo(self.0.as_memo())
     }
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct WornArtifactWeaponMemo(NamedArtifactWeaponMemo);

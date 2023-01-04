@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::weapons::base::BaseWeapon;
 
@@ -22,7 +22,6 @@ impl<'source> WornMundaneWeapon<'source> {
         WornMundaneWeaponMemo(self.0.as_memo())
     }
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct WornMundaneWeaponMemo(BaseMundaneWeaponMemo);

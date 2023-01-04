@@ -1,6 +1,10 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use super::{worn::WornMundaneWeapon, one_handed::OneHandedMundaneWeapon, two_handed::TwoHandedMundaneWeapon, WornMundaneWeaponMemo, OneHandedMundaneWeaponMemo, TwoHandedMundaneWeaponMemo};
+use super::{
+    one_handed::OneHandedMundaneWeapon, two_handed::TwoHandedMundaneWeapon,
+    worn::WornMundaneWeapon, OneHandedMundaneWeaponMemo, TwoHandedMundaneWeaponMemo,
+    WornMundaneWeaponMemo,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum NonnaturalMundaneWeapon<'source> {
@@ -12,9 +16,15 @@ pub(crate) enum NonnaturalMundaneWeapon<'source> {
 impl<'source> NonnaturalMundaneWeapon<'source> {
     pub fn as_memo(&self) -> NonnaturalMundaneWeaponMemo {
         match self {
-            NonnaturalMundaneWeapon::Worn(view) => NonnaturalMundaneWeaponMemo::Worn(view.as_memo()),
-            NonnaturalMundaneWeapon::OneHanded(view) => NonnaturalMundaneWeaponMemo::OneHanded(view.as_memo()),
-            NonnaturalMundaneWeapon::TwoHanded(view) => NonnaturalMundaneWeaponMemo::TwoHanded(view.as_memo())
+            NonnaturalMundaneWeapon::Worn(view) => {
+                NonnaturalMundaneWeaponMemo::Worn(view.as_memo())
+            }
+            NonnaturalMundaneWeapon::OneHanded(view) => {
+                NonnaturalMundaneWeaponMemo::OneHanded(view.as_memo())
+            }
+            NonnaturalMundaneWeapon::TwoHanded(view) => {
+                NonnaturalMundaneWeaponMemo::TwoHanded(view.as_memo())
+            }
         }
     }
 }
@@ -30,8 +40,12 @@ impl<'source> NonnaturalMundaneWeaponMemo {
     pub fn as_ref(&'source self) -> NonnaturalMundaneWeapon<'source> {
         match self {
             NonnaturalMundaneWeaponMemo::Worn(memo) => NonnaturalMundaneWeapon::Worn(memo.as_ref()),
-            NonnaturalMundaneWeaponMemo::OneHanded(memo) => NonnaturalMundaneWeapon::OneHanded(memo.as_ref()),
-            NonnaturalMundaneWeaponMemo::TwoHanded(memo) => NonnaturalMundaneWeapon::TwoHanded(memo.as_ref()),
+            NonnaturalMundaneWeaponMemo::OneHanded(memo) => {
+                NonnaturalMundaneWeapon::OneHanded(memo.as_ref())
+            }
+            NonnaturalMundaneWeaponMemo::TwoHanded(memo) => {
+                NonnaturalMundaneWeapon::TwoHanded(memo.as_ref())
+            }
         }
     }
 }

@@ -1,6 +1,13 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{book_reference::BookReference, weapons::{BaseWeaponId, hearthstone::{OwnedHearthstone, OwnedHearthstoneMemo}, base::BaseWeapon}};
+use crate::{
+    book_reference::BookReference,
+    weapons::{
+        base::BaseWeapon,
+        hearthstone::{OwnedHearthstone, OwnedHearthstoneMemo},
+        BaseWeaponId,
+    },
+};
 
 use super::base::{BaseArtifactWeapon, BaseArtifactWeaponMemo};
 
@@ -26,7 +33,11 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
             base_weapon: self.base_weapon.as_memo(),
             lore: self.lore.map(|s| s.to_string()),
             powers: self.powers.map(|s| s.to_string()),
-            hearthstone_slots: self.hearthstone_slots.iter().map(|option| option.map(|hearthstone| hearthstone.as_memo())).collect(),
+            hearthstone_slots: self
+                .hearthstone_slots
+                .iter()
+                .map(|option| option.map(|hearthstone| hearthstone.as_memo()))
+                .collect(),
         }
     }
 
@@ -58,8 +69,12 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
         self.hearthstone_slots.len()
     }
 
-    pub fn slotted_heathstones(&'view self) -> impl Iterator<Item = &'view OwnedHearthstone<'source>> + '_ {
-        self.hearthstone_slots.iter().filter_map(|maybe_hearthstone| maybe_hearthstone.as_ref())
+    pub fn slotted_heathstones(
+        &'view self,
+    ) -> impl Iterator<Item = &'view OwnedHearthstone<'source>> + '_ {
+        self.hearthstone_slots
+            .iter()
+            .filter_map(|maybe_hearthstone| maybe_hearthstone.as_ref())
     }
 }
 
@@ -85,7 +100,11 @@ impl<'source> NamedArtifactWeaponMemo {
             base_weapon: self.base_weapon.as_ref(),
             lore: self.lore.as_deref(),
             powers: self.powers.as_deref(),
-            hearthstone_slots: self.hearthstone_slots.iter().map(|option| option.as_ref().map(|memo| memo.as_ref())).collect(),
+            hearthstone_slots: self
+                .hearthstone_slots
+                .iter()
+                .map(|option| option.as_ref().map(|memo| memo.as_ref()))
+                .collect(),
         }
     }
 }

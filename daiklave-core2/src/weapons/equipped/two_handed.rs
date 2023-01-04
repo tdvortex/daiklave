@@ -1,6 +1,10 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::weapons::{BaseWeaponId, ArtifactWeaponId, mundane::{TwoHandedMundaneWeapon, TwoHandedMundaneWeaponMemo, MundaneWeapon}, artifact::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo, ArtifactWeapon}, WeaponId, Weapon, WeaponType};
+use crate::weapons::{
+    artifact::{ArtifactWeapon, TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo},
+    mundane::{MundaneWeapon, TwoHandedMundaneWeapon, TwoHandedMundaneWeaponMemo},
+    ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId, WeaponType,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum EquippedTwoHandedWeaponNoAttunement<'source> {
@@ -11,26 +15,43 @@ pub(crate) enum EquippedTwoHandedWeaponNoAttunement<'source> {
 impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
     pub fn as_memo(&self) -> EquippedTwoHandedWeaponNoAttunementMemo {
         match self {
-            EquippedTwoHandedWeaponNoAttunement::Mundane(id, view) => EquippedTwoHandedWeaponNoAttunementMemo::Mundane(*id, view.as_memo()),
-            EquippedTwoHandedWeaponNoAttunement::Artifact(id, view) => EquippedTwoHandedWeaponNoAttunementMemo::Artifact(*id, view.as_memo()),
+            EquippedTwoHandedWeaponNoAttunement::Mundane(id, view) => {
+                EquippedTwoHandedWeaponNoAttunementMemo::Mundane(*id, view.as_memo())
+            }
+            EquippedTwoHandedWeaponNoAttunement::Artifact(id, view) => {
+                EquippedTwoHandedWeaponNoAttunementMemo::Artifact(*id, view.as_memo())
+            }
         }
     }
 
     pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
         match (weapon_id, self) {
             (WeaponId::Unarmed, _) => Some(crate::weapons::unarmed()),
-            (WeaponId::Mundane(target_id), EquippedTwoHandedWeaponNoAttunement::Mundane(actual_id, two)) => {
+            (
+                WeaponId::Mundane(target_id),
+                EquippedTwoHandedWeaponNoAttunement::Mundane(actual_id, two),
+            ) => {
                 if &target_id != actual_id {
                     None
                 } else {
-                    Some(Weapon(WeaponType::Mundane(target_id, MundaneWeapon::TwoHanded(*two, true))))
+                    Some(Weapon(WeaponType::Mundane(
+                        target_id,
+                        MundaneWeapon::TwoHanded(*two, true),
+                    )))
                 }
             }
-            (WeaponId::Artifact(target_id), EquippedTwoHandedWeaponNoAttunement::Artifact(actual_id, two)) => {
+            (
+                WeaponId::Artifact(target_id),
+                EquippedTwoHandedWeaponNoAttunement::Artifact(actual_id, two),
+            ) => {
                 if &target_id != actual_id {
                     None
                 } else {
-                    Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::TwoHanded(two, true), None)))
+                    Some(Weapon(WeaponType::Artifact(
+                        target_id,
+                        ArtifactWeapon::TwoHanded(two, true),
+                        None,
+                    )))
                 }
             }
             (_, _) => None,
@@ -39,8 +60,12 @@ impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
 
     pub fn iter(&self) -> impl Iterator<Item = WeaponId> {
         match self {
-            EquippedTwoHandedWeaponNoAttunement::Mundane(base_id, _) => std::iter::once(WeaponId::Mundane(*base_id)),
-            EquippedTwoHandedWeaponNoAttunement::Artifact(artifact_id, _) => std::iter::once(WeaponId::Artifact(*artifact_id)),
+            EquippedTwoHandedWeaponNoAttunement::Mundane(base_id, _) => {
+                std::iter::once(WeaponId::Mundane(*base_id))
+            }
+            EquippedTwoHandedWeaponNoAttunement::Artifact(artifact_id, _) => {
+                std::iter::once(WeaponId::Artifact(*artifact_id))
+            }
         }
     }
 }
@@ -54,8 +79,12 @@ pub(crate) enum EquippedTwoHandedWeaponNoAttunementMemo {
 impl<'source> EquippedTwoHandedWeaponNoAttunementMemo {
     pub fn as_ref(&'source self) -> EquippedTwoHandedWeaponNoAttunement<'source> {
         match self {
-            EquippedTwoHandedWeaponNoAttunementMemo::Mundane(id, memo) => EquippedTwoHandedWeaponNoAttunement::Mundane(*id, memo.as_ref()),
-            EquippedTwoHandedWeaponNoAttunementMemo::Artifact(id, memo) => EquippedTwoHandedWeaponNoAttunement::Artifact(*id, memo.as_ref()),
+            EquippedTwoHandedWeaponNoAttunementMemo::Mundane(id, memo) => {
+                EquippedTwoHandedWeaponNoAttunement::Mundane(*id, memo.as_ref())
+            }
+            EquippedTwoHandedWeaponNoAttunementMemo::Artifact(id, memo) => {
+                EquippedTwoHandedWeaponNoAttunement::Artifact(*id, memo.as_ref())
+            }
         }
     }
 }
@@ -63,14 +92,22 @@ impl<'source> EquippedTwoHandedWeaponNoAttunementMemo {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum EquippedTwoHandedWeapon<'source> {
     Mundane(BaseWeaponId, TwoHandedMundaneWeapon<'source>),
-    Artifact(ArtifactWeaponId, TwoHandedArtifactWeapon<'source>, Option<u8>),
+    Artifact(
+        ArtifactWeaponId,
+        TwoHandedArtifactWeapon<'source>,
+        Option<u8>,
+    ),
 }
 
-impl<'source> From<EquippedTwoHandedWeaponNoAttunement<'source>> for EquippedTwoHandedWeapon<'source> {
+impl<'source> From<EquippedTwoHandedWeaponNoAttunement<'source>>
+    for EquippedTwoHandedWeapon<'source>
+{
     fn from(unattuned: EquippedTwoHandedWeaponNoAttunement<'source>) -> Self {
         match unattuned {
             EquippedTwoHandedWeaponNoAttunement::Mundane(id, mundane) => Self::Mundane(id, mundane),
-            EquippedTwoHandedWeaponNoAttunement::Artifact(id, artifact) => Self::Artifact(id, artifact, None),
+            EquippedTwoHandedWeaponNoAttunement::Artifact(id, artifact) => {
+                Self::Artifact(id, artifact, None)
+            }
         }
     }
 }
@@ -78,8 +115,12 @@ impl<'source> From<EquippedTwoHandedWeaponNoAttunement<'source>> for EquippedTwo
 impl<'view, 'source> EquippedTwoHandedWeapon<'source> {
     pub fn as_memo(&'source self) -> EquippedTwoHandedWeaponMemo {
         match self {
-            EquippedTwoHandedWeapon::Mundane(id, view) => EquippedTwoHandedWeaponMemo::Mundane(*id, view.as_memo()),
-            EquippedTwoHandedWeapon::Artifact(id, view, attunement) => EquippedTwoHandedWeaponMemo::Artifact(*id, view.as_memo(), *attunement)
+            EquippedTwoHandedWeapon::Mundane(id, view) => {
+                EquippedTwoHandedWeaponMemo::Mundane(*id, view.as_memo())
+            }
+            EquippedTwoHandedWeapon::Artifact(id, view, attunement) => {
+                EquippedTwoHandedWeaponMemo::Artifact(*id, view.as_memo(), *attunement)
+            }
         }
     }
 
@@ -89,14 +130,24 @@ impl<'view, 'source> EquippedTwoHandedWeapon<'source> {
                 if &target_id != actual_id {
                     None
                 } else {
-                    Some(Weapon(WeaponType::Mundane(target_id, MundaneWeapon::TwoHanded(*two, true))))
+                    Some(Weapon(WeaponType::Mundane(
+                        target_id,
+                        MundaneWeapon::TwoHanded(*two, true),
+                    )))
                 }
             }
-            (EquippedTwoHandedWeapon::Artifact(actual_id, two, attunement), WeaponId::Artifact(target_id)) => {
+            (
+                EquippedTwoHandedWeapon::Artifact(actual_id, two, attunement),
+                WeaponId::Artifact(target_id),
+            ) => {
                 if &target_id != actual_id {
                     None
                 } else {
-                    Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::TwoHanded(two, true), *attunement)))
+                    Some(Weapon(WeaponType::Artifact(
+                        target_id,
+                        ArtifactWeapon::TwoHanded(two, true),
+                        *attunement,
+                    )))
                 }
             }
             (_, _) => None,
@@ -105,8 +156,12 @@ impl<'view, 'source> EquippedTwoHandedWeapon<'source> {
 
     pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
         match self {
-            EquippedTwoHandedWeapon::Mundane(base_id, _) => std::iter::once(WeaponId::Mundane(*base_id)),
-            EquippedTwoHandedWeapon::Artifact(artifact_id, _, _) => std::iter::once(WeaponId::Artifact(*artifact_id)),
+            EquippedTwoHandedWeapon::Mundane(base_id, _) => {
+                std::iter::once(WeaponId::Mundane(*base_id))
+            }
+            EquippedTwoHandedWeapon::Artifact(artifact_id, _, _) => {
+                std::iter::once(WeaponId::Artifact(*artifact_id))
+            }
         }
     }
 }
@@ -120,8 +175,12 @@ pub(crate) enum EquippedTwoHandedWeaponMemo {
 impl<'source> EquippedTwoHandedWeaponMemo {
     pub fn as_ref(&'source self) -> EquippedTwoHandedWeapon<'source> {
         match self {
-            EquippedTwoHandedWeaponMemo::Mundane(id, memo) => EquippedTwoHandedWeapon::Mundane(*id, memo.as_ref()),
-            EquippedTwoHandedWeaponMemo::Artifact(id, memo, attunement) => EquippedTwoHandedWeapon::Artifact(*id, memo.as_ref(), *attunement)
+            EquippedTwoHandedWeaponMemo::Mundane(id, memo) => {
+                EquippedTwoHandedWeapon::Mundane(*id, memo.as_ref())
+            }
+            EquippedTwoHandedWeaponMemo::Artifact(id, memo, attunement) => {
+                EquippedTwoHandedWeapon::Artifact(*id, memo.as_ref(), *attunement)
+            }
         }
     }
 }

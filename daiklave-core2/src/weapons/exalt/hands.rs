@@ -1,6 +1,13 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::weapons::{equipped::{EquippedOneHandedWeapon, EquippedTwoHandedWeapon, EquippedOneHandedWeaponMemo, EquippedTwoHandedWeaponMemo}, mortal::MortalHands, WeaponId, Weapon, EquipHand};
+use crate::weapons::{
+    equipped::{
+        EquippedOneHandedWeapon, EquippedOneHandedWeaponMemo, EquippedTwoHandedWeapon,
+        EquippedTwoHandedWeaponMemo,
+    },
+    mortal::MortalHands,
+    EquipHand, Weapon, WeaponId,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum ExaltHands<'source> {
@@ -29,17 +36,21 @@ impl<'source> Default for ExaltHands<'source> {
     }
 }
 
-impl<'view,'source> ExaltHands<'source> {
+impl<'view, 'source> ExaltHands<'source> {
     pub fn as_memo(&self) -> ExaltHandsMemo {
         match self {
             ExaltHands::Empty => ExaltHandsMemo::Empty,
             ExaltHands::MainHand(view) => ExaltHandsMemo::MainHand(view.as_memo()),
             ExaltHands::OffHand(view) => ExaltHandsMemo::OffHand(view.as_memo()),
             ExaltHands::Both(arr) => ExaltHandsMemo::Both(
-                arr.iter().map(|el| el.as_memo()).enumerate().fold([None, None], |mut opt_arr, (i, memo)| {
-                    opt_arr[i] = Some(memo);
-                    opt_arr
-                }).map(|opt| opt.unwrap())            
+                arr.iter()
+                    .map(|el| el.as_memo())
+                    .enumerate()
+                    .fold([None, None], |mut opt_arr, (i, memo)| {
+                        opt_arr[i] = Some(memo);
+                        opt_arr
+                    })
+                    .map(|opt| opt.unwrap()),
             ),
             ExaltHands::TwoHanded(view) => ExaltHandsMemo::TwoHanded(view.as_memo()),
         }
@@ -50,9 +61,9 @@ impl<'view,'source> ExaltHands<'source> {
             ExaltHands::Empty => None,
             ExaltHands::MainHand(one) => one.get_weapon(weapon_id, EquipHand::MainHand),
             ExaltHands::OffHand(one) => one.get_weapon(weapon_id, EquipHand::OffHand),
-            ExaltHands::Both(arr) => {
-                arr[0].get_weapon(weapon_id, EquipHand::MainHand).or_else(|| arr[1].get_weapon(weapon_id, EquipHand::OffHand))
-            }
+            ExaltHands::Both(arr) => arr[0]
+                .get_weapon(weapon_id, EquipHand::MainHand)
+                .or_else(|| arr[1].get_weapon(weapon_id, EquipHand::OffHand)),
             ExaltHands::TwoHanded(two) => two.get_weapon(weapon_id),
         }
     }
@@ -62,11 +73,13 @@ impl<'view,'source> ExaltHands<'source> {
             ExaltHands::Empty => vec![],
             ExaltHands::MainHand(one) => one.iter().collect::<Vec<WeaponId>>(),
             ExaltHands::OffHand(one) => one.iter().collect::<Vec<WeaponId>>(),
-            ExaltHands::Both(arr) => {
-                arr[0].iter().chain(arr[1].iter()).collect::<Vec<WeaponId>>()
-            }
+            ExaltHands::Both(arr) => arr[0]
+                .iter()
+                .chain(arr[1].iter())
+                .collect::<Vec<WeaponId>>(),
             ExaltHands::TwoHanded(two) => two.iter().collect::<Vec<WeaponId>>(),
-        }.into_iter()
+        }
+        .into_iter()
     }
 }
 
@@ -86,10 +99,14 @@ impl<'source> ExaltHandsMemo {
             ExaltHandsMemo::MainHand(memo) => ExaltHands::MainHand(memo.as_ref()),
             ExaltHandsMemo::OffHand(memo) => ExaltHands::OffHand(memo.as_ref()),
             ExaltHandsMemo::Both(arr) => ExaltHands::Both(
-                arr.iter().map(|el| el.as_ref()).enumerate().fold([None, None],  |mut opt_arr, (i, reffed)| {
-                    opt_arr[i] = Some(reffed);
-                    opt_arr
-                }).map(|opt| opt.unwrap())
+                arr.iter()
+                    .map(|el| el.as_ref())
+                    .enumerate()
+                    .fold([None, None], |mut opt_arr, (i, reffed)| {
+                        opt_arr[i] = Some(reffed);
+                        opt_arr
+                    })
+                    .map(|opt| opt.unwrap()),
             ),
             ExaltHandsMemo::TwoHanded(memo) => ExaltHands::TwoHanded(memo.as_ref()),
         }

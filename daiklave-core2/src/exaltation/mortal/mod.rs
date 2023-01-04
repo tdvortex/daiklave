@@ -4,7 +4,19 @@ use std::collections::HashMap;
 
 pub(crate) use mortal_memo::MortalMemo;
 
-use crate::{martial_arts::{MartialArtsStyleId, MartialArtsStyle, AddMartialArtsStyleError, RemoveMartialArtsStyleError, SetMartialArtsDotsError}, sorcery::{circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, TerrestrialSpell}, CharacterMutationError, abilities::AbilityRating, weapons::{mortal::MortalWeapons, WeaponId, Weapon}};
+use crate::{
+    abilities::AbilityRating,
+    martial_arts::{
+        AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId,
+        RemoveMartialArtsStyleError, SetMartialArtsDotsError,
+    },
+    sorcery::{
+        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
+        SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell,
+    },
+    weapons::{mortal::MortalWeapons, Weapon, WeaponId},
+    CharacterMutationError,
+};
 
 use self::martial_arts::MortalMartialArtistView;
 

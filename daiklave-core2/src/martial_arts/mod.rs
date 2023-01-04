@@ -15,7 +15,7 @@ pub use martial_artist::MartialArtist;
 pub use style::MartialArtsStyle;
 pub use style_id::MartialArtsStyleId;
 
-use crate::{exaltation::Exaltation};
+use crate::exaltation::Exaltation;
 
 /// All of the character's Martial Arts styles.
 pub struct MartialArts<'view, 'source>(pub(crate) &'view Exaltation<'source>);
