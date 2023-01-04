@@ -1,5 +1,5 @@
 use super::Weapon;
 
-pub(crate) fn unarmed() -> Weapon<'static> {
+pub(crate) fn unarmed() -> Weapon<'static, 'static> {
     todo!()
 }

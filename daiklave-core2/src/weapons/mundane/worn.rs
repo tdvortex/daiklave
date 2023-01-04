@@ -6,7 +6,7 @@ use crate::weapons::base::BaseWeapon;
 
 use super::base::{BaseMundaneWeapon, BaseMundaneWeaponMemo};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct WornMundaneWeapon<'source>(BaseMundaneWeapon<'source>);
 
 impl<'source> Deref for WornMundaneWeapon<'source> {

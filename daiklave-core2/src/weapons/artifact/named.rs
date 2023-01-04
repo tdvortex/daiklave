@@ -30,8 +30,6 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
         }
     }
 
-
-
     pub fn name(&self) -> &'source str {
         self.name
     }
@@ -49,11 +47,11 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
     }
 
     pub fn lore(&self) -> Option<&'source str> {
-        self.lore.as_deref()
+        self.lore
     }
 
     pub fn powers(&self) -> Option<&'source str> {
-        self.powers.as_deref()
+        self.powers
     }
 
     pub fn hearthstone_slots(&self) -> usize {

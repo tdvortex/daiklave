@@ -22,7 +22,7 @@ pub(in crate::weapons) struct ExaltEquippedWeapons<'source> {
 }
 
 impl<'source> From<MortalEquippedWeapons<'source>> for ExaltEquippedWeapons<'source> {
-    fn from(mortal: MortalEquippedWeapons) -> Self {
+    fn from(mortal: MortalEquippedWeapons<'source>) -> Self {
         Self {
             handless_mundane: mortal.handless_mundane,
             handless_artifact: mortal
@@ -35,7 +35,7 @@ impl<'source> From<MortalEquippedWeapons<'source>> for ExaltEquippedWeapons<'sou
     }
 }
 
-impl<'source> ExaltEquippedWeapons<'source> {
+impl<'view, 'source> ExaltEquippedWeapons<'source> {
     pub fn as_memo(&self) -> ExaltEquippedWeaponsMemo {
         ExaltEquippedWeaponsMemo {
             handless_mundane: self
@@ -52,7 +52,7 @@ impl<'source> ExaltEquippedWeapons<'source> {
         }
     }
 
-    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
         let in_hands = self.hands.get_weapon(weapon_id);
         if in_hands.is_some() {
             return in_hands;
@@ -72,7 +72,7 @@ impl<'source> ExaltEquippedWeapons<'source> {
             WeaponId::Artifact(target_id) => {
                 let handless_artifact_weapon = self.handless_artifact.get(&target_id)?;
                 let (without_attunement, attunement) =
-                    (handless_artifact_weapon.0, handless_artifact_weapon.1);
+                    (&handless_artifact_weapon.0, handless_artifact_weapon.1);
 
                 match without_attunement {
                     HandlessArtifactWeaponNoAttunement::Natural(natural_artifact) => {
@@ -92,6 +92,21 @@ impl<'source> ExaltEquippedWeapons<'source> {
                 }
             }
         }
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
+        std::iter::once(WeaponId::Unarmed)
+            .chain(self.hands.iter())
+            .chain(
+                self.handless_mundane
+                    .iter()
+                    .map(|(base_id, _)| WeaponId::Mundane(*base_id)),
+            )
+            .chain(
+                self.handless_artifact
+                    .iter()
+                    .map(|(artifact_id, _)| WeaponId::Artifact(*artifact_id)),
+            )
     }
 }
 

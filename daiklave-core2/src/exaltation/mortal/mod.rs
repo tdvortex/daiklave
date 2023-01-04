@@ -15,7 +15,7 @@ pub(crate) struct Mortal<'source> {
     pub weapons: MortalWeapons<'source>,
 }
 
-impl<'source> Mortal<'source> {
+impl<'view, 'source> Mortal<'source> {
     pub fn as_memo(&self) -> MortalMemo {
         MortalMemo::new(
             self.martial_arts_styles
@@ -125,11 +125,15 @@ impl<'source> Mortal<'source> {
         Ok(self)
     }
 
-    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             Some(crate::weapons::unarmed())
         } else {
             self.weapons.get_weapon(weapon_id)
         }
+    }
+
+    pub fn iter_weapons(&self) -> impl Iterator<Item = WeaponId> + '_ {
+        self.weapons.iter()
     }
 }

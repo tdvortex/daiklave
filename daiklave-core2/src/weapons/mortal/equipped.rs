@@ -20,7 +20,7 @@ pub(in crate::weapons) struct MortalEquippedWeapons<'source> {
     pub hands: MortalHands<'source>,
 }
 
-impl<'source> MortalEquippedWeapons<'source> {
+impl<'view, 'source> MortalEquippedWeapons<'source> {
     pub fn as_memo(&self) -> MortalEquippedWeaponsMemo {
         MortalEquippedWeaponsMemo {
             handless_mundane: self
@@ -37,7 +37,7 @@ impl<'source> MortalEquippedWeapons<'source> {
         }
     }
 
-    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
         let in_hands = self.hands.get_weapon(weapon_id);
         if in_hands.is_some() {
             return in_hands;
@@ -58,19 +58,28 @@ impl<'source> MortalEquippedWeapons<'source> {
                 HandlessArtifactWeaponNoAttunement::Natural(natural_artifact) => {
                     Some(Weapon(WeaponType::Artifact(
                         target_id,
-                        ArtifactWeapon::Natural(*natural_artifact),
+                        ArtifactWeapon::Natural(natural_artifact),
                         None,
                     )))
                 }
                 HandlessArtifactWeaponNoAttunement::Worn(worn_artifact) => {
                     Some(Weapon(WeaponType::Artifact(
                         target_id,
-                        ArtifactWeapon::Worn(*worn_artifact, true),
+                        ArtifactWeapon::Worn(worn_artifact, true),
                         None,
                     )))
                 }
             },
         }
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
+        let unarmed_iter = std::iter::once(WeaponId::Unarmed);
+        let handless_mundane_iter = self.handless_mundane.iter().map(|(base_id, _)| WeaponId::Mundane(*base_id));
+        let handless_artifact_iter = self.handless_artifact.iter().map(|(artifact_id, _)| WeaponId::Artifact(*artifact_id));
+        let hands_iter = self.hands.iter();
+
+        unarmed_iter.chain(handless_artifact_iter).chain(handless_mundane_iter).chain(hands_iter)
     }
 }
 
@@ -96,7 +105,7 @@ pub(in crate::weapons::mortal) struct MortalEquippedWeaponsMemo {
 }
 
 impl<'source> MortalEquippedWeaponsMemo {
-    pub fn as_ref(&self) -> MortalEquippedWeapons<'source> {
+    pub fn as_ref(&'source self) -> MortalEquippedWeapons<'source> {
         MortalEquippedWeapons {
             handless_mundane: self
                 .handless_mundane

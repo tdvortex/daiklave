@@ -49,7 +49,7 @@ impl<'source> Default for Exaltation<'source> {
     }
 }
 
-impl<'source> Exaltation<'source> {
+impl<'view, 'source> Exaltation<'source> {
     pub fn as_memo(&self) -> ExaltationMemo {
         match self {
             Exaltation::Mortal(box_view) => {
@@ -69,7 +69,7 @@ impl<'source> Exaltation<'source> {
         !self.is_mortal()
     }
 
-    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             Some(crate::weapons::unarmed())
         } else {
@@ -78,6 +78,13 @@ impl<'source> Exaltation<'source> {
                 Exaltation::Exalt(box_exalt) => box_exalt.as_ref().get_weapon(weapon_id),
             }
         }
+    }
+
+    pub fn iter_weapons(&self) -> impl Iterator<Item = WeaponId> {
+        match self {
+            Exaltation::Mortal(box_mortal) => box_mortal.as_ref().iter_weapons().collect::<Vec<WeaponId>>(),
+            Exaltation::Exalt(box_exalt) => box_exalt.as_ref().iter_weapons().collect::<Vec<WeaponId>>(),
+        }.into_iter()
     }
 
     pub fn check_set_mortal(&self) -> Result<(), CharacterMutationError> {

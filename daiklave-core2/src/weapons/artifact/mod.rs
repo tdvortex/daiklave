@@ -15,33 +15,33 @@ pub use two_handed::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo};
 pub(in crate::weapons) use nonnatural::{NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement, NonnaturalArtifactWeaponMemo, NonnaturalArtifactWeaponNoAttunementMemo};
 pub use natural::{NaturalArtifactWeapon, NaturalArtifactWeaponMemo};
 pub use worn::{WornArtifactWeapon, WornArtifactWeaponMemo};
-pub use base::{BaseArtifactWeapon, BaseArtifactWeaponMemo};
+pub(in crate::weapons) use base::{BaseArtifactWeapon, BaseArtifactWeaponMemo};
 
 use self::named::NamedArtifactWeapon;
 
 use super::{EquipHand, Equipped};
 
-pub enum ArtifactWeapon<'source> {
-    Natural(NaturalArtifactWeapon<'source>),
-    Worn(WornArtifactWeapon<'source>, bool),
-    OneHanded(OneHandedArtifactWeapon<'source>, Option<EquipHand>),
-    TwoHanded(TwoHandedArtifactWeapon<'source>, bool),
+pub enum ArtifactWeapon<'view, 'source> {
+    Natural(&'view NaturalArtifactWeapon<'source>),
+    Worn(&'view WornArtifactWeapon<'source>, bool),
+    OneHanded(&'view OneHandedArtifactWeapon<'source>, Option<EquipHand>),
+    TwoHanded(&'view TwoHandedArtifactWeapon<'source>, bool),
 }
 
-impl<'source> Deref for ArtifactWeapon<'source> {
+impl<'view, 'source> Deref for ArtifactWeapon<'view, 'source> {
     type Target = NamedArtifactWeapon<'source>;
 
     fn deref(&self) -> &Self::Target {
         match self {
             ArtifactWeapon::Natural(deref) => deref,
-            ArtifactWeapon::Worn(deref, is_worn) => deref,
-            ArtifactWeapon::OneHanded(deref, maybe_hand) => deref,
-            ArtifactWeapon::TwoHanded(deref, is_equipped) => deref,
+            ArtifactWeapon::Worn(deref, _) => deref,
+            ArtifactWeapon::OneHanded(deref, _) => deref,
+            ArtifactWeapon::TwoHanded(deref, _) => deref,
         }
     }
 }
 
-impl<'source> ArtifactWeapon<'source> {
+impl<'view, 'source> ArtifactWeapon<'view, 'source> {
     pub fn is_equipped(&self) -> Option<Equipped> {
         match self {
             ArtifactWeapon::Natural(_) => Some(Equipped::Natural),

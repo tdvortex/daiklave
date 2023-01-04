@@ -45,7 +45,7 @@ pub(crate) struct Exalt<'source> {
     weapons: ExaltWeapons<'source>,
 }
 
-impl<'source> Exalt<'source> {
+impl<'view, 'source> Exalt<'source> {
     pub fn new(
         essence: Essence<'source>,
         martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
@@ -102,12 +102,16 @@ impl<'source> Exalt<'source> {
         &mut self.weapons
     }
 
-    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             Some(crate::weapons::unarmed())
         } else {
             self.weapons.get_weapon(weapon_id)
         }        
+    }
+
+    pub fn iter_weapons(&self) -> impl Iterator<Item = WeaponId> + '_ {
+        self.weapons.iter()
     }
 
     pub fn check_spend_motes(
@@ -491,9 +495,7 @@ impl<'source> Exalt<'source> {
         }
         Ok(self)
     }
-}
 
-impl<'view, 'source> Exalt<'source> {
     pub(crate) fn sorcery(&'view self) -> Option<Sorcery<'view, 'source>> {
         match self.exalt_type() {
             ExaltType::Solar(solar) => solar

@@ -26,17 +26,21 @@ impl<'source> From<ExaltWeapons<'source>> for MortalWeapons<'source> {
     }
 }
 
-impl<'source> MortalWeapons<'source> {
+impl<'view, 'source> MortalWeapons<'source> {
     pub fn as_memo(&self) -> MortalWeaponsMemo {
         MortalWeaponsMemo { equipped: self.equipped.as_memo(), unequipped: self.unequipped.as_memo() }
     }
 
-    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             Some(super::unarmed())
         } else {
             self.equipped.get_weapon(weapon_id).or_else(|| self.unequipped.get_weapon(weapon_id))
         }        
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
+        self.equipped.iter().chain(self.unequipped.iter())
     }
 }
 

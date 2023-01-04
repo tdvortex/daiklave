@@ -24,7 +24,7 @@ pub(crate) use unarmed::unarmed;
 pub struct Weapons<'view, 'source>(&'view Exaltation<'source>);
 
 impl<'view, 'source> Weapons<'view, 'source> {
-    pub fn get(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+    pub fn get(&self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             Some(unarmed())
         } else {
@@ -50,9 +50,9 @@ pub enum EquipHand {
     OffHand,
 }
 
-pub struct Weapon<'source>(WeaponType<'source>);
+pub struct Weapon<'view, 'source>(WeaponType<'view, 'source>);
 
-impl<'view, 'source> Weapon<'source> {
+impl<'view, 'source> Weapon<'view, 'source> {
     pub fn id(&self) -> WeaponId {
         self.0.id()
     }
@@ -102,12 +102,12 @@ impl<'view, 'source> Weapon<'source> {
     }
 }
 
-enum WeaponType<'source> {
+enum WeaponType<'view, 'source> {
     Mundane(BaseWeaponId, MundaneWeapon<'source>),
-    Artifact(ArtifactWeaponId, ArtifactWeapon<'source>, Option<u8>),
+    Artifact(ArtifactWeaponId, ArtifactWeapon<'view, 'source>, Option<u8>),
 }
 
-impl<'view, 'source> WeaponType<'source> {
+impl<'view, 'source> WeaponType<'view, 'source> {
     pub fn id(&self) -> WeaponId {
         match self {
             WeaponType::Mundane(base_id, _) => WeaponId::Mundane(*base_id),

@@ -49,18 +49,24 @@ impl<'source> Default for MortalHands<'source> {
     }
 }
 
-impl<'source> MortalHands<'source> {
+impl<'view, 'source> MortalHands<'source> {
     pub fn as_memo(&self) -> MortalHandsMemo {
         match self {
             MortalHands::Empty => MortalHandsMemo::Empty,
             MortalHands::MainHand(view) => MortalHandsMemo::MainHand(view.as_memo()),
             MortalHands::OffHand(view) => MortalHandsMemo::OffHand(view.as_memo()),
-            MortalHands::Both(arr) => MortalHandsMemo::Both(arr.map(|view| view.as_memo())),
+            MortalHands::Both(arr) => MortalHandsMemo::Both(
+                arr.iter().map(|el| el.as_memo()).enumerate().fold([None, None], |mut opt_arr, (i, memo)| {
+                    opt_arr[i] = Some(memo);
+                    opt_arr
+                }).map(|opt| opt.unwrap())
+
+            ),
             MortalHands::TwoHanded(view) => MortalHandsMemo::TwoHanded(view.as_memo()),
         }
     }
 
-    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
         match self {
             MortalHands::Empty => None,
             MortalHands::MainHand(one) => one.get_weapon(weapon_id, EquipHand::MainHand),
@@ -70,6 +76,18 @@ impl<'source> MortalHands<'source> {
             }
             MortalHands::TwoHanded(two) => two.get_weapon(weapon_id),
         }
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = WeaponId> {
+        match self {
+            MortalHands::Empty => vec![],
+            MortalHands::MainHand(one) => one.iter().collect::<Vec<WeaponId>>(),
+            MortalHands::OffHand(one) => one.iter().collect::<Vec<WeaponId>>(),
+            MortalHands::Both(arr) => {
+                arr[0].iter().chain(arr[1].iter()).collect::<Vec<WeaponId>>()
+            }
+            MortalHands::TwoHanded(two) => two.iter().collect::<Vec<WeaponId>>(),
+        }.into_iter()
     }
 }
 
@@ -88,7 +106,12 @@ impl<'source> MortalHandsMemo {
             MortalHandsMemo::Empty => MortalHands::Empty,
             MortalHandsMemo::MainHand(memo) => MortalHands::MainHand(memo.as_ref()),
             MortalHandsMemo::OffHand(memo) => MortalHands::OffHand(memo.as_ref()),
-            MortalHandsMemo::Both(arr) => MortalHands::Both(arr.map(|memo| memo.as_ref())),
+            MortalHandsMemo::Both(arr) => MortalHands::Both(
+                arr.iter().map(|el| el.as_ref()).enumerate().fold([None, None], |mut opt_arr, (i, memo)| {
+                    opt_arr[i] = Some(memo);
+                    opt_arr
+                }).map(|opt| opt.unwrap())
+            ),
             MortalHandsMemo::TwoHanded(memo) => MortalHands::TwoHanded(memo.as_ref()),
         }
     }

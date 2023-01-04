@@ -19,7 +19,7 @@ impl<'source> From<ExaltUnequippedWeapons<'source>> for MortalUnequippedWeapons<
     }
 }
 
-impl<'source> MortalUnequippedWeapons<'source> {
+impl<'view, 'source> MortalUnequippedWeapons<'source> {
     pub fn as_memo(&self) -> MortalUnequippedWeaponsMemo {
         MortalUnequippedWeaponsMemo {
             mundane: self.mundane.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
@@ -27,7 +27,7 @@ impl<'source> MortalUnequippedWeapons<'source> {
         }
     }
 
-    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
         match weapon_id {
             WeaponId::Unarmed =>Some(crate::weapons::unarmed()),
             WeaponId::Mundane(target_id) => {
@@ -46,17 +46,21 @@ impl<'source> MortalUnequippedWeapons<'source> {
             WeaponId::Artifact(target_id) => {
                 match self.artifact.get(&target_id)? {
                     NonnaturalArtifactWeaponNoAttunement::Worn(worn) => {
-                        Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::Worn(*worn, false), None)))
+                        Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::Worn(worn, false), None)))
                     }
                     NonnaturalArtifactWeaponNoAttunement::OneHanded(one) => {
-                        Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::OneHanded(*one, None), None)))
+                        Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::OneHanded(one, None), None)))
                     }
                     NonnaturalArtifactWeaponNoAttunement::TwoHanded(two) => {
-                        Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::TwoHanded(*two, false), None)))
+                        Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::TwoHanded(two, false), None)))
                     }
                 }
             }
         }
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
+        self.mundane.iter().map(|(base_id, _)| WeaponId::Mundane(*base_id)).chain(self.artifact.iter().map(|(artifact_id, _)| WeaponId::Artifact(*artifact_id)))
     }
 }
 
