@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 use crate::weapons::{equipped::{EquippedOneHandedWeapon, EquippedTwoHandedWeapon, EquippedOneHandedWeaponMemo, EquippedTwoHandedWeaponMemo}, mortal::MortalHands, WeaponId, Weapon, EquipHand};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::weapons) enum ExaltHands<'source> {
+pub(crate) enum ExaltHands<'source> {
     Empty,
     MainHand(EquippedOneHandedWeapon<'source>),
     OffHand(EquippedOneHandedWeapon<'source>),
@@ -71,7 +71,7 @@ impl<'view,'source> ExaltHands<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons::exalt) enum ExaltHandsMemo {
+pub(crate) enum ExaltHandsMemo {
     Empty,
     MainHand(EquippedOneHandedWeaponMemo),
     OffHand(EquippedOneHandedWeaponMemo),

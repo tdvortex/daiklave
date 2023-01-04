@@ -7,7 +7,7 @@ use crate::exaltation::exalt::essence::MoteCommitment;
 use super::{natural::{NaturalArtifactWeapon, NaturalArtifactWeaponMemo}, worn::{WornArtifactWeapon, WornArtifactWeaponMemo}, named::NamedArtifactWeapon};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::weapons) struct HandlessArtifactWeapon<'source>(pub HandlessArtifactWeaponNoAttunement<'source>, pub Option<u8>);
+pub(crate) struct HandlessArtifactWeapon<'source>(pub HandlessArtifactWeaponNoAttunement<'source>, pub Option<u8>);
 
 impl<'source> HandlessArtifactWeapon<'source> {
     pub fn as_memo(&self) -> HandlessArtifactWeaponMemo {
@@ -38,7 +38,7 @@ impl<'source> Deref for HandlessArtifactWeapon<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::weapons) enum HandlessArtifactWeaponNoAttunement<'source> {
+pub(crate) enum HandlessArtifactWeaponNoAttunement<'source> {
     Natural(NaturalArtifactWeapon<'source>),
     Worn(WornArtifactWeapon<'source>),
 }
@@ -65,7 +65,7 @@ impl<'source> Deref for HandlessArtifactWeaponNoAttunement<'source> {
 
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons) struct HandlessArtifactWeaponMemo(HandlessArtifactWeaponNoAttunementMemo, Option<u8>);
+pub(crate) struct HandlessArtifactWeaponMemo(HandlessArtifactWeaponNoAttunementMemo, Option<u8>);
 
 impl<'source> HandlessArtifactWeaponMemo {
     pub fn as_ref(&'source self) -> HandlessArtifactWeapon<'source> {
@@ -75,7 +75,7 @@ impl<'source> HandlessArtifactWeaponMemo {
 
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons) enum HandlessArtifactWeaponNoAttunementMemo {
+pub(crate) enum HandlessArtifactWeaponNoAttunementMemo {
     Natural(NaturalArtifactWeaponMemo),
     Worn(WornArtifactWeaponMemo),
 }

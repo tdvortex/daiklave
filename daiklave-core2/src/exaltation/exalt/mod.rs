@@ -94,10 +94,6 @@ impl<'view, 'source> Exalt<'source> {
         &mut self.martial_arts_styles
     }
 
-    pub fn weapons(&self) -> &ExaltWeapons<'source> {
-        &self.weapons
-    }
-
     pub fn weapons_mut(&mut self) -> &mut ExaltWeapons<'source> {
         &mut self.weapons
     }

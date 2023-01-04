@@ -15,7 +15,7 @@ use crate::weapons::{
 use super::hands::{ExaltHands, ExaltHandsMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub(in crate::weapons) struct ExaltEquippedWeapons<'source> {
+pub(crate) struct ExaltEquippedWeapons<'source> {
     pub handless_mundane: HashMap<BaseWeaponId, HandlessMundaneWeapon<'source>>,
     pub handless_artifact: HashMap<ArtifactWeaponId, HandlessArtifactWeapon<'source>>,
     pub hands: ExaltHands<'source>,
@@ -36,7 +36,7 @@ impl<'source> From<MortalEquippedWeapons<'source>> for ExaltEquippedWeapons<'sou
 }
 
 impl<'view, 'source> ExaltEquippedWeapons<'source> {
-    pub fn as_memo(&self) -> ExaltEquippedWeaponsMemo {
+    pub(in crate::weapons) fn as_memo(&self) -> ExaltEquippedWeaponsMemo {
         ExaltEquippedWeaponsMemo {
             handless_mundane: self
                 .handless_mundane
@@ -111,7 +111,7 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons::exalt) struct ExaltEquippedWeaponsMemo {
+pub(in crate::weapons) struct ExaltEquippedWeaponsMemo {
     handless_mundane: HashMap<BaseWeaponId, HandlessMundaneWeaponMemo>,
     handless_artifact: HashMap<ArtifactWeaponId, HandlessArtifactWeaponMemo>,
     hands: ExaltHandsMemo,

@@ -10,10 +10,10 @@ use std::ops::Deref;
 
 pub(in crate::weapons) use handless::{HandlessMundaneWeapon, HandlessMundaneWeaponMemo};
 pub(in crate::weapons) use nonnatural::{NonnaturalMundaneWeapon, NonnaturalMundaneWeaponMemo};
-pub use one_handed::{OneHandedMundaneWeapon, OneHandedMundaneWeaponMemo};
-pub use two_handed::{TwoHandedMundaneWeapon, TwoHandedMundaneWeaponMemo};
-pub use natural::{NaturalMundaneWeapon, NaturalMundaneWeaponMemo};
-pub use worn::{WornMundaneWeapon, WornMundaneWeaponMemo};
+pub(in crate::weapons) use one_handed::{OneHandedMundaneWeapon, OneHandedMundaneWeaponMemo};
+pub(in crate::weapons) use two_handed::{TwoHandedMundaneWeapon, TwoHandedMundaneWeaponMemo};
+pub(in crate::weapons) use natural::{NaturalMundaneWeapon};
+pub(in crate::weapons) use worn::{WornMundaneWeapon, WornMundaneWeaponMemo};
 
 use super::{base::BaseWeapon, Equipped, EquipHand};
 
@@ -30,9 +30,9 @@ impl<'source> Deref for MundaneWeapon<'source> {
     fn deref(&self) -> &Self::Target {
         match self {
             MundaneWeapon::Natural(deref) => deref,
-            MundaneWeapon::Worn(deref, is_worn) => deref,
-            MundaneWeapon::OneHanded(deref, maybe_hand) => deref,
-            MundaneWeapon::TwoHanded(deref, is_equipped) => deref,
+            MundaneWeapon::Worn(deref, _) => deref,
+            MundaneWeapon::OneHanded(deref, _) => deref,
+            MundaneWeapon::TwoHanded(deref, _) => deref,
         }
     }
 }

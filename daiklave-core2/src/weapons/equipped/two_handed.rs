@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 use crate::weapons::{BaseWeaponId, ArtifactWeaponId, mundane::{TwoHandedMundaneWeapon, TwoHandedMundaneWeaponMemo, MundaneWeapon}, artifact::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo, ArtifactWeapon}, WeaponId, Weapon, WeaponType};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::weapons) enum EquippedTwoHandedWeaponNoAttunement<'source> {
+pub(crate) enum EquippedTwoHandedWeaponNoAttunement<'source> {
     Mundane(BaseWeaponId, TwoHandedMundaneWeapon<'source>),
     Artifact(ArtifactWeaponId, TwoHandedArtifactWeapon<'source>),
 }
@@ -46,7 +46,7 @@ impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons) enum EquippedTwoHandedWeaponNoAttunementMemo {
+pub(crate) enum EquippedTwoHandedWeaponNoAttunementMemo {
     Mundane(BaseWeaponId, TwoHandedMundaneWeaponMemo),
     Artifact(ArtifactWeaponId, TwoHandedArtifactWeaponMemo),
 }
@@ -61,7 +61,7 @@ impl<'source> EquippedTwoHandedWeaponNoAttunementMemo {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::weapons) enum EquippedTwoHandedWeapon<'source> {
+pub(crate) enum EquippedTwoHandedWeapon<'source> {
     Mundane(BaseWeaponId, TwoHandedMundaneWeapon<'source>),
     Artifact(ArtifactWeaponId, TwoHandedArtifactWeapon<'source>, Option<u8>),
 }
@@ -112,7 +112,7 @@ impl<'view, 'source> EquippedTwoHandedWeapon<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons) enum EquippedTwoHandedWeaponMemo {
+pub(crate) enum EquippedTwoHandedWeaponMemo {
     Mundane(BaseWeaponId, TwoHandedMundaneWeaponMemo),
     Artifact(ArtifactWeaponId, TwoHandedArtifactWeaponMemo, Option<u8>),
 }

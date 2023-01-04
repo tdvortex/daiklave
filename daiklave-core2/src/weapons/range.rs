@@ -8,7 +8,7 @@ pub(in crate::weapons) enum WeaponRange {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-pub(in crate::weapons) enum RangeBand {
+pub enum RangeBand {
     Close,
     Short,
     Medium,

@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 use super::{worn::{WornArtifactWeapon, WornArtifactWeaponMemo}, one_handed::OneHandedArtifactWeapon, two_handed::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo}, named::NamedArtifactWeapon, OneHandedArtifactWeaponMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::weapons) struct NonnaturalArtifactWeapon<'source>(pub NonnaturalArtifactWeaponNoAttunement<'source>, pub Option<u8>);
+pub(crate) struct NonnaturalArtifactWeapon<'source>(pub NonnaturalArtifactWeaponNoAttunement<'source>, pub Option<u8>);
 
 impl<'source> NonnaturalArtifactWeapon<'source> {
     pub fn as_memo(&self) -> NonnaturalArtifactWeaponMemo {
@@ -21,7 +21,7 @@ impl<'source> From<NonnaturalArtifactWeaponNoAttunement<'source>> for Nonnatural
 
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::weapons) enum NonnaturalArtifactWeaponNoAttunement<'source> {
+pub(crate) enum NonnaturalArtifactWeaponNoAttunement<'source> {
     Worn(WornArtifactWeapon<'source>),
     OneHanded(OneHandedArtifactWeapon<'source>),
     TwoHanded(TwoHandedArtifactWeapon<'source>),
@@ -50,7 +50,7 @@ impl<'source> NonnaturalArtifactWeaponNoAttunement<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons) enum NonnaturalArtifactWeaponNoAttunementMemo {
+pub(crate) enum NonnaturalArtifactWeaponNoAttunementMemo {
     Worn(WornArtifactWeaponMemo),
     OneHanded(OneHandedArtifactWeaponMemo),
     TwoHanded(TwoHandedArtifactWeaponMemo),
@@ -67,7 +67,7 @@ impl<'source> NonnaturalArtifactWeaponNoAttunementMemo {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons) struct NonnaturalArtifactWeaponMemo(NonnaturalArtifactWeaponNoAttunementMemo, Option<u8>);
+pub(crate) struct NonnaturalArtifactWeaponMemo(NonnaturalArtifactWeaponNoAttunementMemo, Option<u8>);
 
 impl<'source> NonnaturalArtifactWeaponMemo {
     pub fn as_ref(&'source self) -> NonnaturalArtifactWeapon<'source> {

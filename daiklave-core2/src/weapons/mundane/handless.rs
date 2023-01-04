@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 use super::{worn::{WornMundaneWeapon, WornMundaneWeaponMemo}, natural::{NaturalMundaneWeapon, NaturalMundaneWeaponMemo}};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::weapons) enum HandlessMundaneWeapon<'source> {
+pub(in crate) enum HandlessMundaneWeapon<'source> {
     Natural(NaturalMundaneWeapon<'source>),
     Worn(WornMundaneWeapon<'source>),
 }
@@ -18,7 +18,7 @@ impl<'source> HandlessMundaneWeapon<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons) enum HandlessMundaneWeaponMemo {
+pub(in crate) enum HandlessMundaneWeaponMemo {
     Natural(NaturalMundaneWeaponMemo),
     Worn(WornMundaneWeaponMemo),
 }

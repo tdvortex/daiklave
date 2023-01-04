@@ -14,7 +14,7 @@ pub(in crate::weapons) use owned::{OwnedHearthstone, OwnedHearthstoneMemo};
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(in crate::weapons) struct Hearthstone<'source> {
+pub(crate) struct Hearthstone<'source> {
     name: &'source str,
     book_reference: Option<BookReference>,
     geomancy_level: GeomancyLevel,
@@ -38,7 +38,7 @@ impl<'source> Hearthstone<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons) struct HearthstoneMemo {
+pub(crate) struct HearthstoneMemo {
     name: String,
     book_reference: Option<BookReference>,
     geomancy_level: GeomancyLevel,

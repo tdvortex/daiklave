@@ -7,7 +7,7 @@ use crate::book_reference::BookReference;
 use super::{weight_class::WeaponWeightClass, range::WeaponRange, ability::WeaponAbility, damage_type::WeaponDamageType, tag::OtherWeaponTag};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(in crate::weapons) struct BaseWeapon<'source> {
+pub struct BaseWeapon<'source> {
     name: &'source str,
     book_reference: Option<BookReference>,
     weight_class: WeaponWeightClass,
@@ -18,7 +18,7 @@ pub(in crate::weapons) struct BaseWeapon<'source> {
 }
 
 impl<'source> BaseWeapon<'source> {
-    pub fn as_memo(&self) -> BaseWeaponMemo {
+    pub(crate) fn as_memo(&self) -> BaseWeaponMemo {
         BaseWeaponMemo { 
             name: self.name.to_string(), 
             book_reference: self.book_reference, 
@@ -44,7 +44,7 @@ impl<'source> BaseWeapon<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons) struct BaseWeaponMemo {
+pub(crate) struct BaseWeaponMemo {
     name: String,
     book_reference: Option<BookReference>,
     weight_class: WeaponWeightClass,

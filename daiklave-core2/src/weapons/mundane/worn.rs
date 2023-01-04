@@ -7,7 +7,7 @@ use crate::weapons::base::BaseWeapon;
 use super::base::{BaseMundaneWeapon, BaseMundaneWeaponMemo};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct WornMundaneWeapon<'source>(BaseMundaneWeapon<'source>);
+pub(crate) struct WornMundaneWeapon<'source>(BaseMundaneWeapon<'source>);
 
 impl<'source> Deref for WornMundaneWeapon<'source> {
     type Target = BaseWeapon<'source>;
@@ -25,7 +25,7 @@ impl<'source> WornMundaneWeapon<'source> {
 
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct WornMundaneWeaponMemo(BaseMundaneWeaponMemo);
+pub(crate) struct WornMundaneWeaponMemo(BaseMundaneWeaponMemo);
 
 impl<'source> WornMundaneWeaponMemo {
     pub fn as_ref(&'source self) -> WornMundaneWeapon<'source> {

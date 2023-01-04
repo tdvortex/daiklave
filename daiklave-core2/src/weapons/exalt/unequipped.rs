@@ -13,7 +13,7 @@ use crate::weapons::{
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub(in crate::weapons) struct ExaltUnequippedWeapons<'source> {
+pub(crate) struct ExaltUnequippedWeapons<'source> {
     pub mundane: HashMap<BaseWeaponId, NonnaturalMundaneWeapon<'source>>,
     pub artifact: HashMap<ArtifactWeaponId, NonnaturalArtifactWeapon<'source>>,
 }
@@ -109,7 +109,7 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons::exalt) struct ExaltUnequippedWeaponsMemo {
+pub(crate) struct ExaltUnequippedWeaponsMemo {
     mundane: HashMap<BaseWeaponId, NonnaturalMundaneWeaponMemo>,
     artifact: HashMap<ArtifactWeaponId, NonnaturalArtifactWeaponMemo>,
 }

@@ -5,7 +5,7 @@ use crate::{book_reference::BookReference, weapons::{BaseWeaponId, hearthstone::
 use super::base::{BaseArtifactWeapon, BaseArtifactWeaponMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::weapons::artifact) struct NamedArtifactWeapon<'source> {
+pub(crate) struct NamedArtifactWeapon<'source> {
     name: &'source str,
     book_reference: Option<BookReference>,
     merit_dots: u8,
@@ -64,7 +64,7 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons::artifact) struct NamedArtifactWeaponMemo {
+pub(crate) struct NamedArtifactWeaponMemo {
     name: String,
     book_reference: Option<BookReference>,
     merit_dots: u8,

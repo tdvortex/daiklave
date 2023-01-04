@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::weapons::{BaseWeaponId, ArtifactWeaponId, mundane::{NonnaturalMundaneWeapon, NonnaturalMundaneWeaponMemo, MundaneWeapon}, artifact::{NonnaturalArtifactWeaponNoAttunement, NonnaturalArtifactWeaponNoAttunementMemo, ArtifactWeapon}, exalt::ExaltUnequippedWeapons, WeaponId, Weapon, WeaponType};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub(in crate::weapons) struct MortalUnequippedWeapons<'source> {
+pub(crate) struct MortalUnequippedWeapons<'source> {
     pub mundane: HashMap<BaseWeaponId, NonnaturalMundaneWeapon<'source>>,
     pub artifact: HashMap<ArtifactWeaponId, NonnaturalArtifactWeaponNoAttunement<'source>>,
 }
@@ -66,7 +66,7 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
 
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(in crate::weapons::mortal) struct MortalUnequippedWeaponsMemo {
+pub(crate) struct MortalUnequippedWeaponsMemo {
     mundane: HashMap<BaseWeaponId, NonnaturalMundaneWeaponMemo>,
     artifact: HashMap<ArtifactWeaponId, NonnaturalArtifactWeaponNoAttunementMemo>,
 }

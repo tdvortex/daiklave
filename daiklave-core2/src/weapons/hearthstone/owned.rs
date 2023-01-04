@@ -1,5 +1,3 @@
-use std::ops::Deref;
-
 use serde::{Serialize, Deserialize};
 
 use super::{Hearthstone, HearthstoneMemo};
@@ -8,14 +6,6 @@ use super::{Hearthstone, HearthstoneMemo};
 pub struct OwnedHearthstone<'source> {
     hearthstone: Hearthstone<'source>,
     manse: Option<&'source str>,
-}
-
-impl<'source> Deref for OwnedHearthstone<'source> {
-    type Target = Hearthstone<'source>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.hearthstone
-    }
 }
 
 impl<'source> OwnedHearthstone<'source> {
