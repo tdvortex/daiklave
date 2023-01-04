@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 pub(crate) use mortal_memo::MortalMemo;
 
-use crate::{martial_arts::{MartialArtsStyleId, MartialArtsStyle, AddMartialArtsStyleError, RemoveMartialArtsStyleError, SetMartialArtsDotsError}, sorcery::{circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, TerrestrialSpell}, CharacterMutationError, abilities::AbilityRating, weapons::mortal::MortalWeapons};
+use crate::{martial_arts::{MartialArtsStyleId, MartialArtsStyle, AddMartialArtsStyleError, RemoveMartialArtsStyleError, SetMartialArtsDotsError}, sorcery::{circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, TerrestrialSpell}, CharacterMutationError, abilities::AbilityRating, weapons::{mortal::MortalWeapons, WeaponId, Weapon}};
 
 use self::martial_arts::MortalMartialArtistView;
 
@@ -123,5 +123,13 @@ impl<'source> Mortal<'source> {
         )?);
 
         Ok(self)
+    }
+
+    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+        if matches!(weapon_id, WeaponId::Unarmed) {
+            Some(crate::weapons::unarmed())
+        } else {
+            self.weapons.get_weapon(weapon_id)
+        }
     }
 }

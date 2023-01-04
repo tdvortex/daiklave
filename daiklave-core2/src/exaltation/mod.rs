@@ -19,7 +19,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    CharacterMutationError,
+    CharacterMutationError, weapons::{WeaponId, Weapon},
 };
 
 use self::{
@@ -67,6 +67,17 @@ impl<'source> Exaltation<'source> {
 
     pub fn is_exalted(&self) -> bool {
         !self.is_mortal()
+    }
+
+    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+        if matches!(weapon_id, WeaponId::Unarmed) {
+            Some(crate::weapons::unarmed())
+        } else {
+            match self {
+                Exaltation::Mortal(box_mortal) => box_mortal.as_ref().get_weapon(weapon_id),
+                Exaltation::Exalt(box_exalt) => box_exalt.as_ref().get_weapon(weapon_id),
+            }
+        }
     }
 
     pub fn check_set_mortal(&self) -> Result<(), CharacterMutationError> {

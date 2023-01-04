@@ -30,7 +30,8 @@ impl Deref for ArtifactWeaponId {
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
 pub enum WeaponId {
-    NonArtifact(BaseWeaponId),
+    Unarmed,
+    Mundane(BaseWeaponId),
     Artifact(ArtifactWeaponId),
 }
 

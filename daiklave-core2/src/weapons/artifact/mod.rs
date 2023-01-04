@@ -19,11 +19,13 @@ pub use base::{BaseArtifactWeapon, BaseArtifactWeaponMemo};
 
 use self::named::NamedArtifactWeapon;
 
+use super::{EquipHand, Equipped};
+
 pub enum ArtifactWeapon<'source> {
     Natural(NaturalArtifactWeapon<'source>),
-    Worn(WornArtifactWeapon<'source>),
-    OneHanded(OneHandedArtifactWeapon<'source>),
-    TwoHanded(TwoHandedArtifactWeapon<'source>),
+    Worn(WornArtifactWeapon<'source>, bool),
+    OneHanded(OneHandedArtifactWeapon<'source>, Option<EquipHand>),
+    TwoHanded(TwoHandedArtifactWeapon<'source>, bool),
 }
 
 impl<'source> Deref for ArtifactWeapon<'source> {
@@ -32,9 +34,32 @@ impl<'source> Deref for ArtifactWeapon<'source> {
     fn deref(&self) -> &Self::Target {
         match self {
             ArtifactWeapon::Natural(deref) => deref,
-            ArtifactWeapon::Worn(deref) => deref,
-            ArtifactWeapon::OneHanded(deref) => deref,
-            ArtifactWeapon::TwoHanded(deref) => deref,
+            ArtifactWeapon::Worn(deref, is_worn) => deref,
+            ArtifactWeapon::OneHanded(deref, maybe_hand) => deref,
+            ArtifactWeapon::TwoHanded(deref, is_equipped) => deref,
+        }
+    }
+}
+
+impl<'source> ArtifactWeapon<'source> {
+    pub fn is_equipped(&self) -> Option<Equipped> {
+        match self {
+            ArtifactWeapon::Natural(_) => Some(Equipped::Natural),
+            ArtifactWeapon::Worn(_, is_equipped) => if *is_equipped {
+                Some(Equipped::Worn)
+            } else {
+                None
+            },
+            ArtifactWeapon::OneHanded(_, maybe_hand) => match maybe_hand {
+                None => None,
+                Some(EquipHand::MainHand) => Some(Equipped::MainHand),
+                Some(EquipHand::OffHand) => Some(Equipped::OffHand),
+            }
+            ArtifactWeapon::TwoHanded(_, is_equipped) => if *is_equipped {
+                Some(Equipped::TwoHanded)
+            } else {
+                None
+            }, 
         }
     }
 }

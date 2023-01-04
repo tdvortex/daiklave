@@ -25,7 +25,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    CharacterMutationError, weapons::exalt::ExaltWeapons,
+    CharacterMutationError, weapons::{exalt::ExaltWeapons, WeaponId, Weapon},
 };
 
 use self::{
@@ -100,6 +100,14 @@ impl<'source> Exalt<'source> {
 
     pub fn weapons_mut(&mut self) -> &mut ExaltWeapons<'source> {
         &mut self.weapons
+    }
+
+    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+        if matches!(weapon_id, WeaponId::Unarmed) {
+            Some(crate::weapons::unarmed())
+        } else {
+            self.weapons.get_weapon(weapon_id)
+        }        
     }
 
     pub fn check_spend_motes(

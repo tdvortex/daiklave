@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::weapons::{BaseWeaponId, ArtifactWeaponId, mundane::{TwoHandedMundaneWeapon, TwoHandedMundaneWeaponMemo}, artifact::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo}};
+use crate::weapons::{BaseWeaponId, ArtifactWeaponId, mundane::{TwoHandedMundaneWeapon, TwoHandedMundaneWeaponMemo, MundaneWeapon}, artifact::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo, ArtifactWeapon}, WeaponId, Weapon, WeaponType};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::weapons) enum EquippedTwoHandedWeaponNoAttunement<'source> {
@@ -13,6 +13,27 @@ impl<'source> EquippedTwoHandedWeaponNoAttunement<'source> {
         match self {
             EquippedTwoHandedWeaponNoAttunement::Mundane(id, view) => EquippedTwoHandedWeaponNoAttunementMemo::Mundane(*id, view.as_memo()),
             EquippedTwoHandedWeaponNoAttunement::Artifact(id, view) => EquippedTwoHandedWeaponNoAttunementMemo::Artifact(*id, view.as_memo()),
+        }
+    }
+
+    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+        match (weapon_id, self) {
+            (WeaponId::Unarmed, _) => Some(crate::weapons::unarmed()),
+            (WeaponId::Mundane(target_id), EquippedTwoHandedWeaponNoAttunement::Mundane(actual_id, two)) => {
+                if &target_id != actual_id {
+                    None
+                } else {
+                    Some(Weapon(WeaponType::Mundane(target_id, MundaneWeapon::TwoHanded(*two, true))))
+                }
+            }
+            (WeaponId::Artifact(target_id), EquippedTwoHandedWeaponNoAttunement::Artifact(actual_id, two)) => {
+                if &target_id != actual_id {
+                    None
+                } else {
+                    Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::TwoHanded(*two, true), None)))
+                }
+            }
+            (_, _) => None,
         }
     }
 }
@@ -52,6 +73,26 @@ impl<'source> EquippedTwoHandedWeapon<'source> {
         match self {
             EquippedTwoHandedWeapon::Mundane(id, view) => EquippedTwoHandedWeaponMemo::Mundane(*id, view.as_memo()),
             EquippedTwoHandedWeapon::Artifact(id, view, attunement) => EquippedTwoHandedWeaponMemo::Artifact(*id, view.as_memo(), *attunement)
+        }
+    }
+
+    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+        match (self, weapon_id) {
+            (EquippedTwoHandedWeapon::Mundane(actual_id, two), WeaponId::Mundane(target_id)) => {
+                if &target_id != actual_id {
+                    None
+                } else {
+                    Some(Weapon(WeaponType::Mundane(target_id, MundaneWeapon::TwoHanded(*two, true))))
+                }
+            }
+            (EquippedTwoHandedWeapon::Artifact(actual_id, two, attunement), WeaponId::Artifact(target_id)) => {
+                if &target_id != actual_id {
+                    None
+                } else {
+                    Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::TwoHanded(*two, true), *attunement)))
+                }
+            }
+            (_, _) => None,
         }
     }
 }

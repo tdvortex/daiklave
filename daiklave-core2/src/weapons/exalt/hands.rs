@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::weapons::{equipped::{EquippedOneHandedWeapon, EquippedTwoHandedWeapon, EquippedOneHandedWeaponMemo, EquippedTwoHandedWeaponMemo}, mortal::MortalHands};
+use crate::weapons::{equipped::{EquippedOneHandedWeapon, EquippedTwoHandedWeapon, EquippedOneHandedWeaponMemo, EquippedTwoHandedWeaponMemo}, mortal::MortalHands, WeaponId, Weapon, EquipHand};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::weapons) enum ExaltHands<'source> {
@@ -37,6 +37,18 @@ impl<'source> ExaltHands<'source> {
             ExaltHands::OffHand(view) => ExaltHandsMemo::OffHand(view.as_memo()),
             ExaltHands::Both(arr) => ExaltHandsMemo::Both(arr.map(|el| el.as_memo())),
             ExaltHands::TwoHanded(view) => ExaltHandsMemo::TwoHanded(view.as_memo()),
+        }
+    }
+
+    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+        match self {
+            ExaltHands::Empty => None,
+            ExaltHands::MainHand(one) => one.get_weapon(weapon_id, EquipHand::MainHand),
+            ExaltHands::OffHand(one) => one.get_weapon(weapon_id, EquipHand::OffHand),
+            ExaltHands::Both(arr) => {
+                arr[0].get_weapon(weapon_id, EquipHand::MainHand).or_else(|| arr[1].get_weapon(weapon_id, EquipHand::OffHand))
+            }
+            ExaltHands::TwoHanded(two) => two.get_weapon(weapon_id),
         }
     }
 }

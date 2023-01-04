@@ -6,7 +6,7 @@ pub(in crate::weapons) use equipped::ExaltEquippedWeapons;
 pub(in crate::weapons) use hands::ExaltHands;
 pub(in crate::weapons) use unequipped::ExaltUnequippedWeapons;
 
-use super::mortal::MortalWeapons;
+use super::{mortal::MortalWeapons, WeaponId, Weapon};
 
 mod equipped;
 mod hands;
@@ -23,6 +23,14 @@ impl<'source> ExaltWeapons<'source> {
         ExaltWeaponsMemo { 
             equipped: self.equipped.as_memo(),
             unequipped: self.unequipped.as_memo(),
+        }
+    }
+
+    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+        if matches!(weapon_id, WeaponId::Unarmed) {
+            Some(crate::weapons::unarmed())
+        } else {
+            self.equipped.get_weapon(weapon_id).or_else(|| self.unequipped.get_weapon(weapon_id))
         }
     }
 }

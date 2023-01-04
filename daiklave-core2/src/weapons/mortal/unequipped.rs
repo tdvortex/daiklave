@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::weapons::{BaseWeaponId, ArtifactWeaponId, mundane::{NonnaturalMundaneWeapon, NonnaturalMundaneWeaponMemo}, artifact::{NonnaturalArtifactWeaponNoAttunement, NonnaturalArtifactWeaponNoAttunementMemo}, exalt::ExaltUnequippedWeapons};
+use crate::weapons::{BaseWeaponId, ArtifactWeaponId, mundane::{NonnaturalMundaneWeapon, NonnaturalMundaneWeaponMemo, MundaneWeapon}, artifact::{NonnaturalArtifactWeaponNoAttunement, NonnaturalArtifactWeaponNoAttunementMemo, ArtifactWeapon}, exalt::ExaltUnequippedWeapons, WeaponId, Weapon, WeaponType};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(in crate::weapons) struct MortalUnequippedWeapons<'source> {
@@ -24,6 +24,38 @@ impl<'source> MortalUnequippedWeapons<'source> {
         MortalUnequippedWeaponsMemo {
             mundane: self.mundane.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
             artifact: self.artifact.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+        }
+    }
+
+    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+        match weapon_id {
+            WeaponId::Unarmed =>Some(crate::weapons::unarmed()),
+            WeaponId::Mundane(target_id) => {
+                match self.mundane.get(&target_id)? {
+                    NonnaturalMundaneWeapon::Worn(worn_weapon) => {
+                        Some(Weapon(WeaponType::Mundane(target_id, MundaneWeapon::Worn(*worn_weapon, false))))
+                    }
+                    NonnaturalMundaneWeapon::OneHanded(one) => {
+                        Some(Weapon(WeaponType::Mundane(target_id, MundaneWeapon::OneHanded(*one, None))))
+                    }
+                    NonnaturalMundaneWeapon::TwoHanded(two) => {
+                        Some(Weapon(WeaponType::Mundane(target_id, MundaneWeapon::TwoHanded(*two, false))))
+                    }
+                }
+            }
+            WeaponId::Artifact(target_id) => {
+                match self.artifact.get(&target_id)? {
+                    NonnaturalArtifactWeaponNoAttunement::Worn(worn) => {
+                        Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::Worn(*worn, false), None)))
+                    }
+                    NonnaturalArtifactWeaponNoAttunement::OneHanded(one) => {
+                        Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::OneHanded(*one, None), None)))
+                    }
+                    NonnaturalArtifactWeaponNoAttunement::TwoHanded(two) => {
+                        Some(Weapon(WeaponType::Artifact(target_id, ArtifactWeapon::TwoHanded(*two, false), None)))
+                    }
+                }
+            }
         }
     }
 }

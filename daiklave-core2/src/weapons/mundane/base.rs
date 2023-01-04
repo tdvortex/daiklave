@@ -4,7 +4,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::weapons::base::{BaseWeapon, BaseWeaponMemo};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(in crate::weapons::mundane) struct BaseMundaneWeapon<'source>(BaseWeapon<'source>);
 
 impl<'source> Deref for BaseMundaneWeapon<'source> {

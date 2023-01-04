@@ -13,18 +13,23 @@ mod unarmed;
 mod weapon_id;
 mod weight_class;
 
-pub use weapon_id::{BaseWeaponId, ArtifactWeaponId, ArtifactId};
+pub use weapon_id::{BaseWeaponId, ArtifactWeaponId, ArtifactId, WeaponId};
 
 use crate::{exaltation::{Exaltation, exalt::essence::MoteCommitment}, book_reference::BookReference};
 
-use self::{weapon_id::WeaponId, artifact::{ArtifactWeapon}, mundane::MundaneWeapon, hearthstone::{OwnedHearthstone}, base::BaseWeapon};
+use self::{artifact::{ArtifactWeapon}, mundane::MundaneWeapon, hearthstone::{OwnedHearthstone}, base::BaseWeapon};
 pub use weight_class::WeaponWeightClass;
+pub(crate) use unarmed::unarmed;
 
 pub struct Weapons<'view, 'source>(&'view Exaltation<'source>);
 
 impl<'view, 'source> Weapons<'view, 'source> {
     pub fn get(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
-        self.0.get_weapon(weapon_id)
+        if matches!(weapon_id, WeaponId::Unarmed) {
+            Some(unarmed())
+        } else {
+            self.0.get_weapon(weapon_id)
+        }
     }
 
     pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
@@ -32,6 +37,18 @@ impl<'view, 'source> Weapons<'view, 'source> {
     }
 }
 
+pub enum Equipped {
+    Natural,
+    Worn,
+    MainHand,
+    OffHand,
+    TwoHanded,
+}
+
+pub enum EquipHand {
+    MainHand,
+    OffHand,
+}
 
 pub struct Weapon<'source>(WeaponType<'source>);
 
@@ -46,6 +63,10 @@ impl<'view, 'source> Weapon<'source> {
 
     pub fn is_attuned(&self) -> bool {
         self.0.is_attuned()
+    }
+
+    pub fn is_equipped(&self) -> Option<Equipped> {
+        self.0.is_equipped()
     }
 
     pub fn mote_commitment(&self) -> Option<(ArtifactWeaponId, MoteCommitment<'source>)> {
@@ -89,7 +110,7 @@ enum WeaponType<'source> {
 impl<'view, 'source> WeaponType<'source> {
     pub fn id(&self) -> WeaponId {
         match self {
-            WeaponType::Mundane(base_id, _) => WeaponId::NonArtifact(*base_id),
+            WeaponType::Mundane(base_id, _) => WeaponId::Mundane(*base_id),
             WeaponType::Artifact(artifact_id, _, _) => WeaponId::Artifact(*artifact_id),
         }
     }
@@ -102,6 +123,13 @@ impl<'view, 'source> WeaponType<'source> {
         match self {
             WeaponType::Mundane(_, _) => false,
             WeaponType::Artifact(_, _, maybe) => maybe.is_some(),
+        }
+    }
+
+    pub fn is_equipped(&self) -> Option<Equipped> {
+        match self {
+            WeaponType::Mundane(_, mundane) => mundane.is_equipped(),
+            WeaponType::Artifact(_, artifact, _) => artifact.is_equipped(),
         }
     }
 
