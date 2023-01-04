@@ -28,7 +28,7 @@ pub(crate) use unarmed::unarmed;
 pub use weight_class::WeaponWeightClass;
 
 /// The interface for a character's weapons.
-pub struct Weapons<'view, 'source>(&'view Exaltation<'source>);
+pub struct Weapons<'view, 'source>(pub(crate) &'view Exaltation<'source>);
 
 impl<'view, 'source> Weapons<'view, 'source> {
     /// Retrieves the details for a specific weapon, if it exists.

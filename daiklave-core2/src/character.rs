@@ -20,7 +20,7 @@ use crate::{
         TerrestrialSpell,
     },
     willpower::Willpower,
-    CharacterMemo, CharacterMutation, CharacterMutationError,
+    CharacterMemo, CharacterMutation, CharacterMutationError, weapons::Weapons,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -764,5 +764,10 @@ impl<'view, 'source> Character<'source> {
     /// The character's Sorcery abilities, if any.
     pub fn sorcery(&'view self) -> Option<Sorcery<'view, 'source>> {
         self.exalt_state.sorcery()
+    }
+
+    /// The character's Weapons.
+    pub fn weapons(&'view self) -> Weapons<'view, 'source> {
+        Weapons(&self.exalt_state)
     }
 }
