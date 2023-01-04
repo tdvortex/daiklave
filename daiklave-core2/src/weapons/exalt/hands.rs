@@ -42,7 +42,7 @@ impl<'view, 'source> ExaltHands<'source> {
             ExaltHands::Empty => ExaltHandsMemo::Empty,
             ExaltHands::MainHand(view) => ExaltHandsMemo::MainHand(view.as_memo()),
             ExaltHands::OffHand(view) => ExaltHandsMemo::OffHand(view.as_memo()),
-            ExaltHands::Both(arr) => ExaltHandsMemo::Both(
+            ExaltHands::Both(arr) => ExaltHandsMemo::Both(Box::new(
                 arr.iter()
                     .map(|el| el.as_memo())
                     .enumerate()
@@ -51,7 +51,7 @@ impl<'view, 'source> ExaltHands<'source> {
                         opt_arr
                     })
                     .map(|opt| opt.unwrap()),
-            ),
+            )),
             ExaltHands::TwoHanded(view) => ExaltHandsMemo::TwoHanded(view.as_memo()),
         }
     }
@@ -88,7 +88,7 @@ pub(crate) enum ExaltHandsMemo {
     Empty,
     MainHand(EquippedOneHandedWeaponMemo),
     OffHand(EquippedOneHandedWeaponMemo),
-    Both([EquippedOneHandedWeaponMemo; 2]),
+    Both(Box<[EquippedOneHandedWeaponMemo; 2]>),
     TwoHanded(EquippedTwoHandedWeaponMemo),
 }
 

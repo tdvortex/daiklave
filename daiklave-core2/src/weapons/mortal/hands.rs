@@ -71,7 +71,7 @@ impl<'view, 'source> MortalHands<'source> {
             MortalHands::Empty => MortalHandsMemo::Empty,
             MortalHands::MainHand(view) => MortalHandsMemo::MainHand(view.as_memo()),
             MortalHands::OffHand(view) => MortalHandsMemo::OffHand(view.as_memo()),
-            MortalHands::Both(arr) => MortalHandsMemo::Both(
+            MortalHands::Both(arr) => MortalHandsMemo::Both(Box::new(
                 arr.iter()
                     .map(|el| el.as_memo())
                     .enumerate()
@@ -80,7 +80,7 @@ impl<'view, 'source> MortalHands<'source> {
                         opt_arr
                     })
                     .map(|opt| opt.unwrap()),
-            ),
+            )),
             MortalHands::TwoHanded(view) => MortalHandsMemo::TwoHanded(view.as_memo()),
         }
     }
@@ -117,7 +117,7 @@ pub(crate) enum MortalHandsMemo {
     Empty,
     MainHand(EquippedOneHandedWeaponNoAttunementMemo),
     OffHand(EquippedOneHandedWeaponNoAttunementMemo),
-    Both([EquippedOneHandedWeaponNoAttunementMemo; 2]),
+    Both(Box<[EquippedOneHandedWeaponNoAttunementMemo; 2]>),
     TwoHanded(EquippedTwoHandedWeaponNoAttunementMemo),
 }
 

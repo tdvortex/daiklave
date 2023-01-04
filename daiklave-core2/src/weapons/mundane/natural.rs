@@ -13,7 +13,7 @@ impl<'source> Deref for NaturalMundaneWeapon<'source> {
     type Target = BaseWeapon<'source>;
 
     fn deref(&self) -> &Self::Target {
-        &*self.0
+        &self.0
     }
 }
 

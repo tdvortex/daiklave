@@ -186,7 +186,7 @@ impl<'view, 'source> AbilityType<'view, 'source> {
         match self {
             AbilityType::Vanilla(_, rating)
             | AbilityType::Craft(_, rating)
-            | AbilityType::MartialArts(_, rating) => *rating,
+            | AbilityType::MartialArts(_, rating) => rating,
         }
     }
 }
