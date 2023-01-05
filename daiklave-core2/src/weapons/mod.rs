@@ -1,6 +1,7 @@
 mod ability;
-mod artifact;
+pub(crate) mod artifact;
 mod base;
+pub mod builder;
 mod damage_type;
 mod equipped;
 pub(crate) mod exalt;
@@ -14,6 +15,8 @@ mod weapon_id;
 mod weight_class;
 
 pub use weapon_id::{ArtifactId, ArtifactWeaponId, BaseWeaponId, WeaponId};
+pub use tag::{WeaponTag, OtherWeaponTag};
+pub use range::{AttackRange, RangeBand};
 
 use crate::{
     book_reference::BookReference,
@@ -21,11 +24,12 @@ use crate::{
 };
 
 use self::{
-    artifact::ArtifactWeapon, base::BaseWeapon, hearthstone::OwnedHearthstone,
-    mundane::MundaneWeapon,
+    base::BaseWeapon, hearthstone::OwnedHearthstone, mundane::MundaneWeapon, builder::{artifact::ArtifactWeaponBuilder, base::BaseWeaponBuilder},
 };
 pub(crate) use unarmed::unarmed;
 pub use weight_class::WeaponWeightClass;
+pub use mundane::MundaneWeaponMemo;
+pub use artifact::ArtifactWeapon;
 
 /// The interface for a character's weapons.
 pub struct Weapons<'view, 'source>(pub(crate) &'view Exaltation<'source>);
@@ -47,6 +51,7 @@ impl<'view, 'source> Weapons<'view, 'source> {
 }
 
 /// The position of an equipped weapon.
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum Equipped {
     /// Natural weapons are always equipped.
     Natural,
@@ -61,6 +66,7 @@ pub enum Equipped {
 }
 
 /// For one-handed weapons, the position of that weapon.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum EquipHand {
     /// Wielded in the main hand
     MainHand,
@@ -68,10 +74,28 @@ pub enum EquipHand {
     OffHand,
 }
 
+impl Default for EquipHand {
+    fn default() -> Self {
+        Self::MainHand
+    }
+}
+
 /// The interface for a specific individual weapon
 pub struct Weapon<'view, 'source>(WeaponType<'view, 'source>);
 
 impl<'view, 'source> Weapon<'view, 'source> {
+    /// Starts constructing a base weapon, which is either a mundane
+    /// weapon (like "sword") or base artifact weapon (like "daiklave").
+    pub fn base(name: &'source str) -> BaseWeaponBuilder<'source> {
+        todo!()
+    }
+
+    /// Starts constructing a unique, named artifact weapon (like "Volcano
+    /// Cutter").
+    pub fn artifact(name: &'source str) -> ArtifactWeaponBuilder<'source> {
+        todo!()
+    }
+
     /// The weapon's Id
     pub fn id(&self) -> WeaponId {
         self.0.id()
@@ -141,6 +165,46 @@ impl<'view, 'source> Weapon<'view, 'source> {
     /// For example, the base weapon for "Volcano Cutter" would be "daiklave".
     pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, BaseWeapon<'source>)> {
         self.0.base_artifact_weapon()
+    }
+
+    /// The tags associated with the weapon. Follows the ordering conventions
+    /// in the core rulebook: Lethal/Bashing, then 
+    /// Archery/Brawl/Melee/MartialArts/Thrown, then other tags in alphabetical
+    /// order. Note: Archery weapons are two-handed by default.
+    pub fn tags(&self) -> impl Iterator<Item = WeaponTag> {
+        vec![todo!()].into_iter()
+    }
+
+    /// The weight class of the weapon.
+    pub fn weight_class(&self) -> WeaponWeightClass {
+        todo!()
+    }
+
+    /// The accuracy of the weapon, at the specified attack range. Returns
+    /// None if the weapon is unusable at that range. Note that Medium
+    /// Melee/Thrown weapons have different accuracies at Close range 
+    /// depending on if they are wielded as melee or thrown.
+    pub fn accuracy(&self, attack_range: AttackRange) -> Option<u8> {
+        todo!()
+    }
+
+    /// The damage rating of the weapon at the specified attack range.
+    /// Returns None if unusable at that range. Note that the Powerful
+    /// tag modifies weapon damage at close range meaning that in some
+    /// cases the weapon damage is not static across ranges.
+    pub fn damage(&self, attack_range: AttackRange) -> Option<u8> {
+        todo!()
+    }
+
+    /// The weapon's bonus or penalty to Parry defense. Returns None
+    /// if the weapon cannot be used to parry.
+    pub fn parry_mod(&self) -> Option<i8> {
+        todo!()
+    }
+
+    /// The weapon's Overwhelming value.
+    pub fn overwhelming(&self) -> u8 {
+        todo!()
     }
 }
 

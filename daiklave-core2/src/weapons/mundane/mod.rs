@@ -17,7 +17,7 @@ pub(in crate::weapons) use worn::{WornMundaneWeapon, WornMundaneWeaponMemo};
 
 use super::{base::BaseWeapon, EquipHand, Equipped};
 
-pub(in crate::weapons) enum MundaneWeapon<'source> {
+pub enum MundaneWeapon<'source> {
     Natural(NaturalMundaneWeapon<'source>),
     Worn(WornMundaneWeapon<'source>, bool),
     OneHanded(OneHandedMundaneWeapon<'source>, Option<EquipHand>),
@@ -38,6 +38,10 @@ impl<'source> Deref for MundaneWeapon<'source> {
 }
 
 impl<'source> MundaneWeapon<'source> {
+    pub fn as_memo(&self) -> MundaneWeaponMemo {
+        todo!()
+    }
+
     pub fn is_equipped(&self) -> Option<Equipped> {
         match self {
             MundaneWeapon::Natural(_) => Some(Equipped::Natural),
@@ -63,3 +67,6 @@ impl<'source> MundaneWeapon<'source> {
         }
     }
 }
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MundaneWeaponMemo;

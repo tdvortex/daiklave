@@ -4,6 +4,7 @@
 //! with full Discord integration for over-the-internet play.
 
 use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
+use artifact::ArtifactMemo;
 use attributes::{AttributeName, SetAttributesError};
 use exaltation::exalt::{
     essence::{
@@ -26,6 +27,9 @@ pub mod abilities;
 
 /// Structs related to a character's Attributes.
 pub mod attributes;
+
+/// General properties of artifacts.
+pub mod artifact;
 
 /// Official page references.
 pub mod book_reference;
@@ -65,6 +69,7 @@ mod willpower;
 
 pub use character::Character;
 pub use character_memo::CharacterMemo;
+use weapons::{BaseWeaponId, MundaneWeaponMemo, EquipHand, WeaponId, ArtifactId};
 
 /// The API for the character, expressed as an owned struct. Each mutation has
 /// an associated pub method on Character and CharacterEventSource which
@@ -126,6 +131,17 @@ pub enum CharacterMutation {
     SetMartialArtsDots(MartialArtsStyleId, u8),
     /// Sets the Craft dots for a particular focus area.
     SetCraftDots(String, u8),
+    /// Adds a mundane weapon to the character.
+    AddMundaneWeapon(BaseWeaponId, MundaneWeaponMemo),
+    /// Equips the specific weapon. For a OneHanded weapon, will equip into
+    /// the specified hand, otherwise the parameter is ignored.
+    EquipWeapon(WeaponId, Option<EquipHand>),
+    /// Unequips the specific weapon. For a OneHanded weapon, will equip only
+    /// the weapon in the specified hand.
+    UnequipWeapon(WeaponId, Option<EquipHand>),
+    /// Add an artifact to the character, which may be a weapon, armor item,
+    /// warstrider, or wonder.
+    AddArtifact(ArtifactId, ArtifactMemo),
 }
 
 /// An error representing something that could go wrong with a

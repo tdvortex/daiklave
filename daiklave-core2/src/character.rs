@@ -20,7 +20,7 @@ use crate::{
         TerrestrialSpell,
     },
     willpower::Willpower,
-    CharacterMemo, CharacterMutation, CharacterMutationError, weapons::Weapons,
+    CharacterMemo, CharacterMutation, CharacterMutationError, weapons::{Weapons, WeaponId, EquipHand},
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -120,6 +120,10 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::SetCraftDots(focus, dots) => {
                 self.check_set_craft_dots(focus.as_str(), *dots)
             }
+            CharacterMutation::AddMundaneWeapon(_, _) => todo!(),
+            CharacterMutation::EquipWeapon(_, _) => todo!(),
+            CharacterMutation::UnequipWeapon(_, _) => todo!(),
+            CharacterMutation::AddArtifact(_, _) => todo!(),
         }
     }
 
@@ -173,6 +177,10 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::SetCraftDots(focus, dots) => {
                 self.set_craft_dots(focus.as_str(), *dots)
             }
+            CharacterMutation::AddMundaneWeapon(_, _) => todo!(),
+            CharacterMutation::EquipWeapon(_, _) => todo!(),
+            CharacterMutation::UnequipWeapon(_, _) => todo!(),
+            CharacterMutation::AddArtifact(_, _) => todo!(),
         }
     }
 
@@ -769,5 +777,29 @@ impl<'view, 'source> Character<'source> {
     /// The character's Weapons.
     pub fn weapons(&'view self) -> Weapons<'view, 'source> {
         Weapons(&self.exalt_state)
+    }
+
+    /// Equips a weapon. \n For a OneHanded weapon, the hand parameter is
+    /// required and will unequip the weapon already in that hand. If a 
+    /// mundane weapon is equipped twice, it will be duplicated because mundane
+    /// weapons are not unique. Artifact weapons will not be duplicated and 
+    /// will instead return Err. \n
+    /// For Worn weapons, the hand parameter is ignored and will not unequip 
+    /// any weapons. \n For TwoHanded weapons, the hand parameter is ignored 
+    /// and all one- or two-handed weapons will be unequipped. \n
+    /// For Natural weapons, will return an Err. \n
+    /// For all weapons, will return an Err if the weapon does not currently exist on
+    /// the character.
+    pub fn equip_weapon(&self, weapon_id: WeaponId, hand: Option<EquipHand>) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
+    }
+
+    /// Unequips a weapon. For Worn and TwoHanded weapons, the hand parameter
+    /// is ignored, and will Err if and only if the weapon is not equipped.
+    /// For OneHanded weapons, the hand parameter is required and will return 
+    /// Err if not supplied or the weapon is not found in that hand. For 
+    /// Natural weapons, will return an Err.
+    pub fn unequip_weapon(&self, weapon_id: WeaponId, hand: Option<EquipHand>) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
     }
 }

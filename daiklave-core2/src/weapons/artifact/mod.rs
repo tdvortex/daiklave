@@ -22,11 +22,12 @@ pub(in crate::weapons) use one_handed::{OneHandedArtifactWeapon, OneHandedArtifa
 pub(in crate::weapons) use two_handed::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo};
 pub(in crate::weapons) use worn::WornArtifactWeapon;
 
-use self::named::NamedArtifactWeapon;
+
+use self::{named::NamedArtifactWeapon, natural::NaturalArtifactWeaponMemo, worn::WornArtifactWeaponMemo};
 
 use super::{EquipHand, Equipped};
 
-pub(in crate::weapons) enum ArtifactWeapon<'view, 'source> {
+pub enum ArtifactWeapon<'view, 'source> {
     Natural(&'view NaturalArtifactWeapon<'source>),
     Worn(&'view WornArtifactWeapon<'source>, bool),
     OneHanded(&'view OneHandedArtifactWeapon<'source>, Option<EquipHand>),
@@ -71,4 +72,12 @@ impl<'view, 'source> ArtifactWeapon<'view, 'source> {
             }
         }
     }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ArtifactWeaponMemo {
+    Natural(NaturalArtifactWeaponMemo),
+    Worn(WornArtifactWeaponMemo, bool),
+    OneHanded(OneHandedArtifactWeaponMemo, Option<EquipHand>),
+    TwoHanded(TwoHandedArtifactWeaponMemo, bool),
 }

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use super::range::RangeBand;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-pub(in crate::weapons) enum OtherWeaponTag {
+pub enum OtherWeaponTag {
     Balanced,
     Chopping,
     Concealable,

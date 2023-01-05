@@ -15,3 +15,8 @@ pub enum RangeBand {
     Long,
     Extreme,
 }
+
+pub enum AttackRange {
+    Melee,
+    Ranged(RangeBand),
+}

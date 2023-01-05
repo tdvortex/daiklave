@@ -12,7 +12,7 @@ use crate::{
 use super::base::{BaseArtifactWeapon, BaseArtifactWeaponMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct NamedArtifactWeapon<'source> {
+pub struct NamedArtifactWeapon<'source> {
     name: &'source str,
     book_reference: Option<BookReference>,
     merit_dots: u8,
@@ -79,7 +79,7 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) struct NamedArtifactWeaponMemo {
+pub struct NamedArtifactWeaponMemo {
     name: String,
     book_reference: Option<BookReference>,
     merit_dots: u8,
