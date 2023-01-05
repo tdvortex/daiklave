@@ -73,21 +73,21 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
                     NonnaturalArtifactWeaponNoAttunement::Worn(worn) => {
                         Some(Weapon(WeaponType::Artifact(
                             target_id,
-                            ArtifactWeapon::Worn(worn, false),
+                            ArtifactWeapon::Worn(worn.clone(), false),
                             attunement,
                         )))
                     }
                     NonnaturalArtifactWeaponNoAttunement::OneHanded(one) => {
                         Some(Weapon(WeaponType::Artifact(
                             target_id,
-                            ArtifactWeapon::OneHanded(one, None),
+                            ArtifactWeapon::OneHanded(one.clone(), None),
                             attunement,
                         )))
                     }
                     NonnaturalArtifactWeaponNoAttunement::TwoHanded(two) => {
                         Some(Weapon(WeaponType::Artifact(
                             target_id,
-                            ArtifactWeapon::TwoHanded(two, false),
+                            ArtifactWeapon::TwoHanded(two.clone(), false),
                             attunement,
                         )))
                     }

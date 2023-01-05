@@ -58,14 +58,14 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                 HandlessArtifactWeaponNoAttunement::Natural(natural_artifact) => {
                     Some(Weapon(WeaponType::Artifact(
                         target_id,
-                        ArtifactWeapon::Natural(natural_artifact),
+                        ArtifactWeapon::Natural(natural_artifact.clone()),
                         None,
                     )))
                 }
                 HandlessArtifactWeaponNoAttunement::Worn(worn_artifact) => {
                     Some(Weapon(WeaponType::Artifact(
                         target_id,
-                        ArtifactWeapon::Worn(worn_artifact, true),
+                        ArtifactWeapon::Worn(worn_artifact.clone(), true),
                         None,
                     )))
                 }

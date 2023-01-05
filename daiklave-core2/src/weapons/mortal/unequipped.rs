@@ -62,13 +62,13 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
             },
             WeaponId::Artifact(target_id) => match self.artifact.get(&target_id)? {
                 NonnaturalArtifactWeaponNoAttunement::Worn(worn) => Some(Weapon(
-                    WeaponType::Artifact(target_id, ArtifactWeapon::Worn(worn, false), None),
+                    WeaponType::Artifact(target_id, ArtifactWeapon::Worn(worn.clone(), false), None),
                 )),
                 NonnaturalArtifactWeaponNoAttunement::OneHanded(one) => Some(Weapon(
-                    WeaponType::Artifact(target_id, ArtifactWeapon::OneHanded(one, None), None),
+                    WeaponType::Artifact(target_id, ArtifactWeapon::OneHanded(one.clone(), None), None),
                 )),
                 NonnaturalArtifactWeaponNoAttunement::TwoHanded(two) => Some(Weapon(
-                    WeaponType::Artifact(target_id, ArtifactWeapon::TwoHanded(two, false), None),
+                    WeaponType::Artifact(target_id, ArtifactWeapon::TwoHanded(two.clone(), false), None),
                 )),
             },
         }

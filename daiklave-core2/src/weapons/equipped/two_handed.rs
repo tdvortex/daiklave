@@ -49,7 +49,7 @@ impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
                 } else {
                     Some(Weapon(WeaponType::Artifact(
                         target_id,
-                        ArtifactWeapon::TwoHanded(two, true),
+                        ArtifactWeapon::TwoHanded(two.clone(), true),
                         None,
                     )))
                 }
@@ -145,7 +145,7 @@ impl<'view, 'source> EquippedTwoHandedWeapon<'source> {
                 } else {
                     Some(Weapon(WeaponType::Artifact(
                         target_id,
-                        ArtifactWeapon::TwoHanded(two, true),
+                        ArtifactWeapon::TwoHanded(two.clone(), true),
                         *attunement,
                     )))
                 }
