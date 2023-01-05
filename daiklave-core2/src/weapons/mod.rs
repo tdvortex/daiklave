@@ -1,6 +1,7 @@
 mod ability;
 pub(crate) mod artifact;
 mod base;
+/// Builders for weapons.
 pub mod builder;
 mod damage_type;
 mod equipped;

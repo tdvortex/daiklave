@@ -6,21 +6,22 @@ use crate::{
         base::BaseWeapon,
         hearthstone::{OwnedHearthstone, OwnedHearthstoneMemo},
         BaseWeaponId,
-    },
+    }, artifact::MagicMaterial,
 };
 
 use super::base::{BaseArtifactWeapon, BaseArtifactWeaponMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NamedArtifactWeapon<'source> {
-    name: &'source str,
-    book_reference: Option<BookReference>,
-    merit_dots: u8,
-    base_weapon_id: BaseWeaponId,
-    base_weapon: BaseArtifactWeapon<'source>,
-    lore: Option<&'source str>,
-    powers: Option<&'source str>,
-    hearthstone_slots: Vec<Option<OwnedHearthstone<'source>>>,
+    pub(crate) name: &'source str,
+    pub(crate) book_reference: Option<BookReference>,
+    pub(crate) merit_dots: u8,
+    pub(crate) magic_material: MagicMaterial,
+    pub(crate) base_weapon_id: BaseWeaponId,
+    pub(crate) base_weapon: BaseArtifactWeapon<'source>,
+    pub(crate) lore: Option<&'source str>,
+    pub(crate) powers: Option<&'source str>,
+    pub(crate) hearthstone_slots: Vec<Option<OwnedHearthstone<'source>>>,
 }
 
 impl<'view, 'source> NamedArtifactWeapon<'source> {
@@ -38,6 +39,7 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
                 .iter()
                 .map(|option| option.map(|hearthstone| hearthstone.as_memo()))
                 .collect(),
+            magic_material: self.magic_material,
         }
     }
 
@@ -83,6 +85,7 @@ pub struct NamedArtifactWeaponMemo {
     name: String,
     book_reference: Option<BookReference>,
     merit_dots: u8,
+    magic_material: MagicMaterial,
     base_weapon_id: BaseWeaponId,
     base_weapon: BaseArtifactWeaponMemo,
     lore: Option<String>,
@@ -105,6 +108,7 @@ impl<'source> NamedArtifactWeaponMemo {
                 .iter()
                 .map(|option| option.as_ref().map(|memo| memo.as_ref()))
                 .collect(),
+            magic_material: self.magic_material,
         }
     }
 }

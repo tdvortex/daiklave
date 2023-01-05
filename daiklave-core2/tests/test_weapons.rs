@@ -193,4 +193,5 @@ fn test_weapons_event_source() {
             .build()
         ).as_memo()
     );
+    event_source.apply_mutation(mutation).unwrap();
 }

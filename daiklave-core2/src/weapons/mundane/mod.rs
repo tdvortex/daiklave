@@ -68,5 +68,6 @@ impl<'source> MundaneWeapon<'source> {
     }
 }
 
+/// An owned copy of a Mundane Weapon.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MundaneWeaponMemo;

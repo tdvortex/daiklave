@@ -29,10 +29,21 @@ pub(crate) use self::named::NamedArtifactWeapon;
 
 use super::{EquipHand, Equipped};
 
+/// An artifact weapon, discriminated by its wielding characteristics.
 pub enum ArtifactWeapon<'source> {
+    /// An artifact weapon that is part of the wielder's body. This is unusual,
+    /// but possible through Charm effects like Silver-Voiced Nightengale 
+    /// Style, the Blood Lash spell, or certain Lunar shapeshifting Charms.
     Natural(NaturalArtifactWeapon<'source>),
+    /// An artifact weapon that is worn and does not occupy a hand, such as 
+    /// Smashfists or Razor Claws. The second parameter indicates whether it
+    /// is currently equipped.
     Worn(WornArtifactWeapon<'source>, bool),
+    /// A one-handed artifact weapon. If it is equipped, the second parameter
+    /// is Some with the hand it occupies.
     OneHanded(OneHandedArtifactWeapon<'source>, Option<EquipHand>),
+    /// A two-handed artifact weapon. The second parameter indicates whether it
+    /// is currently equipped.
     TwoHanded(TwoHandedArtifactWeapon<'source>, bool),
 }
 
@@ -50,6 +61,8 @@ impl<'view, 'source> Deref for ArtifactWeapon<'source> {
 }
 
 impl<'source> ArtifactWeapon<'source> {
+    /// Returns None if not equipped, or an enum representing its equipped
+    /// status (Natural, Worn, TwoHanded, MainHand, or OffHand).
     pub fn is_equipped(&self) -> Option<Equipped> {
         match self {
             ArtifactWeapon::Natural(_) => Some(Equipped::Natural),
@@ -74,6 +87,16 @@ impl<'source> ArtifactWeapon<'source> {
             }
         }
     }
+
+    /// Creates (by cloning) an owned copy of the artifact weapon.
+    pub fn as_memo(&self) -> ArtifactWeaponMemo {
+        match self {
+            ArtifactWeapon::Natural(view) => ArtifactWeaponMemo::Natural(view.as_memo()),
+            ArtifactWeapon::Worn(view, equipped) => ArtifactWeaponMemo::Worn(view.as_memo(), *equipped),
+            ArtifactWeapon::OneHanded(view, equipped) => ArtifactWeaponMemo::OneHanded(view.as_memo(), *equipped),
+            ArtifactWeapon::TwoHanded(view, equipped) => ArtifactWeaponMemo::TwoHanded(view.as_memo(), *equipped),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -82,4 +105,15 @@ pub enum ArtifactWeaponMemo {
     Worn(WornArtifactWeaponMemo, bool),
     OneHanded(OneHandedArtifactWeaponMemo, Option<EquipHand>),
     TwoHanded(TwoHandedArtifactWeaponMemo, bool),
+}
+
+impl<'source> ArtifactWeaponMemo {
+    pub fn as_ref(&'source self) -> ArtifactWeapon<'source> {
+        match self {
+            ArtifactWeaponMemo::Natural(memo) => ArtifactWeapon::Natural(memo.as_ref()),
+            ArtifactWeaponMemo::Worn(memo, equipped) => ArtifactWeapon::Worn(memo.as_ref(), *equipped),
+            ArtifactWeaponMemo::OneHanded(memo, equipped) => ArtifactWeapon::OneHanded(memo.as_ref(), *equipped),
+            ArtifactWeaponMemo::TwoHanded(memo, equipped) => ArtifactWeapon::TwoHanded(memo.as_ref(), *equipped),
+        }
+    }
 }
