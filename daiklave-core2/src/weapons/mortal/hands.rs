@@ -85,7 +85,7 @@ impl<'view, 'source> MortalHands<'source> {
         }
     }
 
-    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
         match self {
             MortalHands::Empty => None,
             MortalHands::MainHand(one) => one.get_weapon(weapon_id, EquipHand::MainHand),

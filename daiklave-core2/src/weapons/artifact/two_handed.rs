@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use super::named::{NamedArtifactWeapon, NamedArtifactWeaponMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TwoHandedArtifactWeapon<'source>(NamedArtifactWeapon<'source>);
+pub struct TwoHandedArtifactWeapon<'source>(pub(crate) NamedArtifactWeapon<'source>);
 
 impl<'source> Deref for TwoHandedArtifactWeapon<'source> {
     type Target = NamedArtifactWeapon<'source>;

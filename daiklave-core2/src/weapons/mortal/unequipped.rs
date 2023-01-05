@@ -43,7 +43,7 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
         }
     }
 
-    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
         match weapon_id {
             WeaponId::Unarmed => Some(crate::weapons::unarmed()),
             WeaponId::Mundane(target_id) => match self.mundane.get(&target_id)? {

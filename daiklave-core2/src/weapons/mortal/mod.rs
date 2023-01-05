@@ -34,7 +34,7 @@ impl<'view, 'source> MortalWeapons<'source> {
         }
     }
 
-    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             Some(super::unarmed())
         } else {

@@ -115,7 +115,7 @@ impl<'build> BaseWeaponBuilderWithAttack<'build> {
         todo!()
     }
 
-    pub fn build_artifact(self) -> BaseArtifactWeaponInsert {
+    pub fn build_artifact(self) -> BaseArtifactWeaponInsert<'build> {
         todo!()
     }
 }

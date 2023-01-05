@@ -8,18 +8,22 @@ pub enum ArtifactMemo {
 }
 
 impl<'source> ArtifactMemo {
-    pub fn as_ref(&'source self) -> Artifact<'source, 'source> {
-        todo!()
+    pub fn as_ref(&'source self) -> Artifact<'source> {
+        match self {
+            ArtifactMemo::Weapon(memo) => Artifact::Weapon(memo.as_ref()),
+        }
     }
 }
 
-pub enum Artifact<'view, 'source> {
-    Weapon(ArtifactWeapon<'view, 'source>)
+pub enum Artifact<'source> {
+    Weapon(ArtifactWeapon<'source>)
 }
 
-impl<'view, 'source> Artifact<'view, 'source> {
+impl<'source> Artifact<'source> {
     pub fn as_memo(&self) -> ArtifactMemo {
-        todo!()
+        match self {
+            Artifact::Weapon(view) => ArtifactMemo::Weapon(view.as_memo())
+        }
     }
 }
 

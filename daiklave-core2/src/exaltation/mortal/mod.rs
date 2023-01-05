@@ -27,7 +27,7 @@ pub(crate) struct Mortal<'source> {
     pub weapons: MortalWeapons<'source>,
 }
 
-impl<'view, 'source> Mortal<'source> {
+impl<'source> Mortal<'source> {
     pub fn as_memo(&self) -> MortalMemo {
         MortalMemo::new(
             self.martial_arts_styles
@@ -137,7 +137,7 @@ impl<'view, 'source> Mortal<'source> {
         Ok(self)
     }
 
-    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
+    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             Some(crate::weapons::unarmed())
         } else {

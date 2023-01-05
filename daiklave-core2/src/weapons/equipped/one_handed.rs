@@ -28,7 +28,7 @@ impl<'view, 'source> EquippedOneHandedWeaponNoAttunement<'source> {
         &'view self,
         weapon_id: WeaponId,
         hand: EquipHand,
-    ) -> Option<Weapon<'view, 'source>> {
+    ) -> Option<Weapon<'source>> {
         match (weapon_id, self) {
             (WeaponId::Unarmed, _) => Some(crate::weapons::unarmed()),
             (
@@ -132,7 +132,7 @@ impl<'view, 'source> EquippedOneHandedWeapon<'source> {
         &'view self,
         weapon_id: WeaponId,
         hand: EquipHand,
-    ) -> Option<Weapon<'view, 'source>> {
+    ) -> Option<Weapon<'source>> {
         match (self, weapon_id) {
             (EquippedOneHandedWeapon::Mundane(actual_id, one), WeaponId::Mundane(target_id)) => {
                 if &target_id != actual_id {

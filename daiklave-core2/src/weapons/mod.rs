@@ -36,7 +36,7 @@ pub struct Weapons<'view, 'source>(pub(crate) &'view Exaltation<'source>);
 
 impl<'view, 'source> Weapons<'view, 'source> {
     /// Retrieves the details for a specific weapon, if it exists.
-    pub fn get(&self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
+    pub fn get(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             Some(unarmed())
         } else {
@@ -81,9 +81,9 @@ impl Default for EquipHand {
 }
 
 /// The interface for a specific individual weapon
-pub struct Weapon<'view, 'source>(WeaponType<'view, 'source>);
+pub struct Weapon<'source>(WeaponType<'source>);
 
-impl<'view, 'source> Weapon<'view, 'source> {
+impl<'view, 'source> Weapon<'source> {
     /// Starts constructing a base weapon, which is either a mundane
     /// weapon (like "sword") or base artifact weapon (like "daiklave").
     pub fn base(name: &'source str) -> BaseWeaponBuilder<'source> {
@@ -208,12 +208,12 @@ impl<'view, 'source> Weapon<'view, 'source> {
     }
 }
 
-enum WeaponType<'view, 'source> {
+enum WeaponType<'source> {
     Mundane(BaseWeaponId, MundaneWeapon<'source>),
-    Artifact(ArtifactWeaponId, ArtifactWeapon<'view, 'source>, Option<u8>),
+    Artifact(ArtifactWeaponId, ArtifactWeapon<'source>, Option<u8>),
 }
 
-impl<'view, 'source> WeaponType<'view, 'source> {
+impl<'view, 'source> WeaponType<'source> {
     pub fn id(&self) -> WeaponId {
         match self {
             WeaponType::Mundane(base_id, _) => WeaponId::Mundane(*base_id),

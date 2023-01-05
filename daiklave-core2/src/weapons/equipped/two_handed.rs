@@ -24,7 +24,7 @@ impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
         }
     }
 
-    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
         match (weapon_id, self) {
             (WeaponId::Unarmed, _) => Some(crate::weapons::unarmed()),
             (
@@ -124,7 +124,7 @@ impl<'view, 'source> EquippedTwoHandedWeapon<'source> {
         }
     }
 
-    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
         match (self, weapon_id) {
             (EquippedTwoHandedWeapon::Mundane(actual_id, two), WeaponId::Mundane(target_id)) => {
                 if &target_id != actual_id {

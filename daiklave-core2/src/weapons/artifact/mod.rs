@@ -21,20 +21,22 @@ pub(in crate::weapons) use nonnatural::{
 pub(in crate::weapons) use one_handed::{OneHandedArtifactWeapon, OneHandedArtifactWeaponMemo};
 pub(in crate::weapons) use two_handed::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo};
 pub(in crate::weapons) use worn::WornArtifactWeapon;
+pub(crate) use base::BaseArtifactWeapon;
 
 
-use self::{named::NamedArtifactWeapon, natural::NaturalArtifactWeaponMemo, worn::WornArtifactWeaponMemo};
+use self::{natural::NaturalArtifactWeaponMemo, worn::WornArtifactWeaponMemo};
+pub(crate) use self::named::NamedArtifactWeapon;
 
 use super::{EquipHand, Equipped};
 
-pub enum ArtifactWeapon<'view, 'source> {
-    Natural(&'view NaturalArtifactWeapon<'source>),
-    Worn(&'view WornArtifactWeapon<'source>, bool),
-    OneHanded(&'view OneHandedArtifactWeapon<'source>, Option<EquipHand>),
-    TwoHanded(&'view TwoHandedArtifactWeapon<'source>, bool),
+pub enum ArtifactWeapon<'source> {
+    Natural(NaturalArtifactWeapon<'source>),
+    Worn(WornArtifactWeapon<'source>, bool),
+    OneHanded(OneHandedArtifactWeapon<'source>, Option<EquipHand>),
+    TwoHanded(TwoHandedArtifactWeapon<'source>, bool),
 }
 
-impl<'view, 'source> Deref for ArtifactWeapon<'view, 'source> {
+impl<'view, 'source> Deref for ArtifactWeapon<'source> {
     type Target = NamedArtifactWeapon<'source>;
 
     fn deref(&self) -> &Self::Target {
@@ -47,7 +49,7 @@ impl<'view, 'source> Deref for ArtifactWeapon<'view, 'source> {
     }
 }
 
-impl<'view, 'source> ArtifactWeapon<'view, 'source> {
+impl<'source> ArtifactWeapon<'source> {
     pub fn is_equipped(&self) -> Option<Equipped> {
         match self {
             ArtifactWeapon::Natural(_) => Some(Equipped::Natural),

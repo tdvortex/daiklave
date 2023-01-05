@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::weapons::base::{BaseWeapon, BaseWeaponMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(in crate::weapons) struct BaseArtifactWeapon<'source>(BaseWeapon<'source>);
+pub(crate) struct BaseArtifactWeapon<'source>(BaseWeapon<'source>);
 
 impl<'source> Deref for BaseArtifactWeapon<'source> {
     type Target = BaseWeapon<'source>;

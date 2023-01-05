@@ -52,7 +52,7 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
         }
     }
 
-    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'view, 'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
         let in_hands = self.hands.get_weapon(weapon_id);
         if in_hands.is_some() {
             return in_hands;
