@@ -790,7 +790,7 @@ impl<'view, 'source> Character<'source> {
     /// For Natural weapons, will return an Err. \n
     /// For all weapons, will return an Err if the weapon does not currently exist on
     /// the character.
-    pub fn equip_weapon(&self, weapon_id: WeaponId, hand: Option<EquipHand>) -> Result<&mut Self, CharacterMutationError> {
+    pub fn equip_weapon(&self, _weapon_id: WeaponId, _hand: Option<EquipHand>) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
@@ -799,7 +799,7 @@ impl<'view, 'source> Character<'source> {
     /// For OneHanded weapons, the hand parameter is required and will return 
     /// Err if not supplied or the weapon is not found in that hand. For 
     /// Natural weapons, will return an Err.
-    pub fn unequip_weapon(&self, weapon_id: WeaponId, hand: Option<EquipHand>) -> Result<&mut Self, CharacterMutationError> {
+    pub fn unequip_weapon(&self, _weapon_id: WeaponId, _hand: Option<EquipHand>) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 }

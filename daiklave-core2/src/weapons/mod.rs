@@ -185,7 +185,7 @@ impl<'view, 'source> Weapon<'source> {
     /// Archery/Brawl/Melee/MartialArts/Thrown, then other tags in alphabetical
     /// order. Note: Archery weapons are two-handed by default.
     pub fn tags(&self) -> impl Iterator<Item = WeaponTag> {
-        vec![todo!()].into_iter()
+        vec![].into_iter()
     }
 
     /// The weight class of the weapon.
@@ -197,7 +197,7 @@ impl<'view, 'source> Weapon<'source> {
     /// None if the weapon is unusable at that range. Note that Medium
     /// Melee/Thrown weapons have different accuracies at Close range 
     /// depending on if they are wielded as melee or thrown.
-    pub fn accuracy(&self, attack_range: AttackRange) -> Option<u8> {
+    pub fn accuracy(&self, _attack_range: AttackRange) -> Option<u8> {
         todo!()
     }
 
@@ -205,7 +205,7 @@ impl<'view, 'source> Weapon<'source> {
     /// Returns None if unusable at that range. Note that the Powerful
     /// tag modifies weapon damage at close range meaning that in some
     /// cases the weapon damage is not static across ranges.
-    pub fn damage(&self, attack_range: AttackRange) -> Option<u8> {
+    pub fn damage(&self, _attack_range: AttackRange) -> Option<u8> {
         todo!()
     }
 
