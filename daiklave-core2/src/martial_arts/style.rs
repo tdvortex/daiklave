@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{armor::ArmorWeight, book_reference::BookReference, weapons::BaseWeaponId};
+use crate::{armor::ArmorWeight, book_reference::BookReference, weapons::weapon::BaseWeaponId};
 
 /// A Martial Arts style description.
 #[derive(Debug, Default, PartialEq, Eq, Clone, Serialize, Deserialize)]

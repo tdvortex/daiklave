@@ -1,0 +1,16 @@
+use std::ops::Deref;
+
+use serde::{Deserialize, Serialize};
+
+use crate::unique_id::UniqueId;
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]
+pub struct HearthstoneId(pub UniqueId);
+
+impl Deref for HearthstoneId {
+    type Target = UniqueId;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}

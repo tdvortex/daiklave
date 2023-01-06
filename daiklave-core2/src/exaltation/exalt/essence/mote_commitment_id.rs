@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{unique_id::UniqueId, weapons::ArtifactId};
+use crate::{artifact::ArtifactId, unique_id::UniqueId};
 
 /// A unique identifier for a mote commitment effect.
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, Serialize, Deserialize)]

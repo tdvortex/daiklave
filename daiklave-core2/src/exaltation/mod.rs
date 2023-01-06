@@ -19,7 +19,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    weapons::{Weapon, WeaponId, BaseWeaponId, MundaneWeaponMemo},
+    weapons::weapon::{mundane::MundaneWeaponMemo, BaseWeaponId, Weapon, WeaponId},
     CharacterMutationError,
 };
 
@@ -50,7 +50,7 @@ impl<'source> Default for Exaltation<'source> {
     }
 }
 
-impl<'view, 'source> Exaltation<'source> {
+impl<'source> Exaltation<'source> {
     pub fn as_memo(&self) -> ExaltationMemo {
         match self {
             Exaltation::Mortal(box_view) => {
@@ -72,7 +72,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
-            Some(crate::weapons::unarmed())
+            Some(crate::weapons::weapon::mundane::unarmed())
         } else {
             match self {
                 Exaltation::Mortal(box_mortal) => box_mortal.as_ref().get_weapon(weapon_id),
@@ -521,10 +521,18 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub fn add_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: &'source MundaneWeaponMemo) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_mundane_weapon(
+        &mut self,
+        weapon_id: BaseWeaponId,
+        weapon: &'source MundaneWeaponMemo,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(mortal) => {mortal.as_mut().add_mundane_weapon(weapon_id, weapon)?;}
-            Exaltation::Exalt(exalt) => {exalt.as_mut().add_mundane_weapon(weapon_id, weapon)?;}
+            Exaltation::Mortal(mortal) => {
+                mortal.as_mut().add_mundane_weapon(weapon_id, weapon)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.as_mut().add_mundane_weapon(weapon_id, weapon)?;
+            }
         }
         Ok(self)
     }

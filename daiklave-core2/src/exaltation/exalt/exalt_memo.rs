@@ -2,10 +2,11 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{martial_arts::MartialArtsStyleId, weapons::exalt::ExaltWeaponsMemo};
+use crate::martial_arts::MartialArtsStyleId;
 
 use super::{
-    essence::EssenceMemo, exalt_type::ExaltTypeMemo, martial_arts::ExaltMartialArtistMemo, Exalt,
+    essence::EssenceMemo, exalt_type::ExaltTypeMemo, martial_arts::ExaltMartialArtistMemo,
+    weapons::ExaltWeaponsMemo, Exalt,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

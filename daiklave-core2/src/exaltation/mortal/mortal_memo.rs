@@ -5,10 +5,9 @@ use serde::{Deserialize, Serialize};
 use crate::{
     martial_arts::MartialArtsStyleId,
     sorcery::circles::terrestrial::sorcerer_memo::TerrestrialCircleSorcererMemo,
-    weapons::mortal::MortalWeaponsMemo,
 };
 
-use super::{martial_arts::MortalMartialArtistMemo, Mortal};
+use super::{martial_arts::MortalMartialArtistMemo, weapons::MortalWeaponsMemo, Mortal};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MortalMemo {

@@ -4,7 +4,7 @@
 //! with full Discord integration for over-the-internet play.
 
 use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
-use artifact::ArtifactMemo;
+use artifact::{ArtifactId, ArtifactMemo};
 use attributes::{AttributeName, SetAttributesError};
 use exaltation::exalt::{
     essence::{
@@ -64,12 +64,16 @@ mod armor;
 mod character;
 mod character_memo;
 pub(crate) mod craft;
+mod hearthstone;
 mod name_and_concept;
 mod willpower;
 
 pub use character::Character;
 pub use character_memo::CharacterMemo;
-use weapons::{BaseWeaponId, MundaneWeaponMemo, EquipHand, WeaponId, ArtifactId, error::WeaponError};
+use weapons::{
+    weapon::{equipped::EquipHand, mundane::MundaneWeaponMemo, BaseWeaponId, WeaponId},
+    WeaponError,
+};
 
 /// The API for the character, expressed as an owned struct. Each mutation has
 /// an associated pub method on Character and CharacterEventSource which

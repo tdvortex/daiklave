@@ -6,7 +6,7 @@ use crate::{
         exalt::martial_arts::ExaltMartialArtist, mortal::martial_arts::MortalMartialArtist,
     },
     martial_arts::{MartialArtsCharm, MartialArtsCharmId},
-    weapons::BaseWeaponId,
+    weapons::weapon::BaseWeaponId,
 };
 
 pub(crate) enum ExaltationMartialArtist<'view, 'source> {

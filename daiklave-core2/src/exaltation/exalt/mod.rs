@@ -8,9 +8,11 @@ pub mod exalt_type;
 mod exalt_memo;
 pub(crate) mod martial_arts;
 mod sorcery;
+mod weapons;
 
 pub(crate) use exalt_memo::ExaltMemo;
 pub(crate) use sorcery::ExaltSorcery;
+pub(crate) use weapons::{ExaltEquippedWeapons, ExaltHands, ExaltUnequippedWeapons, ExaltWeapons};
 
 use std::collections::HashMap;
 
@@ -25,7 +27,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    weapons::{exalt::ExaltWeapons, Weapon, WeaponId, BaseWeaponId, MundaneWeaponMemo},
+    weapons::weapon::{mundane::MundaneWeaponMemo, BaseWeaponId, Weapon, WeaponId},
     CharacterMutationError,
 };
 
@@ -101,7 +103,7 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
-            Some(crate::weapons::unarmed())
+            Some(crate::weapons::weapon::mundane::unarmed())
         } else {
             self.weapons.get_weapon(weapon_id)
         }
@@ -501,7 +503,11 @@ impl<'view, 'source> Exalt<'source> {
         }
     }
 
-    pub(crate) fn add_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: &'source MundaneWeaponMemo) -> Result<&mut Self, CharacterMutationError> {
+    pub(crate) fn add_mundane_weapon(
+        &mut self,
+        weapon_id: BaseWeaponId,
+        weapon: &'source MundaneWeaponMemo,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.add_mundane_weapon(weapon_id, weapon)?;
         Ok(self)
     }

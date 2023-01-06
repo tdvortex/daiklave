@@ -1,6 +1,10 @@
 pub(crate) mod martial_arts;
 mod mortal_memo;
+mod weapons;
 use std::collections::HashMap;
+pub(crate) use weapons::{
+    MortalEquippedWeapons, MortalHands, MortalUnequippedWeapons, MortalWeapons,
+};
 
 pub(crate) use mortal_memo::MortalMemo;
 
@@ -14,7 +18,7 @@ use crate::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
         SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell,
     },
-    weapons::{mortal::MortalWeapons, Weapon, WeaponId, BaseWeaponId, MundaneWeaponMemo},
+    weapons::weapon::{mundane::MundaneWeaponMemo, BaseWeaponId, Weapon, WeaponId},
     CharacterMutationError,
 };
 
@@ -139,7 +143,7 @@ impl<'source> Mortal<'source> {
 
     pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
-            Some(crate::weapons::unarmed())
+            Some(crate::weapons::weapon::mundane::unarmed())
         } else {
             self.weapons.get_weapon(weapon_id)
         }
@@ -149,7 +153,11 @@ impl<'source> Mortal<'source> {
         self.weapons.iter()
     }
 
-    pub fn add_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: &'source MundaneWeaponMemo) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_mundane_weapon(
+        &mut self,
+        weapon_id: BaseWeaponId,
+        weapon: &'source MundaneWeaponMemo,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.add_mundane_weapon(weapon_id, weapon)?;
         Ok(self)
     }

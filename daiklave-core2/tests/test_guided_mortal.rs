@@ -12,7 +12,7 @@ use daiklave_core2::{
         SpellId, TerrestrialSpell,
     },
     unique_id::UniqueId,
-    weapons::BaseWeaponId,
+    weapons::weapon::BaseWeaponId,
     CharacterMutation,
 };
 
