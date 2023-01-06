@@ -18,11 +18,11 @@ use crate::{
     CharacterMutationError,
 };
 
-use self::martial_arts::MortalMartialArtistView;
+use self::martial_arts::MortalMartialArtist;
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct Mortal<'source> {
-    pub martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtistView<'source>>,
+    pub martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtist<'source>>,
     pub sorcery: Option<TerrestrialCircleSorcerer<'source>>,
     pub weapons: MortalWeapons<'source>,
 }
@@ -60,7 +60,7 @@ impl<'source> Mortal<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_add_martial_arts_style(id, style)?;
         self.martial_arts_styles
-            .insert(id, MortalMartialArtistView::new(style, AbilityRating::Zero));
+            .insert(id, MortalMartialArtist::new(style, AbilityRating::Zero));
         Ok(self)
     }
 

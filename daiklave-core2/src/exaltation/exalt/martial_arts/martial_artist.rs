@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     abilities::AbilityRating,
-    exaltation::mortal::martial_arts::MortalMartialArtistView,
+    exaltation::mortal::martial_arts::MortalMartialArtist,
     martial_arts::{MartialArtsCharm, MartialArtsCharmId, MartialArtsStyle},
 };
 
@@ -64,8 +64,8 @@ impl<'view, 'source> ExaltMartialArtist<'source> {
     }
 }
 
-impl<'source> From<MortalMartialArtistView<'source>> for ExaltMartialArtist<'source> {
-    fn from(mortal_artist: MortalMartialArtistView<'source>) -> Self {
+impl<'source> From<MortalMartialArtist<'source>> for ExaltMartialArtist<'source> {
+    fn from(mortal_artist: MortalMartialArtist<'source>) -> Self {
         Self {
             style: mortal_artist.style(),
             ability: mortal_artist.ability().to_owned(),

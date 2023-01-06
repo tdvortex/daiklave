@@ -3,14 +3,14 @@ use crate::{
     armor::ArmorWeight,
     book_reference::BookReference,
     exaltation::{
-        exalt::martial_arts::ExaltMartialArtist, mortal::martial_arts::MortalMartialArtistView,
+        exalt::martial_arts::ExaltMartialArtist, mortal::martial_arts::MortalMartialArtist,
     },
     martial_arts::{MartialArtsCharm, MartialArtsCharmId},
     weapons::BaseWeaponId,
 };
 
 pub(crate) enum ExaltationMartialArtist<'view, 'source> {
-    Mortal(&'view MortalMartialArtistView<'source>),
+    Mortal(&'view MortalMartialArtist<'source>),
     Exalt(&'view ExaltMartialArtist<'source>),
 }
 

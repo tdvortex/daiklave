@@ -6,12 +6,12 @@ use crate::{
 use super::MortalMartialArtistMemo;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct MortalMartialArtistView<'source> {
+pub(crate) struct MortalMartialArtist<'source> {
     style: &'source MartialArtsStyle,
     ability: AbilityRating<'source>,
 }
 
-impl<'view, 'source> MortalMartialArtistView<'source> {
+impl<'view, 'source> MortalMartialArtist<'source> {
     pub(in crate::exaltation::mortal) fn new(
         style: &'source MartialArtsStyle,
         ability: AbilityRating<'source>,
@@ -36,7 +36,7 @@ impl<'view, 'source> MortalMartialArtistView<'source> {
     }
 }
 
-impl<'source> From<ExaltMartialArtist<'source>> for MortalMartialArtistView<'source> {
+impl<'source> From<ExaltMartialArtist<'source>> for MortalMartialArtist<'source> {
     fn from(exalt_artist: ExaltMartialArtist<'source>) -> Self {
         Self {
             style: exalt_artist.style(),
