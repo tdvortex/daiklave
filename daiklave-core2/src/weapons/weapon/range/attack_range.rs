@@ -1,6 +1,7 @@
 use super::band::RangeBand;
 
 /// The distance of an actual attack being made.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum AttackRange {
     /// Hand-to-hand combat using the Brawl, Melee, or MartialArts
     /// abilities.

@@ -151,8 +151,8 @@ impl<'view, 'source> Weapon<'source> {
     /// None if the weapon is unusable at that range. Note that Medium
     /// Melee/Thrown weapons have different accuracies at Close range
     /// depending on if they are wielded as melee or thrown.
-    pub fn accuracy(&self, _attack_range: AttackRange) -> Option<u8> {
-        todo!()
+    pub fn accuracy(&self, attack_range: AttackRange) -> Option<i8> {
+        self.0.accuracy(attack_range)
     }
 
     /// The damage rating of the weapon at the specified attack range.

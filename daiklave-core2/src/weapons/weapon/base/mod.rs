@@ -11,7 +11,7 @@ use crate::book_reference::BookReference;
 
 use super::{
     ability::WeaponAbility, damage_type::WeaponDamageType, range::WeaponRange,
-    tag::OptionalWeaponTag, weight_class::WeaponWeightClass, WeaponTag,
+    tag::OptionalWeaponTag, weight_class::WeaponWeightClass, WeaponTag, AttackRange, RangeBand,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -65,5 +65,50 @@ impl BaseWeaponMemo {
         output.sort();
 
         output.into_iter()
+    }
+
+    pub fn accuracy(&self, attack_range: AttackRange, is_artifact: bool) -> Option<i8> {
+        match (self.primary_ability, self.range_bands, attack_range) {
+            (WeaponAbility::Thrown, _, AttackRange::Melee) | (WeaponAbility::Archery, _, AttackRange::Melee) => None,
+            (_, WeaponRange::ContactOnly, AttackRange::Ranged(_)) => None,
+            (_, _, AttackRange::Melee) => {
+                Some(match self.weight_class {
+                    WeaponWeightClass::Light => 4,
+                    WeaponWeightClass::Medium => 2,
+                    WeaponWeightClass::Heavy => 0,
+                } + i8::from(is_artifact))
+            }
+            (_, WeaponRange::Archery(max_range), AttackRange::Ranged(try_range)) => {
+                if try_range > max_range {
+                    None
+                } else {
+                    let flame_bonus = 2 * i8::from(try_range == RangeBand::Close && self.tags.contains(&OptionalWeaponTag::Flame));
+                    let accuracy_curve = match try_range {
+                        RangeBand::Close => -2,
+                        RangeBand::Short => 4,
+                        RangeBand::Medium => 2,
+                        RangeBand::Long => 0,
+                        RangeBand::Extreme => -2,
+                    };
+                    let artifact_bonus = i8::from(is_artifact);
+                    Some(accuracy_curve + flame_bonus + artifact_bonus)
+                }
+            }
+            (_, WeaponRange::Throwable(max_range), AttackRange::Ranged(try_range)) => {
+                if try_range > max_range {
+                    None
+                } else {
+                    let accuracy_curve = match try_range {
+                        RangeBand::Close => 4,
+                        RangeBand::Short => 3,
+                        RangeBand::Medium => 2,
+                        RangeBand::Long => -1,
+                        RangeBand::Extreme => -3,
+                    };
+                    let artifact_bonus = i8::from(is_artifact);
+                    Some(accuracy_curve + artifact_bonus)
+                }
+            }
+        }
     }
 }

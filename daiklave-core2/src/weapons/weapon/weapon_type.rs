@@ -5,7 +5,7 @@ use crate::{
 
 use super::{
     artifact::ArtifactWeapon, base::BaseWeaponMemo, equipped::Equipped, mundane::MundaneWeapon,
-    ArtifactWeaponId, BaseWeaponId, WeaponId, WeaponWeightClass, WeaponTag,
+    ArtifactWeaponId, BaseWeaponId, WeaponId, WeaponWeightClass, WeaponTag, AttackRange,
 };
 
 pub(crate) enum WeaponType<'source> {
@@ -128,6 +128,20 @@ impl<'view, 'source> WeaponType<'source> {
             ].into_iter(),
             WeaponType::Mundane(_, mundane) => mundane.tags(),
             WeaponType::Artifact(_, artifact, _) => artifact.tags(),
+        }
+    }
+
+    pub fn accuracy(&self, attack_range: AttackRange) -> Option<i8> {
+        match self {
+            WeaponType::Unarmed => {
+                if attack_range == AttackRange::Melee {
+                    Some(4)
+                } else {
+                    None
+                }
+            }
+            WeaponType::Mundane(_, mundane) => mundane.accuracy(attack_range, false),
+            WeaponType::Artifact(_, artifact, _) => artifact.base_artifact_weapon().accuracy(attack_range, true),
         }
     }
 }
