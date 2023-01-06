@@ -138,8 +138,8 @@ impl<'view, 'source> Weapon<'source> {
     /// in the core rulebook: Lethal/Bashing, then
     /// Archery/Brawl/Melee/MartialArts/Thrown, then other tags in alphabetical
     /// order. Note: Archery weapons are two-handed by default.
-    pub fn tags(&self) -> impl Iterator<Item = WeaponTag> {
-        vec![].into_iter()
+    pub fn tags(&self) -> impl Iterator<Item = WeaponTag> + '_ {
+        self.0.tags()
     }
 
     /// The weight class of the weapon.

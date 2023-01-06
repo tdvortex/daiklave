@@ -5,7 +5,7 @@ use crate::{
 
 use super::{
     artifact::ArtifactWeapon, base::BaseWeaponMemo, equipped::Equipped, mundane::MundaneWeapon,
-    ArtifactWeaponId, BaseWeaponId, WeaponId, WeaponWeightClass,
+    ArtifactWeaponId, BaseWeaponId, WeaponId, WeaponWeightClass, WeaponTag,
 };
 
 pub(crate) enum WeaponType<'source> {
@@ -115,6 +115,19 @@ impl<'view, 'source> WeaponType<'source> {
             WeaponType::Unarmed => WeaponWeightClass::Light,
             WeaponType::Mundane(_, mundane) => mundane.weight_class,
             WeaponType::Artifact(_, artifact, _) => artifact.base_artifact_weapon().weight_class,
+        }
+    }
+
+    pub fn tags(&self) -> impl Iterator<Item = WeaponTag> + '_ {
+        match self {
+            WeaponType::Unarmed => vec![
+                WeaponTag::Bashing,
+                WeaponTag::Brawl,
+                WeaponTag::Grappling,
+                WeaponTag::Natural,
+            ].into_iter(),
+            WeaponType::Mundane(_, mundane) => mundane.tags(),
+            WeaponType::Artifact(_, artifact, _) => artifact.tags(),
         }
     }
 }

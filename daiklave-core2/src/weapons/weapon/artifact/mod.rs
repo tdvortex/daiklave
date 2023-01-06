@@ -25,7 +25,7 @@ pub use newtype::{
 
 use self::named::NamedArtifactWeapon;
 
-use super::equipped::{EquipHand, Equipped};
+use super::{equipped::{EquipHand, Equipped}, WeaponTag};
 
 /// An artifact weapon, discriminated by its wielding characteristics.
 pub enum ArtifactWeapon<'source> {
@@ -118,8 +118,7 @@ impl<'source> ArtifactWeapon<'source> {
         }
     }
 
-    /// Creates (by cloning) an owned copy of the artifact weapon.
-    pub fn as_memo(&self) -> ArtifactWeaponMemo {
+    pub(crate) fn as_memo(&self) -> ArtifactWeaponMemo {
         match self {
             ArtifactWeapon::Natural(view) => ArtifactWeaponMemo::Natural(view.as_memo()),
             ArtifactWeapon::Worn(view, equipped) => {
@@ -131,6 +130,15 @@ impl<'source> ArtifactWeapon<'source> {
             ArtifactWeapon::TwoHanded(view, equipped) => {
                 ArtifactWeaponMemo::TwoHanded(view.as_memo(), *equipped)
             }
+        }
+    }
+
+    pub(crate) fn tags(&self) -> std::vec::IntoIter<WeaponTag> {
+        match self {
+            ArtifactWeapon::Natural(base) => base.base_artifact_weapon().tags(WeaponTag::Natural),
+            ArtifactWeapon::Worn(base, _) => base.base_artifact_weapon().tags(WeaponTag::Worn),
+            ArtifactWeapon::OneHanded(base, _) => base.base_artifact_weapon().tags(WeaponTag::OneHanded),
+            ArtifactWeapon::TwoHanded(base, _) => base.base_artifact_weapon().tags(WeaponTag::TwoHanded),
         }
     }
 }

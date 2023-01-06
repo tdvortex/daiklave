@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+use super::WeaponTag;
 use super::equipped::EquipHand;
 use super::{base::BaseWeaponMemo, equipped::Equipped};
 
@@ -73,6 +74,15 @@ impl<'source> MundaneWeapon<'source> {
             MundaneWeapon::Worn(weapon, _) => weapon.name(),
             MundaneWeapon::OneHanded(weapon, _) => weapon.name(),
             MundaneWeapon::TwoHanded(weapon, _) => weapon.name(),
+        }
+    }
+
+    pub fn tags(&self) -> std::vec::IntoIter<WeaponTag> {
+        match self {
+            MundaneWeapon::Natural(base) => base.tags(WeaponTag::Natural),
+            MundaneWeapon::Worn(base, _) => base.tags(WeaponTag::Worn),
+            MundaneWeapon::OneHanded(base, _) => base.tags(WeaponTag::OneHanded),
+            MundaneWeapon::TwoHanded(base, _) => base.tags(WeaponTag::TwoHanded),
         }
     }
 }
