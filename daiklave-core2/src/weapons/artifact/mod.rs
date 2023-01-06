@@ -1,4 +1,3 @@
-mod base;
 mod handless;
 mod named;
 mod natural;
@@ -21,7 +20,6 @@ pub(in crate::weapons) use nonnatural::{
 pub(in crate::weapons) use one_handed::{OneHandedArtifactWeapon, OneHandedArtifactWeaponMemo};
 pub(in crate::weapons) use two_handed::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo};
 pub(in crate::weapons) use worn::WornArtifactWeapon;
-pub(crate) use base::BaseArtifactWeapon;
 
 
 use self::{natural::NaturalArtifactWeaponMemo, worn::WornArtifactWeaponMemo};

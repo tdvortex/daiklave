@@ -2,12 +2,10 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::weapons::base::BaseWeapon;
+use crate::weapons::base::{BaseWeapon, BaseWeaponMemo};
 
-use super::base::{BaseMundaneWeapon, BaseMundaneWeaponMemo};
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct OneHandedMundaneWeapon<'source>(BaseMundaneWeapon<'source>);
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct OneHandedMundaneWeapon<'source>(pub(crate) BaseWeapon<'source>);
 
 impl<'source> Deref for OneHandedMundaneWeapon<'source> {
     type Target = BaseWeapon<'source>;
@@ -24,7 +22,7 @@ impl<'source> OneHandedMundaneWeapon<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct OneHandedMundaneWeaponMemo(BaseMundaneWeaponMemo);
+pub struct OneHandedMundaneWeaponMemo(BaseWeaponMemo);
 
 impl<'source> OneHandedMundaneWeaponMemo {
     pub fn as_ref(&'source self) -> OneHandedMundaneWeapon<'source> {

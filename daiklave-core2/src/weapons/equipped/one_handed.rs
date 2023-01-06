@@ -40,7 +40,7 @@ impl<'view, 'source> EquippedOneHandedWeaponNoAttunement<'source> {
                 } else {
                     Some(Weapon(WeaponType::Mundane(
                         target_id,
-                        MundaneWeapon::OneHanded(*one, Some(hand)),
+                        MundaneWeapon::OneHanded(one.clone(), Some(hand)),
                     )))
                 }
             }
@@ -140,7 +140,7 @@ impl<'view, 'source> EquippedOneHandedWeapon<'source> {
                 } else {
                     Some(Weapon(WeaponType::Mundane(
                         target_id,
-                        MundaneWeapon::OneHanded(*one, Some(hand)),
+                        MundaneWeapon::OneHanded(one.clone(), Some(hand)),
                     )))
                 }
             }

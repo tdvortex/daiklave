@@ -1,7 +1,7 @@
 use daiklave_core2::{
     book_reference::{Book, BookReference},
     unique_id::UniqueId,
-    weapons::{WeaponId, Equipped, BaseWeaponId, ArtifactWeaponId, WeaponWeightClass, WeaponTag, AttackRange, RangeBand, EquipHand, Weapon, OtherWeaponTag, ArtifactId},
+    weapons::{WeaponId, Equipped, BaseWeaponId, ArtifactWeaponId, WeaponWeightClass, WeaponTag, AttackRange, RangeBand, EquipHand, Weapon, OptionalWeaponTag, ArtifactId},
     CharacterEventSource, CharacterMutation, artifact::{Artifact, MagicMaterial},
 };
 
@@ -74,7 +74,7 @@ fn test_weapons_event_source() {
                 .lethal()
                 .melee()
                 .thrown_range(RangeBand::Short)
-                .tag(OtherWeaponTag::Chopping)
+                .tag(OptionalWeaponTag::Chopping)
                 .build_mundane()
                 .as_memo(),
         ),
@@ -86,7 +86,7 @@ fn test_weapons_event_source() {
                 .bashing()
                 .book_reference(BookReference::new(Book::CoreRulebook, 583))
                 .melee()
-                .tag(OtherWeaponTag::Shield)
+                .tag(OptionalWeaponTag::Shield)
                 .build_mundane()
                 .as_memo(),
         ),
@@ -98,7 +98,7 @@ fn test_weapons_event_source() {
                 .lethal()
                 .martial_arts()
                 .book_reference(BookReference::new(Book::CoreRulebook, 583))
-                .tag(OtherWeaponTag::Disarming)
+                .tag(OptionalWeaponTag::Disarming)
                 .build_mundane()
                 .as_memo(),
         ),
@@ -109,9 +109,9 @@ fn test_weapons_event_source() {
                 .two_handed()
                 .lethal()
                 .melee()
-                .tag(OtherWeaponTag::Balanced)
+                .tag(OptionalWeaponTag::Balanced)
                 .book_reference(BookReference::new(Book::CoreRulebook, 584))
-                .tag(OtherWeaponTag::Reaching)
+                .tag(OptionalWeaponTag::Reaching)
                 .build_mundane()
                 .as_memo()
         ),
@@ -123,8 +123,8 @@ fn test_weapons_event_source() {
                 .lethal()
                 .thrown()
                 .thrown_range(RangeBand::Medium)
-                .tag(OtherWeaponTag::Cutting)
-                .tag(OtherWeaponTag::Mounted)
+                .tag(OptionalWeaponTag::Cutting)
+                .tag(OptionalWeaponTag::Mounted)
                 .book_reference(BookReference::new(Book::CoreRulebook, 587))
                 .build_mundane()
                 .as_memo()
@@ -137,10 +137,10 @@ fn test_weapons_event_source() {
                 .lethal()
                 .archery()
                 .archery_range(RangeBand::Long)
-                .tag(OtherWeaponTag::Crossbow)
-                .tag(OtherWeaponTag::Piercing)
-                .tag(OtherWeaponTag::Powerful)
-                .tag(OtherWeaponTag::Slow)
+                .tag(OptionalWeaponTag::Crossbow)
+                .tag(OptionalWeaponTag::Piercing)
+                .tag(OptionalWeaponTag::Powerful)
+                .tag(OptionalWeaponTag::Slow)
                 .build_mundane()
                 .as_memo()
         ),
@@ -176,8 +176,8 @@ fn test_weapons_event_source() {
                 .two_handed()
                 .lethal()
                 .melee()
-                .tag(OtherWeaponTag::Balanced)
-                .tag(OtherWeaponTag::Reaching)
+                .tag(OptionalWeaponTag::Balanced)
+                .tag(OptionalWeaponTag::Reaching)
                 .build_artifact()
             )
             .material(MagicMaterial::RedJade)

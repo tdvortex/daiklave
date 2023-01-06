@@ -5,19 +5,19 @@ use serde::{Deserialize, Serialize};
 use crate::book_reference::BookReference;
 
 use super::{
-    ability::WeaponAbility, damage_type::WeaponDamageType, range::WeaponRange, tag::OtherWeaponTag,
+    ability::WeaponAbility, damage_type::WeaponDamageType, range::WeaponRange, tag::OptionalWeaponTag,
     weight_class::WeaponWeightClass,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BaseWeapon<'source> {
-    name: &'source str,
-    book_reference: Option<BookReference>,
-    weight_class: WeaponWeightClass,
-    range_bands: WeaponRange,
-    primary_ability: WeaponAbility,
-    damage_type: WeaponDamageType,
-    tags: &'source HashSet<OtherWeaponTag>,
+    pub(crate) name: &'source str,
+    pub(crate) book_reference: Option<BookReference>,
+    pub(crate) weight_class: WeaponWeightClass,
+    pub(crate) range_bands: WeaponRange,
+    pub(crate) primary_ability: WeaponAbility,
+    pub(crate) damage_type: WeaponDamageType,
+    pub(crate) tags: HashSet<OptionalWeaponTag>,
 }
 
 impl<'source> BaseWeapon<'source> {
@@ -54,7 +54,7 @@ pub(crate) struct BaseWeaponMemo {
     range_bands: WeaponRange,
     primary_ability: WeaponAbility,
     damage_type: WeaponDamageType,
-    tags: HashSet<OtherWeaponTag>,
+    tags: HashSet<OptionalWeaponTag>,
 }
 
 impl<'source> BaseWeaponMemo {
@@ -66,7 +66,7 @@ impl<'source> BaseWeaponMemo {
             range_bands: self.range_bands,
             primary_ability: self.primary_ability,
             damage_type: self.damage_type,
-            tags: &self.tags,
+            tags: self.tags.clone(),
         }
     }
 }

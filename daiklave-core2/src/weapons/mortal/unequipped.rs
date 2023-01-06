@@ -49,15 +49,15 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
             WeaponId::Mundane(target_id) => match self.mundane.get(&target_id)? {
                 NonnaturalMundaneWeapon::Worn(worn_weapon) => Some(Weapon(WeaponType::Mundane(
                     target_id,
-                    MundaneWeapon::Worn(*worn_weapon, false),
+                    MundaneWeapon::Worn(worn_weapon.clone(), false),
                 ))),
                 NonnaturalMundaneWeapon::OneHanded(one) => Some(Weapon(WeaponType::Mundane(
                     target_id,
-                    MundaneWeapon::OneHanded(*one, None),
+                    MundaneWeapon::OneHanded(one.clone(), None),
                 ))),
                 NonnaturalMundaneWeapon::TwoHanded(two) => Some(Weapon(WeaponType::Mundane(
                     target_id,
-                    MundaneWeapon::TwoHanded(*two, false),
+                    MundaneWeapon::TwoHanded(two.clone(), false),
                 ))),
             },
             WeaponId::Artifact(target_id) => match self.artifact.get(&target_id)? {

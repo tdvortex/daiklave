@@ -3,22 +3,24 @@ use crate::{
     book_reference::{BookReference},
     weapons::{
         artifact::{
-            BaseArtifactWeapon, NamedArtifactWeapon, NaturalArtifactWeapon,
+            NamedArtifactWeapon, NaturalArtifactWeapon,
             OneHandedArtifactWeapon, TwoHandedArtifactWeapon, WornArtifactWeapon,
         },
-        ArtifactWeapon, BaseWeaponId,
+        ArtifactWeapon, BaseWeaponId, base::BaseWeapon,
     },
 };
+
+use super::handedness::WeaponHandedness;
 
 /// A builder to construct a new artifact weapon. Enforces that required fields
 /// are specified in order: name, base artifact, magic material, merit dots,
 /// and finally hearthstone slots. Optional fields (lore, powers, and book 
 /// reference) may be specified at any time prior to the final build().
 pub struct ArtifactWeaponBuilder<'build> {
-    name: &'build str,
-    lore: Option<&'build str>,
-    powers: Option<&'build str>,
-    book_reference: Option<BookReference>,
+    pub(crate) name: &'build str,
+    pub(crate) lore: Option<&'build str>,
+    pub(crate) powers: Option<&'build str>,
+    pub(crate) book_reference: Option<BookReference>,
 }
 
 impl<'build> ArtifactWeaponBuilder<'build> {
@@ -306,18 +308,11 @@ impl<'view, 'build> ArtifactWeaponBuilderWithHearthstoneSlots<'build> {
 /// wraps the BaseArtifactWeapon struct with its wielding characteristics.
 pub enum BaseArtifactWeaponInsert<'build> {
     /// A Natural base artifact weapon (uncommon).
-    Natural(BaseArtifactWeapon<'build>),
+    Natural(BaseWeapon<'build>),
     /// A Worn base artifact weapon like Smashfists.
-    Worn(BaseArtifactWeapon<'build>),
+    Worn(BaseWeapon<'build>),
     /// A One-Handed base artifact weapon.
-    OneHanded(BaseArtifactWeapon<'build>),
+    OneHanded(BaseWeapon<'build>),
     /// A Two-Handed base artifact weapon.
-    TwoHanded(BaseArtifactWeapon<'build>),
-}
-
-enum WeaponHandedness {
-    Natural,
-    Worn,
-    OneHanded,
-    TwoHanded,
+    TwoHanded(BaseWeapon<'build>),
 }

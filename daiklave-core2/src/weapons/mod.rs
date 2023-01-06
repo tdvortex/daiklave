@@ -15,8 +15,10 @@ mod unarmed;
 mod weapon_id;
 mod weight_class;
 
+use std::collections::HashSet;
+
 pub use weapon_id::{ArtifactId, ArtifactWeaponId, BaseWeaponId, WeaponId};
-pub use tag::{WeaponTag, OtherWeaponTag};
+pub use tag::{WeaponTag, OptionalWeaponTag};
 pub use range::{AttackRange, RangeBand};
 
 use crate::{
@@ -25,7 +27,7 @@ use crate::{
 };
 
 use self::{
-    base::BaseWeapon, hearthstone::OwnedHearthstone, mundane::MundaneWeapon, builder::{artifact::ArtifactWeaponBuilder, base::BaseWeaponBuilder},
+    base::BaseWeapon, hearthstone::OwnedHearthstone, mundane::MundaneWeapon, builder::{artifact::ArtifactWeaponBuilder, base::BaseWeaponBuilder}, range::WeaponRange,
 };
 pub(crate) use unarmed::unarmed;
 pub use weight_class::WeaponWeightClass;
@@ -88,13 +90,23 @@ impl<'view, 'source> Weapon<'source> {
     /// Starts constructing a base weapon, which is either a mundane
     /// weapon (like "sword") or base artifact weapon (like "daiklave").
     pub fn base(name: &'source str) -> BaseWeaponBuilder<'source> {
-        todo!()
+        BaseWeaponBuilder {
+            name,
+            book_reference: None,
+            attack_range: WeaponRange::ContactOnly,
+            tags: HashSet::new(),
+        }
     }
 
     /// Starts constructing a unique, named artifact weapon (like "Volcano
     /// Cutter").
     pub fn artifact(name: &'source str) -> ArtifactWeaponBuilder<'source> {
-        todo!()
+        ArtifactWeaponBuilder {
+            name,
+            book_reference: None,
+            lore: None,
+            powers: None,
+        }
     }
 
     /// The weapon's Id
@@ -164,7 +176,7 @@ impl<'view, 'source> Weapon<'source> {
 
     /// If the weapon is an artifact weapon, returns the base weapon and its Id.
     /// For example, the base weapon for "Volcano Cutter" would be "daiklave".
-    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, BaseWeapon<'source>)> {
+    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &BaseWeapon<'source>)> {
         self.0.base_artifact_weapon()
     }
 
@@ -296,7 +308,7 @@ impl<'view, 'source> WeaponType<'source> {
         }
     }
 
-    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, BaseWeapon<'source>)> {
+    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &BaseWeapon<'source>)> {
         match self {
             WeaponType::Mundane(_, _) => None,
             WeaponType::Artifact(_, artifact, _) => Some((

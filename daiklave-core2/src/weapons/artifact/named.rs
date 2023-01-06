@@ -3,13 +3,11 @@ use serde::{Deserialize, Serialize};
 use crate::{
     book_reference::BookReference,
     weapons::{
-        base::BaseWeapon,
+        base::{BaseWeapon, BaseWeaponMemo},
         hearthstone::{OwnedHearthstone, OwnedHearthstoneMemo},
         BaseWeaponId,
     }, artifact::MagicMaterial,
 };
-
-use super::base::{BaseArtifactWeapon, BaseArtifactWeaponMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NamedArtifactWeapon<'source> {
@@ -18,7 +16,7 @@ pub struct NamedArtifactWeapon<'source> {
     pub(crate) merit_dots: u8,
     pub(crate) magic_material: MagicMaterial,
     pub(crate) base_weapon_id: BaseWeaponId,
-    pub(crate) base_weapon: BaseArtifactWeapon<'source>,
+    pub(crate) base_weapon: BaseWeapon<'source>,
     pub(crate) lore: Option<&'source str>,
     pub(crate) powers: Option<&'source str>,
     pub(crate) hearthstone_slots: Vec<Option<OwnedHearthstone<'source>>>,
@@ -55,8 +53,8 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
         self.base_weapon_id
     }
 
-    pub fn base_artifact_weapon(&self) -> BaseWeapon<'source> {
-        *self.base_weapon
+    pub fn base_artifact_weapon(&self) -> &BaseWeapon<'source> {
+        &self.base_weapon
     }
 
     pub fn lore(&self) -> Option<&'source str> {
@@ -87,7 +85,7 @@ pub struct NamedArtifactWeaponMemo {
     merit_dots: u8,
     magic_material: MagicMaterial,
     base_weapon_id: BaseWeaponId,
-    base_weapon: BaseArtifactWeaponMemo,
+    base_weapon: BaseWeaponMemo,
     lore: Option<String>,
     powers: Option<String>,
     hearthstone_slots: Vec<Option<OwnedHearthstoneMemo>>,

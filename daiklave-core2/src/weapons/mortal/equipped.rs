@@ -47,11 +47,11 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
             WeaponId::Unarmed => Some(crate::weapons::unarmed()),
             WeaponId::Mundane(target_id) => match self.handless_mundane.get(&target_id)? {
                 HandlessMundaneWeapon::Natural(natural_mundane) => Some(Weapon(
-                    WeaponType::Mundane(target_id, MundaneWeapon::Natural(*natural_mundane)),
+                    WeaponType::Mundane(target_id, MundaneWeapon::Natural(natural_mundane.clone())),
                 )),
                 HandlessMundaneWeapon::Worn(worn) => Some(Weapon(WeaponType::Mundane(
                     target_id,
-                    MundaneWeapon::Worn(*worn, true),
+                    MundaneWeapon::Worn(worn.clone(), true),
                 ))),
             },
             WeaponId::Artifact(target_id) => match self.handless_artifact.get(&target_id)? {

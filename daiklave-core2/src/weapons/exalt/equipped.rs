@@ -62,11 +62,11 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
             WeaponId::Unarmed => Some(crate::weapons::unarmed()),
             WeaponId::Mundane(target_id) => match self.handless_mundane.get(&target_id)? {
                 HandlessMundaneWeapon::Natural(natural_mundane) => Some(Weapon(
-                    WeaponType::Mundane(target_id, MundaneWeapon::Natural(*natural_mundane)),
+                    WeaponType::Mundane(target_id, MundaneWeapon::Natural(natural_mundane.clone())),
                 )),
                 HandlessMundaneWeapon::Worn(worn_mundane) => Some(Weapon(WeaponType::Mundane(
                     target_id,
-                    MundaneWeapon::Worn(*worn_mundane, true),
+                    MundaneWeapon::Worn(worn_mundane.clone(), true),
                 ))),
             },
             WeaponId::Artifact(target_id) => {
