@@ -5,15 +5,15 @@ pub use unarmed::unarmed;
 
 use std::ops::Deref;
 
-use crate::weapons::weapon::base::BaseWeaponMemo;
+use crate::weapons::weapon::base::BaseWeapon;
 
 pub use self::memo::NaturalMundaneWeaponMemo;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct NaturalMundaneWeapon<'source>(pub(crate) &'source BaseWeaponMemo);
+pub(crate) struct NaturalMundaneWeapon<'source>(pub(crate) &'source BaseWeapon);
 
 impl<'source> Deref for NaturalMundaneWeapon<'source> {
-    type Target = BaseWeaponMemo;
+    type Target = BaseWeapon;
 
     fn deref(&self) -> &Self::Target {
         self.0

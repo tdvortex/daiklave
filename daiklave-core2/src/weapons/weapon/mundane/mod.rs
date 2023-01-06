@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use super::WeaponTag;
 use super::equipped::EquipHand;
-use super::{base::BaseWeaponMemo, equipped::Equipped};
+use super::{base::BaseWeapon, equipped::Equipped};
 
 mod grouped;
 mod memo;
@@ -30,7 +30,7 @@ pub(crate) enum MundaneWeapon<'source> {
 }
 
 impl<'source> Deref for MundaneWeapon<'source> {
-    type Target = BaseWeaponMemo;
+    type Target = BaseWeapon;
 
     fn deref(&self) -> &Self::Target {
         match self {

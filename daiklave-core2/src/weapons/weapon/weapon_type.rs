@@ -4,7 +4,7 @@ use crate::{
 };
 
 use super::{
-    artifact::ArtifactWeapon, base::BaseWeaponMemo, equipped::Equipped, mundane::MundaneWeapon,
+    artifact::ArtifactWeapon, base::BaseWeapon, equipped::Equipped, mundane::MundaneWeapon,
     ArtifactWeaponId, BaseWeaponId, WeaponId, WeaponWeightClass, WeaponTag, AttackRange,
 };
 
@@ -100,7 +100,7 @@ impl<'view, 'source> WeaponType<'source> {
         }
     }
 
-    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &'source BaseWeaponMemo)> {
+    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &'source BaseWeapon)> {
         match self {
             WeaponType::Mundane(_, _) | WeaponType::Unarmed => None,
             WeaponType::Artifact(_, artifact, _) => Some((

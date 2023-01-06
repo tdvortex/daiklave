@@ -5,7 +5,7 @@ use crate::{
     weapons::weapon::{
         ability::WeaponAbility,
         artifact::BaseArtifactWeapon,
-        base::BaseWeaponMemo,
+        base::BaseWeapon,
         damage_type::WeaponDamageType,
         handedness::WeaponHandedness,
         mundane::{
@@ -72,7 +72,7 @@ impl BaseWeaponBuilderWithAttack {
     pub fn build_mundane(self) -> MundaneWeaponMemo {
         match self.handedness {
             WeaponHandedness::Natural => {
-                MundaneWeaponMemo::Natural(NaturalMundaneWeaponMemo(BaseWeaponMemo {
+                MundaneWeaponMemo::Natural(NaturalMundaneWeaponMemo(BaseWeapon {
                     name: self.name,
                     book_reference: self.book_reference,
                     weight_class: self.weight_class,
@@ -83,7 +83,7 @@ impl BaseWeaponBuilderWithAttack {
                 }))
             }
             WeaponHandedness::Worn => MundaneWeaponMemo::Worn(
-                WornMundaneWeaponMemo(BaseWeaponMemo {
+                WornMundaneWeaponMemo(BaseWeapon {
                     name: self.name,
                     book_reference: self.book_reference,
                     weight_class: self.weight_class,
@@ -95,7 +95,7 @@ impl BaseWeaponBuilderWithAttack {
                 false,
             ),
             WeaponHandedness::OneHanded => MundaneWeaponMemo::OneHanded(
-                OneHandedMundaneWeaponMemo(BaseWeaponMemo {
+                OneHandedMundaneWeaponMemo(BaseWeapon {
                     name: self.name,
                     book_reference: self.book_reference,
                     weight_class: self.weight_class,
@@ -107,7 +107,7 @@ impl BaseWeaponBuilderWithAttack {
                 None,
             ),
             WeaponHandedness::TwoHanded => MundaneWeaponMemo::TwoHanded(
-                TwoHandedMundaneWeaponMemo(BaseWeaponMemo {
+                TwoHandedMundaneWeaponMemo(BaseWeapon {
                     name: self.name,
                     book_reference: self.book_reference,
                     weight_class: self.weight_class,

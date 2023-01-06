@@ -6,7 +6,7 @@ use crate::{
     artifact::MagicMaterial,
     book_reference::BookReference,
     hearthstone::OwnedHearthstone,
-    weapons::weapon::{base::BaseWeaponMemo, BaseWeaponId},
+    weapons::weapon::{base::BaseWeapon, BaseWeaponId},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -16,7 +16,7 @@ pub struct NamedArtifactWeapon<'source> {
     pub(crate) merit_dots: u8,
     pub(crate) magic_material: MagicMaterial,
     pub(crate) base_weapon_id: BaseWeaponId,
-    pub(crate) base_weapon: &'source BaseWeaponMemo,
+    pub(crate) base_weapon: &'source BaseWeapon,
     pub(crate) lore: Option<&'source str>,
     pub(crate) powers: Option<&'source str>,
     pub(crate) hearthstone_slots: Vec<Option<OwnedHearthstone<'source>>>,
@@ -53,7 +53,7 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
         self.base_weapon_id
     }
 
-    pub fn base_artifact_weapon(&self) -> &'source BaseWeaponMemo {
+    pub fn base_artifact_weapon(&self) -> &'source BaseWeapon {
         self.base_weapon
     }
 

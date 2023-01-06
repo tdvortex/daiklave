@@ -2,15 +2,15 @@ mod memo;
 
 use std::ops::Deref;
 
-use crate::weapons::weapon::base::BaseWeaponMemo;
+use crate::weapons::weapon::base::BaseWeapon;
 
 pub use self::memo::TwoHandedMundaneWeaponMemo;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TwoHandedMundaneWeapon<'source>(pub(crate) &'source BaseWeaponMemo);
+pub struct TwoHandedMundaneWeapon<'source>(pub(crate) &'source BaseWeapon);
 
 impl<'source> Deref for TwoHandedMundaneWeapon<'source> {
-    type Target = BaseWeaponMemo;
+    type Target = BaseWeapon;
 
     fn deref(&self) -> &Self::Target {
         self.0

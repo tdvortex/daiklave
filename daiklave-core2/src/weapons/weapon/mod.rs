@@ -7,7 +7,7 @@ use crate::{
 
 use self::{
     artifact::builder::ArtifactWeaponBuilder,
-    base::{builder::BaseWeaponBuilder, BaseWeaponMemo},
+    base::{builder::BaseWeaponBuilder, BaseWeapon},
     range::WeaponRange,
 };
 
@@ -130,7 +130,7 @@ impl<'view, 'source> Weapon<'source> {
 
     /// If the weapon is an artifact weapon, returns the base weapon and its Id.
     /// For example, the base weapon for "Volcano Cutter" would be "daiklave".
-    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &'source BaseWeaponMemo)> {
+    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &'source BaseWeapon)> {
         self.0.base_artifact_weapon()
     }
 

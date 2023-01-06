@@ -15,7 +15,7 @@ use super::{
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct BaseWeaponMemo {
+pub struct BaseWeapon {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) weight_class: WeaponWeightClass,
@@ -25,7 +25,7 @@ pub struct BaseWeaponMemo {
     pub(crate) tags: HashSet<OptionalWeaponTag>,
 }
 
-impl BaseWeaponMemo {
+impl BaseWeapon {
     pub fn tags(&self, handedness_tag: WeaponTag) -> std::vec::IntoIter<WeaponTag> {
         let mut output = Vec::new();
 

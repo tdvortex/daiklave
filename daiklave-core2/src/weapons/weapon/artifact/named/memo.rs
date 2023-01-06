@@ -4,7 +4,7 @@ use crate::{
     artifact::MagicMaterial,
     book_reference::BookReference,
     hearthstone::OwnedHearthstoneMemo,
-    weapons::weapon::{base::BaseWeaponMemo, BaseWeaponId},
+    weapons::weapon::{base::BaseWeapon, BaseWeaponId},
 };
 
 use super::NamedArtifactWeapon;
@@ -16,7 +16,7 @@ pub struct NamedArtifactWeaponMemo {
     pub(crate) merit_dots: u8,
     pub(crate) magic_material: MagicMaterial,
     pub(crate) base_weapon_id: BaseWeaponId,
-    pub(crate) base_weapon: BaseWeaponMemo,
+    pub(crate) base_weapon: BaseWeapon,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
     pub(crate) hearthstone_slots: Vec<Option<OwnedHearthstoneMemo>>,
