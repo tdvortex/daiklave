@@ -1,5 +1,5 @@
-use crate::weapons::weapon::Weapon;
+use crate::weapons::weapon::{Weapon, WeaponType};
 
 pub fn unarmed() -> Weapon<'static> {
-    todo!()
+    Weapon(WeaponType::Unarmed)
 }
