@@ -31,8 +31,8 @@ use self::{
 };
 pub(crate) use unarmed::unarmed;
 pub use weight_class::WeaponWeightClass;
-pub use mundane::MundaneWeaponMemo;
 pub use artifact::ArtifactWeapon;
+pub use mundane::MundaneWeaponMemo;
 
 /// The interface for a character's weapons.
 pub struct Weapons<'view, 'source>(pub(crate) &'view Exaltation<'source>);
@@ -89,9 +89,9 @@ pub struct Weapon<'source>(WeaponType<'source>);
 impl<'view, 'source> Weapon<'source> {
     /// Starts constructing a base weapon, which is either a mundane
     /// weapon (like "sword") or base artifact weapon (like "daiklave").
-    pub fn base(name: &'source str) -> BaseWeaponBuilder<'source> {
+    pub fn base(name: &str) -> BaseWeaponBuilder {
         BaseWeaponBuilder {
-            name,
+            name: name.to_owned(),
             book_reference: None,
             attack_range: WeaponRange::ContactOnly,
             tags: HashSet::new(),
@@ -261,14 +261,14 @@ impl<'view, 'source> WeaponType<'source> {
 
     pub fn name(&self) -> &'source str {
         match self {
-            WeaponType::Mundane(_, mundane) => (*mundane).name(),
+            WeaponType::Mundane(_, mundane) => mundane.name(),
             WeaponType::Artifact(_, artifact, _) => (*artifact).name(),
         }
     }
 
     pub fn book_reference(&self) -> Option<BookReference> {
         match self {
-            WeaponType::Mundane(_, mundane) => (*mundane).book_reference(),
+            WeaponType::Mundane(_, mundane) => mundane.book_reference,
             WeaponType::Artifact(_, artifact, _) => (*artifact).book_reference(),
         }
     }

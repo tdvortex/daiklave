@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{book_reference::BookReference, weapons::{WeaponWeightClass, mundane::{MundaneWeapon, NaturalMundaneWeapon, WornMundaneWeapon, TwoHandedMundaneWeapon, OneHandedMundaneWeapon}, RangeBand, OptionalWeaponTag, range::WeaponRange, ability::WeaponAbility, base::BaseWeapon, damage_type::WeaponDamageType}};
+use crate::{book_reference::BookReference, weapons::{WeaponWeightClass, mundane::{NaturalMundaneWeaponMemo, WornMundaneWeaponMemo, OneHandedMundaneWeaponMemo, TwoHandedMundaneWeaponMemo}, RangeBand, OptionalWeaponTag, range::WeaponRange, ability::WeaponAbility, base::{BaseWeaponMemo}, damage_type::WeaponDamageType, MundaneWeaponMemo}};
 
 use super::{artifact::BaseArtifactWeaponInsert, handedness::WeaponHandedness};
 
@@ -9,14 +9,14 @@ use super::{artifact::BaseArtifactWeaponInsert, handedness::WeaponHandedness};
 /// specified in order: name, weight class, handedness, damage type, and
 /// primary attack Ability. Optional fields like book reference, weapon ranges,
 /// and optional tags can be added at any time prior to the final build.
-pub struct BaseWeaponBuilder<'build> {
-    pub(crate) name: &'build str,
+pub struct BaseWeaponBuilder {
+    pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) attack_range: WeaponRange,
     pub(crate) tags: HashSet<OptionalWeaponTag>,
 }
 
-impl<'build> BaseWeaponBuilder<'build> {
+impl BaseWeaponBuilder {
     /// The book reference for the base weapon. Note that, for artifacts,
     /// this is for the non-unique weapon (like "grand daiklave") not the
     /// page reference of the unique weapon (like "Volcano Cutter").
@@ -53,7 +53,7 @@ impl<'build> BaseWeaponBuilder<'build> {
     }
 
     /// Sets the weapon to be Light, Medium, or Heavy.
-    pub fn weight_class(self, weight_class: WeaponWeightClass) -> BaseWeaponBuilderWithWeight<'build> {
+    pub fn weight_class(self, weight_class: WeaponWeightClass) -> BaseWeaponBuilderWithWeight {
         BaseWeaponBuilderWithWeight { 
             name: self.name,
             book_reference: self.book_reference,
@@ -65,15 +65,15 @@ impl<'build> BaseWeaponBuilder<'build> {
 }
 
 /// A base weapon builder after specifying weight class.
-pub struct BaseWeaponBuilderWithWeight<'build> {
-    name: &'build str,
+pub struct BaseWeaponBuilderWithWeight {
+    name: String,
     book_reference: Option<BookReference>,
     attack_range: WeaponRange,
     tags: HashSet<OptionalWeaponTag>,
     weight_class: WeaponWeightClass,
 }
 
-impl<'build> BaseWeaponBuilderWithWeight<'build> {
+impl BaseWeaponBuilderWithWeight {
     /// The book reference for the base weapon. Note that, for artifacts,
     /// this is for the non-unique weapon (like "grand daiklave") not the
     /// page reference of the unique weapon (like "Volcano Cutter").
@@ -111,7 +111,7 @@ impl<'build> BaseWeaponBuilderWithWeight<'build> {
 
 
     /// Defines the weapon to be Natural, part of the wielder's body.
-    pub fn natural(self) -> BaseWeaponBuilderWithHandedness<'build> {
+    pub fn natural(self) -> BaseWeaponBuilderWithHandedness {
         BaseWeaponBuilderWithHandedness { 
             name: self.name, 
             book_reference: self.book_reference, 
@@ -123,7 +123,7 @@ impl<'build> BaseWeaponBuilderWithWeight<'build> {
     }
 
     /// Defines the weapon to be Worn, requiring no hands to wield.
-    pub fn worn(self) -> BaseWeaponBuilderWithHandedness<'build> {
+    pub fn worn(self) -> BaseWeaponBuilderWithHandedness {
         BaseWeaponBuilderWithHandedness { 
             name: self.name, 
             book_reference: self.book_reference, 
@@ -135,7 +135,7 @@ impl<'build> BaseWeaponBuilderWithWeight<'build> {
     }
 
     /// Defines the weapon to be one-handed.
-    pub fn one_handed(self) -> BaseWeaponBuilderWithHandedness<'build> {
+    pub fn one_handed(self) -> BaseWeaponBuilderWithHandedness {
         BaseWeaponBuilderWithHandedness { 
             name: self.name, 
             book_reference: self.book_reference, 
@@ -147,7 +147,7 @@ impl<'build> BaseWeaponBuilderWithWeight<'build> {
     }
 
     /// Defines the weapon to be two-handed.
-    pub fn two_handed(self) -> BaseWeaponBuilderWithHandedness<'build> {
+    pub fn two_handed(self) -> BaseWeaponBuilderWithHandedness {
         BaseWeaponBuilderWithHandedness { 
             name: self.name, 
             book_reference: self.book_reference, 
@@ -161,8 +161,8 @@ impl<'build> BaseWeaponBuilderWithWeight<'build> {
 
 /// A weapon builder, after being specified as natural, worn, one-handed,
 /// or two-handed.
-pub struct BaseWeaponBuilderWithHandedness<'build> {
-    name: &'build str,
+pub struct BaseWeaponBuilderWithHandedness {
+    name: String,
     book_reference: Option<BookReference>,
     attack_range: WeaponRange,
     tags: HashSet<OptionalWeaponTag>,
@@ -170,7 +170,7 @@ pub struct BaseWeaponBuilderWithHandedness<'build> {
     handedness: WeaponHandedness,
 }
 
-impl<'build> BaseWeaponBuilderWithHandedness<'build> {
+impl<'build> BaseWeaponBuilderWithHandedness {
     /// The book reference for the base weapon. Note that, for artifacts,
     /// this is for the non-unique weapon (like "grand daiklave") not the
     /// page reference of the unique weapon (like "Volcano Cutter").
@@ -208,7 +208,7 @@ impl<'build> BaseWeaponBuilderWithHandedness<'build> {
 
     /// Sets the weapon to deal Lethal damage by default. Typical for bladed or
     /// piercing weapons.
-    pub fn lethal(self) -> BaseWeaponBuilderWithDamageType<'build> {
+    pub fn lethal(self) -> BaseWeaponBuilderWithDamageType {
         BaseWeaponBuilderWithDamageType { 
             name: self.name, 
             book_reference: self.book_reference, 
@@ -222,7 +222,7 @@ impl<'build> BaseWeaponBuilderWithHandedness<'build> {
 
     /// Sets the weapon to deal Bashing damage by default. Typical for blunt
     /// weapons.
-    pub fn bashing(self) -> BaseWeaponBuilderWithDamageType<'build> {
+    pub fn bashing(self) -> BaseWeaponBuilderWithDamageType {
         BaseWeaponBuilderWithDamageType { 
             name: self.name, 
             book_reference: self.book_reference, 
@@ -236,8 +236,8 @@ impl<'build> BaseWeaponBuilderWithHandedness<'build> {
 }
 
 /// A base weapon builder after having its damage type specified.
-pub struct BaseWeaponBuilderWithDamageType<'build> {
-    name: &'build str,
+pub struct BaseWeaponBuilderWithDamageType {
+    name: String,
     book_reference: Option<BookReference>,
     attack_range: WeaponRange,
     tags: HashSet<OptionalWeaponTag>,
@@ -246,7 +246,7 @@ pub struct BaseWeaponBuilderWithDamageType<'build> {
     damage_type: WeaponDamageType,
 }
 
-impl<'build> BaseWeaponBuilderWithDamageType<'build> {
+impl BaseWeaponBuilderWithDamageType {
     /// The book reference for the base weapon. Note that, for artifacts,
     /// this is for the non-unique weapon (like "grand daiklave") not the
     /// page reference of the unique weapon (like "Volcano Cutter").
@@ -287,7 +287,7 @@ impl<'build> BaseWeaponBuilderWithDamageType<'build> {
     /// range definition (uncommon; most Brawl weapons are melee-only), will 
     /// use either Thrown or Archery (or an applicable Martial Art). This also
     /// allows the weapon to be used to parry.
-    pub fn brawl(self) -> BaseWeaponBuilderWithAttack<'build> {
+    pub fn brawl(self) -> BaseWeaponBuilderWithAttack {
         BaseWeaponBuilderWithAttack {
             name: self.name,
             book_reference: self.book_reference,
@@ -305,7 +305,7 @@ impl<'build> BaseWeaponBuilderWithDamageType<'build> {
     /// range definition, will use either Thrown or Archery (or Martial Arts).
     /// Melee + Thrown is substantially more common than Melee + Archery. This
     /// also allows the weapon to be used to parry.
-    pub fn melee(self) -> BaseWeaponBuilderWithAttack<'build> {
+    pub fn melee(self) -> BaseWeaponBuilderWithAttack {
         BaseWeaponBuilderWithAttack {
             name: self.name,
             book_reference: self.book_reference,
@@ -325,7 +325,7 @@ impl<'build> BaseWeaponBuilderWithDamageType<'build> {
     /// to parry and cannot be used for melee attacks. If a weapon can be used
     /// for both melee and archery attacks (uncommon), use 
     /// .melee().archery_range() instead.
-    pub fn archery(self) -> BaseWeaponBuilderWithAttack<'build> {
+    pub fn archery(self) -> BaseWeaponBuilderWithAttack {
         BaseWeaponBuilderWithAttack {
             name: self.name,
             book_reference: self.book_reference,
@@ -344,7 +344,7 @@ impl<'build> BaseWeaponBuilderWithDamageType<'build> {
     /// Thrown-only weapons cannot be used to parry and cannot be used in 
     /// melee. If a weapon is both melee and thrown, use 
     /// .melee().thrown_range() instead.
-    pub fn thrown(self) -> BaseWeaponBuilderWithAttack<'build> {
+    pub fn thrown(self) -> BaseWeaponBuilderWithAttack {
         BaseWeaponBuilderWithAttack {
             name: self.name,
             book_reference: self.book_reference,
@@ -363,7 +363,7 @@ impl<'build> BaseWeaponBuilderWithDamageType<'build> {
     /// can be adjusted with the .thrown_range() or rarely the .archery_range()
     /// methods. (In the very rare case that there is a weapon that is not
     /// usable to parry, this should be modeled as a unique .thrown() weapon.)
-    pub fn martial_arts(self) -> BaseWeaponBuilderWithAttack<'build> {
+    pub fn martial_arts(self) -> BaseWeaponBuilderWithAttack {
         BaseWeaponBuilderWithAttack {
             name: self.name,
             book_reference: self.book_reference,
@@ -378,8 +378,8 @@ impl<'build> BaseWeaponBuilderWithDamageType<'build> {
 }
 
 /// A base weapon builder after the primary attack skill is specified.
-pub struct BaseWeaponBuilderWithAttack<'build> {
-    name: &'build str,
+pub struct BaseWeaponBuilderWithAttack {
+    name: String,
     book_reference: Option<BookReference>,
     attack_range: WeaponRange,
     tags: HashSet<OptionalWeaponTag>,
@@ -389,7 +389,7 @@ pub struct BaseWeaponBuilderWithAttack<'build> {
     primary_attack: WeaponAbility,
 }
 
-impl<'build> BaseWeaponBuilderWithAttack<'build> {
+impl<'build> BaseWeaponBuilderWithAttack {
     /// The book reference for the base weapon. Note that, for artifacts,
     /// this is for the non-unique weapon (like "grand daiklave") not the
     /// page reference of the unique weapon (like "Volcano Cutter").
@@ -428,9 +428,9 @@ impl<'build> BaseWeaponBuilderWithAttack<'build> {
     /// Completes the builder process, returning a new MundaneWeapon. This is
     /// a borrowed copy but can be immediately memoized with .as_memo() if 
     /// needed.
-    pub fn build_mundane(self) -> MundaneWeapon<'build> {
+    pub fn build_mundane(self) -> MundaneWeaponMemo {
         match self.handedness {
-            WeaponHandedness::Natural => MundaneWeapon::Natural(NaturalMundaneWeapon(BaseWeapon {
+            WeaponHandedness::Natural => MundaneWeaponMemo::Natural(NaturalMundaneWeaponMemo(BaseWeaponMemo {
                 name: self.name,
                 book_reference: self.book_reference,
                 weight_class: self.weight_class,
@@ -439,7 +439,7 @@ impl<'build> BaseWeaponBuilderWithAttack<'build> {
                 damage_type: self.damage_type,
                 tags: self.tags,
             })),
-            WeaponHandedness::Worn => MundaneWeapon::Worn(WornMundaneWeapon(BaseWeapon {
+            WeaponHandedness::Worn => MundaneWeaponMemo::Worn(WornMundaneWeaponMemo(BaseWeaponMemo{
                 name: self.name,
                 book_reference: self.book_reference,
                 weight_class: self.weight_class,
@@ -448,7 +448,7 @@ impl<'build> BaseWeaponBuilderWithAttack<'build> {
                 damage_type: self.damage_type,
                 tags: self.tags,
             }), false),
-            WeaponHandedness::OneHanded => MundaneWeapon::OneHanded(OneHandedMundaneWeapon(BaseWeapon {
+            WeaponHandedness::OneHanded => MundaneWeaponMemo::OneHanded(OneHandedMundaneWeaponMemo(BaseWeaponMemo {
                 name: self.name,
                 book_reference: self.book_reference,
                 weight_class: self.weight_class,
@@ -457,7 +457,7 @@ impl<'build> BaseWeaponBuilderWithAttack<'build> {
                 damage_type: self.damage_type,
                 tags: self.tags,
             }), None),
-            WeaponHandedness::TwoHanded => MundaneWeapon::TwoHanded(TwoHandedMundaneWeapon(BaseWeapon {
+            WeaponHandedness::TwoHanded => MundaneWeaponMemo::TwoHanded(TwoHandedMundaneWeaponMemo(BaseWeaponMemo {
                 name: self.name,
                 book_reference: self.book_reference,
                 weight_class: self.weight_class,

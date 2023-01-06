@@ -9,13 +9,13 @@ mod worn;
 use std::ops::Deref;
 
 pub(in crate::weapons) use handless::{HandlessMundaneWeapon, HandlessMundaneWeaponMemo};
-pub(in crate::weapons) use natural::NaturalMundaneWeapon;
+pub(in crate::weapons) use natural::{NaturalMundaneWeapon, NaturalMundaneWeaponMemo};
 pub(in crate::weapons) use nonnatural::{NonnaturalMundaneWeapon, NonnaturalMundaneWeaponMemo};
 pub(in crate::weapons) use one_handed::{OneHandedMundaneWeapon, OneHandedMundaneWeaponMemo};
 pub(in crate::weapons) use two_handed::{TwoHandedMundaneWeapon, TwoHandedMundaneWeaponMemo};
 pub(in crate::weapons) use worn::{WornMundaneWeapon, WornMundaneWeaponMemo};
 
-use super::{base::BaseWeapon, EquipHand, Equipped};
+use super::{base::{BaseWeaponMemo}, EquipHand, Equipped};
 
 pub enum MundaneWeapon<'source> {
     Natural(NaturalMundaneWeapon<'source>),
@@ -25,7 +25,7 @@ pub enum MundaneWeapon<'source> {
 }
 
 impl<'source> Deref for MundaneWeapon<'source> {
-    type Target = BaseWeapon<'source>;
+    type Target = BaseWeaponMemo;
 
     fn deref(&self) -> &Self::Target {
         match self {
@@ -40,6 +40,15 @@ impl<'source> Deref for MundaneWeapon<'source> {
 impl<'source> MundaneWeapon<'source> {
     pub fn as_memo(&self) -> MundaneWeaponMemo {
         todo!()
+    }
+
+    pub fn name(&self) -> &'source str {
+        match self {
+            MundaneWeapon::Natural(weapon) => weapon.0.name.as_str(),
+            MundaneWeapon::Worn(weapon, _) => weapon.0.name.as_str(),
+            MundaneWeapon::OneHanded(weapon, _) => weapon.0.name.as_str(),
+            MundaneWeapon::TwoHanded(weapon, _) => weapon.0.name.as_str(),
+        }
     }
 
     pub fn is_equipped(&self) -> Option<Equipped> {
@@ -70,4 +79,9 @@ impl<'source> MundaneWeapon<'source> {
 
 /// An owned copy of a Mundane Weapon.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct MundaneWeaponMemo;
+pub enum MundaneWeaponMemo {
+    Natural(NaturalMundaneWeaponMemo),
+    Worn(WornMundaneWeaponMemo, bool),
+    OneHanded(OneHandedMundaneWeaponMemo, Option<EquipHand>),
+    TwoHanded(TwoHandedMundaneWeaponMemo, bool),
+}

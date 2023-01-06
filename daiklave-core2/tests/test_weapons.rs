@@ -63,7 +63,6 @@ fn test_weapons_event_source() {
                 .lethal()
                 .brawl()
                 .build_mundane()
-                .as_memo(),
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(2)),
@@ -76,7 +75,6 @@ fn test_weapons_event_source() {
                 .thrown_range(RangeBand::Short)
                 .tag(OptionalWeaponTag::Chopping)
                 .build_mundane()
-                .as_memo(),
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(3)),
@@ -88,7 +86,6 @@ fn test_weapons_event_source() {
                 .melee()
                 .tag(OptionalWeaponTag::Shield)
                 .build_mundane()
-                .as_memo(),
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(4)),
@@ -100,7 +97,6 @@ fn test_weapons_event_source() {
                 .book_reference(BookReference::new(Book::CoreRulebook, 583))
                 .tag(OptionalWeaponTag::Disarming)
                 .build_mundane()
-                .as_memo(),
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(5)),
@@ -113,7 +109,6 @@ fn test_weapons_event_source() {
                 .book_reference(BookReference::new(Book::CoreRulebook, 584))
                 .tag(OptionalWeaponTag::Reaching)
                 .build_mundane()
-                .as_memo()
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(6)),
@@ -127,7 +122,6 @@ fn test_weapons_event_source() {
                 .tag(OptionalWeaponTag::Mounted)
                 .book_reference(BookReference::new(Book::CoreRulebook, 587))
                 .build_mundane()
-                .as_memo()
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(7)),
@@ -142,7 +136,6 @@ fn test_weapons_event_source() {
                 .tag(OptionalWeaponTag::Powerful)
                 .tag(OptionalWeaponTag::Slow)
                 .build_mundane()
-                .as_memo()
         ),
     ].into_iter().fold(&mut event_source, |source, mutation| source.apply_mutation(mutation).unwrap());
 

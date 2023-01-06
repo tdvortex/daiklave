@@ -47,14 +47,14 @@ impl<'source> BaseWeapon<'source> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) struct BaseWeaponMemo {
-    name: String,
-    book_reference: Option<BookReference>,
-    weight_class: WeaponWeightClass,
-    range_bands: WeaponRange,
-    primary_ability: WeaponAbility,
-    damage_type: WeaponDamageType,
-    tags: HashSet<OptionalWeaponTag>,
+pub struct BaseWeaponMemo {
+    pub(crate) name: String,
+    pub(crate) book_reference: Option<BookReference>,
+    pub(crate) weight_class: WeaponWeightClass,
+    pub(crate) range_bands: WeaponRange,
+    pub(crate) primary_ability: WeaponAbility,
+    pub(crate) damage_type: WeaponDamageType,
+    pub(crate) tags: HashSet<OptionalWeaponTag>,
 }
 
 impl<'source> BaseWeaponMemo {
