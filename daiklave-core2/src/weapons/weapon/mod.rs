@@ -144,7 +144,7 @@ impl<'view, 'source> Weapon<'source> {
 
     /// The weight class of the weapon.
     pub fn weight_class(&self) -> WeaponWeightClass {
-        todo!()
+        self.0.weight_class()
     }
 
     /// The accuracy of the weapon, at the specified attack range. Returns

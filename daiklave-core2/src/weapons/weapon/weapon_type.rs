@@ -5,7 +5,7 @@ use crate::{
 
 use super::{
     artifact::ArtifactWeapon, base::BaseWeaponMemo, equipped::Equipped, mundane::MundaneWeapon,
-    ArtifactWeaponId, BaseWeaponId, WeaponId,
+    ArtifactWeaponId, BaseWeaponId, WeaponId, WeaponWeightClass,
 };
 
 pub(crate) enum WeaponType<'source> {
@@ -107,6 +107,14 @@ impl<'view, 'source> WeaponType<'source> {
                 artifact.base_artifact_weapon_id(),
                 artifact.base_artifact_weapon(),
             )),
+        }
+    }
+
+    pub fn weight_class(&self) -> WeaponWeightClass {
+        match self {
+            WeaponType::Unarmed => WeaponWeightClass::Light,
+            WeaponType::Mundane(_, mundane) => mundane.weight_class,
+            WeaponType::Artifact(_, artifact, _) => artifact.base_artifact_weapon().weight_class,
         }
     }
 }
