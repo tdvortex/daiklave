@@ -3,7 +3,7 @@ use std::ops::Deref;
 use serde::{Deserialize, Serialize};
 
 use super::{
-    named::NamedArtifactWeapon,
+    named::{NamedArtifactWeaponMemo},
     natural::{NaturalArtifactWeapon, NaturalArtifactWeaponMemo},
     worn::{WornArtifactWeapon, WornArtifactWeaponMemo},
 };
@@ -21,7 +21,7 @@ impl<'source> HandlessArtifactWeapon<'source> {
 }
 
 impl<'source> Deref for HandlessArtifactWeapon<'source> {
-    type Target = NamedArtifactWeapon<'source>;
+    type Target = NamedArtifactWeaponMemo;
 
     fn deref(&self) -> &Self::Target {
         &self.0
@@ -48,7 +48,7 @@ impl<'source> HandlessArtifactWeaponNoAttunement<'source> {
 }
 
 impl<'source> Deref for HandlessArtifactWeaponNoAttunement<'source> {
-    type Target = NamedArtifactWeapon<'source>;
+    type Target = NamedArtifactWeaponMemo;
 
     fn deref(&self) -> &Self::Target {
         match self {

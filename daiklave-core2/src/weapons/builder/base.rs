@@ -471,7 +471,7 @@ impl<'build> BaseWeaponBuilderWithAttack {
 
     /// Completes the builder process, returning a new 
     /// BaseArtifactWeaponInsert. 
-    pub fn build_artifact(self) -> BaseArtifactWeaponInsert<'build> {
+    pub fn build_artifact(self) -> BaseArtifactWeaponInsert {
         todo!()
     }
 }

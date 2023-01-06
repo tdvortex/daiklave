@@ -2,30 +2,30 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use super::named::{NamedArtifactWeapon, NamedArtifactWeaponMemo};
+use super::named::{NamedArtifactWeaponMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct WornArtifactWeapon<'source>(pub(crate) NamedArtifactWeapon<'source>);
+pub struct WornArtifactWeapon<'source>(pub(crate) &'source NamedArtifactWeaponMemo);
 
 impl<'source> Deref for WornArtifactWeapon<'source> {
-    type Target = NamedArtifactWeapon<'source>;
+    type Target = NamedArtifactWeaponMemo;
 
     fn deref(&self) -> &Self::Target {
-        &self.0
+        self.0
     }
 }
 
 impl<'source> WornArtifactWeapon<'source> {
     pub fn as_memo(&'source self) -> WornArtifactWeaponMemo {
-        WornArtifactWeaponMemo(self.0.as_memo())
+        WornArtifactWeaponMemo(self.0.clone())
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct WornArtifactWeaponMemo(NamedArtifactWeaponMemo);
+pub struct WornArtifactWeaponMemo(pub(crate) NamedArtifactWeaponMemo);
 
 impl<'source> WornArtifactWeaponMemo {
     pub fn as_ref(&'source self) -> WornArtifactWeapon<'source> {
-        WornArtifactWeapon(self.0.as_ref())
+        WornArtifactWeapon(&self.0)
     }
 }

@@ -19,7 +19,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    weapons::{Weapon, WeaponId},
+    weapons::{Weapon, WeaponId, BaseWeaponId, MundaneWeaponMemo},
     CharacterMutationError,
 };
 
@@ -518,6 +518,14 @@ impl<'view, 'source> Exaltation<'source> {
                 SetEssenceRatingError::MortalError,
             )),
         }?;
+        Ok(self)
+    }
+
+    pub fn add_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: &'source MundaneWeaponMemo) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {mortal.as_mut().add_mundane_weapon(weapon_id, weapon)?;}
+            Exaltation::Exalt(exalt) => {exalt.as_mut().add_mundane_weapon(weapon_id, weapon)?;}
+        }
         Ok(self)
     }
 }

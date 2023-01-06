@@ -20,7 +20,7 @@ use crate::{
         TerrestrialSpell,
     },
     willpower::Willpower,
-    CharacterMemo, CharacterMutation, CharacterMutationError, weapons::{Weapons, WeaponId, EquipHand},
+    CharacterMemo, CharacterMutation, CharacterMutationError, weapons::{Weapons, WeaponId, EquipHand, BaseWeaponId, MundaneWeaponMemo},
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -177,7 +177,9 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::SetCraftDots(focus, dots) => {
                 self.set_craft_dots(focus.as_str(), *dots)
             }
-            CharacterMutation::AddMundaneWeapon(_, _) => todo!(),
+            CharacterMutation::AddMundaneWeapon(weapon_id, mundane_weapon) => {
+                self.add_mundane_weapon(*weapon_id, mundane_weapon)
+            }
             CharacterMutation::EquipWeapon(_, _) => todo!(),
             CharacterMutation::UnequipWeapon(_, _) => todo!(),
             CharacterMutation::AddArtifact(_, _) => todo!(),
@@ -777,6 +779,11 @@ impl<'view, 'source> Character<'source> {
     /// The character's Weapons.
     pub fn weapons(&'view self) -> Weapons<'view, 'source> {
         Weapons(&self.exalt_state)
+    }
+
+    pub fn add_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: &'source MundaneWeaponMemo) -> Result<&mut Self, CharacterMutationError> {
+        self.exalt_state.add_mundane_weapon(weapon_id, weapon)?;
+        Ok(self)
     }
 
     /// Equips a weapon. \n For a OneHanded weapon, the hand parameter is

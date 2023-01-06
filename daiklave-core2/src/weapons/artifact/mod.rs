@@ -12,18 +12,17 @@ pub(in crate::weapons) use handless::{
     HandlessArtifactWeapon, HandlessArtifactWeaponMemo, HandlessArtifactWeaponNoAttunement,
     HandlessArtifactWeaponNoAttunementMemo,
 };
-pub(in crate::weapons) use natural::NaturalArtifactWeapon;
+pub(in crate::weapons) use natural::{NaturalArtifactWeapon, NaturalArtifactWeaponMemo};
 pub(in crate::weapons) use nonnatural::{
     NonnaturalArtifactWeapon, NonnaturalArtifactWeaponMemo, NonnaturalArtifactWeaponNoAttunement,
     NonnaturalArtifactWeaponNoAttunementMemo,
 };
 pub(in crate::weapons) use one_handed::{OneHandedArtifactWeapon, OneHandedArtifactWeaponMemo};
 pub(in crate::weapons) use two_handed::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo};
-pub(in crate::weapons) use worn::WornArtifactWeapon;
+pub(in crate::weapons) use worn::{WornArtifactWeapon, WornArtifactWeaponMemo};
 
 
-use self::{natural::NaturalArtifactWeaponMemo, worn::WornArtifactWeaponMemo};
-pub(crate) use self::named::NamedArtifactWeapon;
+pub(crate) use self::named::NamedArtifactWeaponMemo;
 
 use super::{EquipHand, Equipped};
 
@@ -46,7 +45,7 @@ pub enum ArtifactWeapon<'source> {
 }
 
 impl<'view, 'source> Deref for ArtifactWeapon<'source> {
-    type Target = NamedArtifactWeapon<'source>;
+    type Target = NamedArtifactWeaponMemo;
 
     fn deref(&self) -> &Self::Target {
         match self {
@@ -59,6 +58,15 @@ impl<'view, 'source> Deref for ArtifactWeapon<'source> {
 }
 
 impl<'source> ArtifactWeapon<'source> {
+    pub fn name(&'source self) -> &'source str {
+        match self {
+            ArtifactWeapon::Natural(weapon) => &weapon.0.name,
+            ArtifactWeapon::Worn(weapon, _) => todo!(),
+            ArtifactWeapon::OneHanded(weapon, _) => todo!(),
+            ArtifactWeapon::TwoHanded(weapon, _) => todo!(),
+        }
+    }
+
     /// Returns None if not equipped, or an enum representing its equipped
     /// status (Natural, Worn, TwoHanded, MainHand, or OffHand).
     pub fn is_equipped(&self) -> Option<Equipped> {

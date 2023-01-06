@@ -14,7 +14,7 @@ use crate::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
         SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell,
     },
-    weapons::{mortal::MortalWeapons, Weapon, WeaponId},
+    weapons::{mortal::MortalWeapons, Weapon, WeaponId, BaseWeaponId, MundaneWeaponMemo},
     CharacterMutationError,
 };
 
@@ -147,5 +147,10 @@ impl<'source> Mortal<'source> {
 
     pub fn iter_weapons(&self) -> impl Iterator<Item = WeaponId> + '_ {
         self.weapons.iter()
+    }
+
+    pub fn add_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: &'source MundaneWeaponMemo) -> Result<&mut Self, CharacterMutationError> {
+        self.weapons.add_mundane_weapon(weapon_id, weapon)?;
+        Ok(self)
     }
 }

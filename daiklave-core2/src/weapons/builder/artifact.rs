@@ -2,11 +2,9 @@ use crate::{
     artifact::MagicMaterial,
     book_reference::{BookReference},
     weapons::{
-        artifact::{
-            NamedArtifactWeapon, NaturalArtifactWeapon,
-            OneHandedArtifactWeapon, TwoHandedArtifactWeapon, WornArtifactWeapon,
+        artifact::{ArtifactWeaponMemo, NaturalArtifactWeaponMemo, WornArtifactWeaponMemo, OneHandedArtifactWeaponMemo, TwoHandedArtifactWeaponMemo, NamedArtifactWeaponMemo,
         },
-        ArtifactWeapon, BaseWeaponId, base::BaseWeapon,
+        BaseWeaponId, base::{BaseWeaponMemo},
     },
 };
 
@@ -16,25 +14,25 @@ use super::handedness::WeaponHandedness;
 /// are specified in order: name, base artifact, magic material, merit dots,
 /// and finally hearthstone slots. Optional fields (lore, powers, and book 
 /// reference) may be specified at any time prior to the final build().
-pub struct ArtifactWeaponBuilder<'build> {
-    pub(crate) name: &'build str,
-    pub(crate) lore: Option<&'build str>,
-    pub(crate) powers: Option<&'build str>,
+pub struct ArtifactWeaponBuilder {
+    pub(crate) name: String,
+    pub(crate) lore: Option<String>,
+    pub(crate) powers: Option<String>,
     pub(crate) book_reference: Option<BookReference>,
 }
 
-impl<'build> ArtifactWeaponBuilder<'build> {
+impl ArtifactWeaponBuilder {
     /// Add flavor text to describe the weapon's forging, history, and prior
     /// wielders.
-    pub fn lore(mut self, lore: &'build str) -> Self {
-        self.lore = Some(lore);
+    pub fn lore(mut self, lore: &str) -> Self {
+        self.lore = Some(lore.to_owned());
         self
     }
 
     /// Add passive or unique magical effects that are not Evocations, such as
     /// Beloved Adorei's emotional bond to her wielder.
-    pub fn powers(mut self, powers: &'build str) -> Self {
-        self.powers = Some(powers);
+    pub fn powers(mut self, powers: &str) -> Self {
+        self.powers = Some(powers.to_owned());
         self
     }
 
@@ -49,8 +47,8 @@ impl<'build> ArtifactWeaponBuilder<'build> {
     pub fn base_artifact(
         self,
         base_weapon_id: BaseWeaponId,
-        base_weapon: BaseArtifactWeaponInsert<'build>,
-    ) -> ArtifactWeaponBuilderWithBaseWeapon<'build> {
+        base_weapon: BaseArtifactWeaponInsert,
+    ) -> ArtifactWeaponBuilderWithBaseWeapon {
         ArtifactWeaponBuilderWithBaseWeapon {
             name: self.name,
             base_weapon_id,
@@ -64,27 +62,27 @@ impl<'build> ArtifactWeaponBuilder<'build> {
 
 /// An artifact builder after the base weapon has been specified.
 /// The next stage is .material().
-pub struct ArtifactWeaponBuilderWithBaseWeapon<'build> {
-    name: &'build str,
-    lore: Option<&'build str>,
-    powers: Option<&'build str>,
+pub struct ArtifactWeaponBuilderWithBaseWeapon {
+    name: String,
+    lore: Option<String>,
+    powers: Option<String>,
     book_reference: Option<BookReference>,
     base_weapon_id: BaseWeaponId,
-    base_weapon: BaseArtifactWeaponInsert<'build>,
+    base_weapon: BaseArtifactWeaponInsert,
 }
 
-impl<'build> ArtifactWeaponBuilderWithBaseWeapon<'build> {
+impl ArtifactWeaponBuilderWithBaseWeapon {
     /// Add flavor text to describe the weapon's forging, history, and prior
     /// wielders.
-    pub fn lore(mut self, lore: &'build str) -> Self {
-        self.lore = Some(lore);
+    pub fn lore(mut self, lore: &str) -> Self {
+        self.lore = Some(lore.to_owned());
         self
     }
 
     /// Add passive or unique magical effects that are not Evocations, such as
     /// Beloved Adorei's emotional bond to her wielder.
-    pub fn powers(mut self, powers: &'build str) -> Self {
-        self.powers = Some(powers);
+    pub fn powers(mut self, powers: &str) -> Self {
+        self.powers = Some(powers.to_owned());
         self
     }
 
@@ -101,7 +99,7 @@ impl<'build> ArtifactWeaponBuilderWithBaseWeapon<'build> {
     pub fn material(
         self,
         magic_material: MagicMaterial,
-    ) -> ArtifactWeaponBuilderWithMagicMaterial<'build> {
+    ) -> ArtifactWeaponBuilderWithMagicMaterial {
         ArtifactWeaponBuilderWithMagicMaterial {
             name: self.name,
             base_weapon_id: self.base_weapon_id,
@@ -116,28 +114,28 @@ impl<'build> ArtifactWeaponBuilderWithBaseWeapon<'build> {
 
 /// An artifact weapon after specifying its Magic Material. The next
 /// step is .merit_dots().
-pub struct ArtifactWeaponBuilderWithMagicMaterial<'build> {
-    name: &'build str,
-    lore: Option<&'build str>,
-    powers: Option<&'build str>,
+pub struct ArtifactWeaponBuilderWithMagicMaterial {
+    name: String,
+    lore: Option<String>,
+    powers: Option<String>,
     book_reference: Option<BookReference>,
     base_weapon_id: BaseWeaponId,
-    base_weapon: BaseArtifactWeaponInsert<'build>,
+    base_weapon: BaseArtifactWeaponInsert,
     magic_material: MagicMaterial,
 }
 
-impl<'build> ArtifactWeaponBuilderWithMagicMaterial<'build> {
+impl ArtifactWeaponBuilderWithMagicMaterial {
     /// Add flavor text to describe the weapon's forging, history, and prior
     /// wielders.
-    pub fn lore(mut self, lore: &'build str) -> Self {
-        self.lore = Some(lore);
+    pub fn lore(mut self, lore: &str) -> Self {
+        self.lore = Some(lore.to_owned());
         self
     }
 
     /// Add passive or unique magical effects that are not Evocations, such as
     /// Beloved Adorei's emotional bond to her wielder.
-    pub fn powers(mut self, powers: &'build str) -> Self {
-        self.powers = Some(powers);
+    pub fn powers(mut self, powers: &str) -> Self {
+        self.powers = Some(powers.to_owned());
         self
     }
 
@@ -151,7 +149,7 @@ impl<'build> ArtifactWeaponBuilderWithMagicMaterial<'build> {
     /// Specifies the dot rating of the artifact. Officially, all artifact 
     /// weapons should be rated 3+, but this is not enforced. Dot ratings 
     /// of 6+ are treatedas N/A artifacts. 
-    pub fn merit_dots(self, dots: u8) -> ArtifactWeaponBuilderWithMeritDots<'build> {
+    pub fn merit_dots(self, dots: u8) -> ArtifactWeaponBuilderWithMeritDots {
         ArtifactWeaponBuilderWithMeritDots {
             name: self.name,
             base_weapon_id: self.base_weapon_id,
@@ -167,29 +165,29 @@ impl<'build> ArtifactWeaponBuilderWithMagicMaterial<'build> {
 
 /// An artifact builder after the number of merit dots is specified.
 /// The next step is .hearthstone_slots().
-pub struct ArtifactWeaponBuilderWithMeritDots<'build> {
-    name: &'build str,
-    lore: Option<&'build str>,
-    powers: Option<&'build str>,
+pub struct ArtifactWeaponBuilderWithMeritDots {
+    name: String,
+    lore: Option<String>,
+    powers: Option<String>,
     book_reference: Option<BookReference>,
     base_weapon_id: BaseWeaponId,
-    base_weapon: BaseArtifactWeaponInsert<'build>,
+    base_weapon: BaseArtifactWeaponInsert,
     magic_material: MagicMaterial,
     merit_dots: u8,
 }
 
-impl<'build> ArtifactWeaponBuilderWithMeritDots<'build> {
+impl ArtifactWeaponBuilderWithMeritDots {
     /// Add flavor text to describe the weapon's forging, history, and prior
     /// wielders.
-    pub fn lore(mut self, lore: &'build str) -> Self {
-        self.lore = Some(lore);
+    pub fn lore(mut self, lore: &str) -> Self {
+        self.lore = Some(lore.to_owned());
         self
     }
 
     /// Add passive or unique magical effects that are not Evocations, such as
     /// Beloved Adorei's emotional bond to her wielder.
-    pub fn powers(mut self, powers: &'build str) -> Self {
-        self.powers = Some(powers);
+    pub fn powers(mut self, powers: &str) -> Self {
+        self.powers = Some(powers.to_owned());
         self
     }
 
@@ -204,7 +202,7 @@ impl<'build> ArtifactWeaponBuilderWithMeritDots<'build> {
     pub fn hearthstone_slots(
         self,
         slots: usize,
-    ) -> ArtifactWeaponBuilderWithHearthstoneSlots<'build> {
+    ) -> ArtifactWeaponBuilderWithHearthstoneSlots {
         ArtifactWeaponBuilderWithHearthstoneSlots {
             name: self.name,
             base_weapon_id: self.base_weapon_id,
@@ -221,30 +219,30 @@ impl<'build> ArtifactWeaponBuilderWithMeritDots<'build> {
 
 /// An artifact builder after having its hearthstone slots specified.
 /// The final step is .build() to finish the builder.
-pub struct ArtifactWeaponBuilderWithHearthstoneSlots<'build> {
-    name: &'build str,
-    lore: Option<&'build str>,
-    powers: Option<&'build str>,
+pub struct ArtifactWeaponBuilderWithHearthstoneSlots {
+    name: String,
+    lore: Option<String>,
+    powers: Option<String>,
     book_reference: Option<BookReference>,
     base_weapon_id: BaseWeaponId,
-    base_weapon: BaseArtifactWeaponInsert<'build>,
+    base_weapon: BaseArtifactWeaponInsert,
     magic_material: MagicMaterial,
     merit_dots: u8,
     hearthstone_slots: usize,
 }
 
-impl<'view, 'build> ArtifactWeaponBuilderWithHearthstoneSlots<'build> {
+impl ArtifactWeaponBuilderWithHearthstoneSlots {
     /// Add flavor text to describe the weapon's forging, history, and prior
     /// wielders.
-    pub fn lore(mut self, lore: &'build str) -> Self {
-        self.lore = Some(lore);
+    pub fn lore(mut self, lore: &str) -> Self {
+        self.lore = Some(lore.to_owned());
         self
     }
 
     /// Add passive or unique magical effects that are not Evocations, such as
     /// Beloved Adorei's emotional bond to her wielder.
-    pub fn powers(mut self, powers: &'build str) -> Self {
-        self.powers = Some(powers);
+    pub fn powers(mut self, powers: &str) -> Self {
+        self.powers = Some(powers.to_owned());
         self
     }
 
@@ -256,7 +254,7 @@ impl<'view, 'build> ArtifactWeaponBuilderWithHearthstoneSlots<'build> {
     }
 
     /// Completes the builder, returning an Artifact Weapon.
-    pub fn build(self) -> ArtifactWeapon<'build> {
+    pub fn build(self) -> ArtifactWeaponMemo {
         let (handedness, base_weapon) = match self.base_weapon {
             BaseArtifactWeaponInsert::Natural(base_weapon) => {
                 (WeaponHandedness::Natural, base_weapon)
@@ -275,7 +273,7 @@ impl<'view, 'build> ArtifactWeaponBuilderWithHearthstoneSlots<'build> {
             v
         });
 
-        let named_artifact_weapon = NamedArtifactWeapon {
+        let named_artifact_weapon = NamedArtifactWeaponMemo {
             name: self.name,
             book_reference: self.book_reference,
             merit_dots: self.merit_dots,
@@ -289,16 +287,16 @@ impl<'view, 'build> ArtifactWeaponBuilderWithHearthstoneSlots<'build> {
 
         match handedness {
             WeaponHandedness::Natural => {
-                ArtifactWeapon::Natural(NaturalArtifactWeapon(named_artifact_weapon))
+                ArtifactWeaponMemo::Natural(NaturalArtifactWeaponMemo(named_artifact_weapon))
             }
             WeaponHandedness::Worn => {
-                ArtifactWeapon::Worn(WornArtifactWeapon(named_artifact_weapon), false)
+                ArtifactWeaponMemo::Worn(WornArtifactWeaponMemo(named_artifact_weapon), false)
             }
             WeaponHandedness::OneHanded => {
-                ArtifactWeapon::OneHanded(OneHandedArtifactWeapon(named_artifact_weapon), None)
+                ArtifactWeaponMemo::OneHanded(OneHandedArtifactWeaponMemo(named_artifact_weapon), None)
             }
             WeaponHandedness::TwoHanded => {
-                ArtifactWeapon::TwoHanded(TwoHandedArtifactWeapon(named_artifact_weapon), false)
+                ArtifactWeaponMemo::TwoHanded(TwoHandedArtifactWeaponMemo(named_artifact_weapon), false)
             }
         }
     }
@@ -306,13 +304,13 @@ impl<'view, 'build> ArtifactWeaponBuilderWithHearthstoneSlots<'build> {
 
 /// A base artifact weapon to be inserted into a character. This
 /// wraps the BaseArtifactWeapon struct with its wielding characteristics.
-pub enum BaseArtifactWeaponInsert<'build> {
+pub enum BaseArtifactWeaponInsert {
     /// A Natural base artifact weapon (uncommon).
-    Natural(BaseWeapon<'build>),
+    Natural(BaseWeaponMemo),
     /// A Worn base artifact weapon like Smashfists.
-    Worn(BaseWeapon<'build>),
+    Worn(BaseWeaponMemo),
     /// A One-Handed base artifact weapon.
-    OneHanded(BaseWeapon<'build>),
+    OneHanded(BaseWeaponMemo),
     /// A Two-Handed base artifact weapon.
-    TwoHanded(BaseWeapon<'build>),
+    TwoHanded(BaseWeaponMemo),
 }
