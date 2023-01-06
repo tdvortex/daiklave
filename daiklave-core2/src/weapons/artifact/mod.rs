@@ -22,6 +22,7 @@ pub(in crate::weapons) use two_handed::{TwoHandedArtifactWeapon, TwoHandedArtifa
 pub(in crate::weapons) use worn::{WornArtifactWeapon, WornArtifactWeaponMemo};
 
 
+use self::named::NamedArtifactWeapon;
 pub(crate) use self::named::NamedArtifactWeaponMemo;
 
 use super::{EquipHand, Equipped};
@@ -45,7 +46,7 @@ pub enum ArtifactWeapon<'source> {
 }
 
 impl<'view, 'source> Deref for ArtifactWeapon<'source> {
-    type Target = NamedArtifactWeaponMemo;
+    type Target = NamedArtifactWeapon<'source>;
 
     fn deref(&self) -> &Self::Target {
         match self {
@@ -58,12 +59,30 @@ impl<'view, 'source> Deref for ArtifactWeapon<'source> {
 }
 
 impl<'source> ArtifactWeapon<'source> {
-    pub fn name(&'source self) -> &'source str {
+    pub fn name(&self) -> &'source str {
         match self {
-            ArtifactWeapon::Natural(weapon) => &weapon.0.name,
-            ArtifactWeapon::Worn(weapon, _) => todo!(),
-            ArtifactWeapon::OneHanded(weapon, _) => todo!(),
-            ArtifactWeapon::TwoHanded(weapon, _) => todo!(),
+            ArtifactWeapon::Natural(weapon) => weapon.name(),
+            ArtifactWeapon::Worn(weapon, _) => weapon.name(),
+            ArtifactWeapon::OneHanded(weapon, _) => weapon.name(),
+            ArtifactWeapon::TwoHanded(weapon, _) => weapon.name(),
+        }
+    }
+
+    pub fn lore(&self) -> Option<&'source str> {
+        match self {
+            ArtifactWeapon::Natural(weapon) => weapon.lore(),
+            ArtifactWeapon::Worn(weapon, _) => weapon.lore(),
+            ArtifactWeapon::OneHanded(weapon, _) => weapon.lore(),
+            ArtifactWeapon::TwoHanded(weapon, _) => weapon.lore(),
+        }
+    }
+
+    pub fn powers(&self) -> Option<&'source str> {
+        match self {
+            ArtifactWeapon::Natural(weapon) => weapon.powers(),
+            ArtifactWeapon::Worn(weapon, _) => weapon.powers(),
+            ArtifactWeapon::OneHanded(weapon, _) => weapon.powers(),
+            ArtifactWeapon::TwoHanded(weapon, _) => weapon.powers(),
         }
     }
 

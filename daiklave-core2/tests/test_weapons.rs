@@ -2,7 +2,7 @@ use daiklave_core2::{
     book_reference::{Book, BookReference},
     unique_id::UniqueId,
     weapons::{WeaponId, Equipped, BaseWeaponId, ArtifactWeaponId, WeaponWeightClass, WeaponTag, AttackRange, RangeBand, EquipHand, Weapon, OptionalWeaponTag, ArtifactId},
-    CharacterEventSource, CharacterMutation, artifact::{Artifact, MagicMaterial},
+    CharacterEventSource, CharacterMutation, artifact::{MagicMaterial, ArtifactMemo},
 };
 
 #[test]
@@ -159,7 +159,7 @@ fn test_weapons_event_source() {
     // Create and add a unique artifact weapon
     let mutation = CharacterMutation::AddArtifact(
         ArtifactId::Weapon(ArtifactWeaponId(UniqueId::Placeholder(1))),
-        Artifact::Weapon(
+        ArtifactMemo::Weapon(
             Weapon::artifact("Volcano Cutter")
             .base_artifact(
                 BaseWeaponId(UniqueId::Placeholder(8)),
@@ -184,7 +184,7 @@ fn test_weapons_event_source() {
                 attack made with Volcano Cutter which rolls no 1s.")
             .book_reference(BookReference::new(Book::CoreRulebook, 627))
             .build()
-        ).as_memo()
+        )
     );
     event_source.apply_mutation(mutation).unwrap();
 }

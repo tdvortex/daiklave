@@ -7,7 +7,7 @@ pub(in crate::weapons) use equipped::MortalEquippedWeapons;
 pub(in crate::weapons) use hands::MortalHands;
 pub(in crate::weapons) use unequipped::MortalUnequippedWeapons;
 
-use super::{exalt::ExaltWeapons, Weapon, WeaponId, mundane::{MundaneWeapon, HandlessMundaneWeapon, NonnaturalMundaneWeapon, WornMundaneWeapon, OneHandedMundaneWeapon, TwoHandedMundaneWeapon}, BaseWeaponId};
+use super::{exalt::ExaltWeapons, Weapon, WeaponId, mundane::{NonnaturalMundaneWeapon, WornMundaneWeapon, HandlessMundaneWeapon, NaturalMundaneWeapon}, BaseWeaponId, MundaneWeaponMemo};
 
 mod equipped;
 mod hands;
@@ -50,26 +50,19 @@ impl<'view, 'source> MortalWeapons<'source> {
         self.equipped.iter().chain(self.unequipped.iter())
     }
 
-    pub fn add_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: &'source MundaneWeapon) -> Result<&mut Self, CharacterMutationError> {
-        match weapon {
-            MundaneWeapon::Natural(natural_mundane_weapon) => {
-                self.equipped.add_natural_mundane_weapon(weapon_id, natural_mundane_weapon)?;
+    pub fn add_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: &'source MundaneWeaponMemo) -> Result<&mut Self, CharacterMutationError> {
+        let nonnatural_mundane = match weapon {
+            MundaneWeaponMemo::Natural(weapon) => {
+                let handless_mundane = HandlessMundaneWeapon::Natural(NaturalMundaneWeapon(&weapon.0));
+                self.equipped.add_natural_mundane_weapon(weapon_id, handless_mundane)?;
+                return Ok(self);
             }
-            MundaneWeapon::Worn(worn_mundane_weapon, _) => {
-                let nonnatural = NonnaturalMundaneWeapon::Worn(WornMundaneWeapon(&**worn_mundane_weapon));
-                self.unequipped.add_mundane_weapon(weapon_id, nonnatural)?;
-            }
-            MundaneWeapon::OneHanded(one_handed_mundane_weapon, _) => {
-                let nonnatural = NonnaturalMundaneWeapon::OneHanded(OneHandedMundaneWeapon(&**one_handed_mundane_weapon));
-                self.unequipped.add_mundane_weapon(weapon_id, nonnatural)?;
-            }
-            MundaneWeapon::TwoHanded(two_handed_mundane_weapon, _) => {
-                let nonnatural = NonnaturalMundaneWeapon::TwoHanded(TwoHandedMundaneWeapon(&**two_handed_mundane_weapon));
-                self.unequipped.add_mundane_weapon(weapon_id, nonnatural)?;
-            }
-        }
-        
-        self.unequipped.add_mundane_weapon(weapon_id, weapon)?;
+            MundaneWeaponMemo::Worn(weapon, _) => NonnaturalMundaneWeapon::Worn(WornMundaneWeapon(&weapon.0)),
+            MundaneWeaponMemo::OneHanded(weapon, _) => NonnaturalMundaneWeapon::Worn(WornMundaneWeapon(&weapon.0)),
+            MundaneWeaponMemo::TwoHanded(weapon, _) => NonnaturalMundaneWeapon::Worn(WornMundaneWeapon(&weapon.0)),
+        };
+
+        self.unequipped.add_mundane_weapon(weapon_id, nonnatural_mundane)?;
         Ok(self)
     }
 }

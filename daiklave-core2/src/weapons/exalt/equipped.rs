@@ -2,15 +2,15 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::weapons::{
+use crate::{weapons::{
     artifact::{
         ArtifactWeapon, HandlessArtifactWeapon, HandlessArtifactWeaponMemo,
         HandlessArtifactWeaponNoAttunement,
     },
     mortal::MortalEquippedWeapons,
     mundane::{HandlessMundaneWeapon, HandlessMundaneWeaponMemo, MundaneWeapon},
-    ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId, WeaponType,
-};
+    ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId, WeaponType, error::WeaponError,
+}, CharacterMutationError};
 
 use super::hands::{ExaltHands, ExaltHandsMemo};
 
@@ -107,6 +107,15 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
                     .iter()
                     .map(|(artifact_id, _)| WeaponId::Artifact(*artifact_id)),
             )
+    }
+
+    pub fn add_natural_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: HandlessMundaneWeapon<'source>) -> Result<&mut Self, CharacterMutationError> {
+        if self.handless_mundane.contains_key(&weapon_id) {
+            Err(CharacterMutationError::WeaponError(WeaponError::DuplicateNatural))
+        } else {
+            self.handless_mundane.insert(weapon_id, weapon);
+            Ok(self)
+        }
     }
 }
 

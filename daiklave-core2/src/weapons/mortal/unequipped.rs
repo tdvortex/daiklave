@@ -85,8 +85,9 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
             )
     }
 
-    pub fn add_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: &'source NonnaturalMundaneWeapon) -> Result<&mut Self, CharacterMutationError> {
-        todo!()
+    pub fn add_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: NonnaturalMundaneWeapon<'source>) -> Result<&mut Self, CharacterMutationError> {
+        self.mundane.insert(weapon_id, weapon);
+        Ok(self)
     }
 }
 

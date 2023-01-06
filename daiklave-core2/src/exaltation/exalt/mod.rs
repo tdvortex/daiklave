@@ -25,7 +25,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    weapons::{exalt::ExaltWeapons, Weapon, WeaponId},
+    weapons::{exalt::ExaltWeapons, Weapon, WeaponId, BaseWeaponId, MundaneWeaponMemo},
     CharacterMutationError,
 };
 
@@ -499,5 +499,10 @@ impl<'view, 'source> Exalt<'source> {
                 .sorcery()
                 .map(|sorcerer| Sorcery(ExaltationSorcery::Exalt(ExaltSorcery::Solar(sorcerer)))),
         }
+    }
+
+    pub(crate) fn add_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: &'source MundaneWeaponMemo) -> Result<&mut Self, CharacterMutationError> {
+        self.weapons.add_mundane_weapon(weapon_id, weapon)?;
+        Ok(self)
     }
 }

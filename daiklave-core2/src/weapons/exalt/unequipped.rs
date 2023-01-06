@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::weapons::{
+use crate::{weapons::{
     artifact::{
         ArtifactWeapon, NonnaturalArtifactWeapon, NonnaturalArtifactWeaponMemo,
         NonnaturalArtifactWeaponNoAttunement,
@@ -10,7 +10,7 @@ use crate::weapons::{
     mortal::MortalUnequippedWeapons,
     mundane::{MundaneWeapon, NonnaturalMundaneWeapon, NonnaturalMundaneWeaponMemo},
     ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId, WeaponType,
-};
+}, CharacterMutationError};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct ExaltUnequippedWeapons<'source> {
@@ -105,6 +105,11 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
                     .iter()
                     .map(|(artifact_id, _)| WeaponId::Artifact(*artifact_id)),
             )
+    }
+
+    pub fn add_mundane_weapon(&mut self, weapon_id: BaseWeaponId, weapon: NonnaturalMundaneWeapon<'source>) -> Result<&mut Self, CharacterMutationError> {
+        self.mundane.insert(weapon_id, weapon);
+        Ok(self)
     }
 }
 

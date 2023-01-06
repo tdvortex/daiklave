@@ -41,15 +41,6 @@ impl<'source> MundaneWeapon<'source> {
         todo!()
     }
 
-    pub fn name(&self) -> &'source str {
-        match self {
-            MundaneWeapon::Natural(weapon) => weapon.0.name.as_str(),
-            MundaneWeapon::Worn(weapon, _) => weapon.0.name.as_str(),
-            MundaneWeapon::OneHanded(weapon, _) => weapon.0.name.as_str(),
-            MundaneWeapon::TwoHanded(weapon, _) => weapon.0.name.as_str(),
-        }
-    }
-
     pub fn is_equipped(&self) -> Option<Equipped> {
         match self {
             MundaneWeapon::Natural(_) => Some(Equipped::Natural),
@@ -72,6 +63,15 @@ impl<'source> MundaneWeapon<'source> {
                     None
                 }
             }
+        }
+    }
+
+    pub fn name(&self) -> &'source str {
+        match self {
+            MundaneWeapon::Natural(weapon) => weapon.name(),
+            MundaneWeapon::Worn(weapon, _) => weapon.name(),
+            MundaneWeapon::OneHanded(weapon, _) => weapon.name(),
+            MundaneWeapon::TwoHanded(weapon, _) => weapon.name(),
         }
     }
 }

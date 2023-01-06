@@ -69,7 +69,7 @@ mod willpower;
 
 pub use character::Character;
 pub use character_memo::CharacterMemo;
-use weapons::{BaseWeaponId, MundaneWeaponMemo, EquipHand, WeaponId, ArtifactId};
+use weapons::{BaseWeaponId, MundaneWeaponMemo, EquipHand, WeaponId, ArtifactId, error::WeaponError};
 
 /// The API for the character, expressed as an owned struct. Each mutation has
 /// an associated pub method on Character and CharacterEventSource which
@@ -190,6 +190,9 @@ pub enum CharacterMutationError {
     /// Error occurring while trying to add a Sorcery circle
     #[error("Cannot add Sorcery circle")]
     AddSorceryCircleError(#[from] SorceryError),
+    /// Error related to weapons
+    #[error("Weapons error")]
+    WeaponError(#[from] WeaponError),
 }
 
 /// A container to hold a successfully applied sequence of mutations, with

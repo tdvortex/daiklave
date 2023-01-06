@@ -3,7 +3,7 @@ use std::ops::Deref;
 use serde::{Deserialize, Serialize};
 
 use super::{
-    named::{NamedArtifactWeaponMemo},
+    named::{NamedArtifactWeapon},
     one_handed::OneHandedArtifactWeapon,
     two_handed::{TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo},
     worn::{WornArtifactWeapon, WornArtifactWeaponMemo},
@@ -38,7 +38,7 @@ pub(crate) enum NonnaturalArtifactWeaponNoAttunement<'source> {
 }
 
 impl<'source> Deref for NonnaturalArtifactWeaponNoAttunement<'source> {
-    type Target = NamedArtifactWeaponMemo;
+    type Target = NamedArtifactWeapon<'source>;
 
     fn deref(&self) -> &Self::Target {
         match self {

@@ -5,6 +5,7 @@ mod base;
 pub mod builder;
 mod damage_type;
 mod equipped;
+pub mod error;
 pub(crate) mod exalt;
 mod hearthstone;
 pub(crate) mod mortal;
@@ -27,7 +28,7 @@ use crate::{
 };
 
 use self::{
-    base::BaseWeapon, hearthstone::{OwnedHearthstone, OwnedHearthstoneMemo}, mundane::MundaneWeapon, builder::{artifact::ArtifactWeaponBuilder, base::BaseWeaponBuilder}, range::WeaponRange,
+    hearthstone::{OwnedHearthstone}, mundane::MundaneWeapon, builder::{artifact::ArtifactWeaponBuilder, base::BaseWeaponBuilder}, range::WeaponRange, base::BaseWeaponMemo,
 };
 pub(crate) use unarmed::unarmed;
 pub use weight_class::WeaponWeightClass;
@@ -176,7 +177,7 @@ impl<'view, 'source> Weapon<'source> {
 
     /// If the weapon is an artifact weapon, returns the base weapon and its Id.
     /// For example, the base weapon for "Volcano Cutter" would be "daiklave".
-    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &BaseWeapon<'source>)> {
+    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &'source BaseWeaponMemo)> {
         self.0.base_artifact_weapon()
     }
 
@@ -259,7 +260,7 @@ impl<'view, 'source> WeaponType<'source> {
         }
     }
 
-    pub fn name(&self) -> &'source str {
+    pub fn name(&'view self) -> &'source str {
         match self {
             WeaponType::Mundane(_, mundane) => mundane.name(),
             WeaponType::Artifact(_, artifact, _) => artifact.name(),
@@ -273,17 +274,17 @@ impl<'view, 'source> WeaponType<'source> {
         }
     }
 
-    pub fn lore(&self) -> Option<&'source str> {
+    pub fn lore(&'view self) -> Option<&'source str> {
         match self {
             WeaponType::Mundane(_, _) => None,
-            WeaponType::Artifact(_, artifact, _) => artifact.lore.as_deref(),
+            WeaponType::Artifact(_, artifact, _) => artifact.lore(),
         }
     }
 
     pub fn powers(&self) -> Option<&'source str> {
         match self {
             WeaponType::Mundane(_, _) => None,
-            WeaponType::Artifact(_, artifact, _) => artifact.powers.as_deref(),
+            WeaponType::Artifact(_, artifact, _) => artifact.powers(),
         }
     }
 
@@ -298,22 +299,22 @@ impl<'view, 'source> WeaponType<'source> {
 
     pub fn slotted_hearthstones(
         &'view self,
-    ) -> impl Iterator<Item = &'source OwnedHearthstoneMemo> {
+    ) -> impl Iterator<Item = &'view OwnedHearthstone<'source>> {
         match self {
             WeaponType::Mundane(_, _) => Vec::new().into_iter(),
             WeaponType::Artifact(_, artifact, _) => (**artifact)
                 .slotted_hearthstones()
-                .collect::<Vec<&'source OwnedHearthstoneMemo>>()
+                .collect::<Vec<&'view OwnedHearthstone<'source>>>()
                 .into_iter(),
         }
     }
 
-    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &BaseWeapon<'source>)> {
+    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &'source BaseWeaponMemo)> {
         match self {
             WeaponType::Mundane(_, _) => None,
             WeaponType::Artifact(_, artifact, _) => Some((
-                (*artifact).base_artifact_weapon_id(),
-                (*artifact).base_artifact_weapon(),
+                artifact.base_artifact_weapon_id(),
+                artifact.base_artifact_weapon(),
             )),
         }
     }

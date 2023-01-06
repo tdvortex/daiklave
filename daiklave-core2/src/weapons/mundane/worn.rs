@@ -19,6 +19,10 @@ impl<'source> WornMundaneWeapon<'source> {
     pub fn as_memo(&'source self) -> WornMundaneWeaponMemo {
         WornMundaneWeaponMemo(self.0.clone())
     }
+
+    pub fn name(&self) -> &'source str {
+        self.0.name.as_str()
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
