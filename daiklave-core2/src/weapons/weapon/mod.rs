@@ -166,7 +166,7 @@ impl<'view, 'source> Weapon<'source> {
     /// The weapon's bonus or penalty to Parry defense. Returns None
     /// if the weapon cannot be used to parry.
     pub fn parry_mod(&self) -> Option<i8> {
-        todo!()
+        self.0.parry_mod()
     }
 
     /// The weapon's Overwhelming value.

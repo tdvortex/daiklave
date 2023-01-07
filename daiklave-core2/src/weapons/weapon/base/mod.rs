@@ -157,4 +157,16 @@ impl BaseWeapon {
             }
         }
     }
+
+    pub fn parry_mod(&self, is_artifact: bool) -> Option<i8> {
+        if matches!(self.primary_ability, WeaponAbility::Thrown | WeaponAbility::Archery) {
+            None
+        } else {
+            Some(match self.weight_class {
+                WeaponWeightClass::Light => 0,
+                WeaponWeightClass::Medium => 1,
+                WeaponWeightClass::Heavy => if is_artifact {0} else {-1}
+            })
+        }
+    }
 }

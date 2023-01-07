@@ -158,4 +158,12 @@ impl<'view, 'source> WeaponType<'source> {
             WeaponType::Artifact(_, artifact, _) => artifact.base_artifact_weapon().damage(attack_range, true),
         }
     }
+
+    pub fn parry_mod(&self) -> Option<i8> {
+        match self {
+            WeaponType::Unarmed => Some(0),
+            WeaponType::Mundane(_, mundane) => mundane.parry_mod(false),
+            WeaponType::Artifact(_, artifact, _) => artifact.base_artifact_weapon().parry_mod(true),
+        }
+    }
 }
