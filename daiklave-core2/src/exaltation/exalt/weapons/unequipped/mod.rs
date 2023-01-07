@@ -1,16 +1,19 @@
 mod memo;
-use std::collections::HashMap;
+use std::collections::{hash_map::Entry, HashMap};
 
 pub(crate) use memo::ExaltUnequippedWeaponsMemo;
 
 use crate::{
     exaltation::mortal::MortalUnequippedWeapons,
-    weapons::weapon::{
-        artifact::{
-            ArtifactWeapon, NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement,
+    weapons::{
+        weapon::{
+            artifact::{
+                ArtifactWeapon, NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement,
+            },
+            mundane::{MundaneWeapon, NonnaturalMundaneWeapon},
+            ArtifactWeaponId, BaseWeaponId, Equipped, Weapon, WeaponId, WeaponType,
         },
-        mundane::{MundaneWeapon, NonnaturalMundaneWeapon},
-        ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId, WeaponType, Equipped,
+        WeaponError,
     },
     CharacterMutationError,
 };
@@ -54,10 +57,9 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
         match weapon_id {
             WeaponId::Unarmed => Some(crate::weapons::weapon::mundane::unarmed()),
             WeaponId::Mundane(target_id) => match self.mundane.get(&target_id)? {
-                (NonnaturalMundaneWeapon::Worn(worn_weapon), _) => Some(Weapon(WeaponType::Mundane(
-                    target_id,
-                    MundaneWeapon::Worn(worn_weapon.clone(), false),
-                ))),
+                (NonnaturalMundaneWeapon::Worn(worn_weapon), _) => Some(Weapon(
+                    WeaponType::Mundane(target_id, MundaneWeapon::Worn(worn_weapon.clone(), false)),
+                )),
                 (NonnaturalMundaneWeapon::OneHanded(one), _) => Some(Weapon(WeaponType::Mundane(
                     target_id,
                     MundaneWeapon::OneHanded(one.clone(), None),
@@ -110,12 +112,55 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
             )
     }
 
-    pub fn add_mundane_weapon(
+    pub fn stow_mundane(
         &mut self,
         weapon_id: BaseWeaponId,
         weapon: NonnaturalMundaneWeapon<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.mundane.entry(weapon_id).or_insert((weapon, 0)).1 += 1;
         Ok(self)
+    }
+
+    pub fn unstow_mundane(
+        &mut self,
+        weapon_id: BaseWeaponId,
+    ) -> Option<NonnaturalMundaneWeapon<'source>> {
+        let current_count = self.mundane.get(&weapon_id)?.1;
+
+        match current_count {
+            0 => {
+                // This shouldn't happen, but if it does handle it by
+                // removing the problem entry
+                self.mundane.remove(&weapon_id);
+                None
+            }
+            1 => self.mundane.remove(&weapon_id).map(|(weapon, _)| weapon),
+            _ => self.mundane.get_mut(&weapon_id).map(|(weapon, count)| {
+                *count -= 1;
+                weapon.clone()
+            }),
+        }
+    }
+
+    pub fn stow_artifact(
+        &mut self,
+        weapon_id: ArtifactWeaponId,
+        weapon: NonnaturalArtifactWeapon<'source>,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if let Entry::Vacant(e) = self.artifact.entry(weapon_id) {
+            e.insert(weapon);
+            Ok(self)
+        } else {
+            Err(CharacterMutationError::WeaponError(
+                WeaponError::NamedArtifactsUnique,
+            ))
+        }
+    }
+
+    pub fn unstow_artifact(
+        &mut self,
+        weapon_id: ArtifactWeaponId,
+    ) -> Option<NonnaturalArtifactWeapon<'source>> {
+        self.artifact.remove(&weapon_id)
     }
 }

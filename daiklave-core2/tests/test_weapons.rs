@@ -12,9 +12,12 @@ use daiklave_core2::{
 #[test]
 fn test_weapons_event_source() {
     let mut event_source = CharacterEventSource::default();
-    let character_view = event_source.as_character_view().unwrap();
+    let mut character_view = event_source.as_character_view().unwrap();
     // Default characters have the Unarmed weapon
-    let unarmed = character_view.weapons().get(WeaponId::Unarmed, Some(Equipped::Natural)).unwrap();
+    let unarmed = character_view
+        .weapons()
+        .get(WeaponId::Unarmed, Some(Equipped::Natural))
+        .unwrap();
     assert_eq!(unarmed.id(), WeaponId::Unarmed);
     assert_eq!(unarmed.name(), "Unarmed");
     assert_eq!(
@@ -36,10 +39,7 @@ fn test_weapons_event_source() {
         unarmed.accuracy(AttackRange::Ranged(RangeBand::Close)),
         None
     );
-    assert_eq!(
-        unarmed.damage(AttackRange::Melee),
-        Some(7)
-    );
+    assert_eq!(unarmed.damage(AttackRange::Melee), Some(7));
     assert_eq!(unarmed.damage(AttackRange::Ranged(RangeBand::Short)), None);
     assert_eq!(unarmed.parry_mod(), Some(0));
     assert_eq!(unarmed.overwhelming(), 1);
@@ -47,7 +47,7 @@ fn test_weapons_event_source() {
     // Natural weapons are always equipped
     assert_eq!(unarmed.is_equipped(), Some(Equipped::Natural));
     assert!(character_view
-        .unequip_weapon(WeaponId::Unarmed, Some(EquipHand::MainHand))
+        .unequip_weapon(WeaponId::Unarmed, Equipped::Natural)
         .is_err());
     assert!(character_view
         .equip_weapon(WeaponId::Unarmed, None)
@@ -57,7 +57,7 @@ fn test_weapons_event_source() {
     assert!(character_view
         .unequip_weapon(
             WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(1))),
-            Some(EquipHand::MainHand)
+            Equipped::MainHand
         )
         .is_err());
     assert!(character_view

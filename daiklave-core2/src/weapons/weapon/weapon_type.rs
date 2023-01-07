@@ -1,11 +1,12 @@
 use crate::{
-    book_reference::{BookReference, Book}, exaltation::exalt::essence::MoteCommitment,
+    book_reference::{Book, BookReference},
+    exaltation::exalt::essence::MoteCommitment,
     hearthstone::OwnedHearthstone,
 };
 
 use super::{
     artifact::ArtifactWeapon, base::BaseWeapon, equipped::Equipped, mundane::MundaneWeapon,
-    ArtifactWeaponId, BaseWeaponId, WeaponId, WeaponWeightClass, WeaponTag, AttackRange,
+    ArtifactWeaponId, AttackRange, BaseWeaponId, WeaponId, WeaponTag, WeaponWeightClass,
 };
 
 pub(crate) enum WeaponType<'source> {
@@ -44,7 +45,7 @@ impl<'view, 'source> WeaponType<'source> {
 
     pub fn mote_commitment(&self) -> Option<(ArtifactWeaponId, MoteCommitment<'source>)> {
         match self {
-            WeaponType::Mundane(_, _) | WeaponType::Unarmed=> None,
+            WeaponType::Mundane(_, _) | WeaponType::Unarmed => None,
             WeaponType::Artifact(_, _, _) => todo!(),
         }
     }
@@ -74,7 +75,7 @@ impl<'view, 'source> WeaponType<'source> {
 
     pub fn powers(&self) -> Option<&'source str> {
         match self {
-            WeaponType::Mundane(_, _) | WeaponType::Unarmed=> None,
+            WeaponType::Mundane(_, _) | WeaponType::Unarmed => None,
             WeaponType::Artifact(_, artifact, _) => artifact.powers(),
         }
     }
@@ -125,7 +126,8 @@ impl<'view, 'source> WeaponType<'source> {
                 WeaponTag::Brawl,
                 WeaponTag::Grappling,
                 WeaponTag::Natural,
-            ].into_iter(),
+            ]
+            .into_iter(),
             WeaponType::Mundane(_, mundane) => mundane.tags(),
             WeaponType::Artifact(_, artifact, _) => artifact.tags(),
         }
@@ -141,7 +143,9 @@ impl<'view, 'source> WeaponType<'source> {
                 }
             }
             WeaponType::Mundane(_, mundane) => mundane.accuracy(attack_range, false),
-            WeaponType::Artifact(_, artifact, _) => artifact.base_artifact_weapon().accuracy(attack_range, true),
+            WeaponType::Artifact(_, artifact, _) => {
+                artifact.base_artifact_weapon().accuracy(attack_range, true)
+            }
         }
     }
 
@@ -155,7 +159,9 @@ impl<'view, 'source> WeaponType<'source> {
                 }
             }
             WeaponType::Mundane(_, mundane) => mundane.damage(attack_range, false),
-            WeaponType::Artifact(_, artifact, _) => artifact.base_artifact_weapon().damage(attack_range, true),
+            WeaponType::Artifact(_, artifact, _) => {
+                artifact.base_artifact_weapon().damage(attack_range, true)
+            }
         }
     }
 
@@ -171,7 +177,9 @@ impl<'view, 'source> WeaponType<'source> {
         match self {
             WeaponType::Unarmed => 1,
             WeaponType::Mundane(_, mundane) => mundane.overwhelming(false),
-            WeaponType::Artifact(_, artifact, _) => artifact.base_artifact_weapon().overwhelming(true),
+            WeaponType::Artifact(_, artifact, _) => {
+                artifact.base_artifact_weapon().overwhelming(true)
+            }
         }
     }
 }

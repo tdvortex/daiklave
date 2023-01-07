@@ -6,7 +6,7 @@ pub mod weapon;
 pub use error::WeaponError;
 
 use self::weapon::mundane::unarmed;
-use self::weapon::{Weapon, WeaponId, Equipped};
+use self::weapon::{Equipped, Weapon, WeaponId};
 use crate::exaltation::Exaltation;
 
 /// The interface for a character's weapons.

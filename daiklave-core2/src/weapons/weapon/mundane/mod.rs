@@ -1,7 +1,7 @@
 use std::ops::Deref;
 
-use super::WeaponTag;
 use super::equipped::EquipHand;
+use super::WeaponTag;
 use super::{base::BaseWeapon, equipped::Equipped};
 
 mod grouped;

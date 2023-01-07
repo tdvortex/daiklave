@@ -18,7 +18,9 @@ use crate::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
         SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell,
     },
-    weapons::weapon::{mundane::MundaneWeaponMemo, BaseWeaponId, Weapon, WeaponId, Equipped},
+    weapons::weapon::{
+        mundane::MundaneWeaponMemo, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId,
+    },
     CharacterMutationError,
 };
 
@@ -141,7 +143,11 @@ impl<'source> Mortal<'source> {
         Ok(self)
     }
 
-    pub fn get_weapon(&self, weapon_id: WeaponId, equipped: Option<Equipped>) -> Option<Weapon<'source>> {
+    pub fn get_weapon(
+        &self,
+        weapon_id: WeaponId,
+        equipped: Option<Equipped>,
+    ) -> Option<Weapon<'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             if matches!(equipped, Some(Equipped::Natural)) {
                 Some(crate::weapons::weapon::mundane::unarmed())
@@ -163,6 +169,24 @@ impl<'source> Mortal<'source> {
         weapon: &'source MundaneWeaponMemo,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.add_mundane_weapon(weapon_id, weapon)?;
+        Ok(self)
+    }
+
+    pub fn equip_weapon(
+        &mut self,
+        weapon_id: WeaponId,
+        hand: Option<EquipHand>,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.weapons.equip_weapon(weapon_id, hand)?;
+        Ok(self)
+    }
+
+    pub fn unequip_weapon(
+        &mut self,
+        weapon_id: WeaponId,
+        equipped: Equipped,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.weapons.unequip_weapon(weapon_id, equipped)?;
         Ok(self)
     }
 }

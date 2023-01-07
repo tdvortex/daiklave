@@ -25,7 +25,7 @@ impl<'source> CharacterMemo {
         Character {
             name: self.name.as_str(),
             concept: self.concept.as_deref(),
-            exalt_state: self.exalt_state.as_ref(),
+            exaltation: self.exalt_state.as_ref(),
             willpower: self.willpower,
             health: self.health,
             attributes: self.attributes,

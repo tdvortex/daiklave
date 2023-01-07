@@ -25,7 +25,10 @@ pub use newtype::{
 
 use self::named::NamedArtifactWeapon;
 
-use super::{equipped::{EquipHand, Equipped}, WeaponTag};
+use super::{
+    equipped::{EquipHand, Equipped},
+    WeaponTag,
+};
 
 /// An artifact weapon, discriminated by its wielding characteristics.
 pub enum ArtifactWeapon<'source> {
@@ -137,8 +140,12 @@ impl<'source> ArtifactWeapon<'source> {
         match self {
             ArtifactWeapon::Natural(base) => base.base_artifact_weapon().tags(WeaponTag::Natural),
             ArtifactWeapon::Worn(base, _) => base.base_artifact_weapon().tags(WeaponTag::Worn),
-            ArtifactWeapon::OneHanded(base, _) => base.base_artifact_weapon().tags(WeaponTag::OneHanded),
-            ArtifactWeapon::TwoHanded(base, _) => base.base_artifact_weapon().tags(WeaponTag::TwoHanded),
+            ArtifactWeapon::OneHanded(base, _) => {
+                base.base_artifact_weapon().tags(WeaponTag::OneHanded)
+            }
+            ArtifactWeapon::TwoHanded(base, _) => {
+                base.base_artifact_weapon().tags(WeaponTag::TwoHanded)
+            }
         }
     }
 }

@@ -19,7 +19,9 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    weapons::weapon::{mundane::MundaneWeaponMemo, BaseWeaponId, Weapon, WeaponId, Equipped},
+    weapons::weapon::{
+        mundane::MundaneWeaponMemo, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId,
+    },
     CharacterMutationError,
 };
 
@@ -70,7 +72,11 @@ impl<'source> Exaltation<'source> {
         !self.is_mortal()
     }
 
-    pub fn get_weapon(&self, weapon_id: WeaponId, equipped: Option<Equipped>) -> Option<Weapon<'source>> {
+    pub fn get_weapon(
+        &self,
+        weapon_id: WeaponId,
+        equipped: Option<Equipped>,
+    ) -> Option<Weapon<'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             if matches!(equipped, Some(Equipped::Natural)) {
                 Some(crate::weapons::weapon::mundane::unarmed())
@@ -79,7 +85,9 @@ impl<'source> Exaltation<'source> {
             }
         } else {
             match self {
-                Exaltation::Mortal(box_mortal) => box_mortal.as_ref().get_weapon(weapon_id, equipped),
+                Exaltation::Mortal(box_mortal) => {
+                    box_mortal.as_ref().get_weapon(weapon_id, equipped)
+                }
                 Exaltation::Exalt(box_exalt) => box_exalt.as_ref().get_weapon(weapon_id, equipped),
             }
         }
@@ -91,9 +99,10 @@ impl<'source> Exaltation<'source> {
                 .as_ref()
                 .iter_weapons()
                 .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
-            Exaltation::Exalt(box_exalt) => {
-                box_exalt.as_ref().iter_weapons().collect::<Vec<(WeaponId, Option<Equipped>)>>()
-            }
+            Exaltation::Exalt(box_exalt) => box_exalt
+                .as_ref()
+                .iter_weapons()
+                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
         }
         .into_iter()
     }
@@ -536,6 +545,38 @@ impl<'view, 'source> Exaltation<'source> {
             }
             Exaltation::Exalt(exalt) => {
                 exalt.as_mut().add_mundane_weapon(weapon_id, weapon)?;
+            }
+        }
+        Ok(self)
+    }
+
+    pub fn equip_weapon(
+        &mut self,
+        weapon_id: WeaponId,
+        hand: Option<EquipHand>,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {
+                mortal.as_mut().equip_weapon(weapon_id, hand)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.as_mut().equip_weapon(weapon_id, hand)?;
+            }
+        }
+        Ok(self)
+    }
+
+    pub fn unequip_weapon(
+        &mut self,
+        weapon_id: WeaponId,
+        equipped: Equipped,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {
+                mortal.as_mut().unequip_weapon(weapon_id, equipped)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.as_mut().unequip_weapon(weapon_id, equipped)?;
             }
         }
         Ok(self)

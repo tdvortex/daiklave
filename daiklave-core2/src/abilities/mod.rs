@@ -45,7 +45,7 @@ impl<'view, 'source> Abilities<'view, 'source> {
         &'view self,
         style_id: MartialArtsStyleId,
     ) -> Option<Ability<'view, 'source>> {
-        let rating_ptr = match &self.0.exalt_state {
+        let rating_ptr = match &self.0.exaltation {
             crate::exaltation::Exaltation::Mortal(mortal) => {
                 mortal.martial_arts_styles.get(&style_id)?.ability()
             }

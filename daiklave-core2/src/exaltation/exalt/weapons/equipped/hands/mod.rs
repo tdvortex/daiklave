@@ -2,10 +2,10 @@ mod memo;
 pub use memo::ExaltHandsMemo;
 
 use crate::{
-    exaltation::{mortal::MortalHands},
+    exaltation::mortal::MortalHands,
     weapons::weapon::{
         equipped::{EquipHand, EquippedOneHandedWeapon, EquippedTwoHandedWeapon},
-        Weapon, WeaponId, Equipped,
+        Equipped, Weapon, WeaponId,
     },
 };
 
@@ -56,30 +56,255 @@ impl<'view, 'source> ExaltHands<'source> {
         }
     }
 
-    pub fn get_weapon(&'view self, weapon_id: WeaponId, equipped: Equipped) -> Option<Weapon<'source>> {
+    pub fn get_weapon(
+        &'view self,
+        weapon_id: WeaponId,
+        equipped: Equipped,
+    ) -> Option<Weapon<'source>> {
         match (self, equipped) {
             (ExaltHands::Empty, _) | (_, Equipped::Natural) | (_, Equipped::Worn) => None,
-            (ExaltHands::MainHand(one), Equipped::MainHand) =>  one.get_weapon(weapon_id, EquipHand::MainHand),
-            (ExaltHands::OffHand(one), Equipped::OffHand) => one.get_weapon(weapon_id, EquipHand::OffHand),
+            (ExaltHands::MainHand(one), Equipped::MainHand) => {
+                one.get_weapon(weapon_id, EquipHand::MainHand)
+            }
+            (ExaltHands::OffHand(one), Equipped::OffHand) => {
+                one.get_weapon(weapon_id, EquipHand::OffHand)
+            }
             (ExaltHands::TwoHanded(two), Equipped::TwoHanded) => two.get_weapon(weapon_id),
-            (ExaltHands::Both(arr), Equipped::MainHand) => arr[0].get_weapon(weapon_id, EquipHand::MainHand),
-            (ExaltHands::Both(arr), Equipped::OffHand) => arr[1].get_weapon(weapon_id, EquipHand::MainHand),
-            _ => None
+            (ExaltHands::Both(arr), Equipped::MainHand) => {
+                arr[0].get_weapon(weapon_id, EquipHand::MainHand)
+            }
+            (ExaltHands::Both(arr), Equipped::OffHand) => {
+                arr[1].get_weapon(weapon_id, EquipHand::MainHand)
+            }
+            _ => None,
         }
     }
 
     pub fn iter(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> + '_ {
         match self {
             ExaltHands::Empty => vec![],
-            ExaltHands::MainHand(one) => one.iter().map(|id| (id, Some(Equipped::MainHand))).collect::<Vec<(WeaponId, Option<Equipped>)>>(),
-            ExaltHands::OffHand(one) => one.iter().map(|id| (id, Some(Equipped::OffHand))).collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+            ExaltHands::MainHand(one) => one
+                .iter()
+                .map(|id| (id, Some(Equipped::MainHand)))
+                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+            ExaltHands::OffHand(one) => one
+                .iter()
+                .map(|id| (id, Some(Equipped::OffHand)))
+                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
             ExaltHands::Both(arr) => arr[0]
                 .iter()
                 .map(|id| (id, Some(Equipped::MainHand)))
                 .chain(arr[1].iter().map(|id| (id, Some(Equipped::OffHand))))
                 .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
-            ExaltHands::TwoHanded(two) => two.iter().map(|id| (id, Some(Equipped::TwoHanded))).collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+            ExaltHands::TwoHanded(two) => two
+                .iter()
+                .map(|id| (id, Some(Equipped::TwoHanded)))
+                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
         }
         .into_iter()
+    }
+
+    /// WARNING: If you set a hand that is not empty, the existing weapon will
+    /// be deleted forever!
+    pub fn set_hand(
+        &mut self,
+        one_handed_equipped: EquippedOneHandedWeapon<'source>,
+        hand: EquipHand,
+    ) {
+        *self = match (&self, hand) {
+            (ExaltHands::Empty, EquipHand::MainHand)
+            | (ExaltHands::MainHand(_), EquipHand::MainHand)
+            | (ExaltHands::TwoHanded(_), EquipHand::MainHand) => {
+                ExaltHands::MainHand(one_handed_equipped)
+            }
+            (ExaltHands::Empty, EquipHand::OffHand)
+            | (ExaltHands::OffHand(_), EquipHand::OffHand)
+            | (ExaltHands::TwoHanded(_), EquipHand::OffHand) => {
+                ExaltHands::OffHand(one_handed_equipped)
+            }
+            (ExaltHands::OffHand(current_off), EquipHand::MainHand) => {
+                ExaltHands::Both([one_handed_equipped, current_off.clone()])
+            }
+            (ExaltHands::MainHand(current_main), EquipHand::OffHand) => {
+                ExaltHands::Both([current_main.clone(), one_handed_equipped])
+            }
+            (ExaltHands::Both(arr), EquipHand::MainHand) => {
+                ExaltHands::Both([one_handed_equipped, arr[1].clone()])
+            }
+            (ExaltHands::Both(arr), EquipHand::OffHand) => {
+                ExaltHands::Both([arr[0].clone(), one_handed_equipped])
+            }
+        }
+    }
+
+    /// WARNING: If any weapons are currently equipped, they will be deleted
+    /// forever!
+    pub fn set_two_handed(&mut self, two_handed_equipped: EquippedTwoHandedWeapon<'source>) {
+        *self = ExaltHands::TwoHanded(two_handed_equipped)
+    }
+
+    pub fn free_hand(
+        &mut self,
+        weapon_id: WeaponId,
+        hand: EquipHand,
+    ) -> Option<EquippedOneHandedWeapon<'source>> {
+        match (&self, hand) {
+            (ExaltHands::Empty, _)
+            | (ExaltHands::TwoHanded(_), _)
+            | (ExaltHands::MainHand(_), EquipHand::OffHand)
+            | (ExaltHands::OffHand(_), EquipHand::MainHand) => None,
+            (ExaltHands::MainHand(one_handed_equipped), EquipHand::MainHand) => {
+                match (one_handed_equipped, weapon_id) {
+                    (
+                        EquippedOneHandedWeapon::Mundane(actual_id, _),
+                        WeaponId::Mundane(wanted_id),
+                    ) => {
+                        if *actual_id == wanted_id {
+                            let output = one_handed_equipped.clone();
+                            *self = ExaltHands::Empty;
+                            Some(output)
+                        } else {
+                            None
+                        }
+                    }
+                    (
+                        EquippedOneHandedWeapon::Artifact(actual_id, _, _),
+                        WeaponId::Artifact(wanted_id),
+                    ) => {
+                        if *actual_id == wanted_id {
+                            let output = one_handed_equipped.clone();
+                            *self = ExaltHands::Empty;
+                            Some(output)
+                        } else {
+                            None
+                        }
+                    }
+                    _ => None,
+                }
+            }
+            (ExaltHands::OffHand(one_handed_equipped), EquipHand::OffHand) => {
+                match (one_handed_equipped, weapon_id) {
+                    (
+                        EquippedOneHandedWeapon::Mundane(actual_id, _),
+                        WeaponId::Mundane(wanted_id),
+                    ) => {
+                        if *actual_id == wanted_id {
+                            let output = one_handed_equipped.clone();
+                            *self = ExaltHands::Empty;
+                            Some(output)
+                        } else {
+                            None
+                        }
+                    }
+                    (
+                        EquippedOneHandedWeapon::Artifact(actual_id, _, _),
+                        WeaponId::Artifact(wanted_id),
+                    ) => {
+                        if *actual_id == wanted_id {
+                            let output = one_handed_equipped.clone();
+                            *self = ExaltHands::Empty;
+                            Some(output)
+                        } else {
+                            None
+                        }
+                    }
+                    _ => None,
+                }
+            }
+            (ExaltHands::Both(arr), EquipHand::MainHand) => {
+                let one_handed_equipped = &arr[0];
+                match (one_handed_equipped, weapon_id) {
+                    (
+                        EquippedOneHandedWeapon::Mundane(actual_id, _),
+                        WeaponId::Mundane(wanted_id),
+                    ) => {
+                        if *actual_id == wanted_id {
+                            let output = one_handed_equipped.clone();
+                            *self = ExaltHands::OffHand(arr[1].clone());
+                            Some(output)
+                        } else {
+                            None
+                        }
+                    }
+                    (
+                        EquippedOneHandedWeapon::Artifact(actual_id, _, _),
+                        WeaponId::Artifact(wanted_id),
+                    ) => {
+                        if *actual_id == wanted_id {
+                            let output = one_handed_equipped.clone();
+                            *self = ExaltHands::OffHand(arr[1].clone());
+                            Some(output)
+                        } else {
+                            None
+                        }
+                    }
+                    _ => None,
+                }
+            }
+            (ExaltHands::Both(arr), EquipHand::OffHand) => {
+                let one_handed_equipped = &arr[1];
+                match (one_handed_equipped, weapon_id) {
+                    (
+                        EquippedOneHandedWeapon::Mundane(actual_id, _),
+                        WeaponId::Mundane(wanted_id),
+                    ) => {
+                        if *actual_id == wanted_id {
+                            let output = one_handed_equipped.clone();
+                            *self = ExaltHands::MainHand(arr[0].clone());
+                            Some(output)
+                        } else {
+                            None
+                        }
+                    }
+                    (
+                        EquippedOneHandedWeapon::Artifact(actual_id, _, _),
+                        WeaponId::Artifact(wanted_id),
+                    ) => {
+                        if *actual_id == wanted_id {
+                            let output = one_handed_equipped.clone();
+                            *self = ExaltHands::MainHand(arr[0].clone());
+                            Some(output)
+                        } else {
+                            None
+                        }
+                    }
+                    _ => None,
+                }
+            }
+        }
+    }
+
+    pub fn free_two_handed(
+        &mut self,
+        weapon_id: WeaponId,
+    ) -> Option<EquippedTwoHandedWeapon<'source>> {
+        if let ExaltHands::TwoHanded(two_handed_equipped) = self {
+            match (&two_handed_equipped, weapon_id) {
+                (EquippedTwoHandedWeapon::Mundane(actual_id, _), WeaponId::Mundane(wanted_id)) => {
+                    if *actual_id == wanted_id {
+                        let output = two_handed_equipped.clone();
+                        *self = ExaltHands::Empty;
+                        Some(output)
+                    } else {
+                        None
+                    }
+                }
+                (
+                    EquippedTwoHandedWeapon::Artifact(actual_id, _, _),
+                    WeaponId::Artifact(wanted_id),
+                ) => {
+                    if *actual_id == wanted_id {
+                        let output = two_handed_equipped.clone();
+                        *self = ExaltHands::Empty;
+                        Some(output)
+                    } else {
+                        None
+                    }
+                }
+                _ => None,
+            }
+        } else {
+            None
+        }
     }
 }

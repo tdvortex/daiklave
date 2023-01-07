@@ -18,7 +18,11 @@ pub(crate) struct MortalUnequippedWeaponsMemo {
 impl<'source> MortalUnequippedWeaponsMemo {
     pub fn as_ref(&'source self) -> MortalUnequippedWeapons<'source> {
         MortalUnequippedWeapons {
-            mundane: self.mundane.iter().map(|(k, (v, count))| (*k, (v.as_ref(), *count))).collect(),
+            mundane: self
+                .mundane
+                .iter()
+                .map(|(k, (v, count))| (*k, (v.as_ref(), *count)))
+                .collect(),
             artifact: self
                 .artifact
                 .iter()

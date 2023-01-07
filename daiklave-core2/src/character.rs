@@ -20,7 +20,9 @@ use crate::{
         TerrestrialSpell,
     },
     weapons::{
-        weapon::{equipped::EquipHand, mundane::MundaneWeaponMemo, BaseWeaponId, WeaponId},
+        weapon::{
+            equipped::EquipHand, mundane::MundaneWeaponMemo, BaseWeaponId, Equipped, WeaponId,
+        },
         Weapons,
     },
     willpower::Willpower,
@@ -33,7 +35,7 @@ use crate::{
 pub struct Character<'source> {
     pub(crate) name: &'source str,
     pub(crate) concept: Option<&'source str>,
-    pub(crate) exalt_state: Exaltation<'source>,
+    pub(crate) exaltation: Exaltation<'source>,
     pub(crate) willpower: Willpower,
     pub(crate) health: Health,
     pub(crate) attributes: Attributes,
@@ -46,7 +48,7 @@ impl<'source> Default for Character<'source> {
         Self {
             name: "New Character",
             concept: Default::default(),
-            exalt_state: Default::default(),
+            exaltation: Default::default(),
             willpower: Default::default(),
             health: Default::default(),
             attributes: Default::default(),
@@ -62,7 +64,7 @@ impl<'view, 'source> Character<'source> {
         CharacterMemo {
             name: self.name.to_string(),
             concept: self.concept.map(|s| s.to_string()),
-            exalt_state: self.exalt_state.as_memo(),
+            exalt_state: self.exaltation.as_memo(),
             willpower: self.willpower,
             health: self.health,
             attributes: self.attributes,
@@ -334,7 +336,7 @@ impl<'view, 'source> Character<'source> {
 
     /// None for mortals.
     pub fn essence(&self) -> Option<&Essence> {
-        self.exalt_state.essence()
+        self.exaltation.essence()
     }
 
     /// Checks if the requested amount of motes can be spent.
@@ -343,7 +345,7 @@ impl<'view, 'source> Character<'source> {
         first: MotePoolName,
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
-        self.exalt_state.check_spend_motes(first, amount)
+        self.exaltation.check_spend_motes(first, amount)
     }
 
     /// Spends motes, starting with the specified pool first.
@@ -352,7 +354,7 @@ impl<'view, 'source> Character<'source> {
         first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.spend_motes(first, amount)?;
+        self.exaltation.spend_motes(first, amount)?;
         Ok(self)
     }
 
@@ -364,7 +366,7 @@ impl<'view, 'source> Character<'source> {
         first: MotePoolName,
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
-        self.exalt_state.check_commit_motes(id, name, first, amount)
+        self.exaltation.check_commit_motes(id, name, first, amount)
     }
 
     /// Removes available motes, starting with the specified pool, and
@@ -376,19 +378,19 @@ impl<'view, 'source> Character<'source> {
         first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.commit_motes(id, name, first, amount)?;
+        self.exaltation.commit_motes(id, name, first, amount)?;
         Ok(self)
     }
 
     /// Checks if mote recovery is possible.
     pub fn check_recover_motes(&self, amount: u8) -> Result<(), CharacterMutationError> {
-        self.exalt_state.check_recover_motes(amount)
+        self.exaltation.check_recover_motes(amount)
     }
 
     /// Recovers motes, moving them from spent to available. Will not uncommit
     /// motes.
     pub fn recover_motes(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.recover_motes(amount)?;
+        self.exaltation.recover_motes(amount)?;
         Ok(self)
     }
 
@@ -397,7 +399,7 @@ impl<'view, 'source> Character<'source> {
         &self,
         id: &MoteCommitmentId,
     ) -> Result<(), CharacterMutationError> {
-        self.exalt_state.check_uncommit_motes(id)
+        self.exaltation.check_uncommit_motes(id)
     }
 
     /// Uncommits a mote effect, returning the committed motes to their pool(s)
@@ -406,36 +408,36 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         id: &MoteCommitmentId,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.uncommit_motes(id)?;
+        self.exaltation.uncommit_motes(id)?;
         Ok(self)
     }
 
     /// Checks if essence can be set to the specified value.
     pub fn check_set_essence_rating(&self, rating: u8) -> Result<(), CharacterMutationError> {
-        self.exalt_state.check_set_essence_rating(rating)
+        self.exaltation.check_set_essence_rating(rating)
     }
 
     /// Changes the essence rating of the character to the specified value.
     /// This also uncommits all active effects and recovers all motes.
     pub fn set_essence_rating(&mut self, rating: u8) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.set_essence_rating(rating)?;
+        self.exaltation.set_essence_rating(rating)?;
         Ok(self)
     }
 
     /// Returns true if character is a Solar.
     pub fn is_solar(&self) -> bool {
-        self.exalt_state.is_solar()
+        self.exaltation.is_solar()
     }
 
     /// Returns the character's Solar-specific traits, or None if not a Solar.
     pub fn solar_traits(&self) -> Option<&Solar> {
-        self.exalt_state.solar_traits()
+        self.exaltation.solar_traits()
     }
 
     /// Checks if character can be turned into a Solar Exalted with given
     /// traits.
     pub fn check_set_solar(&self, solar_traits: &SolarMemo) -> Result<(), CharacterMutationError> {
-        self.exalt_state.check_set_solar(solar_traits)
+        self.exaltation.check_set_solar(solar_traits)
     }
 
     /// Sets a character's Exaltation to be the given Solar exaltation. If the
@@ -451,7 +453,7 @@ impl<'view, 'source> Character<'source> {
             let new_willpower_rating = self.willpower().rating() + 2;
             self.set_willpower_rating(new_willpower_rating)?;
         }
-        self.exalt_state.set_solar(solar_traits)?;
+        self.exaltation.set_solar(solar_traits)?;
         Ok(self)
     }
 
@@ -459,7 +461,7 @@ impl<'view, 'source> Character<'source> {
         &self,
         solar_view: &Solar,
     ) -> Result<(), CharacterMutationError> {
-        self.exalt_state.check_set_solar_view(solar_view)
+        self.exaltation.check_set_solar_view(solar_view)
     }
 
     pub(crate) fn set_solar_view(
@@ -471,7 +473,7 @@ impl<'view, 'source> Character<'source> {
             let new_willpower_rating = self.willpower().rating() + 2;
             self.set_willpower_rating(new_willpower_rating)?;
         }
-        self.exalt_state.set_solar_view(solar_view)?;
+        self.exaltation.set_solar_view(solar_view)?;
         Ok(self)
     }
 
@@ -489,7 +491,7 @@ impl<'view, 'source> Character<'source> {
             ));
         }
 
-        self.exalt_state.check_add_martial_arts_style(id, style)
+        self.exaltation.check_add_martial_arts_style(id, style)
     }
 
     /// Adds a Martial Arts style to the character.
@@ -499,7 +501,7 @@ impl<'view, 'source> Character<'source> {
         style: &'source MartialArtsStyle,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_add_martial_arts_style(id, style)?;
-        self.exalt_state.add_martial_arts_style(id, style)?;
+        self.exaltation.add_martial_arts_style(id, style)?;
 
         Ok(self)
     }
@@ -509,7 +511,7 @@ impl<'view, 'source> Character<'source> {
         &self,
         id: MartialArtsStyleId,
     ) -> Result<(), CharacterMutationError> {
-        self.exalt_state.check_remove_martial_arts_style(id)
+        self.exaltation.check_remove_martial_arts_style(id)
     }
 
     /// Removes a Martial Arts style from the character.
@@ -517,7 +519,7 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         id: MartialArtsStyleId,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.remove_martial_arts_style(id)?;
+        self.exaltation.remove_martial_arts_style(id)?;
         Ok(self)
     }
 
@@ -528,7 +530,7 @@ impl<'view, 'source> Character<'source> {
         id: MartialArtsStyleId,
         dots: u8,
     ) -> Result<(), CharacterMutationError> {
-        self.exalt_state.check_set_martial_arts_dots(id, dots)
+        self.exaltation.check_set_martial_arts_dots(id, dots)
     }
 
     /// Sets the ability dots for a specific Martial Arts style.
@@ -537,7 +539,7 @@ impl<'view, 'source> Character<'source> {
         id: MartialArtsStyleId,
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.set_martial_arts_dots(id, dots)?;
+        self.exaltation.set_martial_arts_dots(id, dots)?;
         Ok(self)
     }
 
@@ -552,7 +554,7 @@ impl<'view, 'source> Character<'source> {
         control_spell_id: SpellId,
         control_spell: &'source TerrestrialSpell,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.add_terrestrial_sorcery(
+        self.exaltation.add_terrestrial_sorcery(
             archetype_id,
             archetype,
             shaping_ritual_id,
@@ -620,17 +622,17 @@ impl<'view, 'source> Character<'source> {
 
     /// Returns true if character is not Exalted.
     pub fn is_mortal(&self) -> bool {
-        self.exalt_state.is_mortal()
+        self.exaltation.is_mortal()
     }
 
     /// Returns true if character is an Exalt.
     pub fn is_exalted(&self) -> bool {
-        self.exalt_state.is_exalted()
+        self.exaltation.is_exalted()
     }
 
     /// Checks if character can be de-Exalted and set to be mortal.
     pub fn check_set_mortal(&self) -> Result<(), CharacterMutationError> {
-        self.exalt_state.check_set_mortal()
+        self.exaltation.check_set_mortal()
     }
 
     /// De-Exalts character, setting them to be mortal. This also reduces their
@@ -640,7 +642,7 @@ impl<'view, 'source> Character<'source> {
         if self.is_mortal() {
             return Ok(self);
         }
-        self.exalt_state.set_mortal()?;
+        self.exaltation.set_mortal()?;
         let new_willpower_rating = self.willpower().rating().max(2) - 2;
         self.set_willpower_rating(new_willpower_rating)?;
         Ok(self)
@@ -772,17 +774,17 @@ impl<'view, 'source> Character<'source> {
 
     /// Accesses Martial Arts styles, abilities, and Charms.
     pub fn martial_arts(&'view self) -> MartialArts<'view, 'source> {
-        MartialArts(&self.exalt_state)
+        MartialArts(&self.exaltation)
     }
 
     /// The character's Sorcery abilities, if any.
     pub fn sorcery(&'view self) -> Option<Sorcery<'view, 'source>> {
-        self.exalt_state.sorcery()
+        self.exaltation.sorcery()
     }
 
     /// The character's Weapons.
     pub fn weapons(&'view self) -> Weapons<'view, 'source> {
-        Weapons(&self.exalt_state)
+        Weapons(&self.exaltation)
     }
 
     /// Adds a new mundane weapon to the character's arsenal. The weapon is
@@ -792,39 +794,37 @@ impl<'view, 'source> Character<'source> {
         weapon_id: BaseWeaponId,
         weapon: &'source MundaneWeaponMemo,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exalt_state.add_mundane_weapon(weapon_id, weapon)?;
+        self.exaltation.add_mundane_weapon(weapon_id, weapon)?;
         Ok(self)
     }
 
-    /// Equips a weapon. \n For a OneHanded weapon, the hand parameter is
-    /// required and will unequip the weapon already in that hand. If a
-    /// mundane weapon is equipped twice, it will be duplicated because mundane
-    /// weapons are not unique. Artifact weapons will not be duplicated and
-    /// will instead return Err. \n
+    /// Equips a weapon. For mundane weapons, there must be at least 1
+    /// unequipped copy of the weapon. For artifact weapons, the weapon must
+    /// not be equipped. \n For a OneHanded weapon, the hand parameter is
+    /// required and will unequip the weapon already in that hand. \n
     /// For Worn weapons, the hand parameter is ignored and will not unequip
     /// any weapons. \n For TwoHanded weapons, the hand parameter is ignored
     /// and all one- or two-handed weapons will be unequipped. \n
-    /// For Natural weapons, will return an Err. \n
-    /// For all weapons, will return an Err if the weapon does not currently exist on
-    /// the character.
+    /// For Natural weapons, will return an Err.
     pub fn equip_weapon(
-        &self,
-        _weapon_id: WeaponId,
-        _hand: Option<EquipHand>,
+        &mut self,
+        weapon_id: WeaponId,
+        hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        todo!()
+        self.exaltation.equip_weapon(weapon_id, hand)?;
+        Ok(self)
     }
 
-    /// Unequips a weapon. For Worn and TwoHanded weapons, the hand parameter
-    /// is ignored, and will Err if and only if the weapon is not equipped.
-    /// For OneHanded weapons, the hand parameter is required and will return
-    /// Err if not supplied or the weapon is not found in that hand. For
-    /// Natural weapons, will return an Err.
+    /// Unequips a weapon. The equip location of the weapon must be
+    /// specified to avoid ambiguity (in case of dual-wielding identical
+    /// mundane weapons). Always Errs if Equipped is Natural, or if the
+    /// requested weapon is not equipped at that location.
     pub fn unequip_weapon(
-        &self,
-        _weapon_id: WeaponId,
-        _hand: Option<EquipHand>,
+        &mut self,
+        weapon_id: WeaponId,
+        equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
-        todo!()
+        self.exaltation.unequip_weapon(weapon_id, equipped)?;
+        Ok(self)
     }
 }

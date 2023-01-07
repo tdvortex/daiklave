@@ -18,7 +18,11 @@ pub(crate) struct ExaltUnequippedWeaponsMemo {
 impl<'source> ExaltUnequippedWeaponsMemo {
     pub fn as_ref(&'source self) -> ExaltUnequippedWeapons<'source> {
         ExaltUnequippedWeapons {
-            mundane: self.mundane.iter().map(|(k, (v, count))| (*k, (v.as_ref(), *count))).collect(),
+            mundane: self
+                .mundane
+                .iter()
+                .map(|(k, (v, count))| (*k, (v.as_ref(), *count)))
+                .collect(),
             artifact: self
                 .artifact
                 .iter()

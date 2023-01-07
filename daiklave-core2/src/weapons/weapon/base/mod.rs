@@ -11,7 +11,7 @@ use crate::book_reference::BookReference;
 
 use super::{
     ability::WeaponAbility, damage_type::WeaponDamageType, range::WeaponRange,
-    tag::OptionalWeaponTag, weight_class::WeaponWeightClass, WeaponTag, AttackRange, RangeBand,
+    tag::OptionalWeaponTag, weight_class::WeaponWeightClass, AttackRange, RangeBand, WeaponTag,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -33,12 +33,18 @@ impl BaseWeapon {
         // OneHanded only appears for Archery weapons
         // TwoHanded does not appear for Archery weapons
         match (self.primary_ability, handedness_tag) {
-            (_, WeaponTag::Natural) => {output.push(WeaponTag::Natural);}
-            (_, WeaponTag::Worn) => {output.push(WeaponTag::Worn);}
-            (WeaponAbility::Archery, WeaponTag::OneHanded) => {output.push(WeaponTag::OneHanded)}
-            (WeaponAbility::Archery, _) => {/* Do nothing */}
-            (_, WeaponTag::TwoHanded) => {output.push(WeaponTag::TwoHanded);}
-            _ => {/* Do nothing */}
+            (_, WeaponTag::Natural) => {
+                output.push(WeaponTag::Natural);
+            }
+            (_, WeaponTag::Worn) => {
+                output.push(WeaponTag::Worn);
+            }
+            (WeaponAbility::Archery, WeaponTag::OneHanded) => output.push(WeaponTag::OneHanded),
+            (WeaponAbility::Archery, _) => { /* Do nothing */ }
+            (_, WeaponTag::TwoHanded) => {
+                output.push(WeaponTag::TwoHanded);
+            }
+            _ => { /* Do nothing */ }
         }
 
         output.push(self.damage_type.into());
@@ -46,16 +52,26 @@ impl BaseWeapon {
         // Thrown and Archery are handled via RangeBands
         // This is so that weapons can be Martial Arts + Thrown
         match self.primary_ability {
-            WeaponAbility::Brawl => {output.push(WeaponTag::Brawl);}
-            WeaponAbility::Melee => {output.push(WeaponTag::Melee);}
-            WeaponAbility::MartialArts => {output.push(WeaponTag::MartialArts);}
-            _ => {/* Do nothing */}
+            WeaponAbility::Brawl => {
+                output.push(WeaponTag::Brawl);
+            }
+            WeaponAbility::Melee => {
+                output.push(WeaponTag::Melee);
+            }
+            WeaponAbility::MartialArts => {
+                output.push(WeaponTag::MartialArts);
+            }
+            _ => { /* Do nothing */ }
         }
 
         match self.range_bands {
-            WeaponRange::ContactOnly => {/* Do nothing */}
-            WeaponRange::Throwable(range) => {output.push(WeaponTag::Thrown(range));}
-            WeaponRange::Archery(range) => {output.push(WeaponTag::Archery(range));}
+            WeaponRange::ContactOnly => { /* Do nothing */ }
+            WeaponRange::Throwable(range) => {
+                output.push(WeaponTag::Thrown(range));
+            }
+            WeaponRange::Archery(range) => {
+                output.push(WeaponTag::Archery(range));
+            }
         }
 
         for tag in self.tags.iter().copied() {
@@ -69,20 +85,24 @@ impl BaseWeapon {
 
     pub fn accuracy(&self, attack_range: AttackRange, is_artifact: bool) -> Option<i8> {
         match (self.primary_ability, self.range_bands, attack_range) {
-            (WeaponAbility::Thrown, _, AttackRange::Melee) | (WeaponAbility::Archery, _, AttackRange::Melee) => None,
+            (WeaponAbility::Thrown, _, AttackRange::Melee)
+            | (WeaponAbility::Archery, _, AttackRange::Melee) => None,
             (_, WeaponRange::ContactOnly, AttackRange::Ranged(_)) => None,
-            (_, _, AttackRange::Melee) => {
-                Some(match self.weight_class {
+            (_, _, AttackRange::Melee) => Some(
+                match self.weight_class {
                     WeaponWeightClass::Light => 4,
                     WeaponWeightClass::Medium => 2,
                     WeaponWeightClass::Heavy => 0,
-                } + i8::from(is_artifact))
-            }
+                } + i8::from(is_artifact),
+            ),
             (_, WeaponRange::Archery(max_range), AttackRange::Ranged(try_range)) => {
                 if try_range > max_range {
                     None
                 } else {
-                    let flame_bonus = 2 * i8::from(try_range == RangeBand::Close && self.tags.contains(&OptionalWeaponTag::Flame));
+                    let flame_bonus = 2 * i8::from(
+                        try_range == RangeBand::Close
+                            && self.tags.contains(&OptionalWeaponTag::Flame),
+                    );
                     let accuracy_curve = match try_range {
                         RangeBand::Close => -2,
                         RangeBand::Short => 4,
@@ -114,23 +134,31 @@ impl BaseWeapon {
 
     pub fn damage(&self, attack_range: AttackRange, is_artifact: bool) -> Option<u8> {
         match (self.primary_ability, self.range_bands, attack_range) {
-            (WeaponAbility::Thrown, _, AttackRange::Melee) | (WeaponAbility::Archery, _, AttackRange::Melee) => None,
+            (WeaponAbility::Thrown, _, AttackRange::Melee)
+            | (WeaponAbility::Archery, _, AttackRange::Melee) => None,
             (_, WeaponRange::ContactOnly, AttackRange::Ranged(_)) => None,
             (_, _, AttackRange::Melee) => {
                 let shield_penalty = 2 * u8::from(self.tags.contains(&OptionalWeaponTag::Shield));
-                Some(match self.weight_class {
-                    WeaponWeightClass::Light => 7,
-                    WeaponWeightClass::Medium => 9,
-                    WeaponWeightClass::Heavy => 11,
-                } + 3 * u8::from(is_artifact)
-                - shield_penalty)
+                Some(
+                    match self.weight_class {
+                        WeaponWeightClass::Light => 7,
+                        WeaponWeightClass::Medium => 9,
+                        WeaponWeightClass::Heavy => 11,
+                    } + 3 * u8::from(is_artifact)
+                        - shield_penalty,
+                )
             }
             (_, WeaponRange::Archery(max_range), AttackRange::Ranged(try_range)) => {
                 if try_range > max_range {
                     None
                 } else {
-                    let flame_or_crossbow = 4 * u8::from(self.tags.contains(&OptionalWeaponTag::Crossbow) || self.tags.contains(&OptionalWeaponTag::Flame));
-                    let base_damage = if try_range == RangeBand::Close && self.tags.contains(&OptionalWeaponTag::Powerful) {
+                    let flame_or_crossbow = 4 * u8::from(
+                        self.tags.contains(&OptionalWeaponTag::Crossbow)
+                            || self.tags.contains(&OptionalWeaponTag::Flame),
+                    );
+                    let base_damage = if try_range == RangeBand::Close
+                        && self.tags.contains(&OptionalWeaponTag::Powerful)
+                    {
                         11
                     } else {
                         match self.weight_class {
@@ -148,30 +176,46 @@ impl BaseWeapon {
                 if try_range > max_range {
                     None
                 } else {
-                    Some(match self.weight_class {
-                        WeaponWeightClass::Light => 7,
-                        WeaponWeightClass::Medium => 9,
-                        WeaponWeightClass::Heavy => 11,
-                    } + 3 * u8::from(is_artifact))
+                    Some(
+                        match self.weight_class {
+                            WeaponWeightClass::Light => 7,
+                            WeaponWeightClass::Medium => 9,
+                            WeaponWeightClass::Heavy => 11,
+                        } + 3 * u8::from(is_artifact),
+                    )
                 }
             }
         }
     }
 
     pub fn parry_mod(&self, is_artifact: bool) -> Option<i8> {
-        if matches!(self.primary_ability, WeaponAbility::Thrown | WeaponAbility::Archery) {
+        if matches!(
+            self.primary_ability,
+            WeaponAbility::Thrown | WeaponAbility::Archery
+        ) {
             None
         } else {
             Some(match self.weight_class {
                 WeaponWeightClass::Light => 0,
                 WeaponWeightClass::Medium => 1,
-                WeaponWeightClass::Heavy => if is_artifact {0} else {-1}
+                WeaponWeightClass::Heavy => {
+                    if is_artifact {
+                        0
+                    } else {
+                        -1
+                    }
+                }
             })
         }
     }
 
     pub fn overwhelming(&self, is_artifact: bool) -> u8 {
-        let balanced_bonus = u8::from(matches!(self.primary_ability, WeaponAbility::Brawl | WeaponAbility::Melee | WeaponAbility::MartialArts) && self.tags.contains(&OptionalWeaponTag::Balanced));
+        let balanced_bonus = u8::from(
+            matches!(
+                self.primary_ability,
+                WeaponAbility::Brawl | WeaponAbility::Melee | WeaponAbility::MartialArts
+            ) && self.tags.contains(&OptionalWeaponTag::Balanced),
+        );
         let artifact_bonus = if is_artifact {
             match self.weight_class {
                 WeaponWeightClass::Light => 2,
