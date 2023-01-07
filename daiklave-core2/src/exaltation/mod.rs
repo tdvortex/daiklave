@@ -19,7 +19,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    weapons::weapon::{mundane::MundaneWeaponMemo, BaseWeaponId, Weapon, WeaponId},
+    weapons::weapon::{mundane::MundaneWeaponMemo, BaseWeaponId, Weapon, WeaponId, Equipped},
     CharacterMutationError,
 };
 
@@ -81,14 +81,14 @@ impl<'source> Exaltation<'source> {
         }
     }
 
-    pub fn iter_weapons(&self) -> impl Iterator<Item = WeaponId> {
+    pub fn iter_weapons(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> {
         match self {
             Exaltation::Mortal(box_mortal) => box_mortal
                 .as_ref()
                 .iter_weapons()
-                .collect::<Vec<WeaponId>>(),
+                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
             Exaltation::Exalt(box_exalt) => {
-                box_exalt.as_ref().iter_weapons().collect::<Vec<WeaponId>>()
+                box_exalt.as_ref().iter_weapons().collect::<Vec<(WeaponId, Option<Equipped>)>>()
             }
         }
         .into_iter()

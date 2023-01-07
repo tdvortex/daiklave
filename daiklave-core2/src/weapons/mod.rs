@@ -6,7 +6,7 @@ pub mod weapon;
 pub use error::WeaponError;
 
 use self::weapon::mundane::unarmed;
-use self::weapon::{Weapon, WeaponId};
+use self::weapon::{Weapon, WeaponId, Equipped};
 use crate::exaltation::Exaltation;
 
 /// The interface for a character's weapons.
@@ -23,7 +23,7 @@ impl<'view, 'source> Weapons<'view, 'source> {
     }
 
     /// Iterates over all of the weapons the character possesses by ID.
-    pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> + '_ {
         self.0.iter_weapons()
     }
 }

@@ -27,7 +27,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    weapons::weapon::{mundane::MundaneWeaponMemo, BaseWeaponId, Weapon, WeaponId},
+    weapons::weapon::{mundane::MundaneWeaponMemo, BaseWeaponId, Weapon, WeaponId, Equipped},
     CharacterMutationError,
 };
 
@@ -109,7 +109,7 @@ impl<'view, 'source> Exalt<'source> {
         }
     }
 
-    pub fn iter_weapons(&self) -> impl Iterator<Item = WeaponId> + '_ {
+    pub fn iter_weapons(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> + '_ {
         self.weapons.iter()
     }
 

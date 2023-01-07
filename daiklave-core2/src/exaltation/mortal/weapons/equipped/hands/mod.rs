@@ -8,7 +8,7 @@ use crate::{
             EquipHand, EquippedOneHandedWeapon, EquippedOneHandedWeaponNoAttunement,
             EquippedTwoHandedWeapon, EquippedTwoHandedWeaponNoAttunement,
         },
-        Weapon, WeaponId,
+        Weapon, WeaponId, Equipped,
     },
 };
 
@@ -99,16 +99,17 @@ impl<'view, 'source> MortalHands<'source> {
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = WeaponId> {
+    pub fn iter(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> {
         match self {
             MortalHands::Empty => vec![],
-            MortalHands::MainHand(one) => one.iter().collect::<Vec<WeaponId>>(),
-            MortalHands::OffHand(one) => one.iter().collect::<Vec<WeaponId>>(),
+            MortalHands::MainHand(one) => one.iter().map(|id| (id, Some(Equipped::MainHand))).collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+            MortalHands::OffHand(one) => one.iter().map(|id| (id, Some(Equipped::OffHand))).collect::<Vec<(WeaponId, Option<Equipped>)>>(),
             MortalHands::Both(arr) => arr[0]
                 .iter()
-                .chain(arr[1].iter())
-                .collect::<Vec<WeaponId>>(),
-            MortalHands::TwoHanded(two) => two.iter().collect::<Vec<WeaponId>>(),
+                .map(|id| (id, Some(Equipped::MainHand)))
+                .chain(arr[1].iter().map(|id| (id, Some(Equipped::OffHand))))
+                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+            MortalHands::TwoHanded(two) => two.iter().map(|id| (id, Some(Equipped::TwoHanded))).collect::<Vec<(WeaponId, Option<Equipped>)>>(),
         }
         .into_iter()
     }

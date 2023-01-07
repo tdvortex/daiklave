@@ -5,7 +5,7 @@ use crate::{
     exaltation::mortal::MortalHands,
     weapons::weapon::{
         equipped::{EquipHand, EquippedOneHandedWeapon, EquippedTwoHandedWeapon},
-        Weapon, WeaponId,
+        Weapon, WeaponId, Equipped,
     },
 };
 
@@ -68,16 +68,17 @@ impl<'view, 'source> ExaltHands<'source> {
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> + '_ {
         match self {
             ExaltHands::Empty => vec![],
-            ExaltHands::MainHand(one) => one.iter().collect::<Vec<WeaponId>>(),
-            ExaltHands::OffHand(one) => one.iter().collect::<Vec<WeaponId>>(),
+            ExaltHands::MainHand(one) => one.iter().map(|id| (id, Some(Equipped::MainHand))).collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+            ExaltHands::OffHand(one) => one.iter().map(|id| (id, Some(Equipped::OffHand))).collect::<Vec<(WeaponId, Option<Equipped>)>>(),
             ExaltHands::Both(arr) => arr[0]
                 .iter()
-                .chain(arr[1].iter())
-                .collect::<Vec<WeaponId>>(),
-            ExaltHands::TwoHanded(two) => two.iter().collect::<Vec<WeaponId>>(),
+                .map(|id| (id, Some(Equipped::MainHand)))
+                .chain(arr[1].iter().map(|id| (id, Some(Equipped::OffHand))))
+                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+            ExaltHands::TwoHanded(two) => two.iter().map(|id| (id, Some(Equipped::TwoHanded))).collect::<Vec<(WeaponId, Option<Equipped>)>>(),
         }
         .into_iter()
     }

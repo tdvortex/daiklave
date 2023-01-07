@@ -11,7 +11,7 @@ use crate::{
         weapon::{
             artifact::{ArtifactWeapon, HandlessArtifactWeaponNoAttunement},
             mundane::{HandlessMundaneWeapon, MundaneWeapon},
-            ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId, WeaponType,
+            ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId, WeaponType, Equipped,
         },
         WeaponError,
     },
@@ -78,16 +78,28 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
-        let unarmed_iter = std::iter::once(WeaponId::Unarmed);
+    pub fn iter(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> + '_ {
+        let unarmed_iter = std::iter::once((WeaponId::Unarmed, Some(Equipped::Worn)));
         let handless_mundane_iter = self
             .handless_mundane
             .iter()
-            .map(|(base_id, _)| WeaponId::Mundane(*base_id));
+            .map(|(base_id, weapon)| {
+                (WeaponId::Mundane(*base_id),
+                match weapon {
+                    HandlessMundaneWeapon::Natural(_) => Some(Equipped::Natural),
+                    HandlessMundaneWeapon::Worn(_) => Some(Equipped::Worn),
+                })
+            });
         let handless_artifact_iter = self
             .handless_artifact
             .iter()
-            .map(|(artifact_id, _)| WeaponId::Artifact(*artifact_id));
+            .map(|(artifact_id, weapon)| {
+                (WeaponId::Artifact(*artifact_id),
+                match weapon {
+                    HandlessArtifactWeaponNoAttunement::Natural(_) => Some(Equipped::Natural),
+                    HandlessArtifactWeaponNoAttunement::Worn(_) => Some(Equipped::Worn),
+                })
+            });
         let hands_iter = self.hands.iter();
 
         unarmed_iter

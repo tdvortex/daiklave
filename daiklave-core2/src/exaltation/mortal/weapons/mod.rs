@@ -6,7 +6,7 @@ use crate::{
             NonnaturalMundaneWeapon, OneHandedMundaneWeapon, TwoHandedMundaneWeapon,
             WornMundaneWeapon,
         },
-        BaseWeaponId, Weapon, WeaponId,
+        BaseWeaponId, Weapon, WeaponId, Equipped,
     },
     CharacterMutationError,
 };
@@ -51,7 +51,7 @@ impl<'view, 'source> MortalWeapons<'source> {
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> + '_ {
         self.equipped.iter().chain(self.unequipped.iter())
     }
 

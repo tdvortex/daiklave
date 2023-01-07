@@ -8,7 +8,7 @@ use crate::{
     weapons::weapon::{
         artifact::{ArtifactWeapon, NonnaturalArtifactWeaponNoAttunement},
         mundane::{MundaneWeapon, NonnaturalMundaneWeapon},
-        ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId, WeaponType,
+        ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId, WeaponType, Equipped,
     },
     CharacterMutationError,
 };
@@ -87,14 +87,14 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = WeaponId> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> + '_ {
         self.mundane
             .iter()
-            .map(|(base_id, _)| WeaponId::Mundane(*base_id))
+            .map(|(base_id, _)| (WeaponId::Mundane(*base_id), None))
             .chain(
                 self.artifact
                     .iter()
-                    .map(|(artifact_id, _)| WeaponId::Artifact(*artifact_id)),
+                    .map(|(artifact_id, _)| (WeaponId::Artifact(*artifact_id), None)),
             )
     }
 
