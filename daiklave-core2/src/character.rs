@@ -186,8 +186,12 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AddMundaneWeapon(weapon_id, mundane_weapon) => {
                 self.add_mundane_weapon(*weapon_id, mundane_weapon)
             }
-            CharacterMutation::EquipWeapon(_, _) => todo!(),
-            CharacterMutation::UnequipWeapon(_, _) => todo!(),
+            CharacterMutation::EquipWeapon(weapon_id, equip_hand) => {
+                self.equip_weapon(*weapon_id, *equip_hand)
+            }
+            CharacterMutation::UnequipWeapon(weapon_id, equipped) => {
+                self.unequip_weapon(*weapon_id, *equipped)
+            }
             CharacterMutation::AddArtifact(_, _) => todo!(),
         }
     }

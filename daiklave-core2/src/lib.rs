@@ -71,7 +71,7 @@ mod willpower;
 pub use character::Character;
 pub use character_memo::CharacterMemo;
 use weapons::{
-    weapon::{equipped::EquipHand, mundane::MundaneWeaponMemo, BaseWeaponId, WeaponId},
+    weapon::{equipped::EquipHand, mundane::MundaneWeaponMemo, BaseWeaponId, WeaponId, Equipped},
     WeaponError,
 };
 
@@ -140,9 +140,8 @@ pub enum CharacterMutation {
     /// Equips the specific weapon. For a OneHanded weapon, will equip into
     /// the specified hand, otherwise the parameter is ignored.
     EquipWeapon(WeaponId, Option<EquipHand>),
-    /// Unequips the specific weapon. For a OneHanded weapon, will equip only
-    /// the weapon in the specified hand.
-    UnequipWeapon(WeaponId, Option<EquipHand>),
+    /// Unequips the specific weapon at the specified equipped position.
+    UnequipWeapon(WeaponId, Equipped),
     /// Add an artifact to the character, which may be a weapon, armor item,
     /// warstrider, or wonder.
     AddArtifact(ArtifactId, ArtifactMemo),
