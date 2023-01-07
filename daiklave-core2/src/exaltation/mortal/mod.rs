@@ -19,7 +19,7 @@ use crate::{
         SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell,
     },
     weapons::weapon::{
-        mundane::MundaneWeaponMemo, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId,
+        mundane::MundaneWeaponMemo, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId, ArtifactWeaponId, artifact::ArtifactWeapon,
     },
     CharacterMutationError,
 };
@@ -187,6 +187,15 @@ impl<'source> Mortal<'source> {
         equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.unequip_weapon(weapon_id, equipped)?;
+        Ok(self)
+    }
+
+    pub fn add_artifact_weapon(
+        &mut self,
+        weapon_id: ArtifactWeaponId,
+        weapon: ArtifactWeapon<'source>
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.weapons.add_artifact_weapon(weapon_id, weapon)?;
         Ok(self)
     }
 }

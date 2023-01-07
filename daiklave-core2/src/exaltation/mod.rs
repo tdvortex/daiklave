@@ -20,7 +20,7 @@ use crate::{
         TerrestrialSpell,
     },
     weapons::weapon::{
-        mundane::MundaneWeaponMemo, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId,
+        mundane::MundaneWeaponMemo, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId, ArtifactWeaponId, artifact::ArtifactWeapon,
     },
     CharacterMutationError,
 };
@@ -578,6 +578,18 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Exalt(exalt) => {
                 exalt.as_mut().unequip_weapon(weapon_id, equipped)?;
             }
+        }
+        Ok(self)
+    }
+
+    pub fn add_artifact_weapon(
+        &mut self,
+        artifact_weapon_id: ArtifactWeaponId,
+        weapon: ArtifactWeapon<'source>
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {mortal.add_artifact_weapon(artifact_weapon_id, weapon)?;}
+            Exaltation::Exalt(exalt) => {exalt.add_artifact_weapon(artifact_weapon_id, weapon)?;}
         }
         Ok(self)
     }

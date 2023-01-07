@@ -4,7 +4,7 @@
 //! with full Discord integration for over-the-internet play.
 
 use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
-use artifact::{ArtifactId, ArtifactMemo};
+use artifact::{ArtifactMemo};
 use attributes::{AttributeName, SetAttributesError};
 use exaltation::exalt::{
     essence::{
@@ -144,7 +144,7 @@ pub enum CharacterMutation {
     UnequipWeapon(WeaponId, Equipped),
     /// Add an artifact to the character, which may be a weapon, armor item,
     /// warstrider, or wonder.
-    AddArtifact(ArtifactId, ArtifactMemo),
+    AddArtifact(ArtifactMemo),
 }
 
 /// An error representing something that could go wrong with a

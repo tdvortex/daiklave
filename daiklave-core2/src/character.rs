@@ -26,7 +26,7 @@ use crate::{
         Weapons, WeaponError,
     },
     willpower::Willpower,
-    CharacterMemo, CharacterMutation, CharacterMutationError,
+    CharacterMemo, CharacterMutation, CharacterMutationError, artifact::ArtifactMemo,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -135,7 +135,9 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::UnequipWeapon(weapon_id, equipped) => {
                 self.check_unequip_weapon(*weapon_id, *equipped)
             }
-            CharacterMutation::AddArtifact(_, _) => todo!(),
+            CharacterMutation::AddArtifact(artifact) => {
+                self.check_add_artifact(artifact)
+            }
         }
     }
 
@@ -198,7 +200,9 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::UnequipWeapon(weapon_id, equipped) => {
                 self.unequip_weapon(*weapon_id, *equipped)
             }
-            CharacterMutation::AddArtifact(_, _) => todo!(),
+            CharacterMutation::AddArtifact(artifact) => {
+                self.add_artifact(artifact)
+            }
         }
     }
 
@@ -892,5 +896,43 @@ impl<'view, 'source> Character<'source> {
         } else {
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
         }
+    }
+
+    /// Checks if an artifact can be applied to the character. Note that mortals
+    /// are allowed to own artifacts, they just can't attune to them.
+    pub fn check_add_artifact(
+        &self,
+        artifact: &ArtifactMemo
+    ) -> Result<(), CharacterMutationError> {
+        match artifact {
+            ArtifactMemo::Weapon(artifact_weapon_id, _) => {
+                let weapon_id = WeaponId::Artifact(*artifact_weapon_id);
+                let weapons = self.weapons();
+                if weapons.get(weapon_id, None).is_some() 
+                || weapons.get(weapon_id, Some(Equipped::Natural)).is_some() 
+                || weapons.get(weapon_id, Some(Equipped::Worn)).is_some() 
+                || weapons.get(weapon_id, Some(Equipped::MainHand)).is_some() 
+                || weapons.get(weapon_id, Some(Equipped::OffHand)).is_some() 
+                || weapons.get(weapon_id, Some(Equipped::TwoHanded)).is_some()  {
+                    Err(CharacterMutationError::WeaponError(WeaponError::NamedArtifactsUnique))
+                } else {
+                    Ok(())
+                }
+            }
+        }
+    }
+
+    /// Adds an artifact to the character.
+    pub fn add_artifact(
+        &mut self,
+        artifact: &'source ArtifactMemo
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.check_add_artifact(artifact)?;
+        match artifact {
+            ArtifactMemo::Weapon(artifact_weapon_id, artifact_memo) => {
+                self.exaltation.add_artifact_weapon(*artifact_weapon_id, artifact_memo.as_ref())?;
+            }
+        }
+        Ok(self)
     }
 }

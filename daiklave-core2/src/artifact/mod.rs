@@ -1,4 +1,4 @@
-use crate::weapons::weapon::artifact::ArtifactWeapon;
+use crate::weapons::weapon::{artifact::ArtifactWeapon, ArtifactWeaponId};
 
 mod id;
 mod magic_material;
@@ -11,14 +11,14 @@ pub use memo::ArtifactMemo;
 /// A magical item owned by a character.
 pub enum Artifact<'source> {
     /// An artifact weapon like a daiklave or direlash.
-    Weapon(ArtifactWeapon<'source>),
+    Weapon(ArtifactWeaponId, ArtifactWeapon<'source>),
 }
 
 impl<'source> Artifact<'source> {
     /// Creates an owned copy of the artifact.
     pub fn as_memo(&self) -> ArtifactMemo {
         match self {
-            Artifact::Weapon(view) => ArtifactMemo::Weapon(view.as_memo()),
+            Artifact::Weapon(id, view) => ArtifactMemo::Weapon(*id, view.as_memo()),
         }
     }
 }
