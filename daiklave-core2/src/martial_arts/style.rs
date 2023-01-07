@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{armor::ArmorWeight, book_reference::BookReference, weapons::weapon::BaseWeaponId};
+use crate::{armor::ArmorWeightClass, book_reference::BookReference, weapons::weapon::BaseWeaponId};
 
 /// A Martial Arts style description.
 #[derive(Debug, Default, PartialEq, Eq, Clone, Serialize, Deserialize)]
@@ -11,7 +11,7 @@ pub struct MartialArtsStyle {
     name: String,
     description: String,
     usable_weapons: HashSet<BaseWeaponId>,
-    max_armor_weight: Option<ArmorWeight>,
+    max_armor_weight: Option<ArmorWeightClass>,
 }
 
 impl MartialArtsStyle {
@@ -21,7 +21,7 @@ impl MartialArtsStyle {
         name: String,
         description: String,
         usable_weapons: HashSet<BaseWeaponId>,
-        max_armor_weight: Option<ArmorWeight>,
+        max_armor_weight: Option<ArmorWeightClass>,
     ) -> Self {
         Self {
             book_reference,
@@ -55,7 +55,7 @@ impl MartialArtsStyle {
 
     /// The maximum weight of armor which may be worn with the style, or None
     /// if incompatible with armor.
-    pub fn max_armor_weight(&self) -> Option<ArmorWeight> {
+    pub fn max_armor_weight(&self) -> Option<ArmorWeightClass> {
         self.max_armor_weight
     }
 }

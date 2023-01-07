@@ -1,6 +1,6 @@
 use crate::{
     abilities::AbilityRating,
-    armor::ArmorWeight,
+    armor::ArmorWeightClass,
     book_reference::BookReference,
     exaltation::{
         exalt::martial_arts::ExaltMartialArtist, mortal::martial_arts::MortalMartialArtist,
@@ -43,7 +43,7 @@ impl<'view, 'source> ExaltationMartialArtist<'view, 'source> {
         }
     }
 
-    pub fn max_armor_weight(&self) -> Option<ArmorWeight> {
+    pub fn max_armor_weight(&self) -> Option<ArmorWeightClass> {
         match self {
             ExaltationMartialArtist::Mortal(view) => view.style().max_armor_weight(),
             ExaltationMartialArtist::Exalt(view) => view.style().max_armor_weight(),

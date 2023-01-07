@@ -1,5 +1,5 @@
 use crate::{
-    abilities::Ability, armor::ArmorWeight, book_reference::BookReference,
+    abilities::Ability, armor::ArmorWeightClass, book_reference::BookReference,
     exaltation::ExaltationMartialArtist, weapons::weapon::BaseWeaponId,
 };
 
@@ -44,7 +44,7 @@ impl<'view, 'source> MartialArtist<'view, 'source> {
 
     /// If the style is usable with armor, gives the heaviest weight category
     /// allowed.
-    pub fn max_armor_weight(&self) -> Option<ArmorWeight> {
+    pub fn max_armor_weight(&self) -> Option<ArmorWeightClass> {
         self.maybe_exalt.max_armor_weight()
     }
 

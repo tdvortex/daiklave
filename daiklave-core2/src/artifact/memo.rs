@@ -1,4 +1,4 @@
-use crate::weapons::weapon::{artifact::ArtifactWeaponMemo, ArtifactWeaponId};
+use crate::{weapons::weapon::{artifact::ArtifactWeaponMemo, ArtifactWeaponId}, armor::armor_item::artifact::{ArtifactArmorId, ArtifactArmorMemo}};
 
 use super::Artifact;
 
@@ -7,6 +7,8 @@ use super::Artifact;
 pub enum ArtifactMemo {
     /// An artifact weapon.
     Weapon(ArtifactWeaponId, ArtifactWeaponMemo),
+    /// An artifact armor item.
+    Armor(ArtifactArmorId, ArtifactArmorMemo),
 }
 
 impl<'source> ArtifactMemo {
@@ -15,6 +17,7 @@ impl<'source> ArtifactMemo {
     pub fn as_ref(&'source self) -> Artifact<'source> {
         match self {
             ArtifactMemo::Weapon(id, memo) => Artifact::Weapon(*id, memo.as_ref()),
+            ArtifactMemo::Armor(_, _) => todo!(),
         }
     }
 }

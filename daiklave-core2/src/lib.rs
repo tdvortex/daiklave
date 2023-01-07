@@ -4,6 +4,7 @@
 //! with full Discord integration for over-the-internet play.
 
 use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
+use armor::armor_item::{BaseArmorId, mundane::MundaneArmorMemo, ArmorId};
 use artifact::{ArtifactId, ArtifactMemo};
 use attributes::{AttributeName, SetAttributesError};
 use exaltation::exalt::{
@@ -27,6 +28,9 @@ pub mod abilities;
 
 /// Structs related to a character's Attributes.
 pub mod attributes;
+
+/// Structs related to a character's armor.
+pub mod armor;
 
 /// General properties of artifacts.
 pub mod artifact;
@@ -60,7 +64,7 @@ pub mod sorcery;
 /// Logic for building and equipping weapons
 pub mod weapons;
 
-mod armor;
+
 mod character;
 mod character_memo;
 pub(crate) mod craft;
@@ -149,6 +153,14 @@ pub enum CharacterMutation {
     AddArtifact(ArtifactMemo),
     /// Removes an artifact from the character.
     RemoveArtifact(ArtifactId),
+    /// Adds a piece of mundane armor.
+    AddMundaneArmor(BaseArmorId, MundaneArmorMemo),
+    /// Removes a piece of mundane armor from the character.
+    RemoveMundaneArmor(BaseArmorId),
+    /// Equip a specific piece of armor.
+    EquipArmor(ArmorId),
+    /// Unequip any armor currently worn.
+    UnequipArmor,
 }
 
 /// An error representing something that could go wrong with a

@@ -28,7 +28,7 @@ use crate::{
         WeaponError, Weapons,
     },
     willpower::Willpower,
-    CharacterMemo, CharacterMutation, CharacterMutationError,
+    CharacterMemo, CharacterMutation, CharacterMutationError, armor::Armor,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -144,6 +144,10 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::RemoveArtifact(artifact_id) => {
                 self.check_remove_artifact(*artifact_id)
             }
+            CharacterMutation::AddMundaneArmor(_, _) => todo!(),
+            CharacterMutation::EquipArmor(_) => todo!(),
+            CharacterMutation::RemoveMundaneArmor(_) => todo!(),
+            CharacterMutation::UnequipArmor => todo!(),
         }
     }
 
@@ -211,6 +215,10 @@ impl<'view, 'source> Character<'source> {
                 self.remove_mundane_weapon(*weapon_id)
             }
             CharacterMutation::RemoveArtifact(artifact_id) => self.remove_artifact(*artifact_id),
+            CharacterMutation::AddMundaneArmor(_, _) => todo!(),
+            CharacterMutation::EquipArmor(_) => todo!(),
+            CharacterMutation::RemoveMundaneArmor(_) => todo!(),
+            CharacterMutation::UnequipArmor => todo!(),
         }
     }
 
@@ -954,6 +962,7 @@ impl<'view, 'source> Character<'source> {
                     Ok(())
                 }
             }
+            ArtifactMemo::Armor(_, _) => todo!(),
         }
     }
 
@@ -968,6 +977,7 @@ impl<'view, 'source> Character<'source> {
                 self.exaltation
                     .add_artifact_weapon(*artifact_weapon_id, artifact_memo.as_ref())?;
             }
+            ArtifactMemo::Armor(_, _) => todo!(),
         }
         Ok(self)
     }
@@ -982,6 +992,7 @@ impl<'view, 'source> Character<'source> {
             ArtifactId::Weapon(artifact_weapon_id) => {
                 self.exaltation.remove_artifact_weapon(artifact_weapon_id)?;
             }
+            ArtifactId::Armor(_) => todo!(),
         }
         Ok(self)
     }
@@ -1003,6 +1014,7 @@ impl<'view, 'source> Character<'source> {
                     Ok(())
                 }
             }
+            ArtifactId::Armor(_) => todo!(),
         }
     }
 
@@ -1032,5 +1044,10 @@ impl<'view, 'source> Character<'source> {
         } else {
             Ok(())
         }
+    }
+
+    /// The character's Armor items.
+    pub fn armor(&self) -> Armor {
+        Armor(&self.exaltation)
     }
 }
