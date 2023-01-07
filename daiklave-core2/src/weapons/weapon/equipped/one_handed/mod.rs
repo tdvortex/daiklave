@@ -63,7 +63,7 @@ impl<'view, 'source> EquippedOneHandedWeapon<'source> {
                     Some(Weapon(WeaponType::Mundane(
                         target_id,
                         MundaneWeapon::OneHanded(one.clone(), Some(hand)),
-                        1
+                        1,
                     )))
                 }
             }

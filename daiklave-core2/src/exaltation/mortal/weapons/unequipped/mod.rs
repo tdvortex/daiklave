@@ -51,17 +51,27 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
         match weapon_id {
             WeaponId::Unarmed => Some(crate::weapons::weapon::mundane::unarmed()),
             WeaponId::Mundane(target_id) => match self.mundane.get(&target_id)? {
-                (NonnaturalMundaneWeapon::Worn(worn_weapon), count) => Some(Weapon(
-                    WeaponType::Mundane(target_id, MundaneWeapon::Worn(worn_weapon.clone(), false), *count),
-                )),
-                (NonnaturalMundaneWeapon::OneHanded(one), count) => Some(Weapon(WeaponType::Mundane(
-                    target_id,
-                    MundaneWeapon::OneHanded(one.clone(), None), *count
-                ))),
-                (NonnaturalMundaneWeapon::TwoHanded(two), count) => Some(Weapon(WeaponType::Mundane(
-                    target_id,
-                    MundaneWeapon::TwoHanded(two.clone(), false), *count
-                ))),
+                (NonnaturalMundaneWeapon::Worn(worn_weapon), count) => {
+                    Some(Weapon(WeaponType::Mundane(
+                        target_id,
+                        MundaneWeapon::Worn(worn_weapon.clone(), false),
+                        *count,
+                    )))
+                }
+                (NonnaturalMundaneWeapon::OneHanded(one), count) => {
+                    Some(Weapon(WeaponType::Mundane(
+                        target_id,
+                        MundaneWeapon::OneHanded(one.clone(), None),
+                        *count,
+                    )))
+                }
+                (NonnaturalMundaneWeapon::TwoHanded(two), count) => {
+                    Some(Weapon(WeaponType::Mundane(
+                        target_id,
+                        MundaneWeapon::TwoHanded(two.clone(), false),
+                        *count,
+                    )))
+                }
             },
             WeaponId::Artifact(target_id) => match self.artifact.get(&target_id)? {
                 NonnaturalArtifactWeaponNoAttunement::Worn(worn) => {

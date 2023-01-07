@@ -4,7 +4,10 @@ use crate::{
     exaltation::exalt::ExaltWeapons,
     weapons::{
         weapon::{
-            artifact::{HandlessArtifactWeaponNoAttunement, NonnaturalArtifactWeaponNoAttunement, ArtifactWeapon},
+            artifact::{
+                ArtifactWeapon, HandlessArtifactWeaponNoAttunement,
+                NonnaturalArtifactWeaponNoAttunement,
+            },
             equipped::{EquippedOneHandedWeaponNoAttunement, EquippedTwoHandedWeaponNoAttunement},
             mundane::{
                 HandlessMundaneWeapon, MundaneWeaponMemo, NaturalMundaneWeapon,
@@ -613,39 +616,77 @@ impl<'view, 'source> MortalWeapons<'source> {
         Ok(self)
     }
 
-    pub fn add_artifact_weapon(&mut self, weapon_id: ArtifactWeaponId, weapon: ArtifactWeapon<'source>) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_artifact_weapon(
+        &mut self,
+        weapon_id: ArtifactWeaponId,
+        weapon: ArtifactWeapon<'source>,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match weapon {
             ArtifactWeapon::Natural(natural) => {
                 if self.equipped.handless_artifact.contains_key(&weapon_id) {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NamedArtifactsUnique))
+                    Err(CharacterMutationError::WeaponError(
+                        WeaponError::NamedArtifactsUnique,
+                    ))
                 } else if let Entry::Vacant(e) = self.equipped.handless_artifact.entry(weapon_id) {
                     e.insert(HandlessArtifactWeaponNoAttunement::Natural(natural));
                     Ok(self)
                 } else {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NamedArtifactsUnique))
+                    Err(CharacterMutationError::WeaponError(
+                        WeaponError::NamedArtifactsUnique,
+                    ))
                 }
             }
             ArtifactWeapon::Worn(worn, _) => {
                 if self.equipped.handless_artifact.contains_key(&weapon_id) {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NamedArtifactsUnique))
+                    Err(CharacterMutationError::WeaponError(
+                        WeaponError::NamedArtifactsUnique,
+                    ))
                 } else {
-                    self.unequipped.stow_artifact(weapon_id, NonnaturalArtifactWeaponNoAttunement::Worn(worn))?;
+                    self.unequipped.stow_artifact(
+                        weapon_id,
+                        NonnaturalArtifactWeaponNoAttunement::Worn(worn),
+                    )?;
                     Ok(self)
                 }
             }
             ArtifactWeapon::OneHanded(one_handed, _) => {
-                if self.equipped.hands.get_weapon(WeaponId::Artifact(weapon_id), Equipped::MainHand).is_some() || self.equipped.hands.get_weapon(WeaponId::Artifact(weapon_id), Equipped::OffHand).is_some() {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NamedArtifactsUnique))
+                if self
+                    .equipped
+                    .hands
+                    .get_weapon(WeaponId::Artifact(weapon_id), Equipped::MainHand)
+                    .is_some()
+                    || self
+                        .equipped
+                        .hands
+                        .get_weapon(WeaponId::Artifact(weapon_id), Equipped::OffHand)
+                        .is_some()
+                {
+                    Err(CharacterMutationError::WeaponError(
+                        WeaponError::NamedArtifactsUnique,
+                    ))
                 } else {
-                    self.unequipped.stow_artifact(weapon_id, NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed))?;
+                    self.unequipped.stow_artifact(
+                        weapon_id,
+                        NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed),
+                    )?;
                     Ok(self)
                 }
             }
             ArtifactWeapon::TwoHanded(two_handed, _) => {
-                if self.equipped.hands.get_weapon(WeaponId::Artifact(weapon_id), Equipped::TwoHanded).is_some() {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NamedArtifactsUnique))
+                if self
+                    .equipped
+                    .hands
+                    .get_weapon(WeaponId::Artifact(weapon_id), Equipped::TwoHanded)
+                    .is_some()
+                {
+                    Err(CharacterMutationError::WeaponError(
+                        WeaponError::NamedArtifactsUnique,
+                    ))
                 } else {
-                    self.unequipped.stow_artifact(weapon_id, NonnaturalArtifactWeaponNoAttunement::TwoHanded(two_handed))?;
+                    self.unequipped.stow_artifact(
+                        weapon_id,
+                        NonnaturalArtifactWeaponNoAttunement::TwoHanded(two_handed),
+                    )?;
                     Ok(self)
                 }
             }

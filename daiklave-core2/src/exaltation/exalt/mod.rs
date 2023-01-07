@@ -27,9 +27,17 @@ use crate::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
-    weapons::{weapon::{
-        mundane::{MundaneWeaponMemo, HandlessMundaneWeapon}, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId, ArtifactWeaponId, artifact::{ArtifactWeapon, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement, NonnaturalArtifactWeapon},
-    }, WeaponError},
+    weapons::{
+        weapon::{
+            artifact::{
+                ArtifactWeapon, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
+                NonnaturalArtifactWeapon,
+            },
+            mundane::{HandlessMundaneWeapon, MundaneWeaponMemo},
+            ArtifactWeaponId, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId,
+        },
+        WeaponError,
+    },
     CharacterMutationError,
 };
 
@@ -543,7 +551,7 @@ impl<'view, 'source> Exalt<'source> {
     pub fn add_artifact_weapon(
         &mut self,
         weapon_id: ArtifactWeaponId,
-        weapon: ArtifactWeapon<'source>
+        weapon: ArtifactWeapon<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.add_artifact_weapon(weapon_id, weapon)?;
         Ok(self)
@@ -551,25 +559,50 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn remove_artifact_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId
+        artifact_weapon_id: ArtifactWeaponId,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if let Some(NonnaturalArtifactWeapon(_, attunement)) = self.weapons.unequipped.artifact.get(&artifact_weapon_id) {
+        if let Some(NonnaturalArtifactWeapon(_, attunement)) =
+            self.weapons.unequipped.artifact.get(&artifact_weapon_id)
+        {
             if let Some(personal) = attunement {
                 let peripheral = 5 - (*personal).min(5);
-                self.essence.motes_mut().peripheral_mut().uncommit(peripheral)?;
-                self.essence.motes_mut().personal_mut().uncommit(*personal)?;
+                self.essence
+                    .motes_mut()
+                    .peripheral_mut()
+                    .uncommit(peripheral)?;
+                self.essence
+                    .motes_mut()
+                    .personal_mut()
+                    .uncommit(*personal)?;
             }
 
             self.weapons.unequipped.artifact.remove(&artifact_weapon_id);
             Ok(self)
-        } else if let Some(HandlessArtifactWeapon(HandlessArtifactWeaponNoAttunement::Natural(_), attunement)) = self.weapons.equipped.handless_artifact.get(&artifact_weapon_id) {
+        } else if let Some(HandlessArtifactWeapon(
+            HandlessArtifactWeaponNoAttunement::Natural(_),
+            attunement,
+        )) = self
+            .weapons
+            .equipped
+            .handless_artifact
+            .get(&artifact_weapon_id)
+        {
             if let Some(personal) = attunement {
                 let peripheral = 5 - (*personal).min(5);
-                self.essence.motes_mut().peripheral_mut().uncommit(peripheral)?;
-                self.essence.motes_mut().personal_mut().uncommit(*personal)?;
+                self.essence
+                    .motes_mut()
+                    .peripheral_mut()
+                    .uncommit(peripheral)?;
+                self.essence
+                    .motes_mut()
+                    .personal_mut()
+                    .uncommit(*personal)?;
             }
 
-            self.weapons.equipped.handless_artifact.remove(&artifact_weapon_id);
+            self.weapons
+                .equipped
+                .handless_artifact
+                .remove(&artifact_weapon_id);
             Ok(self)
         } else {
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
@@ -578,13 +611,18 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn remove_mundane_weapon(
         &mut self,
-        weapon_id: BaseWeaponId
+        weapon_id: BaseWeaponId,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some((_, count)) = self.weapons.unequipped.mundane.get(&weapon_id) {
             if *count <= 1 {
                 self.weapons.unequipped.mundane.remove(&weapon_id);
             } else {
-                self.weapons.unequipped.mundane.get_mut(&weapon_id).unwrap().1 -= 1;
+                self.weapons
+                    .unequipped
+                    .mundane
+                    .get_mut(&weapon_id)
+                    .unwrap()
+                    .1 -= 1;
             }
             Ok(self)
         } else if let Some(weapon) = self.weapons.equipped.handless_mundane.get(&weapon_id) {

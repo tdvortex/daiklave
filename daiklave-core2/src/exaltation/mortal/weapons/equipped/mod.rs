@@ -57,7 +57,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                     HandlessMundaneWeapon::Natural(weapon) => Some(Weapon(WeaponType::Mundane(
                         base_weapon_id,
                         MundaneWeapon::Natural(weapon.clone()),
-                        1
+                        1,
                     ))),
                     HandlessMundaneWeapon::Worn(_) => None,
                 }
@@ -67,7 +67,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                     HandlessMundaneWeapon::Worn(weapon) => Some(Weapon(WeaponType::Mundane(
                         base_weapon_id,
                         MundaneWeapon::Worn(weapon.clone(), true),
-                        1
+                        1,
                     ))),
                     HandlessMundaneWeapon::Natural(_) => None,
                 }

@@ -4,7 +4,7 @@
 //! with full Discord integration for over-the-internet play.
 
 use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
-use artifact::{ArtifactMemo, ArtifactId};
+use artifact::{ArtifactId, ArtifactMemo};
 use attributes::{AttributeName, SetAttributesError};
 use exaltation::exalt::{
     essence::{
@@ -71,7 +71,7 @@ mod willpower;
 pub use character::Character;
 pub use character_memo::CharacterMemo;
 use weapons::{
-    weapon::{equipped::EquipHand, mundane::MundaneWeaponMemo, BaseWeaponId, WeaponId, Equipped},
+    weapon::{equipped::EquipHand, mundane::MundaneWeaponMemo, BaseWeaponId, Equipped, WeaponId},
     WeaponError,
 };
 

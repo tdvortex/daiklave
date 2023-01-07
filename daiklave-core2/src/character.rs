@@ -3,6 +3,7 @@ use crate::{
         Abilities, AbilitiesVanilla, AbilityNameVanilla, AbilityRating, AddSpecialtyError,
         RemoveSpecialtyError, SetAbilityError,
     },
+    artifact::{ArtifactId, ArtifactMemo},
     attributes::{AttributeName, Attributes, SetAttributesError},
     craft::Craft,
     exaltation::{
@@ -21,12 +22,13 @@ use crate::{
     },
     weapons::{
         weapon::{
-            equipped::EquipHand, mundane::MundaneWeaponMemo, BaseWeaponId, Equipped, WeaponId, WeaponWeightClass, AttackRange,
+            equipped::EquipHand, mundane::MundaneWeaponMemo, AttackRange, BaseWeaponId, Equipped,
+            WeaponId, WeaponWeightClass,
         },
-        Weapons, WeaponError,
+        WeaponError, Weapons,
     },
     willpower::Willpower,
-    CharacterMemo, CharacterMutation, CharacterMutationError, artifact::{ArtifactMemo, ArtifactId},
+    CharacterMemo, CharacterMutation, CharacterMutationError,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -135,9 +137,7 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::UnequipWeapon(weapon_id, equipped) => {
                 self.check_unequip_weapon(*weapon_id, *equipped)
             }
-            CharacterMutation::AddArtifact(artifact) => {
-                self.check_add_artifact(artifact)
-            }
+            CharacterMutation::AddArtifact(artifact) => self.check_add_artifact(artifact),
             CharacterMutation::RemoveMundaneWeapon(weapon_id) => {
                 self.check_remove_mundane_weapon(*weapon_id)
             }
@@ -206,15 +206,11 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::UnequipWeapon(weapon_id, equipped) => {
                 self.unequip_weapon(*weapon_id, *equipped)
             }
-            CharacterMutation::AddArtifact(artifact) => {
-                self.add_artifact(artifact)
-            }
+            CharacterMutation::AddArtifact(artifact) => self.add_artifact(artifact),
             CharacterMutation::RemoveMundaneWeapon(weapon_id) => {
                 self.remove_mundane_weapon(*weapon_id)
             }
-            CharacterMutation::RemoveArtifact(artifact_id) => {
-                self.remove_artifact(*artifact_id)
-            }
+            CharacterMutation::RemoveArtifact(artifact_id) => self.remove_artifact(*artifact_id),
         }
     }
 
@@ -814,7 +810,7 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Adds a new mundane weapon to the character's arsenal. The weapon is
-    /// initially unequipped, unless it is Natural, in which case it's 
+    /// initially unequipped, unless it is Natural, in which case it's
     /// immediately readied and available.
     pub fn add_mundane_weapon(
         &mut self,
@@ -830,10 +826,16 @@ impl<'view, 'source> Character<'source> {
     pub fn check_add_mundane_weapon(
         &self,
         weapon_id: BaseWeaponId,
-        _weapon: &'source MundaneWeaponMemo
+        _weapon: &'source MundaneWeaponMemo,
     ) -> Result<(), CharacterMutationError> {
-        if self.weapons().get(WeaponId::Mundane(weapon_id), Some(Equipped::Natural)).is_some() {
-            Err(CharacterMutationError::WeaponError(WeaponError::DuplicateNatural))
+        if self
+            .weapons()
+            .get(WeaponId::Mundane(weapon_id), Some(Equipped::Natural))
+            .is_some()
+        {
+            Err(CharacterMutationError::WeaponError(
+                WeaponError::DuplicateNatural,
+            ))
         } else {
             Ok(())
         }
@@ -846,7 +848,7 @@ impl<'view, 'source> Character<'source> {
     /// For Worn weapons, the hand parameter is ignored and will not unequip
     /// any weapons. \n For TwoHanded weapons, the hand parameter is ignored
     /// and all one- or two-handed weapons will be unequipped. \n
-    /// For Natural weapons, will return an Err. 
+    /// For Natural weapons, will return an Err.
     pub fn equip_weapon(
         &mut self,
         weapon_id: WeaponId,
@@ -861,17 +863,33 @@ impl<'view, 'source> Character<'source> {
     pub fn check_equip_weapon(
         &self,
         weapon_id: WeaponId,
-        hand: Option<EquipHand>
+        hand: Option<EquipHand>,
     ) -> Result<(), CharacterMutationError> {
         if let Some(weapon) = self.weapons().get(weapon_id, None) {
             if weapon.is_natural() {
-                Err(CharacterMutationError::WeaponError(WeaponError::EquipNatural))
-            } else if weapon.is_worn() && self.weapons().get(weapon_id, Some(Equipped::Worn)).is_some() {
-                Err(CharacterMutationError::WeaponError(WeaponError::DuplicateEquippedWorn))
+                Err(CharacterMutationError::WeaponError(
+                    WeaponError::EquipNatural,
+                ))
+            } else if weapon.is_worn()
+                && self
+                    .weapons()
+                    .get(weapon_id, Some(Equipped::Worn))
+                    .is_some()
+            {
+                Err(CharacterMutationError::WeaponError(
+                    WeaponError::DuplicateEquippedWorn,
+                ))
             } else if weapon.is_one_handed() && hand.is_none() {
-                Err(CharacterMutationError::WeaponError(WeaponError::HandRequired))
-            } else if weapon.weight_class() == WeaponWeightClass::Heavy && weapon.damage(AttackRange::Melee).is_some() && self.attributes().dots(AttributeName::Strength) < 3 {
-                Err(CharacterMutationError::WeaponError(WeaponError::HeavyMeleeStrengthRequirement))
+                Err(CharacterMutationError::WeaponError(
+                    WeaponError::HandRequired,
+                ))
+            } else if weapon.weight_class() == WeaponWeightClass::Heavy
+                && weapon.damage(AttackRange::Melee).is_some()
+                && self.attributes().dots(AttributeName::Strength) < 3
+            {
+                Err(CharacterMutationError::WeaponError(
+                    WeaponError::HeavyMeleeStrengthRequirement,
+                ))
             } else {
                 Ok(())
             }
@@ -897,11 +915,13 @@ impl<'view, 'source> Character<'source> {
     pub fn check_unequip_weapon(
         &self,
         weapon_id: WeaponId,
-        equipped: Equipped
+        equipped: Equipped,
     ) -> Result<(), CharacterMutationError> {
         if let Some(weapon) = self.weapons().get(weapon_id, Some(equipped)) {
             if weapon.is_natural() {
-                Err(CharacterMutationError::WeaponError(WeaponError::UnequipNatural))
+                Err(CharacterMutationError::WeaponError(
+                    WeaponError::UnequipNatural,
+                ))
             } else {
                 Ok(())
             }
@@ -914,19 +934,22 @@ impl<'view, 'source> Character<'source> {
     /// are allowed to own artifacts, they just can't attune to them.
     pub fn check_add_artifact(
         &self,
-        artifact: &ArtifactMemo
+        artifact: &ArtifactMemo,
     ) -> Result<(), CharacterMutationError> {
         match artifact {
             ArtifactMemo::Weapon(artifact_weapon_id, _) => {
                 let weapon_id = WeaponId::Artifact(*artifact_weapon_id);
                 let weapons = self.weapons();
-                if weapons.get(weapon_id, None).is_some() 
-                || weapons.get(weapon_id, Some(Equipped::Natural)).is_some() 
-                || weapons.get(weapon_id, Some(Equipped::Worn)).is_some() 
-                || weapons.get(weapon_id, Some(Equipped::MainHand)).is_some() 
-                || weapons.get(weapon_id, Some(Equipped::OffHand)).is_some() 
-                || weapons.get(weapon_id, Some(Equipped::TwoHanded)).is_some()  {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NamedArtifactsUnique))
+                if weapons.get(weapon_id, None).is_some()
+                    || weapons.get(weapon_id, Some(Equipped::Natural)).is_some()
+                    || weapons.get(weapon_id, Some(Equipped::Worn)).is_some()
+                    || weapons.get(weapon_id, Some(Equipped::MainHand)).is_some()
+                    || weapons.get(weapon_id, Some(Equipped::OffHand)).is_some()
+                    || weapons.get(weapon_id, Some(Equipped::TwoHanded)).is_some()
+                {
+                    Err(CharacterMutationError::WeaponError(
+                        WeaponError::NamedArtifactsUnique,
+                    ))
                 } else {
                     Ok(())
                 }
@@ -937,12 +960,13 @@ impl<'view, 'source> Character<'source> {
     /// Adds an artifact to the character.
     pub fn add_artifact(
         &mut self,
-        artifact: &'source ArtifactMemo
+        artifact: &'source ArtifactMemo,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_add_artifact(artifact)?;
         match artifact {
             ArtifactMemo::Weapon(artifact_weapon_id, artifact_memo) => {
-                self.exaltation.add_artifact_weapon(*artifact_weapon_id, artifact_memo.as_ref())?;
+                self.exaltation
+                    .add_artifact_weapon(*artifact_weapon_id, artifact_memo.as_ref())?;
             }
         }
         Ok(self)
@@ -951,20 +975,29 @@ impl<'view, 'source> Character<'source> {
     /// Removes an artifact from the character.
     pub fn remove_artifact(
         &mut self,
-        artifact_id: ArtifactId
+        artifact_id: ArtifactId,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_remove_artifact(artifact_id)?;
         match artifact_id {
-            ArtifactId::Weapon(artifact_weapon_id) => {self.exaltation.remove_artifact_weapon(artifact_weapon_id)?;}
+            ArtifactId::Weapon(artifact_weapon_id) => {
+                self.exaltation.remove_artifact_weapon(artifact_weapon_id)?;
+            }
         }
         Ok(self)
     }
 
     /// Checks if an artifact can be removed.
-    pub fn check_remove_artifact(&self, artifact_id: ArtifactId) -> Result<(), CharacterMutationError> {
+    pub fn check_remove_artifact(
+        &self,
+        artifact_id: ArtifactId,
+    ) -> Result<(), CharacterMutationError> {
         match artifact_id {
             ArtifactId::Weapon(artifact_weapon_id) => {
-                if self.weapons().get(WeaponId::Artifact(artifact_weapon_id), None).is_none() {
+                if self
+                    .weapons()
+                    .get(WeaponId::Artifact(artifact_weapon_id), None)
+                    .is_none()
+                {
                     Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 } else {
                     Ok(())
@@ -974,15 +1007,27 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Removes a mundane weapon from the character.
-    pub fn remove_mundane_weapon(&mut self, weapon_id: BaseWeaponId) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_mundane_weapon(
+        &mut self,
+        weapon_id: BaseWeaponId,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.check_remove_mundane_weapon(weapon_id)?;
         self.exaltation.remove_mundane_weapon(weapon_id)?;
         Ok(self)
     }
 
     /// Checks if a mundane weapon can be removed from the character.
-    pub fn check_remove_mundane_weapon(&self, weapon_id: BaseWeaponId) -> Result<(), CharacterMutationError> {
-        if self.weapons().get(WeaponId::Mundane(weapon_id), None).ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?.quantity() == 0 {
+    pub fn check_remove_mundane_weapon(
+        &self,
+        weapon_id: BaseWeaponId,
+    ) -> Result<(), CharacterMutationError> {
+        if self
+            .weapons()
+            .get(WeaponId::Mundane(weapon_id), None)
+            .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
+            .quantity()
+            == 0
+        {
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
         } else {
             Ok(())

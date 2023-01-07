@@ -5,8 +5,8 @@ use crate::{
     weapons::{
         weapon::{
             artifact::{
-                HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
-                NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement, ArtifactWeapon,
+                ArtifactWeapon, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
+                NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement,
             },
             equipped::{EquippedOneHandedWeapon, EquippedTwoHandedWeapon},
             mundane::{
@@ -89,8 +89,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
             }
         };
 
-        self.unequipped
-            .stow_mundane(weapon_id, nonnatural_mundane);
+        self.unequipped.stow_mundane(weapon_id, nonnatural_mundane);
         Ok(self)
     }
 
@@ -596,8 +595,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 }),
         }?;
 
-        self.unequipped
-            .stow_mundane(weapon_id, nonnatural_mundane);
+        self.unequipped.stow_mundane(weapon_id, nonnatural_mundane);
         Ok(self)
     }
 
@@ -685,39 +683,89 @@ impl<'view, 'source> ExaltWeapons<'source> {
         Ok(self)
     }
 
-    pub fn add_artifact_weapon(&mut self, weapon_id: ArtifactWeaponId, weapon: ArtifactWeapon<'source>) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_artifact_weapon(
+        &mut self,
+        weapon_id: ArtifactWeaponId,
+        weapon: ArtifactWeapon<'source>,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match weapon {
             ArtifactWeapon::Natural(natural) => {
                 if self.equipped.handless_artifact.contains_key(&weapon_id) {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NamedArtifactsUnique))
+                    Err(CharacterMutationError::WeaponError(
+                        WeaponError::NamedArtifactsUnique,
+                    ))
                 } else if let Entry::Vacant(e) = self.equipped.handless_artifact.entry(weapon_id) {
-                    e.insert(HandlessArtifactWeapon(HandlessArtifactWeaponNoAttunement::Natural(natural), None));
+                    e.insert(HandlessArtifactWeapon(
+                        HandlessArtifactWeaponNoAttunement::Natural(natural),
+                        None,
+                    ));
                     Ok(self)
                 } else {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NamedArtifactsUnique))
+                    Err(CharacterMutationError::WeaponError(
+                        WeaponError::NamedArtifactsUnique,
+                    ))
                 }
             }
             ArtifactWeapon::Worn(worn, _) => {
                 if self.equipped.handless_artifact.contains_key(&weapon_id) {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NamedArtifactsUnique))
+                    Err(CharacterMutationError::WeaponError(
+                        WeaponError::NamedArtifactsUnique,
+                    ))
                 } else {
-                    self.unequipped.stow_artifact(weapon_id, NonnaturalArtifactWeapon(NonnaturalArtifactWeaponNoAttunement::Worn(worn), None))?;
+                    self.unequipped.stow_artifact(
+                        weapon_id,
+                        NonnaturalArtifactWeapon(
+                            NonnaturalArtifactWeaponNoAttunement::Worn(worn),
+                            None,
+                        ),
+                    )?;
                     Ok(self)
                 }
             }
             ArtifactWeapon::OneHanded(one_handed, _) => {
-                if self.equipped.hands.get_weapon(WeaponId::Artifact(weapon_id), Equipped::MainHand).is_some() || self.equipped.hands.get_weapon(WeaponId::Artifact(weapon_id), Equipped::OffHand).is_some() {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NamedArtifactsUnique))
+                if self
+                    .equipped
+                    .hands
+                    .get_weapon(WeaponId::Artifact(weapon_id), Equipped::MainHand)
+                    .is_some()
+                    || self
+                        .equipped
+                        .hands
+                        .get_weapon(WeaponId::Artifact(weapon_id), Equipped::OffHand)
+                        .is_some()
+                {
+                    Err(CharacterMutationError::WeaponError(
+                        WeaponError::NamedArtifactsUnique,
+                    ))
                 } else {
-                    self.unequipped.stow_artifact(weapon_id, NonnaturalArtifactWeapon(NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed), None))?;
+                    self.unequipped.stow_artifact(
+                        weapon_id,
+                        NonnaturalArtifactWeapon(
+                            NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed),
+                            None,
+                        ),
+                    )?;
                     Ok(self)
                 }
             }
             ArtifactWeapon::TwoHanded(two_handed, _) => {
-                if self.equipped.hands.get_weapon(WeaponId::Artifact(weapon_id), Equipped::TwoHanded).is_some() {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NamedArtifactsUnique))
+                if self
+                    .equipped
+                    .hands
+                    .get_weapon(WeaponId::Artifact(weapon_id), Equipped::TwoHanded)
+                    .is_some()
+                {
+                    Err(CharacterMutationError::WeaponError(
+                        WeaponError::NamedArtifactsUnique,
+                    ))
                 } else {
-                    self.unequipped.stow_artifact(weapon_id, NonnaturalArtifactWeapon(NonnaturalArtifactWeaponNoAttunement::TwoHanded(two_handed), None))?;
+                    self.unequipped.stow_artifact(
+                        weapon_id,
+                        NonnaturalArtifactWeapon(
+                            NonnaturalArtifactWeaponNoAttunement::TwoHanded(two_handed),
+                            None,
+                        ),
+                    )?;
                     Ok(self)
                 }
             }

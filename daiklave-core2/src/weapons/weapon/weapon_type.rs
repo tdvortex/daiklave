@@ -50,11 +50,14 @@ impl<'view, 'source> WeaponType<'source> {
                 let personal = *maybe_personal.as_ref()?;
                 let peripheral = 5 - 5.min(personal);
                 let name = named_artifact.name();
-                Some((*artifact_weapon_id, MoteCommitment {
-                    name,
-                    peripheral,
-                    personal,
-                }))
+                Some((
+                    *artifact_weapon_id,
+                    MoteCommitment {
+                        name,
+                        peripheral,
+                        personal,
+                    },
+                ))
             }
         }
     }
@@ -212,7 +215,9 @@ impl<'view, 'source> WeaponType<'source> {
         match self {
             WeaponType::Unarmed => false,
             WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeapon::OneHanded(..)),
-            WeaponType::Artifact(_, artifact, _) => matches!(artifact, ArtifactWeapon::OneHanded(..)),
+            WeaponType::Artifact(_, artifact, _) => {
+                matches!(artifact, ArtifactWeapon::OneHanded(..))
+            }
         }
     }
 
@@ -220,7 +225,9 @@ impl<'view, 'source> WeaponType<'source> {
         match self {
             WeaponType::Unarmed => false,
             WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeapon::TwoHanded(..)),
-            WeaponType::Artifact(_, artifact, _) => matches!(artifact, ArtifactWeapon::TwoHanded(..)),
+            WeaponType::Artifact(_, artifact, _) => {
+                matches!(artifact, ArtifactWeapon::TwoHanded(..))
+            }
         }
     }
 

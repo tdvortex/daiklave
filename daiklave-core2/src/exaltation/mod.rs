@@ -20,7 +20,8 @@ use crate::{
         TerrestrialSpell,
     },
     weapons::weapon::{
-        mundane::MundaneWeaponMemo, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId, ArtifactWeaponId, artifact::ArtifactWeapon,
+        artifact::ArtifactWeapon, mundane::MundaneWeaponMemo, ArtifactWeaponId, BaseWeaponId,
+        EquipHand, Equipped, Weapon, WeaponId,
     },
     CharacterMutationError,
 };
@@ -585,33 +586,45 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn add_artifact_weapon(
         &mut self,
         artifact_weapon_id: ArtifactWeaponId,
-        weapon: ArtifactWeapon<'source>
+        weapon: ArtifactWeapon<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(mortal) => {mortal.add_artifact_weapon(artifact_weapon_id, weapon)?;}
-            Exaltation::Exalt(exalt) => {exalt.add_artifact_weapon(artifact_weapon_id, weapon)?;}
+            Exaltation::Mortal(mortal) => {
+                mortal.add_artifact_weapon(artifact_weapon_id, weapon)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.add_artifact_weapon(artifact_weapon_id, weapon)?;
+            }
         }
         Ok(self)
     }
 
     pub fn remove_artifact_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId
+        artifact_weapon_id: ArtifactWeaponId,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(mortal) => {mortal.remove_artifact_weapon(artifact_weapon_id)?;}
-            Exaltation::Exalt(exalt) => {exalt.remove_artifact_weapon(artifact_weapon_id)?;}
+            Exaltation::Mortal(mortal) => {
+                mortal.remove_artifact_weapon(artifact_weapon_id)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.remove_artifact_weapon(artifact_weapon_id)?;
+            }
         }
         Ok(self)
     }
 
     pub fn remove_mundane_weapon(
         &mut self,
-        weapon_id: BaseWeaponId
+        weapon_id: BaseWeaponId,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(mortal) => {mortal.remove_mundane_weapon(weapon_id)?;}
-            Exaltation::Exalt(exalt) => {exalt.remove_mundane_weapon(weapon_id)?;}
+            Exaltation::Mortal(mortal) => {
+                mortal.remove_mundane_weapon(weapon_id)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.remove_mundane_weapon(weapon_id)?;
+            }
         }
         Ok(self)
     }

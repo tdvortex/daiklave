@@ -1,12 +1,13 @@
 use daiklave_core2::{
-    artifact::{ArtifactMemo, MagicMaterial, ArtifactId},
+    artifact::{ArtifactId, ArtifactMemo, MagicMaterial},
+    attributes::AttributeName,
     book_reference::{Book, BookReference},
     unique_id::UniqueId,
     weapons::weapon::{
         ArtifactWeaponId, AttackRange, BaseWeaponId, EquipHand, Equipped, OptionalWeaponTag,
         RangeBand, Weapon, WeaponId, WeaponTag, WeaponWeightClass,
     },
-    CharacterEventSource, CharacterMutation, attributes::AttributeName,
+    CharacterEventSource, CharacterMutation,
 };
 
 #[test]
@@ -171,7 +172,17 @@ fn test_weapons_event_source() {
 
     // Can have multiple copies of an unequipped mundane weapon
     let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.weapons().get(WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(4))), None).unwrap().quantity(), 2);
+    assert_eq!(
+        character_view
+            .weapons()
+            .get(
+                WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(4))),
+                None
+            )
+            .unwrap()
+            .quantity(),
+        2
+    );
 
     // Worn weapons can be equipped and unequipped without needing hands
     let mutation = CharacterMutation::EquipWeapon(
@@ -207,9 +218,28 @@ fn test_weapons_event_source() {
 
     // An equipped weapon always shows up as a quantity of 1
     let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.weapons().get(WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(4))), Some(Equipped::MainHand)).unwrap().quantity(), 1);
-    assert_eq!(character_view.weapons().get(WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(3))), Some(Equipped::OffHand)).unwrap().quantity(), 1);
-
+    assert_eq!(
+        character_view
+            .weapons()
+            .get(
+                WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(4))),
+                Some(Equipped::MainHand)
+            )
+            .unwrap()
+            .quantity(),
+        1
+    );
+    assert_eq!(
+        character_view
+            .weapons()
+            .get(
+                WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(3))),
+                Some(Equipped::OffHand)
+            )
+            .unwrap()
+            .quantity(),
+        1
+    );
 
     // Can't equip a two-handed melee weapon if Strength is less than 3
     let mutation = CharacterMutation::EquipWeapon(
@@ -229,37 +259,35 @@ fn test_weapons_event_source() {
     event_source.apply_mutation(mutation).unwrap();
 
     // Create and add a unique artifact weapon
-    let mutation = CharacterMutation::AddArtifact(
-        ArtifactMemo::Weapon(
-            ArtifactWeaponId(UniqueId::Placeholder(1)),
-            Weapon::artifact("Volcano Cutter")
-                .base_artifact(
-                    BaseWeaponId(UniqueId::Placeholder(8)),
-                    Weapon::base("Grand Daiklave")
-                        .book_reference(BookReference::new(Book::CoreRulebook, 597))
-                        .weight_class(WeaponWeightClass::Heavy)
-                        .two_handed()
-                        .lethal()
-                        .melee()
-                        .tag(OptionalWeaponTag::Balanced)
-                        .tag(OptionalWeaponTag::Reaching)
-                        .build_artifact(),
-                )
-                .material(MagicMaterial::RedJade)
-                .merit_dots(5)
-                .hearthstone_slots(2)
-                .lore("Long lore description")
-                .powers(
-                    "A Solar who attunes to Volcano Cutter awakens Grand \
+    let mutation = CharacterMutation::AddArtifact(ArtifactMemo::Weapon(
+        ArtifactWeaponId(UniqueId::Placeholder(1)),
+        Weapon::artifact("Volcano Cutter")
+            .base_artifact(
+                BaseWeaponId(UniqueId::Placeholder(8)),
+                Weapon::base("Grand Daiklave")
+                    .book_reference(BookReference::new(Book::CoreRulebook, 597))
+                    .weight_class(WeaponWeightClass::Heavy)
+                    .two_handed()
+                    .lethal()
+                    .melee()
+                    .tag(OptionalWeaponTag::Balanced)
+                    .tag(OptionalWeaponTag::Reaching)
+                    .build_artifact(),
+            )
+            .material(MagicMaterial::RedJade)
+            .merit_dots(5)
+            .hearthstone_slots(2)
+            .lore("Long lore description")
+            .powers(
+                "A Solar who attunes to Volcano Cutter awakens Grand \
                 Eruption at no experience cost. By paying an extra three motes \
                 when attuning the grand daiklave, the Solar gains an \
                 additional point of Initiative on any successful withering \
                 attack made with Volcano Cutter which rolls no 1s.",
-                )
-                .book_reference(BookReference::new(Book::CoreRulebook, 627))
-                .build(),
-        ),
-    );
+            )
+            .book_reference(BookReference::new(Book::CoreRulebook, 627))
+            .build(),
+    ));
     event_source.apply_mutation(mutation).unwrap();
 
     // Check you can remove an unequipped mundane weapon
@@ -268,13 +296,23 @@ fn test_weapons_event_source() {
 
     // Check you cannot remove a missing mundane weapon
     let mutation = CharacterMutation::RemoveMundaneWeapon(BaseWeaponId(UniqueId::Placeholder(7)));
-    assert!(event_source.as_character_view().unwrap().check_mutation(&mutation).is_err());
+    assert!(event_source
+        .as_character_view()
+        .unwrap()
+        .check_mutation(&mutation)
+        .is_err());
 
     // Check you cannot remove an equipped mundane weapon without unequipped copies
     let mutation = CharacterMutation::RemoveMundaneWeapon(BaseWeaponId(UniqueId::Placeholder(5)));
-    assert!(event_source.as_character_view().unwrap().check_mutation(&mutation).is_err());
+    assert!(event_source
+        .as_character_view()
+        .unwrap()
+        .check_mutation(&mutation)
+        .is_err());
 
     // Check you can remove an unequipped artifact weapon
-    let mutation = CharacterMutation::RemoveArtifact(ArtifactId::Weapon(ArtifactWeaponId(UniqueId::Placeholder(1))));
+    let mutation = CharacterMutation::RemoveArtifact(ArtifactId::Weapon(ArtifactWeaponId(
+        UniqueId::Placeholder(1),
+    )));
     event_source.apply_mutation(mutation).unwrap();
 }
