@@ -6,7 +6,7 @@ use daiklave_core2::{
         ArtifactWeaponId, AttackRange, BaseWeaponId, EquipHand, Equipped, OptionalWeaponTag,
         RangeBand, Weapon, WeaponId, WeaponTag, WeaponWeightClass,
     },
-    CharacterEventSource, CharacterMutation,
+    CharacterEventSource, CharacterMutation, attributes::AttributeName,
 };
 
 #[test]
@@ -200,6 +200,16 @@ fn test_weapons_event_source() {
     .fold(&mut event_source, |source, mutation| {
         source.apply_mutation(mutation).unwrap()
     });
+
+    // Can't equip a two-handed melee weapon if Strength is less than 3
+    let mutation = CharacterMutation::EquipWeapon(
+        WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(5))),
+        None,
+    );
+    assert!(event_source.apply_mutation(mutation).is_err());
+
+    let mutation = CharacterMutation::SetAttribute(AttributeName::Strength, 3);
+    event_source.apply_mutation(mutation).unwrap();
 
     // Equipping a two handed weapon unequips all one-handed weapons
     let mutation = CharacterMutation::EquipWeapon(

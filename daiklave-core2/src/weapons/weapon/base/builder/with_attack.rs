@@ -124,6 +124,43 @@ impl BaseWeaponBuilderWithAttack {
     /// Completes the builder process, returning a new
     /// BaseArtifactWeapon.
     pub fn build_artifact(self) -> BaseArtifactWeapon {
-        todo!()
+        match self.handedness {
+            WeaponHandedness::Natural => BaseArtifactWeapon::Natural(BaseWeapon {
+                name: self.name,
+                book_reference: self.book_reference,
+                weight_class: self.weight_class,
+                range_bands: self.attack_range,
+                primary_ability: self.primary_attack,
+                damage_type: self.damage_type,
+                tags: self.tags,
+            }),
+            WeaponHandedness::Worn => BaseArtifactWeapon::Worn(BaseWeapon {
+                name: self.name,
+                book_reference: self.book_reference,
+                weight_class: self.weight_class,
+                range_bands: self.attack_range,
+                primary_ability: self.primary_attack,
+                damage_type: self.damage_type,
+                tags: self.tags,
+            }),
+            WeaponHandedness::OneHanded => BaseArtifactWeapon::OneHanded(BaseWeapon {
+                name: self.name,
+                book_reference: self.book_reference,
+                weight_class: self.weight_class,
+                range_bands: self.attack_range,
+                primary_ability: self.primary_attack,
+                damage_type: self.damage_type,
+                tags: self.tags,
+            }),
+            WeaponHandedness::TwoHanded => BaseArtifactWeapon::TwoHanded(BaseWeapon {
+                name: self.name,
+                book_reference: self.book_reference,
+                weight_class: self.weight_class,
+                range_bands: self.attack_range,
+                primary_ability: self.primary_attack,
+                damage_type: self.damage_type,
+                tags: self.tags,
+            }),
+        }
     }
 }
