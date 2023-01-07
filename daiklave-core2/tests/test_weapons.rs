@@ -169,6 +169,10 @@ fn test_weapons_event_source() {
         source.apply_mutation(mutation).unwrap()
     });
 
+    // Can have multiple copies of an unequipped mundane weapon
+    let character_view = event_source.as_character_view().unwrap();
+    assert_eq!(character_view.weapons().get(WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(4))), None).unwrap().quantity(), 2);
+
     // Worn weapons can be equipped and unequipped without needing hands
     let mutation = CharacterMutation::EquipWeapon(
         WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(1))),
