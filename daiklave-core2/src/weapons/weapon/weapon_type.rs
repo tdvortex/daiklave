@@ -144,4 +144,18 @@ impl<'view, 'source> WeaponType<'source> {
             WeaponType::Artifact(_, artifact, _) => artifact.base_artifact_weapon().accuracy(attack_range, true),
         }
     }
+
+    pub fn damage(&self, attack_range: AttackRange) -> Option<u8> {
+        match self {
+            WeaponType::Unarmed => {
+                if attack_range == AttackRange::Melee {
+                    Some(7)
+                } else {
+                    None
+                }
+            }
+            WeaponType::Mundane(_, mundane) => mundane.damage(attack_range, false),
+            WeaponType::Artifact(_, artifact, _) => artifact.base_artifact_weapon().damage(attack_range, true),
+        }
+    }
 }

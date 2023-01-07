@@ -37,7 +37,7 @@ fn test_weapons_event_source() {
         None
     );
     assert_eq!(
-        unarmed.damage(AttackRange::Ranged(RangeBand::Close)),
+        unarmed.damage(AttackRange::Melee),
         Some(7)
     );
     assert_eq!(unarmed.damage(AttackRange::Ranged(RangeBand::Short)), None);

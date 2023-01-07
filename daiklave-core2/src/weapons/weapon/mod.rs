@@ -159,8 +159,8 @@ impl<'view, 'source> Weapon<'source> {
     /// Returns None if unusable at that range. Note that the Powerful
     /// tag modifies weapon damage at close range meaning that in some
     /// cases the weapon damage is not static across ranges.
-    pub fn damage(&self, _attack_range: AttackRange) -> Option<u8> {
-        todo!()
+    pub fn damage(&self, attack_range: AttackRange) -> Option<u8> {
+        self.0.damage(attack_range)
     }
 
     /// The weapon's bonus or penalty to Parry defense. Returns None

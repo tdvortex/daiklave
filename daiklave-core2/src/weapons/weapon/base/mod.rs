@@ -111,4 +111,50 @@ impl BaseWeapon {
             }
         }
     }
+
+    pub fn damage(&self, attack_range: AttackRange, is_artifact: bool) -> Option<u8> {
+        match (self.primary_ability, self.range_bands, attack_range) {
+            (WeaponAbility::Thrown, _, AttackRange::Melee) | (WeaponAbility::Archery, _, AttackRange::Melee) => None,
+            (_, WeaponRange::ContactOnly, AttackRange::Ranged(_)) => None,
+            (_, _, AttackRange::Melee) => {
+                let shield_penalty = 2 * u8::from(self.tags.contains(&OptionalWeaponTag::Shield));
+                Some(match self.weight_class {
+                    WeaponWeightClass::Light => 7,
+                    WeaponWeightClass::Medium => 9,
+                    WeaponWeightClass::Heavy => 11,
+                } + 3 * u8::from(is_artifact)
+                - shield_penalty)
+            }
+            (_, WeaponRange::Archery(max_range), AttackRange::Ranged(try_range)) => {
+                if try_range > max_range {
+                    None
+                } else {
+                    let flame_or_crossbow = 4 * u8::from(self.tags.contains(&OptionalWeaponTag::Crossbow) || self.tags.contains(&OptionalWeaponTag::Flame));
+                    let base_damage = if try_range == RangeBand::Close && self.tags.contains(&OptionalWeaponTag::Powerful) {
+                        11
+                    } else {
+                        match self.weight_class {
+                            WeaponWeightClass::Light => 7,
+                            WeaponWeightClass::Medium => 9,
+                            WeaponWeightClass::Heavy => 11,
+                        }
+                    };
+                    let artifact_bonus = 3 * u8::from(is_artifact);
+
+                    Some(base_damage + flame_or_crossbow + artifact_bonus)
+                }
+            }
+            (_, WeaponRange::Throwable(max_range), AttackRange::Ranged(try_range)) => {
+                if try_range > max_range {
+                    None
+                } else {
+                    Some(match self.weight_class {
+                        WeaponWeightClass::Light => 7,
+                        WeaponWeightClass::Medium => 9,
+                        WeaponWeightClass::Heavy => 11,
+                    } + 3 * u8::from(is_artifact))
+                }
+            }
+        }
+    }
 }

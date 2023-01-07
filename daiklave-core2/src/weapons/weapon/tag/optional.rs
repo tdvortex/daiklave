@@ -31,7 +31,7 @@ pub enum OptionalWeaponTag {
     Piercing,
     /// Can convey poison to the target.
     Poisonable,
-    /// For a ranged weapon (like a crossbow) does +4 damage at Close range.
+    /// For a ranged weapon (like a crossbow) does +3 damage at Close range.
     Powerful,
     /// Ignores the benefits of the opponent being mounted.
     Reaching,
