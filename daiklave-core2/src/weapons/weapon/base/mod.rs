@@ -169,4 +169,19 @@ impl BaseWeapon {
             })
         }
     }
+
+    pub fn overwhelming(&self, is_artifact: bool) -> u8 {
+        let balanced_bonus = u8::from(matches!(self.primary_ability, WeaponAbility::Brawl | WeaponAbility::Melee | WeaponAbility::MartialArts) && self.tags.contains(&OptionalWeaponTag::Balanced));
+        let artifact_bonus = if is_artifact {
+            match self.weight_class {
+                WeaponWeightClass::Light => 2,
+                WeaponWeightClass::Medium => 3,
+                WeaponWeightClass::Heavy => 4,
+            }
+        } else {
+            0
+        };
+
+        1 + balanced_bonus + artifact_bonus
+    }
 }

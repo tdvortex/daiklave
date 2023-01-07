@@ -166,4 +166,12 @@ impl<'view, 'source> WeaponType<'source> {
             WeaponType::Artifact(_, artifact, _) => artifact.base_artifact_weapon().parry_mod(true),
         }
     }
+
+    pub fn overwhelming(&self) -> u8 {
+        match self {
+            WeaponType::Unarmed => 1,
+            WeaponType::Mundane(_, mundane) => mundane.overwhelming(false),
+            WeaponType::Artifact(_, artifact, _) => artifact.base_artifact_weapon().overwhelming(true),
+        }
+    }
 }

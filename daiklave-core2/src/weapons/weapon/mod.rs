@@ -171,6 +171,6 @@ impl<'view, 'source> Weapon<'source> {
 
     /// The weapon's Overwhelming value.
     pub fn overwhelming(&self) -> u8 {
-        todo!()
+        self.0.overwhelming()
     }
 }
