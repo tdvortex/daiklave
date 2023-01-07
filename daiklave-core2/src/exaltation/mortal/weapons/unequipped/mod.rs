@@ -51,16 +51,16 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
         match weapon_id {
             WeaponId::Unarmed => Some(crate::weapons::weapon::mundane::unarmed()),
             WeaponId::Mundane(target_id) => match self.mundane.get(&target_id)? {
-                (NonnaturalMundaneWeapon::Worn(worn_weapon), _) => Some(Weapon(
-                    WeaponType::Mundane(target_id, MundaneWeapon::Worn(worn_weapon.clone(), false)),
+                (NonnaturalMundaneWeapon::Worn(worn_weapon), count) => Some(Weapon(
+                    WeaponType::Mundane(target_id, MundaneWeapon::Worn(worn_weapon.clone(), false), *count),
                 )),
-                (NonnaturalMundaneWeapon::OneHanded(one), _) => Some(Weapon(WeaponType::Mundane(
+                (NonnaturalMundaneWeapon::OneHanded(one), count) => Some(Weapon(WeaponType::Mundane(
                     target_id,
-                    MundaneWeapon::OneHanded(one.clone(), None),
+                    MundaneWeapon::OneHanded(one.clone(), None), *count
                 ))),
-                (NonnaturalMundaneWeapon::TwoHanded(two), _) => Some(Weapon(WeaponType::Mundane(
+                (NonnaturalMundaneWeapon::TwoHanded(two), count) => Some(Weapon(WeaponType::Mundane(
                     target_id,
-                    MundaneWeapon::TwoHanded(two.clone(), false),
+                    MundaneWeapon::TwoHanded(two.clone(), false), *count
                 ))),
             },
             WeaponId::Artifact(target_id) => match self.artifact.get(&target_id)? {
@@ -105,7 +105,10 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
         weapon_id: BaseWeaponId,
         weapon: NonnaturalMundaneWeapon<'source>,
     ) {
-        self.mundane.entry(weapon_id).or_insert((weapon, 0)).1 += 1;
+        let count_ptr = &mut self.mundane.entry(weapon_id).or_insert((weapon, 0)).1;
+        if *count_ptr < u8::MAX {
+            *count_ptr += 1;
+        }
     }
 
     pub fn unstow_mundane(

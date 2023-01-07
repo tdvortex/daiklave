@@ -205,6 +205,12 @@ fn test_weapons_event_source() {
         source.apply_mutation(mutation).unwrap()
     });
 
+    // An equipped weapon always shows up as a quantity of 1
+    let character_view = event_source.as_character_view().unwrap();
+    assert_eq!(character_view.weapons().get(WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(4))), Some(Equipped::MainHand)).unwrap().quantity(), 1);
+    assert_eq!(character_view.weapons().get(WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(3))), Some(Equipped::OffHand)).unwrap().quantity(), 1);
+
+
     // Can't equip a two-handed melee weapon if Strength is less than 3
     let mutation = CharacterMutation::EquipWeapon(
         WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(5))),

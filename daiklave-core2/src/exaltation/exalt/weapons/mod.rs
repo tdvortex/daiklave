@@ -90,7 +90,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
         };
 
         self.unequipped
-            .stow_mundane(weapon_id, nonnatural_mundane)?;
+            .stow_mundane(weapon_id, nonnatural_mundane);
         Ok(self)
     }
 
@@ -124,7 +124,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
             (NonnaturalMundaneWeapon::OneHanded(one_handed), None) => {
                 // Don't lose the weapon we unstowed above
                 self.unequipped
-                    .stow_mundane(weapon_id, NonnaturalMundaneWeapon::OneHanded(one_handed))?;
+                    .stow_mundane(weapon_id, NonnaturalMundaneWeapon::OneHanded(one_handed));
                 Err(CharacterMutationError::WeaponError(
                     WeaponError::HandRequired,
                 ))
@@ -136,7 +136,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 } else {
                     // Don't lose the weapon we unstowed above
                     self.unequipped
-                        .stow_mundane(weapon_id, NonnaturalMundaneWeapon::Worn(worn_mundane))?;
+                        .stow_mundane(weapon_id, NonnaturalMundaneWeapon::Worn(worn_mundane));
                     Err(CharacterMutationError::WeaponError(
                         WeaponError::DuplicateEquippedWorn,
                     ))
@@ -161,7 +161,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                                 self.unequipped.stow_mundane(
                                     weapon_id,
                                     NonnaturalMundaneWeapon::OneHanded(one_handed_mundane),
-                                )?;
+                                );
                                 return Err(e);
                             }
                         }
@@ -172,7 +172,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                                 self.unequipped.stow_mundane(
                                     weapon_id,
                                     NonnaturalMundaneWeapon::OneHanded(one_handed_mundane),
-                                )?;
+                                );
                                 return Err(e);
                             }
                         }
@@ -203,7 +203,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                                 self.unequipped.stow_mundane(
                                     weapon_id,
                                     NonnaturalMundaneWeapon::OneHanded(one_handed_mundane),
-                                )?;
+                                );
                                 return Err(e);
                             }
                         }
@@ -214,7 +214,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                                 self.unequipped.stow_mundane(
                                     weapon_id,
                                     NonnaturalMundaneWeapon::OneHanded(one_handed_mundane),
-                                )?;
+                                );
                                 return Err(e);
                             }
                         }
@@ -244,7 +244,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                                 self.unequipped.stow_mundane(
                                     weapon_id,
                                     NonnaturalMundaneWeapon::TwoHanded(two_handed_mundane),
-                                )?;
+                                );
                                 return Err(e);
                             }
                         }
@@ -254,7 +254,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                                 self.unequipped.stow_mundane(
                                     weapon_id,
                                     NonnaturalMundaneWeapon::TwoHanded(two_handed_mundane),
-                                )?;
+                                );
                                 return Err(e);
                             }
                         }
@@ -265,7 +265,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                                 self.unequipped.stow_mundane(
                                     weapon_id,
                                     NonnaturalMundaneWeapon::TwoHanded(two_handed_mundane),
-                                )?;
+                                );
                                 return Err(e);
                             }
                         }
@@ -597,7 +597,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
         }?;
 
         self.unequipped
-            .stow_mundane(weapon_id, nonnatural_mundane)?;
+            .stow_mundane(weapon_id, nonnatural_mundane);
         Ok(self)
     }
 

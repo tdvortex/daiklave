@@ -45,6 +45,7 @@ impl<'view, 'source> EquippedOneHandedWeaponNoAttunement<'source> {
                     Some(Weapon(WeaponType::Mundane(
                         target_id,
                         MundaneWeapon::OneHanded(one.clone(), Some(hand)),
+                        1
                     )))
                 }
             }

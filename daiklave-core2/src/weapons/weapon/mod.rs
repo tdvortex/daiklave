@@ -193,4 +193,9 @@ impl<'view, 'source> Weapon<'source> {
     pub fn is_two_handed(&self) -> bool {
         self.0.is_two_handed()
     }
+
+    /// The number of copies of this weapon (in this equipped position).
+    pub fn quantity(&self) -> u8 {
+        self.0.quantity()
+    }
 }
