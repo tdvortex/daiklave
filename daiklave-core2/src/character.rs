@@ -21,9 +21,9 @@ use crate::{
     },
     weapons::{
         weapon::{
-            equipped::EquipHand, mundane::MundaneWeaponMemo, BaseWeaponId, Equipped, WeaponId,
+            equipped::EquipHand, mundane::MundaneWeaponMemo, BaseWeaponId, Equipped, WeaponId, WeaponWeightClass, AttackRange,
         },
-        Weapons,
+        Weapons, WeaponError,
     },
     willpower::Willpower,
     CharacterMemo, CharacterMutation, CharacterMutationError,
@@ -126,9 +126,15 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::SetCraftDots(focus, dots) => {
                 self.check_set_craft_dots(focus.as_str(), *dots)
             }
-            CharacterMutation::AddMundaneWeapon(_, _) => todo!(),
-            CharacterMutation::EquipWeapon(_, _) => todo!(),
-            CharacterMutation::UnequipWeapon(_, _) => todo!(),
+            CharacterMutation::AddMundaneWeapon(weapon_id, weapon) => {
+                self.check_add_mundane_weapon(*weapon_id, weapon)
+            }
+            CharacterMutation::EquipWeapon(weapon_id, hand) => {
+                self.check_equip_weapon(*weapon_id, *hand)
+            }
+            CharacterMutation::UnequipWeapon(weapon_id, equipped) => {
+                self.check_unequip_weapon(*weapon_id, *equipped)
+            }
             CharacterMutation::AddArtifact(_, _) => todo!(),
         }
     }
@@ -792,14 +798,29 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Adds a new mundane weapon to the character's arsenal. The weapon is
-    /// initially unequipped
+    /// initially unequipped, unless it is Natural, in which case it's 
+    /// immediately readied and available.
     pub fn add_mundane_weapon(
         &mut self,
         weapon_id: BaseWeaponId,
         weapon: &'source MundaneWeaponMemo,
     ) -> Result<&mut Self, CharacterMutationError> {
+        self.check_add_mundane_weapon(weapon_id, weapon)?;
         self.exaltation.add_mundane_weapon(weapon_id, weapon)?;
         Ok(self)
+    }
+
+    /// Checks if a mundane weapon can be added to the character's arsenal.
+    pub fn check_add_mundane_weapon(
+        &self,
+        weapon_id: BaseWeaponId,
+        _weapon: &'source MundaneWeaponMemo
+    ) -> Result<(), CharacterMutationError> {
+        if self.weapons().get(WeaponId::Mundane(weapon_id), Some(Equipped::Natural)).is_some() {
+            Err(CharacterMutationError::WeaponError(WeaponError::DuplicateNatural))
+        } else {
+            Ok(())
+        }
     }
 
     /// Equips a weapon. For mundane weapons, there must be at least 1
@@ -809,14 +830,38 @@ impl<'view, 'source> Character<'source> {
     /// For Worn weapons, the hand parameter is ignored and will not unequip
     /// any weapons. \n For TwoHanded weapons, the hand parameter is ignored
     /// and all one- or two-handed weapons will be unequipped. \n
-    /// For Natural weapons, will return an Err.
+    /// For Natural weapons, will return an Err. 
     pub fn equip_weapon(
         &mut self,
         weapon_id: WeaponId,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
+        self.check_equip_weapon(weapon_id, hand)?;
         self.exaltation.equip_weapon(weapon_id, hand)?;
         Ok(self)
+    }
+
+    /// Checks if a weapon can be equipped in the specified hand.
+    pub fn check_equip_weapon(
+        &self,
+        weapon_id: WeaponId,
+        hand: Option<EquipHand>
+    ) -> Result<(), CharacterMutationError> {
+        if let Some(weapon) = self.weapons().get(weapon_id, None) {
+            if weapon.is_natural() {
+                Err(CharacterMutationError::WeaponError(WeaponError::EquipNatural))
+            } else if weapon.is_worn() && self.weapons().get(weapon_id, Some(Equipped::Worn)).is_some() {
+                Err(CharacterMutationError::WeaponError(WeaponError::DuplicateEquippedWorn))
+            } else if weapon.is_one_handed() && hand.is_none() {
+                Err(CharacterMutationError::WeaponError(WeaponError::HandRequired))
+            } else if weapon.weight_class() == WeaponWeightClass::Heavy && weapon.damage(AttackRange::Melee).is_some() && self.attributes().dots(AttributeName::Strength) < 3 {
+                Err(CharacterMutationError::WeaponError(WeaponError::HeavyMeleeStrengthRequirement))
+            } else {
+                Ok(())
+            }
+        } else {
+            Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+        }
     }
 
     /// Unequips a weapon. The equip location of the weapon must be
@@ -830,5 +875,22 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.unequip_weapon(weapon_id, equipped)?;
         Ok(self)
+    }
+
+    /// Checks if a weapon can be unequipped.
+    pub fn check_unequip_weapon(
+        &self,
+        weapon_id: WeaponId,
+        equipped: Equipped
+    ) -> Result<(), CharacterMutationError> {
+        if let Some(weapon) = self.weapons().get(weapon_id, Some(equipped)) {
+            if weapon.is_natural() {
+                Err(CharacterMutationError::WeaponError(WeaponError::UnequipNatural))
+            } else {
+                Ok(())
+            }
+        } else {
+            Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+        }
     }
 }

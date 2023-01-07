@@ -173,4 +173,24 @@ impl<'view, 'source> Weapon<'source> {
     pub fn overwhelming(&self) -> u8 {
         self.0.overwhelming()
     }
+
+    /// Returns true if the weapon is a Natural weapon.
+    pub fn is_natural(&self) -> bool {
+        self.0.is_natural()
+    }
+
+    /// Returns true if the weapon is a Worn weapon.
+    pub fn is_worn(&self) -> bool {
+        self.0.is_worn()
+    }
+
+    /// Returns true if the weapon is a One-Handed weapon.
+    pub fn is_one_handed(&self) -> bool {
+        self.0.is_one_handed()
+    }
+
+    /// Returns true if the weapon is a Two-Handed weapon.
+    pub fn is_two_handed(&self) -> bool {
+        self.0.is_two_handed()
+    }
 }

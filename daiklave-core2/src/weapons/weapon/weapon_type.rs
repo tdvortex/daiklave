@@ -182,4 +182,36 @@ impl<'view, 'source> WeaponType<'source> {
             }
         }
     }
+
+    pub fn is_natural(&self) -> bool {
+        match self {
+            WeaponType::Unarmed => true,
+            WeaponType::Mundane(_, mundane) => matches!(mundane, MundaneWeapon::Natural(_)),
+            WeaponType::Artifact(_, artifact, _) => matches!(artifact, ArtifactWeapon::Natural(_)),
+        }
+    }
+
+    pub fn is_worn(&self) -> bool {
+        match self {
+            WeaponType::Unarmed => false,
+            WeaponType::Mundane(_, mundane) => matches!(mundane, MundaneWeapon::Worn(..)),
+            WeaponType::Artifact(_, artifact, _) => matches!(artifact, ArtifactWeapon::Worn(..)),
+        }
+    }
+
+    pub fn is_one_handed(&self) -> bool {
+        match self {
+            WeaponType::Unarmed => false,
+            WeaponType::Mundane(_, mundane) => matches!(mundane, MundaneWeapon::OneHanded(..)),
+            WeaponType::Artifact(_, artifact, _) => matches!(artifact, ArtifactWeapon::OneHanded(..)),
+        }
+    }
+
+    pub fn is_two_handed(&self) -> bool {
+        match self {
+            WeaponType::Unarmed => false,
+            WeaponType::Mundane(_, mundane) => matches!(mundane, MundaneWeapon::TwoHanded(..)),
+            WeaponType::Artifact(_, artifact, _) => matches!(artifact, ArtifactWeapon::TwoHanded(..)),
+        }
+    }
 }

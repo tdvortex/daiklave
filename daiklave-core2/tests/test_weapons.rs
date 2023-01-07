@@ -114,6 +114,17 @@ fn test_weapons_event_source() {
                 .build_mundane(),
         ),
         CharacterMutation::AddMundaneWeapon(
+            BaseWeaponId(UniqueId::Placeholder(4)),
+            Weapon::base("Hook Sword")
+                .weight_class(WeaponWeightClass::Medium)
+                .one_handed()
+                .lethal()
+                .martial_arts()
+                .book_reference(BookReference::new(Book::CoreRulebook, 583))
+                .tag(OptionalWeaponTag::Disarming)
+                .build_mundane(),
+        ),
+        CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(5)),
             Weapon::base("Great Sword")
                 .weight_class(WeaponWeightClass::Heavy)
@@ -166,7 +177,7 @@ fn test_weapons_event_source() {
     event_source.apply_mutation(mutation).unwrap();
     let mutation = CharacterMutation::UnequipWeapon(
         WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(1))),
-        None,
+        Equipped::Worn,
     );
     event_source.apply_mutation(mutation).unwrap();
 

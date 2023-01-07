@@ -16,6 +16,10 @@ pub enum WeaponError {
     /// Have to be specific about hands when equipping one-handed weapons
     #[error("Equipping or unequipping a one-handed weapon requires specifying which hand")]
     HandRequired,
+    /// Heavy weapons that are usable in melee require at least Strength 3 to 
+    /// wield
+    #[error("Strength must be at least 3 to wield Heavy melee weapons")]
+    HeavyMeleeStrengthRequirement,
     /// Can't add multiple copies of the same named artifact
     #[error("Named artifacts are unique; only one can be owned at a time")]
     NamedArtifactsUnique,
