@@ -14,11 +14,11 @@ pub struct Weapons<'view, 'source>(pub(crate) &'view Exaltation<'source>);
 
 impl<'view, 'source> Weapons<'view, 'source> {
     /// Retrieves the details for a specific weapon, if it exists.
-    pub fn get(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+    pub fn get(&self, weapon_id: WeaponId, equipped: Option<Equipped>) -> Option<Weapon<'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
             Some(unarmed())
         } else {
-            self.0.get_weapon(weapon_id)
+            self.0.get_weapon(weapon_id, equipped)
         }
     }
 

@@ -2,7 +2,7 @@ mod memo;
 pub use memo::ExaltHandsMemo;
 
 use crate::{
-    exaltation::mortal::MortalHands,
+    exaltation::{mortal::MortalHands},
     weapons::weapon::{
         equipped::{EquipHand, EquippedOneHandedWeapon, EquippedTwoHandedWeapon},
         Weapon, WeaponId, Equipped,
@@ -56,15 +56,15 @@ impl<'view, 'source> ExaltHands<'source> {
         }
     }
 
-    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
-        match self {
-            ExaltHands::Empty => None,
-            ExaltHands::MainHand(one) => one.get_weapon(weapon_id, EquipHand::MainHand),
-            ExaltHands::OffHand(one) => one.get_weapon(weapon_id, EquipHand::OffHand),
-            ExaltHands::Both(arr) => arr[0]
-                .get_weapon(weapon_id, EquipHand::MainHand)
-                .or_else(|| arr[1].get_weapon(weapon_id, EquipHand::OffHand)),
-            ExaltHands::TwoHanded(two) => two.get_weapon(weapon_id),
+    pub fn get_weapon(&'view self, weapon_id: WeaponId, equipped: Equipped) -> Option<Weapon<'source>> {
+        match (self, equipped) {
+            (ExaltHands::Empty, _) | (_, Equipped::Natural) | (_, Equipped::Worn) => None,
+            (ExaltHands::MainHand(one), Equipped::MainHand) =>  one.get_weapon(weapon_id, EquipHand::MainHand),
+            (ExaltHands::OffHand(one), Equipped::OffHand) => one.get_weapon(weapon_id, EquipHand::OffHand),
+            (ExaltHands::TwoHanded(two), Equipped::TwoHanded) => two.get_weapon(weapon_id),
+            (ExaltHands::Both(arr), Equipped::MainHand) => arr[0].get_weapon(weapon_id, EquipHand::MainHand),
+            (ExaltHands::Both(arr), Equipped::OffHand) => arr[1].get_weapon(weapon_id, EquipHand::MainHand),
+            _ => None
         }
     }
 

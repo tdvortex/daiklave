@@ -41,13 +41,19 @@ impl<'view, 'source> MortalWeapons<'source> {
         }
     }
 
-    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&'view self, weapon_id: WeaponId, equipped: Option<Equipped>) -> Option<Weapon<'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
-            Some(crate::weapons::weapon::mundane::unarmed())
+            if matches!(equipped, Some(Equipped::Natural)) {
+                Some(crate::weapons::weapon::mundane::unarmed())
+            } else {
+                None
+            }
         } else {
-            self.equipped
-                .get_weapon(weapon_id)
-                .or_else(|| self.unequipped.get_weapon(weapon_id))
+            if let Some(equipped) = equipped {
+                self.equipped.get_weapon(weapon_id, equipped)
+            } else {
+                self.unequipped.get_weapon(weapon_id)
+            }
         }
     }
 

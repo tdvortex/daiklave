@@ -14,7 +14,7 @@ pub(crate) use exalt_memo::ExaltMemo;
 pub(crate) use sorcery::ExaltSorcery;
 pub(crate) use weapons::{ExaltEquippedWeapons, ExaltHands, ExaltUnequippedWeapons, ExaltWeapons};
 
-use std::collections::HashMap;
+use std::{collections::HashMap};
 
 use crate::{
     abilities::{AbilityRating, SetAbilityError},
@@ -101,11 +101,15 @@ impl<'view, 'source> Exalt<'source> {
         &mut self.weapons
     }
 
-    pub fn get_weapon(&self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&self, weapon_id: WeaponId, equipped: Option<Equipped>) -> Option<Weapon<'source>> {
         if matches!(weapon_id, WeaponId::Unarmed) {
-            Some(crate::weapons::weapon::mundane::unarmed())
+            if matches!(equipped, Some(Equipped::Natural)) {
+                Some(crate::weapons::weapon::mundane::unarmed())
+            } else {
+                None
+            }
         } else {
-            self.weapons.get_weapon(weapon_id)
+            self.weapons.get_weapon(weapon_id, equipped)
         }
     }
 

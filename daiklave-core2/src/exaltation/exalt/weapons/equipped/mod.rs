@@ -58,45 +58,53 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
         }
     }
 
-    pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
-        let in_hands = self.hands.get_weapon(weapon_id);
-        if in_hands.is_some() {
-            return in_hands;
-        }
-
-        match weapon_id {
-            WeaponId::Unarmed => Some(crate::weapons::weapon::mundane::unarmed()),
-            WeaponId::Mundane(target_id) => match self.handless_mundane.get(&target_id)? {
-                HandlessMundaneWeapon::Natural(natural_mundane) => Some(Weapon(
-                    WeaponType::Mundane(target_id, MundaneWeapon::Natural(natural_mundane.clone())),
-                )),
-                HandlessMundaneWeapon::Worn(worn_mundane) => Some(Weapon(WeaponType::Mundane(
-                    target_id,
-                    MundaneWeapon::Worn(worn_mundane.clone(), true),
-                ))),
-            },
-            WeaponId::Artifact(target_id) => {
-                let handless_artifact_weapon = self.handless_artifact.get(&target_id)?;
-                let (without_attunement, attunement) =
-                    (&handless_artifact_weapon.0, handless_artifact_weapon.1);
-
-                match without_attunement {
-                    HandlessArtifactWeaponNoAttunement::Natural(natural_artifact) => {
-                        Some(Weapon(WeaponType::Artifact(
-                            target_id,
-                            ArtifactWeapon::Natural(natural_artifact.clone()),
-                            attunement,
-                        )))
-                    }
-                    HandlessArtifactWeaponNoAttunement::Worn(worn_artifact) => {
-                        Some(Weapon(WeaponType::Artifact(
-                            target_id,
-                            ArtifactWeapon::Worn(worn_artifact.clone(), true),
-                            attunement,
-                        )))
-                    }
+    pub fn get_weapon(&'view self, weapon_id: WeaponId, equipped: Equipped) -> Option<Weapon<'source>> {
+        match (weapon_id, equipped) {
+            (WeaponId::Unarmed, Equipped::Natural) => Some(crate::weapons::weapon::mundane::unarmed()),
+            (WeaponId::Unarmed, _) => None,
+            (WeaponId::Mundane(base_weapon_id), Equipped::Natural) => {
+                match self.handless_mundane.get(&base_weapon_id)? {
+                    HandlessMundaneWeapon::Natural(weapon) => Some(Weapon(
+                        WeaponType::Mundane(base_weapon_id, MundaneWeapon::Natural(weapon.clone())),
+                    )),
+                    HandlessMundaneWeapon::Worn(_) => None,
                 }
             }
+            (WeaponId::Mundane(base_weapon_id), Equipped::Worn) => {
+                match self.handless_mundane.get(&base_weapon_id)? {
+                    HandlessMundaneWeapon::Worn(weapon) => Some(Weapon(
+                        WeaponType::Mundane(base_weapon_id, MundaneWeapon::Worn(weapon.clone(), true)),
+                    )),
+                    HandlessMundaneWeapon::Natural(_) => None,
+                }
+            }
+            (WeaponId::Artifact(artifact_weapon_id), Equipped::Natural) => {
+                let handless_artifact_weapon = self.handless_artifact.get(&artifact_weapon_id)?;
+                let (no_attunement, attunement) = (&handless_artifact_weapon.0, handless_artifact_weapon.1);
+
+                match no_attunement {
+                    HandlessArtifactWeaponNoAttunement::Natural(weapon) => Some(
+                        Weapon(
+                            WeaponType::Artifact(artifact_weapon_id, ArtifactWeapon::Natural(weapon.clone()), attunement)
+                        )
+                    ),
+                    HandlessArtifactWeaponNoAttunement::Worn(_) => None,
+                }
+            }
+            (WeaponId::Artifact(artifact_weapon_id), Equipped::Worn) => {
+                let handless_artifact_weapon = self.handless_artifact.get(&artifact_weapon_id)?;
+                let (no_attunement, attunement) = (&handless_artifact_weapon.0, handless_artifact_weapon.1);
+
+                match no_attunement {
+                    HandlessArtifactWeaponNoAttunement::Worn(weapon) => Some(
+                        Weapon(
+                            WeaponType::Artifact(artifact_weapon_id, ArtifactWeapon::Worn(weapon.clone(), true), attunement)
+                        )
+                    ),
+                    HandlessArtifactWeaponNoAttunement::Natural(_) => None,
+                }
+            }
+            (_, equipped) => self.hands.get_weapon(weapon_id, equipped)
         }
     }
 

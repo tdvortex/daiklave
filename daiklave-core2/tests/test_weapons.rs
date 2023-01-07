@@ -14,7 +14,7 @@ fn test_weapons_event_source() {
     let mut event_source = CharacterEventSource::default();
     let character_view = event_source.as_character_view().unwrap();
     // Default characters have the Unarmed weapon
-    let unarmed = character_view.weapons().get(WeaponId::Unarmed).unwrap();
+    let unarmed = character_view.weapons().get(WeaponId::Unarmed, Some(Equipped::Natural)).unwrap();
     assert_eq!(unarmed.id(), WeaponId::Unarmed);
     assert_eq!(unarmed.name(), "Unarmed");
     assert_eq!(
