@@ -4,7 +4,7 @@
 //! with full Discord integration for over-the-internet play.
 
 use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
-use artifact::{ArtifactMemo};
+use artifact::{ArtifactMemo, ArtifactId};
 use attributes::{AttributeName, SetAttributesError};
 use exaltation::exalt::{
     essence::{
@@ -137,6 +137,8 @@ pub enum CharacterMutation {
     SetCraftDots(String, u8),
     /// Adds a mundane weapon to the character.
     AddMundaneWeapon(BaseWeaponId, MundaneWeaponMemo),
+    /// Removes a mundane weapon from the character.
+    RemoveMundaneWeapon(BaseWeaponId),
     /// Equips the specific weapon. For a OneHanded weapon, will equip into
     /// the specified hand, otherwise the parameter is ignored.
     EquipWeapon(WeaponId, Option<EquipHand>),
@@ -145,6 +147,8 @@ pub enum CharacterMutation {
     /// Add an artifact to the character, which may be a weapon, armor item,
     /// warstrider, or wonder.
     AddArtifact(ArtifactMemo),
+    /// Removes an artifact from the character.
+    RemoveArtifact(ArtifactId),
 }
 
 /// An error representing something that could go wrong with a

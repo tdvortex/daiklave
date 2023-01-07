@@ -18,9 +18,9 @@ use crate::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
         SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell,
     },
-    weapons::weapon::{
-        mundane::MundaneWeaponMemo, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId, ArtifactWeaponId, artifact::ArtifactWeapon,
-    },
+    weapons::{weapon::{
+        mundane::{MundaneWeaponMemo, HandlessMundaneWeapon}, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId, ArtifactWeaponId, artifact::ArtifactWeapon,
+    }, WeaponError},
     CharacterMutationError,
 };
 
@@ -197,5 +197,34 @@ impl<'source> Mortal<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.add_artifact_weapon(weapon_id, weapon)?;
         Ok(self)
+    }
+
+    pub fn remove_artifact_weapon(
+        &mut self,
+        artifact_weapon_id: ArtifactWeaponId
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.weapons.unequipped.artifact.remove(&artifact_weapon_id).ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?;
+        Ok(self)
+    }
+
+    pub fn remove_mundane_weapon(
+        &mut self,
+        weapon_id: BaseWeaponId
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if let Some((_, count)) = self.weapons.unequipped.mundane.get(&weapon_id) {
+            if *count <= 1 {
+                self.weapons.unequipped.mundane.remove(&weapon_id);
+            } else {
+                self.weapons.unequipped.mundane.get_mut(&weapon_id).unwrap().1 -= 1;
+            }
+            Ok(self)
+        } else if let Some(weapon) = self.weapons.equipped.handless_mundane.get(&weapon_id) {
+            if matches!(weapon, HandlessMundaneWeapon::Natural(_)) {
+                self.weapons.equipped.handless_mundane.remove(&weapon_id);
+            }
+            Ok(self)
+        } else {
+            Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+        }
     }
 }

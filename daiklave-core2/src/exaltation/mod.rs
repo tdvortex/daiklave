@@ -593,4 +593,26 @@ impl<'view, 'source> Exaltation<'source> {
         }
         Ok(self)
     }
+
+    pub fn remove_artifact_weapon(
+        &mut self,
+        artifact_weapon_id: ArtifactWeaponId
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {mortal.remove_artifact_weapon(artifact_weapon_id)?;}
+            Exaltation::Exalt(exalt) => {exalt.remove_artifact_weapon(artifact_weapon_id)?;}
+        }
+        Ok(self)
+    }
+
+    pub fn remove_mundane_weapon(
+        &mut self,
+        weapon_id: BaseWeaponId
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {mortal.remove_mundane_weapon(weapon_id)?;}
+            Exaltation::Exalt(exalt) => {exalt.remove_mundane_weapon(weapon_id)?;}
+        }
+        Ok(self)
+    }
 }

@@ -26,7 +26,7 @@ use crate::{
         Weapons, WeaponError,
     },
     willpower::Willpower,
-    CharacterMemo, CharacterMutation, CharacterMutationError, artifact::ArtifactMemo,
+    CharacterMemo, CharacterMutation, CharacterMutationError, artifact::{ArtifactMemo, ArtifactId},
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -138,6 +138,12 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AddArtifact(artifact) => {
                 self.check_add_artifact(artifact)
             }
+            CharacterMutation::RemoveMundaneWeapon(weapon_id) => {
+                self.check_remove_mundane_weapon(*weapon_id)
+            }
+            CharacterMutation::RemoveArtifact(artifact_id) => {
+                self.check_remove_artifact(*artifact_id)
+            }
         }
     }
 
@@ -202,6 +208,12 @@ impl<'view, 'source> Character<'source> {
             }
             CharacterMutation::AddArtifact(artifact) => {
                 self.add_artifact(artifact)
+            }
+            CharacterMutation::RemoveMundaneWeapon(weapon_id) => {
+                self.remove_mundane_weapon(*weapon_id)
+            }
+            CharacterMutation::RemoveArtifact(artifact_id) => {
+                self.remove_artifact(*artifact_id)
             }
         }
     }
@@ -934,5 +946,46 @@ impl<'view, 'source> Character<'source> {
             }
         }
         Ok(self)
+    }
+
+    /// Removes an artifact from the character.
+    pub fn remove_artifact(
+        &mut self,
+        artifact_id: ArtifactId
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.check_remove_artifact(artifact_id)?;
+        match artifact_id {
+            ArtifactId::Weapon(artifact_weapon_id) => {self.exaltation.remove_artifact_weapon(artifact_weapon_id)?;}
+        }
+        Ok(self)
+    }
+
+    /// Checks if an artifact can be removed.
+    pub fn check_remove_artifact(&self, artifact_id: ArtifactId) -> Result<(), CharacterMutationError> {
+        match artifact_id {
+            ArtifactId::Weapon(artifact_weapon_id) => {
+                if self.weapons().get(WeaponId::Artifact(artifact_weapon_id), None).is_none() {
+                    Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+                } else {
+                    Ok(())
+                }
+            }
+        }
+    }
+
+    /// Removes a mundane weapon from the character.
+    pub fn remove_mundane_weapon(&mut self, weapon_id: BaseWeaponId) -> Result<&mut Self, CharacterMutationError> {
+        self.check_remove_mundane_weapon(weapon_id)?;
+        self.exaltation.remove_mundane_weapon(weapon_id)?;
+        Ok(self)
+    }
+
+    /// Checks if a mundane weapon can be removed from the character.
+    pub fn check_remove_mundane_weapon(&self, weapon_id: BaseWeaponId) -> Result<(), CharacterMutationError> {
+        if self.weapons().get(WeaponId::Mundane(weapon_id), None).ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?.quantity() == 0 {
+            Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+        } else {
+            Ok(())
+        }
     }
 }

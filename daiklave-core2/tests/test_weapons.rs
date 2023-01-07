@@ -1,5 +1,5 @@
 use daiklave_core2::{
-    artifact::{ArtifactMemo, MagicMaterial},
+    artifact::{ArtifactMemo, MagicMaterial, ArtifactId},
     book_reference::{Book, BookReference},
     unique_id::UniqueId,
     weapons::weapon::{
@@ -260,5 +260,21 @@ fn test_weapons_event_source() {
                 .build(),
         ),
     );
+    event_source.apply_mutation(mutation).unwrap();
+
+    // Check you can remove an unequipped mundane weapon
+    let mutation = CharacterMutation::RemoveMundaneWeapon(BaseWeaponId(UniqueId::Placeholder(7)));
+    event_source.apply_mutation(mutation).unwrap();
+
+    // Check you cannot remove a missing mundane weapon
+    let mutation = CharacterMutation::RemoveMundaneWeapon(BaseWeaponId(UniqueId::Placeholder(7)));
+    assert!(event_source.as_character_view().unwrap().check_mutation(&mutation).is_err());
+
+    // Check you cannot remove an equipped mundane weapon without unequipped copies
+    let mutation = CharacterMutation::RemoveMundaneWeapon(BaseWeaponId(UniqueId::Placeholder(5)));
+    assert!(event_source.as_character_view().unwrap().check_mutation(&mutation).is_err());
+
+    // Check you can remove an unequipped artifact weapon
+    let mutation = CharacterMutation::RemoveArtifact(ArtifactId::Weapon(ArtifactWeaponId(UniqueId::Placeholder(1))));
     event_source.apply_mutation(mutation).unwrap();
 }
