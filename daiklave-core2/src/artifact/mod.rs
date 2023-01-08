@@ -12,6 +12,8 @@ pub mod wonders;
 pub use id::ArtifactId;
 pub use magic_material::MagicMaterial;
 
+use self::wonders::{WonderId, Wonder};
+
 /// A magical, Essence-infused object.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Artifact {
@@ -19,4 +21,6 @@ pub enum Artifact {
     Weapon(ArtifactWeaponId, ArtifactWeapon),
     /// An artifact armor item.
     Armor(ArtifactArmorId, ArtifactArmor),
+    /// A catch-all for other artifacts.
+    Wonder(WonderId, Wonder),
 }

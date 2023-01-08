@@ -982,6 +982,13 @@ impl<'view, 'source> Character<'source> {
                     Ok(())
                 }
             }
+            Artifact::Wonder(wonder_id, _) => {
+                if self.wonders().get(*wonder_id).is_some() {
+                    Err(CharacterMutationError::ArtifactError(ArtifactError::NamedArtifactsUnique))
+                } else {
+                    Ok(())
+                }
+            }
         }
     }
 
@@ -1000,6 +1007,9 @@ impl<'view, 'source> Character<'source> {
                 self.exaltation
                     .add_artifact_armor(*artifact_armor_id, artifact_memo.as_ref())?;
             }
+            Artifact::Wonder(wonder_id, wonder) => {
+                self.exaltation.add_wonder(*wonder_id, wonder)?;
+            }
         }
         Ok(self)
     }
@@ -1016,6 +1026,9 @@ impl<'view, 'source> Character<'source> {
             }
             ArtifactId::Armor(artifact_armor_id) => {
                 self.exaltation.remove_artifact_armor(artifact_armor_id)?;
+            }
+            ArtifactId::Wonder(wonder_id) => {
+                self.exaltation.remove_wonder(wonder_id)?;
             }
         }
         Ok(self)
@@ -1049,6 +1062,13 @@ impl<'view, 'source> Character<'source> {
                     }
                 } else {
                     Err(CharacterMutationError::ArmorError(ArmorError::NotFound))
+                }
+            }
+            ArtifactId::Wonder(wonder_id) => {
+                if self.wonders().get(wonder_id).is_none() {
+                    Err(CharacterMutationError::ArtifactError(ArtifactError::NotFound))
+                } else {
+                    Ok(())
                 }
             }
         }

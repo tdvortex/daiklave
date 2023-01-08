@@ -28,7 +28,7 @@ use crate::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
         EquipHand, Equipped, Weapon, WeaponId,
     },
-    CharacterMutationError, artifact::wonders::{WonderId, OwnedWonder},
+    CharacterMutationError, artifact::wonders::{WonderId, OwnedWonder, Wonder},
 };
 
 use self::{
@@ -761,5 +761,21 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Mortal(mortal) => mortal.get_wonder(wonder_id),
             Exaltation::Exalt(exalt) => exalt.get_wonder(wonder_id),
         }
+    }
+
+    pub fn add_wonder(&mut self, wonder_id: WonderId, wonder: &'source Wonder) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {mortal.add_wonder(wonder_id, wonder)?;}
+            Exaltation::Exalt(exalt) => {exalt.add_wonder(wonder_id, wonder)?;}
+        }
+        Ok(self)
+    }
+
+    pub fn remove_wonder(&mut self, wonder_id: WonderId) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {mortal.remove_wonder(wonder_id)?;}
+            Exaltation::Exalt(exalt) => {exalt.remove_wonder(wonder_id)?;}
+        }
+        Ok(self)
     }
 }

@@ -1,4 +1,4 @@
-use daiklave_core2::{CharacterEventSource, artifact::{ArtifactId, Artifact}, book_reference::{BookReference, Book}, unique_id::UniqueId, CharacterMutation};
+use daiklave_core2::{CharacterEventSource, artifact::{ArtifactId, Artifact, wonders::WonderId}, book_reference::{BookReference, Book}, unique_id::UniqueId, CharacterMutation};
 
 #[test]
 fn test_wonders() {
@@ -10,7 +10,7 @@ fn test_wonders() {
 
     // Add a wonder
     let wonder = Artifact::Wonder(
-        ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))),
+        WonderId(UniqueId::Placeholder(1)),
         Artifact::wonder("Belt of Shadow Walking")
         .book_reference(BookReference::new(Book::CoreRulebook, 602))
         .merit_dots(3)
@@ -18,7 +18,7 @@ fn test_wonders() {
         .build()
     );
     let mutation = CharacterMutation::AddArtifact(wonder);
-    character.check_mutation(&wonder).unwrap();
+    character.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
     let character = event_source.as_character_view().unwrap();
 
