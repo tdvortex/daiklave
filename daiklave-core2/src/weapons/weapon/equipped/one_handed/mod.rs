@@ -9,7 +9,7 @@ pub use no_attunement::{
 };
 
 use crate::weapons::weapon::{
-    artifact::{ArtifactWeapon, OneHandedArtifactWeapon},
+    artifact::{ArtifactWeaponView, OneHandedArtifactWeapon},
     mundane::{MundaneWeapon, OneHandedMundaneWeapon},
     weapon_type::WeaponType,
     ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId,
@@ -76,7 +76,7 @@ impl<'view, 'source> EquippedOneHandedWeapon<'source> {
                 } else {
                     Some(Weapon(WeaponType::Artifact(
                         target_id,
-                        ArtifactWeapon::OneHanded(one.clone(), Some(hand)),
+                        ArtifactWeaponView::OneHanded(one.clone(), Some(hand)),
                         *attunement,
                     )))
                 }

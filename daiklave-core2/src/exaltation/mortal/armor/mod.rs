@@ -6,8 +6,8 @@ use std::collections::{hash_map::Entry, HashMap};
 use crate::{
     armor::{
         armor_item::{
-            artifact::{ArtifactArmor, ArtifactArmorId, ArtifactArmorNoAttunement, ArtifactError},
-            mundane::{MundaneArmor, MundaneArmorMemo},
+            artifact::{ArtifactArmorView, ArtifactArmorId, ArtifactArmorNoAttunement, ArtifactError},
+            mundane::{MundaneArmorView, MundaneArmor},
             ArmorId, ArmorItem, ArmorType, BaseArmorId, EquippedArmor, EquippedArmorNoAttunement,
         },
         ArmorError,
@@ -19,7 +19,7 @@ use crate::{
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct MortalArmor<'source> {
     pub equipped: Option<EquippedArmorNoAttunement<'source>>,
-    pub unequipped_mundane: HashMap<BaseArmorId, MundaneArmor<'source>>,
+    pub unequipped_mundane: HashMap<BaseArmorId, MundaneArmorView<'source>>,
     pub unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmorNoAttunement<'source>>,
 }
 
@@ -106,7 +106,7 @@ impl<'source> MortalArmor<'source> {
     pub fn add_mundane(
         &mut self,
         armor_id: BaseArmorId,
-        armor: &'source MundaneArmorMemo,
+        armor: &'source MundaneArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self
             .worn_armor()
@@ -196,7 +196,7 @@ impl<'source> MortalArmor<'source> {
     pub fn add_artifact(
         &mut self,
         armor_id: ArtifactArmorId,
-        armor: ArtifactArmor<'source>,
+        armor: ArtifactArmorView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self
             .worn_armor()

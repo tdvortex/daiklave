@@ -21,8 +21,8 @@ use std::collections::HashMap;
 use crate::{
     abilities::{AbilityRating, SetAbilityError},
     armor::armor_item::{
-        artifact::{ArtifactArmor, ArtifactArmorId},
-        mundane::MundaneArmorMemo,
+        artifact::{ArtifactArmorView, ArtifactArmorId},
+        mundane::MundaneArmor,
         ArmorId, ArmorItem, BaseArmorId,
     },
     exaltation::sorcery::ExaltationSorcery,
@@ -37,7 +37,7 @@ use crate::{
     weapons::{
         weapon::{
             artifact::{
-                ArtifactWeapon, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
+                ArtifactWeaponView, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
                 NonnaturalArtifactWeapon,
             },
             mundane::{HandlessMundaneWeapon, MundaneWeaponMemo},
@@ -562,7 +562,7 @@ impl<'view, 'source> Exalt<'source> {
     pub fn add_artifact_weapon(
         &mut self,
         weapon_id: ArtifactWeaponId,
-        weapon: ArtifactWeapon<'source>,
+        weapon: ArtifactWeaponView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.add_artifact_weapon(weapon_id, weapon)?;
         Ok(self)
@@ -661,7 +661,7 @@ impl<'view, 'source> Exalt<'source> {
     pub fn add_mundane_armor(
         &mut self,
         armor_id: BaseArmorId,
-        armor: &'source MundaneArmorMemo,
+        armor: &'source MundaneArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.armor.add_mundane(armor_id, armor)?;
         Ok(self)
@@ -688,7 +688,7 @@ impl<'view, 'source> Exalt<'source> {
     pub fn add_artifact_armor(
         &mut self,
         armor_id: ArtifactArmorId,
-        armor: ArtifactArmor<'source>,
+        armor: ArtifactArmorView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.armor.add_artifact(armor_id, armor)?;
         Ok(self)

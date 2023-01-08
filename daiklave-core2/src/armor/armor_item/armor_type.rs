@@ -2,7 +2,7 @@ use crate::book_reference::BookReference;
 
 use super::{
     artifact::{ArtifactArmorId, ArtifactArmorNoAttunement},
-    mundane::MundaneArmor,
+    mundane::MundaneArmorView,
     ArmorId, ArmorTag, ArmorWeightClass, BaseArmorId,
 };
 
@@ -13,7 +13,7 @@ pub(crate) enum ArmorType<'source> {
         ArtifactArmorNoAttunement<'source>,
         Option<u8>,
     ),
-    Mundane(BaseArmorId, MundaneArmor<'source>),
+    Mundane(BaseArmorId, MundaneArmorView<'source>),
 }
 
 impl<'source> ArmorType<'source> {

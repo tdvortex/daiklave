@@ -15,8 +15,8 @@ pub(crate) use sorcery::ExaltationSorcery;
 
 use crate::{
     armor::armor_item::{
-        artifact::{ArtifactArmor, ArtifactArmorId},
-        mundane::MundaneArmorMemo,
+        artifact::{ArtifactArmorView, ArtifactArmorId},
+        mundane::MundaneArmor,
         ArmorId, ArmorItem, BaseArmorId,
     },
     martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId},
@@ -25,7 +25,7 @@ use crate::{
         TerrestrialSpell,
     },
     weapons::weapon::{
-        artifact::ArtifactWeapon, mundane::MundaneWeaponMemo, ArtifactWeaponId, BaseWeaponId,
+        artifact::ArtifactWeaponView, mundane::MundaneWeaponMemo, ArtifactWeaponId, BaseWeaponId,
         EquipHand, Equipped, Weapon, WeaponId,
     },
     CharacterMutationError,
@@ -595,7 +595,7 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn add_artifact_weapon(
         &mut self,
         artifact_weapon_id: ArtifactWeaponId,
-        weapon: ArtifactWeapon<'source>,
+        weapon: ArtifactWeaponView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
@@ -662,7 +662,7 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn add_mundane_armor(
         &mut self,
         armor_id: BaseArmorId,
-        armor: &'source MundaneArmorMemo,
+        armor: &'source MundaneArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
@@ -717,7 +717,7 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn add_artifact_armor(
         &mut self,
         armor_id: ArtifactArmorId,
-        armor: ArtifactArmor<'source>,
+        armor: ArtifactArmorView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {

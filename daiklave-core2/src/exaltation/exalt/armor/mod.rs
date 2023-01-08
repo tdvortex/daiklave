@@ -6,8 +6,8 @@ use std::collections::{hash_map::Entry, HashMap};
 use crate::{
     armor::{
         armor_item::{
-            artifact::{ArtifactArmor, ArtifactArmorId, ArtifactError},
-            mundane::{MundaneArmor, MundaneArmorMemo},
+            artifact::{ArtifactArmorView, ArtifactArmorId, ArtifactError},
+            mundane::{MundaneArmorView, MundaneArmor},
             ArmorId, ArmorItem, ArmorType, BaseArmorId, EquippedArmor, EquippedArmorNoAttunement,
         },
         ArmorError,
@@ -19,8 +19,8 @@ use crate::{
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct ExaltArmor<'source> {
     pub equipped: Option<EquippedArmor<'source>>,
-    pub unequipped_mundane: HashMap<BaseArmorId, MundaneArmor<'source>>,
-    pub unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmor<'source>>,
+    pub unequipped_mundane: HashMap<BaseArmorId, MundaneArmorView<'source>>,
+    pub unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmorView<'source>>,
 }
 
 impl<'source> ExaltArmor<'source> {
@@ -110,7 +110,7 @@ impl<'source> ExaltArmor<'source> {
     pub fn add_mundane(
         &mut self,
         armor_id: BaseArmorId,
-        armor: &'source MundaneArmorMemo,
+        armor: &'source MundaneArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self
             .worn_armor()
@@ -200,7 +200,7 @@ impl<'source> ExaltArmor<'source> {
     pub fn add_artifact(
         &mut self,
         armor_id: ArtifactArmorId,
-        armor: ArtifactArmor<'source>,
+        armor: ArtifactArmorView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self
             .worn_armor()
@@ -212,7 +212,7 @@ impl<'source> ExaltArmor<'source> {
         } else if let Entry::Vacant(e) = self.unequipped_artifact.entry(armor_id) {
             // Artifacts are always added unattuned
             let no_attunement = armor.0;
-            e.insert(ArtifactArmor(no_attunement, None));
+            e.insert(ArtifactArmorView(no_attunement, None));
             Ok(self)
         } else {
             Err(CharacterMutationError::ArmorError(
@@ -248,14 +248,14 @@ impl<'source> From<MortalArmor<'source>> for ExaltArmor<'source> {
                     EquippedArmor::Mundane(base_armor_id, mundane_armor)
                 }
                 EquippedArmorNoAttunement::Artifact(artifact_armor_id, no_attunement) => {
-                    EquippedArmor::Artifact(artifact_armor_id, ArtifactArmor(no_attunement, None))
+                    EquippedArmor::Artifact(artifact_armor_id, ArtifactArmorView(no_attunement, None))
                 }
             }),
             unequipped_mundane: mortal.unequipped_mundane,
             unequipped_artifact: mortal
                 .unequipped_artifact
                 .into_iter()
-                .map(|(k, v)| (k, ArtifactArmor(v, None)))
+                .map(|(k, v)| (k, ArtifactArmorView(v, None)))
                 .collect(),
         }
     }

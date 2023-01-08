@@ -7,7 +7,7 @@ use crate::{
     exaltation::exalt::ExaltUnequippedWeapons,
     weapons::{
         weapon::{
-            artifact::{ArtifactWeapon, NonnaturalArtifactWeaponNoAttunement},
+            artifact::{ArtifactWeaponView, NonnaturalArtifactWeaponNoAttunement},
             mundane::{MundaneWeapon, NonnaturalMundaneWeapon},
             ArtifactWeaponId, BaseWeaponId, Equipped, Weapon, WeaponId, WeaponType,
         },
@@ -77,21 +77,21 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
                 NonnaturalArtifactWeaponNoAttunement::Worn(worn) => {
                     Some(Weapon(WeaponType::Artifact(
                         target_id,
-                        ArtifactWeapon::Worn(worn.clone(), false),
+                        ArtifactWeaponView::Worn(worn.clone(), false),
                         None,
                     )))
                 }
                 NonnaturalArtifactWeaponNoAttunement::OneHanded(one) => {
                     Some(Weapon(WeaponType::Artifact(
                         target_id,
-                        ArtifactWeapon::OneHanded(one.clone(), None),
+                        ArtifactWeaponView::OneHanded(one.clone(), None),
                         None,
                     )))
                 }
                 NonnaturalArtifactWeaponNoAttunement::TwoHanded(two) => {
                     Some(Weapon(WeaponType::Artifact(
                         target_id,
-                        ArtifactWeapon::TwoHanded(two.clone(), false),
+                        ArtifactWeaponView::TwoHanded(two.clone(), false),
                         None,
                     )))
                 }

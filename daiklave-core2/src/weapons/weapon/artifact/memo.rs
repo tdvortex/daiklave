@@ -5,7 +5,7 @@ use super::{
         NaturalArtifactWeaponMemo, OneHandedArtifactWeaponMemo, TwoHandedArtifactWeaponMemo,
         WornArtifactWeaponMemo,
     },
-    ArtifactWeapon,
+    ArtifactWeaponView,
 };
 
 /// An owned copy of an artifact weapon.
@@ -18,17 +18,17 @@ pub enum ArtifactWeaponMemo {
 }
 
 impl<'source> ArtifactWeaponMemo {
-    pub(crate) fn as_ref(&'source self) -> ArtifactWeapon<'source> {
+    pub(crate) fn as_ref(&'source self) -> ArtifactWeaponView<'source> {
         match self {
-            ArtifactWeaponMemo::Natural(memo) => ArtifactWeapon::Natural(memo.as_ref()),
+            ArtifactWeaponMemo::Natural(memo) => ArtifactWeaponView::Natural(memo.as_ref()),
             ArtifactWeaponMemo::Worn(memo, equipped) => {
-                ArtifactWeapon::Worn(memo.as_ref(), *equipped)
+                ArtifactWeaponView::Worn(memo.as_ref(), *equipped)
             }
             ArtifactWeaponMemo::OneHanded(memo, equipped) => {
-                ArtifactWeapon::OneHanded(memo.as_ref(), *equipped)
+                ArtifactWeaponView::OneHanded(memo.as_ref(), *equipped)
             }
             ArtifactWeaponMemo::TwoHanded(memo, equipped) => {
-                ArtifactWeapon::TwoHanded(memo.as_ref(), *equipped)
+                ArtifactWeaponView::TwoHanded(memo.as_ref(), *equipped)
             }
         }
     }

@@ -1,5 +1,5 @@
 use crate::weapons::weapon::{
-    artifact::{ArtifactWeapon, OneHandedArtifactWeapon},
+    artifact::{ArtifactWeaponView, OneHandedArtifactWeapon},
     mundane::{MundaneWeapon, OneHandedMundaneWeapon},
     ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId, WeaponType,
 };
@@ -58,7 +58,7 @@ impl<'view, 'source> EquippedOneHandedWeaponNoAttunement<'source> {
                 } else {
                     Some(Weapon(WeaponType::Artifact(
                         target_id,
-                        ArtifactWeapon::OneHanded(one.clone(), Some(hand)),
+                        ArtifactWeaponView::OneHanded(one.clone(), Some(hand)),
                         None,
                     )))
                 }

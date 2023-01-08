@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::armor::armor_item::{
     artifact::{ArtifactArmorId, ArtifactArmorNoAttunementMemo},
-    mundane::MundaneArmorMemo,
+    mundane::MundaneArmor,
     BaseArmorId,
 };
 
@@ -10,7 +10,7 @@ use super::EquippedArmorNoAttunement;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum EquippedArmorNoAttunementMemo {
-    Mundane(BaseArmorId, MundaneArmorMemo),
+    Mundane(BaseArmorId, MundaneArmor),
     Artifact(ArtifactArmorId, ArtifactArmorNoAttunementMemo),
 }
 

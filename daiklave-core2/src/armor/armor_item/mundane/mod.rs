@@ -2,14 +2,14 @@ mod memo;
 
 use std::ops::Deref;
 
-pub use memo::MundaneArmorMemo;
+pub use memo::MundaneArmor;
 
 use super::base::BaseArmor;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) struct MundaneArmor<'source>(pub &'source BaseArmor);
+pub(crate) struct MundaneArmorView<'source>(pub &'source BaseArmor);
 
-impl<'source> Deref for MundaneArmor<'source> {
+impl<'source> Deref for MundaneArmorView<'source> {
     type Target = BaseArmor;
 
     fn deref(&self) -> &Self::Target {
@@ -17,9 +17,9 @@ impl<'source> Deref for MundaneArmor<'source> {
     }
 }
 
-impl<'source> MundaneArmor<'source> {
-    pub fn as_memo(&self) -> MundaneArmorMemo {
-        MundaneArmorMemo(self.0.to_owned())
+impl<'source> MundaneArmorView<'source> {
+    pub fn as_memo(&self) -> MundaneArmor {
+        MundaneArmor(self.0.to_owned())
     }
 
     pub fn name(&self) -> &'source str {

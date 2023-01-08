@@ -1,5 +1,5 @@
 use crate::{
-    armor::armor_item::artifact::{ArtifactArmorId, ArtifactArmorMemo},
+    armor::armor_item::artifact::{ArtifactArmorId, ArtifactArmor},
     weapons::weapon::{artifact::ArtifactWeaponMemo, ArtifactWeaponId},
 };
 
@@ -9,11 +9,11 @@ mod magic_material;
 pub use id::ArtifactId;
 pub use magic_material::MagicMaterial;
 
-/// An owned copy of an Artifact.
+/// A magica;, Essence-infused object.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Artifact {
     /// An artifact weapon.
     Weapon(ArtifactWeaponId, ArtifactWeaponMemo),
     /// An artifact armor item.
-    Armor(ArtifactArmorId, ArtifactArmorMemo),
+    Armor(ArtifactArmorId, ArtifactArmor),
 }

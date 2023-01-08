@@ -4,7 +4,7 @@ use crate::{
         RemoveSpecialtyError, SetAbilityError,
     },
     armor::{
-        armor_item::{artifact::ArtifactError, mundane::MundaneArmorMemo, ArmorId, BaseArmorId},
+        armor_item::{artifact::ArtifactError, mundane::MundaneArmor, ArmorId, BaseArmorId},
         Armor, ArmorError,
     },
     artifact::{Artifact, ArtifactId},
@@ -470,7 +470,7 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Returns the character's Solar-specific traits, or None if not a Solar.
-    pub fn solar_traits(&self) -> Option<&Solar> {
+    pub fn solar_traits(&'source self) -> Option<&Solar> {
         self.exaltation.solar_traits()
     }
 
@@ -1091,7 +1091,7 @@ impl<'view, 'source> Character<'source> {
     pub fn add_mundane_armor(
         &mut self,
         armor_id: BaseArmorId,
-        armor: &'source MundaneArmorMemo,
+        armor: &'source MundaneArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_add_mundane_armor(armor_id, armor)?;
         self.exaltation.add_mundane_armor(armor_id, armor)?;
@@ -1113,7 +1113,7 @@ impl<'view, 'source> Character<'source> {
     pub fn check_add_mundane_armor(
         &self,
         armor_id: BaseArmorId,
-        _armor: &'source MundaneArmorMemo,
+        _armor: &'source MundaneArmor,
     ) -> Result<(), CharacterMutationError> {
         if self.armor().get(ArmorId::Mundane(armor_id)).is_some() {
             Err(CharacterMutationError::ArmorError(

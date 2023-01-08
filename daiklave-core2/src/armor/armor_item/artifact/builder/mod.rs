@@ -3,9 +3,12 @@ mod with_hearthstone_slots;
 mod with_magic_material;
 mod with_merit_dots;
 
-use crate::{armor::armor_item::BaseArmorId, book_reference::BookReference};
+pub use with_base_armor::ArtifactArmorItemBuilderWithBaseArmor;
+pub use with_hearthstone_slots::ArtifactArmorItemBuilderWithHearthstoneSlots;
+pub use with_magic_material::ArtifactArmorItemBuilderWithMagicMaterial;
+pub use with_merit_dots::ArtifactArmorItemBuilderWithMeritDots;
 
-use self::with_base_armor::ArtifactArmorItemBuilderWithBaseArmor;
+use crate::{armor::armor_item::BaseArmorId, book_reference::BookReference};
 
 use super::BaseArtifactArmor;
 

@@ -1,7 +1,7 @@
 use crate::{
     armor::armor_item::{
         artifact::{
-            no_attunement::ArtifactArmorNoAttunementMemo, ArtifactArmorMemo, BaseArtifactArmor,
+            no_attunement::ArtifactArmorNoAttunementMemo, ArtifactArmor, BaseArtifactArmor,
         },
         BaseArmorId,
     },
@@ -9,6 +9,7 @@ use crate::{
     book_reference::BookReference,
 };
 
+/// An artifact armor builder after specifying the number of hearthstone slots.
 pub struct ArtifactArmorItemBuilderWithHearthstoneSlots {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
@@ -22,23 +23,27 @@ pub struct ArtifactArmorItemBuilderWithHearthstoneSlots {
 }
 
 impl ArtifactArmorItemBuilderWithHearthstoneSlots {
+    /// The book and page number where the named artifact armor is listed.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
         self
     }
 
+    /// Flavor text about the artifact's history, prior wearers, etc.
     pub fn lore(mut self, lore: &str) -> Self {
         self.lore = Some(lore.to_owned());
         self
     }
 
+    /// Persistent powers that the bearer gets for free.
     pub fn powers(mut self, powers: &str) -> Self {
         self.powers = Some(powers.to_owned());
         self
     }
 
-    pub fn build(self) -> ArtifactArmorMemo {
-        ArtifactArmorMemo(
+    /// Finalizes the construction of a piece of artifact armor.
+    pub fn build(self) -> ArtifactArmor {
+        ArtifactArmor(
             ArtifactArmorNoAttunementMemo {
                 name: self.name,
                 book_reference: self.book_reference,

@@ -6,6 +6,7 @@ use crate::{
 
 use super::with_hearthstone_slots::ArtifactArmorItemBuilderWithHearthstoneSlots;
 
+/// An artifact armor item builder after merit dots have been specified.
 pub struct ArtifactArmorItemBuilderWithMeritDots {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
@@ -18,21 +19,25 @@ pub struct ArtifactArmorItemBuilderWithMeritDots {
 }
 
 impl ArtifactArmorItemBuilderWithMeritDots {
+    /// The book and page number where the named artifact armor is listed.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
         self
     }
 
+    /// Flavor text about the artifact's history, prior wearers, etc.
     pub fn lore(mut self, lore: &str) -> Self {
         self.lore = Some(lore.to_owned());
         self
     }
 
+    /// Persistent powers that the bearer gets for free.
     pub fn powers(mut self, powers: &str) -> Self {
         self.powers = Some(powers.to_owned());
         self
     }
 
+    /// Sets the number of hearthstone slots in the artifact.
     pub fn hearthstone_slots(
         self,
         hearthstone_slots: u8,

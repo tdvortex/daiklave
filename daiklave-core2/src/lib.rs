@@ -5,7 +5,7 @@
 
 use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
 use armor::{
-    armor_item::{artifact::ArtifactError, mundane::MundaneArmorMemo, ArmorId, BaseArmorId},
+    armor_item::{artifact::ArtifactError, mundane::MundaneArmor, ArmorId, BaseArmorId},
     ArmorError,
 };
 use artifact::{Artifact, ArtifactId};
@@ -156,7 +156,7 @@ pub enum CharacterMutation {
     /// Removes an artifact from the character.
     RemoveArtifact(ArtifactId),
     /// Adds a piece of mundane armor.
-    AddMundaneArmor(BaseArmorId, MundaneArmorMemo),
+    AddMundaneArmor(BaseArmorId, MundaneArmor),
     /// Removes a piece of mundane armor from the character.
     RemoveMundaneArmor(BaseArmorId),
     /// Equip a specific piece of armor.

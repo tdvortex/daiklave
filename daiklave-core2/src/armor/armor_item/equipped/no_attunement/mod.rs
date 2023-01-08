@@ -3,13 +3,13 @@ pub(crate) use memo::EquippedArmorNoAttunementMemo;
 
 use crate::armor::armor_item::{
     artifact::{ArtifactArmorId, ArtifactArmorNoAttunement},
-    mundane::MundaneArmor,
+    mundane::MundaneArmorView,
     BaseArmorId,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum EquippedArmorNoAttunement<'source> {
-    Mundane(BaseArmorId, MundaneArmor<'source>),
+    Mundane(BaseArmorId, MundaneArmorView<'source>),
     Artifact(ArtifactArmorId, ArtifactArmorNoAttunement<'source>),
 }
 

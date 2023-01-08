@@ -5,7 +5,7 @@ use crate::{
     weapons::{
         weapon::{
             artifact::{
-                ArtifactWeapon, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
+                ArtifactWeaponView, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
                 NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement,
             },
             equipped::{EquippedOneHandedWeapon, EquippedTwoHandedWeapon},
@@ -686,10 +686,10 @@ impl<'view, 'source> ExaltWeapons<'source> {
     pub fn add_artifact_weapon(
         &mut self,
         weapon_id: ArtifactWeaponId,
-        weapon: ArtifactWeapon<'source>,
+        weapon: ArtifactWeaponView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match weapon {
-            ArtifactWeapon::Natural(natural) => {
+            ArtifactWeaponView::Natural(natural) => {
                 if self.equipped.handless_artifact.contains_key(&weapon_id) {
                     Err(CharacterMutationError::WeaponError(
                         WeaponError::NamedArtifactsUnique,
@@ -706,7 +706,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     ))
                 }
             }
-            ArtifactWeapon::Worn(worn, _) => {
+            ArtifactWeaponView::Worn(worn, _) => {
                 if self.equipped.handless_artifact.contains_key(&weapon_id) {
                     Err(CharacterMutationError::WeaponError(
                         WeaponError::NamedArtifactsUnique,
@@ -722,7 +722,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     Ok(self)
                 }
             }
-            ArtifactWeapon::OneHanded(one_handed, _) => {
+            ArtifactWeaponView::OneHanded(one_handed, _) => {
                 if self
                     .equipped
                     .hands
@@ -748,7 +748,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     Ok(self)
                 }
             }
-            ArtifactWeapon::TwoHanded(two_handed, _) => {
+            ArtifactWeaponView::TwoHanded(two_handed, _) => {
                 if self
                     .equipped
                     .hands

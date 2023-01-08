@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::{
     armor::armor_item::{
-        artifact::BaseArtifactArmor, base::BaseArmor, mundane::MundaneArmorMemo, ArmorTag,
+        artifact::BaseArtifactArmor, base::BaseArmor, mundane::MundaneArmor, ArmorTag,
         ArmorWeightClass,
     },
     book_reference::BookReference,
@@ -26,8 +26,8 @@ impl BaseArmorItemBuilderWithWeightClass {
         self
     }
 
-    pub fn build_mundane(self) -> MundaneArmorMemo {
-        MundaneArmorMemo(BaseArmor {
+    pub fn build_mundane(self) -> MundaneArmor {
+        MundaneArmor(BaseArmor {
             name: self.name,
             book_reference: self.book_reference,
             tags: self.tags,

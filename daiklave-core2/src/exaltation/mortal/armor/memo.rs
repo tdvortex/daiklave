@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::armor::armor_item::{
     artifact::{ArtifactArmorId, ArtifactArmorNoAttunementMemo},
-    mundane::MundaneArmorMemo,
+    mundane::MundaneArmor,
     BaseArmorId, EquippedArmorNoAttunementMemo,
 };
 
@@ -13,7 +13,7 @@ use super::MortalArmor;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MortalArmorMemo {
     pub equipped: Option<EquippedArmorNoAttunementMemo>,
-    pub unequipped_mundane: HashMap<BaseArmorId, MundaneArmorMemo>,
+    pub unequipped_mundane: HashMap<BaseArmorId, MundaneArmor>,
     pub unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmorNoAttunementMemo>,
 }
 
