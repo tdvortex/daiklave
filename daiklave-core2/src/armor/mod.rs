@@ -6,7 +6,7 @@ pub use error::ArmorError;
 
 use crate::exaltation::Exaltation;
 
-use self::armor_item::{ArmorItem, ArmorId};
+use self::armor_item::{ArmorId, ArmorItem};
 
 /// An interface for all of a character's armor. For an individual piece of
 /// armor, see ArmorItem.

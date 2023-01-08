@@ -1,6 +1,11 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{book_reference::BookReference, armor::armor_item::{BaseArmorId, base::BaseArmor}, artifact::MagicMaterial, hearthstone::OwnedHearthstoneMemo};
+use crate::{
+    armor::armor_item::{base::BaseArmor, BaseArmorId},
+    artifact::MagicMaterial,
+    book_reference::BookReference,
+    hearthstone::OwnedHearthstoneMemo,
+};
 
 use super::ArtifactArmorNoAttunement;
 
@@ -28,7 +33,11 @@ impl<'source> ArtifactArmorNoAttunementMemo {
             base_armor: &self.base_armor,
             magic_material: self.magic_material,
             merit_dots: self.merit_dots,
-            hearthstone_slots: self.hearthstone_slots.iter().map(|option| option.as_ref().map(|hearthstone| hearthstone.as_ref())).collect()
+            hearthstone_slots: self
+                .hearthstone_slots
+                .iter()
+                .map(|option| option.as_ref().map(|hearthstone| hearthstone.as_ref()))
+                .collect(),
         }
     }
 }

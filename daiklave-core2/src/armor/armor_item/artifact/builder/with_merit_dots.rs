@@ -1,4 +1,8 @@
-use crate::{armor::armor_item::{BaseArmorId, artifact::BaseArtifactArmor}, book_reference::BookReference, artifact::MagicMaterial};
+use crate::{
+    armor::armor_item::{artifact::BaseArtifactArmor, BaseArmorId},
+    artifact::MagicMaterial,
+    book_reference::BookReference,
+};
 
 use super::with_hearthstone_slots::ArtifactArmorItemBuilderWithHearthstoneSlots;
 
@@ -29,7 +33,10 @@ impl ArtifactArmorItemBuilderWithMeritDots {
         self
     }
 
-    pub fn hearthstone_slots(self, hearthstone_slots: u8) -> ArtifactArmorItemBuilderWithHearthstoneSlots {
+    pub fn hearthstone_slots(
+        self,
+        hearthstone_slots: u8,
+    ) -> ArtifactArmorItemBuilderWithHearthstoneSlots {
         ArtifactArmorItemBuilderWithHearthstoneSlots {
             name: self.name,
             book_reference: self.book_reference,

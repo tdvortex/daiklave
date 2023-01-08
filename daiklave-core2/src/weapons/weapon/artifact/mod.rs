@@ -31,7 +31,7 @@ use super::{
 };
 
 /// An artifact weapon, discriminated by its wielding characteristics.
-pub enum ArtifactWeapon<'source> {
+pub(crate) enum ArtifactWeapon<'source> {
     /// An artifact weapon that is part of the wielder's body. This is unusual,
     /// but possible through Charm effects like Silver-Voiced Nightengale
     /// Style, the Blood Lash spell, or certain Lunar shapeshifting Charms.
@@ -117,21 +117,6 @@ impl<'source> ArtifactWeapon<'source> {
                 } else {
                     None
                 }
-            }
-        }
-    }
-
-    pub(crate) fn as_memo(&self) -> ArtifactWeaponMemo {
-        match self {
-            ArtifactWeapon::Natural(view) => ArtifactWeaponMemo::Natural(view.as_memo()),
-            ArtifactWeapon::Worn(view, equipped) => {
-                ArtifactWeaponMemo::Worn(view.as_memo(), *equipped)
-            }
-            ArtifactWeapon::OneHanded(view, equipped) => {
-                ArtifactWeaponMemo::OneHanded(view.as_memo(), *equipped)
-            }
-            ArtifactWeapon::TwoHanded(view, equipped) => {
-                ArtifactWeaponMemo::TwoHanded(view.as_memo(), *equipped)
             }
         }
     }

@@ -3,7 +3,7 @@ mod with_hearthstone_slots;
 mod with_magic_material;
 mod with_merit_dots;
 
-use crate::{book_reference::BookReference, armor::armor_item::BaseArmorId};
+use crate::{armor::armor_item::BaseArmorId, book_reference::BookReference};
 
 use self::with_base_armor::ArtifactArmorItemBuilderWithBaseArmor;
 
@@ -41,7 +41,11 @@ impl ArtifactArmorItemBuilder {
 
     /// Specifies the base armor item (like "Silken Armor") that the armor item
     /// is an example of.
-    pub fn base_artifact(self, base_artifact_id: BaseArmorId, base_artifact: BaseArtifactArmor) -> ArtifactArmorItemBuilderWithBaseArmor {
+    pub fn base_artifact(
+        self,
+        base_artifact_id: BaseArmorId,
+        base_artifact: BaseArtifactArmor,
+    ) -> ArtifactArmorItemBuilderWithBaseArmor {
         ArtifactArmorItemBuilderWithBaseArmor {
             name: self.name,
             book_reference: self.book_reference,

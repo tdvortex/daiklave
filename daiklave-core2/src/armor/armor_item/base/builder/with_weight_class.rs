@@ -1,6 +1,12 @@
 use std::collections::HashSet;
 
-use crate::{armor::{armor_item::{ArmorTag, mundane::MundaneArmorMemo, ArmorWeightClass, artifact::BaseArtifactArmor, base::BaseArmor}}, book_reference::BookReference};
+use crate::{
+    armor::armor_item::{
+        artifact::BaseArtifactArmor, base::BaseArmor, mundane::MundaneArmorMemo, ArmorTag,
+        ArmorWeightClass,
+    },
+    book_reference::BookReference,
+};
 
 pub struct BaseArmorItemBuilderWithWeightClass {
     pub(crate) name: String,
@@ -21,7 +27,7 @@ impl BaseArmorItemBuilderWithWeightClass {
     }
 
     pub fn build_mundane(self) -> MundaneArmorMemo {
-        MundaneArmorMemo(BaseArmor { 
+        MundaneArmorMemo(BaseArmor {
             name: self.name,
             book_reference: self.book_reference,
             tags: self.tags,
@@ -30,7 +36,7 @@ impl BaseArmorItemBuilderWithWeightClass {
     }
 
     pub fn build_artifact(self) -> BaseArtifactArmor {
-        BaseArtifactArmor(BaseArmor { 
+        BaseArtifactArmor(BaseArmor {
             name: self.name,
             book_reference: self.book_reference,
             tags: self.tags,

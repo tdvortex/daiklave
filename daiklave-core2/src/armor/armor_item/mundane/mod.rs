@@ -19,7 +19,7 @@ impl<'source> Deref for MundaneArmor<'source> {
 
 impl<'source> MundaneArmor<'source> {
     pub fn as_memo(&self) -> MundaneArmorMemo {
-        MundaneArmorMemo(self.0.to_owned())    
+        MundaneArmorMemo(self.0.to_owned())
     }
 
     pub fn name(&self) -> &'source str {

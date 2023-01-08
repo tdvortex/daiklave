@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use super::{ArtifactArmor, no_attunement::ArtifactArmorNoAttunementMemo};
+use super::{no_attunement::ArtifactArmorNoAttunementMemo, ArtifactArmor};
 
 /// An owned copy of a named piece of artifact armor.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

@@ -1,11 +1,12 @@
 use crate::{
     abilities::AbilityRating,
+    armor::armor_item::ArmorWeightClass,
     book_reference::BookReference,
     exaltation::{
         exalt::martial_arts::ExaltMartialArtist, mortal::martial_arts::MortalMartialArtist,
     },
     martial_arts::{MartialArtsCharm, MartialArtsCharmId},
-    weapons::weapon::BaseWeaponId, armor::armor_item::ArmorWeightClass,
+    weapons::weapon::BaseWeaponId,
 };
 
 pub(crate) enum ExaltationMartialArtist<'view, 'source> {

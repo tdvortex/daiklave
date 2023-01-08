@@ -1,8 +1,12 @@
 use std::collections::HashMap;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::armor::armor_item::{EquippedArmorNoAttunementMemo, BaseArmorId, mundane::MundaneArmorMemo, artifact::{ArtifactArmorId, ArtifactArmorNoAttunementMemo}};
+use crate::armor::armor_item::{
+    artifact::{ArtifactArmorId, ArtifactArmorNoAttunementMemo},
+    mundane::MundaneArmorMemo,
+    BaseArmorId, EquippedArmorNoAttunementMemo,
+};
 
 use super::MortalArmor;
 
@@ -17,8 +21,16 @@ impl<'source> MortalArmorMemo {
     pub fn as_ref(&'source self) -> MortalArmor<'source> {
         MortalArmor {
             equipped: self.equipped.as_ref().map(|equipped| equipped.as_ref()),
-            unequipped_mundane: self.unequipped_mundane.iter().map(|(k, v)| (*k, v.as_ref())).collect(),
-            unequipped_artifact: self.unequipped_artifact.iter().map(|(k, v)| (*k, v.as_ref())).collect(),
+            unequipped_mundane: self
+                .unequipped_mundane
+                .iter()
+                .map(|(k, v)| (*k, v.as_ref()))
+                .collect(),
+            unequipped_artifact: self
+                .unequipped_artifact
+                .iter()
+                .map(|(k, v)| (*k, v.as_ref()))
+                .collect(),
         }
     }
 }

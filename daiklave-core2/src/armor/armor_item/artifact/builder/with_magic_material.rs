@@ -1,4 +1,8 @@
-use crate::{book_reference::BookReference, artifact::MagicMaterial, armor::armor_item::{artifact::BaseArtifactArmor, BaseArmorId}};
+use crate::{
+    armor::armor_item::{artifact::BaseArtifactArmor, BaseArmorId},
+    artifact::MagicMaterial,
+    book_reference::BookReference,
+};
 
 use super::with_merit_dots::ArtifactArmorItemBuilderWithMeritDots;
 

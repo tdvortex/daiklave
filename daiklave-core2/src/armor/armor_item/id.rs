@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use super::{BaseArmorId, artifact::ArtifactArmorId};
+use super::{artifact::ArtifactArmorId, BaseArmorId};
 
 /// A unique identifier for a piece of armor.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

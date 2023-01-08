@@ -18,7 +18,7 @@ pub enum ArtifactWeaponMemo {
 }
 
 impl<'source> ArtifactWeaponMemo {
-    pub fn as_ref(&'source self) -> ArtifactWeapon<'source> {
+    pub(crate) fn as_ref(&'source self) -> ArtifactWeapon<'source> {
         match self {
             ArtifactWeaponMemo::Natural(memo) => ArtifactWeapon::Natural(memo.as_ref()),
             ArtifactWeaponMemo::Worn(memo, equipped) => {

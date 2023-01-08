@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{weapons::weapon::ArtifactWeaponId, armor::armor_item::artifact::ArtifactArmorId};
+use crate::{armor::armor_item::artifact::ArtifactArmorId, weapons::weapon::ArtifactWeaponId};
 
 /// The Id for a magical creation (weapon, armor, warstrider, or wonder).
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]

@@ -1,6 +1,10 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::armor::armor_item::{BaseArmorId, mundane::MundaneArmorMemo, artifact::{ArtifactArmorId, ArtifactArmorMemo}};
+use crate::armor::armor_item::{
+    artifact::{ArtifactArmorId, ArtifactArmorMemo},
+    mundane::MundaneArmorMemo,
+    BaseArmorId,
+};
 
 use super::EquippedArmor;
 

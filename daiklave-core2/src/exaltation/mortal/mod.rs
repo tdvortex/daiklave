@@ -1,5 +1,5 @@
-pub(crate) mod martial_arts;
 mod armor;
+pub(crate) mod martial_arts;
 mod mortal_memo;
 mod weapons;
 use std::collections::HashMap;
@@ -12,6 +12,11 @@ pub(crate) use mortal_memo::MortalMemo;
 
 use crate::{
     abilities::AbilityRating,
+    armor::armor_item::{
+        artifact::{ArtifactArmor, ArtifactArmorId},
+        mundane::MundaneArmorMemo,
+        ArmorId, ArmorItem, BaseArmorId,
+    },
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId,
         RemoveMartialArtsStyleError, SetMartialArtsDotsError,
@@ -28,10 +33,10 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError, armor::armor_item::{ArmorItem, ArmorId, BaseArmorId, mundane::MundaneArmorMemo, artifact::{ArtifactArmorId, ArtifactArmor}},
+    CharacterMutationError,
 };
 
-use self::{martial_arts::MortalMartialArtist};
+use self::martial_arts::MortalMartialArtist;
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct Mortal<'source> {
@@ -250,7 +255,7 @@ impl<'source> Mortal<'source> {
         self.armor.worn_armor()
     }
 
-    pub fn armor_iter(&self) ->  std::vec::IntoIter<ArmorId> {
+    pub fn armor_iter(&self) -> std::vec::IntoIter<ArmorId> {
         self.armor.iter()
     }
 
@@ -258,12 +263,19 @@ impl<'source> Mortal<'source> {
         self.armor.get(armor_id)
     }
 
-    pub fn add_mundane_armor(&mut self, armor_id: BaseArmorId, armor: &'source MundaneArmorMemo) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_mundane_armor(
+        &mut self,
+        armor_id: BaseArmorId,
+        armor: &'source MundaneArmorMemo,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.armor.add_mundane(armor_id, armor)?;
         Ok(self)
     }
 
-    pub fn remove_mundane_armor(&mut self, armor_id: BaseArmorId) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_mundane_armor(
+        &mut self,
+        armor_id: BaseArmorId,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.armor.remove_mundane(armor_id)?;
         Ok(self)
     }
@@ -278,12 +290,19 @@ impl<'source> Mortal<'source> {
         Ok(self)
     }
 
-    pub fn add_artifact_armor(&mut self, armor_id: ArtifactArmorId, armor: ArtifactArmor<'source>) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_artifact_armor(
+        &mut self,
+        armor_id: ArtifactArmorId,
+        armor: ArtifactArmor<'source>,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.armor.add_artifact(armor_id, armor)?;
         Ok(self)
     }
 
-    pub fn remove_artifact_armor(&mut self, armor_id: ArtifactArmorId) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_artifact_armor(
+        &mut self,
+        armor_id: ArtifactArmorId,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.armor.remove_artifact(armor_id)?;
         Ok(self)
     }

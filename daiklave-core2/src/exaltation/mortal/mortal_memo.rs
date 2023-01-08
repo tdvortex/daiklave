@@ -7,7 +7,10 @@ use crate::{
     sorcery::circles::terrestrial::sorcerer_memo::TerrestrialCircleSorcererMemo,
 };
 
-use super::{martial_arts::MortalMartialArtistMemo, weapons::MortalWeaponsMemo, Mortal, armor::MortalArmorMemo};
+use super::{
+    armor::MortalArmorMemo, martial_arts::MortalMartialArtistMemo, weapons::MortalWeaponsMemo,
+    Mortal,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MortalMemo {

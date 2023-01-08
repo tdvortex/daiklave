@@ -3,7 +3,11 @@ mod no_attunement;
 pub(crate) use memo::EquippedArmorMemo;
 pub(crate) use no_attunement::{EquippedArmorNoAttunement, EquippedArmorNoAttunementMemo};
 
-use super::{BaseArmorId, mundane::MundaneArmor, artifact::{ArtifactArmorId, ArtifactArmor}};
+use super::{
+    artifact::{ArtifactArmor, ArtifactArmorId},
+    mundane::MundaneArmor,
+    BaseArmorId,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum EquippedArmor<'source> {

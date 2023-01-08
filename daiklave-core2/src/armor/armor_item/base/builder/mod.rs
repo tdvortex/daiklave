@@ -1,6 +1,9 @@
 use std::collections::HashSet;
 
-use crate::{book_reference::BookReference, armor::armor_item::{ArmorTag, ArmorWeightClass}};
+use crate::{
+    armor::armor_item::{ArmorTag, ArmorWeightClass},
+    book_reference::BookReference,
+};
 
 use self::with_weight_class::BaseArmorItemBuilderWithWeightClass;
 
@@ -23,7 +26,10 @@ impl BaseArmorItemBuilder {
         self
     }
 
-    pub fn weight_class(self, weight_class: ArmorWeightClass) -> BaseArmorItemBuilderWithWeightClass {
+    pub fn weight_class(
+        self,
+        weight_class: ArmorWeightClass,
+    ) -> BaseArmorItemBuilderWithWeightClass {
         BaseArmorItemBuilderWithWeightClass {
             name: self.name,
             book_reference: self.book_reference,

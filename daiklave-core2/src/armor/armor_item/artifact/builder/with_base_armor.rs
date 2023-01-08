@@ -1,4 +1,8 @@
-use crate::{book_reference::BookReference, artifact::MagicMaterial, armor::armor_item::{artifact::BaseArtifactArmor, BaseArmorId}};
+use crate::{
+    armor::armor_item::{artifact::BaseArtifactArmor, BaseArmorId},
+    artifact::MagicMaterial,
+    book_reference::BookReference,
+};
 
 use super::with_magic_material::ArtifactArmorItemBuilderWithMagicMaterial;
 
@@ -27,7 +31,10 @@ impl ArtifactArmorItemBuilderWithBaseArmor {
         self
     }
 
-    pub fn material(self, magic_material: MagicMaterial) -> ArtifactArmorItemBuilderWithMagicMaterial {
+    pub fn material(
+        self,
+        magic_material: MagicMaterial,
+    ) -> ArtifactArmorItemBuilderWithMagicMaterial {
         ArtifactArmorItemBuilderWithMagicMaterial {
             name: self.name,
             book_reference: self.book_reference,

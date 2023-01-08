@@ -4,8 +4,11 @@
 //! with full Discord integration for over-the-internet play.
 
 use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
-use armor::{armor_item::{BaseArmorId, mundane::MundaneArmorMemo, ArmorId, artifact::ArtifactError}, ArmorError};
-use artifact::{ArtifactId, ArtifactMemo};
+use armor::{
+    armor_item::{artifact::ArtifactError, mundane::MundaneArmorMemo, ArmorId, BaseArmorId},
+    ArmorError,
+};
+use artifact::{Artifact, ArtifactId};
 use attributes::{AttributeName, SetAttributesError};
 use exaltation::exalt::{
     essence::{
@@ -63,7 +66,6 @@ pub mod sorcery;
 
 /// Logic for building and equipping weapons
 pub mod weapons;
-
 
 mod character;
 mod character_memo;
@@ -150,7 +152,7 @@ pub enum CharacterMutation {
     UnequipWeapon(WeaponId, Equipped),
     /// Add an artifact to the character, which may be a weapon, armor item,
     /// warstrider, or wonder.
-    AddArtifact(ArtifactMemo),
+    AddArtifact(Artifact),
     /// Removes an artifact from the character.
     RemoveArtifact(ArtifactId),
     /// Adds a piece of mundane armor.

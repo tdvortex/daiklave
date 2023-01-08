@@ -1,5 +1,5 @@
 use daiklave_core2::{
-    artifact::{ArtifactId, ArtifactMemo, MagicMaterial},
+    artifact::{Artifact, ArtifactId, MagicMaterial},
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     unique_id::UniqueId,
@@ -259,7 +259,7 @@ fn test_weapons_event_source() {
     event_source.apply_mutation(mutation).unwrap();
 
     // Create and add a unique artifact weapon
-    let mutation = CharacterMutation::AddArtifact(ArtifactMemo::Weapon(
+    let mutation = CharacterMutation::AddArtifact(Artifact::Weapon(
         ArtifactWeaponId(UniqueId::Placeholder(1)),
         Weapon::artifact("Volcano Cutter")
             .base_artifact(

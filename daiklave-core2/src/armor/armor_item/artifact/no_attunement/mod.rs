@@ -1,7 +1,12 @@
 mod memo;
 pub use memo::ArtifactArmorNoAttunementMemo;
 
-use crate::{book_reference::BookReference, armor::armor_item::{BaseArmorId, base::BaseArmor}, artifact::MagicMaterial, hearthstone::OwnedHearthstone};
+use crate::{
+    armor::armor_item::{base::BaseArmor, BaseArmorId},
+    artifact::MagicMaterial,
+    book_reference::BookReference,
+    hearthstone::OwnedHearthstone,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ArtifactArmorNoAttunement<'source> {
@@ -27,7 +32,11 @@ impl<'source> ArtifactArmorNoAttunement<'source> {
             base_armor: self.base_armor.to_owned(),
             magic_material: self.magic_material,
             merit_dots: self.merit_dots,
-            hearthstone_slots: self.hearthstone_slots.iter().map(|option| option.map(|hearthstone| hearthstone.as_memo())).collect()
+            hearthstone_slots: self
+                .hearthstone_slots
+                .iter()
+                .map(|option| option.map(|hearthstone| hearthstone.as_memo()))
+                .collect(),
         }
     }
 

@@ -20,6 +20,11 @@ use std::collections::HashMap;
 
 use crate::{
     abilities::{AbilityRating, SetAbilityError},
+    armor::armor_item::{
+        artifact::{ArtifactArmor, ArtifactArmorId},
+        mundane::MundaneArmorMemo,
+        ArmorId, ArmorItem, BaseArmorId,
+    },
     exaltation::sorcery::ExaltationSorcery,
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsCharmId, MartialArtsStyle, MartialArtsStyleId,
@@ -40,7 +45,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError, armor::armor_item::{ArmorItem, ArmorId, BaseArmorId, mundane::MundaneArmorMemo, artifact::{ArtifactArmorId, ArtifactArmor}},
+    CharacterMutationError,
 };
 
 use self::{
@@ -645,7 +650,7 @@ impl<'view, 'source> Exalt<'source> {
         self.armor.worn_armor()
     }
 
-    pub fn armor_iter(&self) ->  std::vec::IntoIter<ArmorId> {
+    pub fn armor_iter(&self) -> std::vec::IntoIter<ArmorId> {
         self.armor.iter()
     }
 
@@ -653,12 +658,19 @@ impl<'view, 'source> Exalt<'source> {
         self.armor.get(armor_id)
     }
 
-    pub fn add_mundane_armor(&mut self, armor_id: BaseArmorId, armor: &'source MundaneArmorMemo) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_mundane_armor(
+        &mut self,
+        armor_id: BaseArmorId,
+        armor: &'source MundaneArmorMemo,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.armor.add_mundane(armor_id, armor)?;
         Ok(self)
     }
 
-    pub fn remove_mundane_armor(&mut self, armor_id: BaseArmorId) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_mundane_armor(
+        &mut self,
+        armor_id: BaseArmorId,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.armor.remove_mundane(armor_id)?;
         Ok(self)
     }
@@ -673,12 +685,19 @@ impl<'view, 'source> Exalt<'source> {
         Ok(self)
     }
 
-    pub fn add_artifact_armor(&mut self, armor_id: ArtifactArmorId, armor: ArtifactArmor<'source>) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_artifact_armor(
+        &mut self,
+        armor_id: ArtifactArmorId,
+        armor: ArtifactArmor<'source>,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.armor.add_artifact(armor_id, armor)?;
         Ok(self)
     }
 
-    pub fn remove_artifact_armor(&mut self, armor_id: ArtifactArmorId) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_artifact_armor(
+        &mut self,
+        armor_id: ArtifactArmorId,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.armor.remove_artifact(armor_id)?;
         Ok(self)
     }

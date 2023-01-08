@@ -6,23 +6,25 @@ mod base;
 mod equipped;
 mod id;
 mod memo;
-mod tag;
 /// Properties of mundane armor
 pub mod mundane;
+mod tag;
 mod weight_class;
 
 use std::collections::HashSet;
 
-pub use id::ArmorId;
-pub use base::{BaseArmorId};
 pub(crate) use armor_type::ArmorType;
-pub(crate) use equipped::{EquippedArmor, EquippedArmorMemo, EquippedArmorNoAttunement, EquippedArmorNoAttunementMemo};
+pub use base::BaseArmorId;
+pub(crate) use equipped::{
+    EquippedArmor, EquippedArmorMemo, EquippedArmorNoAttunement, EquippedArmorNoAttunementMemo,
+};
+pub use id::ArmorId;
 pub use tag::ArmorTag;
 pub use weight_class::ArmorWeightClass;
 
 use crate::book_reference::BookReference;
 
-use self::{base::builder::BaseArmorItemBuilder, artifact::builder::ArtifactArmorItemBuilder};
+use self::{artifact::builder::ArtifactArmorItemBuilder, base::builder::BaseArmorItemBuilder};
 
 /// A single piece of armor owned by a character
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -40,10 +42,10 @@ impl<'source> ArmorItem<'source> {
 
     /// Starts construct an artifact armor item.
     pub fn artifact(name: &str) -> ArtifactArmorItemBuilder {
-        ArtifactArmorItemBuilder { 
-            name: name.to_owned(), 
-            book_reference: None, 
-            lore: None, 
+        ArtifactArmorItemBuilder {
+            name: name.to_owned(),
+            book_reference: None,
+            lore: None,
             powers: None,
         }
     }
@@ -91,7 +93,7 @@ impl<'source> ArmorItem<'source> {
         self.0.attunement_cost()
     }
 
-    /// An iterator over the armor item's tags. 
+    /// An iterator over the armor item's tags.
     pub fn tags(&self) -> impl Iterator<Item = ArmorTag> + '_ {
         self.0.tags()
     }

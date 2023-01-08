@@ -4,11 +4,11 @@ mod id;
 use std::collections::HashSet;
 
 pub use id::BaseArmorId;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::book_reference::BookReference;
 
-use super::{ArmorWeightClass, ArmorTag};
+use super::{ArmorTag, ArmorWeightClass};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct BaseArmor {

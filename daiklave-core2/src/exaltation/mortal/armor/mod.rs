@@ -1,9 +1,20 @@
 mod memo;
 pub(crate) use memo::MortalArmorMemo;
 
-use std::{collections::{HashMap, hash_map::Entry}};
+use std::collections::{hash_map::Entry, HashMap};
 
-use crate::{armor::{armor_item::{BaseArmorId, artifact::{ArtifactArmorId, ArtifactArmorNoAttunement, ArtifactArmor, ArtifactError}, EquippedArmorNoAttunement, mundane::{MundaneArmor, MundaneArmorMemo}, ArmorItem, ArmorType, ArmorId, EquippedArmor}, ArmorError}, CharacterMutationError, exaltation::exalt::ExaltArmor};
+use crate::{
+    armor::{
+        armor_item::{
+            artifact::{ArtifactArmor, ArtifactArmorId, ArtifactArmorNoAttunement, ArtifactError},
+            mundane::{MundaneArmor, MundaneArmorMemo},
+            ArmorId, ArmorItem, ArmorType, BaseArmorId, EquippedArmor, EquippedArmorNoAttunement,
+        },
+        ArmorError,
+    },
+    exaltation::exalt::ExaltArmor,
+    CharacterMutationError,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct MortalArmor<'source> {
@@ -14,10 +25,18 @@ pub(crate) struct MortalArmor<'source> {
 
 impl<'source> MortalArmor<'source> {
     pub fn as_memo(&self) -> MortalArmorMemo {
-        MortalArmorMemo { 
+        MortalArmorMemo {
             equipped: self.equipped.as_ref().map(|view| view.as_memo()),
-            unequipped_mundane: self.unequipped_mundane.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
-            unequipped_artifact: self.unequipped_artifact.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+            unequipped_mundane: self
+                .unequipped_mundane
+                .iter()
+                .map(|(k, v)| (*k, v.as_memo()))
+                .collect(),
+            unequipped_artifact: self
+                .unequipped_artifact
+                .iter()
+                .map(|(k, v)| (*k, v.as_memo()))
+                .collect(),
         }
     }
 
@@ -27,9 +46,10 @@ impl<'source> MortalArmor<'source> {
                 EquippedArmorNoAttunement::Mundane(id, mundane) => {
                     Some(ArmorItem(ArmorType::Mundane(*id, *mundane), true))
                 }
-                EquippedArmorNoAttunement::Artifact(id, artifact) => {
-                    Some(ArmorItem(ArmorType::Artifact(*id, artifact.clone(), None), true))
-                }
+                EquippedArmorNoAttunement::Artifact(id, artifact) => Some(ArmorItem(
+                    ArmorType::Artifact(*id, artifact.clone(), None),
+                    true,
+                )),
             }
         } else {
             None
@@ -45,28 +65,29 @@ impl<'source> MortalArmor<'source> {
                 self.unequipped_artifact
                     .keys()
                     .map(|k| ArmorId::Artifact(*k)),
-            ).collect::<Vec<ArmorId>>().into_iter()
+            )
+            .collect::<Vec<ArmorId>>()
+            .into_iter()
     }
 
     pub fn get(&self, armor_id: ArmorId) -> Option<ArmorItem<'source>> {
         let unequipped = match armor_id {
             ArmorId::Mundane(base_armor_id) => {
-                if let Some(mundane_armor) = self.unequipped_mundane.get(&base_armor_id) {
-                    Some(ArmorItem(
-                        ArmorType::Mundane(base_armor_id, *mundane_armor),
-                        false
-                    ))
-                } else {
-                    None
-                }
+                self.unequipped_mundane
+                    .get(&base_armor_id)
+                    .map(|mundane_armor| {
+                        ArmorItem(ArmorType::Mundane(base_armor_id, *mundane_armor), false)
+                    })
             }
-            ArmorId::Artifact(artifact_armor_id) => {
-                if let Some(no_attunement) = self.unequipped_artifact.get(&artifact_armor_id) {
-                    Some(ArmorItem(ArmorType::Artifact(artifact_armor_id, no_attunement.clone(), None), false))
-                } else {
-                    None
-                }
-            }
+            ArmorId::Artifact(artifact_armor_id) => self
+                .unequipped_artifact
+                .get(&artifact_armor_id)
+                .map(|no_attunement| {
+                    ArmorItem(
+                        ArmorType::Artifact(artifact_armor_id, no_attunement.clone(), None),
+                        false,
+                    )
+                }),
         };
 
         if unequipped.is_some() {
@@ -82,22 +103,41 @@ impl<'source> MortalArmor<'source> {
         }
     }
 
-    pub fn add_mundane(&mut self, armor_id: BaseArmorId, armor: &'source MundaneArmorMemo) -> Result<&mut Self, CharacterMutationError> {
-        if self.worn_armor().map_or(false, |item| item.id() == ArmorId::Mundane(armor_id)) {
-            Err(CharacterMutationError::ArmorError(ArmorError::DuplicateArmor))
+    pub fn add_mundane(
+        &mut self,
+        armor_id: BaseArmorId,
+        armor: &'source MundaneArmorMemo,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if self
+            .worn_armor()
+            .map_or(false, |item| item.id() == ArmorId::Mundane(armor_id))
+        {
+            Err(CharacterMutationError::ArmorError(
+                ArmorError::DuplicateArmor,
+            ))
         } else if let Entry::Vacant(e) = self.unequipped_mundane.entry(armor_id) {
             e.insert(armor.as_ref());
             Ok(self)
         } else {
-            Err(CharacterMutationError::ArmorError(ArmorError::DuplicateArmor))
+            Err(CharacterMutationError::ArmorError(
+                ArmorError::DuplicateArmor,
+            ))
         }
     }
 
-    pub fn remove_mundane(&mut self, armor_id: BaseArmorId) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_mundane(
+        &mut self,
+        armor_id: BaseArmorId,
+    ) -> Result<&mut Self, CharacterMutationError> {
         if self.unequipped_mundane.remove(&armor_id).is_some() {
             Ok(self)
-        } else if self.worn_armor().map_or(false, |item| item.id() == ArmorId::Mundane(armor_id)) {
-            Err(CharacterMutationError::ArmorError(ArmorError::RemoveEquipped))
+        } else if self
+            .worn_armor()
+            .map_or(false, |item| item.id() == ArmorId::Mundane(armor_id))
+        {
+            Err(CharacterMutationError::ArmorError(
+                ArmorError::RemoveEquipped,
+            ))
         } else {
             Err(CharacterMutationError::ArmorError(ArmorError::NotFound))
         }
@@ -111,7 +151,8 @@ impl<'source> MortalArmor<'source> {
                     Ok(self)
                 }
                 EquippedArmorNoAttunement::Artifact(artifact_armor_id, artifact_armor) => {
-                    self.unequipped_artifact.insert(artifact_armor_id, artifact_armor);
+                    self.unequipped_artifact
+                        .insert(artifact_armor_id, artifact_armor);
                     Ok(self)
                 }
             }
@@ -122,8 +163,18 @@ impl<'source> MortalArmor<'source> {
 
     pub fn equip(&mut self, armor_id: ArmorId) -> Result<&mut Self, CharacterMutationError> {
         let unstowed = match armor_id {
-            ArmorId::Mundane(base_armor_id) => EquippedArmorNoAttunement::Mundane(base_armor_id, self.unequipped_mundane.remove(&base_armor_id).ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?),
-            ArmorId::Artifact(artifact_armor_id) => EquippedArmorNoAttunement::Artifact(artifact_armor_id, self.unequipped_artifact.remove(&artifact_armor_id).ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?),
+            ArmorId::Mundane(base_armor_id) => EquippedArmorNoAttunement::Mundane(
+                base_armor_id,
+                self.unequipped_mundane
+                    .remove(&base_armor_id)
+                    .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?,
+            ),
+            ArmorId::Artifact(artifact_armor_id) => EquippedArmorNoAttunement::Artifact(
+                artifact_armor_id,
+                self.unequipped_artifact
+                    .remove(&artifact_armor_id)
+                    .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?,
+            ),
         };
 
         if let Some(old_equipped) = self.equipped.take() {
@@ -132,7 +183,8 @@ impl<'source> MortalArmor<'source> {
                     self.unequipped_mundane.insert(base_armor_id, mundane_armor);
                 }
                 EquippedArmorNoAttunement::Artifact(artifact_armor_id, artifact_armor) => {
-                    self.unequipped_artifact.insert(artifact_armor_id, artifact_armor);
+                    self.unequipped_artifact
+                        .insert(artifact_armor_id, artifact_armor);
                 }
             }
         }
@@ -141,22 +193,41 @@ impl<'source> MortalArmor<'source> {
         Ok(self)
     }
 
-    pub fn add_artifact(&mut self, armor_id: ArtifactArmorId, armor: ArtifactArmor<'source>) -> Result<&mut Self, CharacterMutationError> {
-        if self.worn_armor().map_or(false, |item| item.id() == ArmorId::Artifact(armor_id)) {
-            Err(CharacterMutationError::ArtifactError(ArtifactError::NamedArtifactsUnique))
+    pub fn add_artifact(
+        &mut self,
+        armor_id: ArtifactArmorId,
+        armor: ArtifactArmor<'source>,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if self
+            .worn_armor()
+            .map_or(false, |item| item.id() == ArmorId::Artifact(armor_id))
+        {
+            Err(CharacterMutationError::ArtifactError(
+                ArtifactError::NamedArtifactsUnique,
+            ))
         } else if let Entry::Vacant(e) = self.unequipped_artifact.entry(armor_id) {
             e.insert(armor.0);
             Ok(self)
         } else {
-            Err(CharacterMutationError::ArmorError(ArmorError::DuplicateArmor))
+            Err(CharacterMutationError::ArmorError(
+                ArmorError::DuplicateArmor,
+            ))
         }
     }
 
-    pub fn remove_artifact(&mut self, armor_id: ArtifactArmorId) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_artifact(
+        &mut self,
+        armor_id: ArtifactArmorId,
+    ) -> Result<&mut Self, CharacterMutationError> {
         if self.unequipped_artifact.remove(&armor_id).is_some() {
             Ok(self)
-        } else if self.worn_armor().map_or(false, |item| item.id() == ArmorId::Artifact(armor_id)) {
-            Err(CharacterMutationError::ArmorError(ArmorError::RemoveEquipped))
+        } else if self
+            .worn_armor()
+            .map_or(false, |item| item.id() == ArmorId::Artifact(armor_id))
+        {
+            Err(CharacterMutationError::ArmorError(
+                ArmorError::RemoveEquipped,
+            ))
         } else {
             Err(CharacterMutationError::ArmorError(ArmorError::NotFound))
         }
@@ -166,14 +237,20 @@ impl<'source> MortalArmor<'source> {
 impl<'source> From<ExaltArmor<'source>> for MortalArmor<'source> {
     fn from(exalt: ExaltArmor<'source>) -> Self {
         Self {
-            equipped: exalt.equipped.map(|maybe_attuned| {
-                match maybe_attuned {
-                    EquippedArmor::Mundane(base_armor_id, mundane_armor) => EquippedArmorNoAttunement::Mundane(base_armor_id, mundane_armor),
-                    EquippedArmor::Artifact(artifact_armor_id, artifact_armor) => EquippedArmorNoAttunement::Artifact(artifact_armor_id, artifact_armor.0),
+            equipped: exalt.equipped.map(|maybe_attuned| match maybe_attuned {
+                EquippedArmor::Mundane(base_armor_id, mundane_armor) => {
+                    EquippedArmorNoAttunement::Mundane(base_armor_id, mundane_armor)
+                }
+                EquippedArmor::Artifact(artifact_armor_id, artifact_armor) => {
+                    EquippedArmorNoAttunement::Artifact(artifact_armor_id, artifact_armor.0)
                 }
             }),
             unequipped_mundane: exalt.unequipped_mundane,
-            unequipped_artifact: exalt.unequipped_artifact.into_iter().map(|(k, v)| (k, v.0)).collect(),
+            unequipped_artifact: exalt
+                .unequipped_artifact
+                .into_iter()
+                .map(|(k, v)| (k, v.0))
+                .collect(),
         }
     }
 }
