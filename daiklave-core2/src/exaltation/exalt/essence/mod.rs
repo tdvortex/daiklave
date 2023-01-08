@@ -14,12 +14,12 @@ pub(crate) use error::{
     CommitMotesError, RecoverMotesError, SetEssenceRatingError, SpendMotesError, UncommitMotesError,
 };
 pub(crate) use essence_memo::EssenceMemo;
-pub(crate) use mote_commitment::MoteCommitment;
+pub use mote_commitment::MoteCommitment;
 pub use mote_commitment_id::MoteCommitmentId;
 pub(crate) use mote_commitment_memo::MoteCommitmentMemo;
 pub use mote_pool_name::MotePoolName;
-
-use self::{mote_pool::MotePool, motes::Motes};
+pub use motes::Motes;
+pub use mote_pool::MotePool;
 
 /// An Exalt's Essence rating and mote pools.
 #[derive(Debug, Clone, PartialEq, Eq)]

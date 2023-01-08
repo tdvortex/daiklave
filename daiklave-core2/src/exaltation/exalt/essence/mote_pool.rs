@@ -27,7 +27,7 @@ impl MotePool {
     }
 
     /// Spend a number of motes, shifting them from available to spent.
-    pub fn spend(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub(crate) fn spend(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         if amount > self.available {
             Err(CharacterMutationError::SpendMotesError(
                 SpendMotesError::InsufficientMotes(amount, self.available),
@@ -41,7 +41,7 @@ impl MotePool {
 
     /// Commit a number of motes, removing the from the pool and locking them
     /// inside the committed effect.
-    pub fn commit(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub(crate) fn commit(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         if amount > self.available {
             Err(CharacterMutationError::CommitMotesError(
                 CommitMotesError::InsufficientMotes(self.available, amount),
@@ -53,7 +53,7 @@ impl MotePool {
     }
 
     /// Recover spent motes, shifting them from spent to available.
-    pub fn recover(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub(crate) fn recover(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         let recovered = amount.min(self.spent);
         self.spent -= recovered;
         self.available += recovered;
@@ -62,7 +62,7 @@ impl MotePool {
 
     /// Recover motes from a commitment effect, adding these to spent, where
     /// they can later be recovered.
-    pub fn uncommit(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub(crate) fn uncommit(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         self.spent += amount;
         Ok(self)
     }

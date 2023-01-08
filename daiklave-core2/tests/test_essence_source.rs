@@ -110,7 +110,10 @@ fn test_essence_character_event_source() {
     assert_eq!(mote_state.personal().available(), 0);
     assert_eq!(mote_state.personal().spent(), 10);
     let mut commits_count = 0;
-    for (id, name, peripheral_committed, personal_committed) in mote_state.committed() {
+    for (id, commitment) in mote_state.committed() {
+        let name = commitment.name();
+        let peripheral_committed = commitment.peripheral();
+        let personal_committed = commitment.personal();
         commits_count += 1;
         if id == MoteCommitmentId::Other(UniqueId::Placeholder(1)) {
             assert_eq!(name, "Peripheral motes committed");
@@ -182,7 +185,10 @@ fn test_essence_character_event_source() {
     assert_eq!(mote_state.personal().available(), 10);
     assert_eq!(mote_state.personal().spent(), 3);
     let mut commits_count = 0;
-    for (id, name, peripheral_committed, personal_committed) in mote_state.committed() {
+    for (id, commitment) in mote_state.committed() {
+        let name = commitment.name();
+        let peripheral_committed = commitment.peripheral();
+        let personal_committed = commitment.personal();
         commits_count += 1;
         if id == MoteCommitmentId::Other(UniqueId::Placeholder(1)) {
             assert_eq!(name, "Peripheral motes committed");

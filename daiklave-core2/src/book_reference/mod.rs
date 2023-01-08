@@ -14,4 +14,14 @@ impl BookReference {
     pub fn new(book: Book, page_number: i16) -> Self {
         Self { book, page_number }
     }
+
+    /// The book being referenced.
+    pub fn book(&self) -> Book {
+        self.book
+    }
+
+    /// The page number in the referenced book.
+    pub fn page_number(&self) -> i16 {
+        self.page_number
+    }
 }
