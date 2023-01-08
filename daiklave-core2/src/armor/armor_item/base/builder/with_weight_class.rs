@@ -1,8 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{armor::{armor_item::{ArmorTag, mundane::MundaneArmorMemo, ArmorWeightClass, artifact::BaseArtifactArmor}}, book_reference::BookReference};
-
-use super::BaseArmor;
+use crate::{armor::{armor_item::{ArmorTag, mundane::MundaneArmorMemo, ArmorWeightClass, artifact::BaseArtifactArmor, base::BaseArmor}}, book_reference::BookReference};
 
 pub struct BaseArmorItemBuilderWithWeightClass {
     pub(crate) name: String,

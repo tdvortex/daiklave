@@ -16,8 +16,8 @@ impl<'view, 'source> Armor<'view, 'source> {
     }
 
     /// Gets the currently worn piece of armor, if eny.
-    pub fn worn(&self) -> Option<(ArmorId, ArmorItem<'source>)> {
-        todo!()
+    pub fn worn(&self) -> Option<ArmorItem<'source>> {
+        self.0.worn_armor()
     }
 
     /// Gets a piece of armor by its Id.

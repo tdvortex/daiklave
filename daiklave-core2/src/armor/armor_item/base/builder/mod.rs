@@ -1,17 +1,34 @@
-mod base_armor_item_builder;
-mod with_weight_class;
-
 use std::collections::HashSet;
 
-pub use base_armor_item_builder::BaseArmorItemBuilder;
-use serde::{Serialize, Deserialize};
+use crate::{book_reference::BookReference, armor::armor_item::{ArmorTag, ArmorWeightClass}};
 
-use crate::{book_reference::BookReference, armor::armor_item::{ArmorWeightClass, ArmorTag}};
+use self::with_weight_class::BaseArmorItemBuilderWithWeightClass;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) struct BaseArmor {
-    pub name: String,
-    pub book_reference: Option<BookReference>,
-    pub weight_class: ArmorWeightClass,
-    pub tags: HashSet<ArmorTag>,
+mod with_weight_class;
+
+pub struct BaseArmorItemBuilder {
+    pub(crate) name: String,
+    pub(crate) book_reference: Option<BookReference>,
+    pub(crate) tags: HashSet<ArmorTag>,
+}
+
+impl BaseArmorItemBuilder {
+    pub fn book_reference(mut self, book_reference: BookReference) -> Self {
+        self.book_reference = Some(book_reference);
+        self
+    }
+
+    pub fn tag(mut self, tag: ArmorTag) -> Self {
+        self.tags.insert(tag);
+        self
+    }
+
+    pub fn weight_class(self, weight_class: ArmorWeightClass) -> BaseArmorItemBuilderWithWeightClass {
+        BaseArmorItemBuilderWithWeightClass {
+            name: self.name,
+            book_reference: self.book_reference,
+            tags: self.tags,
+            weight_class,
+        }
+    }
 }

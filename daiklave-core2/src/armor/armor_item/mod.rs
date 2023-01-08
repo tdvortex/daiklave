@@ -1,6 +1,9 @@
 /// Properties of artifact armor
 pub mod artifact;
+
+mod armor_type;
 mod base;
+mod equipped;
 mod id;
 mod memo;
 mod tag;
@@ -11,7 +14,9 @@ mod weight_class;
 use std::collections::HashSet;
 
 pub use id::ArmorId;
-pub use base::BaseArmorId;
+pub use base::{BaseArmorId};
+pub(crate) use armor_type::ArmorType;
+pub(crate) use equipped::{EquippedArmor, EquippedArmorNoAttunement};
 pub use tag::ArmorTag;
 pub use weight_class::ArmorWeightClass;
 
@@ -20,10 +25,8 @@ use crate::book_reference::BookReference;
 use self::{base::builder::BaseArmorItemBuilder, artifact::builder::ArtifactArmorItemBuilder};
 
 /// A single piece of armor owned by a character
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct ArmorItem<'source> {
-    name: &'source str,
-}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ArmorItem<'source>(pub(crate) ArmorType<'source>, pub(crate) bool);
 
 impl<'source> ArmorItem<'source> {
     /// Starts constructing a base armor item.

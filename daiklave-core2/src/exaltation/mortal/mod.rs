@@ -1,4 +1,5 @@
 pub(crate) mod martial_arts;
+mod armor;
 mod mortal_memo;
 mod weapons;
 use std::collections::HashMap;
@@ -26,13 +27,14 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError,
+    CharacterMutationError, armor::armor_item::{ArmorItem},
 };
 
-use self::martial_arts::MortalMartialArtist;
+use self::{martial_arts::MortalMartialArtist, armor::MortalArmor};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct Mortal<'source> {
+    pub armor: MortalArmor<'source>,
     pub martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtist<'source>>,
     pub sorcery: Option<TerrestrialCircleSorcerer<'source>>,
     pub weapons: MortalWeapons<'source>,
@@ -240,5 +242,9 @@ impl<'source> Mortal<'source> {
         } else {
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
         }
+    }
+
+    pub fn worn_armor(&self) -> Option<ArmorItem<'source>> {
+        self.armor.worn_armor()
     }
 }

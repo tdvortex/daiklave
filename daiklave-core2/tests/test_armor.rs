@@ -30,7 +30,7 @@ fn test_armor() {
 
     // Check the properties of the armor
     assert_eq!(character_view.armor().iter().next().unwrap(), (ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1)))));
-    let chain_shirt = character_view.armor().worn().unwrap().1;
+    let chain_shirt = character_view.armor().worn().unwrap();
     assert_eq!(chain_shirt.id(), ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1))));
     assert_eq!(chain_shirt.name(), "Chain Shirt (Mundane)");
     assert_eq!(chain_shirt.book_reference().unwrap(), BookReference::new(Book::CoreRulebook, 592));
@@ -78,14 +78,14 @@ fn test_armor() {
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
 
-    assert_eq!(character_view.armor().worn().unwrap().0, ArmorId::Artifact(ArtifactArmorId(UniqueId::Placeholder(1))));
+    assert_eq!(character_view.armor().worn().unwrap().id(), ArmorId::Artifact(ArtifactArmorId(UniqueId::Placeholder(1))));
 
     // Equipping another piece of armor should swap the two
     let mutation = CharacterMutation::EquipArmor(ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1))));
     character_view.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.armor().worn().unwrap().0, ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1))));
+    assert_eq!(character_view.armor().worn().unwrap().id(), ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1))));
 
     // Remove the artifact armor
     let mutation = CharacterMutation::RemoveArtifact(ArtifactId::Armor(ArtifactArmorId(UniqueId::Placeholder(1))));

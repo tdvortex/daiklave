@@ -1,4 +1,4 @@
-use crate::{armor::armor_item::{base::builder::BaseArmor, BaseArmorId}, book_reference::BookReference, hearthstone::OwnedHearthstoneMemo, artifact::MagicMaterial};
+use crate::{armor::armor_item::{BaseArmorId, base::BaseArmor}, book_reference::BookReference, hearthstone::OwnedHearthstoneMemo, artifact::MagicMaterial};
 
 /// An owned copy of a named piece of artifact armor.
 #[derive(Debug, Clone, PartialEq, Eq)]

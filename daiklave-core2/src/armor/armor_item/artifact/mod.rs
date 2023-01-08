@@ -3,7 +3,12 @@ mod base;
 pub mod builder;
 mod id;
 mod memo;
+mod no_attunement;
 
 pub use base::BaseArtifactArmor;
 pub use id::ArtifactArmorId;
 pub use memo::ArtifactArmorMemo;
+pub(crate) use no_attunement::ArtifactArmorNoAttunement;
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct ArtifactArmor<'source>(pub ArtifactArmorNoAttunement<'source>, pub Option<u8>);

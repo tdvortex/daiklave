@@ -5,11 +5,11 @@ pub mod exalt;
 ///  Essence)
 pub mod mortal;
 
-mod exaltation_memo;
+mod memo;
 mod martial_artist;
 mod sorcery;
 
-pub(crate) use exaltation_memo::ExaltationMemo;
+pub(crate) use memo::ExaltationMemo;
 pub(crate) use martial_artist::ExaltationMartialArtist;
 pub(crate) use sorcery::ExaltationSorcery;
 
@@ -23,7 +23,7 @@ use crate::{
         artifact::ArtifactWeapon, mundane::MundaneWeaponMemo, ArtifactWeaponId, BaseWeaponId,
         EquipHand, Equipped, Weapon, WeaponId,
     },
-    CharacterMutationError,
+    CharacterMutationError, armor::armor_item::{ArmorItem, ArmorId},
 };
 
 use self::{
@@ -155,6 +155,7 @@ impl<'source> Exaltation<'source> {
             martial_arts_styles,
             sorcery,
             weapons,
+            armor: todo!(),
         }));
         Ok(self)
     }
@@ -627,5 +628,12 @@ impl<'view, 'source> Exaltation<'source> {
             }
         }
         Ok(self)
+    }
+
+    pub fn worn_armor(&self) -> Option<ArmorItem<'source>> {
+        match self {
+            Exaltation::Mortal(mortal) => mortal.worn_armor(),
+            Exaltation::Exalt(exalt) => exalt.worn_armor(),
+        }
     }
 }

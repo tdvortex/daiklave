@@ -39,6 +39,7 @@ impl<'source> MortalMemo {
             },
             sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_ref()),
             weapons: self.weapons.as_ref(),
+            armor: todo!(),
         }
     }
 }

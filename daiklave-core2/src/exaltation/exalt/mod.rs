@@ -5,6 +5,7 @@ pub mod essence;
 /// Structs and methods related to various Exalt subtypes (Solar, Lunar, etc).
 pub mod exalt_type;
 
+mod armor;
 mod exalt_memo;
 pub(crate) mod martial_arts;
 mod sorcery;
@@ -38,7 +39,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError,
+    CharacterMutationError, armor::armor_item::ArmorItem,
 };
 
 use self::{
@@ -47,11 +48,12 @@ use self::{
         SetEssenceRatingError, SpendMotesError, UncommitMotesError,
     },
     exalt_type::{solar::Solar, ExaltType},
-    martial_arts::ExaltMartialArtist,
+    martial_arts::ExaltMartialArtist, armor::ExaltArmor,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Exalt<'source> {
+    armor: ExaltArmor<'source>,
     essence: Essence<'source>,
     martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
     exalt_type: ExaltType<'source>,
@@ -70,6 +72,7 @@ impl<'view, 'source> Exalt<'source> {
             martial_arts_styles,
             exalt_type,
             weapons,
+            armor: todo!(),
         }
     }
 
@@ -633,5 +636,9 @@ impl<'view, 'source> Exalt<'source> {
         } else {
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
         }
+    }
+
+    pub fn worn_armor(&self) -> Option<ArmorItem<'source>> {
+        self.armor.worn_armor()
     }
 }

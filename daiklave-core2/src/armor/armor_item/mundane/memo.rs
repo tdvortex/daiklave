@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::{armor::armor_item::{base::builder::BaseArmor}};
+use crate::armor::armor_item::base::BaseArmor;
 
 /// A piece of mundane armor.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
