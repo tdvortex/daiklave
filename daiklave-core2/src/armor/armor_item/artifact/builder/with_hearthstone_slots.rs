@@ -1,4 +1,4 @@
-use crate::{book_reference::BookReference, armor::armor_item::{BaseArmorId, artifact::{BaseArtifactArmor, ArtifactArmorMemo}}, artifact::MagicMaterial};
+use crate::{book_reference::BookReference, armor::armor_item::{BaseArmorId, artifact::{BaseArtifactArmor, ArtifactArmorMemo, no_attunement::ArtifactArmorNoAttunementMemo}}, artifact::MagicMaterial};
 
 pub struct ArtifactArmorItemBuilderWithHearthstoneSlots {
     pub(crate) name: String,
@@ -9,7 +9,7 @@ pub struct ArtifactArmorItemBuilderWithHearthstoneSlots {
     pub(crate) base_armor: BaseArtifactArmor,
     pub(crate) magic_material: MagicMaterial,
     pub(crate) merit_dots: u8,
-    pub(crate) hearthstone_slots: usize,
+    pub(crate) hearthstone_slots: u8,
 }
 
 impl ArtifactArmorItemBuilderWithHearthstoneSlots {
@@ -29,7 +29,7 @@ impl ArtifactArmorItemBuilderWithHearthstoneSlots {
     }
 
     pub fn build(self) -> ArtifactArmorMemo {
-        ArtifactArmorMemo {
+        ArtifactArmorMemo(ArtifactArmorNoAttunementMemo{
             name: self.name,
             book_reference: self.book_reference,
             lore: self.lore,
@@ -39,6 +39,6 @@ impl ArtifactArmorItemBuilderWithHearthstoneSlots {
             magic_material: self.magic_material,
             merit_dots: self.merit_dots,
             hearthstone_slots: (0..self.hearthstone_slots).fold(Vec::new(), |mut acc, _| {acc.push(None); acc})
-        }
+        }, None)
     }
 }

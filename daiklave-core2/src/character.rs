@@ -28,7 +28,7 @@ use crate::{
         WeaponError, Weapons,
     },
     willpower::Willpower,
-    CharacterMemo, CharacterMutation, CharacterMutationError, armor::Armor,
+    CharacterMemo, CharacterMutation, CharacterMutationError, armor::{Armor, armor_item::{ArmorId, artifact::ArtifactError, BaseArmorId, mundane::MundaneArmorMemo}, ArmorError},
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -144,10 +144,18 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::RemoveArtifact(artifact_id) => {
                 self.check_remove_artifact(*artifact_id)
             }
-            CharacterMutation::AddMundaneArmor(_, _) => todo!(),
-            CharacterMutation::EquipArmor(_) => todo!(),
-            CharacterMutation::RemoveMundaneArmor(_) => todo!(),
-            CharacterMutation::UnequipArmor => todo!(),
+            CharacterMutation::AddMundaneArmor(armor_id, armor_item) => {
+                self.check_add_mundane_armor(*armor_id, armor_item)
+            }
+            CharacterMutation::EquipArmor(armor_id) => {
+                self.check_equip_armor(*armor_id)
+            }
+            CharacterMutation::RemoveMundaneArmor(armor_id) => {
+                self.check_remove_mundane_armor(*armor_id)
+            }
+            CharacterMutation::UnequipArmor => {
+                self.check_unequip_armor()
+            }
         }
     }
 
@@ -215,10 +223,18 @@ impl<'view, 'source> Character<'source> {
                 self.remove_mundane_weapon(*weapon_id)
             }
             CharacterMutation::RemoveArtifact(artifact_id) => self.remove_artifact(*artifact_id),
-            CharacterMutation::AddMundaneArmor(_, _) => todo!(),
-            CharacterMutation::EquipArmor(_) => todo!(),
-            CharacterMutation::RemoveMundaneArmor(_) => todo!(),
-            CharacterMutation::UnequipArmor => todo!(),
+            CharacterMutation::AddMundaneArmor(armor_id, armor_item) => {
+                self.add_mundane_armor(*armor_id, armor_item)
+            }
+            CharacterMutation::EquipArmor(armor_id) => {
+                self.equip_armor(*armor_id)
+            }
+            CharacterMutation::RemoveMundaneArmor(armor_id) => {
+                self.remove_mundane_armor(*armor_id)
+            }
+            CharacterMutation::UnequipArmor => {
+                self.unequip_armor()
+            }
         }
     }
 
@@ -962,7 +978,13 @@ impl<'view, 'source> Character<'source> {
                     Ok(())
                 }
             }
-            ArtifactMemo::Armor(_, _) => todo!(),
+            ArtifactMemo::Armor(artifact_armor_id, _) => {
+                if self.armor().get(ArmorId::Artifact(*artifact_armor_id)).is_some() {
+                    Err(CharacterMutationError::ArtifactError(ArtifactError::NamedArtifactsUnique))
+                } else {
+                    Ok(())
+                }
+            }
         }
     }
 
@@ -1049,5 +1071,69 @@ impl<'view, 'source> Character<'source> {
     /// The character's Armor items.
     pub fn armor(&self) -> Armor {
         Armor(&self.exaltation)
+    }
+
+    pub fn add_mundane_armor(&mut self, armor_id: BaseArmorId, armor: &'source MundaneArmorMemo) -> Result<&mut Self, CharacterMutationError> {
+        self.check_add_mundane_armor(armor_id, armor)?;
+        self.exaltation.add_mundane_armor(armor_id, armor)?;
+        Ok(self)
+    }
+
+    pub fn remove_mundane_armor(&mut self, armor_id: BaseArmorId) -> Result<&mut Self, CharacterMutationError> {
+        self.check_remove_mundane_armor(armor_id)?;
+        self.exaltation.remove_mundane_armor(armor_id)?;
+        Ok(self)
+    }
+
+    pub fn check_add_mundane_armor(&self, armor_id: BaseArmorId, _armor: &'source MundaneArmorMemo) -> Result<(), CharacterMutationError> {
+        if self.armor().get(ArmorId::Mundane(armor_id)).is_some() {
+            Err(CharacterMutationError::ArmorError(ArmorError::DuplicateArmor))
+        } else {
+            Ok(())
+        }
+    }
+
+    pub fn check_remove_mundane_armor(&self, armor_id: BaseArmorId) -> Result<(), CharacterMutationError> {
+        if let Some(armor) = self.armor().get(ArmorId::Mundane(armor_id)) {
+            if armor.is_equipped() {
+                Err(CharacterMutationError::ArmorError(ArmorError::RemoveEquipped))
+            } else {
+                Ok(())
+            }
+        } else {
+            Err(CharacterMutationError::ArmorError(ArmorError::NotFound))
+        }
+    }
+
+    pub fn check_equip_armor(&self, armor_id: ArmorId) -> Result<(), CharacterMutationError> {
+        if let Some(armor) = self.armor().get(armor_id) {
+            if armor.is_equipped() {
+                Err(CharacterMutationError::ArmorError(ArmorError::AlreadyEquipped))
+            } else {
+                Ok(())
+            }
+        } else {
+            Err(CharacterMutationError::ArmorError(ArmorError::NotFound))
+        }
+    }
+
+    pub fn equip_armor(&mut self, armor_id: ArmorId) -> Result<&mut Self, CharacterMutationError> {
+        self.check_equip_armor(armor_id)?;
+        self.exaltation.equip_armor(armor_id)?;
+        Ok(self)
+    }
+
+    pub fn check_unequip_armor(&self) -> Result<(), CharacterMutationError> {
+        if self.armor().worn().is_none() {
+            Err(CharacterMutationError::ArmorError(ArmorError::NotFound))
+        } else {
+            Ok(())
+        }
+    }
+
+    pub fn unequip_armor(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        self.check_unequip_armor()?;
+        self.exaltation.unequip_armor()?;
+        Ok(self)
     }
 }

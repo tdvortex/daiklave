@@ -14,10 +14,10 @@ pub enum ArtifactMemo {
 impl<'source> ArtifactMemo {
     /// Uses the Artifact as a source and copies all Copy values and derefs
     /// String to &'source str
-    pub fn as_ref(&'source self) -> Artifact<'source> {
+    pub(crate) fn as_ref(&'source self) -> Artifact<'source> {
         match self {
             ArtifactMemo::Weapon(id, memo) => Artifact::Weapon(*id, memo.as_ref()),
-            ArtifactMemo::Armor(_, _) => todo!(),
+            ArtifactMemo::Armor(id, memo) => Artifact::Armor(*id, memo.as_ref()),
         }
     }
 }

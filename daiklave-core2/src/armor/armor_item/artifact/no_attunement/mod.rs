@@ -1,3 +1,6 @@
+mod memo;
+pub use memo::ArtifactArmorNoAttunementMemo;
+
 use crate::{book_reference::BookReference, armor::armor_item::{BaseArmorId, base::BaseArmor}, artifact::MagicMaterial, hearthstone::OwnedHearthstone};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -14,6 +17,20 @@ pub struct ArtifactArmorNoAttunement<'source> {
 }
 
 impl<'source> ArtifactArmorNoAttunement<'source> {
+    pub fn as_memo(&self) -> ArtifactArmorNoAttunementMemo {
+        ArtifactArmorNoAttunementMemo {
+            name: self.name.to_owned(),
+            book_reference: self.book_reference,
+            lore: self.lore.map(|s| s.to_owned()),
+            powers: self.powers.map(|s| s.to_owned()),
+            base_armor_id: self.base_armor_id,
+            base_armor: self.base_armor.to_owned(),
+            magic_material: self.magic_material,
+            merit_dots: self.merit_dots,
+            hearthstone_slots: self.hearthstone_slots.iter().map(|option| option.map(|hearthstone| hearthstone.as_memo())).collect()
+        }
+    }
+
     pub fn name(&self) -> &'source str {
         self.name
     }

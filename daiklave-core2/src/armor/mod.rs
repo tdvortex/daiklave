@@ -1,6 +1,9 @@
 /// Properties of individual pieces of armor
 pub mod armor_item;
 
+mod error;
+pub use error::ArmorError;
+
 use crate::exaltation::Exaltation;
 
 use self::armor_item::{ArmorItem, ArmorId};
@@ -12,7 +15,7 @@ pub struct Armor<'view, 'source>(pub(crate) &'view Exaltation<'source>);
 impl<'view, 'source> Armor<'view, 'source> {
     /// Iterates over all owned pieces of armor by their Id.
     pub fn iter(&self) -> impl Iterator<Item = ArmorId> + '_ {
-        vec![].into_iter()
+        self.0.armor_iter()
     }
 
     /// Gets the currently worn piece of armor, if eny.
@@ -22,6 +25,6 @@ impl<'view, 'source> Armor<'view, 'source> {
 
     /// Gets a piece of armor by its Id.
     pub fn get(&self, armor_id: ArmorId) -> Option<ArmorItem<'source>> {
-        todo!()
+        self.0.get_armor(armor_id)
     }
 }

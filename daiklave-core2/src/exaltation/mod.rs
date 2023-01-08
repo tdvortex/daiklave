@@ -23,7 +23,7 @@ use crate::{
         artifact::ArtifactWeapon, mundane::MundaneWeaponMemo, ArtifactWeaponId, BaseWeaponId,
         EquipHand, Equipped, Weapon, WeaponId,
     },
-    CharacterMutationError, armor::armor_item::{ArmorItem, ArmorId},
+    CharacterMutationError, armor::armor_item::{ArmorItem, ArmorId, BaseArmorId, mundane::MundaneArmorMemo},
 };
 
 use self::{
@@ -635,5 +635,51 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Mortal(mortal) => mortal.worn_armor(),
             Exaltation::Exalt(exalt) => exalt.worn_armor(),
         }
+    }
+
+    pub fn armor_iter(&self) ->  impl Iterator<Item = ArmorId> + '_ {
+        match self {
+            Exaltation::Mortal(mortal) => mortal.armor_iter(),
+            Exaltation::Exalt(exalt) => exalt.armor_iter(),
+        }
+    }
+
+    pub fn get_armor(&self, armor_id: ArmorId) -> Option<ArmorItem<'source>> {
+        match self {
+            Exaltation::Mortal(mortal) => mortal.get_armor(armor_id),
+            Exaltation::Exalt(exalt) => exalt.get_armor(armor_id),
+        }
+    }
+
+    pub fn add_mundane_armor(&mut self, armor_id: BaseArmorId, armor: &'source MundaneArmorMemo) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {mortal.add_mundane_armor(armor_id, armor)?;}
+            Exaltation::Exalt(exalt) => {exalt.add_mundane_armor(armor_id, armor)?;}
+        }
+        Ok(self)
+    }
+
+    pub fn remove_mundane_armor(&mut self, armor_id: BaseArmorId) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {mortal.remove_mundane_armor(armor_id)?;}
+            Exaltation::Exalt(exalt) => {exalt.remove_mundane_armor(armor_id)?;}
+        }
+        Ok(self)
+    }
+
+    pub fn equip_armor(&mut self, armor_id: ArmorId) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {mortal.equip_armor(armor_id)?;}
+            Exaltation::Exalt(exalt) => {exalt.equip_armor(armor_id)?;}
+        }
+        Ok(self)
+    }
+
+    pub fn unequip_armor(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {mortal.unequip_armor()?;}
+            Exaltation::Exalt(exalt) => {exalt.unequip_armor()?;}
+        }
+        Ok(self)
     }
 }

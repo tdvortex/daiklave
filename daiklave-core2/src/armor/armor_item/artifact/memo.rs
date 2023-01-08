@@ -1,15 +1,11 @@
-use crate::{armor::armor_item::{BaseArmorId, base::BaseArmor}, book_reference::BookReference, hearthstone::OwnedHearthstoneMemo, artifact::MagicMaterial};
+use super::{ArtifactArmor, no_attunement::ArtifactArmorNoAttunementMemo};
 
 /// An owned copy of a named piece of artifact armor.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ArtifactArmorMemo {
-    pub(crate) name: String,
-    pub(crate) book_reference: Option<BookReference>,
-    pub(crate) lore: Option<String>,
-    pub(crate) powers: Option<String>,
-    pub(crate) base_armor_id: BaseArmorId,
-    pub(crate) base_armor: BaseArmor,
-    pub(crate) magic_material: MagicMaterial,
-    pub(crate) merit_dots: u8,
-    pub(crate) hearthstone_slots: Vec<Option<OwnedHearthstoneMemo>>,
+pub struct ArtifactArmorMemo(pub ArtifactArmorNoAttunementMemo, pub Option<u8>);
+
+impl<'source> ArtifactArmorMemo {
+    pub(crate) fn as_ref(&'source self) -> ArtifactArmor<'source> {
+        ArtifactArmor(self.0.as_ref(), self.1)
+    }
 }

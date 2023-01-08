@@ -27,7 +27,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError, armor::armor_item::{ArmorItem},
+    CharacterMutationError, armor::armor_item::{ArmorItem, ArmorId, BaseArmorId, mundane::MundaneArmorMemo},
 };
 
 use self::{martial_arts::MortalMartialArtist, armor::MortalArmor};
@@ -246,5 +246,33 @@ impl<'source> Mortal<'source> {
 
     pub fn worn_armor(&self) -> Option<ArmorItem<'source>> {
         self.armor.worn_armor()
+    }
+
+    pub fn armor_iter(&self) ->  std::vec::IntoIter<ArmorId> {
+        self.armor.iter()
+    }
+
+    pub fn get_armor(&self, armor_id: ArmorId) -> Option<ArmorItem<'source>> {
+        self.armor.get(armor_id)
+    }
+
+    pub fn add_mundane_armor(&mut self, armor_id: BaseArmorId, armor: &'source MundaneArmorMemo) -> Result<&mut Self, CharacterMutationError> {
+        self.armor.add_mundane(armor_id, armor)?;
+        Ok(self)
+    }
+
+    pub fn remove_mundane_armor(&mut self, armor_id: BaseArmorId) -> Result<&mut Self, CharacterMutationError> {
+        self.armor.remove_mundane(armor_id)?;
+        Ok(self)
+    }
+
+    pub fn equip_armor(&mut self, armor_id: ArmorId) -> Result<&mut Self, CharacterMutationError> {
+        self.armor.equip(armor_id)?;
+        Ok(self)
+    }
+
+    pub fn unequip_armor(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        self.armor.unequip()?;
+        Ok(self)
     }
 }

@@ -4,7 +4,7 @@
 //! with full Discord integration for over-the-internet play.
 
 use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
-use armor::armor_item::{BaseArmorId, mundane::MundaneArmorMemo, ArmorId};
+use armor::{armor_item::{BaseArmorId, mundane::MundaneArmorMemo, ArmorId, artifact::ArtifactError}, ArmorError};
 use artifact::{ArtifactId, ArtifactMemo};
 use attributes::{AttributeName, SetAttributesError};
 use exaltation::exalt::{
@@ -212,6 +212,12 @@ pub enum CharacterMutationError {
     /// Error related to weapons
     #[error("Weapons error")]
     WeaponError(#[from] WeaponError),
+    /// Error related to artifacts
+    #[error("Artifacts error")]
+    ArtifactError(#[from] ArtifactError),
+    /// Error related to armor
+    #[error("Armor error")]
+    ArmorError(#[from] ArmorError),
 }
 
 /// A container to hold a successfully applied sequence of mutations, with

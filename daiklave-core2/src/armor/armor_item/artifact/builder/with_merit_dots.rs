@@ -29,7 +29,7 @@ impl ArtifactArmorItemBuilderWithMeritDots {
         self
     }
 
-    pub fn hearthstone_slots(self, hearthstone_slots: usize) -> ArtifactArmorItemBuilderWithHearthstoneSlots {
+    pub fn hearthstone_slots(self, hearthstone_slots: u8) -> ArtifactArmorItemBuilderWithHearthstoneSlots {
         ArtifactArmorItemBuilderWithHearthstoneSlots {
             name: self.name,
             book_reference: self.book_reference,
