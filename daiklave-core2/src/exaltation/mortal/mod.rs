@@ -7,6 +7,7 @@ pub(crate) use weapons::{
     MortalEquippedWeapons, MortalHands, MortalUnequippedWeapons, MortalWeapons,
 };
 
+pub(crate) use armor::MortalArmor;
 pub(crate) use mortal_memo::MortalMemo;
 
 use crate::{
@@ -30,7 +31,7 @@ use crate::{
     CharacterMutationError, armor::armor_item::{ArmorItem, ArmorId, BaseArmorId, mundane::MundaneArmorMemo, artifact::{ArtifactArmorId, ArtifactArmor}},
 };
 
-use self::{martial_arts::MortalMartialArtist, armor::MortalArmor};
+use self::{martial_arts::MortalMartialArtist};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct Mortal<'source> {
@@ -43,6 +44,7 @@ pub(crate) struct Mortal<'source> {
 impl<'source> Mortal<'source> {
     pub fn as_memo(&self) -> MortalMemo {
         MortalMemo::new(
+            self.armor.as_memo(),
             self.martial_arts_styles
                 .iter()
                 .map(|(k, v)| (*k, v.as_memo()))

@@ -1,8 +1,10 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{book_reference::BookReference, armor::armor_item::{BaseArmorId, base::BaseArmor}, artifact::MagicMaterial, hearthstone::OwnedHearthstoneMemo};
 
 use super::ArtifactArmorNoAttunement;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ArtifactArmorNoAttunementMemo {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,

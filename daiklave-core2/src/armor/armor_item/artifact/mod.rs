@@ -10,7 +10,7 @@ pub use base::BaseArtifactArmor;
 pub use error::ArtifactError;
 pub use id::ArtifactArmorId;
 pub use memo::ArtifactArmorMemo;
-pub(crate) use no_attunement::ArtifactArmorNoAttunement;
+pub(crate) use no_attunement::{ArtifactArmorNoAttunement, ArtifactArmorNoAttunementMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ArtifactArmor<'source>(pub ArtifactArmorNoAttunement<'source>, pub Option<u8>);

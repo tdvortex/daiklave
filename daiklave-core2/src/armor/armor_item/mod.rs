@@ -16,7 +16,7 @@ use std::collections::HashSet;
 pub use id::ArmorId;
 pub use base::{BaseArmorId};
 pub(crate) use armor_type::ArmorType;
-pub(crate) use equipped::{EquippedArmor, EquippedArmorNoAttunement};
+pub(crate) use equipped::{EquippedArmor, EquippedArmorMemo, EquippedArmorNoAttunement, EquippedArmorNoAttunementMemo};
 pub use tag::ArmorTag;
 pub use weight_class::ArmorWeightClass;
 

@@ -150,12 +150,13 @@ impl<'source> Exaltation<'source> {
 
         // Remove all artifact attunements
         let weapons = std::mem::take(exalt.weapons_mut()).into();
+        let armor = std::mem::take(exalt.armor_mut()).into();
 
         *self = Exaltation::Mortal(Box::new(Mortal {
             martial_arts_styles,
             sorcery,
             weapons,
-            armor: todo!(),
+            armor,
         }));
         Ok(self)
     }
@@ -375,6 +376,7 @@ impl<'view, 'source> Exaltation<'source> {
                 // Default to essence 1
                 // Preserve martial arts styles, with empty Charms set
                 *self = Self::Exalt(Box::new(Exalt::new(
+                    std::mem::take(&mut mortal.armor).into(),
                     Essence::new_solar(1),
                     std::mem::take(&mut mortal.martial_arts_styles)
                         .into_iter()
@@ -388,6 +390,7 @@ impl<'view, 'source> Exaltation<'source> {
                 // Preserve essence rating
                 // Preserve martial arts styles (including charms)
                 *self = Self::Exalt(Box::new(Exalt::new(
+                    std::mem::take(exalt.armor_mut()),
                     Essence::new_solar(exalt.essence().rating()),
                     std::mem::take(exalt.martial_arts_styles_mut()),
                     ExaltType::Solar(solar),

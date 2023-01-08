@@ -1,15 +1,26 @@
+mod memo;
+pub(crate) use memo::MortalArmorMemo;
+
 use std::{collections::{HashMap, hash_map::Entry}};
 
-use crate::{armor::{armor_item::{BaseArmorId, artifact::{ArtifactArmorId, ArtifactArmorNoAttunement, ArtifactArmor, ArtifactError}, EquippedArmorNoAttunement, mundane::{MundaneArmor, MundaneArmorMemo}, ArmorItem, ArmorType, ArmorId}, ArmorError}, CharacterMutationError};
+use crate::{armor::{armor_item::{BaseArmorId, artifact::{ArtifactArmorId, ArtifactArmorNoAttunement, ArtifactArmor, ArtifactError}, EquippedArmorNoAttunement, mundane::{MundaneArmor, MundaneArmorMemo}, ArmorItem, ArmorType, ArmorId, EquippedArmor}, ArmorError}, CharacterMutationError, exaltation::exalt::ExaltArmor};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct MortalArmor<'source> {
-    equipped: Option<EquippedArmorNoAttunement<'source>>,
-    unequipped_mundane: HashMap<BaseArmorId, MundaneArmor<'source>>,
-    unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmorNoAttunement<'source>>,
+    pub equipped: Option<EquippedArmorNoAttunement<'source>>,
+    pub unequipped_mundane: HashMap<BaseArmorId, MundaneArmor<'source>>,
+    pub unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmorNoAttunement<'source>>,
 }
 
 impl<'source> MortalArmor<'source> {
+    pub fn as_memo(&self) -> MortalArmorMemo {
+        MortalArmorMemo { 
+            equipped: self.equipped.as_ref().map(|view| view.as_memo()),
+            unequipped_mundane: self.unequipped_mundane.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+            unequipped_artifact: self.unequipped_artifact.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+        }
+    }
+
     pub fn worn_armor(&self) -> Option<ArmorItem<'source>> {
         if let Some(equipped) = &self.equipped {
             match equipped {
@@ -148,6 +159,21 @@ impl<'source> MortalArmor<'source> {
             Err(CharacterMutationError::ArmorError(ArmorError::RemoveEquipped))
         } else {
             Err(CharacterMutationError::ArmorError(ArmorError::NotFound))
+        }
+    }
+}
+
+impl<'source> From<ExaltArmor<'source>> for MortalArmor<'source> {
+    fn from(exalt: ExaltArmor<'source>) -> Self {
+        Self {
+            equipped: exalt.equipped.map(|maybe_attuned| {
+                match maybe_attuned {
+                    EquippedArmor::Mundane(base_armor_id, mundane_armor) => EquippedArmorNoAttunement::Mundane(base_armor_id, mundane_armor),
+                    EquippedArmor::Artifact(artifact_armor_id, artifact_armor) => EquippedArmorNoAttunement::Artifact(artifact_armor_id, artifact_armor.0),
+                }
+            }),
+            unequipped_mundane: exalt.unequipped_mundane,
+            unequipped_artifact: exalt.unequipped_artifact.into_iter().map(|(k, v)| (k, v.0)).collect(),
         }
     }
 }

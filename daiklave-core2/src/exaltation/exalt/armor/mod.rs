@@ -1,19 +1,30 @@
+mod memo;
+pub(crate) use memo::ExaltArmorMemo;
+
 use std::collections::{HashMap, hash_map::Entry};
 
 use crate::{armor::{armor_item::{
     artifact::{ArtifactArmor, ArtifactArmorId, ArtifactError},
     mundane::{MundaneArmor, MundaneArmorMemo},
-    ArmorId, ArmorItem, ArmorType, BaseArmorId, EquippedArmor,
-}, ArmorError}, CharacterMutationError};
+    ArmorId, ArmorItem, ArmorType, BaseArmorId, EquippedArmor, EquippedArmorNoAttunement,
+}, ArmorError}, CharacterMutationError, exaltation::mortal::MortalArmor};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct ExaltArmor<'source> {
-    equipped: Option<EquippedArmor<'source>>,
-    unequipped_mundane: HashMap<BaseArmorId, MundaneArmor<'source>>,
-    unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmor<'source>>,
+    pub equipped: Option<EquippedArmor<'source>>,
+    pub unequipped_mundane: HashMap<BaseArmorId, MundaneArmor<'source>>,
+    pub unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmor<'source>>,
 }
 
 impl<'source> ExaltArmor<'source> {
+    pub fn as_memo(&self) -> ExaltArmorMemo {
+        ExaltArmorMemo {
+            equipped: self.equipped.as_ref().map(|view| view.as_memo()),
+            unequipped_mundane: self.unequipped_mundane.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+            unequipped_artifact: self.unequipped_artifact.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+        }
+    }
+
     pub fn worn_armor(&self) -> Option<ArmorItem<'source>> {
         if let Some(equipped) = &self.equipped {
             match equipped {
@@ -159,6 +170,19 @@ impl<'source> ExaltArmor<'source> {
             Err(CharacterMutationError::ArmorError(ArmorError::RemoveEquipped))
         } else {
             Err(CharacterMutationError::ArmorError(ArmorError::NotFound))
+        }
+    }
+}
+
+impl<'source> From<MortalArmor<'source>> for ExaltArmor<'source> {
+    fn from(mortal: MortalArmor<'source>) -> Self {
+        Self {
+            equipped: mortal.equipped.map(|no_attunement| match no_attunement {
+                EquippedArmorNoAttunement::Mundane(base_armor_id, mundane_armor) => EquippedArmor::Mundane(base_armor_id, mundane_armor),
+                EquippedArmorNoAttunement::Artifact(artifact_armor_id, no_attunement) => EquippedArmor::Artifact(artifact_armor_id, ArtifactArmor(no_attunement, None)),
+            }),
+            unequipped_mundane: mortal.unequipped_mundane,
+            unequipped_artifact: mortal.unequipped_artifact.into_iter().map(|(k, v)| (k, ArtifactArmor(v, None))).collect()
         }
     }
 }

@@ -11,6 +11,7 @@ pub(crate) mod martial_arts;
 mod sorcery;
 mod weapons;
 
+pub(crate) use armor::ExaltArmor;
 pub(crate) use exalt_memo::ExaltMemo;
 pub(crate) use sorcery::ExaltSorcery;
 pub(crate) use weapons::{ExaltEquippedWeapons, ExaltHands, ExaltUnequippedWeapons, ExaltWeapons};
@@ -48,7 +49,7 @@ use self::{
         SetEssenceRatingError, SpendMotesError, UncommitMotesError,
     },
     exalt_type::{solar::Solar, ExaltType},
-    martial_arts::ExaltMartialArtist, armor::ExaltArmor,
+    martial_arts::ExaltMartialArtist,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -62,6 +63,7 @@ pub(crate) struct Exalt<'source> {
 
 impl<'view, 'source> Exalt<'source> {
     pub fn new(
+        armor: ExaltArmor<'source>,
         essence: Essence<'source>,
         martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
         exalt_type: ExaltType<'source>,
@@ -72,12 +74,13 @@ impl<'view, 'source> Exalt<'source> {
             martial_arts_styles,
             exalt_type,
             weapons,
-            armor: todo!(),
+            armor,
         }
     }
 
     pub fn as_memo(&self) -> ExaltMemo {
         ExaltMemo::new(
+            self.armor.as_memo(),
             self.essence.as_memo(),
             self.martial_arts_styles
                 .iter()
@@ -678,5 +681,9 @@ impl<'view, 'source> Exalt<'source> {
     pub fn remove_artifact_armor(&mut self, armor_id: ArtifactArmorId) -> Result<&mut Self, CharacterMutationError> {
         self.armor.remove_artifact(armor_id)?;
         Ok(self)
+    }
+
+    pub fn armor_mut(&mut self) -> &mut ExaltArmor<'source> {
+        &mut self.armor
     }
 }

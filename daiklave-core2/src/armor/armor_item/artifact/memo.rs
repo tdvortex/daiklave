@@ -1,7 +1,9 @@
+use serde::{Serialize, Deserialize};
+
 use super::{ArtifactArmor, no_attunement::ArtifactArmorNoAttunementMemo};
 
 /// An owned copy of a named piece of artifact armor.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ArtifactArmorMemo(pub ArtifactArmorNoAttunementMemo, pub Option<u8>);
 
 impl<'source> ArtifactArmorMemo {
