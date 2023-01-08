@@ -1,7 +1,11 @@
-mod attribute_name;
+mod attribute;
+mod category;
+mod name;
 mod error;
 
-pub use attribute_name::AttributeName;
+pub use attribute::Attribute;
+pub use category::AttributeCategory;
+pub use name::AttributeName;
 pub use error::SetAttributesError;
 use serde::{Deserialize, Serialize};
 
@@ -39,8 +43,27 @@ impl Default for Attributes {
 }
 
 impl Attributes {
-    /// Returns the dot value for the specific attribute.
-    pub fn dots(&self, attribute_name: AttributeName) -> u8 {
+    /// Get a specific attribute by its name.
+    pub fn get(&self, attribute_name: AttributeName) -> Attribute {
+        Attribute { name: attribute_name, dots: self.dots(attribute_name) }
+    }
+
+    /// Iterates over all attributes.
+    pub fn iter(&self) -> impl Iterator<Item = Attribute> + '_ {
+        [
+            AttributeName::Strength,
+            AttributeName::Dexterity,
+            AttributeName::Stamina,
+            AttributeName::Charisma,
+            AttributeName::Manipulation,
+            AttributeName::Appearance,
+            AttributeName::Intelligence,
+            AttributeName::Perception,
+            AttributeName::Wits,
+        ].into_iter().map(|attribute_name| self.get(attribute_name))
+    }
+
+    pub(crate) fn dots(&self, attribute_name: AttributeName) -> u8 {
         match attribute_name {
             AttributeName::Strength => self.strength,
             AttributeName::Dexterity => self.dexterity,

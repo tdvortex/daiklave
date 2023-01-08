@@ -9,7 +9,7 @@ mod magic_material;
 pub use id::ArtifactId;
 pub use magic_material::MagicMaterial;
 
-/// A magica;, Essence-infused object.
+/// A magical, Essence-infused object.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Artifact {
     /// An artifact weapon.

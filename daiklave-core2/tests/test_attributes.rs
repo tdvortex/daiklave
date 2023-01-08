@@ -6,34 +6,34 @@ use daiklave_core2::{
 fn test_attributes_character_view() {
     // Check default attributes
     let mut character_view = Character::default();
-    assert_eq!(character_view.attributes().dots(AttributeName::Strength), 1);
+    assert_eq!(character_view.attributes().get(AttributeName::Strength).dots(), 1);
     assert_eq!(
-        character_view.attributes().dots(AttributeName::Dexterity),
+        character_view.attributes().get(AttributeName::Dexterity).dots(),
         1
     );
-    assert_eq!(character_view.attributes().dots(AttributeName::Stamina), 1);
-    assert_eq!(character_view.attributes().dots(AttributeName::Charisma), 1);
-    assert_eq!(
-        character_view
-            .attributes()
-            .dots(AttributeName::Manipulation),
-        1
-    );
-    assert_eq!(
-        character_view.attributes().dots(AttributeName::Appearance),
-        1
-    );
-    assert_eq!(
-        character_view.attributes().dots(AttributeName::Perception),
-        1
-    );
+    assert_eq!(character_view.attributes().get(AttributeName::Stamina).dots(), 1);
+    assert_eq!(character_view.attributes().get(AttributeName::Charisma).dots(), 1);
     assert_eq!(
         character_view
             .attributes()
-            .dots(AttributeName::Intelligence),
+            .get(AttributeName::Manipulation).dots(),
         1
     );
-    assert_eq!(character_view.attributes().dots(AttributeName::Wits), 1);
+    assert_eq!(
+        character_view.attributes().get(AttributeName::Appearance).dots(),
+        1
+    );
+    assert_eq!(
+        character_view.attributes().get(AttributeName::Perception).dots(),
+        1
+    );
+    assert_eq!(
+        character_view
+            .attributes()
+            .get(AttributeName::Intelligence).dots(),
+        1
+    );
+    assert_eq!(character_view.attributes().get(AttributeName::Wits).dots(), 1);
 
     // Check setting attributes
     character_view
@@ -42,7 +42,7 @@ fn test_attributes_character_view() {
     character_view
         .set_attribute(AttributeName::Strength, 2)
         .unwrap();
-    assert_eq!(character_view.attributes().dots(AttributeName::Strength), 2);
+    assert_eq!(character_view.attributes().get(AttributeName::Strength).dots(), 2);
 
     // Check out-of-bounds prevention
     assert!(character_view
@@ -58,34 +58,34 @@ fn test_attributes_character_event_source() {
     // Check default attributes
     let mut event_source = CharacterEventSource::default();
     let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.attributes().dots(AttributeName::Strength), 1);
+    assert_eq!(character_view.attributes().get(AttributeName::Strength).dots(), 1);
     assert_eq!(
-        character_view.attributes().dots(AttributeName::Dexterity),
+        character_view.attributes().get(AttributeName::Dexterity).dots(),
         1
     );
-    assert_eq!(character_view.attributes().dots(AttributeName::Stamina), 1);
-    assert_eq!(character_view.attributes().dots(AttributeName::Charisma), 1);
-    assert_eq!(
-        character_view
-            .attributes()
-            .dots(AttributeName::Manipulation),
-        1
-    );
-    assert_eq!(
-        character_view.attributes().dots(AttributeName::Appearance),
-        1
-    );
-    assert_eq!(
-        character_view.attributes().dots(AttributeName::Perception),
-        1
-    );
+    assert_eq!(character_view.attributes().get(AttributeName::Stamina).dots(), 1);
+    assert_eq!(character_view.attributes().get(AttributeName::Charisma).dots(), 1);
     assert_eq!(
         character_view
             .attributes()
-            .dots(AttributeName::Intelligence),
+            .get(AttributeName::Manipulation).dots(),
         1
     );
-    assert_eq!(character_view.attributes().dots(AttributeName::Wits), 1);
+    assert_eq!(
+        character_view.attributes().get(AttributeName::Appearance).dots(),
+        1
+    );
+    assert_eq!(
+        character_view.attributes().get(AttributeName::Perception).dots(),
+        1
+    );
+    assert_eq!(
+        character_view
+            .attributes()
+            .get(AttributeName::Intelligence).dots(),
+        1
+    );
+    assert_eq!(character_view.attributes().get(AttributeName::Wits).dots(), 1);
 
     // Check setting attributes
     let mutation = CharacterMutation::SetAttribute(AttributeName::Strength, 2);
@@ -93,7 +93,7 @@ fn test_attributes_character_event_source() {
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
 
-    assert_eq!(character_view.attributes().dots(AttributeName::Strength), 2);
+    assert_eq!(character_view.attributes().get(AttributeName::Strength).dots(), 2);
 
     // Check out-of-bounds prevention
     assert!(character_view
@@ -107,9 +107,9 @@ fn test_attributes_character_event_source() {
     assert!(!event_source.can_redo());
     assert!(event_source.undo());
     let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.attributes().dots(AttributeName::Strength), 1);
+    assert_eq!(character_view.attributes().get(AttributeName::Strength).dots(), 1);
     assert!(!event_source.can_undo());
     assert!(event_source.redo());
     let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.attributes().dots(AttributeName::Strength), 2);
+    assert_eq!(character_view.attributes().get(AttributeName::Strength).dots(), 2);
 }
