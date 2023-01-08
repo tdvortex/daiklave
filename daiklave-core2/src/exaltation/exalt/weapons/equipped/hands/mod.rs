@@ -1,5 +1,5 @@
 mod memo;
-pub use memo::ExaltHandsMemo;
+pub(crate) use memo::ExaltHandsMemo;
 
 use crate::{
     exaltation::mortal::MortalHands,
@@ -10,7 +10,7 @@ use crate::{
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ExaltHands<'source> {
+pub(crate) enum ExaltHands<'source> {
     Empty,
     MainHand(EquippedOneHandedWeapon<'source>),
     OffHand(EquippedOneHandedWeapon<'source>),

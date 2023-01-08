@@ -13,7 +13,7 @@ pub(crate) use mortal_memo::MortalMemo;
 use crate::{
     abilities::AbilityRating,
     armor::armor_item::{
-        artifact::{ArtifactArmorView, ArtifactArmorId},
+        artifact::{ArtifactArmorId, ArtifactArmorView},
         mundane::MundaneArmor,
         ArmorId, ArmorItem, BaseArmorId,
     },
@@ -28,7 +28,7 @@ use crate::{
     weapons::{
         weapon::{
             artifact::ArtifactWeaponView,
-            mundane::{HandlessMundaneWeapon, MundaneWeaponMemo},
+            mundane::{HandlessMundaneWeapon, MundaneWeapon},
             ArtifactWeaponId, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId,
         },
         WeaponError,
@@ -180,7 +180,7 @@ impl<'source> Mortal<'source> {
     pub fn add_mundane_weapon(
         &mut self,
         weapon_id: BaseWeaponId,
-        weapon: &'source MundaneWeaponMemo,
+        weapon: &'source MundaneWeapon,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.add_mundane_weapon(weapon_id, weapon)?;
         Ok(self)

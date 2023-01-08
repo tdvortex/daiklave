@@ -1,19 +1,18 @@
 use crate::weapons::weapon::equipped::EquipHand;
 
 use super::newtype::{
-    NaturalMundaneWeaponMemo, OneHandedMundaneWeaponMemo, TwoHandedMundaneWeaponMemo,
-    WornMundaneWeaponMemo,
+    NaturalMundaneWeapon, OneHandedMundaneWeapon, TwoHandedMundaneWeapon, WornMundaneWeapon,
 };
 
-/// An owned copy of a Mundane Weapon.
+/// An nonmagical, nonunique weapon.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum MundaneWeaponMemo {
+pub enum MundaneWeapon {
     /// A Natural weapon.
-    Natural(NaturalMundaneWeaponMemo),
+    Natural(NaturalMundaneWeapon),
     /// A Worn weapon, and whether it is equipped.
-    Worn(WornMundaneWeaponMemo, bool),
+    Worn(WornMundaneWeapon, bool),
     /// A OneHanded weapon, and the hand it's equipped in (if any).
-    OneHanded(OneHandedMundaneWeaponMemo, Option<EquipHand>),
+    OneHanded(OneHandedMundaneWeapon, Option<EquipHand>),
     /// A TwoHanded weapon, and whether it is equipped.
-    TwoHanded(TwoHandedMundaneWeaponMemo, bool),
+    TwoHanded(TwoHandedMundaneWeapon, bool),
 }

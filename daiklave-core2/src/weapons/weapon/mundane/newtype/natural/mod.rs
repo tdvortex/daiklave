@@ -7,12 +7,12 @@ use std::ops::Deref;
 
 use crate::weapons::weapon::base::BaseWeapon;
 
-pub use self::memo::NaturalMundaneWeaponMemo;
+pub use self::memo::NaturalMundaneWeapon;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct NaturalMundaneWeapon<'source>(pub(crate) &'source BaseWeapon);
+pub(crate) struct NaturalMundaneWeaponView<'source>(pub(crate) &'source BaseWeapon);
 
-impl<'source> Deref for NaturalMundaneWeapon<'source> {
+impl<'source> Deref for NaturalMundaneWeaponView<'source> {
     type Target = BaseWeapon;
 
     fn deref(&self) -> &Self::Target {
@@ -20,9 +20,9 @@ impl<'source> Deref for NaturalMundaneWeapon<'source> {
     }
 }
 
-impl<'source> NaturalMundaneWeapon<'source> {
-    pub fn as_memo(&'source self) -> NaturalMundaneWeaponMemo {
-        NaturalMundaneWeaponMemo(self.0.clone())
+impl<'source> NaturalMundaneWeaponView<'source> {
+    pub fn as_memo(&'source self) -> NaturalMundaneWeapon {
+        NaturalMundaneWeapon(self.0.clone())
     }
 
     pub fn name(&self) -> &'source str {

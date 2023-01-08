@@ -10,7 +10,7 @@ use crate::{
             artifact::{
                 ArtifactWeaponView, NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement,
             },
-            mundane::{MundaneWeapon, NonnaturalMundaneWeapon},
+            mundane::{MundaneWeaponView, NonnaturalMundaneWeapon},
             ArtifactWeaponId, BaseWeaponId, Equipped, Weapon, WeaponId, WeaponType,
         },
         WeaponError,
@@ -60,21 +60,21 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
                 (NonnaturalMundaneWeapon::Worn(worn_weapon), count) => {
                     Some(Weapon(WeaponType::Mundane(
                         target_id,
-                        MundaneWeapon::Worn(worn_weapon.clone(), false),
+                        MundaneWeaponView::Worn(worn_weapon.clone(), false),
                         *count,
                     )))
                 }
                 (NonnaturalMundaneWeapon::OneHanded(one), count) => {
                     Some(Weapon(WeaponType::Mundane(
                         target_id,
-                        MundaneWeapon::OneHanded(one.clone(), None),
+                        MundaneWeaponView::OneHanded(one.clone(), None),
                         *count,
                     )))
                 }
                 (NonnaturalMundaneWeapon::TwoHanded(two), count) => {
                     Some(Weapon(WeaponType::Mundane(
                         target_id,
-                        MundaneWeapon::TwoHanded(two.clone(), false),
+                        MundaneWeaponView::TwoHanded(two.clone(), false),
                         *count,
                     )))
                 }

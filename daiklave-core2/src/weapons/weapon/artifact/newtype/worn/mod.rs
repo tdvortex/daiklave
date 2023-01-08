@@ -1,16 +1,14 @@
 mod memo;
-pub use memo::WornArtifactWeaponMemo;
+pub use memo::WornArtifactWeapon;
 
 use std::ops::Deref;
 
 use crate::weapons::weapon::artifact::named::NamedArtifactWeapon;
 
-/// An artifact weapon that is worn when equipped, and does not use
-/// any hands.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct WornArtifactWeapon<'source>(pub(crate) NamedArtifactWeapon<'source>);
+pub(crate) struct WornArtifactWeaponView<'source>(pub(crate) NamedArtifactWeapon<'source>);
 
-impl<'source> Deref for WornArtifactWeapon<'source> {
+impl<'source> Deref for WornArtifactWeaponView<'source> {
     type Target = NamedArtifactWeapon<'source>;
 
     fn deref(&self) -> &Self::Target {
@@ -18,8 +16,8 @@ impl<'source> Deref for WornArtifactWeapon<'source> {
     }
 }
 
-impl<'source> WornArtifactWeapon<'source> {
-    pub(crate) fn as_memo(&'source self) -> WornArtifactWeaponMemo {
-        WornArtifactWeaponMemo(self.0.as_memo())
+impl<'source> WornArtifactWeaponView<'source> {
+    pub(crate) fn as_memo(&'source self) -> WornArtifactWeapon {
+        WornArtifactWeapon(self.0.as_memo())
     }
 }

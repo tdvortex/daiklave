@@ -26,7 +26,7 @@ use crate::{
     },
     weapons::{
         weapon::{
-            equipped::EquipHand, mundane::MundaneWeaponMemo, AttackRange, BaseWeaponId, Equipped,
+            equipped::EquipHand, mundane::MundaneWeapon, AttackRange, BaseWeaponId, Equipped,
             WeaponId, WeaponWeightClass,
         },
         WeaponError, Weapons,
@@ -833,7 +833,7 @@ impl<'view, 'source> Character<'source> {
     pub fn add_mundane_weapon(
         &mut self,
         weapon_id: BaseWeaponId,
-        weapon: &'source MundaneWeaponMemo,
+        weapon: &'source MundaneWeapon,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_add_mundane_weapon(weapon_id, weapon)?;
         self.exaltation.add_mundane_weapon(weapon_id, weapon)?;
@@ -844,7 +844,7 @@ impl<'view, 'source> Character<'source> {
     pub fn check_add_mundane_weapon(
         &self,
         weapon_id: BaseWeaponId,
-        _weapon: &'source MundaneWeaponMemo,
+        _weapon: &'source MundaneWeapon,
     ) -> Result<(), CharacterMutationError> {
         if self
             .weapons()

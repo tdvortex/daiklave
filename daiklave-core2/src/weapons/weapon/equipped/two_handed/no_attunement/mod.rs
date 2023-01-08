@@ -1,6 +1,6 @@
 use crate::weapons::weapon::{
-    artifact::{ArtifactWeaponView, TwoHandedArtifactWeapon},
-    mundane::{MundaneWeapon, TwoHandedMundaneWeapon},
+    artifact::{ArtifactWeaponView, TwoHandedArtifactWeaponView},
+    mundane::{MundaneWeaponView, TwoHandedMundaneWeaponView},
     weapon_type::WeaponType,
     ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId,
 };
@@ -9,9 +9,9 @@ mod memo;
 pub use memo::EquippedTwoHandedWeaponNoAttunementMemo;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum EquippedTwoHandedWeaponNoAttunement<'source> {
-    Mundane(BaseWeaponId, TwoHandedMundaneWeapon<'source>),
-    Artifact(ArtifactWeaponId, TwoHandedArtifactWeapon<'source>),
+pub(crate) enum EquippedTwoHandedWeaponNoAttunement<'source> {
+    Mundane(BaseWeaponId, TwoHandedMundaneWeaponView<'source>),
+    Artifact(ArtifactWeaponId, TwoHandedArtifactWeaponView<'source>),
 }
 
 impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
@@ -38,7 +38,7 @@ impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
                 } else {
                     Some(Weapon(WeaponType::Mundane(
                         target_id,
-                        MundaneWeapon::TwoHanded(two.clone(), true),
+                        MundaneWeaponView::TwoHanded(two.clone(), true),
                         1,
                     )))
                 }

@@ -10,9 +10,9 @@ use crate::{
             },
             equipped::{EquippedOneHandedWeaponNoAttunement, EquippedTwoHandedWeaponNoAttunement},
             mundane::{
-                HandlessMundaneWeapon, MundaneWeaponMemo, NaturalMundaneWeapon,
-                NonnaturalMundaneWeapon, OneHandedMundaneWeapon, TwoHandedMundaneWeapon,
-                WornMundaneWeapon,
+                HandlessMundaneWeapon, MundaneWeapon, NaturalMundaneWeaponView,
+                NonnaturalMundaneWeapon, OneHandedMundaneWeaponView, TwoHandedMundaneWeaponView,
+                WornMundaneWeaponView,
             },
             ArtifactWeaponId, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId,
         },
@@ -76,24 +76,24 @@ impl<'view, 'source> MortalWeapons<'source> {
     pub fn add_mundane_weapon(
         &mut self,
         weapon_id: BaseWeaponId,
-        weapon: &'source MundaneWeaponMemo,
+        weapon: &'source MundaneWeapon,
     ) -> Result<&mut Self, CharacterMutationError> {
         let nonnatural_mundane = match weapon {
-            MundaneWeaponMemo::Natural(weapon) => {
+            MundaneWeapon::Natural(weapon) => {
                 let handless_mundane =
-                    HandlessMundaneWeapon::Natural(NaturalMundaneWeapon(&weapon.0));
+                    HandlessMundaneWeapon::Natural(NaturalMundaneWeaponView(&weapon.0));
                 self.equipped
                     .add_natural_mundane_weapon(weapon_id, handless_mundane)?;
                 return Ok(self);
             }
-            MundaneWeaponMemo::Worn(weapon, _) => {
-                NonnaturalMundaneWeapon::Worn(WornMundaneWeapon(&weapon.0))
+            MundaneWeapon::Worn(weapon, _) => {
+                NonnaturalMundaneWeapon::Worn(WornMundaneWeaponView(&weapon.0))
             }
-            MundaneWeaponMemo::OneHanded(weapon, _) => {
-                NonnaturalMundaneWeapon::OneHanded(OneHandedMundaneWeapon(&weapon.0))
+            MundaneWeapon::OneHanded(weapon, _) => {
+                NonnaturalMundaneWeapon::OneHanded(OneHandedMundaneWeaponView(&weapon.0))
             }
-            MundaneWeaponMemo::TwoHanded(weapon, _) => {
-                NonnaturalMundaneWeapon::TwoHanded(TwoHandedMundaneWeapon(&weapon.0))
+            MundaneWeapon::TwoHanded(weapon, _) => {
+                NonnaturalMundaneWeapon::TwoHanded(TwoHandedMundaneWeaponView(&weapon.0))
             }
         };
 

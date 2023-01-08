@@ -6,8 +6,8 @@ use std::collections::{hash_map::Entry, HashMap};
 use crate::{
     armor::{
         armor_item::{
-            artifact::{ArtifactArmorView, ArtifactArmorId, ArtifactError},
-            mundane::{MundaneArmorView, MundaneArmor},
+            artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
+            mundane::{MundaneArmor, MundaneArmorView},
             ArmorId, ArmorItem, ArmorType, BaseArmorId, EquippedArmor, EquippedArmorNoAttunement,
         },
         ArmorError,
@@ -248,7 +248,10 @@ impl<'source> From<MortalArmor<'source>> for ExaltArmor<'source> {
                     EquippedArmor::Mundane(base_armor_id, mundane_armor)
                 }
                 EquippedArmorNoAttunement::Artifact(artifact_armor_id, no_attunement) => {
-                    EquippedArmor::Artifact(artifact_armor_id, ArtifactArmorView(no_attunement, None))
+                    EquippedArmor::Artifact(
+                        artifact_armor_id,
+                        ArtifactArmorView(no_attunement, None),
+                    )
                 }
             }),
             unequipped_mundane: mortal.unequipped_mundane,

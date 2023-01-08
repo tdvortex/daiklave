@@ -3,9 +3,9 @@ use crate::{
     book_reference::BookReference,
     weapons::weapon::{
         artifact::{
-            base::BaseArtifactWeapon, named::NamedArtifactWeaponMemo, ArtifactWeaponMemo,
-            NaturalArtifactWeaponMemo, OneHandedArtifactWeaponMemo, TwoHandedArtifactWeaponMemo,
-            WornArtifactWeaponMemo,
+            base::BaseArtifactWeapon, named::NamedArtifactWeaponMemo, ArtifactWeapon,
+            NaturalArtifactWeapon, OneHandedArtifactWeapon, TwoHandedArtifactWeapon,
+            WornArtifactWeapon,
         },
         handedness::WeaponHandedness,
         BaseWeaponId,
@@ -49,7 +49,7 @@ impl ArtifactWeaponBuilderWithHearthstoneSlots {
     }
 
     /// Completes the builder, returning an Artifact Weapon.
-    pub fn build(self) -> ArtifactWeaponMemo {
+    pub fn build(self) -> ArtifactWeapon {
         let (handedness, base_weapon) = match self.base_weapon {
             BaseArtifactWeapon::Natural(base_weapon) => (WeaponHandedness::Natural, base_weapon),
             BaseArtifactWeapon::Worn(base_weapon) => (WeaponHandedness::Worn, base_weapon),
@@ -80,19 +80,17 @@ impl ArtifactWeaponBuilderWithHearthstoneSlots {
 
         match handedness {
             WeaponHandedness::Natural => {
-                ArtifactWeaponMemo::Natural(NaturalArtifactWeaponMemo(named_artifact_weapon))
+                ArtifactWeapon::Natural(NaturalArtifactWeapon(named_artifact_weapon))
             }
             WeaponHandedness::Worn => {
-                ArtifactWeaponMemo::Worn(WornArtifactWeaponMemo(named_artifact_weapon), false)
+                ArtifactWeapon::Worn(WornArtifactWeapon(named_artifact_weapon), false)
             }
-            WeaponHandedness::OneHanded => ArtifactWeaponMemo::OneHanded(
-                OneHandedArtifactWeaponMemo(named_artifact_weapon),
-                None,
-            ),
-            WeaponHandedness::TwoHanded => ArtifactWeaponMemo::TwoHanded(
-                TwoHandedArtifactWeaponMemo(named_artifact_weapon),
-                false,
-            ),
+            WeaponHandedness::OneHanded => {
+                ArtifactWeapon::OneHanded(OneHandedArtifactWeapon(named_artifact_weapon), None)
+            }
+            WeaponHandedness::TwoHanded => {
+                ArtifactWeapon::TwoHanded(TwoHandedArtifactWeapon(named_artifact_weapon), false)
+            }
         }
     }
 }

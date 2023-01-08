@@ -15,7 +15,7 @@ pub(crate) use sorcery::ExaltationSorcery;
 
 use crate::{
     armor::armor_item::{
-        artifact::{ArtifactArmorView, ArtifactArmorId},
+        artifact::{ArtifactArmorId, ArtifactArmorView},
         mundane::MundaneArmor,
         ArmorId, ArmorItem, BaseArmorId,
     },
@@ -25,7 +25,7 @@ use crate::{
         TerrestrialSpell,
     },
     weapons::weapon::{
-        artifact::ArtifactWeaponView, mundane::MundaneWeaponMemo, ArtifactWeaponId, BaseWeaponId,
+        artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
         EquipHand, Equipped, Weapon, WeaponId,
     },
     CharacterMutationError,
@@ -547,7 +547,7 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn add_mundane_weapon(
         &mut self,
         weapon_id: BaseWeaponId,
-        weapon: &'source MundaneWeaponMemo,
+        weapon: &'source MundaneWeapon,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {

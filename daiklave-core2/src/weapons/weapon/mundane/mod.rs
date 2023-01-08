@@ -12,53 +12,53 @@ pub(crate) use grouped::{
     HandlessMundaneWeapon, HandlessMundaneWeaponMemo, NonnaturalMundaneWeapon,
     NonnaturalMundaneWeaponMemo,
 };
-pub use memo::MundaneWeaponMemo;
+pub use memo::MundaneWeapon;
 pub(crate) use newtype::unarmed;
-pub(crate) use newtype::{
+pub use newtype::{
     NaturalMundaneWeapon, OneHandedMundaneWeapon, TwoHandedMundaneWeapon, WornMundaneWeapon,
 };
-pub use newtype::{
-    NaturalMundaneWeaponMemo, OneHandedMundaneWeaponMemo, TwoHandedMundaneWeaponMemo,
-    WornMundaneWeaponMemo,
+pub(crate) use newtype::{
+    NaturalMundaneWeaponView, OneHandedMundaneWeaponView, TwoHandedMundaneWeaponView,
+    WornMundaneWeaponView,
 };
 
-pub(crate) enum MundaneWeapon<'source> {
-    Natural(NaturalMundaneWeapon<'source>),
-    Worn(WornMundaneWeapon<'source>, bool),
-    OneHanded(OneHandedMundaneWeapon<'source>, Option<EquipHand>),
-    TwoHanded(TwoHandedMundaneWeapon<'source>, bool),
+pub(crate) enum MundaneWeaponView<'source> {
+    Natural(NaturalMundaneWeaponView<'source>),
+    Worn(WornMundaneWeaponView<'source>, bool),
+    OneHanded(OneHandedMundaneWeaponView<'source>, Option<EquipHand>),
+    TwoHanded(TwoHandedMundaneWeaponView<'source>, bool),
 }
 
-impl<'source> Deref for MundaneWeapon<'source> {
+impl<'source> Deref for MundaneWeaponView<'source> {
     type Target = BaseWeapon;
 
     fn deref(&self) -> &Self::Target {
         match self {
-            MundaneWeapon::Natural(deref) => deref,
-            MundaneWeapon::Worn(deref, _) => deref,
-            MundaneWeapon::OneHanded(deref, _) => deref,
-            MundaneWeapon::TwoHanded(deref, _) => deref,
+            MundaneWeaponView::Natural(deref) => deref,
+            MundaneWeaponView::Worn(deref, _) => deref,
+            MundaneWeaponView::OneHanded(deref, _) => deref,
+            MundaneWeaponView::TwoHanded(deref, _) => deref,
         }
     }
 }
 
-impl<'source> MundaneWeapon<'source> {
+impl<'source> MundaneWeaponView<'source> {
     pub fn is_equipped(&self) -> Option<Equipped> {
         match self {
-            MundaneWeapon::Natural(_) => Some(Equipped::Natural),
-            MundaneWeapon::Worn(_, is_equipped) => {
+            MundaneWeaponView::Natural(_) => Some(Equipped::Natural),
+            MundaneWeaponView::Worn(_, is_equipped) => {
                 if *is_equipped {
                     Some(Equipped::Worn)
                 } else {
                     None
                 }
             }
-            MundaneWeapon::OneHanded(_, maybe_hand) => match maybe_hand {
+            MundaneWeaponView::OneHanded(_, maybe_hand) => match maybe_hand {
                 None => None,
                 Some(EquipHand::MainHand) => Some(Equipped::MainHand),
                 Some(EquipHand::OffHand) => Some(Equipped::OffHand),
             },
-            MundaneWeapon::TwoHanded(_, is_equipped) => {
+            MundaneWeaponView::TwoHanded(_, is_equipped) => {
                 if *is_equipped {
                     Some(Equipped::TwoHanded)
                 } else {
@@ -70,19 +70,19 @@ impl<'source> MundaneWeapon<'source> {
 
     pub fn name(&self) -> &'source str {
         match self {
-            MundaneWeapon::Natural(weapon) => weapon.name(),
-            MundaneWeapon::Worn(weapon, _) => weapon.name(),
-            MundaneWeapon::OneHanded(weapon, _) => weapon.name(),
-            MundaneWeapon::TwoHanded(weapon, _) => weapon.name(),
+            MundaneWeaponView::Natural(weapon) => weapon.name(),
+            MundaneWeaponView::Worn(weapon, _) => weapon.name(),
+            MundaneWeaponView::OneHanded(weapon, _) => weapon.name(),
+            MundaneWeaponView::TwoHanded(weapon, _) => weapon.name(),
         }
     }
 
     pub fn tags(&self) -> std::vec::IntoIter<WeaponTag> {
         match self {
-            MundaneWeapon::Natural(base) => base.tags(WeaponTag::Natural),
-            MundaneWeapon::Worn(base, _) => base.tags(WeaponTag::Worn),
-            MundaneWeapon::OneHanded(base, _) => base.tags(WeaponTag::OneHanded),
-            MundaneWeapon::TwoHanded(base, _) => base.tags(WeaponTag::TwoHanded),
+            MundaneWeaponView::Natural(base) => base.tags(WeaponTag::Natural),
+            MundaneWeaponView::Worn(base, _) => base.tags(WeaponTag::Worn),
+            MundaneWeaponView::OneHanded(base, _) => base.tags(WeaponTag::OneHanded),
+            MundaneWeaponView::TwoHanded(base, _) => base.tags(WeaponTag::TwoHanded),
         }
     }
 }

@@ -1,13 +1,13 @@
 use serde::{Deserialize, Serialize};
 
-use crate::weapons::weapon::mundane::{NaturalMundaneWeaponMemo, WornMundaneWeaponMemo};
+use crate::weapons::weapon::mundane::{NaturalMundaneWeapon, WornMundaneWeapon};
 
 use super::HandlessMundaneWeapon;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum HandlessMundaneWeaponMemo {
-    Natural(NaturalMundaneWeaponMemo),
-    Worn(WornMundaneWeaponMemo),
+    Natural(NaturalMundaneWeapon),
+    Worn(WornMundaneWeapon),
 }
 
 impl<'source> HandlessMundaneWeaponMemo {

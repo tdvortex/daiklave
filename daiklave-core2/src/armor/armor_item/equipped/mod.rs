@@ -4,7 +4,7 @@ pub(crate) use memo::EquippedArmorMemo;
 pub(crate) use no_attunement::{EquippedArmorNoAttunement, EquippedArmorNoAttunementMemo};
 
 use super::{
-    artifact::{ArtifactArmorView, ArtifactArmorId},
+    artifact::{ArtifactArmorId, ArtifactArmorView},
     mundane::MundaneArmorView,
     BaseArmorId,
 };

@@ -2,14 +2,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::weapons::weapon::base::BaseWeapon;
 
-use super::OneHandedMundaneWeapon;
+use super::OneHandedMundaneWeaponView;
 
 /// A one-handed mundane weapon.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct OneHandedMundaneWeaponMemo(pub(crate) BaseWeapon);
+pub struct OneHandedMundaneWeapon(pub(crate) BaseWeapon);
 
-impl<'source> OneHandedMundaneWeaponMemo {
-    pub(crate) fn as_ref(&'source self) -> OneHandedMundaneWeapon<'source> {
-        OneHandedMundaneWeapon(&self.0)
+impl<'source> OneHandedMundaneWeapon {
+    pub(crate) fn as_ref(&'source self) -> OneHandedMundaneWeaponView<'source> {
+        OneHandedMundaneWeaponView(&self.0)
     }
 }

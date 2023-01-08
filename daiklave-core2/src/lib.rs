@@ -77,7 +77,7 @@ mod willpower;
 pub use character::Character;
 pub use character_memo::CharacterMemo;
 use weapons::{
-    weapon::{equipped::EquipHand, mundane::MundaneWeaponMemo, BaseWeaponId, Equipped, WeaponId},
+    weapon::{equipped::EquipHand, mundane::MundaneWeapon, BaseWeaponId, Equipped, WeaponId},
     WeaponError,
 };
 
@@ -142,7 +142,7 @@ pub enum CharacterMutation {
     /// Sets the Craft dots for a particular focus area.
     SetCraftDots(String, u8),
     /// Adds a mundane weapon to the character.
-    AddMundaneWeapon(BaseWeaponId, MundaneWeaponMemo),
+    AddMundaneWeapon(BaseWeaponId, MundaneWeapon),
     /// Removes a mundane weapon from the character.
     RemoveMundaneWeapon(BaseWeaponId),
     /// Equips the specific weapon. For a OneHanded weapon, will equip into

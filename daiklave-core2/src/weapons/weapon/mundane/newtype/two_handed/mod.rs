@@ -4,12 +4,12 @@ use std::ops::Deref;
 
 use crate::weapons::weapon::base::BaseWeapon;
 
-pub use self::memo::TwoHandedMundaneWeaponMemo;
+pub use self::memo::TwoHandedMundaneWeapon;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TwoHandedMundaneWeapon<'source>(pub(crate) &'source BaseWeapon);
+pub(crate) struct TwoHandedMundaneWeaponView<'source>(pub(crate) &'source BaseWeapon);
 
-impl<'source> Deref for TwoHandedMundaneWeapon<'source> {
+impl<'source> Deref for TwoHandedMundaneWeaponView<'source> {
     type Target = BaseWeapon;
 
     fn deref(&self) -> &Self::Target {
@@ -17,9 +17,9 @@ impl<'source> Deref for TwoHandedMundaneWeapon<'source> {
     }
 }
 
-impl<'source> TwoHandedMundaneWeapon<'source> {
-    pub fn as_memo(&'source self) -> TwoHandedMundaneWeaponMemo {
-        TwoHandedMundaneWeaponMemo(self.0.clone())
+impl<'source> TwoHandedMundaneWeaponView<'source> {
+    pub fn as_memo(&'source self) -> TwoHandedMundaneWeapon {
+        TwoHandedMundaneWeapon(self.0.clone())
     }
 
     pub fn name(&self) -> &'source str {

@@ -45,10 +45,6 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
         self.name
     }
 
-    pub fn book_reference(&self) -> Option<BookReference> {
-        self.book_reference
-    }
-
     pub fn base_artifact_weapon_id(&self) -> BaseWeaponId {
         self.base_weapon_id
     }
@@ -63,10 +59,6 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
 
     pub fn powers(&self) -> Option<&'source str> {
         self.powers
-    }
-
-    pub fn hearthstone_slots(&self) -> usize {
-        self.hearthstone_slots.len()
     }
 
     pub fn slotted_hearthstones(

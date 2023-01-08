@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use crate::weapons::weapon::artifact::{
     named::NamedArtifactWeapon,
-    newtype::{NaturalArtifactWeapon, WornArtifactWeapon},
+    newtype::{NaturalArtifactWeaponView, WornArtifactWeaponView},
 };
 
 mod memo;
@@ -10,8 +10,8 @@ pub(crate) use memo::HandlessArtifactWeaponNoAttunementMemo;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum HandlessArtifactWeaponNoAttunement<'source> {
-    Natural(NaturalArtifactWeapon<'source>),
-    Worn(WornArtifactWeapon<'source>),
+    Natural(NaturalArtifactWeaponView<'source>),
+    Worn(WornArtifactWeaponView<'source>),
 }
 
 impl<'source> HandlessArtifactWeaponNoAttunement<'source> {

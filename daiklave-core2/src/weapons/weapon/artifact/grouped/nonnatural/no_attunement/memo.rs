@@ -1,16 +1,16 @@
 use serde::{Deserialize, Serialize};
 
 use crate::weapons::weapon::artifact::newtype::{
-    OneHandedArtifactWeaponMemo, TwoHandedArtifactWeaponMemo, WornArtifactWeaponMemo,
+    OneHandedArtifactWeapon, TwoHandedArtifactWeapon, WornArtifactWeapon,
 };
 
 use super::NonnaturalArtifactWeaponNoAttunement;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum NonnaturalArtifactWeaponNoAttunementMemo {
-    Worn(WornArtifactWeaponMemo),
-    OneHanded(OneHandedArtifactWeaponMemo),
-    TwoHanded(TwoHandedArtifactWeaponMemo),
+    Worn(WornArtifactWeapon),
+    OneHanded(OneHandedArtifactWeapon),
+    TwoHanded(TwoHandedArtifactWeapon),
 }
 
 impl<'source> NonnaturalArtifactWeaponNoAttunementMemo {

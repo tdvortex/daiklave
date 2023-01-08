@@ -1,6 +1,6 @@
 use crate::{
-    armor::armor_item::artifact::{ArtifactArmorId, ArtifactArmor},
-    weapons::weapon::{artifact::ArtifactWeaponMemo, ArtifactWeaponId},
+    armor::armor_item::artifact::{ArtifactArmor, ArtifactArmorId},
+    weapons::weapon::{artifact::ArtifactWeapon, ArtifactWeaponId},
 };
 
 mod id;
@@ -13,7 +13,7 @@ pub use magic_material::MagicMaterial;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Artifact {
     /// An artifact weapon.
-    Weapon(ArtifactWeaponId, ArtifactWeaponMemo),
+    Weapon(ArtifactWeaponId, ArtifactWeapon),
     /// An artifact armor item.
     Armor(ArtifactArmorId, ArtifactArmor),
 }

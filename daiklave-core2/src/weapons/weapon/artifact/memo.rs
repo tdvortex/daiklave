@@ -2,32 +2,31 @@ use crate::weapons::weapon::equipped::EquipHand;
 
 use super::{
     newtype::{
-        NaturalArtifactWeaponMemo, OneHandedArtifactWeaponMemo, TwoHandedArtifactWeaponMemo,
-        WornArtifactWeaponMemo,
+        NaturalArtifactWeapon, OneHandedArtifactWeapon, TwoHandedArtifactWeapon, WornArtifactWeapon,
     },
     ArtifactWeaponView,
 };
 
-/// An owned copy of an artifact weapon.
+/// A magical weapon, like a daiklave or a direlash.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ArtifactWeaponMemo {
-    Natural(NaturalArtifactWeaponMemo),
-    Worn(WornArtifactWeaponMemo, bool),
-    OneHanded(OneHandedArtifactWeaponMemo, Option<EquipHand>),
-    TwoHanded(TwoHandedArtifactWeaponMemo, bool),
+pub enum ArtifactWeapon {
+    Natural(NaturalArtifactWeapon),
+    Worn(WornArtifactWeapon, bool),
+    OneHanded(OneHandedArtifactWeapon, Option<EquipHand>),
+    TwoHanded(TwoHandedArtifactWeapon, bool),
 }
 
-impl<'source> ArtifactWeaponMemo {
+impl<'source> ArtifactWeapon {
     pub(crate) fn as_ref(&'source self) -> ArtifactWeaponView<'source> {
         match self {
-            ArtifactWeaponMemo::Natural(memo) => ArtifactWeaponView::Natural(memo.as_ref()),
-            ArtifactWeaponMemo::Worn(memo, equipped) => {
+            ArtifactWeapon::Natural(memo) => ArtifactWeaponView::Natural(memo.as_ref()),
+            ArtifactWeapon::Worn(memo, equipped) => {
                 ArtifactWeaponView::Worn(memo.as_ref(), *equipped)
             }
-            ArtifactWeaponMemo::OneHanded(memo, equipped) => {
+            ArtifactWeapon::OneHanded(memo, equipped) => {
                 ArtifactWeaponView::OneHanded(memo.as_ref(), *equipped)
             }
-            ArtifactWeaponMemo::TwoHanded(memo, equipped) => {
+            ArtifactWeapon::TwoHanded(memo, equipped) => {
                 ArtifactWeaponView::TwoHanded(memo.as_ref(), *equipped)
             }
         }

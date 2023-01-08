@@ -5,14 +5,14 @@ pub(crate) use memo::NonnaturalArtifactWeaponNoAttunementMemo;
 
 use crate::weapons::weapon::artifact::{
     named::NamedArtifactWeapon,
-    newtype::{OneHandedArtifactWeapon, TwoHandedArtifactWeapon, WornArtifactWeapon},
+    newtype::{OneHandedArtifactWeaponView, TwoHandedArtifactWeaponView, WornArtifactWeaponView},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum NonnaturalArtifactWeaponNoAttunement<'source> {
-    Worn(WornArtifactWeapon<'source>),
-    OneHanded(OneHandedArtifactWeapon<'source>),
-    TwoHanded(TwoHandedArtifactWeapon<'source>),
+    Worn(WornArtifactWeaponView<'source>),
+    OneHanded(OneHandedArtifactWeaponView<'source>),
+    TwoHanded(TwoHandedArtifactWeaponView<'source>),
 }
 
 impl<'source> Deref for NonnaturalArtifactWeaponNoAttunement<'source> {

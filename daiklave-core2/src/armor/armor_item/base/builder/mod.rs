@@ -8,8 +8,7 @@ use crate::{
 mod with_weight_class;
 pub use with_weight_class::BaseArmorItemBuilderWithWeightClass;
 
-
-/// Constructs a base armor item, like "Chain Shirt" or "Articulated Plate". 
+/// Constructs a base armor item, like "Chain Shirt" or "Articulated Plate".
 /// Weight class is required; book reference and tags are optional.
 pub struct BaseArmorItemBuilder {
     pub(crate) name: String,

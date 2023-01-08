@@ -16,11 +16,13 @@ pub(crate) use grouped::{
     NonnaturalArtifactWeaponNoAttunement, NonnaturalArtifactWeaponNoAttunementMemo,
 };
 pub use id::ArtifactWeaponId;
-pub(crate) use memo::ArtifactWeaponMemo;
+pub(crate) use memo::ArtifactWeapon;
 pub use newtype::{
-    NaturalArtifactWeapon, NaturalArtifactWeaponMemo, OneHandedArtifactWeapon,
-    OneHandedArtifactWeaponMemo, TwoHandedArtifactWeapon, TwoHandedArtifactWeaponMemo,
-    WornArtifactWeapon, WornArtifactWeaponMemo,
+    NaturalArtifactWeapon, OneHandedArtifactWeapon, TwoHandedArtifactWeapon, WornArtifactWeapon,
+};
+pub(crate) use newtype::{
+    NaturalArtifactWeaponView, OneHandedArtifactWeaponView, TwoHandedArtifactWeaponView,
+    WornArtifactWeaponView,
 };
 
 use self::named::NamedArtifactWeapon;
@@ -31,10 +33,10 @@ use super::{
 };
 
 pub(crate) enum ArtifactWeaponView<'source> {
-    Natural(NaturalArtifactWeapon<'source>),
-    Worn(WornArtifactWeapon<'source>, bool),
-    OneHanded(OneHandedArtifactWeapon<'source>, Option<EquipHand>),
-    TwoHanded(TwoHandedArtifactWeapon<'source>, bool),
+    Natural(NaturalArtifactWeaponView<'source>),
+    Worn(WornArtifactWeaponView<'source>, bool),
+    OneHanded(OneHandedArtifactWeaponView<'source>, Option<EquipHand>),
+    TwoHanded(TwoHandedArtifactWeaponView<'source>, bool),
 }
 
 impl<'source> Deref for ArtifactWeaponView<'source> {
@@ -105,7 +107,9 @@ impl<'source> ArtifactWeaponView<'source> {
 
     pub(crate) fn tags(&self) -> std::vec::IntoIter<WeaponTag> {
         match self {
-            ArtifactWeaponView::Natural(base) => base.base_artifact_weapon().tags(WeaponTag::Natural),
+            ArtifactWeaponView::Natural(base) => {
+                base.base_artifact_weapon().tags(WeaponTag::Natural)
+            }
             ArtifactWeaponView::Worn(base, _) => base.base_artifact_weapon().tags(WeaponTag::Worn),
             ArtifactWeaponView::OneHanded(base, _) => {
                 base.base_artifact_weapon().tags(WeaponTag::OneHanded)

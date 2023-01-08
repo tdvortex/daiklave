@@ -4,23 +4,22 @@ mod no_attunement;
 
 pub use equip_hand::EquipHand;
 pub use memo::EquippedOneHandedWeaponMemo;
-pub use no_attunement::{
-    EquippedOneHandedWeaponNoAttunement, EquippedOneHandedWeaponNoAttunementMemo,
-};
+pub(crate) use no_attunement::EquippedOneHandedWeaponNoAttunement;
+pub use no_attunement::EquippedOneHandedWeaponNoAttunementMemo;
 
 use crate::weapons::weapon::{
-    artifact::{ArtifactWeaponView, OneHandedArtifactWeapon},
-    mundane::{MundaneWeapon, OneHandedMundaneWeapon},
+    artifact::{ArtifactWeaponView, OneHandedArtifactWeaponView},
+    mundane::{MundaneWeaponView, OneHandedMundaneWeaponView},
     weapon_type::WeaponType,
     ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum EquippedOneHandedWeapon<'source> {
-    Mundane(BaseWeaponId, OneHandedMundaneWeapon<'source>),
+pub(crate) enum EquippedOneHandedWeapon<'source> {
+    Mundane(BaseWeaponId, OneHandedMundaneWeaponView<'source>),
     Artifact(
         ArtifactWeaponId,
-        OneHandedArtifactWeapon<'source>,
+        OneHandedArtifactWeaponView<'source>,
         Option<u8>,
     ),
 }
@@ -62,7 +61,7 @@ impl<'view, 'source> EquippedOneHandedWeapon<'source> {
                 } else {
                     Some(Weapon(WeaponType::Mundane(
                         target_id,
-                        MundaneWeapon::OneHanded(one.clone(), Some(hand)),
+                        MundaneWeaponView::OneHanded(one.clone(), Some(hand)),
                         1,
                     )))
                 }

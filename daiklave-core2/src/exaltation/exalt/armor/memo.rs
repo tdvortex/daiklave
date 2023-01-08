@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::armor::armor_item::{
-    artifact::{ArtifactArmorId, ArtifactArmor},
+    artifact::{ArtifactArmor, ArtifactArmorId},
     mundane::MundaneArmor,
     BaseArmorId, EquippedArmorMemo,
 };

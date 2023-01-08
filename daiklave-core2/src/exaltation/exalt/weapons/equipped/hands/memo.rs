@@ -5,7 +5,7 @@ use super::ExaltHands;
 use crate::weapons::weapon::equipped::{EquippedOneHandedWeaponMemo, EquippedTwoHandedWeaponMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum ExaltHandsMemo {
+pub(crate) enum ExaltHandsMemo {
     Empty,
     MainHand(EquippedOneHandedWeaponMemo),
     OffHand(EquippedOneHandedWeaponMemo),

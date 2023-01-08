@@ -1,6 +1,6 @@
 use crate::weapons::weapon::{
-    artifact::{ArtifactWeaponView, OneHandedArtifactWeapon},
-    mundane::{MundaneWeapon, OneHandedMundaneWeapon},
+    artifact::{ArtifactWeaponView, OneHandedArtifactWeaponView},
+    mundane::{MundaneWeaponView, OneHandedMundaneWeaponView},
     ArtifactWeaponId, BaseWeaponId, Weapon, WeaponId, WeaponType,
 };
 
@@ -11,9 +11,9 @@ use super::EquipHand;
 mod memo;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum EquippedOneHandedWeaponNoAttunement<'source> {
-    Mundane(BaseWeaponId, OneHandedMundaneWeapon<'source>),
-    Artifact(ArtifactWeaponId, OneHandedArtifactWeapon<'source>),
+pub(crate) enum EquippedOneHandedWeaponNoAttunement<'source> {
+    Mundane(BaseWeaponId, OneHandedMundaneWeaponView<'source>),
+    Artifact(ArtifactWeaponId, OneHandedArtifactWeaponView<'source>),
 }
 
 impl<'view, 'source> EquippedOneHandedWeaponNoAttunement<'source> {
@@ -44,7 +44,7 @@ impl<'view, 'source> EquippedOneHandedWeaponNoAttunement<'source> {
                 } else {
                     Some(Weapon(WeaponType::Mundane(
                         target_id,
-                        MundaneWeapon::OneHanded(one.clone(), Some(hand)),
+                        MundaneWeaponView::OneHanded(one.clone(), Some(hand)),
                         1,
                     )))
                 }

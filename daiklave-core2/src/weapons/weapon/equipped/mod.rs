@@ -2,10 +2,10 @@ mod one_handed;
 mod two_handed;
 
 pub use one_handed::{
-    EquipHand, EquippedOneHandedWeapon, EquippedOneHandedWeaponMemo,
-    EquippedOneHandedWeaponNoAttunement, EquippedOneHandedWeaponNoAttunementMemo,
+    EquipHand, EquippedOneHandedWeaponMemo, EquippedOneHandedWeaponNoAttunementMemo,
 };
-pub use two_handed::{
+pub(crate) use one_handed::{EquippedOneHandedWeapon, EquippedOneHandedWeaponNoAttunement};
+pub(crate) use two_handed::{
     EquippedTwoHandedWeapon, EquippedTwoHandedWeaponMemo, EquippedTwoHandedWeaponNoAttunement,
     EquippedTwoHandedWeaponNoAttunementMemo,
 };

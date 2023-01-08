@@ -1,15 +1,13 @@
 use serde::{Deserialize, Serialize};
 
-use crate::weapons::weapon::artifact::newtype::{
-    NaturalArtifactWeaponMemo, WornArtifactWeaponMemo,
-};
+use crate::weapons::weapon::artifact::newtype::{NaturalArtifactWeapon, WornArtifactWeapon};
 
 use super::HandlessArtifactWeaponNoAttunement;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum HandlessArtifactWeaponNoAttunementMemo {
-    Natural(NaturalArtifactWeaponMemo),
-    Worn(WornArtifactWeaponMemo),
+    Natural(NaturalArtifactWeapon),
+    Worn(WornArtifactWeapon),
 }
 
 impl<'source> HandlessArtifactWeaponNoAttunementMemo {

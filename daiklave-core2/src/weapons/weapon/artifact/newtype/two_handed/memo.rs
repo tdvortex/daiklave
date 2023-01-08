@@ -2,14 +2,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::weapons::weapon::artifact::named::NamedArtifactWeaponMemo;
 
-use super::TwoHandedArtifactWeapon;
+use super::TwoHandedArtifactWeaponView;
 
 /// A two-handed artifact weapon.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct TwoHandedArtifactWeaponMemo(pub(crate) NamedArtifactWeaponMemo);
+pub struct TwoHandedArtifactWeapon(pub(crate) NamedArtifactWeaponMemo);
 
-impl<'source> TwoHandedArtifactWeaponMemo {
-    pub(crate) fn as_ref(&'source self) -> TwoHandedArtifactWeapon<'source> {
-        TwoHandedArtifactWeapon(self.0.as_ref())
+impl<'source> TwoHandedArtifactWeapon {
+    pub(crate) fn as_ref(&'source self) -> TwoHandedArtifactWeaponView<'source> {
+        TwoHandedArtifactWeaponView(self.0.as_ref())
     }
 }

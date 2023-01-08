@@ -6,8 +6,10 @@ use std::collections::{hash_map::Entry, HashMap};
 use crate::{
     armor::{
         armor_item::{
-            artifact::{ArtifactArmorView, ArtifactArmorId, ArtifactArmorNoAttunement, ArtifactError},
-            mundane::{MundaneArmorView, MundaneArmor},
+            artifact::{
+                ArtifactArmorId, ArtifactArmorNoAttunement, ArtifactArmorView, ArtifactError,
+            },
+            mundane::{MundaneArmor, MundaneArmorView},
             ArmorId, ArmorItem, ArmorType, BaseArmorId, EquippedArmor, EquippedArmorNoAttunement,
         },
         ArmorError,

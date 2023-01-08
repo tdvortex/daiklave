@@ -1,16 +1,16 @@
 use serde::{Deserialize, Serialize};
 
 use crate::weapons::weapon::{
-    artifact::TwoHandedArtifactWeaponMemo, mundane::TwoHandedMundaneWeaponMemo, ArtifactWeaponId,
+    artifact::TwoHandedArtifactWeapon, mundane::TwoHandedMundaneWeapon, ArtifactWeaponId,
     BaseWeaponId,
 };
 
 use super::EquippedTwoHandedWeapon;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum EquippedTwoHandedWeaponMemo {
-    Mundane(BaseWeaponId, TwoHandedMundaneWeaponMemo),
-    Artifact(ArtifactWeaponId, TwoHandedArtifactWeaponMemo, Option<u8>),
+pub(crate) enum EquippedTwoHandedWeaponMemo {
+    Mundane(BaseWeaponId, TwoHandedMundaneWeapon),
+    Artifact(ArtifactWeaponId, TwoHandedArtifactWeapon, Option<u8>),
 }
 
 impl<'source> EquippedTwoHandedWeaponMemo {

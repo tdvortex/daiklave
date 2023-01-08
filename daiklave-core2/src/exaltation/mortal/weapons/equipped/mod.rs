@@ -9,8 +9,10 @@ use crate::{
     exaltation::exalt::ExaltEquippedWeapons,
     weapons::{
         weapon::{
-            artifact::{ArtifactWeaponView, HandlessArtifactWeaponNoAttunement, WornArtifactWeapon},
-            mundane::{HandlessMundaneWeapon, MundaneWeapon, WornMundaneWeapon},
+            artifact::{
+                ArtifactWeaponView, HandlessArtifactWeaponNoAttunement, WornArtifactWeaponView,
+            },
+            mundane::{HandlessMundaneWeapon, MundaneWeaponView, WornMundaneWeaponView},
             ArtifactWeaponId, BaseWeaponId, Equipped, Weapon, WeaponId, WeaponType,
         },
         WeaponError,
@@ -56,7 +58,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                 match self.handless_mundane.get(&base_weapon_id)? {
                     HandlessMundaneWeapon::Natural(weapon) => Some(Weapon(WeaponType::Mundane(
                         base_weapon_id,
-                        MundaneWeapon::Natural(weapon.clone()),
+                        MundaneWeaponView::Natural(weapon.clone()),
                         1,
                     ))),
                     HandlessMundaneWeapon::Worn(_) => None,
@@ -66,7 +68,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                 match self.handless_mundane.get(&base_weapon_id)? {
                     HandlessMundaneWeapon::Worn(weapon) => Some(Weapon(WeaponType::Mundane(
                         base_weapon_id,
-                        MundaneWeapon::Worn(weapon.clone(), true),
+                        MundaneWeaponView::Worn(weapon.clone(), true),
                         1,
                     ))),
                     HandlessMundaneWeapon::Natural(_) => None,
@@ -146,7 +148,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
     pub fn remove_worn_mundane(
         &mut self,
         weapon_id: BaseWeaponId,
-    ) -> Option<WornMundaneWeapon<'source>> {
+    ) -> Option<WornMundaneWeaponView<'source>> {
         if matches!(
             self.handless_mundane.get(&weapon_id),
             Some(HandlessMundaneWeapon::Worn(_))
@@ -168,7 +170,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
     pub fn remove_worn_artifact(
         &mut self,
         weapon_id: ArtifactWeaponId,
-    ) -> Option<WornArtifactWeapon<'source>> {
+    ) -> Option<WornArtifactWeaponView<'source>> {
         if matches!(
             self.handless_artifact.get(&weapon_id),
             Some(HandlessArtifactWeaponNoAttunement::Worn(_))

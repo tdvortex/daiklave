@@ -5,13 +5,13 @@ use crate::{
 };
 
 use super::{
-    artifact::ArtifactWeaponView, base::BaseWeapon, equipped::Equipped, mundane::MundaneWeapon,
+    artifact::ArtifactWeaponView, base::BaseWeapon, equipped::Equipped, mundane::MundaneWeaponView,
     ArtifactWeaponId, AttackRange, BaseWeaponId, WeaponId, WeaponTag, WeaponWeightClass,
 };
 
 pub(crate) enum WeaponType<'source> {
     Unarmed,
-    Mundane(BaseWeaponId, MundaneWeapon<'source>, u8),
+    Mundane(BaseWeaponId, MundaneWeaponView<'source>, u8),
     Artifact(ArtifactWeaponId, ArtifactWeaponView<'source>, Option<u8>),
 }
 
@@ -198,23 +198,27 @@ impl<'view, 'source> WeaponType<'source> {
     pub fn is_natural(&self) -> bool {
         match self {
             WeaponType::Unarmed => true,
-            WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeapon::Natural(_)),
-            WeaponType::Artifact(_, artifact, _) => matches!(artifact, ArtifactWeaponView::Natural(_)),
+            WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeaponView::Natural(_)),
+            WeaponType::Artifact(_, artifact, _) => {
+                matches!(artifact, ArtifactWeaponView::Natural(_))
+            }
         }
     }
 
     pub fn is_worn(&self) -> bool {
         match self {
             WeaponType::Unarmed => false,
-            WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeapon::Worn(..)),
-            WeaponType::Artifact(_, artifact, _) => matches!(artifact, ArtifactWeaponView::Worn(..)),
+            WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeaponView::Worn(..)),
+            WeaponType::Artifact(_, artifact, _) => {
+                matches!(artifact, ArtifactWeaponView::Worn(..))
+            }
         }
     }
 
     pub fn is_one_handed(&self) -> bool {
         match self {
             WeaponType::Unarmed => false,
-            WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeapon::OneHanded(..)),
+            WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeaponView::OneHanded(..)),
             WeaponType::Artifact(_, artifact, _) => {
                 matches!(artifact, ArtifactWeaponView::OneHanded(..))
             }
@@ -224,7 +228,7 @@ impl<'view, 'source> WeaponType<'source> {
     pub fn is_two_handed(&self) -> bool {
         match self {
             WeaponType::Unarmed => false,
-            WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeapon::TwoHanded(..)),
+            WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeaponView::TwoHanded(..)),
             WeaponType::Artifact(_, artifact, _) => {
                 matches!(artifact, ArtifactWeaponView::TwoHanded(..))
             }
