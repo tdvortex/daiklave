@@ -8,6 +8,7 @@ use crate::{
     book_reference::BookReference,
 };
 
+/// A base armor item builder after the weight class has been set.
 pub struct BaseArmorItemBuilderWithWeightClass {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
@@ -16,16 +17,19 @@ pub struct BaseArmorItemBuilderWithWeightClass {
 }
 
 impl BaseArmorItemBuilderWithWeightClass {
+    /// The book reference for the armor item.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
         self
     }
 
+    /// Adds a tag to the armor item.
     pub fn tag(mut self, tag: ArmorTag) -> Self {
         self.tags.insert(tag);
         self
     }
 
+    /// Completes the build process as a mundane armor item.
     pub fn build_mundane(self) -> MundaneArmor {
         MundaneArmor(BaseArmor {
             name: self.name,
@@ -35,6 +39,9 @@ impl BaseArmorItemBuilderWithWeightClass {
         })
     }
 
+    /// Completes the build process as a base artifact armor item.
+    /// This is **not** usable directly but is added to an artifact armor item
+    /// build.
     pub fn build_artifact(self) -> BaseArtifactArmor {
         BaseArtifactArmor(BaseArmor {
             name: self.name,

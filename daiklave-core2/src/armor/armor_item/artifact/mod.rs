@@ -1,6 +1,6 @@
 mod base;
 /// A builder path for constructing a new Artifact armor item.
-pub mod builder;
+pub(crate) mod builder;
 mod error;
 mod id;
 mod memo;

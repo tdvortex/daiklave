@@ -5,10 +5,12 @@ use crate::{
     book_reference::BookReference,
 };
 
-use self::with_weight_class::BaseArmorItemBuilderWithWeightClass;
-
 mod with_weight_class;
+pub use with_weight_class::BaseArmorItemBuilderWithWeightClass;
 
+
+/// Constructs a base armor item, like "Chain Shirt" or "Articulated Plate". 
+/// Weight class is required; book reference and tags are optional.
 pub struct BaseArmorItemBuilder {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
@@ -16,16 +18,19 @@ pub struct BaseArmorItemBuilder {
 }
 
 impl BaseArmorItemBuilder {
+    /// The book reference for the armor item.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
         self
     }
 
+    /// Adds a tag to the armor item.
     pub fn tag(mut self, tag: ArmorTag) -> Self {
         self.tags.insert(tag);
         self
     }
 
+    /// Sets the weight class of the armor item.
     pub fn weight_class(
         self,
         weight_class: ArmorWeightClass,

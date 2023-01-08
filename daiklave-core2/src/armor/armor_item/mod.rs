@@ -1,6 +1,9 @@
 /// Properties of artifact armor
 pub mod artifact;
 
+/// Builders for artifact and base armor.
+pub mod builder;
+
 mod armor_type;
 mod base;
 mod equipped;
