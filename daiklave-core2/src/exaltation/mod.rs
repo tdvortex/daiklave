@@ -23,7 +23,7 @@ use crate::{
         artifact::ArtifactWeapon, mundane::MundaneWeaponMemo, ArtifactWeaponId, BaseWeaponId,
         EquipHand, Equipped, Weapon, WeaponId,
     },
-    CharacterMutationError, armor::armor_item::{ArmorItem, ArmorId, BaseArmorId, mundane::MundaneArmorMemo},
+    CharacterMutationError, armor::armor_item::{ArmorItem, ArmorId, BaseArmorId, mundane::MundaneArmorMemo, artifact::{ArtifactArmorId, ArtifactArmor}},
 };
 
 use self::{
@@ -679,6 +679,22 @@ impl<'view, 'source> Exaltation<'source> {
         match self {
             Exaltation::Mortal(mortal) => {mortal.unequip_armor()?;}
             Exaltation::Exalt(exalt) => {exalt.unequip_armor()?;}
+        }
+        Ok(self)
+    }
+
+    pub fn add_artifact_armor(&mut self, armor_id: ArtifactArmorId, armor: ArtifactArmor<'source>) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {mortal.add_artifact_armor(armor_id, armor)?;}
+            Exaltation::Exalt(exalt) => {exalt.add_artifact_armor(armor_id, armor)?;}
+        }
+        Ok(self)
+    }
+
+    pub fn remove_artifact_armor(&mut self, armor_id: ArtifactArmorId) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {mortal.remove_artifact_armor(armor_id)?;}
+            Exaltation::Exalt(exalt) => {exalt.remove_artifact_armor(armor_id)?;}
         }
         Ok(self)
     }

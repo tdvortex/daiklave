@@ -27,7 +27,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError, armor::armor_item::{ArmorItem, ArmorId, BaseArmorId, mundane::MundaneArmorMemo},
+    CharacterMutationError, armor::armor_item::{ArmorItem, ArmorId, BaseArmorId, mundane::MundaneArmorMemo, artifact::{ArtifactArmorId, ArtifactArmor}},
 };
 
 use self::{martial_arts::MortalMartialArtist, armor::MortalArmor};
@@ -273,6 +273,16 @@ impl<'source> Mortal<'source> {
 
     pub fn unequip_armor(&mut self) -> Result<&mut Self, CharacterMutationError> {
         self.armor.unequip()?;
+        Ok(self)
+    }
+
+    pub fn add_artifact_armor(&mut self, armor_id: ArtifactArmorId, armor: ArtifactArmor<'source>) -> Result<&mut Self, CharacterMutationError> {
+        self.armor.add_artifact(armor_id, armor)?;
+        Ok(self)
+    }
+
+    pub fn remove_artifact_armor(&mut self, armor_id: ArtifactArmorId) -> Result<&mut Self, CharacterMutationError> {
+        self.armor.remove_artifact(armor_id)?;
         Ok(self)
     }
 }

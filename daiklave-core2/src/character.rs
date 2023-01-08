@@ -999,7 +999,9 @@ impl<'view, 'source> Character<'source> {
                 self.exaltation
                     .add_artifact_weapon(*artifact_weapon_id, artifact_memo.as_ref())?;
             }
-            ArtifactMemo::Armor(_, _) => todo!(),
+            ArtifactMemo::Armor(artifact_armor_id, artifact_memo) => {
+                self.exaltation.add_artifact_armor(*artifact_armor_id, artifact_memo.as_ref())?;
+            }
         }
         Ok(self)
     }
@@ -1014,7 +1016,9 @@ impl<'view, 'source> Character<'source> {
             ArtifactId::Weapon(artifact_weapon_id) => {
                 self.exaltation.remove_artifact_weapon(artifact_weapon_id)?;
             }
-            ArtifactId::Armor(_) => todo!(),
+            ArtifactId::Armor(artifact_armor_id) => {
+                self.exaltation.remove_artifact_armor(artifact_armor_id)?;
+            }
         }
         Ok(self)
     }
@@ -1036,7 +1040,17 @@ impl<'view, 'source> Character<'source> {
                     Ok(())
                 }
             }
-            ArtifactId::Armor(_) => todo!(),
+            ArtifactId::Armor(artifact_armor_id) => {
+                if let Some(armor) = self.armor().get(ArmorId::Artifact(artifact_armor_id)) {
+                    if armor.is_equipped() {
+                        Err(CharacterMutationError::ArmorError(ArmorError::RemoveEquipped))
+                    } else {
+                        Ok(())
+                    }
+                } else {
+                    Err(CharacterMutationError::ArmorError(ArmorError::NotFound))
+                }
+            }
         }
     }
 

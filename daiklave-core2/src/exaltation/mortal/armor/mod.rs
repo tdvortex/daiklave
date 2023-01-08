@@ -1,6 +1,6 @@
 use std::{collections::{HashMap, hash_map::Entry}};
 
-use crate::{armor::{armor_item::{BaseArmorId, artifact::{ArtifactArmorId, ArtifactArmorNoAttunement}, EquippedArmorNoAttunement, mundane::{MundaneArmor, MundaneArmorMemo}, ArmorItem, ArmorType, ArmorId}, ArmorError}, CharacterMutationError};
+use crate::{armor::{armor_item::{BaseArmorId, artifact::{ArtifactArmorId, ArtifactArmorNoAttunement, ArtifactArmor, ArtifactError}, EquippedArmorNoAttunement, mundane::{MundaneArmor, MundaneArmorMemo}, ArmorItem, ArmorType, ArmorId}, ArmorError}, CharacterMutationError};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct MortalArmor<'source> {
@@ -128,5 +128,26 @@ impl<'source> MortalArmor<'source> {
 
         self.equipped = Some(unstowed);
         Ok(self)
+    }
+
+    pub fn add_artifact(&mut self, armor_id: ArtifactArmorId, armor: ArtifactArmor<'source>) -> Result<&mut Self, CharacterMutationError> {
+        if self.worn_armor().map_or(false, |item| item.id() == ArmorId::Artifact(armor_id)) {
+            Err(CharacterMutationError::ArtifactError(ArtifactError::NamedArtifactsUnique))
+        } else if let Entry::Vacant(e) = self.unequipped_artifact.entry(armor_id) {
+            e.insert(armor.0);
+            Ok(self)
+        } else {
+            Err(CharacterMutationError::ArmorError(ArmorError::DuplicateArmor))
+        }
+    }
+
+    pub fn remove_artifact(&mut self, armor_id: ArtifactArmorId) -> Result<&mut Self, CharacterMutationError> {
+        if self.unequipped_artifact.remove(&armor_id).is_some() {
+            Ok(self)
+        } else if self.worn_armor().map_or(false, |item| item.id() == ArmorId::Artifact(armor_id)) {
+            Err(CharacterMutationError::ArmorError(ArmorError::RemoveEquipped))
+        } else {
+            Err(CharacterMutationError::ArmorError(ArmorError::NotFound))
+        }
     }
 }
