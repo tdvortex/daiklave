@@ -14,4 +14,14 @@ impl CharmCost {
     pub fn new(cost_type: CharmCostType, amount: u8) -> Self {
         Self { cost_type, amount }
     }
+
+    /// The type of resource that must be spent.
+    pub fn cost_type(&self) -> CharmCostType {
+        self.cost_type
+    }
+
+    /// The amount of the resource that must be spent.
+    pub fn amount(&self) -> u8 {
+        self.amount
+    }
 }
