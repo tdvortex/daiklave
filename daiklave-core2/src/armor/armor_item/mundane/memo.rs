@@ -1,7 +1,7 @@
 use serde::{Serialize, Deserialize};
 
+use crate::{armor::armor_item::{base::builder::BaseArmor}};
+
 /// A piece of mundane armor.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct MundaneArmorMemo {
-    name: String,
-}
+pub struct MundaneArmorMemo(pub(crate) BaseArmor);

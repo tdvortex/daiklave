@@ -1,4 +1,4 @@
-use daiklave_core2::{CharacterEventSource, artifact::{ArtifactMemo, MagicMaterial, ArtifactId}, book_reference::{BookReference, Book}, CharacterMutation, unique_id::UniqueId, armor::{armor_item::{ArmorItem, ArmorId, BaseArmorId, artifact::ArtifactArmorId}, ArmorWeightClass}};
+use daiklave_core2::{CharacterEventSource, artifact::{ArtifactMemo, MagicMaterial, ArtifactId}, book_reference::{BookReference, Book}, CharacterMutation, unique_id::UniqueId, armor::{armor_item::{ArmorItem, ArmorId, BaseArmorId, artifact::ArtifactArmorId, ArmorTag, ArmorWeightClass}}};
 
 #[test]
 fn test_armor() {
@@ -27,20 +27,18 @@ fn test_armor() {
     character_view.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
-6
+
     // Check the properties of the armor
     assert_eq!(character_view.armor().iter().next().unwrap(), (ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1)))));
     let chain_shirt = character_view.armor().worn().unwrap().1;
     assert_eq!(chain_shirt.id(), ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1))));
-    assert_eq!(chain_shirt.name(), "Chain Shirt");
-    assert_eq!(chain_shirt.book_reference(), BookReference::new(Book::CoreRulebook, 592));
+    assert_eq!(chain_shirt.name(), "Chain Shirt (Mundane)");
+    assert_eq!(chain_shirt.book_reference().unwrap(), BookReference::new(Book::CoreRulebook, 592));
     assert_eq!(chain_shirt.soak_bonus(), 3);
     assert_eq!(chain_shirt.mobility_penalty(), 0);
     assert_eq!(chain_shirt.hardness(), 0);
     assert_eq!(chain_shirt.attunement_cost(), None);
-    let tags = chain_shirt.tags();
-    assert_eq!(tags.next(), ArmorTag::Concealable);
-    assert!(tags.next().is_none());
+    assert_eq!(chain_shirt.tags().collect::<Vec<ArmorTag>>(), vec![ArmorTag::Concealable]);
     assert_eq!(chain_shirt.hearthstone_slots(), 0);
     assert!(chain_shirt.is_equipped());
 
@@ -72,6 +70,7 @@ fn test_armor() {
     let mutation = CharacterMutation::AddArtifact(artifact_articulated_plate);
     event_source.as_character_view().unwrap().check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
+    let character_view = event_source.as_character_view().unwrap();
 
     // Equip the artifact armor
     let mutation = CharacterMutation::EquipArmor(ArmorId::Artifact(ArtifactArmorId(UniqueId::Placeholder(1))));

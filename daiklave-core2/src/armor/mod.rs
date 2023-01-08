@@ -1,8 +1,5 @@
 /// Properties of individual pieces of armor
 pub mod armor_item;
-mod armor_weight;
-
-pub use armor_weight::ArmorWeightClass;
 
 use crate::exaltation::Exaltation;
 
