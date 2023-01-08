@@ -50,55 +50,60 @@ impl<'source> ArmorItem<'source> {
 
     /// The Id of the armor item
     pub fn id(&self) -> ArmorId {
-        todo!()
+        self.0.id()
     }
 
     /// The name of the armor item. For artifacts, this will return the name of
     /// the unique armor item (like "Brilliant Sentinel") not the name of the
     /// base armor item (like "Articulated Plate").
     pub fn name(&self) -> &'source str {
-        todo!()
+        self.0.name()
     }
 
     /// The book reference for the armor item, if any.
     pub fn book_reference(&self) -> Option<BookReference> {
-        todo!()
+        self.0.book_reference()
+    }
+
+    /// The weight class of the armor item.
+    pub fn weight_class(&self) -> ArmorWeightClass {
+        self.0.weight_class()
     }
 
     /// The bonus to soak granted from wearing the armor item.
     pub fn soak_bonus(&self) -> u8 {
-        todo!()
+        self.0.soak_bonus()
     }
 
     /// The mobility penalty incurred from wearing the armor item.
     pub fn mobility_penalty(&self) -> i8 {
-        todo!()
+        self.0.mobility_penalty()
     }
 
     /// The hardness from wearing the armor. (Zero for mundane armor.)
     pub fn hardness(&self) -> u8 {
-        todo!()
+        self.0.hardness()
     }
 
     /// The number of motes it takes to attune to this armor item.
     /// None for mundane armor.
     pub fn attunement_cost(&self) -> Option<u8> {
-        todo!()
+        self.0.attunement_cost()
     }
 
     /// An iterator over the armor item's tags. 
     pub fn tags(&self) -> impl Iterator<Item = ArmorTag> + '_ {
-        vec![].into_iter()
+        self.0.tags()
     }
 
     /// The total number of hearthstone slots in the armor item. Zero for
     /// mundane armor.
     pub fn hearthstone_slots(&self) -> u8 {
-        todo!()
+        self.0.hearthstone_slots()
     }
 
     /// Returns true if the armor item is currently equipped.
     pub fn is_equipped(&self) -> bool {
-        todo!()
+        self.1
     }
 }
