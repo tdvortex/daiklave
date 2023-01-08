@@ -3,6 +3,11 @@ mod with_damage_type;
 mod with_handedness;
 mod with_weight;
 
+pub use with_attack::BaseWeaponBuilderWithAttack;
+pub use with_damage_type::BaseWeaponBuilderWithDamageType;
+pub use with_handedness::BaseWeaponBuilderWithHandedness;
+pub use with_weight::BaseWeaponBuilderWithWeight;
+
 use std::collections::HashSet;
 
 use crate::{
@@ -13,8 +18,6 @@ use crate::{
         weight_class::WeaponWeightClass,
     },
 };
-
-use self::with_weight::BaseWeaponBuilderWithWeight;
 
 /// A builder for a base weapon, either a base mundane weapon (like "sword")
 /// or a base artifact weapon (like "daiklave"). Required fields must be

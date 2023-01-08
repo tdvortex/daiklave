@@ -10,7 +10,7 @@ use crate::{
         handedness::WeaponHandedness,
         mundane::{
             MundaneWeapon, NaturalMundaneWeapon, OneHandedMundaneWeapon,
-            TwoHandedMundaneWeapon, WornMundaneWeapon,
+            TwoHandedMundaneWeapon, WornMundaneWeapon, MundaneWeaponHandedness,
         },
         range::{RangeBand, WeaponRange},
         tag::OptionalWeaponTag,
@@ -72,7 +72,8 @@ impl BaseWeaponBuilderWithAttack {
     pub fn build_mundane(self) -> MundaneWeapon {
         match self.handedness {
             WeaponHandedness::Natural => {
-                MundaneWeapon::Natural(NaturalMundaneWeapon(BaseWeapon {
+                MundaneWeapon(
+                MundaneWeaponHandedness::Natural(NaturalMundaneWeapon(BaseWeapon {
                     name: self.name,
                     book_reference: self.book_reference,
                     weight_class: self.weight_class,
@@ -80,9 +81,9 @@ impl BaseWeaponBuilderWithAttack {
                     primary_ability: self.primary_attack,
                     damage_type: self.damage_type,
                     tags: self.tags,
-                }))
+                })))
             }
-            WeaponHandedness::Worn => MundaneWeapon::Worn(
+            WeaponHandedness::Worn => MundaneWeapon(MundaneWeaponHandedness::Worn(
                 WornMundaneWeapon(BaseWeapon {
                     name: self.name,
                     book_reference: self.book_reference,
@@ -93,8 +94,8 @@ impl BaseWeaponBuilderWithAttack {
                     tags: self.tags,
                 }),
                 false,
-            ),
-            WeaponHandedness::OneHanded => MundaneWeapon::OneHanded(
+            )),
+            WeaponHandedness::OneHanded => MundaneWeapon(MundaneWeaponHandedness::OneHanded(
                 OneHandedMundaneWeapon(BaseWeapon {
                     name: self.name,
                     book_reference: self.book_reference,
@@ -105,8 +106,8 @@ impl BaseWeaponBuilderWithAttack {
                     tags: self.tags,
                 }),
                 None,
-            ),
-            WeaponHandedness::TwoHanded => MundaneWeapon::TwoHanded(
+            )),
+            WeaponHandedness::TwoHanded => MundaneWeapon(MundaneWeaponHandedness::TwoHanded(
                 TwoHandedMundaneWeapon(BaseWeapon {
                     name: self.name,
                     book_reference: self.book_reference,
@@ -117,50 +118,26 @@ impl BaseWeaponBuilderWithAttack {
                     tags: self.tags,
                 }),
                 false,
-            ),
+            )),
         }
     }
 
     /// Completes the builder process, returning a new
     /// BaseArtifactWeapon.
     pub fn build_artifact(self) -> BaseArtifactWeapon {
-        match self.handedness {
-            WeaponHandedness::Natural => BaseArtifactWeapon::Natural(BaseWeapon {
-                name: self.name,
-                book_reference: self.book_reference,
-                weight_class: self.weight_class,
-                range_bands: self.attack_range,
-                primary_ability: self.primary_attack,
-                damage_type: self.damage_type,
-                tags: self.tags,
-            }),
-            WeaponHandedness::Worn => BaseArtifactWeapon::Worn(BaseWeapon {
-                name: self.name,
-                book_reference: self.book_reference,
-                weight_class: self.weight_class,
-                range_bands: self.attack_range,
-                primary_ability: self.primary_attack,
-                damage_type: self.damage_type,
-                tags: self.tags,
-            }),
-            WeaponHandedness::OneHanded => BaseArtifactWeapon::OneHanded(BaseWeapon {
-                name: self.name,
-                book_reference: self.book_reference,
-                weight_class: self.weight_class,
-                range_bands: self.attack_range,
-                primary_ability: self.primary_attack,
-                damage_type: self.damage_type,
-                tags: self.tags,
-            }),
-            WeaponHandedness::TwoHanded => BaseArtifactWeapon::TwoHanded(BaseWeapon {
-                name: self.name,
-                book_reference: self.book_reference,
-                weight_class: self.weight_class,
-                range_bands: self.attack_range,
-                primary_ability: self.primary_attack,
-                damage_type: self.damage_type,
-                tags: self.tags,
-            }),
+        let base_weapon = BaseWeapon {
+            name: self.name,
+            book_reference: self.book_reference,
+            weight_class: self.weight_class,
+            range_bands: self.attack_range,
+            primary_ability: self.primary_attack,
+            damage_type: self.damage_type,
+            tags: self.tags,
+        };
+
+        BaseArtifactWeapon {
+            handedness: self.handedness,
+            base_weapon,
         }
     }
 }

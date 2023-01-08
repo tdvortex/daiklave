@@ -3,9 +3,12 @@ mod with_heartstone_slots;
 mod with_magic_material;
 mod with_merit_dots;
 
-use crate::{book_reference::BookReference, weapons::weapon::base::BaseWeaponId};
+pub use with_base_weapon::ArtifactWeaponBuilderWithBaseWeapon;
+pub use with_heartstone_slots::ArtifactWeaponBuilderWithHearthstoneSlots;
+pub use with_magic_material::ArtifactWeaponBuilderWithMagicMaterial;
+pub use with_merit_dots::ArtifactWeaponBuilderWithMeritDots;
 
-use self::with_base_weapon::ArtifactWeaponBuilderWithBaseWeapon;
+use crate::{book_reference::BookReference, weapons::weapon::base::BaseWeaponId};
 
 use super::base::BaseArtifactWeapon;
 

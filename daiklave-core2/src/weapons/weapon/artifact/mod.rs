@@ -1,6 +1,5 @@
 mod base;
-/// A sequential set of builder types to construct a new artifact weapon.
-pub mod builder;
+pub(crate) mod builder;
 mod grouped;
 mod id;
 mod memo;
@@ -16,12 +15,9 @@ pub(crate) use grouped::{
     NonnaturalArtifactWeaponNoAttunement, NonnaturalArtifactWeaponNoAttunementMemo,
 };
 pub use id::ArtifactWeaponId;
-pub(crate) use memo::ArtifactWeapon;
-pub use newtype::{
-    NaturalArtifactWeapon, OneHandedArtifactWeapon, TwoHandedArtifactWeapon, WornArtifactWeapon,
-};
+pub use memo::ArtifactWeapon;
 pub(crate) use newtype::{
-    NaturalArtifactWeaponView, OneHandedArtifactWeaponView, TwoHandedArtifactWeaponView,
+    NaturalArtifactWeapon, OneHandedArtifactWeapon, TwoHandedArtifactWeapon, WornArtifactWeapon,NaturalArtifactWeaponView, OneHandedArtifactWeaponView, TwoHandedArtifactWeaponView,
     WornArtifactWeaponView,
 };
 

@@ -5,7 +5,7 @@ use crate::{
         artifact::{
             base::BaseArtifactWeapon, named::NamedArtifactWeaponMemo, ArtifactWeapon,
             NaturalArtifactWeapon, OneHandedArtifactWeapon, TwoHandedArtifactWeapon,
-            WornArtifactWeapon,
+            WornArtifactWeapon, memo::ArtifactWeaponHandedness,
         },
         handedness::WeaponHandedness,
         BaseWeaponId,
@@ -50,16 +50,7 @@ impl ArtifactWeaponBuilderWithHearthstoneSlots {
 
     /// Completes the builder, returning an Artifact Weapon.
     pub fn build(self) -> ArtifactWeapon {
-        let (handedness, base_weapon) = match self.base_weapon {
-            BaseArtifactWeapon::Natural(base_weapon) => (WeaponHandedness::Natural, base_weapon),
-            BaseArtifactWeapon::Worn(base_weapon) => (WeaponHandedness::Worn, base_weapon),
-            BaseArtifactWeapon::OneHanded(base_weapon) => {
-                (WeaponHandedness::OneHanded, base_weapon)
-            }
-            BaseArtifactWeapon::TwoHanded(base_weapon) => {
-                (WeaponHandedness::TwoHanded, base_weapon)
-            }
-        };
+        let (handedness, base_weapon) = (self.base_weapon.handedness, self.base_weapon.base_weapon);
 
         let empty_hearthstone_slots = (0..self.hearthstone_slots).fold(Vec::new(), |mut v, _| {
             v.push(None);
@@ -80,16 +71,16 @@ impl ArtifactWeaponBuilderWithHearthstoneSlots {
 
         match handedness {
             WeaponHandedness::Natural => {
-                ArtifactWeapon::Natural(NaturalArtifactWeapon(named_artifact_weapon))
+                ArtifactWeapon(ArtifactWeaponHandedness::Natural(NaturalArtifactWeapon(named_artifact_weapon)))
             }
             WeaponHandedness::Worn => {
-                ArtifactWeapon::Worn(WornArtifactWeapon(named_artifact_weapon), false)
+                ArtifactWeapon(ArtifactWeaponHandedness::Worn(WornArtifactWeapon(named_artifact_weapon), false))
             }
             WeaponHandedness::OneHanded => {
-                ArtifactWeapon::OneHanded(OneHandedArtifactWeapon(named_artifact_weapon), None)
+                ArtifactWeapon(ArtifactWeaponHandedness::OneHanded(OneHandedArtifactWeapon(named_artifact_weapon), None))
             }
             WeaponHandedness::TwoHanded => {
-                ArtifactWeapon::TwoHanded(TwoHandedArtifactWeapon(named_artifact_weapon), false)
+                ArtifactWeapon(ArtifactWeaponHandedness::TwoHanded(TwoHandedArtifactWeapon(named_artifact_weapon), false))
             }
         }
     }

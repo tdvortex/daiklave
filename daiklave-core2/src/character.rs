@@ -994,7 +994,7 @@ impl<'view, 'source> Character<'source> {
         match artifact {
             Artifact::Weapon(artifact_weapon_id, artifact_memo) => {
                 self.exaltation
-                    .add_artifact_weapon(*artifact_weapon_id, artifact_memo.as_ref())?;
+                    .add_artifact_weapon(*artifact_weapon_id, artifact_memo.0.as_ref())?;
             }
             Artifact::Armor(artifact_armor_id, artifact_memo) => {
                 self.exaltation

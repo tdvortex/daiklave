@@ -12,7 +12,7 @@ use crate::{
             mundane::{
                 HandlessMundaneWeapon, MundaneWeapon, NaturalMundaneWeaponView,
                 NonnaturalMundaneWeapon, OneHandedMundaneWeaponView, TwoHandedMundaneWeaponView,
-                WornMundaneWeaponView,
+                WornMundaneWeaponView, MundaneWeaponHandedness,
             },
             ArtifactWeaponId, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId,
         },
@@ -70,21 +70,21 @@ impl<'view, 'source> ExaltWeapons<'source> {
         weapon_id: BaseWeaponId,
         weapon: &'source MundaneWeapon,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let nonnatural_mundane = match weapon {
-            MundaneWeapon::Natural(weapon) => {
+        let nonnatural_mundane = match &weapon.0 {
+            MundaneWeaponHandedness::Natural(weapon) => {
                 let handless_mundane =
                     HandlessMundaneWeapon::Natural(NaturalMundaneWeaponView(&weapon.0));
                 self.equipped
                     .add_natural_mundane_weapon(weapon_id, handless_mundane)?;
                 return Ok(self);
             }
-            MundaneWeapon::Worn(weapon, _) => {
+            MundaneWeaponHandedness::Worn(weapon, _) => {
                 NonnaturalMundaneWeapon::Worn(WornMundaneWeaponView(&weapon.0))
             }
-            MundaneWeapon::OneHanded(weapon, _) => {
+            MundaneWeaponHandedness::OneHanded(weapon, _) => {
                 NonnaturalMundaneWeapon::OneHanded(OneHandedMundaneWeaponView(&weapon.0))
             }
-            MundaneWeapon::TwoHanded(weapon, _) => {
+            MundaneWeaponHandedness::TwoHanded(weapon, _) => {
                 NonnaturalMundaneWeapon::TwoHanded(TwoHandedMundaneWeaponView(&weapon.0))
             }
         };

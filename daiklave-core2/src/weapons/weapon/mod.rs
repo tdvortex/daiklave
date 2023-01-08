@@ -6,9 +6,8 @@ use crate::{
 };
 
 use self::{
-    artifact::builder::ArtifactWeaponBuilder,
     base::{builder::BaseWeaponBuilder, BaseWeapon},
-    range::WeaponRange,
+    range::WeaponRange, artifact::builder::ArtifactWeaponBuilder,
 };
 
 mod ability;
@@ -16,6 +15,9 @@ mod ability;
 /// Traits that are specific to Artifact weapons.
 pub mod artifact;
 mod base;
+
+/// Builder structs for weapons.
+pub mod builder;
 mod damage_type;
 pub(crate) mod equipped;
 mod handedness;
