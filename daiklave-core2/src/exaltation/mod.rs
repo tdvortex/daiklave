@@ -28,7 +28,7 @@ use crate::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
         EquipHand, Equipped, Weapon, WeaponId,
     },
-    CharacterMutationError,
+    CharacterMutationError, artifact::wonders::{WonderId, OwnedWonder},
 };
 
 use self::{
@@ -156,12 +156,14 @@ impl<'source> Exaltation<'source> {
         // Remove all artifact attunements
         let weapons = std::mem::take(exalt.weapons_mut()).into();
         let armor = std::mem::take(exalt.armor_mut()).into();
+        let wonders = std::mem::take(exalt.wonders_mut()).into();
 
         *self = Exaltation::Mortal(Box::new(Mortal {
             martial_arts_styles,
             sorcery,
             weapons,
             armor,
+            wonders,
         }));
         Ok(self)
     }
@@ -389,6 +391,7 @@ impl<'view, 'source> Exaltation<'source> {
                         .collect(),
                     ExaltType::Solar(solar),
                     std::mem::take(&mut mortal.weapons).into(),
+                    std::mem::take(&mut mortal.wonders).into()
                 )))
             }
             Exaltation::Exalt(exalt) => {
@@ -400,6 +403,7 @@ impl<'view, 'source> Exaltation<'source> {
                     std::mem::take(exalt.martial_arts_styles_mut()),
                     ExaltType::Solar(solar),
                     std::mem::take(exalt.weapons_mut()),
+                    std::mem::take(exalt.wonders_mut()),
                 )));
             }
         }
@@ -743,5 +747,19 @@ impl<'view, 'source> Exaltation<'source> {
             }
         }
         Ok(self)
+    }
+
+    pub fn wonders_iter(&self) -> impl Iterator<Item = WonderId> + '_ {
+        match self {
+            Exaltation::Mortal(mortal) => mortal.wonders_iter().collect::<Vec<WonderId>>().into_iter(),
+            Exaltation::Exalt(exalt) => exalt.wonders_iter().collect::<Vec<WonderId>>().into_iter(),
+        }
+    }
+
+    pub fn get_wonder(&self, wonder_id: WonderId) -> Option<OwnedWonder<'source>> {
+        match self {
+            Exaltation::Mortal(mortal) => mortal.get_wonder(wonder_id),
+            Exaltation::Exalt(exalt) => exalt.get_wonder(wonder_id),
+        }
     }
 }

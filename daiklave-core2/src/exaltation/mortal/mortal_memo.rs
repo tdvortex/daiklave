@@ -9,7 +9,7 @@ use crate::{
 
 use super::{
     armor::MortalArmorMemo, martial_arts::MortalMartialArtistMemo, weapons::MortalWeaponsMemo,
-    Mortal,
+    Mortal, wonders::MortalWondersMemo,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -18,6 +18,7 @@ pub(crate) struct MortalMemo {
     martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtistMemo>,
     sorcery: Option<TerrestrialCircleSorcererMemo>,
     weapons: MortalWeaponsMemo,
+    wonders: MortalWondersMemo,
 }
 
 impl<'source> MortalMemo {
@@ -26,12 +27,14 @@ impl<'source> MortalMemo {
         martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtistMemo>,
         sorcery: Option<TerrestrialCircleSorcererMemo>,
         weapons: MortalWeaponsMemo,
+        wonders: MortalWondersMemo,
     ) -> Self {
         Self {
             armor,
             martial_arts_styles,
             sorcery,
             weapons,
+            wonders,
         }
     }
 
@@ -46,6 +49,7 @@ impl<'source> MortalMemo {
             sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_ref()),
             weapons: self.weapons.as_ref(),
             armor: self.armor.as_ref(),
+            wonders: self.wonders.as_ref(),
         }
     }
 }

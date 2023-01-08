@@ -6,6 +6,9 @@ use crate::{
 mod id;
 mod magic_material;
 
+/// Artifacts which are not weapons, armor, or warstriders.
+pub mod wonders;
+
 pub use id::ArtifactId;
 pub use magic_material::MagicMaterial;
 

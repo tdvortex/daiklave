@@ -6,7 +6,7 @@ use crate::martial_arts::MartialArtsStyleId;
 
 use super::{
     armor::ExaltArmorMemo, essence::EssenceMemo, exalt_type::ExaltTypeMemo,
-    martial_arts::ExaltMartialArtistMemo, weapons::ExaltWeaponsMemo, Exalt,
+    martial_arts::ExaltMartialArtistMemo, weapons::ExaltWeaponsMemo, Exalt, wonders::ExaltWondersMemo,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -16,6 +16,7 @@ pub(crate) struct ExaltMemo {
     martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistMemo>,
     exalt_type: ExaltTypeMemo,
     weapons: ExaltWeaponsMemo,
+    wonders: ExaltWondersMemo,
 }
 
 impl<'source> ExaltMemo {
@@ -25,6 +26,7 @@ impl<'source> ExaltMemo {
         martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistMemo>,
         exalt_type: ExaltTypeMemo,
         weapons: ExaltWeaponsMemo,
+        wonders: ExaltWondersMemo,
     ) -> Self {
         Self {
             armor,
@@ -32,6 +34,7 @@ impl<'source> ExaltMemo {
             martial_arts_styles,
             exalt_type,
             weapons,
+            wonders,
         }
     }
 
@@ -45,6 +48,7 @@ impl<'source> ExaltMemo {
                 .collect(),
             self.exalt_type.as_ref(),
             self.weapons.as_ref(),
+            self.wonders.as_ref(),
         )
     }
 }

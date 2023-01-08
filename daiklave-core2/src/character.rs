@@ -7,7 +7,7 @@ use crate::{
         armor_item::{artifact::ArtifactError, mundane::MundaneArmor, ArmorId, BaseArmorId},
         Armor, ArmorError,
     },
-    artifact::{Artifact, ArtifactId},
+    artifact::{Artifact, ArtifactId, wonders::Wonders},
     attributes::{AttributeName, Attributes, SetAttributesError},
     craft::Craft,
     exaltation::{
@@ -1180,5 +1180,10 @@ impl<'view, 'source> Character<'source> {
         self.check_unequip_armor()?;
         self.exaltation.unequip_armor()?;
         Ok(self)
+    }
+
+    /// Gets the character's artifact Wonders.
+    pub fn wonders(&'view self) -> Wonders<'view, 'source> {
+        Wonders(&self.exaltation)
     }
 }

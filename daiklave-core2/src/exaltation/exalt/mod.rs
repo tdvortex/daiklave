@@ -10,11 +10,13 @@ mod exalt_memo;
 pub(crate) mod martial_arts;
 mod sorcery;
 mod weapons;
+mod wonders;
 
 pub(crate) use armor::ExaltArmor;
 pub(crate) use exalt_memo::ExaltMemo;
 pub(crate) use sorcery::ExaltSorcery;
 pub(crate) use weapons::{ExaltEquippedWeapons, ExaltHands, ExaltUnequippedWeapons, ExaltWeapons};
+pub(crate) use wonders::ExaltWonders;
 
 use std::collections::HashMap;
 
@@ -45,7 +47,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError,
+    CharacterMutationError, artifact::wonders::{WonderId, OwnedWonder},
 };
 
 use self::{
@@ -64,6 +66,7 @@ pub(crate) struct Exalt<'source> {
     martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
     exalt_type: ExaltType<'source>,
     weapons: ExaltWeapons<'source>,
+    wonders: ExaltWonders<'source>,
 }
 
 impl<'view, 'source> Exalt<'source> {
@@ -73,6 +76,7 @@ impl<'view, 'source> Exalt<'source> {
         martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
         exalt_type: ExaltType<'source>,
         weapons: ExaltWeapons<'source>,
+        wonders: ExaltWonders<'source>,
     ) -> Self {
         Self {
             essence,
@@ -80,6 +84,7 @@ impl<'view, 'source> Exalt<'source> {
             exalt_type,
             weapons,
             armor,
+            wonders,
         }
     }
 
@@ -93,6 +98,7 @@ impl<'view, 'source> Exalt<'source> {
                 .collect(),
             self.exalt_type.as_memo(),
             self.weapons.as_memo(),
+            self.wonders.as_memo(),
         )
     }
 
@@ -704,5 +710,17 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn armor_mut(&mut self) -> &mut ExaltArmor<'source> {
         &mut self.armor
+    }
+
+    pub fn wonders_iter(&self) -> impl Iterator<Item = WonderId> + '_ {
+        self.wonders.iter()
+    }
+
+    pub fn get_wonder(&self, wonder_id: WonderId) -> Option<OwnedWonder<'source>> {
+        self.wonders.get(wonder_id)
+    }
+
+    pub fn wonders_mut(&mut self) -> &mut ExaltWonders<'source> {
+        &mut self.wonders
     }
 }

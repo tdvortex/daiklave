@@ -2,6 +2,7 @@ mod armor;
 pub(crate) mod martial_arts;
 mod mortal_memo;
 mod weapons;
+mod wonders;
 use std::collections::HashMap;
 pub(crate) use weapons::{
     MortalEquippedWeapons, MortalHands, MortalUnequippedWeapons, MortalWeapons,
@@ -9,6 +10,7 @@ pub(crate) use weapons::{
 
 pub(crate) use armor::MortalArmor;
 pub(crate) use mortal_memo::MortalMemo;
+pub(crate) use wonders::MortalWonders;
 
 use crate::{
     abilities::AbilityRating,
@@ -33,7 +35,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError,
+    CharacterMutationError, artifact::wonders::{WonderId, OwnedWonder},
 };
 
 use self::martial_arts::MortalMartialArtist;
@@ -44,6 +46,7 @@ pub(crate) struct Mortal<'source> {
     pub martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtist<'source>>,
     pub sorcery: Option<TerrestrialCircleSorcerer<'source>>,
     pub weapons: MortalWeapons<'source>,
+    pub wonders: MortalWonders<'source>,
 }
 
 impl<'source> Mortal<'source> {
@@ -56,6 +59,7 @@ impl<'source> Mortal<'source> {
                 .collect(),
             self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
             self.weapons.as_memo(),
+            self.wonders.as_memo(),
         )
     }
 
@@ -305,5 +309,13 @@ impl<'source> Mortal<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.armor.remove_artifact(armor_id)?;
         Ok(self)
+    }
+
+    pub fn wonders_iter(&self) -> impl Iterator<Item = WonderId> + '_ {
+        self.wonders.iter()
+    }
+
+    pub fn get_wonder(&self, wonder_id: WonderId) -> Option<OwnedWonder<'source>> {
+        self.wonders.get(wonder_id)
     }
 }
