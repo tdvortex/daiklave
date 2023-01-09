@@ -3,6 +3,8 @@ use crate::{
     weapons::weapon::{artifact::ArtifactWeapon, ArtifactWeaponId},
 };
 
+/// Builders for Wonders and Warstriders.
+pub mod builder;
 mod id;
 mod magic_material;
 
@@ -12,7 +14,7 @@ pub mod wonders;
 pub use id::ArtifactId;
 pub use magic_material::MagicMaterial;
 
-use self::wonders::{WonderId, Wonder};
+use self::{wonders::{WonderId, Wonder}, builder::wonder::WonderBuilder};
 
 /// A magical, Essence-infused object.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -23,4 +25,17 @@ pub enum Artifact {
     Armor(ArtifactArmorId, ArtifactArmor),
     /// A catch-all for other artifacts.
     Wonder(WonderId, Wonder),
+}
+
+impl Artifact {
+    /// Starts constructing a Wonder artifact.
+    pub fn wonder(name: &str) -> WonderBuilder {
+        WonderBuilder {
+            name: name.to_owned(),
+            book_reference: None,
+            lore: None,
+            magic_material: None,
+            hearthstone_slots: 0,
+        }
+    }
 }
