@@ -9,7 +9,7 @@ use crate::{
 
 use super::{
     armor::MortalArmorMemo, martial_arts::MortalMartialArtistMemo, weapons::MortalWeaponsMemo,
-    Mortal, wonders::MortalWondersMemo,
+    wonders::MortalWondersMemo, Mortal,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

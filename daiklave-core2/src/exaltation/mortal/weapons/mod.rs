@@ -10,9 +10,9 @@ use crate::{
             },
             equipped::{EquippedOneHandedWeaponNoAttunement, EquippedTwoHandedWeaponNoAttunement},
             mundane::{
-                HandlessMundaneWeapon, MundaneWeapon, NaturalMundaneWeaponView,
-                NonnaturalMundaneWeapon, OneHandedMundaneWeaponView, TwoHandedMundaneWeaponView,
-                WornMundaneWeaponView, MundaneWeaponHandedness,
+                HandlessMundaneWeapon, MundaneWeapon, MundaneWeaponHandedness,
+                NaturalMundaneWeaponView, NonnaturalMundaneWeapon, OneHandedMundaneWeaponView,
+                TwoHandedMundaneWeaponView, WornMundaneWeaponView,
             },
             ArtifactWeaponId, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId,
         },

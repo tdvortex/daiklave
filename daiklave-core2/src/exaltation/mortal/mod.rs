@@ -3,7 +3,7 @@ pub(crate) mod martial_arts;
 mod mortal_memo;
 mod weapons;
 mod wonders;
-use std::collections::{HashMap, hash_map::Entry};
+use std::collections::{hash_map::Entry, HashMap};
 pub(crate) use weapons::{
     MortalEquippedWeapons, MortalHands, MortalUnequippedWeapons, MortalWeapons,
 };
@@ -19,6 +19,7 @@ use crate::{
         mundane::MundaneArmor,
         ArmorId, ArmorItem, BaseArmorId,
     },
+    artifact::wonders::{OwnedWonder, Wonder, WonderId},
     martial_arts::{
         AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId,
         RemoveMartialArtsStyleError, SetMartialArtsDotsError,
@@ -35,7 +36,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError, artifact::wonders::{WonderId, OwnedWonder, Wonder},
+    CharacterMutationError,
 };
 
 use self::martial_arts::MortalMartialArtist;
@@ -319,17 +320,31 @@ impl<'source> Mortal<'source> {
         self.wonders.get(wonder_id)
     }
 
-    pub fn add_wonder(&mut self, wonder_id: WonderId, wonder: &'source Wonder) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_wonder(
+        &mut self,
+        wonder_id: WonderId,
+        wonder: &'source Wonder,
+    ) -> Result<&mut Self, CharacterMutationError> {
         if let Entry::Vacant(e) = self.wonders.0.entry(wonder_id) {
             e.insert(wonder.0.as_ref());
             Ok(self)
         } else {
-            Err(CharacterMutationError::ArtifactError(ArtifactError::NamedArtifactsUnique))
+            Err(CharacterMutationError::ArtifactError(
+                ArtifactError::NamedArtifactsUnique,
+            ))
         }
     }
 
-    pub fn remove_wonder(&mut self, wonder_id: WonderId) -> Result<&mut Self, CharacterMutationError> {
-        self.wonders.0.remove(&wonder_id).ok_or(CharacterMutationError::ArtifactError(ArtifactError::NotFound))?;
+    pub fn remove_wonder(
+        &mut self,
+        wonder_id: WonderId,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.wonders
+            .0
+            .remove(&wonder_id)
+            .ok_or(CharacterMutationError::ArtifactError(
+                ArtifactError::NotFound,
+            ))?;
         Ok(self)
     }
 }

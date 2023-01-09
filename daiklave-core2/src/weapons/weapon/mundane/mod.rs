@@ -15,7 +15,7 @@ pub(crate) use grouped::{
 pub use memo::MundaneWeapon;
 pub(crate) use memo::MundaneWeaponHandedness;
 pub(crate) use newtype::unarmed;
-pub(crate)  use newtype::{
+pub(crate) use newtype::{
     NaturalMundaneWeapon, OneHandedMundaneWeapon, TwoHandedMundaneWeapon, WornMundaneWeapon,
 };
 pub(crate) use newtype::{

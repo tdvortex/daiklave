@@ -1,7 +1,13 @@
-use crate::{book_reference::BookReference, artifact::{MagicMaterial, wonders::{Wonder, WonderNoAttunementMemo}}};
+use crate::{
+    artifact::{
+        wonders::{Wonder, WonderNoAttunementMemo},
+        MagicMaterial,
+    },
+    book_reference::BookReference,
+};
 
 /// A builder to construct a Wonder. Note that unlike artifacts and weapons,
-/// magic materials are optional, but powers are not. Required fields (in 
+/// magic materials are optional, but powers are not. Required fields (in
 /// order) are name, merit dots, and powers. Hearthstone slots are also
 /// required but are defaulted to 0.
 pub struct WonderBuilder {
@@ -142,7 +148,10 @@ impl WonderBuilderWithPowers {
             book_reference: self.book_reference,
             lore: self.lore,
             powers: self.powers,
-            hearthstone_slots: (0..self.hearthstone_slots).fold(Vec::new(), |mut acc, _| {acc.push(None); acc}),
+            hearthstone_slots: (0..self.hearthstone_slots).fold(Vec::new(), |mut acc, _| {
+                acc.push(None);
+                acc
+            }),
             merit_dots: self.merit_dots,
             magic_material: self.magic_material,
         })

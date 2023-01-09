@@ -6,8 +6,9 @@ use crate::{
 };
 
 use self::{
+    artifact::builder::ArtifactWeaponBuilder,
     base::{builder::BaseWeaponBuilder, BaseWeapon},
-    range::WeaponRange, artifact::builder::ArtifactWeaponBuilder,
+    range::WeaponRange,
 };
 
 mod ability;

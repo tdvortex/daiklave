@@ -9,8 +9,8 @@ use crate::{
         damage_type::WeaponDamageType,
         handedness::WeaponHandedness,
         mundane::{
-            MundaneWeapon, NaturalMundaneWeapon, OneHandedMundaneWeapon,
-            TwoHandedMundaneWeapon, WornMundaneWeapon, MundaneWeaponHandedness,
+            MundaneWeapon, MundaneWeaponHandedness, NaturalMundaneWeapon, OneHandedMundaneWeapon,
+            TwoHandedMundaneWeapon, WornMundaneWeapon,
         },
         range::{RangeBand, WeaponRange},
         tag::OptionalWeaponTag,
@@ -71,9 +71,8 @@ impl BaseWeaponBuilderWithAttack {
     /// needed.
     pub fn build_mundane(self) -> MundaneWeapon {
         match self.handedness {
-            WeaponHandedness::Natural => {
-                MundaneWeapon(
-                MundaneWeaponHandedness::Natural(NaturalMundaneWeapon(BaseWeapon {
+            WeaponHandedness::Natural => MundaneWeapon(MundaneWeaponHandedness::Natural(
+                NaturalMundaneWeapon(BaseWeapon {
                     name: self.name,
                     book_reference: self.book_reference,
                     weight_class: self.weight_class,
@@ -81,8 +80,8 @@ impl BaseWeaponBuilderWithAttack {
                     primary_ability: self.primary_attack,
                     damage_type: self.damage_type,
                     tags: self.tags,
-                })))
-            }
+                }),
+            )),
             WeaponHandedness::Worn => MundaneWeapon(MundaneWeaponHandedness::Worn(
                 WornMundaneWeapon(BaseWeapon {
                     name: self.name,

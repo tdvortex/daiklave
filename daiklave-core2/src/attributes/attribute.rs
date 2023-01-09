@@ -1,4 +1,4 @@
-use super::{AttributeName, category::AttributeCategory};
+use super::{category::AttributeCategory, AttributeName};
 
 /// One attribute of a character.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

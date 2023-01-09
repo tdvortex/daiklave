@@ -1,6 +1,8 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{book_reference::BookReference, hearthstone::OwnedHearthstoneMemo, artifact::MagicMaterial};
+use crate::{
+    artifact::MagicMaterial, book_reference::BookReference, hearthstone::OwnedHearthstoneMemo,
+};
 
 use super::WonderNoAttunement;
 
@@ -17,14 +19,18 @@ pub(crate) struct WonderNoAttunementMemo {
 
 impl<'source> WonderNoAttunementMemo {
     pub fn as_ref(&'source self) -> WonderNoAttunement<'source> {
-        WonderNoAttunement { 
-            name: self.name.as_str(), 
+        WonderNoAttunement {
+            name: self.name.as_str(),
             book_reference: self.book_reference,
             lore: self.lore.as_deref(),
             powers: self.powers.as_ref(),
-            hearthstone_slots: self.hearthstone_slots.iter().map(|option| option.as_ref().map(|hearthstone| hearthstone.as_ref())).collect(),
+            hearthstone_slots: self
+                .hearthstone_slots
+                .iter()
+                .map(|option| option.as_ref().map(|hearthstone| hearthstone.as_ref()))
+                .collect(),
             merit_dots: self.merit_dots,
-            magic_material: self.magic_material, 
+            magic_material: self.magic_material,
         }
     }
 }

@@ -14,7 +14,10 @@ pub mod wonders;
 pub use id::ArtifactId;
 pub use magic_material::MagicMaterial;
 
-use self::{wonders::{WonderId, Wonder}, builder::wonder::WonderBuilder};
+use self::{
+    builder::wonder::WonderBuilder,
+    wonders::{Wonder, WonderId},
+};
 
 /// A magical, Essence-infused object.
 #[derive(Debug, Clone, PartialEq, Eq)]

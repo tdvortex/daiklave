@@ -1,12 +1,12 @@
 mod attribute;
 mod category;
-mod name;
 mod error;
+mod name;
 
 pub use attribute::Attribute;
 pub use category::AttributeCategory;
-pub use name::AttributeName;
 pub use error::SetAttributesError;
+pub use name::AttributeName;
 use serde::{Deserialize, Serialize};
 
 use crate::CharacterMutationError;
@@ -45,7 +45,10 @@ impl Default for Attributes {
 impl Attributes {
     /// Get a specific attribute by its name.
     pub fn get(&self, attribute_name: AttributeName) -> Attribute {
-        Attribute { name: attribute_name, dots: self.dots(attribute_name) }
+        Attribute {
+            name: attribute_name,
+            dots: self.dots(attribute_name),
+        }
     }
 
     /// Iterates over all attributes.
@@ -60,7 +63,9 @@ impl Attributes {
             AttributeName::Intelligence,
             AttributeName::Perception,
             AttributeName::Wits,
-        ].into_iter().map(|attribute_name| self.get(attribute_name))
+        ]
+        .into_iter()
+        .map(|attribute_name| self.get(attribute_name))
     }
 
     pub(crate) fn dots(&self, attribute_name: AttributeName) -> u8 {

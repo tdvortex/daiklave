@@ -19,6 +19,7 @@ use crate::{
         mundane::MundaneArmor,
         ArmorId, ArmorItem, BaseArmorId,
     },
+    artifact::wonders::{OwnedWonder, Wonder, WonderId},
     martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
@@ -28,7 +29,7 @@ use crate::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
         EquipHand, Equipped, Weapon, WeaponId,
     },
-    CharacterMutationError, artifact::wonders::{WonderId, OwnedWonder, Wonder},
+    CharacterMutationError,
 };
 
 use self::{
@@ -391,7 +392,7 @@ impl<'view, 'source> Exaltation<'source> {
                         .collect(),
                     ExaltType::Solar(solar),
                     std::mem::take(&mut mortal.weapons).into(),
-                    std::mem::take(&mut mortal.wonders).into()
+                    std::mem::take(&mut mortal.wonders).into(),
                 )))
             }
             Exaltation::Exalt(exalt) => {
@@ -751,7 +752,9 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn wonders_iter(&self) -> impl Iterator<Item = WonderId> + '_ {
         match self {
-            Exaltation::Mortal(mortal) => mortal.wonders_iter().collect::<Vec<WonderId>>().into_iter(),
+            Exaltation::Mortal(mortal) => {
+                mortal.wonders_iter().collect::<Vec<WonderId>>().into_iter()
+            }
             Exaltation::Exalt(exalt) => exalt.wonders_iter().collect::<Vec<WonderId>>().into_iter(),
         }
     }
@@ -763,18 +766,33 @@ impl<'view, 'source> Exaltation<'source> {
         }
     }
 
-    pub fn add_wonder(&mut self, wonder_id: WonderId, wonder: &'source Wonder) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_wonder(
+        &mut self,
+        wonder_id: WonderId,
+        wonder: &'source Wonder,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(mortal) => {mortal.add_wonder(wonder_id, wonder)?;}
-            Exaltation::Exalt(exalt) => {exalt.add_wonder(wonder_id, wonder)?;}
+            Exaltation::Mortal(mortal) => {
+                mortal.add_wonder(wonder_id, wonder)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.add_wonder(wonder_id, wonder)?;
+            }
         }
         Ok(self)
     }
 
-    pub fn remove_wonder(&mut self, wonder_id: WonderId) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_wonder(
+        &mut self,
+        wonder_id: WonderId,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(mortal) => {mortal.remove_wonder(wonder_id)?;}
-            Exaltation::Exalt(exalt) => {exalt.remove_wonder(wonder_id)?;}
+            Exaltation::Mortal(mortal) => {
+                mortal.remove_wonder(wonder_id)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.remove_wonder(wonder_id)?;
+            }
         }
         Ok(self)
     }

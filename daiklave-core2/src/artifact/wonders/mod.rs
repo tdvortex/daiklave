@@ -1,11 +1,11 @@
 mod wonder;
 
-pub use wonder::{Wonder, OwnedWonder, WonderId};
+pub use wonder::{OwnedWonder, Wonder, WonderId};
 pub(crate) use wonder::{WonderNoAttunement, WonderNoAttunementMemo};
 
 use crate::exaltation::Exaltation;
 
-/// A character's collection of non-armor, non-weapon, non-Warstrider 
+/// A character's collection of non-armor, non-weapon, non-Warstrider
 /// artifacts.
 pub struct Wonders<'view, 'source>(pub(crate) &'view Exaltation<'source>);
 

@@ -11,7 +11,6 @@ use super::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ArtifactWeapon(pub(crate) ArtifactWeaponHandedness);
 
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ArtifactWeaponHandedness {
     Natural(NaturalArtifactWeapon),

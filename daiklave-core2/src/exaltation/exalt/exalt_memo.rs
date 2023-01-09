@@ -6,7 +6,8 @@ use crate::martial_arts::MartialArtsStyleId;
 
 use super::{
     armor::ExaltArmorMemo, essence::EssenceMemo, exalt_type::ExaltTypeMemo,
-    martial_arts::ExaltMartialArtistMemo, weapons::ExaltWeaponsMemo, Exalt, wonders::ExaltWondersMemo,
+    martial_arts::ExaltMartialArtistMemo, weapons::ExaltWeaponsMemo, wonders::ExaltWondersMemo,
+    Exalt,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

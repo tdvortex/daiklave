@@ -17,9 +17,9 @@ pub(crate) use essence_memo::EssenceMemo;
 pub use mote_commitment::MoteCommitment;
 pub use mote_commitment_id::MoteCommitmentId;
 pub(crate) use mote_commitment_memo::MoteCommitmentMemo;
+pub use mote_pool::MotePool;
 pub use mote_pool_name::MotePoolName;
 pub use motes::Motes;
-pub use mote_pool::MotePool;
 
 /// An Exalt's Essence rating and mote pools.
 #[derive(Debug, Clone, PartialEq, Eq)]

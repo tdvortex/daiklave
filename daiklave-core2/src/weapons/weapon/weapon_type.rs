@@ -218,7 +218,9 @@ impl<'view, 'source> WeaponType<'source> {
     pub fn is_one_handed(&self) -> bool {
         match self {
             WeaponType::Unarmed => false,
-            WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeaponView::OneHanded(..)),
+            WeaponType::Mundane(_, mundane, _) => {
+                matches!(mundane, MundaneWeaponView::OneHanded(..))
+            }
             WeaponType::Artifact(_, artifact, _) => {
                 matches!(artifact, ArtifactWeaponView::OneHanded(..))
             }
@@ -228,7 +230,9 @@ impl<'view, 'source> WeaponType<'source> {
     pub fn is_two_handed(&self) -> bool {
         match self {
             WeaponType::Unarmed => false,
-            WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeaponView::TwoHanded(..)),
+            WeaponType::Mundane(_, mundane, _) => {
+                matches!(mundane, MundaneWeaponView::TwoHanded(..))
+            }
             WeaponType::Artifact(_, artifact, _) => {
                 matches!(artifact, ArtifactWeaponView::TwoHanded(..))
             }

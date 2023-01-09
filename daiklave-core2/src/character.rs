@@ -7,7 +7,7 @@ use crate::{
         armor_item::{artifact::ArtifactError, mundane::MundaneArmor, ArmorId, BaseArmorId},
         Armor, ArmorError,
     },
-    artifact::{Artifact, ArtifactId, wonders::Wonders},
+    artifact::{wonders::Wonders, Artifact, ArtifactId},
     attributes::{AttributeName, Attributes, SetAttributesError},
     craft::Craft,
     exaltation::{
@@ -984,7 +984,9 @@ impl<'view, 'source> Character<'source> {
             }
             Artifact::Wonder(wonder_id, _) => {
                 if self.wonders().get(*wonder_id).is_some() {
-                    Err(CharacterMutationError::ArtifactError(ArtifactError::NamedArtifactsUnique))
+                    Err(CharacterMutationError::ArtifactError(
+                        ArtifactError::NamedArtifactsUnique,
+                    ))
                 } else {
                     Ok(())
                 }
@@ -1066,7 +1068,9 @@ impl<'view, 'source> Character<'source> {
             }
             ArtifactId::Wonder(wonder_id) => {
                 if self.wonders().get(wonder_id).is_none() {
-                    Err(CharacterMutationError::ArtifactError(ArtifactError::NotFound))
+                    Err(CharacterMutationError::ArtifactError(
+                        ArtifactError::NotFound,
+                    ))
                 } else {
                     Ok(())
                 }

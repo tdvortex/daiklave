@@ -17,8 +17,9 @@ pub(crate) use grouped::{
 pub use id::ArtifactWeaponId;
 pub use memo::ArtifactWeapon;
 pub(crate) use newtype::{
-    NaturalArtifactWeapon, OneHandedArtifactWeapon, TwoHandedArtifactWeapon, WornArtifactWeapon,NaturalArtifactWeaponView, OneHandedArtifactWeaponView, TwoHandedArtifactWeaponView,
-    WornArtifactWeaponView,
+    NaturalArtifactWeapon, NaturalArtifactWeaponView, OneHandedArtifactWeapon,
+    OneHandedArtifactWeaponView, TwoHandedArtifactWeapon, TwoHandedArtifactWeaponView,
+    WornArtifactWeapon, WornArtifactWeaponView,
 };
 
 use self::named::NamedArtifactWeapon;

@@ -8,7 +8,6 @@ use super::newtype::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MundaneWeapon(pub(crate) MundaneWeaponHandedness);
 
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum MundaneWeaponHandedness {
     Natural(NaturalMundaneWeapon),
