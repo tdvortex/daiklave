@@ -14,6 +14,7 @@ pub(crate) struct WonderNoAttunement<'source> {
     hearthstone_slots: Vec<Option<OwnedHearthstone<'source>>>,
     merit_dots: u8,
     magic_material: Option<MagicMaterial>,
+    attunement_cost: Option<u8>,
 }
 
 impl<'source> WonderNoAttunement<'source> {
@@ -30,6 +31,7 @@ impl<'source> WonderNoAttunement<'source> {
                 .collect(),
             merit_dots: self.merit_dots,
             magic_material: self.magic_material,
+            attunement_cost: self.attunement_cost,
         }
     }
 

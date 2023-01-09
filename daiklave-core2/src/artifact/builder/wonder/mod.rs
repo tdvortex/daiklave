@@ -16,16 +16,17 @@ pub struct WonderBuilder {
     pub(crate) lore: Option<String>,
     pub(crate) magic_material: Option<MagicMaterial>,
     pub(crate) hearthstone_slots: u8,
+    pub(crate) attunement_cost: Option<u8>,
 }
 
 impl WonderBuilder {
-    /// The book reference for the Wonder (if any).
+    /// The book reference for the Wonder.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
         self
     }
 
-    /// The item's lore and history (if any).
+    /// The item's lore and history.
     pub fn lore(mut self, lore: String) -> Self {
         self.lore = Some(lore);
         self
@@ -43,6 +44,12 @@ impl WonderBuilder {
         self
     }
 
+    /// The cost to attune to the artifact (if needed).
+    pub fn attunement_cost(mut self, attunement_cost: u8) -> Self {
+        self.attunement_cost = Some(attunement_cost);
+        self
+    }
+
     /// The number of merit dots required to purchase the artifact.
     pub fn merit_dots(self, dots: u8) -> WonderBuilderWithMeritDots {
         WonderBuilderWithMeritDots {
@@ -52,6 +59,7 @@ impl WonderBuilder {
             magic_material: self.magic_material,
             merit_dots: dots,
             hearthstone_slots: self.hearthstone_slots,
+            attunement_cost: self.attunement_cost,
         }
     }
 }
@@ -64,6 +72,7 @@ pub struct WonderBuilderWithMeritDots {
     magic_material: Option<MagicMaterial>,
     merit_dots: u8,
     hearthstone_slots: u8,
+    attunement_cost: Option<u8>,
 }
 
 impl WonderBuilderWithMeritDots {
@@ -91,6 +100,12 @@ impl WonderBuilderWithMeritDots {
         self
     }
 
+    /// The cost to attune to the artifact (if needed).
+    pub fn attunement_cost(mut self, attunement_cost: u8) -> Self {
+        self.attunement_cost = Some(attunement_cost);
+        self
+    }
+
     /// Sets the powers of the artifact.
     pub fn powers(self, powers: &str) -> WonderBuilderWithPowers {
         WonderBuilderWithPowers {
@@ -101,6 +116,7 @@ impl WonderBuilderWithMeritDots {
             merit_dots: self.merit_dots,
             hearthstone_slots: self.hearthstone_slots,
             powers: powers.to_owned(),
+            attunement_cost: self.attunement_cost,
         }
     }
 }
@@ -114,6 +130,7 @@ pub struct WonderBuilderWithPowers {
     merit_dots: u8,
     powers: String,
     hearthstone_slots: u8,
+    attunement_cost: Option<u8>,
 }
 
 impl WonderBuilderWithPowers {
@@ -141,6 +158,12 @@ impl WonderBuilderWithPowers {
         self
     }
 
+    /// The cost to attune to the artifact (if needed).
+    pub fn attunement_cost(mut self, attunement_cost: u8) -> Self {
+        self.attunement_cost = Some(attunement_cost);
+        self
+    }
+    
     /// Completes the builder.
     pub fn build(self) -> Wonder {
         Wonder(WonderNoAttunementMemo {
@@ -154,6 +177,7 @@ impl WonderBuilderWithPowers {
             }),
             merit_dots: self.merit_dots,
             magic_material: self.magic_material,
+            attunement_cost: self.attunement_cost,
         })
     }
 }

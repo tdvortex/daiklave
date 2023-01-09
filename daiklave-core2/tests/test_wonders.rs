@@ -20,6 +20,7 @@ fn test_wonders() {
             .book_reference(BookReference::new(Book::CoreRulebook, 602))
             .merit_dots(3)
             .powers("Night-black belts made from leathe from the wings of giant bats[...]")
+            .attunement_cost(5)
             .build(),
     );
     let mutation = CharacterMutation::AddArtifact(wonder);

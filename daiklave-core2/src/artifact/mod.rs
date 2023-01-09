@@ -39,6 +39,7 @@ impl Artifact {
             lore: None,
             magic_material: None,
             hearthstone_slots: 0,
+            attunement_cost: None,
         }
     }
 }
