@@ -1,16 +1,20 @@
 use crate::{book_reference::BookReference, artifact::ArtifactId};
 
-use self::position::HearthstonePosition;
+use self::{position::HearthstonePosition};
 
-use super::{HearthstoneId, geomancy_level::GeomancyLevel, category::HearthstoneCategory, keyword::HearthstoneKeyword};
-
+mod category;
 mod details;
+mod geomancy_level;
+mod id;
+mod keyword;
 mod origin;
 mod position;
 mod slotted;
 mod stability;
 mod template;
 mod unslotted;
+
+pub use {category::HearthstoneCategory, geomancy_level::GeomancyLevel, id::HearthstoneId, keyword::HearthstoneKeyword};
 
 /// A Hearthstone owned by a character.
 pub struct Hearthstone<'source>(pub(crate) HearthstonePosition<'source>);

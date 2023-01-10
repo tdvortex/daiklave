@@ -1,7 +1,7 @@
 mod memo;
 pub(crate) use memo::HearthstoneOriginMemo;
 
-use crate::hearthstones::keyword::HearthstoneKeyword;
+use super::keyword::HearthstoneKeyword;
 
 pub(crate) enum HearthstoneOrigin<'source> {
     // Manse is required

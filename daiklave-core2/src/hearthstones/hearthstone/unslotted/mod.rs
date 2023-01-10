@@ -1,10 +1,10 @@
 mod memo;
 
-use crate::{book_reference::BookReference, hearthstones::{category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword}};
+use crate::book_reference::BookReference;
 
 use self::memo::UnslottedHearthstoneMemo;
 
-use super::{details::HearthstoneDetails, origin::HearthstoneOrigin};
+use super::{details::HearthstoneDetails, origin::HearthstoneOrigin, category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword};
 
 pub(crate) struct UnslottedHearthstone<'source> {
     details: HearthstoneDetails<'source>,

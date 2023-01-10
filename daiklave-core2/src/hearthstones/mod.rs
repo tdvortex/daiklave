@@ -1,12 +1,7 @@
-mod category;
-mod geomancy_level;
 mod hearthstone;
-mod id;
-mod keyword;
 mod memo;
 mod owned;
 
-pub use id::HearthstoneId;
 pub use owned::OwnedHearthstone;
 pub(crate) use owned::OwnedHearthstoneMemo;
 
@@ -15,9 +10,10 @@ use std::collections::HashSet;
 use crate::{book_reference::BookReference, Character};
 
 use self::{
-    category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword,
-    memo::HearthstoneMemo,
+    memo::HearthstoneMemo, hearthstone::{GeomancyLevel, HearthstoneCategory, HearthstoneKeyword},
 };
+
+pub use hearthstone::HearthstoneId;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct Hearthstone<'source> {

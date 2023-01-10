@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::{book_reference::BookReference, hearthstones::{category::HearthstoneCategory, geomancy_level::GeomancyLevel}};
+use crate::{book_reference::BookReference, hearthstones::hearthstone::{category::HearthstoneCategory, geomancy_level::GeomancyLevel}};
 
 use super::HearthstoneDetails;
 

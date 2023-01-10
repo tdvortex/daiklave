@@ -1,7 +1,9 @@
 mod memo;
 pub(crate) use memo::HearthstoneDetailsMemo;
 
-use crate::{book_reference::BookReference, hearthstones::{category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword}};
+use crate::book_reference::BookReference;
+
+use super::{category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword};
 
 pub(crate) struct HearthstoneDetails<'source> {
     name: &'source str,

@@ -1,6 +1,6 @@
-use crate::{artifact::ArtifactId, hearthstones::{HearthstoneId, keyword::HearthstoneKeyword, geomancy_level::GeomancyLevel, category::HearthstoneCategory}, book_reference::BookReference};
+use crate::{artifact::ArtifactId, book_reference::BookReference};
 
-use super::{slotted::SlottedHearthstone, unslotted::UnslottedHearthstone};
+use super::{slotted::SlottedHearthstone, unslotted::UnslottedHearthstone, id::HearthstoneId, category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword};
 
 pub(crate) enum HearthstonePosition<'source> {
     Slotted(ArtifactId, SlottedHearthstone<'source>),

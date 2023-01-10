@@ -4,10 +4,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::book_reference::BookReference;
 
-use super::{
-    category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword,
-    Hearthstone,
-};
+use super::{hearthstone::{GeomancyLevel, HearthstoneCategory, HearthstoneKeyword}, Hearthstone};
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct HearthstoneMemo {

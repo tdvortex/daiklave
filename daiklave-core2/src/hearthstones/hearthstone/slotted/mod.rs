@@ -1,8 +1,8 @@
-use crate::{hearthstones::{HearthstoneId, category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword}, book_reference::BookReference};
+use crate::book_reference::BookReference;
 
 use self::memo::SlottedHearthstoneMemo;
 
-use super::{details::HearthstoneDetails, origin::HearthstoneOrigin};
+use super::{details::HearthstoneDetails, origin::HearthstoneOrigin, id::HearthstoneId, category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword};
 
 mod memo;
 
