@@ -1,4 +1,8 @@
+mod memo;
+
 use crate::{book_reference::BookReference, hearthstones::{category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword}};
+
+use self::memo::UnslottedHearthstoneMemo;
 
 use super::{details::HearthstoneDetails, origin::HearthstoneOrigin};
 
@@ -8,6 +12,13 @@ pub(crate) struct UnslottedHearthstone<'source> {
 }
 
 impl<'source> UnslottedHearthstone<'source> {
+    pub fn as_memo(&self) -> UnslottedHearthstoneMemo {
+        UnslottedHearthstoneMemo {
+            details: self.details.as_memo(),
+            origin: self.origin.as_memo(),
+        }
+    }
+
     pub fn name(&self) -> &'source str {
         self.details.name()
     }

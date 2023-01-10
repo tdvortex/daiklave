@@ -52,4 +52,8 @@ impl<'view, 'source> Hearthstones<'view, 'source> {
     pub fn get(&self, _hearthstone_id: HearthstoneId) -> Option<hearthstone::Hearthstone<'source>> {
         todo!()
     }
+
+    pub fn iter(&self) -> impl Iterator<Item = HearthstoneId> {
+        vec![].into_iter()
+    }
 }

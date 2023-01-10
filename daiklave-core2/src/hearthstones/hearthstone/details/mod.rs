@@ -14,6 +14,18 @@ pub(crate) struct HearthstoneDetails<'source> {
 }
 
 impl<'source> HearthstoneDetails<'source> {
+    pub fn as_memo(&self) -> HearthstoneDetailsMemo {
+        HearthstoneDetailsMemo {
+            name: self.name.to_owned(),
+            book_reference: self.book_reference,
+            category: self.category,
+            geomancy_level: self.geomancy_level,
+            lore: self.lore.map(|s| s.to_owned()),
+            powers: self.powers.map(|s| s.to_owned()),
+            is_dependent: self.is_dependent,
+        }
+    }
+
     pub fn name(&self) -> &'source str {
         self.name
     }
