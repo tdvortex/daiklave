@@ -5,7 +5,7 @@ pub use hearthstone::Hearthstone;
 use crate::Character;
 
 pub use hearthstone::HearthstoneId;
-pub(crate) use hearthstone::{HearthstonePosition, SlottedHearthstone, SlottedHearthstoneMemo};
+pub(crate) use hearthstone::{HearthstonePosition, SlottedHearthstone, SlottedHearthstoneMemo, UnslottedHearthstone, UnslottedHearthstoneMemo};
 
 /// The Hearthstones owned by a character, their current position, and any
 /// Manses and Demenses they may also have.

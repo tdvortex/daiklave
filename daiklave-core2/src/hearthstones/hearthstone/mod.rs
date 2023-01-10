@@ -14,6 +14,7 @@ mod unslotted;
 
 pub(crate) use position::HearthstonePosition;
 pub(crate) use slotted::{SlottedHearthstone, SlottedHearthstoneMemo};
+pub(crate) use unslotted::{UnslottedHearthstone, UnslottedHearthstoneMemo};
 pub use {
     category::HearthstoneCategory, geomancy_level::GeomancyLevel, id::HearthstoneId,
     keyword::HearthstoneKeyword,

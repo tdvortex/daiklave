@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     abilities::{
         Abilities, AbilitiesVanilla, AbilityNameVanilla, AbilityRating, AddSpecialtyError,
@@ -18,7 +20,7 @@ use crate::{
         Exaltation,
     },
     health::{DamageLevel, Health, WoundPenalty},
-    hearthstones::Hearthstones,
+    hearthstones::{Hearthstones, HearthstoneId, UnslottedHearthstone},
     martial_arts::{AddMartialArtsStyleError, MartialArts, MartialArtsStyle, MartialArtsStyleId},
     name_and_concept::RemoveConceptError,
     sorcery::{
@@ -48,6 +50,7 @@ pub struct Character<'source> {
     pub(crate) attributes: Attributes,
     pub(crate) abilities: AbilitiesVanilla<'source>,
     pub(crate) craft: Craft<'source>,
+    pub(crate) hearthstone_inventory: HashMap<HearthstoneId, UnslottedHearthstone<'source>>,
 }
 
 impl<'source> Default for Character<'source> {
@@ -61,6 +64,7 @@ impl<'source> Default for Character<'source> {
             attributes: Default::default(),
             abilities: Default::default(),
             craft: Default::default(),
+            hearthstone_inventory: Default::default(),
         }
     }
 }
@@ -77,6 +81,7 @@ impl<'view, 'source> Character<'source> {
             attributes: self.attributes,
             abilities: self.abilities.as_memo(),
             craft: self.craft.as_memo(),
+            hearthstone_inventory: self.hearthstone_inventory.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
         }
     }
 

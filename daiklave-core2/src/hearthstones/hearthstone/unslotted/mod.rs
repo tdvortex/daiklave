@@ -1,8 +1,7 @@
 mod memo;
+pub(crate) use memo::UnslottedHearthstoneMemo;
 
 use crate::book_reference::BookReference;
-
-use self::memo::UnslottedHearthstoneMemo;
 
 use super::{
     category::HearthstoneCategory, details::HearthstoneDetails, geomancy_level::GeomancyLevel,
