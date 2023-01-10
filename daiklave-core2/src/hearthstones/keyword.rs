@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum HearthstoneKeyword {
-    Linked,
-    Steady,
     Dependent,
+    Linked,
     ManseBorn,
+    Steady,
     WildBorn,
 }
