@@ -1,4 +1,4 @@
-use crate::{artifact::ArtifactId, hearthstone::HearthstoneId};
+use crate::{artifact::ArtifactId, hearthstones::HearthstoneId};
 
 /// The Id for an item which is capable of having Evocations.
 pub enum _EvokableItemId {

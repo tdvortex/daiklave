@@ -32,7 +32,7 @@ use crate::{
         WeaponError, Weapons,
     },
     willpower::Willpower,
-    CharacterMemo, CharacterMutation, CharacterMutationError,
+    CharacterMemo, CharacterMutation, CharacterMutationError, hearthstones::Hearthstones,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -1209,5 +1209,10 @@ impl<'view, 'source> Character<'source> {
     /// Gets the character's artifact Wonders.
     pub fn wonders(&'view self) -> Wonders<'view, 'source> {
         Wonders(&self.exaltation)
+    }
+
+    /// Gets the character's Hearthstones.
+    pub fn hearthstones(&'view self) -> Hearthstones<'view, 'source> {
+        Hearthstones(self)
     }
 }

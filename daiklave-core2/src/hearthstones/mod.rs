@@ -1,5 +1,6 @@
 mod category;
 mod geomancy_level;
+mod hearthstone;
 mod id;
 mod keyword;
 mod memo;
@@ -11,7 +12,7 @@ pub(crate) use owned::OwnedHearthstoneMemo;
 
 use std::collections::HashSet;
 
-use crate::book_reference::BookReference;
+use crate::{book_reference::BookReference, Character};
 
 use self::{
     category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword,
@@ -40,5 +41,15 @@ impl<'source> Hearthstone<'source> {
             lore: self.lore.map(|s| s.to_string()),
             powers: self.powers.map(|s| s.to_string()),
         }
+    }
+}
+
+/// The Hearthstones owned by a character, their current position, and any
+/// Manses and Demenses they may also have.
+pub struct Hearthstones<'view, 'source>(pub(crate) &'view Character<'source>);
+
+impl<'view, 'source> Hearthstones<'view, 'source> {
+    pub fn get(&self, _hearthstone_id: HearthstoneId) -> Option<hearthstone::Hearthstone<'source>> {
+        todo!()
     }
 }

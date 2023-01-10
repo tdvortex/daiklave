@@ -70,7 +70,7 @@ pub mod weapons;
 mod character;
 mod character_memo;
 pub(crate) mod craft;
-mod hearthstone;
+mod hearthstones;
 mod name_and_concept;
 mod willpower;
 
@@ -163,6 +163,10 @@ pub enum CharacterMutation {
     EquipArmor(ArmorId),
     /// Unequip any armor currently worn.
     UnequipArmor,
+    // Add a manse and its associated hearthstone to the character.
+    // AddManse(Manse, HearthstoneId, HearthstoneTemplate)
+    // Add a hearthstone to a character without a manse.
+    // AddHearthstone(HearthstoneId, HearthstoneTemplate)
 }
 
 /// An error representing something that could go wrong with a

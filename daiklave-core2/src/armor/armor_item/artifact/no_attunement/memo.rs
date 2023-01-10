@@ -4,7 +4,7 @@ use crate::{
     armor::armor_item::{base::BaseArmor, BaseArmorId},
     artifact::MagicMaterial,
     book_reference::BookReference,
-    hearthstone::OwnedHearthstoneMemo,
+    hearthstones::OwnedHearthstoneMemo,
 };
 
 use super::ArtifactArmorNoAttunement;

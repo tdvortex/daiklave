@@ -1,7 +1,7 @@
 use crate::{
     book_reference::{Book, BookReference},
     exaltation::exalt::essence::MoteCommitment,
-    hearthstone::OwnedHearthstone,
+    hearthstones::OwnedHearthstone,
 };
 
 use super::{

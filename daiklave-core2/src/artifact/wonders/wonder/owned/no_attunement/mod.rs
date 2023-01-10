@@ -2,7 +2,7 @@ mod memo;
 pub(crate) use memo::WonderNoAttunementMemo;
 
 use crate::{
-    artifact::MagicMaterial, book_reference::BookReference, hearthstone::OwnedHearthstone,
+    artifact::MagicMaterial, book_reference::BookReference, hearthstones::OwnedHearthstone,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]

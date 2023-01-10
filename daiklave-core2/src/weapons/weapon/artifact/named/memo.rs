@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     artifact::MagicMaterial,
     book_reference::BookReference,
-    hearthstone::OwnedHearthstoneMemo,
+    hearthstones::OwnedHearthstoneMemo,
     weapons::weapon::{base::BaseWeapon, BaseWeaponId},
 };
 

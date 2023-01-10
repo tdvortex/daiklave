@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    artifact::MagicMaterial, book_reference::BookReference, hearthstone::OwnedHearthstoneMemo,
+    artifact::MagicMaterial, book_reference::BookReference, hearthstones::OwnedHearthstoneMemo,
 };
 
 use super::WonderNoAttunement;

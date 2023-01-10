@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::hearthstone::memo::HearthstoneMemo;
+use crate::hearthstones::memo::HearthstoneMemo;
 
 use super::OwnedHearthstone;
 
