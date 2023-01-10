@@ -163,7 +163,7 @@ impl WonderBuilderWithPowers {
         self.attunement_cost = Some(attunement_cost);
         self
     }
-    
+
     /// Completes the builder.
     pub fn build(self) -> Wonder {
         Wonder(WonderNoAttunementMemo {

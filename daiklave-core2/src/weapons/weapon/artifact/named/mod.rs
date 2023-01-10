@@ -3,9 +3,9 @@ mod memo;
 pub use memo::NamedArtifactWeaponMemo;
 
 use crate::{
-    artifact::MagicMaterial,
+    artifact::{ArtifactId, MagicMaterial},
     book_reference::BookReference,
-    hearthstones::OwnedHearthstone,
+    hearthstones::{Hearthstone, HearthstonePosition, SlottedHearthstone},
     weapons::weapon::{base::BaseWeapon, BaseWeaponId},
 };
 
@@ -19,7 +19,7 @@ pub struct NamedArtifactWeapon<'source> {
     pub(crate) base_weapon: &'source BaseWeapon,
     pub(crate) lore: Option<&'source str>,
     pub(crate) powers: Option<&'source str>,
-    pub(crate) hearthstone_slots: Vec<Option<OwnedHearthstone<'source>>>,
+    pub(crate) hearthstone_slots: Vec<Option<SlottedHearthstone<'source>>>,
 }
 
 impl<'view, 'source> NamedArtifactWeapon<'source> {
@@ -63,9 +63,14 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
 
     pub fn slotted_hearthstones(
         &'view self,
-    ) -> impl Iterator<Item = &'view OwnedHearthstone<'source>> + '_ {
+        artifact_id: ArtifactId,
+    ) -> impl Iterator<Item = Hearthstone<'source>> + '_ {
         self.hearthstone_slots
             .iter()
-            .filter_map(|maybe_hearthstone| maybe_hearthstone.as_ref())
+            .filter_map(move |maybe_hearthstone| {
+                maybe_hearthstone
+                    .as_ref()
+                    .map(|slotted| Hearthstone(HearthstonePosition::Slotted(artifact_id, *slotted)))
+            })
     }
 }

@@ -1,5 +1,8 @@
+use serde::{Deserialize, Serialize};
+
 use super::HearthstoneOrigin;
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum HearthstoneOriginMemo {
     // Manse is required
     Linked((String, String)),

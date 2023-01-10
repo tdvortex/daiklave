@@ -1,6 +1,4 @@
-use crate::{book_reference::BookReference, artifact::ArtifactId};
-
-use self::{position::HearthstonePosition};
+use crate::{artifact::ArtifactId, book_reference::BookReference};
 
 mod category;
 mod details;
@@ -14,9 +12,15 @@ mod stability;
 mod template;
 mod unslotted;
 
-pub use {category::HearthstoneCategory, geomancy_level::GeomancyLevel, id::HearthstoneId, keyword::HearthstoneKeyword};
+pub(crate) use position::HearthstonePosition;
+pub(crate) use slotted::{SlottedHearthstone, SlottedHearthstoneMemo};
+pub use {
+    category::HearthstoneCategory, geomancy_level::GeomancyLevel, id::HearthstoneId,
+    keyword::HearthstoneKeyword,
+};
 
 /// A Hearthstone owned by a character.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Hearthstone<'source>(pub(crate) HearthstonePosition<'source>);
 
 impl<'source> Hearthstone<'source> {

@@ -2,7 +2,7 @@ mod memo;
 pub(crate) use memo::WonderNoAttunementMemo;
 
 use crate::{
-    artifact::MagicMaterial, book_reference::BookReference, hearthstones::OwnedHearthstone,
+    artifact::MagicMaterial, book_reference::BookReference, hearthstones::SlottedHearthstone,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -11,7 +11,7 @@ pub(crate) struct WonderNoAttunement<'source> {
     book_reference: Option<BookReference>,
     lore: Option<&'source str>,
     powers: &'source str,
-    hearthstone_slots: Vec<Option<OwnedHearthstone<'source>>>,
+    hearthstone_slots: Vec<Option<SlottedHearthstone<'source>>>,
     merit_dots: u8,
     magic_material: Option<MagicMaterial>,
     attunement_cost: Option<u8>,

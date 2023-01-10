@@ -1,4 +1,6 @@
-use crate::hearthstones::hearthstone::{details::HearthstoneDetailsMemo, origin::HearthstoneOriginMemo};
+use crate::hearthstones::hearthstone::{
+    details::HearthstoneDetailsMemo, origin::HearthstoneOriginMemo,
+};
 
 use super::UnslottedHearthstone;
 

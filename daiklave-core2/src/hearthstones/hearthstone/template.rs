@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use super::{stability::HearthstoneStability, details::HearthstoneDetailsMemo};
+use super::{details::HearthstoneDetailsMemo, stability::HearthstoneStability};
 
 /// A template for a Hearthstone to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

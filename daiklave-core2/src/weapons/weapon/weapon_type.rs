@@ -1,7 +1,8 @@
 use crate::{
+    artifact::ArtifactId,
     book_reference::{Book, BookReference},
     exaltation::exalt::essence::MoteCommitment,
-    hearthstones::OwnedHearthstone,
+    hearthstones::Hearthstone,
 };
 
 use super::{
@@ -101,14 +102,12 @@ impl<'view, 'source> WeaponType<'source> {
         }
     }
 
-    pub fn slotted_hearthstones(
-        &'view self,
-    ) -> impl Iterator<Item = &'view OwnedHearthstone<'source>> {
+    pub fn slotted_hearthstones(&'view self) -> impl Iterator<Item = Hearthstone<'source>> {
         match self {
             WeaponType::Mundane(_, _, _) | WeaponType::Unarmed => Vec::new().into_iter(),
-            WeaponType::Artifact(_, artifact, _) => (**artifact)
-                .slotted_hearthstones()
-                .collect::<Vec<&'view OwnedHearthstone<'source>>>()
+            WeaponType::Artifact(artifact_weapon_id, artifact, _) => (**artifact)
+                .slotted_hearthstones(ArtifactId::Weapon(*artifact_weapon_id))
+                .collect::<Vec<Hearthstone<'source>>>()
                 .into_iter(),
         }
     }

@@ -3,6 +3,7 @@ pub(crate) use memo::HearthstoneOriginMemo;
 
 use super::keyword::HearthstoneKeyword;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum HearthstoneOrigin<'source> {
     // Manse is required
     Linked((&'source str, &'source str)),

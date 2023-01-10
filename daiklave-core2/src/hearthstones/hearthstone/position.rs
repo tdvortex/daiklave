@@ -1,7 +1,11 @@
 use crate::{artifact::ArtifactId, book_reference::BookReference};
 
-use super::{slotted::SlottedHearthstone, unslotted::UnslottedHearthstone, id::HearthstoneId, category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword};
+use super::{
+    category::HearthstoneCategory, geomancy_level::GeomancyLevel, id::HearthstoneId,
+    keyword::HearthstoneKeyword, slotted::SlottedHearthstone, unslotted::UnslottedHearthstone,
+};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum HearthstonePosition<'source> {
     Slotted(ArtifactId, SlottedHearthstone<'source>),
     Unslotted(HearthstoneId, UnslottedHearthstone<'source>),
@@ -66,8 +70,12 @@ impl<'source> HearthstonePosition<'source> {
 
     pub fn keywords(&self) -> impl Iterator<Item = HearthstoneKeyword> {
         let mut keywords = match self {
-            HearthstonePosition::Slotted(_, slotted) => slotted.keywords().collect::<Vec<HearthstoneKeyword>>(),
-            HearthstonePosition::Unslotted(_, unslotted) => unslotted.keywords().collect::<Vec<HearthstoneKeyword>>(),
+            HearthstonePosition::Slotted(_, slotted) => {
+                slotted.keywords().collect::<Vec<HearthstoneKeyword>>()
+            }
+            HearthstonePosition::Unslotted(_, unslotted) => {
+                unslotted.keywords().collect::<Vec<HearthstoneKeyword>>()
+            }
         };
         keywords.sort();
         keywords.into_iter()

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    artifact::MagicMaterial, book_reference::BookReference, hearthstones::OwnedHearthstoneMemo,
+    artifact::MagicMaterial, book_reference::BookReference, hearthstones::SlottedHearthstoneMemo,
 };
 
 use super::WonderNoAttunement;
@@ -12,7 +12,7 @@ pub(crate) struct WonderNoAttunementMemo {
     pub book_reference: Option<BookReference>,
     pub lore: Option<String>,
     pub powers: String,
-    pub hearthstone_slots: Vec<Option<OwnedHearthstoneMemo>>,
+    pub hearthstone_slots: Vec<Option<SlottedHearthstoneMemo>>,
     pub merit_dots: u8,
     pub magic_material: Option<MagicMaterial>,
     pub attunement_cost: Option<u8>,

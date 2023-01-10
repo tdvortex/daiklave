@@ -1,51 +1,18 @@
 mod hearthstone;
-mod memo;
-mod owned;
 
-pub use owned::OwnedHearthstone;
-pub(crate) use owned::OwnedHearthstoneMemo;
+pub use hearthstone::Hearthstone;
 
-use std::collections::HashSet;
-
-use crate::{book_reference::BookReference, Character};
-
-use self::{
-    memo::HearthstoneMemo, hearthstone::{GeomancyLevel, HearthstoneCategory, HearthstoneKeyword},
-};
+use crate::Character;
 
 pub use hearthstone::HearthstoneId;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) struct Hearthstone<'source> {
-    name: &'source str,
-    book_reference: Option<BookReference>,
-    geomancy_level: GeomancyLevel,
-    category: HearthstoneCategory,
-    keywords: &'source HashSet<HearthstoneKeyword>,
-    lore: Option<&'source str>,
-    powers: Option<&'source str>,
-}
-
-impl<'source> Hearthstone<'source> {
-    pub fn as_memo(&self) -> HearthstoneMemo {
-        HearthstoneMemo {
-            name: self.name.to_string(),
-            book_reference: self.book_reference,
-            geomancy_level: self.geomancy_level,
-            category: self.category,
-            keywords: self.keywords.to_owned(),
-            lore: self.lore.map(|s| s.to_string()),
-            powers: self.powers.map(|s| s.to_string()),
-        }
-    }
-}
+pub(crate) use hearthstone::{HearthstonePosition, SlottedHearthstone, SlottedHearthstoneMemo};
 
 /// The Hearthstones owned by a character, their current position, and any
 /// Manses and Demenses they may also have.
 pub struct Hearthstones<'view, 'source>(pub(crate) &'view Character<'source>);
 
 impl<'view, 'source> Hearthstones<'view, 'source> {
-    pub fn get(&self, _hearthstone_id: HearthstoneId) -> Option<hearthstone::Hearthstone<'source>> {
+    pub fn get(&self, _hearthstone_id: HearthstoneId) -> Option<Hearthstone<'source>> {
         todo!()
     }
 

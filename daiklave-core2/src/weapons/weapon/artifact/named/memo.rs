@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     artifact::MagicMaterial,
     book_reference::BookReference,
-    hearthstones::OwnedHearthstoneMemo,
+    hearthstones::SlottedHearthstoneMemo,
     weapons::weapon::{base::BaseWeapon, BaseWeaponId},
 };
 
@@ -19,7 +19,7 @@ pub struct NamedArtifactWeaponMemo {
     pub(crate) base_weapon: BaseWeapon,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
-    pub(crate) hearthstone_slots: Vec<Option<OwnedHearthstoneMemo>>,
+    pub(crate) hearthstone_slots: Vec<Option<SlottedHearthstoneMemo>>,
 }
 
 impl<'source> NamedArtifactWeaponMemo {

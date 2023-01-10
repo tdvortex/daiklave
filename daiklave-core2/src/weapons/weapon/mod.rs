@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::{
     book_reference::BookReference, exaltation::exalt::essence::MoteCommitment,
-    hearthstones::OwnedHearthstone,
+    hearthstones::Hearthstone,
 };
 
 use self::{
@@ -125,9 +125,7 @@ impl<'view, 'source> Weapon<'source> {
 
     /// An iterator over all of the hearthstones currently slotted into the
     /// artifact weapon. Returns an empty iterator for mundane weapons.
-    pub fn slotted_heathstones(
-        &'view self,
-    ) -> impl Iterator<Item = &'view OwnedHearthstone<'source>> + '_ {
+    pub fn slotted_heathstones(&'view self) -> impl Iterator<Item = Hearthstone<'source>> + '_ {
         self.0.slotted_hearthstones()
     }
 

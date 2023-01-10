@@ -4,8 +4,12 @@ use crate::book_reference::BookReference;
 
 use self::memo::UnslottedHearthstoneMemo;
 
-use super::{details::HearthstoneDetails, origin::HearthstoneOrigin, category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword};
+use super::{
+    category::HearthstoneCategory, details::HearthstoneDetails, geomancy_level::GeomancyLevel,
+    keyword::HearthstoneKeyword, origin::HearthstoneOrigin,
+};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct UnslottedHearthstone<'source> {
     details: HearthstoneDetails<'source>,
     origin: HearthstoneOrigin<'source>,

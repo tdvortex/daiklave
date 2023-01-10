@@ -3,8 +3,11 @@ pub(crate) use memo::HearthstoneDetailsMemo;
 
 use crate::book_reference::BookReference;
 
-use super::{category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword};
+use super::{
+    category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword,
+};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct HearthstoneDetails<'source> {
     name: &'source str,
     book_reference: Option<BookReference>,
@@ -57,6 +60,7 @@ impl<'source> HearthstoneDetails<'source> {
             vec![HearthstoneKeyword::Dependent]
         } else {
             vec![]
-        }.into_iter()
+        }
+        .into_iter()
     }
 }

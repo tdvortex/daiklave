@@ -18,6 +18,7 @@ use crate::{
         Exaltation,
     },
     health::{DamageLevel, Health, WoundPenalty},
+    hearthstones::Hearthstones,
     martial_arts::{AddMartialArtsStyleError, MartialArts, MartialArtsStyle, MartialArtsStyleId},
     name_and_concept::RemoveConceptError,
     sorcery::{
@@ -32,7 +33,7 @@ use crate::{
         WeaponError, Weapons,
     },
     willpower::Willpower,
-    CharacterMemo, CharacterMutation, CharacterMutationError, hearthstones::Hearthstones,
+    CharacterMemo, CharacterMutation, CharacterMutationError,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource

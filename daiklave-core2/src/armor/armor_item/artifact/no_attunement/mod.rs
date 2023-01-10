@@ -5,7 +5,7 @@ use crate::{
     armor::armor_item::{base::BaseArmor, BaseArmorId},
     artifact::MagicMaterial,
     book_reference::BookReference,
-    hearthstones::OwnedHearthstone,
+    hearthstones::SlottedHearthstone,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -18,7 +18,7 @@ pub struct ArtifactArmorNoAttunement<'source> {
     pub(crate) base_armor: &'source BaseArmor,
     pub(crate) magic_material: MagicMaterial,
     pub(crate) merit_dots: u8,
-    pub(crate) hearthstone_slots: Vec<Option<OwnedHearthstone<'source>>>,
+    pub(crate) hearthstone_slots: Vec<Option<SlottedHearthstone<'source>>>,
 }
 
 impl<'source> ArtifactArmorNoAttunement<'source> {

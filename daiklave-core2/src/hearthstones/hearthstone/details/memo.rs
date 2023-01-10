@@ -1,6 +1,9 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{book_reference::BookReference, hearthstones::hearthstone::{category::HearthstoneCategory, geomancy_level::GeomancyLevel}};
+use crate::{
+    book_reference::BookReference,
+    hearthstones::hearthstone::{category::HearthstoneCategory, geomancy_level::GeomancyLevel},
+};
 
 use super::HearthstoneDetails;
 
@@ -17,7 +20,7 @@ pub(crate) struct HearthstoneDetailsMemo {
 
 impl<'source> HearthstoneDetailsMemo {
     pub fn as_ref(&'source self) -> HearthstoneDetails<'source> {
-        HearthstoneDetails { 
+        HearthstoneDetails {
             name: self.name.as_str(),
             book_reference: self.book_reference,
             category: self.category,

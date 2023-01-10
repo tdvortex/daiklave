@@ -1,7 +1,13 @@
-use crate::hearthstones::{HearthstoneId, hearthstone::{details::HearthstoneDetailsMemo, origin::HearthstoneOriginMemo}};
+use serde::{Deserialize, Serialize};
+
+use crate::hearthstones::{
+    hearthstone::{details::HearthstoneDetailsMemo, origin::HearthstoneOriginMemo},
+    HearthstoneId,
+};
 
 use super::SlottedHearthstone;
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SlottedHearthstoneMemo {
     pub hearthstone_id: HearthstoneId,
     pub details: HearthstoneDetailsMemo,

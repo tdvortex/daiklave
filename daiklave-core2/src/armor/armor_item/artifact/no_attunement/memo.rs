@@ -4,7 +4,7 @@ use crate::{
     armor::armor_item::{base::BaseArmor, BaseArmorId},
     artifact::MagicMaterial,
     book_reference::BookReference,
-    hearthstones::OwnedHearthstoneMemo,
+    hearthstones::SlottedHearthstoneMemo,
 };
 
 use super::ArtifactArmorNoAttunement;
@@ -19,7 +19,7 @@ pub struct ArtifactArmorNoAttunementMemo {
     pub(crate) base_armor: BaseArmor,
     pub(crate) magic_material: MagicMaterial,
     pub(crate) merit_dots: u8,
-    pub(crate) hearthstone_slots: Vec<Option<OwnedHearthstoneMemo>>,
+    pub(crate) hearthstone_slots: Vec<Option<SlottedHearthstoneMemo>>,
 }
 
 impl<'source> ArtifactArmorNoAttunementMemo {
