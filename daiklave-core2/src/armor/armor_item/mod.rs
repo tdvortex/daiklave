@@ -25,7 +25,7 @@ pub use id::ArmorId;
 pub use tag::ArmorTag;
 pub use weight_class::ArmorWeightClass;
 
-use crate::book_reference::BookReference;
+use crate::{book_reference::BookReference, hearthstones::hearthstone::Hearthstone};
 
 use self::{artifact::builder::ArtifactArmorItemBuilder, base::builder::BaseArmorItemBuilder};
 
@@ -105,6 +105,12 @@ impl<'source> ArmorItem<'source> {
     /// mundane armor.
     pub fn hearthstone_slots(&self) -> u8 {
         self.0.hearthstone_slots()
+    }
+
+    /// Iterates over all hearthstones slotted into the armor item. Returns an
+    /// empty iterator for mundane armor or if all slots are empty.
+    pub fn slotted_hearthstones(&self) -> impl Iterator<Item = Hearthstone<'source>> {
+        self.0.slotted_hearthstones()
     }
 
     /// Returns true if the armor item is currently equipped.

@@ -1117,7 +1117,7 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// The character's Armor items.
-    pub fn armor(&self) -> Armor {
+    pub fn armor(&'view self) -> Armor<'view, 'source> {
         Armor(&self.exaltation)
     }
 

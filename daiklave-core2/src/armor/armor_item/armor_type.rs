@@ -1,4 +1,8 @@
-use crate::book_reference::BookReference;
+use crate::{
+    artifact::ArtifactId,
+    book_reference::BookReference,
+    hearthstones::{hearthstone::Hearthstone, HearthstonePosition},
+};
 
 use super::{
     artifact::{ArtifactArmorId, ArtifactArmorNoAttunement},
@@ -101,5 +105,21 @@ impl<'source> ArmorType<'source> {
             ArmorType::Artifact(_, artifact, _) => artifact.hearthstone_slots(),
             ArmorType::Mundane(_, _) => 0,
         }
+    }
+
+    pub fn slotted_hearthstones(&self) -> impl Iterator<Item = Hearthstone<'source>> {
+        match self {
+            ArmorType::Artifact(artifact_id, no_attunement, _) => no_attunement
+                .slotted_hearthstones()
+                .map(|slotted| {
+                    Hearthstone(HearthstonePosition::Slotted(
+                        ArtifactId::Armor(*artifact_id),
+                        slotted,
+                    ))
+                })
+                .collect(),
+            ArmorType::Mundane(_, _) => vec![],
+        }
+        .into_iter()
     }
 }

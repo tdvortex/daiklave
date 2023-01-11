@@ -125,7 +125,7 @@ impl<'view, 'source> Weapon<'source> {
 
     /// An iterator over all of the hearthstones currently slotted into the
     /// artifact weapon. Returns an empty iterator for mundane weapons.
-    pub fn slotted_heathstones(&'view self) -> impl Iterator<Item = Hearthstone<'source>> + '_ {
+    pub fn slotted_hearthstones(&'view self) -> impl Iterator<Item = Hearthstone<'source>> + '_ {
         self.0.slotted_hearthstones()
     }
 

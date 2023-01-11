@@ -55,4 +55,12 @@ impl<'source> ArtifactArmorNoAttunement<'source> {
     pub fn hearthstone_slots(&self) -> u8 {
         self.hearthstone_slots.len().min(u8::MAX as usize) as u8
     }
+
+    pub(crate) fn slotted_hearthstones(
+        &self,
+    ) -> impl Iterator<Item = SlottedHearthstone<'source>> + '_ {
+        self.hearthstone_slots
+            .iter()
+            .filter_map(|maybe_hearthstone| *maybe_hearthstone)
+    }
 }

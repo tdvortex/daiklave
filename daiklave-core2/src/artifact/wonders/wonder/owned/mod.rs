@@ -1,7 +1,9 @@
 mod no_attunement;
 pub(crate) use no_attunement::{WonderNoAttunement, WonderNoAttunementMemo};
 
-use crate::{artifact::MagicMaterial, book_reference::BookReference};
+use crate::{
+    artifact::MagicMaterial, book_reference::BookReference, hearthstones::hearthstone::Hearthstone,
+};
 
 use super::WonderId;
 
@@ -51,5 +53,10 @@ impl<'source> OwnedWonder<'source> {
     /// If the wonder has a specific Magic Material, returns it.
     pub fn material(&self) -> Option<MagicMaterial> {
         self.1.material()
+    }
+
+    /// Returns all Hearthstones currently slotted into the artifact.
+    pub fn slotted_hearthstones(&self) -> impl Iterator<Item = Hearthstone<'source>> + '_ {
+        self.1.slotted_hearthstones(self.0)
     }
 }

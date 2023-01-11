@@ -2,7 +2,9 @@ mod memo;
 pub(crate) use memo::WonderNoAttunementMemo;
 
 use crate::{
-    artifact::MagicMaterial, book_reference::BookReference, hearthstones::SlottedHearthstone,
+    artifact::{wonders::WonderId, ArtifactId, MagicMaterial},
+    book_reference::BookReference,
+    hearthstones::{hearthstone::Hearthstone, HearthstonePosition, SlottedHearthstone},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -57,5 +59,21 @@ impl<'source> WonderNoAttunement<'source> {
 
     pub fn material(&self) -> Option<MagicMaterial> {
         self.magic_material
+    }
+
+    pub fn slotted_hearthstones(
+        &self,
+        wonder_id: WonderId,
+    ) -> impl Iterator<Item = Hearthstone<'source>> + '_ {
+        self.hearthstone_slots
+            .iter()
+            .filter_map(move |maybe_slotted| {
+                (*maybe_slotted).map(|slotted| {
+                    Hearthstone(HearthstonePosition::Slotted(
+                        ArtifactId::Wonder(wonder_id),
+                        slotted,
+                    ))
+                })
+            })
     }
 }
