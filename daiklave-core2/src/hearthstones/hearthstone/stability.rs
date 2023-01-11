@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 /// A stability rating for a Hearthstone.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum HearthstoneStability {
+pub(crate) enum HearthstoneStability {
     /// The Hearthstone requires a Manse to exist. If the Manse is lost,
     /// the Hearthstone is destroyed.
     Linked,

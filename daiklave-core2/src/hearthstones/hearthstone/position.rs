@@ -47,14 +47,7 @@ impl<'source> HearthstonePosition<'source> {
         }
     }
 
-    pub fn lore(&self) -> Option<&'source str> {
-        match self {
-            HearthstonePosition::Slotted(_, slotted) => slotted.lore(),
-            HearthstonePosition::Unslotted(_, unslotted) => unslotted.lore(),
-        }
-    }
-
-    pub fn powers(&self) -> Option<&'source str> {
+    pub fn powers(&self) -> &'source str {
         match self {
             HearthstonePosition::Slotted(_, slotted) => slotted.powers(),
             HearthstonePosition::Unslotted(_, unslotted) => unslotted.powers(),

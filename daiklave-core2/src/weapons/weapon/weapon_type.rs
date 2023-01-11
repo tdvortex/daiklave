@@ -2,7 +2,7 @@ use crate::{
     artifact::ArtifactId,
     book_reference::{Book, BookReference},
     exaltation::exalt::essence::MoteCommitment,
-    hearthstones::Hearthstone,
+    hearthstones::hearthstone::Hearthstone,
 };
 
 use super::{

@@ -40,11 +40,7 @@ impl<'source> SlottedHearthstone<'source> {
         self.details.category()
     }
 
-    pub fn lore(&self) -> Option<&'source str> {
-        self.details.lore()
-    }
-
-    pub fn powers(&self) -> Option<&'source str> {
+    pub fn powers(&self) -> &'source str {
         self.details.powers()
     }
 

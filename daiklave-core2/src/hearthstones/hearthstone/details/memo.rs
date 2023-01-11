@@ -13,8 +13,7 @@ pub(crate) struct HearthstoneDetailsMemo {
     pub book_reference: Option<BookReference>,
     pub category: HearthstoneCategory,
     pub geomancy_level: GeomancyLevel,
-    pub lore: Option<String>,
-    pub powers: Option<String>,
+    pub powers: String,
     pub is_dependent: bool,
 }
 
@@ -25,8 +24,7 @@ impl<'source> HearthstoneDetailsMemo {
             book_reference: self.book_reference,
             category: self.category,
             geomancy_level: self.geomancy_level,
-            lore: self.lore.as_deref(),
-            powers: self.powers.as_deref(),
+            powers: self.powers.as_str(),
             is_dependent: self.is_dependent,
         }
     }

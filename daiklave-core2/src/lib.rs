@@ -55,6 +55,9 @@ pub mod guided;
 /// The Health struct and methods related to damage and healing.
 pub mod health;
 
+/// Hearthstones logic
+pub mod hearthstones;
+
 /// Martial Arts style logic
 pub mod martial_arts;
 /// Contains the Id enum and a variety of specific Id subtypes, to be used as
@@ -70,7 +73,6 @@ pub mod weapons;
 mod character;
 mod character_memo;
 pub(crate) mod craft;
-mod hearthstones;
 mod name_and_concept;
 mod willpower;
 

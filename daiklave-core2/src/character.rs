@@ -20,7 +20,7 @@ use crate::{
         Exaltation,
     },
     health::{DamageLevel, Health, WoundPenalty},
-    hearthstones::{Hearthstones, HearthstoneId, UnslottedHearthstone},
+    hearthstones::{HearthstoneId, Hearthstones, UnslottedHearthstone},
     martial_arts::{AddMartialArtsStyleError, MartialArts, MartialArtsStyle, MartialArtsStyleId},
     name_and_concept::RemoveConceptError,
     sorcery::{
@@ -81,7 +81,11 @@ impl<'view, 'source> Character<'source> {
             attributes: self.attributes,
             abilities: self.abilities.as_memo(),
             craft: self.craft.as_memo(),
-            hearthstone_inventory: self.hearthstone_inventory.iter().map(|(k, v)| (*k, v.as_memo())).collect(),
+            hearthstone_inventory: self
+                .hearthstone_inventory
+                .iter()
+                .map(|(k, v)| (*k, v.as_memo()))
+                .collect(),
         }
     }
 

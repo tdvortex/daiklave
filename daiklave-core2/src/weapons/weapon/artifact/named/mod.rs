@@ -5,7 +5,7 @@ pub use memo::NamedArtifactWeaponMemo;
 use crate::{
     artifact::{ArtifactId, MagicMaterial},
     book_reference::BookReference,
-    hearthstones::{Hearthstone, HearthstonePosition, SlottedHearthstone},
+    hearthstones::{hearthstone::Hearthstone, HearthstonePosition, SlottedHearthstone},
     weapons::weapon::{base::BaseWeapon, BaseWeaponId},
 };
 

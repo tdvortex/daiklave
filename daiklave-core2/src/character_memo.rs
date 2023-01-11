@@ -3,8 +3,14 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    abilities::AbilitiesMemo, attributes::Attributes, craft::CraftMemo, exaltation::ExaltationMemo,
-    health::Health, willpower::Willpower, Character, hearthstones::{HearthstoneId, UnslottedHearthstoneMemo},
+    abilities::AbilitiesMemo,
+    attributes::Attributes,
+    craft::CraftMemo,
+    exaltation::ExaltationMemo,
+    health::Health,
+    hearthstones::{HearthstoneId, UnslottedHearthstoneMemo},
+    willpower::Willpower,
+    Character,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -34,7 +40,11 @@ impl<'source> CharacterMemo {
             attributes: self.attributes,
             abilities: self.abilities.as_ref(),
             craft: self.craft.as_ref(),
-            hearthstone_inventory: self.hearthstone_inventory.iter().map(|(k, v)| (*k, v.as_ref())).collect()
+            hearthstone_inventory: self
+                .hearthstone_inventory
+                .iter()
+                .map(|(k, v)| (*k, v.as_ref()))
+                .collect(),
         }
     }
 }

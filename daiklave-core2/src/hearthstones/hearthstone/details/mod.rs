@@ -13,8 +13,7 @@ pub(crate) struct HearthstoneDetails<'source> {
     book_reference: Option<BookReference>,
     category: HearthstoneCategory,
     geomancy_level: GeomancyLevel,
-    lore: Option<&'source str>,
-    powers: Option<&'source str>,
+    powers: &'source str,
     is_dependent: bool,
 }
 
@@ -25,8 +24,7 @@ impl<'source> HearthstoneDetails<'source> {
             book_reference: self.book_reference,
             category: self.category,
             geomancy_level: self.geomancy_level,
-            lore: self.lore.map(|s| s.to_owned()),
-            powers: self.powers.map(|s| s.to_owned()),
+            powers: self.powers.to_owned(),
             is_dependent: self.is_dependent,
         }
     }
@@ -43,11 +41,7 @@ impl<'source> HearthstoneDetails<'source> {
         self.category
     }
 
-    pub fn lore(&self) -> Option<&'source str> {
-        self.lore
-    }
-
-    pub fn powers(&self) -> Option<&'source str> {
+    pub fn powers(&self) -> &'source str {
         self.powers
     }
 
