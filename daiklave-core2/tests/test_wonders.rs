@@ -16,7 +16,7 @@ fn test_wonders() {
     // Add a wonder
     let wonder = Artifact::Wonder(
         WonderId(UniqueId::Placeholder(1)),
-        Artifact::wonder("Belt of Shadow Walking")
+        Artifact::wonder_builder("Belt of Shadow Walking")
             .book_reference(BookReference::new(Book::CoreRulebook, 602))
             .merit_dots(3)
             .powers("Night-black belts made from leathe from the wings of giant bats[...]")

@@ -32,7 +32,7 @@ pub enum Artifact {
 
 impl Artifact {
     /// Starts constructing a Wonder artifact.
-    pub fn wonder(name: &str) -> WonderBuilder {
+    pub fn wonder_builder(name: &str) -> WonderBuilder {
         WonderBuilder {
             name: name.to_owned(),
             book_reference: None,

@@ -182,7 +182,7 @@ fn test_hearthstones() {
     event_source.apply_mutation(mutation).unwrap();
     let character = event_source.as_character_view().unwrap();
 
-    let hearthstone_amulet = Artifact::wonder("Hearthstone Amulet")
+    let hearthstone_amulet = Artifact::wonder_builder("Hearthstone Amulet")
         .attunement_cost(1)
         .book_reference(BookReference::new(Book::CoreRulebook, 601))
         .hearthstone_slots(1)
