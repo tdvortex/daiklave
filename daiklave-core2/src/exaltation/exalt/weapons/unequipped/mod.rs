@@ -187,7 +187,7 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
             .get_mut(&artifact_weapon_id)
             .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
             .0
-            .hearthstone_slots
+            .hearthstone_slots_mut()
             .iter_mut()
             .find(|maybe_hearthstone| maybe_hearthstone.is_none())
             .ok_or(CharacterMutationError::HearthstoneError(
@@ -206,7 +206,7 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         let SlottedHearthstone {
-            hearthstone_id,
+            hearthstone_id: _,
             details,
             origin,
         } = self
@@ -214,7 +214,7 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
             .get_mut(&artifact_weapon_id)
             .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
             .0
-            .hearthstone_slots
+            .hearthstone_slots_mut()
             .iter_mut()
             .find_map(|maybe_hearthstone| {
                 if maybe_hearthstone

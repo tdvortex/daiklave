@@ -1251,7 +1251,7 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Checks if a manse (with demense and hearthstone) can be added
-    pub fn check_add_manse(&self, manse_name: &str, demense_name: &str, hearthstone_id: HearthstoneId, template: &HearthstoneTemplate) -> Result<(), CharacterMutationError> {
+    pub fn check_add_manse(&self, _manse_name: &str, _demense_name: &str, hearthstone_id: HearthstoneId, template: &HearthstoneTemplate) -> Result<(), CharacterMutationError> {
         if self.hearthstones().get(hearthstone_id).is_some() {
             Err(CharacterMutationError::HearthstoneError(HearthstoneError::UniqueHearthstone))
         } else if let HearthstoneStability::WildBorn = template.stability {
@@ -1321,7 +1321,7 @@ impl<'view, 'source> Character<'source> {
                     if self
                     .weapons()
                     .iter()
-                    .find(|(weapon_id, equipped)| weapon_id == &WeaponId::Artifact(artifact_weapon_id))
+                    .find(|(weapon_id, _equipped)| weapon_id == &WeaponId::Artifact(artifact_weapon_id))
                     .and_then(|(weapon_id, equipped)| {
                         self.weapons().get(weapon_id, equipped)
                     }).ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?

@@ -767,4 +767,16 @@ impl<'view, 'source> Exalt<'source> {
         self.wonders.slot_hearthstone(wonder_id, hearthstone_id, unslotted)?;
         Ok(self)
     }
+
+    pub fn unslot_hearthstone_from_weapon(&mut self, artifact_weapon_id: ArtifactWeaponId, hearthstone_id: HearthstoneId) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        self.weapons.unslot_hearthstone(artifact_weapon_id, hearthstone_id)
+    }
+
+    pub fn unslot_hearthstone_from_armor(&mut self, artifact_armor_id: ArtifactArmorId, hearthstone_id: HearthstoneId) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        self.armor.unslot_hearthstone(artifact_armor_id, hearthstone_id)
+    }
+
+    pub fn unslot_hearthstone_from_wonder(&mut self, wonder_id: WonderId, hearthstone_id: HearthstoneId) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        self.wonders.unslot_hearthstone(wonder_id, hearthstone_id)
+    }
 }

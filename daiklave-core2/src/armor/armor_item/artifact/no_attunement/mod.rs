@@ -5,7 +5,7 @@ use crate::{
     armor::armor_item::{base::BaseArmor, BaseArmorId},
     artifact::MagicMaterial,
     book_reference::BookReference,
-    hearthstones::SlottedHearthstone,
+    hearthstones::{SlottedHearthstone},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]

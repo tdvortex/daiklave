@@ -10,9 +10,9 @@ pub(crate) use memo::SlottedHearthstoneMemo;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct SlottedHearthstone<'source> {
-    hearthstone_id: HearthstoneId,
-    details: HearthstoneDetails<'source>,
-    origin: HearthstoneOrigin<'source>,
+    pub hearthstone_id: HearthstoneId,
+    pub details: HearthstoneDetails<'source>,
+    pub origin: HearthstoneOrigin<'source>,
 }
 
 impl<'source> SlottedHearthstone<'source> {

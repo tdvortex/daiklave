@@ -13,7 +13,7 @@ pub(crate) struct WonderNoAttunement<'source> {
     book_reference: Option<BookReference>,
     lore: Option<&'source str>,
     powers: &'source str,
-    hearthstone_slots: Vec<Option<SlottedHearthstone<'source>>>,
+    pub hearthstone_slots: Vec<Option<SlottedHearthstone<'source>>>,
     merit_dots: u8,
     magic_material: Option<MagicMaterial>,
     attunement_cost: Option<u8>,

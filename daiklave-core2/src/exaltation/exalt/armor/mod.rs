@@ -13,6 +13,7 @@ use crate::{
         ArmorError,
     },
     exaltation::mortal::MortalArmor,
+    hearthstones::{HearthstoneError, HearthstoneId, SlottedHearthstone, UnslottedHearthstone},
     CharacterMutationError,
 };
 
@@ -237,6 +238,83 @@ impl<'source> ExaltArmor<'source> {
         } else {
             Err(CharacterMutationError::ArmorError(ArmorError::NotFound))
         }
+    }
+
+    pub fn slot_hearthstone(
+        &mut self,
+        artifact_armor_id: ArtifactArmorId,
+        hearthstone_id: HearthstoneId,
+        unslotted: UnslottedHearthstone<'source>,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        *self
+            .equipped
+            .as_mut()
+            .and_then(|equipped| match equipped {
+                EquippedArmor::Mundane(_, _) => None,
+                EquippedArmor::Artifact(worn_id, worn_armor) => {
+                    if worn_id == &artifact_armor_id {
+                        Some(worn_armor)
+                    } else {
+                        None
+                    }
+                }
+            })
+            .or_else(|| self.unequipped_artifact.get_mut(&artifact_armor_id))
+            .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?
+            .0
+            .hearthstone_slots
+            .iter_mut()
+            .find(|maybe_hearthstone| maybe_hearthstone.is_none())
+            .ok_or(CharacterMutationError::HearthstoneError(
+                HearthstoneError::AllSlotsFilled,
+            ))? = Some(SlottedHearthstone {
+            hearthstone_id,
+            details: unslotted.details,
+            origin: unslotted.origin,
+        });
+        Ok(self)
+    }
+
+    pub fn unslot_hearthstone(
+        &mut self,
+        artifact_armor_id: ArtifactArmorId,
+        hearthstone_id: HearthstoneId,
+    ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        let SlottedHearthstone {
+            hearthstone_id: _,
+            details,
+            origin,
+        } = self
+            .equipped
+            .as_mut()
+            .and_then(|equipped| match equipped {
+                EquippedArmor::Mundane(_, _) => None,
+                EquippedArmor::Artifact(worn_id, worn_armor) => {
+                    if worn_id == &artifact_armor_id {
+                        Some(worn_armor)
+                    } else {
+                        None
+                    }
+                }
+            })
+            .or_else(|| self.unequipped_artifact.get_mut(&artifact_armor_id))
+            .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?
+            .0
+            .hearthstone_slots
+            .iter_mut()
+            .find_map(|maybe_hearthstone| {
+                if maybe_hearthstone.map_or(false, |hearthstone| hearthstone.id() == hearthstone_id)
+                {
+                    maybe_hearthstone.take()
+                } else {
+                    None
+                }
+            })
+            .ok_or(CharacterMutationError::HearthstoneError(
+                HearthstoneError::NotFound,
+            ))?;
+
+        Ok(UnslottedHearthstone { details, origin })
     }
 }
 
