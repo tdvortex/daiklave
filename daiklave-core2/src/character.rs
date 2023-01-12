@@ -178,6 +178,9 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::UnslotHearthstone(hearthstone_id) => {
                 self.check_unslot_hearthstone(*hearthstone_id)
             }
+            CharacterMutation::RemoveHearthstone(hearthstone_id) => {
+                self.check_remove_hearthstone(*hearthstone_id)
+            }
         }
     }
 
@@ -262,6 +265,9 @@ impl<'view, 'source> Character<'source> {
             }
             CharacterMutation::UnslotHearthstone(hearthstone_id) => {
                 self.unslot_hearthstone(*hearthstone_id)
+            }
+            CharacterMutation::RemoveHearthstone(hearthstone_id) => {
+                self.remove_hearthstone(*hearthstone_id)
             }
         }
     }
@@ -1446,6 +1452,25 @@ impl<'view, 'source> Character<'source> {
             };
 
         self.hearthstone_inventory.insert(hearthstone_id, unslotted);
+        Ok(self)
+    }
+
+    /// Checks if a hearthstone can be removed.
+    pub fn check_remove_hearthstone(&self, hearthstone_id: HearthstoneId) -> Result<(), CharacterMutationError> {
+        if self.hearthstones().get(hearthstone_id).is_none() {
+            Err(CharacterMutationError::HearthstoneError(HearthstoneError::NotFound))
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Removes a hearthstone from a character.
+    pub fn remove_hearthstone(&mut self, hearthstone_id: HearthstoneId) -> Result<&mut Self, CharacterMutationError> {
+        if self.hearthstones().get(hearthstone_id).ok_or(CharacterMutationError::HearthstoneError(HearthstoneError::NotFound))?.slotted_into().is_some() {
+            self.unslot_hearthstone(hearthstone_id)?;
+        }
+
+        self.hearthstone_inventory.remove(&hearthstone_id).ok_or(CharacterMutationError::HearthstoneError(HearthstoneError::NotFound))?;
         Ok(self)
     }
 }

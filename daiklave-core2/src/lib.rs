@@ -175,6 +175,9 @@ pub enum CharacterMutation {
     SlotHearthstone(ArtifactId, HearthstoneId),
     /// Unslot a hearthstone from its current position.
     UnslotHearthstone(HearthstoneId),
+    /// Remove a hearthstone from the character, unslotting it in the process 
+    /// if needed.
+    RemoveHearthstone(HearthstoneId),
 }
 
 /// An error representing something that could go wrong with a

@@ -101,7 +101,7 @@ fn test_hearthstones() {
     assert!(character
         .check_mutation(&CharacterMutation::AddHearthstone(
             HearthstoneId(UniqueId::Placeholder(1)),
-            jewel
+            jewel_clone
         ))
         .is_err());
 
@@ -277,8 +277,4 @@ fn test_hearthstones() {
         .hearthstones()
         .get(HearthstoneId(UniqueId::Placeholder(1)))
         .is_none());
-
-    // Check you can't remove a slotted hearthstone
-    let mutation = CharacterMutation::RemoveHearthstone(HearthstoneId(UniqueId::Placeholder(2)));
-    assert!(character.check_mutation(&mutation).is_err());
 }
