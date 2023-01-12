@@ -199,61 +199,53 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        *self.handless_artifact.get_mut(&artifact_weapon_id).map(|weapon| weapon.hearthstone_slots_mut()).or_else(|| 
-            match &mut self.hands {
-            MortalHands::Empty => {
-               None
-            }
-            MortalHands::MainHand(one_handed) | MortalHands::OffHand(one_handed) => {
-                match one_handed {
-                    EquippedOneHandedWeaponNoAttunement::Mundane(_, _) => {
+        *self
+            .handless_artifact
+            .get_mut(&artifact_weapon_id)
+            .map(|weapon| weapon.hearthstone_slots_mut())
+            .or_else(|| match &mut self.hands {
+                MortalHands::Empty => None,
+                MortalHands::MainHand(one_handed) | MortalHands::OffHand(one_handed) => {
+                    match one_handed {
+                        EquippedOneHandedWeaponNoAttunement::Mundane(_, _) => None,
+                        EquippedOneHandedWeaponNoAttunement::Artifact(held_id, held_weapon) => {
+                            if held_id != &artifact_weapon_id {
+                                None
+                            } else {
+                                Some(held_weapon.hearthstone_slots_mut())
+                            }
+                        }
+                    }
+                }
+                MortalHands::Both(arr) => arr.iter_mut().find_map(|one| {
+                    if let EquippedOneHandedWeaponNoAttunement::Artifact(held_id, held_weapon) = one
+                    {
+                        if held_id != &artifact_weapon_id {
+                            None
+                        } else {
+                            Some(held_weapon.hearthstone_slots_mut())
+                        }
+                    } else {
                         None
                     }
-                    EquippedOneHandedWeaponNoAttunement::Artifact(held_id, held_weapon) => {
+                }),
+                MortalHands::TwoHanded(two_handed) => match two_handed {
+                    EquippedTwoHandedWeaponNoAttunement::Mundane(_, _) => None,
+                    EquippedTwoHandedWeaponNoAttunement::Artifact(held_id, held_weapon) => {
                         if held_id != &artifact_weapon_id {
                             None
                         } else {
                             Some(held_weapon.hearthstone_slots_mut())
                         }
                     }
-                }
-            }
-            MortalHands::Both(arr) => {
-                arr.iter_mut()
-                    .find_map(|one| {
-                        if let EquippedOneHandedWeaponNoAttunement::Artifact(
-                            held_id,
-                            held_weapon,
-                        ) = one
-                        {
-                            if held_id != &artifact_weapon_id {
-                                None
-                            } else {
-                                Some(held_weapon.hearthstone_slots_mut())
-                            }
-                        } else {
-                            None
-                        }
-                    })
-            }
-            MortalHands::TwoHanded(two_handed) => match two_handed {
-                EquippedTwoHandedWeaponNoAttunement::Mundane(_, _) => {
-                    None
-                }
-                EquippedTwoHandedWeaponNoAttunement::Artifact(held_id, held_weapon) => {
-                    if held_id != &artifact_weapon_id {
-                        None
-                    } else {
-                        Some(held_weapon.hearthstone_slots_mut())
-                    }
-                }
-            },
-        }).ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
-        .iter_mut()
-        .find(|maybe_hearthstone| maybe_hearthstone.is_none())
-        .ok_or(CharacterMutationError::HearthstoneError(
-            HearthstoneError::AllSlotsFilled,
-        ))? = Some(SlottedHearthstone {
+                },
+            })
+            .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
+            .iter_mut()
+            .find(|maybe_hearthstone| maybe_hearthstone.is_none())
+            .ok_or(CharacterMutationError::HearthstoneError(
+                HearthstoneError::AllSlotsFilled,
+            ))? = Some(SlottedHearthstone {
             hearthstone_id,
             details: unslotted.details,
             origin: unslotted.origin,
@@ -269,12 +261,14 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
         let SlottedHearthstone {
             hearthstone_id: _,
             details,
-            origin
-        } = self.handless_artifact.get_mut(&artifact_weapon_id).map(|weapon| weapon.hearthstone_slots_mut()).or_else(|| match &mut self.hands {
-            MortalHands::Empty => None,
-            MortalHands::MainHand(one)
-            | MortalHands::OffHand(one) => {
-                match one {
+            origin,
+        } = self
+            .handless_artifact
+            .get_mut(&artifact_weapon_id)
+            .map(|weapon| weapon.hearthstone_slots_mut())
+            .or_else(|| match &mut self.hands {
+                MortalHands::Empty => None,
+                MortalHands::MainHand(one) | MortalHands::OffHand(one) => match one {
                     EquippedOneHandedWeaponNoAttunement::Mundane(_, _) => None,
                     EquippedOneHandedWeaponNoAttunement::Artifact(held_id, held_weapon) => {
                         if held_id == &artifact_weapon_id {
@@ -283,10 +277,8 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                             None
                         }
                     }
-                }
-            }
-            MortalHands::Both(arr) => {
-                arr.iter_mut().find_map(|one| match one {
+                },
+                MortalHands::Both(arr) => arr.iter_mut().find_map(|one| match one {
                     EquippedOneHandedWeaponNoAttunement::Mundane(_, _) => None,
                     EquippedOneHandedWeaponNoAttunement::Artifact(held_id, held_weapon) => {
                         if held_id == &artifact_weapon_id {
@@ -295,10 +287,8 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                             None
                         }
                     }
-                })
-            }
-            MortalHands::TwoHanded(two) => {
-                match two {
+                }),
+                MortalHands::TwoHanded(two) => match two {
                     EquippedTwoHandedWeaponNoAttunement::Mundane(_, _) => None,
                     EquippedTwoHandedWeaponNoAttunement::Artifact(held_id, held_weapon) => {
                         if held_id == &artifact_weapon_id {
@@ -307,16 +297,25 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                             None
                         }
                     }
+                },
+            })
+            .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
+            .iter_mut()
+            .find_map(|maybe_hearthstone| {
+                if maybe_hearthstone
+                    .as_ref()
+                    .map_or(false, |hearthstone| hearthstone.id() == hearthstone_id)
+                {
+                    maybe_hearthstone.take()
+                } else {
+                    None
                 }
-            }
-        }).ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
-        .iter_mut()
-        .find_map(|maybe_hearthstone| if maybe_hearthstone.as_ref().map_or(false, |hearthstone| hearthstone.id() == hearthstone_id) {
-            maybe_hearthstone.take()
-        } else {None})
-        .ok_or(CharacterMutationError::HearthstoneError(HearthstoneError::NotFound))?;
+            })
+            .ok_or(CharacterMutationError::HearthstoneError(
+                HearthstoneError::NotFound,
+            ))?;
 
-        Ok(UnslottedHearthstone { details, origin})
+        Ok(UnslottedHearthstone { details, origin })
     }
 }
 

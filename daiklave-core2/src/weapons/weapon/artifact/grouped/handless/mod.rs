@@ -5,7 +5,9 @@ use std::ops::Deref;
 
 pub(crate) use memo::HandlessArtifactWeaponMemo;
 
-use crate::{weapons::weapon::artifact::named::NamedArtifactWeapon, hearthstones::SlottedHearthstone};
+use crate::{
+    hearthstones::SlottedHearthstone, weapons::weapon::artifact::named::NamedArtifactWeapon,
+};
 
 pub(crate) use no_attunement::{
     HandlessArtifactWeaponNoAttunement, HandlessArtifactWeaponNoAttunementMemo,
@@ -22,7 +24,9 @@ impl<'source> HandlessArtifactWeapon<'source> {
         HandlessArtifactWeaponMemo(self.0.as_memo(), self.1)
     }
 
-    pub(crate) fn hearthstone_slots_mut(&mut self) -> &mut Vec<Option<SlottedHearthstone<'source>>> {
+    pub(crate) fn hearthstone_slots_mut(
+        &mut self,
+    ) -> &mut Vec<Option<SlottedHearthstone<'source>>> {
         self.0.hearthstone_slots_mut()
     }
 }

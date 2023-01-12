@@ -10,8 +10,7 @@ use daiklave_core2::{
     },
     unique_id::UniqueId,
     weapons::weapon::{
-        ArtifactWeaponId, BaseWeaponId, OptionalWeaponTag, Weapon, WeaponId,
-        WeaponWeightClass,
+        ArtifactWeaponId, BaseWeaponId, OptionalWeaponTag, Weapon, WeaponId, WeaponWeightClass,
     },
     CharacterEventSource, CharacterMutation,
 };
@@ -25,7 +24,7 @@ fn test_hearthstones() {
     assert!(character.hearthstones().iter().next().is_none());
 
     // Add two hearthstones, one with a manse
-    let jewel = Hearthstone::new("Jewel of the Celestial Mandarin".to_string())
+    let jewel = Hearthstone::builder("Jewel of the Celestial Mandarin".to_string())
         .book_reference(BookReference::new(Book::CoreRulebook, 611))
         .category(HearthstoneCategory::Sidereal)
         .geomancy_level(GeomancyLevel::Standard)
@@ -52,7 +51,7 @@ fn test_hearthstones() {
     event_source.apply_mutation(mutation).unwrap();
     let character = event_source.as_character_view().unwrap();
 
-    let eye = Hearthstone::new("Hierophant's Eye".to_string())
+    let eye = Hearthstone::builder("Hierophant's Eye".to_string())
         .book_reference(BookReference::new(Book::CoreRulebook, 610))
         .category(HearthstoneCategory::Solar)
         .geomancy_level(GeomancyLevel::Greater)

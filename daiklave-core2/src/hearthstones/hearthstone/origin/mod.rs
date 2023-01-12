@@ -60,11 +60,11 @@ impl<'source> HearthstoneOrigin<'source> {
     pub fn manse_and_demense(&self) -> Option<(&'source str, &'source str)> {
         match self {
             HearthstoneOrigin::Linked(m_and_d) => Some(*m_and_d),
-            HearthstoneOrigin::ManseBorn(m_and_d) => m_and_d.as_ref().map(|pair| *pair),
-            HearthstoneOrigin::ManseBornSteady(m_and_d) => m_and_d.as_ref().map(|pair| *pair),
-            HearthstoneOrigin::Steady(m_and_d) => m_and_d.as_ref().map(|pair| *pair),
+            HearthstoneOrigin::ManseBorn(m_and_d) => m_and_d.as_ref().copied(),
+            HearthstoneOrigin::ManseBornSteady(m_and_d) => m_and_d.as_ref().copied(),
+            HearthstoneOrigin::Steady(m_and_d) => m_and_d.as_ref().copied(),
             HearthstoneOrigin::WildBorn => None,
-            HearthstoneOrigin::Unspecified(m_and_d) => m_and_d.as_ref().map(|pair| *pair),
+            HearthstoneOrigin::Unspecified(m_and_d) => m_and_d.as_ref().copied(),
         }
     }
 }

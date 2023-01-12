@@ -1,9 +1,12 @@
 use std::ops::Deref;
 
-use crate::{weapons::weapon::artifact::{
-    named::NamedArtifactWeapon,
-    newtype::{NaturalArtifactWeaponView, WornArtifactWeaponView},
-}, hearthstones::SlottedHearthstone};
+use crate::{
+    hearthstones::SlottedHearthstone,
+    weapons::weapon::artifact::{
+        named::NamedArtifactWeapon,
+        newtype::{NaturalArtifactWeaponView, WornArtifactWeaponView},
+    },
+};
 
 mod memo;
 pub(crate) use memo::HandlessArtifactWeaponNoAttunementMemo;
@@ -26,7 +29,9 @@ impl<'source> HandlessArtifactWeaponNoAttunement<'source> {
         }
     }
 
-    pub(crate) fn hearthstone_slots_mut(&mut self) -> &mut Vec<Option<SlottedHearthstone<'source>>> {
+    pub(crate) fn hearthstone_slots_mut(
+        &mut self,
+    ) -> &mut Vec<Option<SlottedHearthstone<'source>>> {
         match self {
             HandlessArtifactWeaponNoAttunement::Natural(view) => view.hearthstone_slots_mut(),
             HandlessArtifactWeaponNoAttunement::Worn(view) => view.hearthstone_slots_mut(),

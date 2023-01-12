@@ -5,7 +5,7 @@ use crate::{
     armor::armor_item::{base::BaseArmor, BaseArmorId},
     artifact::MagicMaterial,
     book_reference::BookReference,
-    hearthstones::{SlottedHearthstone},
+    hearthstones::SlottedHearthstone,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -65,6 +65,10 @@ impl<'source> ArtifactArmorNoAttunement<'source> {
     }
 
     pub(crate) fn open_slots(&self) -> u8 {
-        self.hearthstone_slots.iter().filter(|maybe_slotted| maybe_slotted.is_none()).count().min(u8::MAX as usize) as u8
+        self.hearthstone_slots
+            .iter()
+            .filter(|maybe_slotted| maybe_slotted.is_none())
+            .count()
+            .min(u8::MAX as usize) as u8
     }
 }

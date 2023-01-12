@@ -5,11 +5,11 @@ pub mod hearthstone;
 
 use crate::Character;
 
-pub use hearthstone::HearthstoneId;
 pub use error::HearthstoneError;
+pub use hearthstone::HearthstoneId;
 pub(crate) use hearthstone::{
-    HearthstonePosition, SlottedHearthstone, SlottedHearthstoneMemo, UnslottedHearthstone,
-    UnslottedHearthstoneMemo, HearthstoneStability, HearthstoneOrigin
+    HearthstoneOrigin, HearthstonePosition, HearthstoneStability, SlottedHearthstone,
+    SlottedHearthstoneMemo, UnslottedHearthstone, UnslottedHearthstoneMemo,
 };
 
 use self::hearthstone::Hearthstone;

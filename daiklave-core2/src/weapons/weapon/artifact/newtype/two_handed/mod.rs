@@ -3,7 +3,9 @@ pub use memo::TwoHandedArtifactWeapon;
 
 use std::ops::Deref;
 
-use crate::{weapons::weapon::artifact::named::NamedArtifactWeapon, hearthstones::SlottedHearthstone};
+use crate::{
+    hearthstones::SlottedHearthstone, weapons::weapon::artifact::named::NamedArtifactWeapon,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TwoHandedArtifactWeaponView<'source>(pub(crate) NamedArtifactWeapon<'source>);
@@ -21,8 +23,9 @@ impl<'source> TwoHandedArtifactWeaponView<'source> {
         TwoHandedArtifactWeapon(self.0.as_memo())
     }
 
-
-    pub(crate) fn hearthstone_slots_mut(&mut self) -> &mut Vec<Option<SlottedHearthstone<'source>>> {
+    pub(crate) fn hearthstone_slots_mut(
+        &mut self,
+    ) -> &mut Vec<Option<SlottedHearthstone<'source>>> {
         &mut self.0.hearthstone_slots
     }
 }

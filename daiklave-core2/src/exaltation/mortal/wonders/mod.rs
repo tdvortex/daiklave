@@ -4,8 +4,11 @@ pub(crate) use memo::MortalWondersMemo;
 use std::collections::HashMap;
 
 use crate::{
+    armor::armor_item::artifact::ArtifactError,
     artifact::wonders::{OwnedWonder, WonderId, WonderNoAttunement},
-    exaltation::exalt::ExaltWonders, hearthstones::{HearthstoneId, UnslottedHearthstone, HearthstoneError, SlottedHearthstone}, CharacterMutationError, armor::armor_item::artifact::ArtifactError,
+    exaltation::exalt::ExaltWonders,
+    hearthstones::{HearthstoneError, HearthstoneId, SlottedHearthstone, UnslottedHearthstone},
+    CharacterMutationError,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]

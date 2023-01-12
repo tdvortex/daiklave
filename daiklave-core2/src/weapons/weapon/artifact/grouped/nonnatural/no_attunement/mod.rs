@@ -3,10 +3,15 @@ use std::ops::Deref;
 
 pub(crate) use memo::NonnaturalArtifactWeaponNoAttunementMemo;
 
-use crate::{weapons::weapon::artifact::{
-    named::NamedArtifactWeapon,
-    newtype::{OneHandedArtifactWeaponView, TwoHandedArtifactWeaponView, WornArtifactWeaponView},
-}, hearthstones::SlottedHearthstone};
+use crate::{
+    hearthstones::SlottedHearthstone,
+    weapons::weapon::artifact::{
+        named::NamedArtifactWeapon,
+        newtype::{
+            OneHandedArtifactWeaponView, TwoHandedArtifactWeaponView, WornArtifactWeaponView,
+        },
+    },
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum NonnaturalArtifactWeaponNoAttunement<'source> {
@@ -40,13 +45,49 @@ impl<'source> NonnaturalArtifactWeaponNoAttunement<'source> {
                 NonnaturalArtifactWeaponNoAttunementMemo::TwoHanded(view.as_memo())
             }
         }
-    } 
+    }
 
     pub fn hearthstone_slots_mut(&mut self) -> &mut Vec<Option<SlottedHearthstone<'source>>> {
         match self {
-            NonnaturalArtifactWeaponNoAttunement::Worn(WornArtifactWeaponView(NamedArtifactWeapon { name: _, book_reference: _, merit_dots: _, magic_material: _, base_weapon_id: _, base_weapon: _, lore: _, powers: _, hearthstone_slots })) => hearthstone_slots,
-            NonnaturalArtifactWeaponNoAttunement::OneHanded(OneHandedArtifactWeaponView(NamedArtifactWeapon { name: _, book_reference: _, merit_dots: _, magic_material: _, base_weapon_id: _, base_weapon: _, lore: _, powers: _, hearthstone_slots })) => hearthstone_slots,
-            NonnaturalArtifactWeaponNoAttunement::TwoHanded(TwoHandedArtifactWeaponView(NamedArtifactWeapon { name: _, book_reference: _, merit_dots: _, magic_material: _, base_weapon_id: _, base_weapon: _, lore: _, powers: _, hearthstone_slots })) => hearthstone_slots,
+            NonnaturalArtifactWeaponNoAttunement::Worn(WornArtifactWeaponView(
+                NamedArtifactWeapon {
+                    name: _,
+                    book_reference: _,
+                    merit_dots: _,
+                    magic_material: _,
+                    base_weapon_id: _,
+                    base_weapon: _,
+                    lore: _,
+                    powers: _,
+                    hearthstone_slots,
+                },
+            )) => hearthstone_slots,
+            NonnaturalArtifactWeaponNoAttunement::OneHanded(OneHandedArtifactWeaponView(
+                NamedArtifactWeapon {
+                    name: _,
+                    book_reference: _,
+                    merit_dots: _,
+                    magic_material: _,
+                    base_weapon_id: _,
+                    base_weapon: _,
+                    lore: _,
+                    powers: _,
+                    hearthstone_slots,
+                },
+            )) => hearthstone_slots,
+            NonnaturalArtifactWeaponNoAttunement::TwoHanded(TwoHandedArtifactWeaponView(
+                NamedArtifactWeapon {
+                    name: _,
+                    book_reference: _,
+                    merit_dots: _,
+                    magic_material: _,
+                    base_weapon_id: _,
+                    base_weapon: _,
+                    lore: _,
+                    powers: _,
+                    hearthstone_slots,
+                },
+            )) => hearthstone_slots,
         }
     }
 }

@@ -1,6 +1,8 @@
 use std::ops::Deref;
 
-use crate::{weapons::weapon::artifact::named::NamedArtifactWeapon, hearthstones::SlottedHearthstone};
+use crate::{
+    hearthstones::SlottedHearthstone, weapons::weapon::artifact::named::NamedArtifactWeapon,
+};
 
 mod memo;
 pub use memo::OneHandedArtifactWeapon;
@@ -21,7 +23,9 @@ impl<'source> OneHandedArtifactWeaponView<'source> {
         OneHandedArtifactWeapon(self.0.as_memo())
     }
 
-    pub(crate) fn hearthstone_slots_mut(&mut self) -> &mut Vec<Option<SlottedHearthstone<'source>>> {
+    pub(crate) fn hearthstone_slots_mut(
+        &mut self,
+    ) -> &mut Vec<Option<SlottedHearthstone<'source>>> {
         &mut self.0.hearthstone_slots
     }
 }

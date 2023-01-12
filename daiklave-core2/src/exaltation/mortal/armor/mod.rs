@@ -15,7 +15,8 @@ use crate::{
         ArmorError,
     },
     exaltation::exalt::ExaltArmor,
-    CharacterMutationError, hearthstones::{HearthstoneError, SlottedHearthstone, HearthstoneId, UnslottedHearthstone},
+    hearthstones::{HearthstoneError, HearthstoneId, SlottedHearthstone, UnslottedHearthstone},
+    CharacterMutationError,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]

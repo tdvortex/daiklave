@@ -14,11 +14,11 @@ mod stability;
 mod template;
 mod unslotted;
 
+pub(crate) use origin::HearthstoneOrigin;
 pub(crate) use position::HearthstonePosition;
 pub(crate) use slotted::{SlottedHearthstone, SlottedHearthstoneMemo};
-pub(crate) use unslotted::{UnslottedHearthstone, UnslottedHearthstoneMemo};
 pub(crate) use stability::HearthstoneStability;
-pub(crate) use origin::HearthstoneOrigin;
+pub(crate) use unslotted::{UnslottedHearthstone, UnslottedHearthstoneMemo};
 
 use self::builder::HearthstoneBuilder;
 pub use {
@@ -32,7 +32,7 @@ pub struct Hearthstone<'source>(pub(crate) HearthstonePosition<'source>);
 
 impl<'source> Hearthstone<'source> {
     /// Starts constructing a new HearthstoneTemplate with a name.
-    pub fn new(name: String) -> HearthstoneBuilder {
+    pub fn builder(name: String) -> HearthstoneBuilder {
         HearthstoneBuilder {
             name,
             book_reference: None,

@@ -18,7 +18,7 @@ use exaltation::exalt::{
     exalt_type::solar::SolarMemo,
 };
 use health::{DamageLevel, WoundPenalty};
-use hearthstones::{HearthstoneId, hearthstone::HearthstoneTemplate, HearthstoneError};
+use hearthstones::{hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId};
 use martial_arts::{
     AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError,
     SetMartialArtsDotsError,
@@ -166,7 +166,7 @@ pub enum CharacterMutation {
     EquipArmor(ArmorId),
     /// Unequip any armor currently worn.
     UnequipArmor,
-    /// Add a manse, its associated demense, and its associated hearthstone 
+    /// Add a manse, its associated demense, and its associated hearthstone
     /// to the character.
     AddManse(String, String, HearthstoneId, HearthstoneTemplate),
     /// Add a hearthstone to a character without a manse.
@@ -175,7 +175,7 @@ pub enum CharacterMutation {
     SlotHearthstone(ArtifactId, HearthstoneId),
     /// Unslot a hearthstone from its current position.
     UnslotHearthstone(HearthstoneId),
-    /// Remove a hearthstone from the character, unslotting it in the process 
+    /// Remove a hearthstone from the character, unslotting it in the process
     /// if needed.
     RemoveHearthstone(HearthstoneId),
 }

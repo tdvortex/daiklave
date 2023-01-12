@@ -116,9 +116,12 @@ impl<'view, 'source> WeaponType<'source> {
         match self {
             WeaponType::Unarmed => 0,
             WeaponType::Mundane(_, _, _) => 0,
-            WeaponType::Artifact(_, artifact, _) => {
-                artifact.hearthstone_slots.iter().filter(|maybe_slotted| maybe_slotted.is_none()).count().min(u8::MAX as usize) as u8
-            }
+            WeaponType::Artifact(_, artifact, _) => artifact
+                .hearthstone_slots
+                .iter()
+                .filter(|maybe_slotted| maybe_slotted.is_none())
+                .count()
+                .min(u8::MAX as usize) as u8,
         }
     }
 
