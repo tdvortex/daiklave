@@ -15,7 +15,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError,
+    CharacterMutationError, hearthstones::{HearthstoneId, UnslottedHearthstone, HearthstoneError, SlottedHearthstone},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -174,5 +174,62 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
         weapon_id: ArtifactWeaponId,
     ) -> Option<NonnaturalArtifactWeapon<'source>> {
         self.artifact.remove(&weapon_id)
+    }
+
+    pub fn slot_hearthstone(
+        &mut self,
+        artifact_weapon_id: ArtifactWeaponId,
+        hearthstone_id: HearthstoneId,
+        unslotted: UnslottedHearthstone<'source>,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        *self
+            .artifact
+            .get_mut(&artifact_weapon_id)
+            .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
+            .0
+            .hearthstone_slots
+            .iter_mut()
+            .find(|maybe_hearthstone| maybe_hearthstone.is_none())
+            .ok_or(CharacterMutationError::HearthstoneError(
+                HearthstoneError::AllSlotsFilled,
+            ))? = Some(SlottedHearthstone {
+            hearthstone_id,
+            details: unslotted.details,
+            origin: unslotted.origin,
+        });
+        Ok(self)
+    }
+
+    pub fn unslot_hearthstone(
+        &mut self,
+        artifact_weapon_id: ArtifactWeaponId,
+        hearthstone_id: HearthstoneId,
+    ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        let SlottedHearthstone {
+            hearthstone_id,
+            details,
+            origin,
+        } = self
+            .artifact
+            .get_mut(&artifact_weapon_id)
+            .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
+            .0
+            .hearthstone_slots
+            .iter_mut()
+            .find_map(|maybe_hearthstone| {
+                if maybe_hearthstone
+                    .as_ref()
+                    .map_or(false, |hearthstone| hearthstone.id() == hearthstone_id)
+                {
+                    maybe_hearthstone.take()
+                } else {
+                    None
+                }
+            })
+            .ok_or(CharacterMutationError::HearthstoneError(
+                HearthstoneError::NotSlotted,
+            ))?;
+
+        Ok(UnslottedHearthstone { details, origin })
     }
 }

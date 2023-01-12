@@ -1,7 +1,7 @@
 use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
-    exaltation::mortal::MortalEquippedWeapons,
+    exaltation::mortal::{MortalEquippedWeapons},
     weapons::{
         weapon::{
             artifact::{
@@ -9,11 +9,11 @@ use crate::{
                 WornArtifactWeaponView,
             },
             mundane::{HandlessMundaneWeapon, MundaneWeaponView, WornMundaneWeaponView},
-            ArtifactWeaponId, BaseWeaponId, Equipped, Weapon, WeaponId, WeaponType,
+            ArtifactWeaponId, BaseWeaponId, Equipped, Weapon, WeaponId, WeaponType, equipped::{EquippedOneHandedWeapon, EquippedTwoHandedWeapon},
         },
         WeaponError,
     },
-    CharacterMutationError,
+    CharacterMutationError, hearthstones::{HearthstoneId, UnslottedHearthstone, HearthstoneError, SlottedHearthstone},
 };
 
 mod hands;
@@ -215,5 +215,132 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
         } else {
             None
         }
+    }
+
+    pub fn slot_hearthstone(
+        &mut self,
+        artifact_weapon_id: ArtifactWeaponId,
+        hearthstone_id: HearthstoneId,
+        unslotted: UnslottedHearthstone<'source>,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        *self.handless_artifact.get_mut(&artifact_weapon_id).map(|weapon| weapon.hearthstone_slots).or_else(|| 
+            match &mut self.hands {
+            ExaltHands::Empty => {
+               None
+            }
+            ExaltHands::MainHand(one_handed) | ExaltHands::OffHand(one_handed) => {
+                match one_handed {
+                    EquippedOneHandedWeapon::Mundane(_, _) => {
+                        None
+                    }
+                    EquippedOneHandedWeapon::Artifact(held_id, held_weapon, _) => {
+                        if held_id != &mut artifact_weapon_id {
+                            None
+                        } else {
+                            Some(held_weapon.hearthstone_slots)
+                        }
+                    }
+                }
+            }
+            ExaltHands::Both(arr) => {
+                arr.iter_mut()
+                    .find_map(|one| {
+                        if let EquippedOneHandedWeapon::Artifact(
+                            held_id,
+                            held_weapon,
+                            _
+                        ) = one
+                        {
+                            if *held_id == artifact_weapon_id {
+                                Some(held_weapon.hearthstone_slots)
+                            } else {
+                                None
+                            }
+                        } else {
+                            None
+                        }
+                    })
+            }
+            ExaltHands::TwoHanded(two_handed) => match two_handed {
+                EquippedTwoHandedWeapon::Mundane(_, _) => {
+                    None
+                }
+                EquippedTwoHandedWeapon::Artifact(held_id, held_weapon, _) => {
+                    if held_id != &mut artifact_weapon_id {
+                        None
+                    } else {
+                        Some(held_weapon.hearthstone_slots)
+                    }
+                }
+            },
+        }).ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
+        .iter_mut()
+        .find(|maybe_hearthstone| maybe_hearthstone.is_none())
+        .ok_or(CharacterMutationError::HearthstoneError(
+            HearthstoneError::AllSlotsFilled,
+        ))? = Some(SlottedHearthstone {
+            hearthstone_id,
+            details: unslotted.details,
+            origin: unslotted.origin,
+        });
+        Ok(self)
+    }
+
+    pub fn unslot_hearthstone(
+        &mut self,
+        artifact_weapon_id: ArtifactWeaponId,
+        hearthstone_id: HearthstoneId,
+    ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        let SlottedHearthstone {
+            hearthstone_id,
+            details,
+            origin
+        } = self.handless_artifact.get_mut(&artifact_weapon_id).map(|weapon| weapon.hearthstone_slots).or_else(|| match self.hands {
+            ExaltHands::Empty => None,
+            ExaltHands::MainHand(one)
+            | ExaltHands::OffHand(one) => {
+                match one {
+                    EquippedOneHandedWeapon::Mundane(_, _) => None,
+                    EquippedOneHandedWeapon::Artifact(held_id, held_weapon, _) => {
+                        if held_id == artifact_weapon_id {
+                            Some(held_weapon.hearthstone_slots)
+                        } else {
+                            None
+                        }
+                    }
+                }
+            }
+            ExaltHands::Both(arr) => {
+                arr.iter_mut().find_map(|one| match one {
+                    EquippedOneHandedWeapon::Mundane(_, _) => None,
+                    EquippedOneHandedWeapon::Artifact(held_id, held_weapon, _) => {
+                        if held_id == &artifact_weapon_id {
+                            Some(held_weapon.hearthstone_slots)
+                        } else {
+                            None
+                        }
+                    }
+                })
+            }
+            ExaltHands::TwoHanded(two) => {
+                match two {
+                    EquippedTwoHandedWeapon::Mundane(_, _) => None,
+                    EquippedTwoHandedWeapon::Artifact(held_id, held_weapon, _) => {
+                        if held_id == artifact_weapon_id {
+                            Some(held_weapon.hearthstone_slots)
+                        } else {
+                            None
+                        }
+                    }
+                }
+            }
+        }).ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
+        .iter_mut()
+        .find_map(|maybe_hearthstone| if maybe_hearthstone.as_ref().map_or(false, |hearthstone| hearthstone.id() == hearthstone_id) {
+            maybe_hearthstone.take()
+        } else {None})
+        .ok_or(CharacterMutationError::HearthstoneError(HearthstoneError::NotFound))?;
+
+        Ok(UnslottedHearthstone { details, origin})
     }
 }
