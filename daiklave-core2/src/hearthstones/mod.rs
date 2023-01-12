@@ -1,12 +1,15 @@
+mod error;
+
 /// Structs related to an individual hearthstone.
 pub mod hearthstone;
 
 use crate::Character;
 
 pub use hearthstone::HearthstoneId;
+pub use error::HearthstoneError;
 pub(crate) use hearthstone::{
     HearthstonePosition, SlottedHearthstone, SlottedHearthstoneMemo, UnslottedHearthstone,
-    UnslottedHearthstoneMemo,
+    UnslottedHearthstoneMemo, HearthstoneStability, HearthstoneOrigin
 };
 
 use self::hearthstone::Hearthstone;

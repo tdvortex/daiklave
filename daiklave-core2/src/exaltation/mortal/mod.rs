@@ -36,7 +36,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError,
+    CharacterMutationError, hearthstones::{HearthstoneId, UnslottedHearthstone},
 };
 
 use self::martial_arts::MortalMartialArtist;
@@ -345,6 +345,21 @@ impl<'source> Mortal<'source> {
             .ok_or(CharacterMutationError::ArtifactError(
                 ArtifactError::NotFound,
             ))?;
+        Ok(self)
+    }
+
+    pub fn slot_hearthstone_into_weapon(&mut self, artifact_weapon_id: ArtifactWeaponId, hearthstone_id: HearthstoneId, unslotted: UnslottedHearthstone<'source>) -> Result<&mut Self, CharacterMutationError> {
+        self.weapons.slot_hearthstone(artifact_weapon_id, hearthstone_id, unslotted)?;
+        Ok(self)
+    }
+
+    pub fn slot_hearthstone_into_armor(&mut self, artifact_armor_id: ArtifactArmorId, hearthstone_id: HearthstoneId, unslotted: UnslottedHearthstone<'source>) -> Result<&mut Self, CharacterMutationError> {
+        self.armor.slot_hearthstone(artifact_armor_id, hearthstone_id, unslotted)?;
+        Ok(self)
+    }
+
+    pub fn slot_hearthstone_into_wonder(&mut self, wonder_id: WonderId, hearthstone_id: HearthstoneId, unslotted: UnslottedHearthstone<'source>) -> Result<&mut Self, CharacterMutationError> {
+        self.wonders.slot_hearthstone(wonder_id, hearthstone_id, unslotted)?;
         Ok(self)
     }
 }

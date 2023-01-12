@@ -6,7 +6,7 @@ fn test_hearthstones() {
     let character = event_source.as_character_view().unwrap();
     
     // Characters have no hearthstones by default
-    assert!(character.hearthstones().iter().next().is_none())
+    assert!(character.hearthstones().iter().next().is_none());
 
     // Add two hearthstones, one with a manse
     let jewel = Hearthstone::new("Jewel of the Celestial Mandarin".to_string())

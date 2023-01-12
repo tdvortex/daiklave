@@ -10,8 +10,8 @@ use super::{
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct UnslottedHearthstone<'source> {
-    details: HearthstoneDetails<'source>,
-    origin: HearthstoneOrigin<'source>,
+    pub(crate) details: HearthstoneDetails<'source>,
+    pub(crate) origin: HearthstoneOrigin<'source>,
 }
 
 impl<'source> UnslottedHearthstone<'source> {

@@ -117,4 +117,9 @@ impl<'source> ArmorItem<'source> {
     pub fn is_equipped(&self) -> bool {
         self.1
     }
+
+    /// The number of currently unoccupied hearthstone slots in the armor item.
+    pub fn open_slots(&self) -> u8 {
+        self.0.open_slots()
+    }
 }

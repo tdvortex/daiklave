@@ -18,6 +18,7 @@ use exaltation::exalt::{
     exalt_type::solar::SolarMemo,
 };
 use health::{DamageLevel, WoundPenalty};
+use hearthstones::{HearthstoneId, hearthstone::HearthstoneTemplate, HearthstoneError};
 use martial_arts::{
     AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError,
     SetMartialArtsDotsError,
@@ -165,10 +166,15 @@ pub enum CharacterMutation {
     EquipArmor(ArmorId),
     /// Unequip any armor currently worn.
     UnequipArmor,
-    // Add a manse and its associated hearthstone to the character.
-    // AddManse(Manse, HearthstoneId, HearthstoneTemplate)
-    // Add a hearthstone to a character without a manse.
-    // AddHearthstone(HearthstoneId, HearthstoneTemplate)
+    /// Add a manse, its associated demense, and its associated hearthstone 
+    /// to the character.
+    AddManse(String, String, HearthstoneId, HearthstoneTemplate),
+    /// Add a hearthstone to a character without a manse.
+    AddHearthstone(HearthstoneId, HearthstoneTemplate),
+    /// Slot a hearthstone into an artifact.
+    SlotHearthstone(ArtifactId, HearthstoneId),
+    /// Unslot a hearthstone from its current position.
+    UnslotHearthstone(HearthstoneId),
 }
 
 /// An error representing something that could go wrong with a
@@ -226,6 +232,9 @@ pub enum CharacterMutationError {
     /// Error related to armor
     #[error("Armor error")]
     ArmorError(#[from] ArmorError),
+    /// Error related to hearthstones
+    #[error("Hearthstone error")]
+    HearthstoneError(#[from] HearthstoneError),
 }
 
 /// A container to hold a successfully applied sequence of mutations, with

@@ -112,6 +112,16 @@ impl<'view, 'source> WeaponType<'source> {
         }
     }
 
+    pub fn open_slots(&self) -> u8 {
+        match self {
+            WeaponType::Unarmed => 0,
+            WeaponType::Mundane(_, _, _) => 0,
+            WeaponType::Artifact(_, artifact, _) => {
+                artifact.hearthstone_slots.iter().filter(|maybe_slotted| maybe_slotted.is_none()).count().min(u8::MAX as usize) as u8
+            }
+        }
+    }
+
     pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &'source BaseWeapon)> {
         match self {
             WeaponType::Mundane(_, _, _) | WeaponType::Unarmed => None,

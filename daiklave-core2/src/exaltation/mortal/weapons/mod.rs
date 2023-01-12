@@ -18,7 +18,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError,
+    CharacterMutationError, hearthstones::{UnslottedHearthstone, HearthstoneId},
 };
 
 mod equipped;
@@ -690,6 +690,29 @@ impl<'view, 'source> MortalWeapons<'source> {
                     Ok(self)
                 }
             }
+        }
+    }
+
+    pub fn slot_hearthstone(&mut self, artifact_weapon_id: ArtifactWeaponId, hearthstone_id: HearthstoneId, unslotted: UnslottedHearthstone<'source>) -> Result<&mut Self, CharacterMutationError> {
+        let try_slot = self.unequipped.slot_hearthstone(artifact_weapon_id, hearthstone_id, unslotted); 
+        match try_slot {
+            Ok(_) => Ok(self),
+            Err(CharacterMutationError::WeaponError(WeaponError::NotFound)) => {
+                self.equipped.slot_hearthstone(artifact_weapon_id, hearthstone_id, unslotted)?;
+                Ok(self)
+            }
+            Err(e) => Err(e),
+        }
+    }
+
+    pub fn unslot_hearthstone(&mut self, artifact_weapon_id: ArtifactWeaponId, hearthstone_id: HearthstoneId) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        let try_unslotted = self.unequipped.unslot_hearthstone(artifact_weapon_id, hearthstone_id); 
+        match try_unslotted {
+            Ok(unslotted) => Ok(unslotted),
+            Err(CharacterMutationError::WeaponError(WeaponError::NotFound)) => {
+                self.equipped.unslot_hearthstone(artifact_weapon_id, hearthstone_id)
+            }
+            Err(e) => Err(e),
         }
     }
 }

@@ -59,4 +59,9 @@ impl<'source> OwnedWonder<'source> {
     pub fn slotted_hearthstones(&self) -> impl Iterator<Item = Hearthstone<'source>> + '_ {
         self.1.slotted_hearthstones(self.0)
     }
+
+    /// Returns the number of open heartstone slots. 
+    pub fn open_slots(&self) -> u8 {
+        self.1.open_slots()
+    }
 }

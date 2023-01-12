@@ -122,4 +122,11 @@ impl<'source> ArmorType<'source> {
         }
         .into_iter()
     }
+
+    pub fn open_slots(&self) -> u8 {
+        match self {
+            ArmorType::Artifact(_, no_attunement, _) => no_attunement.open_slots(),
+            ArmorType::Mundane(_, _) => 0
+        }
+    }
 }

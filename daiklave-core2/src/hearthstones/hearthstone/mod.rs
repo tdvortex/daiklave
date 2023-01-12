@@ -17,11 +17,13 @@ mod unslotted;
 pub(crate) use position::HearthstonePosition;
 pub(crate) use slotted::{SlottedHearthstone, SlottedHearthstoneMemo};
 pub(crate) use unslotted::{UnslottedHearthstone, UnslottedHearthstoneMemo};
+pub(crate) use stability::HearthstoneStability;
+pub(crate) use origin::HearthstoneOrigin;
 
 use self::builder::HearthstoneBuilder;
 pub use {
     category::HearthstoneCategory, geomancy_level::GeomancyLevel, id::HearthstoneId,
-    keyword::HearthstoneKeyword,
+    keyword::HearthstoneKeyword, template::HearthstoneTemplate,
 };
 
 /// A Hearthstone owned by a character.

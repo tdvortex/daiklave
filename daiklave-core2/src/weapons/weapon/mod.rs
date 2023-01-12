@@ -129,6 +129,11 @@ impl<'view, 'source> Weapon<'source> {
         self.0.slotted_hearthstones()
     }
 
+    /// The number of open hearthstone slots in the weapon.
+    pub fn open_slots(&self) -> u8 {
+        self.0.open_slots()
+    }
+
     /// If the weapon is an artifact weapon, returns the base weapon and its Id.
     /// For example, the base weapon for "Volcano Cutter" would be "daiklave".
     pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &'source BaseWeapon)> {

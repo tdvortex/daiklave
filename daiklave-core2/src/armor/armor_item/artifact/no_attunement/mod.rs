@@ -63,4 +63,8 @@ impl<'source> ArtifactArmorNoAttunement<'source> {
             .iter()
             .filter_map(|maybe_hearthstone| *maybe_hearthstone)
     }
+
+    pub(crate) fn open_slots(&self) -> u8 {
+        self.hearthstone_slots.iter().filter(|maybe_slotted| maybe_slotted.is_none()).count().min(u8::MAX as usize) as u8
+    }
 }

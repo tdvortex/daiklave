@@ -29,7 +29,7 @@ use crate::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
         EquipHand, Equipped, Weapon, WeaponId,
     },
-    CharacterMutationError,
+    CharacterMutationError, hearthstones::{UnslottedHearthstone, HearthstoneId},
 };
 
 use self::{
@@ -795,5 +795,74 @@ impl<'view, 'source> Exaltation<'source> {
             }
         }
         Ok(self)
+    }
+
+    pub fn slot_hearthstone_into_weapon(&mut self, artifact_weapon_id: ArtifactWeaponId, hearthstone_id: HearthstoneId, unslotted: UnslottedHearthstone<'source>) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {
+                mortal.slot_hearthstone_into_weapon(artifact_weapon_id, hearthstone_id, unslotted)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.slot_hearthstone_into_weapon(artifact_weapon_id, hearthstone_id, unslotted)?;
+            }
+        }
+        Ok(self)
+    }
+
+    pub fn slot_hearthstone_into_armor(&mut self, artifact_armor_id: ArtifactArmorId, hearthstone_id: HearthstoneId, unslotted: UnslottedHearthstone<'source>) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {
+                mortal.slot_hearthstone_into_armor(artifact_armor_id, hearthstone_id, unslotted)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.slot_hearthstone_into_armor(artifact_armor_id, hearthstone_id, unslotted)?;
+            }
+        }
+        Ok(self)
+    }
+
+    pub fn slot_hearthstone_into_wonder(&mut self, wonder_id: WonderId, hearthstone_id: HearthstoneId, unslotted: UnslottedHearthstone<'source>) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {
+                mortal.slot_hearthstone_into_wonder(wonder_id, hearthstone_id, unslotted)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.slot_hearthstone_into_wonder(wonder_id, hearthstone_id, unslotted)?;
+            }
+        }
+        Ok(self)
+    }
+
+    pub fn unslot_hearthstone_from_weapon(&mut self, artifact_weapon_id: ArtifactWeaponId, hearthstone_id: HearthstoneId) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        Ok(match self {
+            Exaltation::Mortal(mortal) => {
+                mortal.unslot_hearthstone_from_weapon(artifact_weapon_id, hearthstone_id)?
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.unslot_hearthstone_from_weapon(artifact_weapon_id, hearthstone_id)?
+            }
+        })
+    }
+
+    pub fn unslot_hearthstone_from_armor(&mut self, artifact_armor_id: ArtifactArmorId, hearthstone_id: HearthstoneId) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        Ok(match self {
+            Exaltation::Mortal(mortal) => {
+                mortal.unslot_hearthstone_from_armor(artifact_armor_id, hearthstone_id)?
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.unslot_hearthstone_from_armor(artifact_armor_id, hearthstone_id)?
+            }
+        })
+    }
+
+    pub fn unslot_hearthstone_from_wonder(&mut self, wonder_id: WonderId, hearthstone_id: HearthstoneId) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        Ok(match self {
+            Exaltation::Mortal(mortal) => {
+                mortal.unslot_hearthstone_from_wonder(wonder_id, hearthstone_id)?
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.unslot_hearthstone_from_wonder(wonder_id, hearthstone_id)?
+            }
+        })
     }
 }
