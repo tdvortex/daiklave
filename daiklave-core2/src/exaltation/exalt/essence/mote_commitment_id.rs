@@ -8,5 +8,9 @@ pub enum MoteCommitmentId {
     /// Attuning to an artifact requires a mote commitment
     AttunedArtifact(ArtifactId),
     /// Other effects may also require mote commitments
-    Other(UniqueId),
+    Other(OtherMoteCommitmentId),
 }
+
+/// A unique identified for a mote commitment that is not an attuned artifact.
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, Serialize, Deserialize)]
+pub struct OtherMoteCommitmentId(pub UniqueId);

@@ -55,7 +55,7 @@ use crate::{
 use self::{
     essence::{
         CommitMotesError, Essence, MoteCommitment, MoteCommitmentId, MotePoolName,
-        SetEssenceRatingError, SpendMotesError, UncommitMotesError,
+        SetEssenceRatingError, SpendMotesError, UncommitMotesError, OtherMoteCommitmentId,
     },
     exalt_type::{solar::Solar, ExaltType},
     martial_arts::ExaltMartialArtist,
@@ -197,7 +197,7 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn check_commit_motes(
         &self,
-        _id: &MoteCommitmentId,
+        _id: &OtherMoteCommitmentId,
         _name: &str,
         _first: MotePoolName,
         amount: u8,
@@ -216,7 +216,7 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn commit_motes(
         &mut self,
-        id: &MoteCommitmentId,
+        id: &OtherMoteCommitmentId,
         name: &'source str,
         first: MotePoolName,
         amount: u8,
@@ -248,7 +248,7 @@ impl<'view, 'source> Exalt<'source> {
         self.essence_mut()
             .motes_mut()
             .commitments_mut()
-            .insert(*id, commitment);
+            .insert(MoteCommitmentId::Other(*id), commitment);
         Ok(self)
     }
 

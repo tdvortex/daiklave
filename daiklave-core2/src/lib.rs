@@ -13,7 +13,7 @@ use attributes::{AttributeName, SetAttributesError};
 use exaltation::exalt::{
     essence::{
         CommitMotesError, MoteCommitmentId, MotePoolName, RecoverMotesError, SetEssenceRatingError,
-        SpendMotesError, UncommitMotesError,
+        SpendMotesError, UncommitMotesError, OtherMoteCommitmentId,
     },
     exalt_type::solar::SolarMemo,
 };
@@ -103,7 +103,7 @@ pub enum CharacterMutation {
     /// Spend motes, starting with one pool
     SpendMotes(MotePoolName, u8),
     /// Commit motes into a persistent effect, starting with one pool
-    CommitMotes(MoteCommitmentId, String, MotePoolName, u8),
+    CommitMotes(OtherMoteCommitmentId, String, MotePoolName, u8),
     /// Recover motes, always starting from peripheral
     RecoverMotes(u8),
     /// Uncommit motes from a peristent effect
@@ -178,6 +178,8 @@ pub enum CharacterMutation {
     /// Remove a hearthstone from the character, unslotting it in the process
     /// if needed.
     RemoveHearthstone(HearthstoneId),
+    /// Attune to an artifact, committing motes to its ongoing use.
+    AttuneArtifact(ArtifactId),
 }
 
 /// An error representing something that could go wrong with a

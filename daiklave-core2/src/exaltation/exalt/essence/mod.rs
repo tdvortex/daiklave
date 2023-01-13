@@ -15,7 +15,7 @@ pub(crate) use error::{
 };
 pub(crate) use essence_memo::EssenceMemo;
 pub use mote_commitment::MoteCommitment;
-pub use mote_commitment_id::MoteCommitmentId;
+pub use mote_commitment_id::{MoteCommitmentId, OtherMoteCommitmentId};
 pub(crate) use mote_commitment_memo::MoteCommitmentMemo;
 pub use mote_pool::MotePool;
 pub use mote_pool_name::MotePoolName;

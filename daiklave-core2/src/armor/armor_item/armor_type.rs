@@ -93,6 +93,13 @@ impl<'source> ArmorType<'source> {
         }
     }
 
+    pub fn is_attuned(&self) -> bool {
+        match self {
+            ArmorType::Artifact(_, _, attunement) => attunement.is_some(),
+            ArmorType::Mundane(_, _) => false,
+        }
+    }
+
     pub fn tags(&self) -> impl Iterator<Item = ArmorTag> + '_ {
         match self {
             ArmorType::Artifact(_, artifact, _) => artifact.base_armor().tags(),

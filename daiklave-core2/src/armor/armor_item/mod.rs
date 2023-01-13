@@ -96,6 +96,11 @@ impl<'source> ArmorItem<'source> {
         self.0.attunement_cost()
     }
 
+    /// Returns true if the armor is currently attuned.
+    pub fn is_attuned(&self) -> bool {
+        self.0.is_attuned()
+    }
+
     /// An iterator over the armor item's tags.
     pub fn tags(&self) -> impl Iterator<Item = ArmorTag> + '_ {
         self.0.tags()

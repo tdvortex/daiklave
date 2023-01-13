@@ -37,7 +37,7 @@ use self::{
     exalt::{
         essence::{
             CommitMotesError, Essence, MoteCommitmentId, MotePoolName, RecoverMotesError,
-            SetEssenceRatingError, SpendMotesError, UncommitMotesError,
+            SetEssenceRatingError, SpendMotesError, UncommitMotesError, OtherMoteCommitmentId,
         },
         exalt_type::{
             solar::{Solar, SolarMemo, SolarSorcererView},
@@ -449,7 +449,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn check_commit_motes(
         &self,
-        id: &MoteCommitmentId,
+        id: &OtherMoteCommitmentId,
         name: &str,
         first: MotePoolName,
         amount: u8,
@@ -464,7 +464,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn commit_motes(
         &mut self,
-        id: &MoteCommitmentId,
+        id: &OtherMoteCommitmentId,
         name: &'source str,
         first: MotePoolName,
         amount: u8,

@@ -6,7 +6,7 @@ use crate::{
         RemoveSpecialtyError, SetAbilityError,
     },
     armor::{
-        armor_item::{artifact::ArtifactError, mundane::MundaneArmor, ArmorId, BaseArmorId},
+        armor_item::{artifact::ArtifactError, mundane::MundaneArmor, ArmorId, BaseArmorId, ArmorType},
         Armor, ArmorError,
     },
     artifact::{wonders::Wonders, Artifact, ArtifactId},
@@ -14,7 +14,7 @@ use crate::{
     craft::Craft,
     exaltation::{
         exalt::{
-            essence::{Essence, MoteCommitmentId, MotePoolName},
+            essence::{Essence, MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
             exalt_type::solar::{Solar, SolarMemo},
         },
         Exaltation,
@@ -184,6 +184,9 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::RemoveHearthstone(hearthstone_id) => {
                 self.check_remove_hearthstone(*hearthstone_id)
             }
+            CharacterMutation::AttuneArtifact(artifact_id) => {
+                self.check_attune_artifact(*artifact_id)
+            }
         }
     }
 
@@ -271,6 +274,9 @@ impl<'view, 'source> Character<'source> {
             }
             CharacterMutation::RemoveHearthstone(hearthstone_id) => {
                 self.remove_hearthstone(*hearthstone_id)
+            }
+            CharacterMutation::AttuneArtifact(artifact_id) => {
+                self.attune_artifact(*artifact_id)
             }
         }
     }
@@ -444,7 +450,7 @@ impl<'view, 'source> Character<'source> {
     /// Checks if the requested mote commitment would be possible.
     pub fn check_commit_motes(
         &self,
-        id: &MoteCommitmentId,
+        id: &OtherMoteCommitmentId,
         name: &str,
         first: MotePoolName,
         amount: u8,
@@ -456,7 +462,7 @@ impl<'view, 'source> Character<'source> {
     /// packages them into a commitment package to be later uncommitted.
     pub fn commit_motes(
         &mut self,
-        id: &MoteCommitmentId,
+        id: &OtherMoteCommitmentId,
         name: &'source str,
         first: MotePoolName,
         amount: u8,
@@ -1675,5 +1681,61 @@ impl<'view, 'source> Character<'source> {
             CharacterMutationError::HearthstoneError(HearthstoneError::NotFound),
         )?;
         Ok(self)
+    }
+
+    /// Checks if an artifact can be attuned.
+    pub fn check_attune_artifact(&self, artifact_id: ArtifactId) -> Result<(), CharacterMutationError> {
+        if matches!(self.exaltation, Exaltation::Mortal(_)) {
+            return Err(CharacterMutationError::EssenceError(EssenceError::Mortal));
+        }
+
+        match artifact_id {
+            ArtifactId::Wonder(wonder_id) => {
+                let wonder = self.wonders().get(&wonder_id).ok_or(CharacterMutationError::ArtifactError(ArtifactError::NotFound))?;
+                if wonder.2.is_some() {
+                    Err(CharacterMutationError::EssenceError(EssenceError::AlreadyAttuned))
+                } else {
+                    let cost = wonder.1.attunement_cost.ok_or(CharacterMutationError::EssenceError(EssenceError::NoAttunementCost))?;
+                    if self.essence().map_or(0, |essence| essence.motes().peripheral().available() + essence.motes().personal().available()) < cost {
+                        Err(CharacterMutationError::EssenceError(EssenceError::InsufficientMotes))
+                    } else {
+                        Ok(())
+                    }
+                }
+            }
+            ArtifactId::Armor(artifact_armor_id) => {
+                let armor_item = self.armor().get(ArmorId::Artifact(artifact_armor_id)).ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?;                
+                if armor_item.is_attuned() {
+                    Err(CharacterMutationError::EssenceError(EssenceError::AlreadyAttuned))
+                } else {
+                    if let Some(cost) = armor_item.attunement_cost() {
+                        if self.essence().map_or(0, |essence| essence.motes().peripheral().available() + essence.motes().personal().available()) < cost {
+                            Err(CharacterMutationError::EssenceError(EssenceError::InsufficientMotes))
+                        } else {
+                            Ok(())
+                        }
+                    } else {
+                        Err(CharacterMutationError::EssenceError(EssenceError::NoAttunementCost))
+                    }
+                }
+            }
+            ArtifactId::Weapon(artifact_weapon_id) => {
+                let weapon = self.weapons().iter().find_map(|(weapon_id ,equipped)| if weapon_id == &WeaponId::Artifact(artifact_weapon_id) {self.weapons().get(weapon_id, equipped)} else {None}).ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?;
+
+                if weapon.is_attuned() {
+                    Err(CharacterMutationError::EssenceError(EssenceError::AlreadyAttuned))
+                } else {
+                    if weapon.is_artifact() {
+                        if self.essence().map_or(0, |essence| essence.motes().peripheral().available() + essence.motes().personal().available()) < 5 {
+                            Err(CharacterMutationError::EssenceError(EssenceError::InsufficientMotes))
+                        } else {
+                            Ok(())
+                        }
+                    } else {
+                        Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+                    }
+                }
+            }
+        }
     }
 }
