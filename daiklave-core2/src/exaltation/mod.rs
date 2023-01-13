@@ -35,10 +35,7 @@ use crate::{
 
 use self::{
     exalt::{
-        essence::{
-            CommitMotesError, Essence, MoteCommitmentId, MotePoolName, RecoverMotesError,
-            SetEssenceRatingError, SpendMotesError, UncommitMotesError, OtherMoteCommitmentId,
-        },
+        essence::{Essence, EssenceError, MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
         exalt_type::{
             solar::{Solar, SolarMemo, SolarSorcererView},
             ExaltType,
@@ -426,9 +423,9 @@ impl<'view, 'source> Exaltation<'source> {
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::SpendMotesError(
-                SpendMotesError::MortalError,
-            )),
+            Exaltation::Mortal(_) => {
+                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
+            }
             Exaltation::Exalt(exalt) => exalt.check_spend_motes(first, amount),
         }
     }
@@ -439,9 +436,9 @@ impl<'view, 'source> Exaltation<'source> {
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::SpendMotesError(
-                SpendMotesError::MortalError,
-            )),
+            Exaltation::Mortal(_) => {
+                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
+            }
             Exaltation::Exalt(exalt) => exalt.spend_motes(first, amount),
         }?;
         Ok(self)
@@ -455,9 +452,9 @@ impl<'view, 'source> Exaltation<'source> {
         amount: u8,
     ) -> Result<(), CharacterMutationError> {
         match self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
-                CommitMotesError::MortalError,
-            )),
+            Exaltation::Mortal(_) => {
+                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
+            }
             Exaltation::Exalt(exalt) => exalt.check_commit_motes(id, name, first, amount),
         }
     }
@@ -470,9 +467,9 @@ impl<'view, 'source> Exaltation<'source> {
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::CommitMotesError(
-                CommitMotesError::MortalError,
-            )),
+            Exaltation::Mortal(_) => {
+                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
+            }
             Exaltation::Exalt(exalt) => exalt.commit_motes(id, name, first, amount),
         }?;
         Ok(self)
@@ -480,18 +477,18 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn check_recover_motes(&self, _amount: u8) -> Result<(), CharacterMutationError> {
         match self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
-                RecoverMotesError::MortalError,
-            )),
+            Exaltation::Mortal(_) => {
+                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
+            }
             Exaltation::Exalt(_) => Ok(()),
         }
     }
 
     pub fn recover_motes(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::RecoverMotesError(
-                RecoverMotesError::MortalError,
-            )),
+            Exaltation::Mortal(_) => {
+                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
+            }
             Exaltation::Exalt(exalt) => exalt.recover_motes(amount),
         }?;
         Ok(self)
@@ -502,9 +499,9 @@ impl<'view, 'source> Exaltation<'source> {
         id: &MoteCommitmentId,
     ) -> Result<(), CharacterMutationError> {
         match self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
-                UncommitMotesError::MortalError,
-            )),
+            Exaltation::Mortal(_) => {
+                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
+            }
             Exaltation::Exalt(exalt) => exalt.check_uncommit_motes(id),
         }
     }
@@ -514,9 +511,9 @@ impl<'view, 'source> Exaltation<'source> {
         id: &MoteCommitmentId,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::UncommitMotesError(
-                UncommitMotesError::MortalError,
-            )),
+            Exaltation::Mortal(_) => {
+                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
+            }
             Exaltation::Exalt(exalt) => exalt.uncommit_motes(id),
         }?;
         Ok(self)
@@ -524,15 +521,15 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn check_set_essence_rating(&self, rating: u8) -> Result<(), CharacterMutationError> {
         match self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
-                SetEssenceRatingError::MortalError,
-            )),
+            Exaltation::Mortal(_) => {
+                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
+            }
             Exaltation::Exalt(_) => {
                 if (1..=5).contains(&rating) {
                     Ok(())
                 } else {
-                    Err(CharacterMutationError::SetEssenceRatingError(
-                        SetEssenceRatingError::InvalidRating(rating),
+                    Err(CharacterMutationError::EssenceError(
+                        EssenceError::InvalidRating,
                     ))
                 }
             }
@@ -543,9 +540,9 @@ impl<'view, 'source> Exaltation<'source> {
         self.check_set_essence_rating(rating)?;
         match self {
             Exaltation::Exalt(exalt) => exalt.set_essence_rating(rating),
-            Exaltation::Mortal(_) => Err(CharacterMutationError::SetEssenceRatingError(
-                SetEssenceRatingError::MortalError,
-            )),
+            Exaltation::Mortal(_) => {
+                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
+            }
         }?;
         Ok(self)
     }

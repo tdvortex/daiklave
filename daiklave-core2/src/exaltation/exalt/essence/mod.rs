@@ -10,9 +10,7 @@ mod motes_memo;
 
 use std::collections::HashMap;
 
-pub(crate) use error::{
-    CommitMotesError, RecoverMotesError, SetEssenceRatingError, SpendMotesError, UncommitMotesError,
-};
+pub(crate) use error::EssenceError;
 pub(crate) use essence_memo::EssenceMemo;
 pub use mote_commitment::MoteCommitment;
 pub use mote_commitment_id::{MoteCommitmentId, OtherMoteCommitmentId};

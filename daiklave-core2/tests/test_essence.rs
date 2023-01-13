@@ -174,8 +174,9 @@ fn test_essence() {
     assert_eq!(mote_state.personal().spent(), 0);
 
     // Uncommitting mote effects should make them spent again
-    let mutation =
-        CharacterMutation::UncommitMotes(MoteCommitmentId::Other(OtherMoteCommitmentId(UniqueId::Placeholder(2))));
+    let mutation = CharacterMutation::UncommitMotes(MoteCommitmentId::Other(
+        OtherMoteCommitmentId(UniqueId::Placeholder(2)),
+    ));
     character_view.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
@@ -200,8 +201,9 @@ fn test_essence() {
     }
     assert_eq!(commits_count, 1);
 
-    let mutation =
-        CharacterMutation::UncommitMotes(MoteCommitmentId::Other(OtherMoteCommitmentId(UniqueId::Placeholder(1))));
+    let mutation = CharacterMutation::UncommitMotes(MoteCommitmentId::Other(
+        OtherMoteCommitmentId(UniqueId::Placeholder(1)),
+    ));
     character_view.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();

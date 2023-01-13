@@ -1,55 +1,27 @@
 use thiserror::Error;
 
-use super::MoteCommitmentId;
-
-/// An error when trying to commit motes to an ongoing effect.
+/// An error related to motes or Essence ratings.
 #[derive(Debug, Error)]
-pub enum CommitMotesError {
-    /// Mortals cannot commit motes.
-    #[error("Mortals do not have Essence")]
-    MortalError,
-    /// Can't commit more motes than available.
-    #[error("Insufficient motes, need {1} but only have {0}")]
-    InsufficientMotes(u8, u8),
-}
-
-/// An error when trying to recover spent motes.
-#[derive(Debug, Error)]
-pub enum RecoverMotesError {
-    /// Mortals cannot recover motes.
-    #[error("Mortals do not have Essence")]
-    MortalError,
-}
-
-/// An error when trying to uncommit motes from an ongoing effect.
-#[derive(Debug, Error)]
-pub enum UncommitMotesError {
-    /// Mortals cannot uncommit motes.
-    #[error("Mortals do not have Essence")]
-    MortalError,
-    /// Cannot uncommit an effect that does not exist.
-    #[error("Mote commitment id {0:?} not found")]
-    NotFound(MoteCommitmentId),
-}
-
-/// An error when trying to set the essence rating of a character.
-#[derive(Debug, Error)]
-pub enum SetEssenceRatingError {
-    /// Mortals do not have an Essence rating (or, it's always 1).
-    #[error("Mortals do not have Essence")]
-    MortalError,
+pub enum EssenceError {
+    /// Can't attune to the same artifact twice.
+    #[error("Already attuned to that artifact")]
+    AlreadyAttuned,
+    /// Can't commit a duplicate mote commitment
+    #[error("Mote commitment Ids must be unique")]
+    DuplicateCommitment,
+    /// Can't spend or commit more motes than you have
+    #[error("Insufficient motes")]
+    InsufficientMotes,
     /// Essence ratings can only be between 1 and 5.
-    #[error("Essence must be between 1 and 5, not {0}")]
-    InvalidRating(u8),
-}
-
-/// An error when trying to spend motes.
-#[derive(Debug, Error)]
-pub enum SpendMotesError {
-    /// Mortals cannot spend motes.
+    #[error("Essence must be between 1 and 5")]
+    InvalidRating,
+    /// Mortals cannot do anything with essence..
     #[error("Mortals do not have Essence")]
-    MortalError,
-    /// Cannot spend more motes than you have (peripheral + personal combined).
-    #[error("Insufficient motes, need {1} but only have {0}")]
-    InsufficientMotes(u8, u8),
+    Mortal,
+    /// Can't attune to something if it doesn't have an attunement cost
+    #[error("No attunement cost, cannot attune")]
+    NoAttunementCost,
+    /// Mote commitment does not exist
+    #[error("Mote commitment not found")]
+    NotFound,
 }

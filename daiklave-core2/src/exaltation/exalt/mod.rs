@@ -54,8 +54,8 @@ use crate::{
 
 use self::{
     essence::{
-        CommitMotesError, Essence, MoteCommitment, MoteCommitmentId, MotePoolName,
-        SetEssenceRatingError, SpendMotesError, UncommitMotesError, OtherMoteCommitmentId,
+        Essence, EssenceError, MoteCommitment, MoteCommitmentId, MotePoolName,
+        OtherMoteCommitmentId,
     },
     exalt_type::{solar::Solar, ExaltType},
     martial_arts::ExaltMartialArtist,
@@ -159,8 +159,8 @@ impl<'view, 'source> Exalt<'source> {
             + self.essence().motes().personal().available();
 
         if total_available < amount {
-            Err(CharacterMutationError::SpendMotesError(
-                SpendMotesError::InsufficientMotes(total_available, amount),
+            Err(CharacterMutationError::EssenceError(
+                EssenceError::InsufficientMotes,
             ))
         } else {
             Ok(())
@@ -206,8 +206,8 @@ impl<'view, 'source> Exalt<'source> {
             + self.essence().motes().personal().available();
 
         if total_available < amount {
-            Err(CharacterMutationError::CommitMotesError(
-                CommitMotesError::InsufficientMotes(total_available, amount),
+            Err(CharacterMutationError::EssenceError(
+                EssenceError::InsufficientMotes,
             ))
         } else {
             Ok(())
@@ -221,35 +221,75 @@ impl<'view, 'source> Exalt<'source> {
         first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_commit_motes(id, name, first, amount)?;
-        let (peripheral_committed, personal_committed) = if let MotePoolName::Peripheral = first {
-            let peripheral_committed = self.essence().motes().peripheral().available().min(amount);
-            let personal_committed = amount - peripheral_committed;
-            (peripheral_committed, personal_committed)
-        } else {
-            let personal_committed = self.essence().motes().personal().available().min(amount);
-            let peripheral_committed = amount - personal_committed;
-            (peripheral_committed, personal_committed)
-        };
-
-        self.essence_mut()
-            .motes_mut()
-            .peripheral_mut()
-            .commit(peripheral_committed)?;
-        self.essence_mut()
-            .motes_mut()
-            .personal_mut()
-            .commit(personal_committed)?;
-        let commitment = MoteCommitment {
-            name,
-            peripheral: peripheral_committed,
-            personal: personal_committed,
-        };
-        self.essence_mut()
+        let entry = if let Entry::Vacant(e) = self
+            .essence_mut()
             .motes_mut()
             .commitments_mut()
-            .insert(MoteCommitmentId::Other(*id), commitment);
-        Ok(self)
+            .entry(MoteCommitmentId::Other(*id))
+        {
+            Ok(e)
+        } else {
+            Err(CharacterMutationError::EssenceError(
+                EssenceError::DuplicateCommitment,
+            ))
+        }?;
+
+        let (peripheral_committed, personal_committed) = if let MotePoolName::Peripheral = first {
+            let peripheral_committed = self.essence().motes().peripheral().available().min(amount);
+            let personal_committed = amount - peripheral_committed.min(amount);
+            if peripheral_committed + personal_committed < amount {
+                Err(CharacterMutationError::EssenceError(
+                    EssenceError::InsufficientMotes,
+                ))
+            } else {
+                Ok((peripheral_committed, personal_committed))
+            }
+        } else {
+            let personal_committed = self.essence().motes().personal().available().min(amount);
+            let peripheral_committed = amount - personal_committed.min(amount);
+            if peripheral_committed + personal_committed < amount {
+                Err(CharacterMutationError::EssenceError(
+                    EssenceError::InsufficientMotes,
+                ))
+            } else {
+                Ok((peripheral_committed, personal_committed))
+            }
+        }?;
+
+        match (
+            self.essence_mut()
+                .motes_mut()
+                .peripheral_mut()
+                .commit(peripheral_committed),
+            self.essence_mut()
+                .motes_mut()
+                .personal_mut()
+                .commit(personal_committed),
+        ) {
+            (Ok(_), Ok(_)) => {
+                entry.insert(MoteCommitment {
+                    name,
+                    peripheral: peripheral_committed,
+                    personal: personal_committed,
+                });
+                Ok(self)
+            }
+            (Ok(_), Err(e)) => {
+                self.essence_mut()
+                    .motes_mut()
+                    .peripheral_mut()
+                    .uncommit(peripheral_committed)?;
+                Err(e)
+            }
+            (Err(e), Ok(_)) => {
+                self.essence_mut()
+                    .motes_mut()
+                    .personal_mut()
+                    .uncommit(personal_committed)?;
+                Err(e)
+            }
+            (Err(e1), Err(e2)) => Err(e1),
+        }
     }
 
     pub fn recover_motes(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
@@ -277,9 +317,7 @@ impl<'view, 'source> Exalt<'source> {
         id: &MoteCommitmentId,
     ) -> Result<(), CharacterMutationError> {
         if !self.essence().motes().commitments().contains_key(id) {
-            Err(CharacterMutationError::UncommitMotesError(
-                UncommitMotesError::NotFound(*id),
-            ))
+            Err(CharacterMutationError::EssenceError(EssenceError::NotFound))
         } else {
             Ok(())
         }
@@ -294,9 +332,7 @@ impl<'view, 'source> Exalt<'source> {
             .motes_mut()
             .commitments_mut()
             .remove(id)
-            .ok_or({
-                CharacterMutationError::UncommitMotesError(UncommitMotesError::NotFound(*id))
-            })?;
+            .ok_or({ CharacterMutationError::EssenceError(EssenceError::NotFound) })?;
         self.essence_mut()
             .motes_mut()
             .peripheral_mut()
@@ -316,8 +352,8 @@ impl<'view, 'source> Exalt<'source> {
         }
 
         if !(1..=5).contains(&rating) {
-            return Err(CharacterMutationError::SetEssenceRatingError(
-                SetEssenceRatingError::InvalidRating(rating),
+            return Err(CharacterMutationError::EssenceError(
+                EssenceError::InvalidRating,
             ));
         }
 

@@ -4,7 +4,7 @@ use daiklave_core2::{
     artifact::{wonders::WonderId, Artifact, ArtifactId, MagicMaterial},
     book_reference::{Book, BookReference},
     exaltation::exalt::{
-        essence::{MotePoolName, MoteCommitmentId},
+        essence::{MoteCommitmentId, MotePoolName},
         exalt_type::solar::{caste::dawn::Dawn, Solar},
     },
     unique_id::UniqueId,
@@ -216,38 +216,38 @@ fn test_attunement() {
             .available(),
         21
     );
-    assert_eq!(
-        character
-            .essence()
-            .unwrap()
-            .motes()
-            .peripheral()
-            .spent(),
-        0
-    );
+    assert_eq!(character.essence().unwrap().motes().peripheral().spent(), 0);
 
     // Exalts cannot attune to no-attunement Wonders
-    assert!(character.check_mutation(&CharacterMutation::AttuneArtifact(
-        ArtifactId::Wonder(WonderId(UniqueId::Placeholder(2))),
-        MotePoolName::Peripheral,
-    )).is_err());
+    assert!(character
+        .check_mutation(&CharacterMutation::AttuneArtifact(
+            ArtifactId::Wonder(WonderId(UniqueId::Placeholder(2))),
+            MotePoolName::Peripheral,
+        ))
+        .is_err());
 
     // Exalts can unattune from everything they've attuned to
     event_source
-    .apply_mutation(CharacterMutation::UncommitMotes(
-        MoteCommitmentId::AttunedArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))))
-    ))
-    .unwrap();
+        .apply_mutation(CharacterMutation::UncommitMotes(
+            MoteCommitmentId::AttunedArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(
+                1,
+            )))),
+        ))
+        .unwrap();
     event_source
-    .apply_mutation(CharacterMutation::UncommitMotes(
-        MoteCommitmentId::AttunedArtifact(ArtifactId::Armor(ArtifactArmorId(UniqueId::Placeholder(1))))
-    ))
-    .unwrap();
+        .apply_mutation(CharacterMutation::UncommitMotes(
+            MoteCommitmentId::AttunedArtifact(ArtifactId::Armor(ArtifactArmorId(
+                UniqueId::Placeholder(1),
+            ))),
+        ))
+        .unwrap();
     event_source
-    .apply_mutation(CharacterMutation::UncommitMotes(
-        MoteCommitmentId::AttunedArtifact(ArtifactId::Weapon(ArtifactWeaponId(UniqueId::Placeholder(1))))
-    ))
-    .unwrap();
+        .apply_mutation(CharacterMutation::UncommitMotes(
+            MoteCommitmentId::AttunedArtifact(ArtifactId::Weapon(ArtifactWeaponId(
+                UniqueId::Placeholder(1),
+            ))),
+        ))
+        .unwrap();
 
     let character = event_source.as_character_view().unwrap();
     assert_eq!(
@@ -276,17 +276,16 @@ fn test_attunement() {
         21
     );
     assert_eq!(
-        character
-            .essence()
-            .unwrap()
-            .motes()
-            .peripheral()
-            .spent(),
+        character.essence().unwrap().motes().peripheral().spent(),
         12
     );
 
     // Can't unattune from an artifact that is already unattuned
-    assert!(character.check_mutation(&CharacterMutation::UncommitMotes(
-        MoteCommitmentId::AttunedArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))))
-    )).is_err());
+    assert!(character
+        .check_mutation(&CharacterMutation::UncommitMotes(
+            MoteCommitmentId::AttunedArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(
+                1
+            ))))
+        ))
+        .is_err());
 }

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::CharacterMutationError;
 
-use super::{CommitMotesError, SpendMotesError};
+use super::EssenceError;
 
 /// The available and spent motes from either a peripheral or personal pool.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
@@ -29,8 +29,8 @@ impl MotePool {
     /// Spend a number of motes, shifting them from available to spent.
     pub(crate) fn spend(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         if amount > self.available {
-            Err(CharacterMutationError::SpendMotesError(
-                SpendMotesError::InsufficientMotes(amount, self.available),
+            Err(CharacterMutationError::EssenceError(
+                EssenceError::InsufficientMotes,
             ))
         } else {
             self.available -= amount;
@@ -43,8 +43,8 @@ impl MotePool {
     /// inside the committed effect.
     pub(crate) fn commit(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         if amount > self.available {
-            Err(CharacterMutationError::CommitMotesError(
-                CommitMotesError::InsufficientMotes(self.available, amount),
+            Err(CharacterMutationError::EssenceError(
+                EssenceError::InsufficientMotes,
             ))
         } else {
             self.available -= amount;

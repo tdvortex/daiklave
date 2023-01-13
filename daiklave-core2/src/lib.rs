@@ -11,10 +11,7 @@ use armor::{
 use artifact::{Artifact, ArtifactId};
 use attributes::{AttributeName, SetAttributesError};
 use exaltation::exalt::{
-    essence::{
-        CommitMotesError, MoteCommitmentId, MotePoolName, RecoverMotesError, SetEssenceRatingError,
-        SpendMotesError, UncommitMotesError, OtherMoteCommitmentId,
-    },
+    essence::{EssenceError, MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
     exalt_type::solar::SolarMemo,
 };
 use health::{DamageLevel, WoundPenalty};
@@ -179,7 +176,7 @@ pub enum CharacterMutation {
     /// if needed.
     RemoveHearthstone(HearthstoneId),
     /// Attune to an artifact, committing motes to its ongoing use.
-    AttuneArtifact(ArtifactId),
+    AttuneArtifact(ArtifactId, MotePoolName),
 }
 
 /// An error representing something that could go wrong with a
@@ -189,21 +186,6 @@ pub enum CharacterMutationError {
     /// Error occurring while trying to remove concept
     #[error("Cannot remove character concept")]
     RemoveConceptError(#[from] RemoveConceptError),
-    /// Error occurring while trying to spend motes
-    #[error("Cannot spend motes")]
-    SpendMotesError(#[from] SpendMotesError),
-    /// Error occurring while trying to commit motes
-    #[error("Cannot commit motes")]
-    CommitMotesError(#[from] CommitMotesError),
-    /// Error occurring while trying to recover motes
-    #[error("Cannot recover motes")]
-    RecoverMotesError(#[from] RecoverMotesError),
-    /// Error occurring while trying to uncommit motes
-    #[error("Cannot uncommit motes")]
-    UncommitMotesError(#[from] UncommitMotesError),
-    /// Error occurring while trying to set essence rating
-    #[error("Cannot set Essence rating")]
-    SetEssenceRatingError(#[from] SetEssenceRatingError),
     /// Error occurring while trying to set an attribute rating
     #[error("Cannot set attribute rating")]
     SetAttributesError(#[from] SetAttributesError),
@@ -240,6 +222,9 @@ pub enum CharacterMutationError {
     /// Error related to hearthstones
     #[error("Hearthstone error")]
     HearthstoneError(#[from] HearthstoneError),
+    /// Error related to Essence rating or mote pools
+    #[error("Essence error")]
+    EssenceError(#[from] EssenceError),
 }
 
 /// A container to hold a successfully applied sequence of mutations, with
