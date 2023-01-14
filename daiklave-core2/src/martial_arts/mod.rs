@@ -8,7 +8,7 @@ mod style_id;
 pub use charm::MartialArtsCharm;
 pub(crate) use charm_id::MartialArtsCharmId;
 pub(crate) use error::{
-    AddMartialArtsStyleError, RemoveMartialArtsStyleError, SetMartialArtsDotsError,
+    MartialArtsError
 };
 
 pub use martial_artist::MartialArtist;

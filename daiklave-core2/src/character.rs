@@ -25,8 +25,8 @@ use crate::{
         hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId, HearthstoneOrigin,
         HearthstoneStability, Hearthstones, UnslottedHearthstone,
     },
-    martial_arts::{AddMartialArtsStyleError, MartialArts, MartialArtsStyle, MartialArtsStyleId},
-    name_and_concept::RemoveConceptError,
+    martial_arts::{MartialArts, MartialArtsStyle, MartialArtsStyleId, MartialArtsError},
+    name_and_concept::ConceptError,
     sorcery::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
@@ -553,10 +553,8 @@ impl<'view, 'source> Character<'source> {
         style: &MartialArtsStyle,
     ) -> Result<(), CharacterMutationError> {
         if self.abilities().get(AbilityNameVanilla::Brawl).dots() < 1 {
-            return Err(CharacterMutationError::AddMartialArtsStyleError(
-                AddMartialArtsStyleError::PrerequsitesNotMet(
-                    "Brawl must be 1+ to take Martial Artist merit".to_owned(),
-                ),
+            return Err(CharacterMutationError::MartialArtsError(
+                MartialArtsError::PrerequsitesNotMet
             ));
         }
 
@@ -657,8 +655,8 @@ impl<'view, 'source> Character<'source> {
     /// Checks if the character's concept can be removed.
     pub fn check_remove_concept(&self) -> Result<(), CharacterMutationError> {
         if self.concept().is_none() {
-            Err(CharacterMutationError::RemoveConceptError(
-                RemoveConceptError::NoConcept,
+            Err(CharacterMutationError::ConceptError(
+                ConceptError::NoConcept,
             ))
         } else {
             Ok(())

@@ -16,11 +16,9 @@ use exaltation::exalt::{
 };
 use health::{DamageLevel, WoundPenalty};
 use hearthstones::{hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId};
-use martial_arts::{
-    AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId, RemoveMartialArtsStyleError,
-    SetMartialArtsDotsError,
+use martial_arts::{MartialArtsStyle, MartialArtsStyleId, MartialArtsError,
 };
-use name_and_concept::RemoveConceptError;
+use name_and_concept::ConceptError;
 use sorcery::SorceryError;
 use thiserror::Error;
 
@@ -183,21 +181,9 @@ pub enum CharacterMutation {
 /// CharacterMutation.
 #[derive(Debug, Error)]
 pub enum CharacterMutationError {
-    /// Error occurring while trying to remove concept
-    #[error("Cannot remove character concept")]
-    RemoveConceptError(#[from] RemoveConceptError),
     /// Error occurring while trying to set an attribute rating
     #[error("Cannot set attribute rating")]
     SetAttributesError(#[from] SetAttributesError),
-    /// Error occurring while trying to add a Martial Arts style
-    #[error("Cannot add Martial Arts style")]
-    AddMartialArtsStyleError(#[from] AddMartialArtsStyleError),
-    /// Error occurring while trying to remove a Martial Arts style
-    #[error("Cannot remove Martial Arts style")]
-    RemoveMartialArtsStyleError(#[from] RemoveMartialArtsStyleError),
-    /// Error occurring while trying to set Martial Arts dots
-    #[error("Cannot set Martial Arts dots")]
-    SetMartialArtsDotsError(#[from] SetMartialArtsDotsError),
     /// Error occurring while trying to add a Sorcery circle
     #[error("Cannot add Sorcery circle")]
     AddSorceryCircleError(#[from] SorceryError),
@@ -210,12 +196,18 @@ pub enum CharacterMutationError {
     /// Error related to artifacts
     #[error("Artifacts error")]
     ArtifactError(#[from] ArtifactError),
+    /// Error occurring while trying to modify a character's concept
+    #[error("Concept error")]
+    ConceptError(#[from] ConceptError),
     /// Error related to Essence rating or mote pools
     #[error("Essence error")]
     EssenceError(#[from] EssenceError),
     /// Error related to hearthstones
     #[error("Hearthstone error")]
     HearthstoneError(#[from] HearthstoneError),
+    /// Error related to Martial Arts
+    #[error("Martial Arts error")]
+    MartialArtsError(#[from] MartialArtsError),
     /// Error related to weapons
     #[error("Weapons error")]
     WeaponError(#[from] WeaponError),

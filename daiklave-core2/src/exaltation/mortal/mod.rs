@@ -22,8 +22,7 @@ use crate::{
     artifact::wonders::{OwnedWonder, Wonder, WonderId},
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{
-        AddMartialArtsStyleError, MartialArtsStyle, MartialArtsStyleId,
-        RemoveMartialArtsStyleError, SetMartialArtsDotsError,
+        MartialArtsStyle, MartialArtsStyleId, MartialArtsError,
     },
     sorcery::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
@@ -71,8 +70,8 @@ impl<'source> Mortal<'source> {
         _style: &MartialArtsStyle,
     ) -> Result<(), CharacterMutationError> {
         if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::AddMartialArtsStyleError(
-                AddMartialArtsStyleError::DuplicateStyle,
+            Err(CharacterMutationError::MartialArtsError(
+                MartialArtsError::DuplicateStyle,
             ))
         } else {
             Ok(())
@@ -95,8 +94,8 @@ impl<'source> Mortal<'source> {
         id: MartialArtsStyleId,
     ) -> Result<(), CharacterMutationError> {
         if !self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::RemoveMartialArtsStyleError(
-                RemoveMartialArtsStyleError::NotFound,
+            Err(CharacterMutationError::MartialArtsError(
+                MartialArtsError::StyleNotFound,
             ))
         } else {
             Ok(())
@@ -120,8 +119,8 @@ impl<'source> Mortal<'source> {
         if self.martial_arts_styles.contains_key(&id) {
             Ok(())
         } else {
-            Err(CharacterMutationError::SetMartialArtsDotsError(
-                SetMartialArtsDotsError::NotFound,
+            Err(CharacterMutationError::MartialArtsError(
+                MartialArtsError::StyleNotFound,
             ))
         }
     }
@@ -136,8 +135,8 @@ impl<'source> Mortal<'source> {
             style.ability_mut().set_dots(dots)?;
             Ok(self)
         } else {
-            Err(CharacterMutationError::SetMartialArtsDotsError(
-                SetMartialArtsDotsError::NotFound,
+            Err(CharacterMutationError::MartialArtsError(
+                MartialArtsError::StyleNotFound,
             ))
         }
     }

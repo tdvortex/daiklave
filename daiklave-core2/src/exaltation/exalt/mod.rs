@@ -38,9 +38,7 @@ use crate::{
     },
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::{HearthstoneId, UnslottedHearthstone},
-    martial_arts::{
-        AddMartialArtsStyleError, MartialArtsCharmId, MartialArtsStyle, MartialArtsStyleId,
-        RemoveMartialArtsStyleError, SetMartialArtsDotsError,
+    martial_arts::{MartialArtsCharmId, MartialArtsStyle, MartialArtsStyleId, MartialArtsError,
     },
     sorcery::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
@@ -459,8 +457,8 @@ impl<'view, 'source> Exalt<'source> {
         _style: &MartialArtsStyle,
     ) -> Result<(), CharacterMutationError> {
         if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::AddMartialArtsStyleError(
-                AddMartialArtsStyleError::DuplicateStyle,
+            Err(CharacterMutationError::MartialArtsError(
+                MartialArtsError::DuplicateStyle,
             ))
         } else {
             Ok(())
@@ -485,8 +483,8 @@ impl<'view, 'source> Exalt<'source> {
         id: MartialArtsStyleId,
     ) -> Result<(), CharacterMutationError> {
         if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::RemoveMartialArtsStyleError(
-                RemoveMartialArtsStyleError::NotFound,
+            Err(CharacterMutationError::MartialArtsError(
+                MartialArtsError::StyleNotFound,
             ))
         } else {
             Ok(())
@@ -514,8 +512,8 @@ impl<'view, 'source> Exalt<'source> {
         } else if self.martial_arts_styles.contains_key(&id) {
             Ok(())
         } else {
-            Err(CharacterMutationError::SetMartialArtsDotsError(
-                SetMartialArtsDotsError::NotFound,
+            Err(CharacterMutationError::MartialArtsError(
+                MartialArtsError::StyleNotFound,
             ))
         }
     }
@@ -561,8 +559,8 @@ impl<'view, 'source> Exalt<'source> {
             style.ability_mut().set_dots(dots)?;
             Ok(self)
         } else {
-            Err(CharacterMutationError::SetMartialArtsDotsError(
-                SetMartialArtsDotsError::NotFound,
+            Err(CharacterMutationError::MartialArtsError(
+                MartialArtsError::StyleNotFound,
             ))
         }
     }
