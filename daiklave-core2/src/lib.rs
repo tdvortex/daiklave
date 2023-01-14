@@ -9,7 +9,7 @@ use armor::{
     ArmorError,
 };
 use artifact::{Artifact, ArtifactId};
-use attributes::{AttributeName, SetAttributesError};
+use attributes::{AttributeName, AttributeError};
 use exaltation::exalt::{
     essence::{EssenceError, MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
     exalt_type::solar::NewSolar,
@@ -181,12 +181,6 @@ pub enum CharacterMutation {
 /// CharacterMutation.
 #[derive(Debug, Error)]
 pub enum CharacterMutationError {
-    /// Error occurring while trying to set an attribute rating
-    #[error("Cannot set attribute rating")]
-    SetAttributesError(#[from] SetAttributesError),
-    /// Error occurring while trying to add a Sorcery circle
-    #[error("Cannot add Sorcery circle")]
-    AddSorceryCircleError(#[from] SorceryError),
     /// Error related to abilities
     #[error("Abilities error")]
     AbilityError(#[from] AbilityError),
@@ -196,6 +190,9 @@ pub enum CharacterMutationError {
     /// Error related to artifacts
     #[error("Artifacts error")]
     ArtifactError(#[from] ArtifactError),
+    /// Error related to Attributes
+    #[error("Attribute Error")]
+    AttributeError(#[from] AttributeError),
     /// Error occurring while trying to modify a character's concept
     #[error("Concept error")]
     ConceptError(#[from] ConceptError),
@@ -208,6 +205,9 @@ pub enum CharacterMutationError {
     /// Error related to Martial Arts
     #[error("Martial Arts error")]
     MartialArtsError(#[from] MartialArtsError),
+    /// Error related to Sorcery
+    #[error("Sorcery error")]
+    SorceryError(#[from] SorceryError),
     /// Error related to weapons
     #[error("Weapons error")]
     WeaponError(#[from] WeaponError),

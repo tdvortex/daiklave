@@ -1,9 +1,9 @@
 use thiserror::Error;
 
-/// An error trying to set an Attribute rating.
+/// An error related to Attributes.
 #[derive(Debug, Error)]
-pub enum SetAttributesError {
+pub enum AttributeError {
     /// Attributes must be between 1 and 5.
-    #[error("Attributes must be between 1 and 5, {0} is invalid")]
-    InvalidRating(u8),
+    #[error("Attributes must be between 1 and 5")]
+    InvalidRating,
 }

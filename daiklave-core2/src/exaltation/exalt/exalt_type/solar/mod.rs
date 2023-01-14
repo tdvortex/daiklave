@@ -98,7 +98,7 @@ impl<'source> Solar<'source> {
             ));
             Ok(self)
         } else {
-            Err(CharacterMutationError::AddSorceryCircleError(
+            Err(CharacterMutationError::SorceryError(
                 SorceryError::CircleSequence,
             ))
         }

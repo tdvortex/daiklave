@@ -9,7 +9,7 @@ use crate::{
         Armor, ArmorError,
     },
     artifact::{wonders::Wonders, Artifact, ArtifactId},
-    attributes::{AttributeName, Attributes, SetAttributesError},
+    attributes::{AttributeName, Attributes, AttributeError},
     craft::Craft,
     exaltation::{
         exalt::{
@@ -784,8 +784,8 @@ impl<'view, 'source> Character<'source> {
         dots: u8,
     ) -> Result<(), CharacterMutationError> {
         if !(1..=5).contains(&dots) {
-            Err(CharacterMutationError::SetAttributesError(
-                SetAttributesError::InvalidRating(dots),
+            Err(CharacterMutationError::AttributeError(
+                AttributeError::InvalidRating,
             ))
         } else {
             Ok(())

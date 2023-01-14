@@ -5,7 +5,7 @@ mod name;
 
 pub use attribute::Attribute;
 pub use category::AttributeCategory;
-pub use error::SetAttributesError;
+pub use error::AttributeError;
 pub use name::AttributeName;
 use serde::{Deserialize, Serialize};
 
@@ -88,8 +88,8 @@ impl Attributes {
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         if !(1..=5).contains(&dots) {
-            Err(CharacterMutationError::SetAttributesError(
-                SetAttributesError::InvalidRating(dots),
+            Err(CharacterMutationError::AttributeError(
+                AttributeError::InvalidRating,
             ))
         } else {
             match attribute_name {
