@@ -1,7 +1,8 @@
 /// Traits relating to specific Solar castes.
 pub mod caste;
 
-mod builder;
+/// A builder path for constructing a new Solar.
+pub mod builder;
 mod error;
 mod memo;
 mod new;
@@ -24,7 +25,7 @@ use crate::{
 
 use self::{builder::SolarBuilder, caste::SolarCaste};
 
-/// Traits which are unique to being a Solar Exalted, with &str
+/// Traits which are unique to being a Solar Exalted.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Solar<'source> {
     caste: SolarCaste,

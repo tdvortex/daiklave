@@ -1,17 +1,14 @@
-/// Dawn Caste, warriors and generals
-pub mod dawn;
+pub(crate) mod dawn;
+pub(crate) mod eclipse;
+pub(crate) mod night;
+pub(crate) mod twilight;
+pub(crate) mod zenith;
 
-/// Eclipse Caste, dealmakers and travelers
-pub mod eclipse;
-
-/// Night Caste, rogues and swashbucklers
-pub mod night;
-
-/// Twilight Caste, scholars and sorcerers
-pub mod twilight;
-
-/// Zenith Caste, leaders and priests
-pub mod zenith;
+pub use dawn::{DawnCasteAbility, DawnSupernalAbility};
+pub use eclipse::EclipseAbility;
+pub use night::NightAbility;
+pub use twilight::TwilightAbility;
+pub use zenith::ZenithAbility;
 
 mod memo;
 

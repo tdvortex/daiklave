@@ -12,6 +12,7 @@ use crate::{
     },
 };
 
+/// A builder for a Night caste Solar.
 pub struct NightBuilder {
     pub(crate) caste_abilities: Vec<NightAbility>,
     pub(crate) supernal_ability: Option<NightAbility>,
@@ -20,27 +21,33 @@ pub struct NightBuilder {
 }
 
 impl NightBuilder {
+    /// Adds a Caste ability to the Night.
     pub fn caste_ability(mut self, caste_ability: NightAbility) -> Self {
         self.caste_abilities.push(caste_ability);
         self
     }
 
+    /// Sets the Night's supernal ability.
     pub fn supernal_ability(mut self, supernal_ability: NightAbility) -> Self {
         self.caste_abilities.push(supernal_ability);
         self.supernal_ability = Some(supernal_ability);
         self
     }
 
+    /// Adds a Favored ability to the Solar.
     pub fn favored_ability(mut self, favored_ability: AbilityName) -> Self {
         self.favored_abilities.push(favored_ability);
         self
     }
 
+    /// Sets the Solar's Limit Trigger.
     pub fn limit_trigger(mut self, limit_trigger: String) -> Self {
         self.limit_trigger = Some(limit_trigger);
         self
     }
 
+    /// Finishes the builder, returning a NewSolar object if successful or an
+    /// error if some validation failed.
     pub fn build(mut self) -> Result<NewSolar, SolarError> {
         let supernal = self.supernal_ability.ok_or(SolarError::SupernalRequired)?;
 

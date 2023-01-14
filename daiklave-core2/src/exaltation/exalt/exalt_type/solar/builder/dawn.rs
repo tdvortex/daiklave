@@ -15,6 +15,7 @@ use crate::{
     },
 };
 
+/// A builder for a Dawn caste Solar.
 pub struct DawnBuilder {
     pub(crate) caste_abilities: Vec<DawnCasteAbility>,
     pub(crate) supernal_ability: Option<DawnSupernalAbility>,
@@ -23,11 +24,15 @@ pub struct DawnBuilder {
 }
 
 impl DawnBuilder {
+    /// Adds a Caste ability to the Dawn. Martial Arts cannot be a Caste
+    /// ability.
     pub fn caste_ability(mut self, caste_ability: DawnCasteAbility) -> Self {
         self.caste_abilities.push(caste_ability);
         self
     }
 
+    /// Sets the Supernal ability of the Dawn. If it wasn't already a Caste
+    /// ability, it is also added as a Caste ability.
     pub fn supernal_ability(mut self, supernal_ability: DawnSupernalAbility) -> Self {
         let caste_insert = match supernal_ability {
             DawnSupernalAbility::Archery => DawnCasteAbility::Archery,
@@ -45,16 +50,20 @@ impl DawnBuilder {
         self
     }
 
+    /// Adds a Favored ability to the Solar.
     pub fn favored_ability(mut self, favored_ability: AbilityName) -> Self {
         self.favored_abilities.push(favored_ability);
         self
     }
 
+    /// Sets the Solar's Limit Trigger.
     pub fn limit_trigger(mut self, limit_trigger: String) -> Self {
         self.limit_trigger = Some(limit_trigger);
         self
     }
 
+    /// Finishes the builder, returning a NewSolar object if successful or an
+    /// error if some validation failed.
     pub fn build(mut self) -> Result<NewSolar, SolarError> {
         let limit_trigger = self.limit_trigger.ok_or(SolarError::LimitTriggerRequired)?;
         let supernal = self.supernal_ability.ok_or(SolarError::SupernalRequired)?;

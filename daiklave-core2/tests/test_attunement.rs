@@ -6,7 +6,7 @@ use daiklave_core2::{
     exaltation::exalt::{
         essence::{MoteCommitmentId, MotePoolName},
         exalt_type::solar::{
-            caste::dawn::{DawnCasteAbility, DawnSupernalAbility},
+            caste::{DawnCasteAbility, DawnSupernalAbility},
             Solar,
         },
     },

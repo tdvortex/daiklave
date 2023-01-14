@@ -1,7 +1,7 @@
 use daiklave_core2::{
     abilities::AbilityName,
     exaltation::exalt::exalt_type::solar::{
-        caste::dawn::{DawnCasteAbility, DawnSupernalAbility},
+        caste::{DawnCasteAbility, DawnSupernalAbility},
         Solar,
     },
     CharacterEventSource, CharacterMutation,
