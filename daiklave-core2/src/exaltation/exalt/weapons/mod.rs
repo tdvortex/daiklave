@@ -829,6 +829,16 @@ impl<'view, 'source> ExaltWeapons<'source> {
             Err(e) => Err(e),
         }
     }
+
+    pub fn unattune_artifact_weapon(&mut self, artifact_weapon_id: ArtifactWeaponId) -> Result<(u8, u8), CharacterMutationError> {
+        match self.unequipped.unattune_artifact_weapon(artifact_weapon_id) {
+            Ok((peripheral, personal)) => Ok((peripheral, personal)),
+            Err(CharacterMutationError::WeaponError(WeaponError::NotFound)) => {
+                self.equipped.unattune_artifact_weapon(artifact_weapon_id)
+            }
+            Err(e) => Err(e),
+        }
+    }
 }
 
 impl<'source> From<MortalWeapons<'source>> for ExaltWeapons<'source> {

@@ -34,7 +34,7 @@ impl<'view, 'source> Motes<'view, 'source> {
     pub fn committed(
         &self,
     ) -> impl Iterator<Item = (MoteCommitmentId, MoteCommitment<'source>)> + '_ {
-        let other_commitments = self.state.commitments.iter().map(|(k, v)| (*k, *v));
+        let other_commitments = self.state.commitments.iter().map(|(k, v)| (MoteCommitmentId::Other(*k), *v));
 
         let weapon_commitments =
             self.weapons.iter().filter_map(|(weapon_id, equipped)| {

@@ -418,4 +418,67 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
             }
         }
     }
+
+    pub fn unattune_artifact_weapon(&mut self, artifact_weapon_id: ArtifactWeaponId) -> Result<(u8, u8), CharacterMutationError> {
+        if let Some(handless) = self.handless_artifact.get_mut(&artifact_weapon_id) {
+            if let Some(personal) = handless.1.take() {
+                Ok((5 - 5.min(personal), 5.min(personal)))
+            } else {
+                Err(CharacterMutationError::EssenceError(EssenceError::NotFound))
+            }
+        } else {
+            match &mut self.hands {
+                ExaltHands::Empty => Err(CharacterMutationError::WeaponError(WeaponError::NotFound)),
+                ExaltHands::MainHand(one)
+                | ExaltHands::OffHand(one) => {
+                    match one {
+                        EquippedOneHandedWeapon::Mundane(_, _) => Err(CharacterMutationError::WeaponError(WeaponError::NotFound)),
+                        EquippedOneHandedWeapon::Artifact(held_id, _, attunement) => {
+                            if held_id == &artifact_weapon_id {
+                                if let Some(personal) = attunement.take() {
+                                    Ok((5 - 5.min(personal), 5.min(personal)))
+                                } else {
+                                    Err(CharacterMutationError::EssenceError(EssenceError::NotFound))
+                                }
+                            } else {
+                                Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+                            }
+                        }
+                    }
+                }
+                ExaltHands::Both(arr) => {
+                    arr.iter_mut().find_map(|one| match one {
+                        EquippedOneHandedWeapon::Mundane(_, _) => None,
+                        EquippedOneHandedWeapon::Artifact(held_id, _, attunement) => {
+                            if held_id == &artifact_weapon_id {
+                                if let Some(personal) = attunement.take() {
+                                    Some(Ok((5 - 5.min(personal), 5.min(personal))))
+                                } else {
+                                    Some(Err(CharacterMutationError::EssenceError(EssenceError::NotFound)))
+                                }
+                            } else {
+                                None
+                            }
+                        }
+                    }).ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
+                }
+                ExaltHands::TwoHanded(two) => {
+                    match two {
+                        EquippedTwoHandedWeapon::Mundane(_, _) => Err(CharacterMutationError::WeaponError(WeaponError::NotFound)),
+                        EquippedTwoHandedWeapon::Artifact(held_id, _, attunement) => {
+                            if held_id == &artifact_weapon_id {
+                                if let Some(personal) = attunement.take() {
+                                    Ok((5 - 5.min(personal), 5.min(personal)))
+                                } else {
+                                    Err(CharacterMutationError::EssenceError(EssenceError::NotFound))
+                                }
+                            } else {
+                                Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

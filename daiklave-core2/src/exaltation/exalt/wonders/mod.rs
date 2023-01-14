@@ -120,6 +120,20 @@ impl<'source> ExaltWonders<'source> {
             Ok(self)
         }
     }
+
+    pub fn unattune_wonder(&mut self, wonder_id: WonderId) -> Result<(u8, u8), CharacterMutationError> {
+        let wonder = self.0.get_mut(&wonder_id).ok_or(CharacterMutationError::ArtifactError(ArtifactError::NotFound))?;
+
+        if let Some(amount) = wonder.0.attunement_cost {
+            if let Some(personal) = wonder.1.take() {
+                Ok((amount - amount.min(personal), amount.min(personal)))
+            } else {
+                Err(CharacterMutationError::EssenceError(EssenceError::NotFound))
+            }
+        } else {
+            Err(CharacterMutationError::EssenceError(EssenceError::NoAttunementCost))
+        }
+    }
 }
 
 impl<'source> From<MortalWonders<'source>> for ExaltWonders<'source> {

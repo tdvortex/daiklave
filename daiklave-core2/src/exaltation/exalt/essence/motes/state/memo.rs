@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::exaltation::exalt::essence::{
-    mote_commitment::{MoteCommitmentId, MoteCommitmentMemo},
-    mote_pool::MotePool,
+    mote_commitment::{MoteCommitmentMemo},
+    mote_pool::MotePool, OtherMoteCommitmentId,
 };
 
 use super::MotesState;
@@ -13,14 +13,14 @@ use super::MotesState;
 pub(crate) struct MotesStateMemo {
     peripheral: MotePool,
     personal: MotePool,
-    commitments: HashMap<MoteCommitmentId, MoteCommitmentMemo>,
+    commitments: HashMap<OtherMoteCommitmentId, MoteCommitmentMemo>,
 }
 
 impl<'source> MotesStateMemo {
     pub(in crate::exaltation::exalt::essence) fn new(
         peripheral: MotePool,
         personal: MotePool,
-        commitments: HashMap<MoteCommitmentId, MoteCommitmentMemo>,
+        commitments: HashMap<OtherMoteCommitmentId, MoteCommitmentMemo>,
     ) -> Self {
         Self {
             peripheral,

@@ -265,7 +265,7 @@ impl<'view, 'source> Exalt<'source> {
             .essence
             .motes
             .commitments_mut()
-            .entry(MoteCommitmentId::Other(*id))
+            .entry(*id)
         {
             e.insert(MoteCommitment {
                 name,
@@ -337,7 +337,7 @@ impl<'view, 'source> Exalt<'source> {
                 .essence
                 .motes
                 .commitments()
-                .contains_key(&MoteCommitmentId::Other(*other_id)),
+                .contains_key(&other_id),
         } {
             Ok(())
         } else {
@@ -349,22 +349,27 @@ impl<'view, 'source> Exalt<'source> {
         &mut self,
         id: &MoteCommitmentId,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let commitment = self
-            .essence
-            .motes
-            .commitments_mut()
-            .remove(id)
-            .ok_or(CharacterMutationError::EssenceError(EssenceError::NotFound))?;
-        self.essence
-            .motes
-            .peripheral_mut()
-            .uncommit(commitment.peripheral)
-            .unwrap();
-        self.essence
-            .motes
-            .personal_mut()
-            .uncommit(commitment.personal)
-            .unwrap();
+        let (peripheral, personal) = match id {
+            MoteCommitmentId::AttunedArtifact(artifact_id) => {
+                match artifact_id {
+                    ArtifactId::Weapon(artifact_weapon_id) => {
+                        self.weapons.unattune_artifact_weapon(*artifact_weapon_id)?
+                    }
+                    ArtifactId::Armor(artifact_armor_id) => {
+                        self.armor.unattune_artifact_armor(*artifact_armor_id)?
+                    }
+                    ArtifactId::Wonder(wonder_id) => {
+                        self.wonders.unattune_wonder(*wonder_id)?
+                    }
+                }
+            }
+            MoteCommitmentId::Other(other_id) => {
+                let commitment = self.essence.motes.commitments.remove(other_id).ok_or(CharacterMutationError::EssenceError(EssenceError::NotFound))?;
+                (commitment.peripheral, commitment.personal)
+            }
+        };
+        self.essence.motes.peripheral.uncommit(peripheral)?;
+        self.essence.motes.personal.uncommit(personal)?;
         Ok(self)
     }
 

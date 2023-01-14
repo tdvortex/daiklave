@@ -8,7 +8,7 @@ use crate::{
         armor_item::{
             artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
             mundane::{MundaneArmor, MundaneArmorView},
-            ArmorId, ArmorItem, ArmorType, BaseArmorId, EquippedArmor, EquippedArmorNoAttunement,
+            ArmorId, ArmorItem, ArmorType, BaseArmorId, EquippedArmor, EquippedArmorNoAttunement, ArmorWeightClass,
         },
         ArmorError,
     },
@@ -348,6 +348,36 @@ impl<'source> ExaltArmor<'source> {
             Err(CharacterMutationError::EssenceError(
                 EssenceError::AlreadyAttuned,
             ))
+        }
+    }
+
+    pub fn unattune_artifact_armor(&mut self, artifact_armor_id: ArtifactArmorId) -> Result<(u8, u8), CharacterMutationError> {
+        let armor = self
+            .equipped
+            .as_mut()
+            .and_then(|equipped| match equipped {
+                EquippedArmor::Mundane(_, _) => None,
+                EquippedArmor::Artifact(worn_id, worn_armor) => {
+                    if worn_id == &artifact_armor_id {
+                        Some(worn_armor)
+                    } else {
+                        None
+                    }
+                }
+            })
+            .or_else(|| self.unequipped_artifact.get_mut(&artifact_armor_id))
+            .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?;
+
+        let amount = match armor.0.base_armor().weight_class() {
+            ArmorWeightClass::Light => 4,
+            ArmorWeightClass::Medium => 5,
+            ArmorWeightClass::Heavy => 6,
+        };
+
+        if let Some(personal) = armor.1.take() {
+            Ok((amount - amount.min(personal), amount.min(personal)))
+        } else {
+            Err(CharacterMutationError::EssenceError(EssenceError::NotFound))
         }
     }
 }
