@@ -2,7 +2,7 @@ use thiserror::Error;
 
 /// An error related to a character's Abilities.
 #[derive(Debug, Error)]
-pub enum AbilityError {    
+pub enum AbilityError {
     /// Specialties must be unique.
     #[error("Specialty already exists")]
     DuplicateSpecialty,

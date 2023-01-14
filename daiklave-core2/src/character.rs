@@ -1,15 +1,13 @@
 use std::collections::HashMap;
 
 use crate::{
-    abilities::{
-        Abilities, AbilitiesVanilla, AbilityNameVanilla, AbilityRating, AbilityError,
-    },
+    abilities::{Abilities, AbilitiesVanilla, AbilityError, AbilityNameVanilla, AbilityRating},
     armor::{
         armor_item::{artifact::ArtifactError, mundane::MundaneArmor, ArmorId, BaseArmorId},
         Armor, ArmorError,
     },
     artifact::{wonders::Wonders, Artifact, ArtifactId},
-    attributes::{AttributeName, Attributes, AttributeError},
+    attributes::{AttributeError, AttributeName, Attributes},
     craft::Craft,
     exaltation::{
         exalt::{
@@ -25,7 +23,7 @@ use crate::{
         hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId, HearthstoneOrigin,
         HearthstoneStability, Hearthstones, UnslottedHearthstone,
     },
-    martial_arts::{MartialArts, MartialArtsStyle, MartialArtsStyleId, MartialArtsError},
+    martial_arts::{MartialArts, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     name_and_concept::ConceptError,
     sorcery::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
@@ -554,7 +552,7 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<(), CharacterMutationError> {
         if self.abilities().get(AbilityNameVanilla::Brawl).dots() < 1 {
             return Err(CharacterMutationError::MartialArtsError(
-                MartialArtsError::PrerequsitesNotMet
+                MartialArtsError::PrerequsitesNotMet,
             ));
         }
 

@@ -3,21 +3,20 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
-use abilities::{AbilityNameVanilla, AbilityError};
+use abilities::{AbilityError, AbilityNameVanilla};
 use armor::{
     armor_item::{artifact::ArtifactError, mundane::MundaneArmor, ArmorId, BaseArmorId},
     ArmorError,
 };
 use artifact::{Artifact, ArtifactId};
-use attributes::{AttributeName, AttributeError};
+use attributes::{AttributeError, AttributeName};
 use exaltation::exalt::{
     essence::{EssenceError, MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
     exalt_type::solar::NewSolar,
 };
 use health::{DamageLevel, WoundPenalty};
 use hearthstones::{hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId};
-use martial_arts::{MartialArtsStyle, MartialArtsStyleId, MartialArtsError,
-};
+use martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId};
 use name_and_concept::ConceptError;
 use sorcery::SorceryError;
 use thiserror::Error;

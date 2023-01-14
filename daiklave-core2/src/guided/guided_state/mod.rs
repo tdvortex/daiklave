@@ -3,9 +3,7 @@ use std::collections::{HashMap, HashSet};
 use crate::{
     abilities::{AbilityName, AbilityNameVanilla},
     attributes::AttributeName,
-    martial_arts::{
-        MartialArtsStyle, MartialArtsStyleId, MartialArtsError,
-    },
+    martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
@@ -99,9 +97,7 @@ impl<'source> GuidedState<'source> {
                     .map(|hashmap| hashmap.contains_key(id))
                 {
                     return Err(GuidedError::CharacterMutationError(
-                        CharacterMutationError::MartialArtsError(
-                            MartialArtsError::DuplicateStyle,
-                        ),
+                        CharacterMutationError::MartialArtsError(MartialArtsError::DuplicateStyle),
                     ));
                 }
 
@@ -127,9 +123,7 @@ impl<'source> GuidedState<'source> {
                     self.update_bonus_points();
                 } else {
                     return Err(GuidedError::CharacterMutationError(
-                        CharacterMutationError::MartialArtsError(
-                            MartialArtsError::StyleNotFound,
-                        ),
+                        CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound),
                     ));
                 }
             }

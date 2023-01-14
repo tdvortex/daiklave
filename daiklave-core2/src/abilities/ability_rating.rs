@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::CharacterMutationError;
 
-use super::{AbilityRatingMemo, AbilityError};
+use super::{AbilityError, AbilityRatingMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum AbilityRating<'source> {
@@ -37,7 +37,7 @@ impl<'source> AbilityRating<'source> {
     pub fn set_dots(&mut self, new_dots: u8) -> Result<&mut Self, CharacterMutationError> {
         if new_dots > 5 {
             Err(CharacterMutationError::AbilityError(
-                AbilityError::InvalidRating
+                AbilityError::InvalidRating,
             ))
         } else if new_dots == 0 {
             *self = AbilityRating::Zero;

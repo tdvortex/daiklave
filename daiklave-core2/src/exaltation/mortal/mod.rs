@@ -21,9 +21,7 @@ use crate::{
     },
     artifact::wonders::{OwnedWonder, Wonder, WonderId},
     hearthstones::{HearthstoneId, UnslottedHearthstone},
-    martial_arts::{
-        MartialArtsStyle, MartialArtsStyleId, MartialArtsError,
-    },
+    martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
         SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell,

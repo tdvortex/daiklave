@@ -23,7 +23,7 @@ pub(crate) use wonders::ExaltWonders;
 use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
-    abilities::{AbilityRating, AbilityError},
+    abilities::{AbilityError, AbilityRating},
     armor::{
         armor_item::{
             artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
@@ -38,8 +38,7 @@ use crate::{
     },
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::{HearthstoneId, UnslottedHearthstone},
-    martial_arts::{MartialArtsCharmId, MartialArtsStyle, MartialArtsStyleId, MartialArtsError,
-    },
+    martial_arts::{MartialArtsCharmId, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
