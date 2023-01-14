@@ -312,25 +312,6 @@ fn test_guided_solar() {
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
-    // After Solar abilities stage, should be a valid Solar with
-    // the correct abilities.
-    let guided_view = guided_builder.as_guided_view().unwrap();
-    let character_view = guided_view.as_character_view();
-    assert!(character_view.is_solar());
-    let solar_traits = character_view.solar_traits().unwrap();
-
-    assert!(solar_traits.has_caste_ability(AbilityName::Athletics));
-    assert!(solar_traits.has_caste_ability(AbilityName::Awareness));
-    assert!(solar_traits.has_caste_ability(AbilityName::Dodge));
-    assert!(solar_traits.has_caste_ability(AbilityName::Larceny));
-    assert!(solar_traits.has_caste_ability(AbilityName::Stealth));
-    assert_eq!(solar_traits.supernal_ability(), AbilityName::Dodge);
-    assert!(solar_traits.has_favored_ability(AbilityName::Craft));
-    assert!(solar_traits.has_favored_ability(AbilityName::Linguistics));
-    assert!(solar_traits.has_favored_ability(AbilityName::Socialize));
-    assert!(solar_traits.has_favored_ability(AbilityName::Survival));
-    assert!(solar_traits.has_favored_ability(AbilityName::Thrown));
-
     // Add a martial arts style
     let crane_style = MartialArtsStyle::new(
         Some(BookReference::new(Book::CoreRulebook, 443)),

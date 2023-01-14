@@ -4,8 +4,8 @@ use super::{ability::NightAbility, Night};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct NightMemo {
-    caste_not_supernal: [NightAbility; 4],
-    supernal: NightAbility,
+    pub(crate) caste_not_supernal: [NightAbility; 4],
+    pub(crate) supernal: NightAbility,
 }
 
 impl<'source> NightMemo {

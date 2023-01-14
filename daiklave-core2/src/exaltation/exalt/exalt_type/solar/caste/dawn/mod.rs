@@ -3,40 +3,89 @@ mod memo;
 mod supernal_ability;
 
 pub use caste_ability::DawnCasteAbility;
+pub(crate) use caste_ability::DawnCasteAbilityNoBrawl;
 pub(crate) use memo::DawnMemo;
 pub use supernal_ability::DawnSupernalAbility;
+pub(crate) use supernal_ability::DawnSupernalLayout;
 
 use crate::abilities::AbilityName;
 
 /// Caste traits for the Dawn Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Dawn {
-    pub caste_not_supernal: [DawnCasteAbility; 4],
-    pub supernal: DawnSupernalAbility,
+    pub layout: DawnSupernalLayout,
 }
 
 impl Dawn {
     pub(crate) fn as_memo(&self) -> DawnMemo {
-        DawnMemo::new(self.caste_not_supernal, self.supernal)
+        DawnMemo {
+            layout: self.layout,
+        }
     }
 
     /// Returns true if the ability is a chosen Caste ability. If Brawl is a
     /// Caste ability, then Martial Arts is also a Caste ability.
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
-        let search_ability = if ability == AbilityName::MartialArts {
-            AbilityName::Brawl
-        } else {
-            ability
-        };
+        match (self.layout, ability) {
+            (DawnSupernalLayout::Brawl(_), AbilityName::MartialArts)
+            | (DawnSupernalLayout::Brawl(_), AbilityName::Brawl)
+            | (DawnSupernalLayout::MartialArts(_), AbilityName::MartialArts)
+            | (DawnSupernalLayout::MartialArts(_), AbilityName::Brawl) => true,
+            (DawnSupernalLayout::Other(caste, _), AbilityName::Brawl)
+            | (DawnSupernalLayout::Other(caste, _), AbilityName::MartialArts) => {
+                caste.contains(&DawnCasteAbility::Brawl)
+            }
+            (DawnSupernalLayout::Brawl(no_brawl), other_ability)
+            | (DawnSupernalLayout::MartialArts(no_brawl), other_ability) => {
+                let search_ability = match other_ability {
+                    AbilityName::Archery => DawnCasteAbilityNoBrawl::Archery,
+                    AbilityName::Awareness => DawnCasteAbilityNoBrawl::Awareness,
+                    AbilityName::Dodge => DawnCasteAbilityNoBrawl::Dodge,
+                    AbilityName::Melee => DawnCasteAbilityNoBrawl::Melee,
+                    AbilityName::Resistance => DawnCasteAbilityNoBrawl::Resistance,
+                    AbilityName::Thrown => DawnCasteAbilityNoBrawl::Thrown,
+                    AbilityName::War => DawnCasteAbilityNoBrawl::War,
+                    _ => {
+                        return false;
+                    }
+                };
 
-        self.caste_not_supernal
-            .iter()
-            .any(|dawn_caste_ability| AbilityName::from(*dawn_caste_ability) == search_ability)
-            || AbilityName::from(self.supernal) == search_ability
+                no_brawl.contains(&search_ability)
+            }
+            (DawnSupernalLayout::Other(caste, supernal), other_ability) => {
+                let is_supernal = match (supernal, other_ability) {
+                    (DawnCasteAbilityNoBrawl::Archery, AbilityName::Archery) => true,
+                    (DawnCasteAbilityNoBrawl::Awareness, AbilityName::Awareness) => true,
+                    (DawnCasteAbilityNoBrawl::Dodge, AbilityName::Dodge) => true,
+                    (DawnCasteAbilityNoBrawl::Melee, AbilityName::Melee) => true,
+                    (DawnCasteAbilityNoBrawl::Resistance, AbilityName::Resistance) => true,
+                    (DawnCasteAbilityNoBrawl::Thrown, AbilityName::Thrown) => true,
+                    (DawnCasteAbilityNoBrawl::War, AbilityName::War) => true,
+                    (_, _) => false,
+                };
+
+                is_supernal
+                    || caste
+                        .iter()
+                        .any(|caste_ability| AbilityName::from(*caste_ability) == other_ability)
+            }
+        }
     }
 
     /// Returns the Dawn's Supernal ability.
     pub fn supernal_ability(&self) -> AbilityName {
-        AbilityName::from(self.supernal)
+        match self.layout {
+            DawnSupernalLayout::MartialArts(_) => AbilityName::MartialArts,
+            DawnSupernalLayout::Brawl(_) => AbilityName::Brawl,
+            DawnSupernalLayout::Other(_, supernal) => match supernal {
+                DawnCasteAbilityNoBrawl::Archery => AbilityName::Archery,
+                DawnCasteAbilityNoBrawl::Awareness => AbilityName::Awareness,
+                DawnCasteAbilityNoBrawl::Dodge => AbilityName::Dodge,
+                DawnCasteAbilityNoBrawl::Melee => AbilityName::Melee,
+                DawnCasteAbilityNoBrawl::Resistance => AbilityName::Resistance,
+                DawnCasteAbilityNoBrawl::Thrown => AbilityName::Thrown,
+                DawnCasteAbilityNoBrawl::War => AbilityName::War,
+            },
+        }
     }
 }

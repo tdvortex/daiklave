@@ -360,10 +360,6 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(())
     }
 
-    pub fn check_set_solar_view(&self, _solar: &Solar) -> Result<(), CharacterMutationError> {
-        Ok(())
-    }
-
     pub fn set_solar(
         &mut self,
         solar: &'source SolarMemo,

@@ -14,7 +14,10 @@ pub(crate) struct Zenith {
 
 impl Zenith {
     pub(crate) fn as_memo(&self) -> ZenithMemo {
-        ZenithMemo::new(self.caste_not_supernal, self.supernal)
+        ZenithMemo {
+            caste_not_supernal: self.caste_not_supernal,
+            supernal: self.supernal,
+        }
     }
 
     /// Returns true if the ability is a chosen Caste ability.

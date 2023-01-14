@@ -2,24 +2,24 @@
 pub mod caste;
 
 mod builder;
-mod builder_error;
 mod error;
 mod memo;
 mod new;
 mod sorcery;
 
-pub(crate) use memo::SolarMemo;
-pub(crate) use sorcery::{SolarSorcererView, SolarSorcererMemo};
-pub use new::NewSolar;
 pub use error::SolarError;
+pub(crate) use memo::SolarMemo;
+pub use new::NewSolar;
+pub(crate) use sorcery::{SolarSorcererMemo, SolarSorcererView};
 
 use crate::{
     abilities::AbilityName,
+    exaltation::exalt::Limit,
     sorcery::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
         SorceryArchetype, SorceryArchetypeId, SorceryError, SpellId, TerrestrialSpell,
     },
-    CharacterMutationError, exaltation::exalt::Limit,
+    CharacterMutationError,
 };
 
 use self::{builder::SolarBuilder, caste::SolarCaste};
@@ -34,7 +34,7 @@ pub struct Solar<'source> {
 }
 
 impl<'source> Solar<'source> {
-   /// Starts building a set of Solar traits
+    /// Starts building a set of Solar traits
     pub fn builder() -> SolarBuilder {
         SolarBuilder {
             limit_trigger: None,

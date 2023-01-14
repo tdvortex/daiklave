@@ -2,19 +2,22 @@ mod ability;
 mod memo;
 
 pub use ability::TwilightAbility;
-pub(crate)  use memo::TwilightMemo;
+pub(crate) use memo::TwilightMemo;
 
 use crate::abilities::AbilityName;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Twilight {
-    caste_not_supernal: [TwilightAbility; 4],
-    supernal: TwilightAbility,
+    pub caste_not_supernal: [TwilightAbility; 4],
+    pub supernal: TwilightAbility,
 }
 
 impl Twilight {
     pub(crate) fn as_memo(&self) -> TwilightMemo {
-        TwilightMemo::new(self.caste_not_supernal, self.supernal)
+        TwilightMemo {
+            caste_not_supernal: self.caste_not_supernal,
+            supernal: self.supernal,
+        }
     }
 
     /// Returns true if the ability is a chosen Caste ability.

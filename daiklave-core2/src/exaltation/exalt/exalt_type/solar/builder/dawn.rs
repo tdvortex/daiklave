@@ -1,4 +1,19 @@
-use crate::{exaltation::exalt::{exalt_type::solar::{caste::{dawn::{DawnCasteAbility, DawnSupernalAbility, DawnMemo}, SolarCasteMemo}, SolarMemo, NewSolar, SolarError}, LimitMemo}, abilities::AbilityName};
+use crate::{
+    abilities::AbilityName,
+    exaltation::exalt::{
+        exalt_type::solar::{
+            caste::{
+                dawn::{
+                    DawnCasteAbility, DawnCasteAbilityNoBrawl, DawnMemo, DawnSupernalAbility,
+                    DawnSupernalLayout,
+                },
+                SolarCasteMemo,
+            },
+            NewSolar, SolarError, SolarMemo,
+        },
+        LimitMemo,
+    },
+};
 
 pub struct DawnBuilder {
     pub(crate) caste_abilities: Vec<DawnCasteAbility>,
@@ -41,6 +56,7 @@ impl DawnBuilder {
     }
 
     pub fn build(mut self) -> Result<NewSolar, SolarError> {
+        let limit_trigger = self.limit_trigger.ok_or(SolarError::LimitTriggerRequired)?;
         let supernal = self.supernal_ability.ok_or(SolarError::SupernalRequired)?;
 
         self.caste_abilities.sort();
@@ -51,7 +67,8 @@ impl DawnBuilder {
 
         self.favored_abilities.sort();
         self.favored_abilities.dedup();
-        self.favored_abilities.retain(|ability| ability != &AbilityName::MartialArts);
+        self.favored_abilities
+            .retain(|ability| ability != &AbilityName::MartialArts);
         if self.favored_abilities.len() != 5 {
             return Err(SolarError::FiveFavoredAbilities);
         }
@@ -62,37 +79,214 @@ impl DawnBuilder {
             }
         }
 
-        let remove_supernal = match supernal {
-            DawnSupernalAbility::Archery => DawnCasteAbility::Archery,
-            DawnSupernalAbility::Awareness => DawnCasteAbility::Awareness,
-            DawnSupernalAbility::Brawl => DawnCasteAbility::Brawl,
-            DawnSupernalAbility::Dodge => DawnCasteAbility::Dodge,
-            DawnSupernalAbility::MartialArts => DawnCasteAbility::Brawl,
-            DawnSupernalAbility::Melee => DawnCasteAbility::Melee,
-            DawnSupernalAbility::Resistance => DawnCasteAbility::Resistance,
-            DawnSupernalAbility::Thrown => DawnCasteAbility::Thrown,
-            DawnSupernalAbility::War => DawnCasteAbility::War,
+        let favored_abilities = self.favored_abilities.into_iter().enumerate().fold(
+            [AbilityName::Archery; 5],
+            |mut arr, (i, ability)| {
+                arr[i] = ability;
+                arr
+            },
+        );
+
+        let layout = match supernal {
+            DawnSupernalAbility::Brawl => {
+                let (no_brawl, inserted) = self
+                    .caste_abilities
+                    .into_iter()
+                    .filter_map(|caste_ability| match caste_ability {
+                        DawnCasteAbility::Archery => Some(DawnCasteAbilityNoBrawl::Archery),
+                        DawnCasteAbility::Awareness => Some(DawnCasteAbilityNoBrawl::Awareness),
+                        DawnCasteAbility::Brawl => None,
+                        DawnCasteAbility::Dodge => Some(DawnCasteAbilityNoBrawl::Dodge),
+                        DawnCasteAbility::Melee => Some(DawnCasteAbilityNoBrawl::Melee),
+                        DawnCasteAbility::Resistance => Some(DawnCasteAbilityNoBrawl::Resistance),
+                        DawnCasteAbility::Thrown => Some(DawnCasteAbilityNoBrawl::Thrown),
+                        DawnCasteAbility::War => Some(DawnCasteAbilityNoBrawl::War),
+                    })
+                    .take(4)
+                    .fold(
+                        ([DawnCasteAbilityNoBrawl::Archery; 4], 0),
+                        |(mut acc, i), ability| {
+                            acc[i] = ability;
+                            (acc, i + 1)
+                        },
+                    );
+                if inserted < 4 {
+                    return Err(SolarError::FiveCasteAbilities);
+                } else {
+                    DawnSupernalLayout::Brawl(no_brawl)
+                }
+            }
+            DawnSupernalAbility::MartialArts => {
+                let (no_brawl, inserted) = self
+                    .caste_abilities
+                    .into_iter()
+                    .filter_map(|caste_ability| match caste_ability {
+                        DawnCasteAbility::Archery => Some(DawnCasteAbilityNoBrawl::Archery),
+                        DawnCasteAbility::Awareness => Some(DawnCasteAbilityNoBrawl::Awareness),
+                        DawnCasteAbility::Brawl => None,
+                        DawnCasteAbility::Dodge => Some(DawnCasteAbilityNoBrawl::Dodge),
+                        DawnCasteAbility::Melee => Some(DawnCasteAbilityNoBrawl::Melee),
+                        DawnCasteAbility::Resistance => Some(DawnCasteAbilityNoBrawl::Resistance),
+                        DawnCasteAbility::Thrown => Some(DawnCasteAbilityNoBrawl::Thrown),
+                        DawnCasteAbility::War => Some(DawnCasteAbilityNoBrawl::War),
+                    })
+                    .take(4)
+                    .fold(
+                        ([DawnCasteAbilityNoBrawl::Archery; 4], 0),
+                        |(mut acc, i), ability| {
+                            acc[i] = ability;
+                            (acc, i + 1)
+                        },
+                    );
+                if inserted < 4 {
+                    return Err(SolarError::FiveCasteAbilities);
+                } else {
+                    DawnSupernalLayout::MartialArts(no_brawl)
+                }
+            }
+            DawnSupernalAbility::Archery => {
+                let (caste, inserted) = self
+                    .caste_abilities
+                    .into_iter()
+                    .filter(|caste_ability| caste_ability == &DawnCasteAbility::Archery)
+                    .take(4)
+                    .fold(
+                        ([DawnCasteAbility::Archery; 4], 0),
+                        |(mut acc, i), ability| {
+                            acc[i] = ability;
+                            (acc, i + 1)
+                        },
+                    );
+                if inserted < 4 {
+                    return Err(SolarError::FiveCasteAbilities);
+                } else {
+                    DawnSupernalLayout::Other(caste, DawnCasteAbilityNoBrawl::Archery)
+                }
+            }
+            DawnSupernalAbility::Awareness => {
+                let (caste, inserted) = self
+                    .caste_abilities
+                    .into_iter()
+                    .filter(|caste_ability| caste_ability == &DawnCasteAbility::Awareness)
+                    .take(4)
+                    .fold(
+                        ([DawnCasteAbility::Archery; 4], 0),
+                        |(mut acc, i), ability| {
+                            acc[i] = ability;
+                            (acc, i + 1)
+                        },
+                    );
+                if inserted < 4 {
+                    return Err(SolarError::FiveCasteAbilities);
+                } else {
+                    DawnSupernalLayout::Other(caste, DawnCasteAbilityNoBrawl::Awareness)
+                }
+            }
+            DawnSupernalAbility::Dodge => {
+                let (caste, inserted) = self
+                    .caste_abilities
+                    .into_iter()
+                    .filter(|caste_ability| caste_ability == &DawnCasteAbility::Dodge)
+                    .take(4)
+                    .fold(
+                        ([DawnCasteAbility::Archery; 4], 0),
+                        |(mut acc, i), ability| {
+                            acc[i] = ability;
+                            (acc, i + 1)
+                        },
+                    );
+                if inserted < 4 {
+                    return Err(SolarError::FiveCasteAbilities);
+                } else {
+                    DawnSupernalLayout::Other(caste, DawnCasteAbilityNoBrawl::Dodge)
+                }
+            }
+            DawnSupernalAbility::Melee => {
+                let (caste, inserted) = self
+                    .caste_abilities
+                    .into_iter()
+                    .filter(|caste_ability| caste_ability == &DawnCasteAbility::Melee)
+                    .take(4)
+                    .fold(
+                        ([DawnCasteAbility::Archery; 4], 0),
+                        |(mut acc, i), ability| {
+                            acc[i] = ability;
+                            (acc, i + 1)
+                        },
+                    );
+                if inserted < 4 {
+                    return Err(SolarError::FiveCasteAbilities);
+                } else {
+                    DawnSupernalLayout::Other(caste, DawnCasteAbilityNoBrawl::Melee)
+                }
+            }
+            DawnSupernalAbility::Resistance => {
+                let (caste, inserted) = self
+                    .caste_abilities
+                    .into_iter()
+                    .filter(|caste_ability| caste_ability == &DawnCasteAbility::Resistance)
+                    .take(4)
+                    .fold(
+                        ([DawnCasteAbility::Archery; 4], 0),
+                        |(mut acc, i), ability| {
+                            acc[i] = ability;
+                            (acc, i + 1)
+                        },
+                    );
+                if inserted < 4 {
+                    return Err(SolarError::FiveCasteAbilities);
+                } else {
+                    DawnSupernalLayout::Other(caste, DawnCasteAbilityNoBrawl::Resistance)
+                }
+            }
+            DawnSupernalAbility::Thrown => {
+                let (caste, inserted) = self
+                    .caste_abilities
+                    .into_iter()
+                    .filter(|caste_ability| caste_ability == &DawnCasteAbility::Thrown)
+                    .take(4)
+                    .fold(
+                        ([DawnCasteAbility::Archery; 4], 0),
+                        |(mut acc, i), ability| {
+                            acc[i] = ability;
+                            (acc, i + 1)
+                        },
+                    );
+                if inserted < 4 {
+                    return Err(SolarError::FiveCasteAbilities);
+                } else {
+                    DawnSupernalLayout::Other(caste, DawnCasteAbilityNoBrawl::Thrown)
+                }
+            }
+            DawnSupernalAbility::War => {
+                let (caste, inserted) = self
+                    .caste_abilities
+                    .into_iter()
+                    .filter(|caste_ability| caste_ability == &DawnCasteAbility::War)
+                    .take(4)
+                    .fold(
+                        ([DawnCasteAbility::Archery; 4], 0),
+                        |(mut acc, i), ability| {
+                            acc[i] = ability;
+                            (acc, i + 1)
+                        },
+                    );
+                if inserted < 4 {
+                    return Err(SolarError::FiveCasteAbilities);
+                } else {
+                    DawnSupernalLayout::Other(caste, DawnCasteAbilityNoBrawl::War)
+                }
+            }
         };
-        self.caste_abilities.retain(|caste| caste != &remove_supernal);
-
-        let caste_not_supernal = self.caste_abilities.into_iter().enumerate().fold([DawnCasteAbility::Archery; 4], |mut arr, (i, ability)| {arr[i] = ability; arr});
-        let favored_abilities = self.favored_abilities.into_iter().enumerate().fold([AbilityName::Archery; 5], |mut arr, (i, ability)| {arr[i] = ability; arr});
-
-        let limit_trigger = self.limit_trigger.ok_or(SolarError::LimitTriggerRequired)?;
 
         Ok(NewSolar(Box::new(SolarMemo {
-            caste: SolarCasteMemo::Dawn(
-                DawnMemo {
-                    caste_not_supernal,
-                    supernal,
-                }
-            ),
+            caste: SolarCasteMemo::Dawn(DawnMemo { layout }),
             favored_abilities,
             sorcery: None,
             limit: LimitMemo {
                 track: 0,
-                trigger: limit_trigger
-            }
+                trigger: limit_trigger,
+            },
         })))
     }
 }

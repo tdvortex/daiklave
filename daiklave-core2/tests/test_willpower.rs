@@ -1,68 +1,11 @@
 use daiklave_core2::{
     abilities::AbilityName,
-    exaltation::exalt::exalt_type::solar::{caste::dawn::Dawn, Solar},
-    Character, CharacterEventSource, CharacterMutation,
+    exaltation::exalt::exalt_type::solar::{
+        caste::dawn::{DawnCasteAbility, DawnSupernalAbility},
+        Solar,
+    },
+    CharacterEventSource, CharacterMutation,
 };
-
-#[test]
-fn test_willpower_character_view() {
-    // Check default (mortal)
-    let mut character_view = Character::default();
-    assert_eq!(character_view.willpower().rating(), 3);
-    assert_eq!(character_view.willpower().current(), 3);
-
-    // Check default (exalt)
-    let dawn = {
-        let mut builder = Dawn::builder();
-        [
-            AbilityName::Dodge,
-            AbilityName::Resistance,
-            AbilityName::Awareness,
-            AbilityName::War,
-        ]
-        .into_iter()
-        .for_each(|ability| {
-            builder.add_caste_ability(ability).unwrap();
-        });
-        builder
-            .set_supernal_ability(AbilityName::MartialArts)
-            .unwrap();
-        builder.build().unwrap()
-    };
-
-    let solar_traits = {
-        let mut builder = Solar::builder();
-        builder.set_dawn(dawn);
-        [
-            AbilityName::Presence,
-            AbilityName::Socialize,
-            AbilityName::Linguistics,
-            AbilityName::Medicine,
-            AbilityName::Performance,
-        ]
-        .into_iter()
-        .for_each(|ability| {
-            builder.add_favored_ability(ability).unwrap();
-        });
-        builder.build_view().unwrap().as_memo()
-    };
-
-    character_view.set_solar(&solar_traits).unwrap();
-    assert_eq!(character_view.willpower().rating(), 5);
-    assert_eq!(character_view.willpower().current(), 5);
-
-    // Check modifying current willpower
-    character_view.check_set_current_willpower(3).unwrap();
-    character_view.set_current_willpower(3).unwrap();
-    assert_eq!(character_view.willpower().rating(), 5);
-    assert_eq!(character_view.willpower().current(), 3);
-
-    // Check modifying willpower rating
-    character_view.check_set_willpower_rating(7).unwrap();
-    character_view.set_willpower_rating(7).unwrap();
-    assert_eq!(character_view.willpower().rating(), 7);
-    assert_eq!(character_view.willpower().current(), 7);
-}
 
 #[test]
 fn test_willpower_character_event_source() {
@@ -73,42 +16,22 @@ fn test_willpower_character_event_source() {
     assert_eq!(character_view.willpower().current(), 3);
 
     // Check default (exalt)
-    let dawn = {
-        let mut builder = Dawn::builder();
-        [
-            AbilityName::Dodge,
-            AbilityName::Resistance,
-            AbilityName::Awareness,
-            AbilityName::War,
-        ]
-        .into_iter()
-        .for_each(|ability| {
-            builder.add_caste_ability(ability).unwrap();
-        });
-        builder
-            .set_supernal_ability(AbilityName::MartialArts)
-            .unwrap();
-        builder.build().unwrap()
-    };
-
-    let solar_traits = {
-        let mut builder = Solar::builder();
-        builder.set_dawn(dawn);
-        [
-            AbilityName::Presence,
-            AbilityName::Socialize,
-            AbilityName::Linguistics,
-            AbilityName::Medicine,
-            AbilityName::Performance,
-        ]
-        .into_iter()
-        .for_each(|ability| {
-            builder.add_favored_ability(ability).unwrap();
-        });
-        builder.build_view().unwrap().as_memo()
-    };
-
-    let mutation = CharacterMutation::SetSolar(Box::new(solar_traits));
+    let new_solar = Solar::builder()
+        .dawn()
+        .caste_ability(DawnCasteAbility::Dodge)
+        .caste_ability(DawnCasteAbility::Resistance)
+        .caste_ability(DawnCasteAbility::Awareness)
+        .caste_ability(DawnCasteAbility::War)
+        .supernal_ability(DawnSupernalAbility::MartialArts)
+        .favored_ability(AbilityName::Presence)
+        .favored_ability(AbilityName::Socialize)
+        .favored_ability(AbilityName::Linguistics)
+        .favored_ability(AbilityName::Medicine)
+        .favored_ability(AbilityName::Performance)
+        .limit_trigger("Fleeing from a battle not yet lost".to_owned())
+        .build()
+        .unwrap();
+    let mutation = CharacterMutation::SetSolar(new_solar);
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert_eq!(character_view.willpower().rating(), 5);

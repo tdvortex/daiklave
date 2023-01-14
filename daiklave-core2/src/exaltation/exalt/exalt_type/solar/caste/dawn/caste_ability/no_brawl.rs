@@ -1,12 +1,10 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum DawnSupernalAbility {
+pub(crate) enum DawnCasteAbilityNoBrawl {
     Archery,
     Awareness,
-    Brawl,
     Dodge,
-    MartialArts,
     Melee,
     Resistance,
     Thrown,

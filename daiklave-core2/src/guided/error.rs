@@ -24,7 +24,7 @@ pub enum SolarAbilityError {
     CasteAndFavoredCount,
     /// Martial Arts cannot be either a Caste or Favored ability (implied by
     /// having Brawl as Caste/Favored).
-    #[error("MartialArts cannot be Caster or Favored")]
+    #[error("MartialArts cannot be Caste or Favored")]
     MartialArts,
 }
 

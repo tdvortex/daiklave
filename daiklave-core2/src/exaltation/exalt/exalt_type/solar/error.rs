@@ -1,5 +1,6 @@
 use thiserror::Error;
 
+/// An error specifically related to a Solar's trait layout.
 #[derive(Debug, Error)]
 pub enum SolarError {
     /// All Solars must have a Supernal ability
@@ -19,4 +20,7 @@ pub enum SolarError {
     /// Solars require a Limit Trigger.
     #[error("Limit Trigger is required")]
     LimitTriggerRequired,
+    /// Supernal abilities must also be Caste abilities
+    #[error("Supernal abilities must be Caste")]
+    SupernalIsCaste,
 }

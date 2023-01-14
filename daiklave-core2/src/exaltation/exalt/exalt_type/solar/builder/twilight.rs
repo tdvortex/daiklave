@@ -1,4 +1,16 @@
-use crate::{exaltation::exalt::{exalt_type::solar::{caste::{SolarCasteMemo, twilight::{TwilightAbility, TwilightMemo}}, SolarMemo, NewSolar, SolarError}, LimitMemo}, abilities::AbilityName};
+use crate::{
+    abilities::AbilityName,
+    exaltation::exalt::{
+        exalt_type::solar::{
+            caste::{
+                twilight::{TwilightAbility, TwilightMemo},
+                SolarCasteMemo,
+            },
+            NewSolar, SolarError, SolarMemo,
+        },
+        LimitMemo,
+    },
+};
 
 pub struct TwilightBuilder {
     pub(crate) caste_abilities: Vec<TwilightAbility>,
@@ -40,7 +52,8 @@ impl TwilightBuilder {
 
         self.favored_abilities.sort();
         self.favored_abilities.dedup();
-        self.favored_abilities.retain(|ability| ability != &AbilityName::MartialArts);
+        self.favored_abilities
+            .retain(|ability| ability != &AbilityName::MartialArts);
         if self.favored_abilities.len() != 5 {
             return Err(SolarError::FiveFavoredAbilities);
         }
@@ -53,24 +66,34 @@ impl TwilightBuilder {
 
         self.caste_abilities.retain(|caste| caste != &supernal);
 
-        let caste_not_supernal = self.caste_abilities.into_iter().enumerate().fold([TwilightAbility::Bureaucracy; 4], |mut arr, (i, ability)| {arr[i] = ability; arr});
-        let favored_abilities = self.favored_abilities.into_iter().enumerate().fold([AbilityName::Archery; 5], |mut arr, (i, ability)| {arr[i] = ability; arr});
+        let caste_not_supernal = self.caste_abilities.into_iter().enumerate().fold(
+            [TwilightAbility::Bureaucracy; 4],
+            |mut arr, (i, ability)| {
+                arr[i] = ability;
+                arr
+            },
+        );
+        let favored_abilities = self.favored_abilities.into_iter().enumerate().fold(
+            [AbilityName::Archery; 5],
+            |mut arr, (i, ability)| {
+                arr[i] = ability;
+                arr
+            },
+        );
 
         let limit_trigger = self.limit_trigger.ok_or(SolarError::LimitTriggerRequired)?;
 
         Ok(NewSolar(Box::new(SolarMemo {
-            caste: SolarCasteMemo::Twilight(
-                TwilightMemo {
-                    caste_not_supernal,
-                    supernal,
-                }
-            ),
+            caste: SolarCasteMemo::Twilight(TwilightMemo {
+                caste_not_supernal,
+                supernal,
+            }),
             favored_abilities,
             sorcery: None,
             limit: LimitMemo {
                 track: 0,
-                trigger: limit_trigger
-            }
+                trigger: limit_trigger,
+            },
         })))
     }
 }

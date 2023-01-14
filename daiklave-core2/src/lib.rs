@@ -12,7 +12,7 @@ use artifact::{Artifact, ArtifactId};
 use attributes::{AttributeName, SetAttributesError};
 use exaltation::exalt::{
     essence::{EssenceError, MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
-    exalt_type::solar::SolarMemo,
+    exalt_type::solar::NewSolar,
 };
 use health::{DamageLevel, WoundPenalty};
 use hearthstones::{hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId};
@@ -96,7 +96,7 @@ pub enum CharacterMutation {
     /// Set character to be mortal
     SetMortal,
     /// Set character to be Solar
-    SetSolar(Box<SolarMemo>),
+    SetSolar(NewSolar),
     /// Spend motes, starting with one pool
     SpendMotes(MotePoolName, u8),
     /// Commit motes into a persistent effect, starting with one pool

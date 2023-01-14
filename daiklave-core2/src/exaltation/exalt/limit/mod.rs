@@ -9,6 +9,9 @@ pub(crate) struct Limit<'source> {
 
 impl<'source> Limit<'source> {
     pub fn as_memo(&self) -> LimitMemo {
-        LimitMemo { track: self.track, trigger: self.trigger.to_owned()}
+        LimitMemo {
+            track: self.track,
+            trigger: self.trigger.to_owned(),
+        }
     }
 }

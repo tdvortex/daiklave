@@ -2,7 +2,7 @@ use daiklave_core2::{
     abilities::AbilityName,
     exaltation::exalt::{
         essence::{MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
-        exalt_type::solar::{caste::eclipse::Eclipse, Solar},
+        exalt_type::solar::{caste::eclipse::EclipseAbility, Solar},
     },
     unique_id::UniqueId,
     CharacterEventSource, CharacterMutation,
@@ -16,40 +16,22 @@ fn test_essence() {
     assert!(character_view.essence().is_none());
 
     // Exalts (including Solars) should have essence
-    let eclipse = {
-        let mut builder = Eclipse::builder();
-        [
-            AbilityName::Larceny,
-            AbilityName::Linguistics,
-            AbilityName::Sail,
-            AbilityName::Socialize,
-        ]
-        .into_iter()
-        .for_each(|ability| {
-            builder.add_caste_ability(ability).unwrap();
-        });
-        builder.set_supernal_ability(AbilityName::Presence).unwrap();
-        builder.build().unwrap()
-    };
-
-    let solar_traits = {
-        let mut builder = Solar::builder();
-        builder.set_eclipse(eclipse);
-        [
-            AbilityName::Archery,
-            AbilityName::Dodge,
-            AbilityName::Investigation,
-            AbilityName::Performance,
-            AbilityName::Ride,
-        ]
-        .into_iter()
-        .for_each(|ability| {
-            builder.add_favored_ability(ability).unwrap();
-        });
-        builder.build_view().unwrap().as_memo()
-    };
-
-    let mutation = CharacterMutation::SetSolar(Box::new(solar_traits));
+    let new_solar = Solar::builder()
+        .eclipse()
+        .caste_ability(EclipseAbility::Larceny)
+        .caste_ability(EclipseAbility::Linguistics)
+        .caste_ability(EclipseAbility::Sail)
+        .caste_ability(EclipseAbility::Socialize)
+        .supernal_ability(EclipseAbility::Presence)
+        .favored_ability(AbilityName::Archery)
+        .favored_ability(AbilityName::Dodge)
+        .favored_ability(AbilityName::Investigation)
+        .favored_ability(AbilityName::Performance)
+        .favored_ability(AbilityName::Ride)
+        .limit_trigger("Being underground or unable to move freely".to_owned())
+        .build()
+        .unwrap();
+    let mutation = CharacterMutation::SetSolar(new_solar);
     event_source.apply_mutation(mutation).unwrap();
     let character_view = event_source.as_character_view().unwrap();
     assert!(character_view.essence().is_some());

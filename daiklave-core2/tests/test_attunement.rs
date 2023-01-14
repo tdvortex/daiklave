@@ -5,7 +5,10 @@ use daiklave_core2::{
     book_reference::{Book, BookReference},
     exaltation::exalt::{
         essence::{MoteCommitmentId, MotePoolName},
-        exalt_type::solar::{caste::dawn::Dawn, Solar},
+        exalt_type::solar::{
+            caste::dawn::{DawnCasteAbility, DawnSupernalAbility},
+            Solar,
+        },
     },
     unique_id::UniqueId,
     weapons::weapon::{
@@ -123,43 +126,23 @@ fn test_attunement() {
         ))
         .is_err());
 
-    let dawn = {
-        let mut builder = Dawn::builder();
-        [
-            AbilityName::Dodge,
-            AbilityName::Resistance,
-            AbilityName::Awareness,
-            AbilityName::War,
-        ]
-        .into_iter()
-        .for_each(|ability| {
-            builder.add_caste_ability(ability).unwrap();
-        });
-        builder
-            .set_supernal_ability(AbilityName::MartialArts)
-            .unwrap();
-        builder.build().unwrap()
-    };
-
-    let solar_traits = {
-        let mut builder = Solar::builder();
-        builder.set_dawn(dawn);
-        [
-            AbilityName::Presence,
-            AbilityName::Socialize,
-            AbilityName::Linguistics,
-            AbilityName::Medicine,
-            AbilityName::Performance,
-        ]
-        .into_iter()
-        .for_each(|ability| {
-            builder.add_favored_ability(ability).unwrap();
-        });
-        builder.build_view().unwrap().as_memo()
-    };
-    event_source
-        .apply_mutation(CharacterMutation::SetSolar(Box::new(solar_traits)))
+    let new_solar = Solar::builder()
+        .dawn()
+        .caste_ability(DawnCasteAbility::Dodge)
+        .caste_ability(DawnCasteAbility::Resistance)
+        .caste_ability(DawnCasteAbility::Awareness)
+        .caste_ability(DawnCasteAbility::War)
+        .supernal_ability(DawnSupernalAbility::MartialArts)
+        .favored_ability(AbilityName::Presence)
+        .favored_ability(AbilityName::Socialize)
+        .favored_ability(AbilityName::Linguistics)
+        .favored_ability(AbilityName::Medicine)
+        .favored_ability(AbilityName::Performance)
+        .limit_trigger("Fleeing from a battle not yet lost".to_owned())
+        .build()
         .unwrap();
+    let mutation = CharacterMutation::SetSolar(new_solar);
+    event_source.apply_mutation(mutation).unwrap();
 
     // Can't attune to a missing artifact
     assert!(event_source

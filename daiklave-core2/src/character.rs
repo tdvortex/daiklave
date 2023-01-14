@@ -17,7 +17,7 @@ use crate::{
             essence::{
                 Essence, EssenceError, MoteCommitmentId, MotePoolName, OtherMoteCommitmentId,
             },
-            exalt_type::solar::{Solar, SolarMemo},
+            exalt_type::solar::{NewSolar, Solar},
         },
         Exaltation,
     },
@@ -527,8 +527,8 @@ impl<'view, 'source> Character<'source> {
 
     /// Checks if character can be turned into a Solar Exalted with given
     /// traits.
-    pub fn check_set_solar(&self, solar_traits: &SolarMemo) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_set_solar(solar_traits)
+    pub fn check_set_solar(&self, solar: &'source NewSolar) -> Result<(), CharacterMutationError> {
+        self.exaltation.check_set_solar(solar.0.as_ref())
     }
 
     /// Sets a character's Exaltation to be the given Solar exaltation. If the
@@ -537,34 +537,13 @@ impl<'view, 'source> Character<'source> {
     /// Exalt default).
     pub fn set_solar(
         &mut self,
-        solar_traits: &'source SolarMemo,
+        solar: &'source NewSolar,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_set_solar(solar_traits)?;
         if self.is_mortal() {
             let new_willpower_rating = self.willpower().rating() + 2;
             self.set_willpower_rating(new_willpower_rating)?;
         }
-        self.exaltation.set_solar(solar_traits)?;
-        Ok(self)
-    }
-
-    pub(crate) fn check_set_solar_view(
-        &self,
-        solar_view: &Solar,
-    ) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_set_solar_view(solar_view)
-    }
-
-    pub(crate) fn set_solar_view(
-        &mut self,
-        solar_view: Solar<'source>,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_set_solar_view(&solar_view)?;
-        if self.is_mortal() {
-            let new_willpower_rating = self.willpower().rating() + 2;
-            self.set_willpower_rating(new_willpower_rating)?;
-        }
-        self.exaltation.set_solar_view(solar_view)?;
+        self.exaltation.set_solar(solar.0.as_ref())?;
         Ok(self)
     }
 
