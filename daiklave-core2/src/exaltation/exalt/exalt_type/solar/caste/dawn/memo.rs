@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use super::{
-    dawn_caste_ability::DawnCasteAbility, dawn_supernal_ability::DawnSupernalAbility, Dawn,
+    caste_ability::DawnCasteAbility, supernal_ability::DawnSupernalAbility, Dawn,
 };
 
 /// An owned copy of Dawn Solar traits
@@ -23,6 +23,9 @@ impl<'source> DawnMemo {
     }
 
     pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(&'source self) -> Dawn {
-        Dawn::new(self.caste_not_supernal, self.supernal)
+        Dawn {
+            caste_not_supernal: self.caste_not_supernal,
+            supernal: self.supernal,
+        }
     }
 }

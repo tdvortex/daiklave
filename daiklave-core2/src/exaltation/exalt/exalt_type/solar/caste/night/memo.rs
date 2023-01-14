@@ -1,10 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use super::{night_ability::NightAbility, Night};
+use super::{ability::NightAbility, Night};
 
-/// An owned copy of Night Solar traits
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct NightMemo {
+pub(crate) struct NightMemo {
     caste_not_supernal: [NightAbility; 4],
     supernal: NightAbility,
 }
@@ -21,6 +20,9 @@ impl<'source> NightMemo {
     }
 
     pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(&'source self) -> Night {
-        Night::new(self.caste_not_supernal, self.supernal)
+        Night {
+            caste_not_supernal: self.caste_not_supernal,
+            supernal: self.supernal,
+        }
     }
 }

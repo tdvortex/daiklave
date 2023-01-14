@@ -1,34 +1,18 @@
-mod builder;
-mod zenith_ability;
-mod zenith_memo;
+mod ability;
+mod memo;
 
-pub(crate) use zenith_ability::ZenithAbility;
-pub use zenith_memo::ZenithMemo;
+pub use ability::ZenithAbility;
+pub(crate) use memo::ZenithMemo;
 
 use crate::abilities::AbilityName;
 
-use self::builder::ZenithBuilder;
-
-/// Caste traits for the Zenith Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Zenith {
-    caste_not_supernal: [ZenithAbility; 4],
-    supernal: ZenithAbility,
+pub(crate) struct Zenith {
+    pub caste_not_supernal: [ZenithAbility; 4],
+    pub supernal: ZenithAbility,
 }
 
 impl Zenith {
-    pub(crate) fn new(caste_not_supernal: [ZenithAbility; 4], supernal: ZenithAbility) -> Self {
-        Self {
-            caste_not_supernal,
-            supernal,
-        }
-    }
-
-    /// Builder struct for constructing Zenith traits
-    pub fn builder() -> ZenithBuilder {
-        ZenithBuilder::default()
-    }
-
     pub(crate) fn as_memo(&self) -> ZenithMemo {
         ZenithMemo::new(self.caste_not_supernal, self.supernal)
     }

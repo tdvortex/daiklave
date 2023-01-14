@@ -13,9 +13,9 @@ pub mod twilight;
 /// Zenith Caste, leaders and priests
 pub mod zenith;
 
-mod caste_memo;
+mod memo;
 
-pub(crate) use caste_memo::SolarCasteMemo;
+pub(crate) use memo::SolarCasteMemo;
 
 use crate::abilities::AbilityName;
 

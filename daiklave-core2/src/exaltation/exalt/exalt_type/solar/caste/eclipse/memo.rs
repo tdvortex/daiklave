@@ -21,6 +21,9 @@ impl<'source> EclipseMemo {
     }
 
     pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(&'source self) -> Eclipse {
-        Eclipse::new(self.caste_not_supernal, self.supernal)
+        Eclipse{
+            caste_not_supernal: self.caste_not_supernal, 
+            supernal: self.supernal,
+        }
     }
 }

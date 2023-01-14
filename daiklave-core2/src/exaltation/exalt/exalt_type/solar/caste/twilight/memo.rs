@@ -1,9 +1,8 @@
-use super::{twilight_ability::TwilightAbility, Twilight};
+use super::{ability::TwilightAbility, Twilight};
 use serde::{Deserialize, Serialize};
 
-/// An owned copy of Twilight Solar traits
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct TwilightMemo {
+pub(crate) struct TwilightMemo {
     caste_not_supernal: [TwilightAbility; 4],
     supernal: TwilightAbility,
 }
@@ -22,6 +21,9 @@ impl<'source> TwilightMemo {
     pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(
         &'source self,
     ) -> Twilight {
-        Twilight::new(self.caste_not_supernal, self.supernal)
+        Twilight {
+            caste_not_supernal: self.caste_not_supernal,
+            supernal: self.supernal,
+        }
     }
 }

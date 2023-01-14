@@ -3,11 +3,15 @@ pub mod caste;
 
 mod builder;
 mod builder_error;
-mod solar_memo;
+mod error;
+mod memo;
+mod new;
 mod sorcery;
 
-pub use solar_memo::SolarMemo;
-pub(crate) use sorcery::{SolarSorcererMemo, SolarSorcererView};
+pub use memo::SolarMemo;
+pub(crate) use sorcery::{SolarSorcererView, SolarSorcererMemo};
+pub use new::NewSolar;
+pub use error::SolarError;
 
 use crate::{
     abilities::AbilityName,
@@ -42,8 +46,10 @@ impl<'source> Solar<'source> {
     }
 
     /// Starts building a set of Solar traits
-    pub fn builder() -> SolarBuilder<'source> {
-        SolarBuilder::default()
+    pub fn builder() -> SolarBuilder {
+        SolarBuilder {
+            limit_trigger: None,
+        }
     }
 
     /// Converts a borrowed Solar object and clones it into an owned memo struct.

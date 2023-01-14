@@ -1,34 +1,18 @@
-mod builder;
-mod twilight_ability;
-mod twilight_memo;
+mod ability;
+mod memo;
 
-pub(crate) use twilight_ability::TwilightAbility;
-pub use twilight_memo::TwilightMemo;
+pub use ability::TwilightAbility;
+pub(crate)  use memo::TwilightMemo;
 
 use crate::abilities::AbilityName;
 
-use self::builder::TwilightBuilder;
-
-/// Caste traits for the Twilight Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Twilight {
+pub(crate) struct Twilight {
     caste_not_supernal: [TwilightAbility; 4],
     supernal: TwilightAbility,
 }
 
 impl Twilight {
-    pub(crate) fn new(caste_not_supernal: [TwilightAbility; 4], supernal: TwilightAbility) -> Self {
-        Self {
-            caste_not_supernal,
-            supernal,
-        }
-    }
-
-    /// Builder struct for constructing Twilight traits
-    pub fn builder() -> TwilightBuilder {
-        TwilightBuilder::default()
-    }
-
     pub(crate) fn as_memo(&self) -> TwilightMemo {
         TwilightMemo::new(self.caste_not_supernal, self.supernal)
     }

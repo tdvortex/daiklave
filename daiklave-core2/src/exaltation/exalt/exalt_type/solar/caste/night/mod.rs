@@ -1,34 +1,19 @@
-mod builder;
-mod night_ability;
-mod night_memo;
+mod ability;
+mod memo;
 
-pub(crate) use night_ability::NightAbility;
-pub use night_memo::NightMemo;
+pub use ability::NightAbility;
+pub(crate) use memo::NightMemo;
 
 use crate::abilities::AbilityName;
 
-use self::builder::NightBuilder;
-
 /// Caste traits for the Night Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Night {
-    caste_not_supernal: [NightAbility; 4],
-    supernal: NightAbility,
+pub(crate) struct Night {
+    pub caste_not_supernal: [NightAbility; 4],
+    pub supernal: NightAbility,
 }
 
 impl Night {
-    pub(crate) fn new(caste_not_supernal: [NightAbility; 4], supernal: NightAbility) -> Self {
-        Self {
-            caste_not_supernal,
-            supernal,
-        }
-    }
-
-    /// Builder struct for constructing Night traits
-    pub fn builder() -> NightBuilder {
-        NightBuilder::default()
-    }
-
     pub(crate) fn as_memo(&self) -> NightMemo {
         NightMemo::new(self.caste_not_supernal, self.supernal)
     }

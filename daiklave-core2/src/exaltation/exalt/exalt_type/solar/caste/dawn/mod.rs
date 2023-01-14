@@ -1,39 +1,21 @@
-mod builder;
-mod dawn_caste_ability;
-mod dawn_memo;
-mod dawn_supernal_ability;
+mod caste_ability;
+mod memo;
+mod supernal_ability;
 
-pub(crate) use dawn_caste_ability::DawnCasteAbility;
-pub use dawn_memo::DawnMemo;
-pub(crate) use dawn_supernal_ability::DawnSupernalAbility;
+pub use caste_ability::DawnCasteAbility;
+pub(crate) use memo::DawnMemo;
+pub use supernal_ability::DawnSupernalAbility;
 
 use crate::abilities::AbilityName;
 
-use self::builder::DawnBuilder;
-
 /// Caste traits for the Dawn Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Dawn {
-    caste_not_supernal: [DawnCasteAbility; 4],
-    supernal: DawnSupernalAbility,
+pub(crate) struct Dawn {
+    pub caste_not_supernal: [DawnCasteAbility; 4],
+    pub supernal: DawnSupernalAbility,
 }
 
 impl Dawn {
-    pub(crate) fn new(
-        caste_not_supernal: [DawnCasteAbility; 4],
-        supernal: DawnSupernalAbility,
-    ) -> Self {
-        Self {
-            caste_not_supernal,
-            supernal,
-        }
-    }
-
-    /// Builder struct for constructing Dawn traits
-    pub fn builder() -> DawnBuilder {
-        DawnBuilder::default()
-    }
-
     pub(crate) fn as_memo(&self) -> DawnMemo {
         DawnMemo::new(self.caste_not_supernal, self.supernal)
     }

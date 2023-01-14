@@ -1,34 +1,19 @@
-mod builder;
-mod eclipse_ability;
-mod eclipse_memo;
+mod ability;
+mod memo;
 
-pub(crate) use eclipse_ability::EclipseAbility;
-pub use eclipse_memo::EclipseMemo;
+pub use ability::EclipseAbility;
+pub(crate) use memo::EclipseMemo;
 
 use crate::abilities::AbilityName;
 
-use self::builder::EclipseBuilder;
-
 /// Caste traits for the Eclipse Caste Solar.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Eclipse {
-    caste_not_supernal: [EclipseAbility; 4],
-    supernal: EclipseAbility,
+pub(crate) struct Eclipse {
+    pub caste_not_supernal: [EclipseAbility; 4],
+    pub supernal: EclipseAbility,
 }
 
 impl Eclipse {
-    pub(crate) fn new(caste_not_supernal: [EclipseAbility; 4], supernal: EclipseAbility) -> Self {
-        Self {
-            caste_not_supernal,
-            supernal,
-        }
-    }
-
-    /// Builder struct for constructing Eclipse traits
-    pub fn builder() -> EclipseBuilder {
-        EclipseBuilder::default()
-    }
-
     pub(crate) fn as_memo(&self) -> EclipseMemo {
         EclipseMemo::new(self.caste_not_supernal, self.supernal)
     }
