@@ -1,6 +1,8 @@
+mod other;
+pub use other::OtherMoteCommitmentId;
 use serde::{Deserialize, Serialize};
 
-use crate::{artifact::ArtifactId, unique_id::UniqueId};
+use crate::artifact::ArtifactId;
 
 /// A unique identifier for a mote commitment effect.
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, Serialize, Deserialize)]
@@ -10,7 +12,3 @@ pub enum MoteCommitmentId {
     /// Other effects may also require mote commitments
     Other(OtherMoteCommitmentId),
 }
-
-/// A unique identified for a mote commitment that is not an attuned artifact.
-#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, Serialize, Deserialize)]
-pub struct OtherMoteCommitmentId(pub UniqueId);

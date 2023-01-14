@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::martial_arts::MartialArtsStyleId;
 
 use super::{
-    armor::ExaltArmorMemo, essence::EssenceMemo, exalt_type::ExaltTypeMemo,
+    armor::ExaltArmorMemo, essence::EssenceStateMemo, exalt_type::ExaltTypeMemo,
     martial_arts::ExaltMartialArtistMemo, weapons::ExaltWeaponsMemo, wonders::ExaltWondersMemo,
     Exalt,
 };
@@ -13,7 +13,7 @@ use super::{
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct ExaltMemo {
     armor: ExaltArmorMemo,
-    essence: EssenceMemo,
+    essence: EssenceStateMemo,
     martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistMemo>,
     exalt_type: ExaltTypeMemo,
     weapons: ExaltWeaponsMemo,
@@ -23,7 +23,7 @@ pub(crate) struct ExaltMemo {
 impl<'source> ExaltMemo {
     pub(in crate::exaltation::exalt) fn new(
         armor: ExaltArmorMemo,
-        essence: EssenceMemo,
+        essence: EssenceStateMemo,
         martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistMemo>,
         exalt_type: ExaltTypeMemo,
         weapons: ExaltWeaponsMemo,

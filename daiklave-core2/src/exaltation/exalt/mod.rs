@@ -6,14 +6,14 @@ pub mod essence;
 pub mod exalt_type;
 
 mod armor;
-mod exalt_memo;
 pub(crate) mod martial_arts;
+mod memo;
 mod sorcery;
 mod weapons;
 mod wonders;
 
 pub(crate) use armor::ExaltArmor;
-pub(crate) use exalt_memo::ExaltMemo;
+pub(crate) use memo::ExaltMemo;
 pub(crate) use sorcery::ExaltSorcery;
 pub(crate) use weapons::{ExaltEquippedWeapons, ExaltHands, ExaltUnequippedWeapons, ExaltWeapons};
 pub(crate) use wonders::ExaltWonders;
@@ -60,7 +60,7 @@ use crate::{
 
 use self::{
     essence::{
-        Essence, EssenceError, MoteCommitment, MoteCommitmentId, MotePoolName,
+        Essence, EssenceError, EssenceState, MoteCommitment, MoteCommitmentId, MotePoolName,
         OtherMoteCommitmentId,
     },
     exalt_type::{solar::Solar, ExaltType},
@@ -70,7 +70,7 @@ use self::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Exalt<'source> {
     armor: ExaltArmor<'source>,
-    essence: Essence<'source>,
+    essence: EssenceState<'source>,
     martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
     exalt_type: ExaltType<'source>,
     weapons: ExaltWeapons<'source>,
@@ -80,7 +80,7 @@ pub(crate) struct Exalt<'source> {
 impl<'view, 'source> Exalt<'source> {
     pub fn new(
         armor: ExaltArmor<'source>,
-        essence: Essence<'source>,
+        essence: EssenceState<'source>,
         martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
         exalt_type: ExaltType<'source>,
         weapons: ExaltWeapons<'source>,
@@ -114,12 +114,8 @@ impl<'view, 'source> Exalt<'source> {
         &self.exalt_type
     }
 
-    pub fn essence(&self) -> &Essence {
-        &self.essence
-    }
-
-    pub fn essence_mut(&mut self) -> &mut Essence<'source> {
-        &mut self.essence
+    pub fn essence(&'view self) -> Essence<'view, 'source> {
+        Essence(self)
     }
 
     pub fn martial_arts_styles(&self) -> &HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>> {
@@ -190,14 +186,11 @@ impl<'view, 'source> Exalt<'source> {
             (peripheral_spent, personal_spent)
         };
 
-        self.essence_mut()
-            .motes_mut()
+        self.essence
+            .motes
             .peripheral_mut()
             .spend(peripheral_spent)?;
-        self.essence_mut()
-            .motes_mut()
-            .personal_mut()
-            .spend(personal_spent)?;
+        self.essence.motes.personal_mut().spend(personal_spent)?;
         Ok(self)
     }
 
@@ -255,27 +248,22 @@ impl<'view, 'source> Exalt<'source> {
             ));
         }
 
-        self.essence_mut()
-            .motes_mut()
+        self.essence
+            .motes
             .peripheral_mut()
             .commit(peripheral_committed)?;
 
-        if let Err(e) = self
-            .essence_mut()
-            .motes_mut()
-            .personal_mut()
-            .commit(personal_committed)
-        {
-            self.essence_mut()
-                .motes_mut()
+        if let Err(e) = self.essence.motes.personal_mut().commit(personal_committed) {
+            self.essence
+                .motes
                 .peripheral_mut()
                 .uncommit(peripheral_committed)?;
             return Err(e);
         }
 
         if let Entry::Vacant(e) = self
-            .essence_mut()
-            .motes_mut()
+            .essence
+            .motes
             .commitments_mut()
             .entry(MoteCommitmentId::Other(*id))
         {
@@ -301,12 +289,12 @@ impl<'view, 'source> Exalt<'source> {
             .spent()
             .min(amount - peripheral_recovered);
 
-        self.essence_mut()
-            .motes_mut()
+        self.essence
+            .motes
             .peripheral_mut()
             .recover(peripheral_recovered)?;
-        self.essence_mut()
-            .motes_mut()
+        self.essence
+            .motes
             .personal_mut()
             .recover(personal_recovered)?;
         Ok(self)
@@ -316,10 +304,44 @@ impl<'view, 'source> Exalt<'source> {
         &self,
         id: &MoteCommitmentId,
     ) -> Result<(), CharacterMutationError> {
-        if !self.essence().motes().commitments().contains_key(id) {
-            Err(CharacterMutationError::EssenceError(EssenceError::NotFound))
-        } else {
+        if match id {
+            MoteCommitmentId::AttunedArtifact(artifact_id) => match artifact_id {
+                ArtifactId::Weapon(artifact_weapon_id) => self
+                    .weapons
+                    .iter()
+                    .find_map(|(weapon_id, equipped)| {
+                        if weapon_id == WeaponId::Artifact(*artifact_weapon_id) {
+                            self.weapons.get_weapon(weapon_id, equipped)
+                        } else {
+                            None
+                        }
+                    })
+                    .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
+                    .is_attuned(),
+                ArtifactId::Armor(artifact_armor_id) => self
+                    .armor
+                    .get(ArmorId::Artifact(*artifact_armor_id))
+                    .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?
+                    .is_attuned(),
+                ArtifactId::Wonder(wonder_id) => self
+                    .wonders
+                    .0
+                    .get(&wonder_id)
+                    .ok_or(CharacterMutationError::ArtifactError(
+                        ArtifactError::NotFound,
+                    ))?
+                    .1
+                    .is_some(),
+            },
+            MoteCommitmentId::Other(other_id) => self
+                .essence
+                .motes
+                .commitments()
+                .contains_key(&MoteCommitmentId::Other(*other_id)),
+        } {
             Ok(())
+        } else {
+            Err(CharacterMutationError::EssenceError(EssenceError::NotFound))
         }
     }
 
@@ -328,18 +350,18 @@ impl<'view, 'source> Exalt<'source> {
         id: &MoteCommitmentId,
     ) -> Result<&mut Self, CharacterMutationError> {
         let commitment = self
-            .essence_mut()
-            .motes_mut()
+            .essence
+            .motes
             .commitments_mut()
             .remove(id)
             .ok_or(CharacterMutationError::EssenceError(EssenceError::NotFound))?;
-        self.essence_mut()
-            .motes_mut()
+        self.essence
+            .motes
             .peripheral_mut()
             .uncommit(commitment.peripheral)
             .unwrap();
-        self.essence_mut()
-            .motes_mut()
+        self.essence
+            .motes
             .personal_mut()
             .uncommit(commitment.personal)
             .unwrap();
@@ -372,52 +394,52 @@ impl<'view, 'source> Exalt<'source> {
         }
 
         let spent_peripheral = self.essence().motes().peripheral().spent();
-        self.essence_mut()
-            .motes_mut()
+        self.essence
+            .motes
             .peripheral_mut()
             .recover(spent_peripheral)
             .unwrap();
         let available_peripheral = self.essence().motes().peripheral().available();
         if available_peripheral < new_peripheral {
-            self.essence_mut()
-                .motes_mut()
+            self.essence
+                .motes
                 .peripheral_mut()
                 .uncommit(new_peripheral - available_peripheral)
                 .unwrap()
                 .recover(new_peripheral - available_peripheral)
                 .unwrap();
         } else {
-            self.essence_mut()
-                .motes_mut()
+            self.essence
+                .motes
                 .peripheral_mut()
                 .commit(available_peripheral - new_peripheral)
                 .unwrap();
         }
 
         let spent_personal = self.essence().motes().personal().spent();
-        self.essence_mut()
-            .motes_mut()
+        self.essence
+            .motes
             .personal_mut()
             .recover(spent_personal)
             .unwrap();
         let available_personal = self.essence().motes().personal().available();
         if available_personal < new_personal {
-            self.essence_mut()
-                .motes_mut()
+            self.essence
+                .motes
                 .personal_mut()
                 .uncommit(new_personal - available_personal)
                 .unwrap()
                 .recover(new_personal - available_personal)
                 .unwrap();
         } else {
-            self.essence_mut()
-                .motes_mut()
+            self.essence
+                .motes
                 .peripheral_mut()
                 .commit(available_personal - new_personal)
                 .unwrap();
         }
 
-        *self.essence_mut().rating_mut() = rating;
+        self.essence.rating = rating;
 
         Ok(self)
     }
@@ -621,14 +643,8 @@ impl<'view, 'source> Exalt<'source> {
         {
             if let Some(personal) = attunement {
                 let peripheral = 5 - (*personal).min(5);
-                self.essence
-                    .motes_mut()
-                    .peripheral_mut()
-                    .uncommit(peripheral)?;
-                self.essence
-                    .motes_mut()
-                    .personal_mut()
-                    .uncommit(*personal)?;
+                self.essence.motes.peripheral_mut().uncommit(peripheral)?;
+                self.essence.motes.personal_mut().uncommit(*personal)?;
             }
 
             self.weapons.unequipped.artifact.remove(&artifact_weapon_id);
@@ -644,14 +660,8 @@ impl<'view, 'source> Exalt<'source> {
         {
             if let Some(personal) = attunement {
                 let peripheral = 5 - (*personal).min(5);
-                self.essence
-                    .motes_mut()
-                    .peripheral_mut()
-                    .uncommit(peripheral)?;
-                self.essence
-                    .motes_mut()
-                    .personal_mut()
-                    .uncommit(*personal)?;
+                self.essence.motes.peripheral_mut().uncommit(peripheral)?;
+                self.essence.motes.personal_mut().uncommit(*personal)?;
             }
 
             self.weapons
@@ -883,19 +893,14 @@ impl<'view, 'source> Exalt<'source> {
             ));
         }
 
-        self.essence_mut()
-            .motes_mut()
+        self.essence
+            .motes
             .peripheral_mut()
             .commit(peripheral_committed)?;
 
-        if let Err(e) = self
-            .essence_mut()
-            .motes_mut()
-            .personal_mut()
-            .commit(personal_committed)
-        {
-            self.essence_mut()
-                .motes_mut()
+        if let Err(e) = self.essence.motes.personal_mut().commit(personal_committed) {
+            self.essence
+                .motes
                 .peripheral_mut()
                 .uncommit(peripheral_committed)?;
             return Err(e);
@@ -917,12 +922,12 @@ impl<'view, 'source> Exalt<'source> {
         };
 
         if let Some(e) = outcome {
-            self.essence_mut()
-                .motes_mut()
+            self.essence
+                .motes
                 .peripheral_mut()
                 .uncommit(peripheral_committed)?;
-            self.essence_mut()
-                .motes_mut()
+            self.essence
+                .motes
                 .personal_mut()
                 .uncommit(personal_committed)?;
             Err(e)

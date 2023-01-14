@@ -1,19 +1,23 @@
+mod memo;
+
 use std::collections::HashMap;
 
-use super::{
-    mote_commitment::MoteCommitment, mote_pool::MotePool, motes_memo::MotesMemo, MoteCommitmentId,
+use crate::exaltation::exalt::essence::{
+    mote_commitment::{MoteCommitment, MoteCommitmentId},
+    mote_pool::MotePool,
 };
 
-/// The current state of an exalt's mote pools and commitments.
+pub(crate) use self::memo::MotesStateMemo;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Motes<'source> {
-    peripheral: MotePool,
-    personal: MotePool,
-    commitments: HashMap<MoteCommitmentId, MoteCommitment<'source>>,
+pub struct MotesState<'source> {
+    pub peripheral: MotePool,
+    pub personal: MotePool,
+    pub commitments: HashMap<MoteCommitmentId, MoteCommitment<'source>>,
 }
 
-impl<'source> Motes<'source> {
-    pub(in crate::exaltation::exalt::essence) fn new(
+impl<'source> MotesState<'source> {
+    pub(crate) fn new(
         peripheral: MotePool,
         personal: MotePool,
         commitments: HashMap<MoteCommitmentId, MoteCommitment<'source>>,
@@ -25,8 +29,8 @@ impl<'source> Motes<'source> {
         }
     }
 
-    pub(crate) fn as_memo(&self) -> MotesMemo {
-        MotesMemo::new(
+    pub(crate) fn as_memo(&self) -> MotesStateMemo {
+        MotesStateMemo::new(
             self.peripheral,
             self.personal,
             self.commitments
@@ -52,11 +56,6 @@ impl<'source> Motes<'source> {
 
     pub(crate) fn personal_mut(&mut self) -> &mut MotePool {
         &mut self.personal
-    }
-
-    /// The exalt's current mote commitments.
-    pub fn committed(&self) -> impl Iterator<Item = (MoteCommitmentId, MoteCommitment)> {
-        self.commitments.iter().map(|(k, v)| (*k, *v))
     }
 
     pub(crate) fn commitments(&self) -> &HashMap<MoteCommitmentId, MoteCommitment<'source>> {

@@ -1,62 +1,36 @@
 mod error;
-mod essence_memo;
 mod mote_commitment;
-mod mote_commitment_id;
-mod mote_commitment_memo;
 mod mote_pool;
-mod mote_pool_name;
 mod motes;
-mod motes_memo;
-
-use std::collections::HashMap;
+mod state;
+pub(crate) use state::{EssenceState, EssenceStateMemo};
 
 pub(crate) use error::EssenceError;
-pub(crate) use essence_memo::EssenceMemo;
-pub use mote_commitment::MoteCommitment;
-pub use mote_commitment_id::{MoteCommitmentId, OtherMoteCommitmentId};
-pub(crate) use mote_commitment_memo::MoteCommitmentMemo;
-pub use mote_pool::MotePool;
-pub use mote_pool_name::MotePoolName;
 pub use motes::Motes;
+pub(crate) use motes::MotesState;
+
+use super::Exalt;
+pub use mote_commitment::{MoteCommitment, MoteCommitmentId, OtherMoteCommitmentId};
+pub(crate) use mote_pool::MotePool;
+pub use mote_pool::MotePoolName;
 
 /// An Exalt's Essence rating and mote pools.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Essence<'source> {
-    rating: u8,
-    motes: Motes<'source>,
-}
+pub struct Essence<'view, 'source>(pub(crate) &'view Exalt<'source>);
 
-impl<'source> Essence<'source> {
-    pub(in crate::exaltation::exalt) fn as_memo(&self) -> EssenceMemo {
-        EssenceMemo::new(self.rating, self.motes.as_memo())
-    }
-
+impl<'view, 'source> Essence<'view, 'source> {
     /// The Exalt's current Essence rating.
     pub fn rating(&self) -> u8 {
-        self.rating
-    }
-
-    pub(in crate::exaltation::exalt) fn rating_mut(&mut self) -> &mut u8 {
-        &mut self.rating
+        self.0.essence.rating
     }
 
     /// The current state of the Exalt's mote pools.
-    pub fn motes(&self) -> &Motes {
-        &self.motes
-    }
-
-    pub(in crate::exaltation::exalt) fn motes_mut(&mut self) -> &mut Motes<'source> {
-        &mut self.motes
-    }
-
-    pub(in crate::exaltation) fn new_solar(rating: u8) -> Self {
-        Self {
-            rating,
-            motes: Motes::new(
-                MotePool::new(rating * 7 + 26, 0),
-                MotePool::new(rating * 3 + 10, 0),
-                HashMap::new(),
-            ),
+    pub fn motes(&self) -> Motes<'view, 'source> {
+        Motes {
+            state: &self.0.essence.motes,
+            weapons: &self.0.weapons,
+            armor: &self.0.armor,
+            wonders: &self.0.wonders,
         }
     }
 }

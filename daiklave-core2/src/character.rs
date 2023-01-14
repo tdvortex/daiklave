@@ -426,7 +426,7 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// None for mortals.
-    pub fn essence(&self) -> Option<&Essence> {
+    pub fn essence(&'view self) -> Option<Essence<'view, 'source>> {
         self.exaltation.essence()
     }
 

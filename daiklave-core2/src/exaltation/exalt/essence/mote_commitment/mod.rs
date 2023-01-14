@@ -1,4 +1,8 @@
-use super::MoteCommitmentMemo;
+mod id;
+mod memo;
+
+pub use id::{MoteCommitmentId, OtherMoteCommitmentId};
+pub(crate) use memo::MoteCommitmentMemo;
 
 /// A single committed mote effect.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

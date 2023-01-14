@@ -38,7 +38,10 @@ use crate::{
 
 use self::{
     exalt::{
-        essence::{Essence, EssenceError, MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
+        essence::{
+            Essence, EssenceError, EssenceState, MoteCommitmentId, MotePool, MotePoolName,
+            MotesState, OtherMoteCommitmentId,
+        },
         exalt_type::{
             solar::{Solar, SolarMemo, SolarSorcererView},
             ExaltType,
@@ -386,7 +389,14 @@ impl<'view, 'source> Exaltation<'source> {
                 // Preserve martial arts styles, with empty Charms set
                 *self = Self::Exalt(Box::new(Exalt::new(
                     std::mem::take(&mut mortal.armor).into(),
-                    Essence::new_solar(1),
+                    EssenceState {
+                        rating: 1,
+                        motes: MotesState {
+                            peripheral: MotePool::new(33, 0),
+                            personal: MotePool::new(13, 0),
+                            commitments: Default::default(),
+                        },
+                    },
                     std::mem::take(&mut mortal.martial_arts_styles)
                         .into_iter()
                         .map(|(id, mortal_artist)| (id, mortal_artist.into()))
@@ -397,11 +407,29 @@ impl<'view, 'source> Exaltation<'source> {
                 )))
             }
             Exaltation::Exalt(exalt) => {
-                // Preserve essence rating
+                // Preserve essence rating, but uncommit all motes and unattune all artifacts
+                let to_uncommit = exalt
+                    .essence()
+                    .motes()
+                    .committed()
+                    .map(|(id, _)| id)
+                    .collect::<Vec<MoteCommitmentId>>();
+                for commit_id in to_uncommit.into_iter() {
+                    exalt.uncommit_motes(&commit_id)?;
+                }
+
                 // Preserve martial arts styles (including charms)
+
                 *self = Self::Exalt(Box::new(Exalt::new(
                     std::mem::take(exalt.armor_mut()),
-                    Essence::new_solar(exalt.essence().rating()),
+                    EssenceState {
+                        rating: exalt.essence().rating(),
+                        motes: MotesState {
+                            peripheral: MotePool::new(26 * exalt.essence().rating() * 7, 0),
+                            personal: MotePool::new(10 + exalt.essence().rating() * 3, 0),
+                            commitments: Default::default(),
+                        },
+                    },
                     std::mem::take(exalt.martial_arts_styles_mut()),
                     ExaltType::Solar(solar),
                     std::mem::take(exalt.weapons_mut()),
@@ -413,10 +441,10 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub fn essence(&self) -> Option<&Essence> {
+    pub fn essence(&'view self) -> Option<Essence<'view, 'source>> {
         match self {
             Exaltation::Mortal(_) => None,
-            Exaltation::Exalt(exalt) => Some(exalt.essence()),
+            Exaltation::Exalt(exalt) => Some(Essence(exalt.as_ref())),
         }
     }
 

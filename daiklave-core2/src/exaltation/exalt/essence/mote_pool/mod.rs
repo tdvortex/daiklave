@@ -1,3 +1,5 @@
+mod name;
+pub use name::MotePoolName;
 use serde::{Deserialize, Serialize};
 
 use crate::CharacterMutationError;
@@ -12,7 +14,7 @@ pub struct MotePool {
 }
 
 impl MotePool {
-    pub(in crate::exaltation::exalt::essence) fn new(available: u8, spent: u8) -> Self {
+    pub(crate) fn new(available: u8, spent: u8) -> Self {
         Self { available, spent }
     }
 
