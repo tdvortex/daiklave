@@ -1,35 +1,24 @@
 use serde::{Deserialize, Serialize};
 
-use crate::abilities::AbilityName;
+use crate::{abilities::AbilityName, exaltation::exalt::LimitMemo};
 
 use super::{caste::SolarCasteMemo, Solar, SolarSorcererMemo};
 
-/// An owned copy of all Solar traits.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct SolarMemo {
-    caste: SolarCasteMemo,
-    favored_abilities: [AbilityName; 5],
-    sorcery: Option<SolarSorcererMemo>,
+pub(crate) struct SolarMemo {
+    pub caste: SolarCasteMemo,
+    pub favored_abilities: [AbilityName; 5],
+    pub sorcery: Option<SolarSorcererMemo>,
+    pub limit: LimitMemo,
 }
 
 impl<'source> SolarMemo {
-    pub(in crate::exaltation::exalt::exalt_type::solar) fn new(
-        caste: SolarCasteMemo,
-        favored_abilities: [AbilityName; 5],
-        sorcery: Option<SolarSorcererMemo>,
-    ) -> Self {
-        Self {
-            caste,
-            favored_abilities,
-            sorcery,
-        }
-    }
-
     pub(in crate::exaltation) fn as_ref(&'source self) -> Solar<'source> {
-        Solar::new(
-            self.caste.as_ref(),
-            self.favored_abilities,
-            self.sorcery.as_ref().map(|sorcery| sorcery.as_ref()),
-        )
+        Solar {
+            caste: self.caste.as_ref(),
+            favored_abilities: self.favored_abilities,
+            sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_ref()),
+            limit: self.limit.as_ref(),
+        }
     }
 }

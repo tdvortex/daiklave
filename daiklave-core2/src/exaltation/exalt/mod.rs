@@ -6,6 +6,7 @@ pub mod essence;
 pub mod exalt_type;
 
 mod armor;
+mod limit;
 pub(crate) mod martial_arts;
 mod memo;
 mod sorcery;
@@ -13,6 +14,7 @@ mod weapons;
 mod wonders;
 
 pub(crate) use armor::ExaltArmor;
+pub(crate) use limit::{Limit, LimitMemo};
 pub(crate) use memo::ExaltMemo;
 pub(crate) use sorcery::ExaltSorcery;
 pub(crate) use weapons::{ExaltEquippedWeapons, ExaltHands, ExaltUnequippedWeapons, ExaltWeapons};

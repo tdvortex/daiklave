@@ -1,4 +1,4 @@
-use crate::{exaltation::exalt::exalt_type::solar::{caste::{SolarCasteMemo, twilight::{TwilightAbility, TwilightMemo}}, SolarMemo, NewSolar, SolarError}, abilities::AbilityName};
+use crate::{exaltation::exalt::{exalt_type::solar::{caste::{SolarCasteMemo, twilight::{TwilightAbility, TwilightMemo}}, SolarMemo, NewSolar, SolarError}, LimitMemo}, abilities::AbilityName};
 
 pub struct TwilightBuilder {
     pub(crate) caste_abilities: Vec<TwilightAbility>,
@@ -67,6 +67,10 @@ impl TwilightBuilder {
             ),
             favored_abilities,
             sorcery: None,
+            limit: LimitMemo {
+                track: 0,
+                trigger: limit_trigger
+            }
         })))
     }
 }

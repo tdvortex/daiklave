@@ -8,7 +8,7 @@ mod memo;
 mod new;
 mod sorcery;
 
-pub use memo::SolarMemo;
+pub(crate) use memo::SolarMemo;
 pub(crate) use sorcery::{SolarSorcererView, SolarSorcererMemo};
 pub use new::NewSolar;
 pub use error::SolarError;
@@ -19,7 +19,7 @@ use crate::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
         SorceryArchetype, SorceryArchetypeId, SorceryError, SpellId, TerrestrialSpell,
     },
-    CharacterMutationError,
+    CharacterMutationError, exaltation::exalt::Limit,
 };
 
 use self::{builder::SolarBuilder, caste::SolarCaste};
@@ -30,35 +30,24 @@ pub struct Solar<'source> {
     caste: SolarCaste,
     favored_abilities: [AbilityName; 5],
     sorcery: Option<SolarSorcererView<'source>>,
+    limit: Limit<'source>,
 }
 
 impl<'source> Solar<'source> {
-    pub(crate) fn new(
-        caste: SolarCaste,
-        favored_abilities: [AbilityName; 5],
-        sorcery: Option<SolarSorcererView<'source>>,
-    ) -> Self {
-        Self {
-            caste,
-            favored_abilities,
-            sorcery,
-        }
-    }
-
-    /// Starts building a set of Solar traits
+   /// Starts building a set of Solar traits
     pub fn builder() -> SolarBuilder {
         SolarBuilder {
             limit_trigger: None,
         }
     }
 
-    /// Converts a borrowed Solar object and clones it into an owned memo struct.
-    pub fn as_memo(&self) -> SolarMemo {
-        SolarMemo::new(
-            self.caste.as_memo(),
-            self.favored_abilities,
-            self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
-        )
+    pub(crate) fn as_memo(&self) -> SolarMemo {
+        SolarMemo {
+            caste: self.caste.as_memo(),
+            favored_abilities: self.favored_abilities,
+            sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
+            limit: self.limit.as_memo(),
+        }
     }
 
     /// Returns True if the ability is a caste ability for the charcter. Note

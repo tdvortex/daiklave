@@ -1,4 +1,4 @@
-use crate::{exaltation::exalt::exalt_type::solar::{caste::{SolarCasteMemo, zenith::{ZenithAbility, ZenithMemo}}, SolarMemo, NewSolar, SolarError}, abilities::AbilityName};
+use crate::{exaltation::exalt::{exalt_type::solar::{caste::{SolarCasteMemo, zenith::{ZenithAbility, ZenithMemo}}, SolarMemo, NewSolar, SolarError}, LimitMemo}, abilities::AbilityName};
 
 pub struct ZenithBuilder {
     pub(crate) caste_abilities: Vec<ZenithAbility>,
@@ -67,6 +67,10 @@ impl ZenithBuilder {
             ),
             favored_abilities,
             sorcery: None,
+            limit: LimitMemo {
+                track: 0,
+                trigger: limit_trigger
+            }
         })))
     }
 }

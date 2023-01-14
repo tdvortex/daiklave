@@ -222,7 +222,7 @@ impl<'source> GuidedState<'source> {
 
     /// Returns a new owned Solar object for the previously specified Caste,
     /// Supernal, and Favored abilities.
-    pub fn solar_traits(&self) -> Result<Solar<'source>, GuidedError> {
+    pub(crate) fn solar_traits(&self) -> Result<Solar<'source>, GuidedError> {
         Ok(match self.exaltation_choice {
             None => return Err(GuidedError::StageOrderError),
             Some(ExaltationChoice::Dawn) => {

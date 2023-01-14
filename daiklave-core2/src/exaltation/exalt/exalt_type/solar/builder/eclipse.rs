@@ -1,4 +1,4 @@
-use crate::{exaltation::exalt::exalt_type::solar::{caste::{SolarCasteMemo, eclipse::{EclipseAbility, EclipseMemo}}, SolarMemo, NewSolar, SolarError}, abilities::AbilityName};
+use crate::{exaltation::exalt::{exalt_type::solar::{caste::{SolarCasteMemo, eclipse::{EclipseAbility, EclipseMemo}}, SolarMemo, NewSolar, SolarError}, LimitMemo}, abilities::AbilityName};
 
 pub struct EclipseBuilder {
     pub(crate) caste_abilities: Vec<EclipseAbility>,
@@ -67,6 +67,10 @@ impl EclipseBuilder {
             ),
             favored_abilities,
             sorcery: None,
+            limit: LimitMemo {
+                track: 0,
+                trigger: limit_trigger
+            }
         })))
     }
 }
