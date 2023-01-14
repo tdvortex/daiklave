@@ -1,4 +1,4 @@
-mod abilities_memo;
+mod memo;
 mod abilities_vanilla;
 mod ability_name;
 mod ability_name_vanilla;
@@ -6,13 +6,13 @@ mod ability_rating;
 mod ability_rating_memo;
 mod error;
 
-pub(crate) use abilities_memo::AbilitiesMemo;
+pub(crate) use memo::AbilitiesMemo;
 pub(crate) use abilities_vanilla::AbilitiesVanilla;
 pub use ability_name::AbilityName;
 pub use ability_name_vanilla::AbilityNameVanilla;
 pub(crate) use ability_rating::AbilityRating;
 pub(crate) use ability_rating_memo::AbilityRatingMemo;
-pub(crate) use error::{AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
+pub(crate) use error::{AbilityError};
 
 use crate::{martial_arts::MartialArtsStyleId, Character};
 

@@ -3,7 +3,7 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
-use abilities::{AbilityNameVanilla, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
+use abilities::{AbilityNameVanilla, AbilityError};
 use armor::{
     armor_item::{artifact::ArtifactError, mundane::MundaneArmor, ArmorId, BaseArmorId},
     ArmorError,
@@ -189,15 +189,6 @@ pub enum CharacterMutationError {
     /// Error occurring while trying to set an attribute rating
     #[error("Cannot set attribute rating")]
     SetAttributesError(#[from] SetAttributesError),
-    /// Error occurring while trying to set an ability dot rating
-    #[error("Cannot set ability rating")]
-    SetAbilityError(#[from] SetAbilityError),
-    /// Error occurring while trying to add a specialty
-    #[error("Cannot add specialty")]
-    AddSpecialtyError(#[from] AddSpecialtyError),
-    /// Error occurring while trying to remove a specialty
-    #[error("Cannot remove specialty")]
-    RemoveSpecialtyError(#[from] RemoveSpecialtyError),
     /// Error occurring while trying to add a Martial Arts style
     #[error("Cannot add Martial Arts style")]
     AddMartialArtsStyleError(#[from] AddMartialArtsStyleError),
@@ -210,21 +201,24 @@ pub enum CharacterMutationError {
     /// Error occurring while trying to add a Sorcery circle
     #[error("Cannot add Sorcery circle")]
     AddSorceryCircleError(#[from] SorceryError),
-    /// Error related to weapons
-    #[error("Weapons error")]
-    WeaponError(#[from] WeaponError),
-    /// Error related to artifacts
-    #[error("Artifacts error")]
-    ArtifactError(#[from] ArtifactError),
+    /// Error related to abilities
+    #[error("Abilities error")]
+    AbilityError(#[from] AbilityError),
     /// Error related to armor
     #[error("Armor error")]
     ArmorError(#[from] ArmorError),
-    /// Error related to hearthstones
-    #[error("Hearthstone error")]
-    HearthstoneError(#[from] HearthstoneError),
+    /// Error related to artifacts
+    #[error("Artifacts error")]
+    ArtifactError(#[from] ArtifactError),
     /// Error related to Essence rating or mote pools
     #[error("Essence error")]
     EssenceError(#[from] EssenceError),
+    /// Error related to hearthstones
+    #[error("Hearthstone error")]
+    HearthstoneError(#[from] HearthstoneError),
+    /// Error related to weapons
+    #[error("Weapons error")]
+    WeaponError(#[from] WeaponError),
 }
 
 /// A container to hold a successfully applied sequence of mutations, with

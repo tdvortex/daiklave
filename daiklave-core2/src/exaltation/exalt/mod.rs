@@ -23,7 +23,7 @@ pub(crate) use wonders::ExaltWonders;
 use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
-    abilities::{AbilityRating, SetAbilityError},
+    abilities::{AbilityRating, AbilityError},
     armor::{
         armor_item::{
             artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
@@ -508,8 +508,8 @@ impl<'view, 'source> Exalt<'source> {
         dots: u8,
     ) -> Result<(), CharacterMutationError> {
         if dots > 5 {
-            Err(CharacterMutationError::SetAbilityError(
-                SetAbilityError::InvalidRating(dots),
+            Err(CharacterMutationError::AbilityError(
+                AbilityError::InvalidRating,
             ))
         } else if self.martial_arts_styles.contains_key(&id) {
             Ok(())
@@ -526,8 +526,8 @@ impl<'view, 'source> Exalt<'source> {
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         if dots > 5 {
-            Err(CharacterMutationError::SetAbilityError(
-                SetAbilityError::InvalidRating(dots),
+            Err(CharacterMutationError::AbilityError(
+                AbilityError::InvalidRating,
             ))
         } else if let Some(style) = self.martial_arts_styles.get_mut(&id) {
             if dots < style.ability().dots() {

@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::CharacterMutationError;
 
-use super::{AbilityRatingMemo, AddSpecialtyError, RemoveSpecialtyError, SetAbilityError};
+use super::{AbilityRatingMemo, AbilityError};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum AbilityRating<'source> {
@@ -36,8 +36,8 @@ impl<'source> AbilityRating<'source> {
 
     pub fn set_dots(&mut self, new_dots: u8) -> Result<&mut Self, CharacterMutationError> {
         if new_dots > 5 {
-            Err(CharacterMutationError::SetAbilityError(
-                SetAbilityError::InvalidRating(new_dots),
+            Err(CharacterMutationError::AbilityError(
+                AbilityError::InvalidRating
             ))
         } else if new_dots == 0 {
             *self = AbilityRating::Zero;
@@ -68,16 +68,16 @@ impl<'source> AbilityRating<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         if let AbilityRating::NonZero(_, specialties) = self {
             if specialties.contains(new_specialty) {
-                Err(CharacterMutationError::AddSpecialtyError(
-                    AddSpecialtyError::DuplicateSpecialty,
+                Err(CharacterMutationError::AbilityError(
+                    AbilityError::DuplicateSpecialty,
                 ))
             } else {
                 specialties.insert(new_specialty);
                 Ok(self)
             }
         } else {
-            Err(CharacterMutationError::AddSpecialtyError(
-                AddSpecialtyError::ZeroAbility,
+            Err(CharacterMutationError::AbilityError(
+                AbilityError::ZeroAbilitySpecialty,
             ))
         }
     }
@@ -88,15 +88,15 @@ impl<'source> AbilityRating<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         if let AbilityRating::NonZero(_, specialties) = self {
             if !specialties.remove(specialty) {
-                Err(CharacterMutationError::RemoveSpecialtyError(
-                    RemoveSpecialtyError::NotFound,
+                Err(CharacterMutationError::AbilityError(
+                    AbilityError::SpecialtyNotFound,
                 ))
             } else {
                 Ok(self)
             }
         } else {
-            Err(CharacterMutationError::RemoveSpecialtyError(
-                RemoveSpecialtyError::NotFound,
+            Err(CharacterMutationError::AbilityError(
+                AbilityError::SpecialtyNotFound,
             ))
         }
     }

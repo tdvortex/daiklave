@@ -2,8 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     abilities::{
-        Abilities, AbilitiesVanilla, AbilityNameVanilla, AbilityRating, AddSpecialtyError,
-        RemoveSpecialtyError, SetAbilityError,
+        Abilities, AbilitiesVanilla, AbilityNameVanilla, AbilityRating, AbilityError,
     },
     armor::{
         armor_item::{artifact::ArtifactError, mundane::MundaneArmor, ArmorId, BaseArmorId},
@@ -335,8 +334,8 @@ impl<'view, 'source> Character<'source> {
         dots: u8,
     ) -> Result<(), CharacterMutationError> {
         if dots > 5 {
-            Err(CharacterMutationError::SetAbilityError(
-                SetAbilityError::InvalidRating(dots),
+            Err(CharacterMutationError::AbilityError(
+                AbilityError::InvalidRating,
             ))
         } else {
             Ok(())
@@ -364,15 +363,15 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<(), CharacterMutationError> {
         if let AbilityRating::NonZero(_, specialties) = self.vanilla_abilities().get(ability_name) {
             if specialties.contains(specialty) {
-                Err(CharacterMutationError::AddSpecialtyError(
-                    AddSpecialtyError::DuplicateSpecialty,
+                Err(CharacterMutationError::AbilityError(
+                    AbilityError::DuplicateSpecialty,
                 ))
             } else {
                 Ok(())
             }
         } else {
-            Err(CharacterMutationError::AddSpecialtyError(
-                AddSpecialtyError::ZeroAbility,
+            Err(CharacterMutationError::AbilityError(
+                AbilityError::ZeroAbilitySpecialty,
             ))
         }
     }
@@ -399,15 +398,15 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<(), CharacterMutationError> {
         if let AbilityRating::NonZero(_, specialties) = self.vanilla_abilities().get(ability_name) {
             if !specialties.contains(specialty) {
-                Err(CharacterMutationError::RemoveSpecialtyError(
-                    RemoveSpecialtyError::NotFound,
+                Err(CharacterMutationError::AbilityError(
+                    AbilityError::SpecialtyNotFound,
                 ))
             } else {
                 Ok(())
             }
         } else {
-            Err(CharacterMutationError::RemoveSpecialtyError(
-                RemoveSpecialtyError::NotFound,
+            Err(CharacterMutationError::AbilityError(
+                AbilityError::SpecialtyNotFound,
             ))
         }
     }
@@ -818,8 +817,8 @@ impl<'view, 'source> Character<'source> {
         dots: u8,
     ) -> Result<(), CharacterMutationError> {
         if dots > 5 {
-            Err(CharacterMutationError::SetAbilityError(
-                SetAbilityError::InvalidRating(dots),
+            Err(CharacterMutationError::AbilityError(
+                AbilityError::InvalidRating,
             ))
         } else {
             Ok(())
@@ -833,8 +832,8 @@ impl<'view, 'source> Character<'source> {
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         if dots > 5 {
-            Err(CharacterMutationError::SetAbilityError(
-                SetAbilityError::InvalidRating(dots),
+            Err(CharacterMutationError::AbilityError(
+                AbilityError::InvalidRating,
             ))
         } else {
             self.craft.set_dots(focus, dots)?;

@@ -1,28 +1,18 @@
 use thiserror::Error;
 
-/// An error when trying to set an ability's dot rating.
+/// An error related to a character's Abilities.
 #[derive(Debug, Error)]
-pub enum SetAbilityError {
-    /// Ability ratings must be between 0 and 5
-    #[error("Ability ratings must be between 0 and 5, not {0}")]
-    InvalidRating(u8),
-}
-
-/// An error when trying to add a specialty to an ability.
-#[derive(Debug, Error)]
-pub enum AddSpecialtyError {
+pub enum AbilityError {    
     /// Specialties must be unique.
     #[error("Specialty already exists")]
     DuplicateSpecialty,
-    /// Specialties can only be added to abilities rated 1+
-    #[error("Abilities must be rated at 1+ to have specialties")]
-    ZeroAbility,
-}
-
-/// An error when trying to remove a specialty from an ability.
-#[derive(Debug, Error)]
-pub enum RemoveSpecialtyError {
+    /// Ability ratings must be between 0 and 5
+    #[error("Ability ratings must be between 0 and 5")]
+    InvalidRating,
     /// Cannot remove nonexistent specialty.
     #[error("Specialty does not exist")]
-    NotFound,
+    SpecialtyNotFound,
+    /// Specialties can only be added to abilities rated 1+
+    #[error("Abilities must be rated at 1+ to have specialties")]
+    ZeroAbilitySpecialty,
 }
