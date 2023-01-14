@@ -1,7 +1,7 @@
 use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
-    exaltation::mortal::MortalEquippedWeapons,
+    exaltation::{exalt::essence::EssenceError, mortal::MortalEquippedWeapons},
     hearthstones::{HearthstoneError, HearthstoneId, SlottedHearthstone, UnslottedHearthstone},
     weapons::{
         weapon::{
@@ -341,5 +341,81 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
             ))?;
 
         Ok(UnslottedHearthstone { details, origin })
+    }
+
+    pub fn attune_artifact_weapon(
+        &mut self,
+        artifact_weapon_id: ArtifactWeaponId,
+        personal_committed: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if let Some(handless) = self.handless_artifact.get_mut(&artifact_weapon_id) {
+            if handless.1.is_none() {
+                handless.1 = Some(personal_committed);
+                Ok(self)
+            } else {
+                Err(CharacterMutationError::EssenceError(
+                    EssenceError::AlreadyAttuned,
+                ))
+            }
+        } else {
+            match &mut self.hands {
+                ExaltHands::Empty => {
+                    Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+                }
+                ExaltHands::MainHand(one) | ExaltHands::OffHand(one) => match one {
+                    EquippedOneHandedWeapon::Mundane(_, _) => {
+                        Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+                    }
+                    EquippedOneHandedWeapon::Artifact(held_id, _, attunement) => {
+                        if held_id != &artifact_weapon_id {
+                            Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+                        } else if attunement.is_some() {
+                            Err(CharacterMutationError::EssenceError(
+                                EssenceError::AlreadyAttuned,
+                            ))
+                        } else {
+                            *attunement = Some(personal_committed);
+                            Ok(self)
+                        }
+                    }
+                },
+                ExaltHands::Both(arr) => {
+                    arr.iter_mut()
+                        .find_map(|one| {
+                            if let EquippedOneHandedWeapon::Artifact(held_id, _, attunement) = one {
+                                if held_id == &artifact_weapon_id {
+                                    Some(attunement)
+                                } else {
+                                    None
+                                }
+                            } else {
+                                None
+                            }
+                        })
+                        .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
+                        .map(|attunement| {
+                            *attunement = Some(personal_committed);
+                        })?;
+                    Ok(self)
+                }
+                ExaltHands::TwoHanded(two) => match two {
+                    EquippedTwoHandedWeapon::Mundane(_, _) => {
+                        Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+                    }
+                    EquippedTwoHandedWeapon::Artifact(held_id, _, attunement) => {
+                        if held_id != &artifact_weapon_id {
+                            Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+                        } else if attunement.is_some() {
+                            Err(CharacterMutationError::EssenceError(
+                                EssenceError::AlreadyAttuned,
+                            ))
+                        } else {
+                            *attunement = Some(personal_committed);
+                            Ok(self)
+                        }
+                    }
+                },
+            }
+        }
     }
 }

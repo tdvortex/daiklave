@@ -4,7 +4,7 @@ use std::collections::{hash_map::Entry, HashMap};
 pub(crate) use memo::ExaltUnequippedWeaponsMemo;
 
 use crate::{
-    exaltation::mortal::MortalUnequippedWeapons,
+    exaltation::{exalt::essence::EssenceError, mortal::MortalUnequippedWeapons},
     hearthstones::{HearthstoneError, HearthstoneId, SlottedHearthstone, UnslottedHearthstone},
     weapons::{
         weapon::{
@@ -232,5 +232,26 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
             ))?;
 
         Ok(UnslottedHearthstone { details, origin })
+    }
+
+    pub fn attune_artifact_weapon(
+        &mut self,
+        artifact_weapon_id: ArtifactWeaponId,
+        personal_committed: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        let attunement = &mut self
+            .artifact
+            .get_mut(&artifact_weapon_id)
+            .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
+            .1;
+
+        if attunement.is_some() {
+            Err(CharacterMutationError::EssenceError(
+                EssenceError::AlreadyAttuned,
+            ))
+        } else {
+            *attunement = Some(personal_committed);
+            Ok(self)
+        }
     }
 }

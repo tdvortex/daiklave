@@ -17,6 +17,8 @@ use crate::{
     CharacterMutationError,
 };
 
+use super::essence::EssenceError;
+
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct ExaltArmor<'source> {
     pub equipped: Option<EquippedArmor<'source>>,
@@ -315,6 +317,38 @@ impl<'source> ExaltArmor<'source> {
             ))?;
 
         Ok(UnslottedHearthstone { details, origin })
+    }
+
+    pub fn attune_artifact_armor(
+        &mut self,
+        artifact_armor_id: ArtifactArmorId,
+        personal_committed: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        let attunement = &mut self
+            .equipped
+            .as_mut()
+            .and_then(|equipped| match equipped {
+                EquippedArmor::Mundane(_, _) => None,
+                EquippedArmor::Artifact(worn_id, worn_armor) => {
+                    if worn_id == &artifact_armor_id {
+                        Some(worn_armor)
+                    } else {
+                        None
+                    }
+                }
+            })
+            .or_else(|| self.unequipped_artifact.get_mut(&artifact_armor_id))
+            .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?
+            .1;
+
+        if attunement.is_none() {
+            *attunement = Some(personal_committed);
+            Ok(self)
+        } else {
+            Err(CharacterMutationError::EssenceError(
+                EssenceError::AlreadyAttuned,
+            ))
+        }
     }
 }
 

@@ -11,6 +11,8 @@ use crate::{
     CharacterMutationError,
 };
 
+use super::essence::EssenceError;
+
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct ExaltWonders<'source>(
     pub(crate) HashMap<WonderId, (WonderNoAttunement<'source>, Option<u8>)>,
@@ -95,6 +97,28 @@ impl<'source> ExaltWonders<'source> {
             ))?;
 
         Ok(UnslottedHearthstone { details, origin })
+    }
+
+    pub fn attune_wonder(
+        &mut self,
+        wonder_id: WonderId,
+        personal_committed: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        let attunement = &mut self
+            .0
+            .get_mut(&wonder_id)
+            .ok_or(CharacterMutationError::ArtifactError(
+                ArtifactError::NotFound,
+            ))?
+            .1;
+        if attunement.is_some() {
+            Err(CharacterMutationError::EssenceError(
+                EssenceError::AlreadyAttuned,
+            ))
+        } else {
+            *attunement = Some(personal_committed);
+            Ok(self)
+        }
     }
 }
 

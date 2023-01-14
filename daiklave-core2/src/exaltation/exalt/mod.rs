@@ -22,12 +22,18 @@ use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
     abilities::{AbilityRating, SetAbilityError},
-    armor::armor_item::{
-        artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
-        mundane::MundaneArmor,
-        ArmorId, ArmorItem, BaseArmorId,
+    armor::{
+        armor_item::{
+            artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
+            mundane::MundaneArmor,
+            ArmorId, ArmorItem, BaseArmorId,
+        },
+        ArmorError,
     },
-    artifact::wonders::{OwnedWonder, Wonder, WonderId},
+    artifact::{
+        wonders::{OwnedWonder, Wonder, WonderId},
+        ArtifactId,
+    },
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{
@@ -221,74 +227,68 @@ impl<'view, 'source> Exalt<'source> {
         first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let entry = if let Entry::Vacant(e) = self
+        let (peripheral_committed, personal_committed) = if let MotePoolName::Peripheral = first {
+            let peripheral_committed = self.essence().motes().peripheral().available().min(amount);
+            (
+                peripheral_committed,
+                self.essence()
+                    .motes()
+                    .personal()
+                    .available()
+                    .min(amount - peripheral_committed),
+            )
+        } else {
+            let personal_committed = self.essence().motes().personal().available().min(amount);
+            (
+                self.essence()
+                    .motes()
+                    .peripheral()
+                    .available()
+                    .min(amount - personal_committed),
+                personal_committed,
+            )
+        };
+
+        if peripheral_committed + personal_committed != amount {
+            return Err(CharacterMutationError::EssenceError(
+                EssenceError::InsufficientMotes,
+            ));
+        }
+
+        self.essence_mut()
+            .motes_mut()
+            .peripheral_mut()
+            .commit(peripheral_committed)?;
+
+        if let Err(e) = self
+            .essence_mut()
+            .motes_mut()
+            .personal_mut()
+            .commit(personal_committed)
+        {
+            self.essence_mut()
+                .motes_mut()
+                .peripheral_mut()
+                .uncommit(peripheral_committed)?;
+            return Err(e);
+        }
+
+        if let Entry::Vacant(e) = self
             .essence_mut()
             .motes_mut()
             .commitments_mut()
             .entry(MoteCommitmentId::Other(*id))
         {
-            Ok(e)
+            e.insert(MoteCommitment {
+                name,
+                peripheral: peripheral_committed,
+                personal: personal_committed,
+            });
+            Ok(self)
         } else {
             Err(CharacterMutationError::EssenceError(
                 EssenceError::DuplicateCommitment,
             ))
-        }?;
-
-        let (peripheral_committed, personal_committed) = if let MotePoolName::Peripheral = first {
-            let peripheral_committed = self.essence().motes().peripheral().available().min(amount);
-            let personal_committed = amount - peripheral_committed.min(amount);
-            if peripheral_committed + personal_committed < amount {
-                Err(CharacterMutationError::EssenceError(
-                    EssenceError::InsufficientMotes,
-                ))
-            } else {
-                Ok((peripheral_committed, personal_committed))
-            }
-        } else {
-            let personal_committed = self.essence().motes().personal().available().min(amount);
-            let peripheral_committed = amount - personal_committed.min(amount);
-            if peripheral_committed + personal_committed < amount {
-                Err(CharacterMutationError::EssenceError(
-                    EssenceError::InsufficientMotes,
-                ))
-            } else {
-                Ok((peripheral_committed, personal_committed))
-            }
-        }?;
-
-        match (
-            self.essence_mut()
-                .motes_mut()
-                .peripheral_mut()
-                .commit(peripheral_committed),
-            self.essence_mut()
-                .motes_mut()
-                .personal_mut()
-                .commit(personal_committed),
-        ) {
-            (Ok(_), Ok(_)) => {
-                entry.insert(MoteCommitment {
-                    name,
-                    peripheral: peripheral_committed,
-                    personal: personal_committed,
-                });
-                Ok(self)
-            }
-            (Ok(_), Err(e)) => {
-                self.essence_mut()
-                    .motes_mut()
-                    .peripheral_mut()
-                    .uncommit(peripheral_committed)?;
-                Err(e)
-            }
-            (Err(e), Ok(_)) => {
-                self.essence_mut()
-                    .motes_mut()
-                    .personal_mut()
-                    .uncommit(personal_committed)?;
-                Err(e)
-            }
-            (Err(e1), Err(e2)) => Err(e1),
         }
     }
 
@@ -332,7 +332,7 @@ impl<'view, 'source> Exalt<'source> {
             .motes_mut()
             .commitments_mut()
             .remove(id)
-            .ok_or({ CharacterMutationError::EssenceError(EssenceError::NotFound) })?;
+            .ok_or(CharacterMutationError::EssenceError(EssenceError::NotFound))?;
         self.essence_mut()
             .motes_mut()
             .peripheral_mut()
@@ -847,5 +847,122 @@ impl<'view, 'source> Exalt<'source> {
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         self.wonders.unslot_hearthstone(wonder_id, hearthstone_id)
+    }
+
+    pub fn attune_artifact(
+        &mut self,
+        artifact_id: ArtifactId,
+        first: MotePoolName,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        let amount = self.attunement_cost(artifact_id)?;
+        let (peripheral_committed, personal_committed) = if let MotePoolName::Peripheral = first {
+            let peripheral_committed = self.essence().motes().peripheral().available().min(amount);
+            (
+                peripheral_committed,
+                self.essence()
+                    .motes()
+                    .personal()
+                    .available()
+                    .min(amount - peripheral_committed),
+            )
+        } else {
+            let personal_committed = self.essence().motes().personal().available().min(amount);
+            (
+                self.essence()
+                    .motes()
+                    .peripheral()
+                    .available()
+                    .min(amount - personal_committed),
+                personal_committed,
+            )
+        };
+
+        if peripheral_committed + personal_committed != amount {
+            return Err(CharacterMutationError::EssenceError(
+                EssenceError::InsufficientMotes,
+            ));
+        }
+
+        self.essence_mut()
+            .motes_mut()
+            .peripheral_mut()
+            .commit(peripheral_committed)?;
+
+        if let Err(e) = self
+            .essence_mut()
+            .motes_mut()
+            .personal_mut()
+            .commit(personal_committed)
+        {
+            self.essence_mut()
+                .motes_mut()
+                .peripheral_mut()
+                .uncommit(peripheral_committed)?;
+            return Err(e);
+        }
+
+        let outcome = match artifact_id {
+            ArtifactId::Weapon(artifact_weapon_id) => self
+                .weapons_mut()
+                .attune_artifact_weapon(artifact_weapon_id, personal_committed)
+                .err(),
+            ArtifactId::Armor(artifact_armor_id) => self
+                .armor_mut()
+                .attune_artifact_armor(artifact_armor_id, personal_committed)
+                .err(),
+            ArtifactId::Wonder(wonder_id) => self
+                .wonders_mut()
+                .attune_wonder(wonder_id, personal_committed)
+                .err(),
+        };
+
+        if let Some(e) = outcome {
+            self.essence_mut()
+                .motes_mut()
+                .peripheral_mut()
+                .uncommit(peripheral_committed)?;
+            self.essence_mut()
+                .motes_mut()
+                .personal_mut()
+                .uncommit(personal_committed)?;
+            Err(e)
+        } else {
+            Ok(self)
+        }
+    }
+
+    pub fn attunement_cost(&self, artifact_id: ArtifactId) -> Result<u8, CharacterMutationError> {
+        match artifact_id {
+            ArtifactId::Weapon(artifact_weapon_id) => {
+                if self
+                    .weapons
+                    .iter()
+                    .any(|(weapon_id, _)| weapon_id == WeaponId::Artifact(artifact_weapon_id))
+                {
+                    Ok(5)
+                } else {
+                    Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+                }
+            }
+            ArtifactId::Armor(artifact_armor_id) => self
+                .armor
+                .get(ArmorId::Artifact(artifact_armor_id))
+                .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?
+                .attunement_cost()
+                .ok_or(CharacterMutationError::EssenceError(
+                    EssenceError::NoAttunementCost,
+                )),
+            ArtifactId::Wonder(wonder_id) => self
+                .wonders
+                .get(wonder_id)
+                .ok_or(CharacterMutationError::ArtifactError(
+                    ArtifactError::NotFound,
+                ))?
+                .1
+                .attunement_cost
+                .ok_or(CharacterMutationError::EssenceError(
+                    EssenceError::NoAttunementCost,
+                )),
+        }
     }
 }

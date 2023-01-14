@@ -19,7 +19,10 @@ use crate::{
         mundane::MundaneArmor,
         ArmorId, ArmorItem, BaseArmorId,
     },
-    artifact::wonders::{OwnedWonder, Wonder, WonderId},
+    artifact::{
+        wonders::{OwnedWonder, Wonder, WonderId},
+        ArtifactId,
+    },
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
@@ -897,5 +900,19 @@ impl<'view, 'source> Exaltation<'source> {
                 exalt.unslot_hearthstone_from_wonder(wonder_id, hearthstone_id)?
             }
         })
+    }
+
+    pub fn attune_artifact(
+        &mut self,
+        artifact_id: ArtifactId,
+        first: MotePoolName,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(_) => {
+                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
+            }
+            Exaltation::Exalt(exalt) => exalt.attune_artifact(artifact_id, first),
+        }?;
+        Ok(self)
     }
 }

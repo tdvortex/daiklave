@@ -1737,24 +1737,22 @@ impl<'view, 'source> Character<'source> {
                     Err(CharacterMutationError::EssenceError(
                         EssenceError::AlreadyAttuned,
                     ))
-                } else {
-                    if let Some(cost) = armor_item.attunement_cost() {
-                        if self.essence().map_or(0, |essence| {
-                            essence.motes().peripheral().available()
-                                + essence.motes().personal().available()
-                        }) < cost
-                        {
-                            Err(CharacterMutationError::EssenceError(
-                                EssenceError::InsufficientMotes,
-                            ))
-                        } else {
-                            Ok(())
-                        }
-                    } else {
+                } else if let Some(cost) = armor_item.attunement_cost() {
+                    if self.essence().map_or(0, |essence| {
+                        essence.motes().peripheral().available()
+                            + essence.motes().personal().available()
+                    }) < cost
+                    {
                         Err(CharacterMutationError::EssenceError(
-                            EssenceError::NoAttunementCost,
+                            EssenceError::InsufficientMotes,
                         ))
+                    } else {
+                        Ok(())
                     }
+                } else {
+                    Err(CharacterMutationError::EssenceError(
+                        EssenceError::NoAttunementCost,
+                    ))
                 }
             }
             ArtifactId::Weapon(artifact_weapon_id) => {
@@ -1774,24 +1772,32 @@ impl<'view, 'source> Character<'source> {
                     Err(CharacterMutationError::EssenceError(
                         EssenceError::AlreadyAttuned,
                     ))
-                } else {
-                    if weapon.is_artifact() {
-                        if self.essence().map_or(0, |essence| {
-                            essence.motes().peripheral().available()
-                                + essence.motes().personal().available()
-                        }) < 5
-                        {
-                            Err(CharacterMutationError::EssenceError(
-                                EssenceError::InsufficientMotes,
-                            ))
-                        } else {
-                            Ok(())
-                        }
+                } else if weapon.is_artifact() {
+                    if self.essence().map_or(0, |essence| {
+                        essence.motes().peripheral().available()
+                            + essence.motes().personal().available()
+                    }) < 5
+                    {
+                        Err(CharacterMutationError::EssenceError(
+                            EssenceError::InsufficientMotes,
+                        ))
                     } else {
-                        Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
+                        Ok(())
                     }
+                } else {
+                    Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 }
             }
         }
+    }
+
+    /// Attunes to the specified artifact.
+    pub fn attune_artifact(
+        &mut self,
+        artifact_id: ArtifactId,
+        first: MotePoolName,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.exaltation.attune_artifact(artifact_id, first)?;
+        Ok(self)
     }
 }
