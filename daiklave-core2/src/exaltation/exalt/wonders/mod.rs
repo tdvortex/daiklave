@@ -121,8 +121,16 @@ impl<'source> ExaltWonders<'source> {
         }
     }
 
-    pub fn unattune_wonder(&mut self, wonder_id: WonderId) -> Result<(u8, u8), CharacterMutationError> {
-        let wonder = self.0.get_mut(&wonder_id).ok_or(CharacterMutationError::ArtifactError(ArtifactError::NotFound))?;
+    pub fn unattune_wonder(
+        &mut self,
+        wonder_id: WonderId,
+    ) -> Result<(u8, u8), CharacterMutationError> {
+        let wonder = self
+            .0
+            .get_mut(&wonder_id)
+            .ok_or(CharacterMutationError::ArtifactError(
+                ArtifactError::NotFound,
+            ))?;
 
         if let Some(amount) = wonder.0.attunement_cost {
             if let Some(personal) = wonder.1.take() {
@@ -131,7 +139,9 @@ impl<'source> ExaltWonders<'source> {
                 Err(CharacterMutationError::EssenceError(EssenceError::NotFound))
             }
         } else {
-            Err(CharacterMutationError::EssenceError(EssenceError::NoAttunementCost))
+            Err(CharacterMutationError::EssenceError(
+                EssenceError::NoAttunementCost,
+            ))
         }
     }
 }

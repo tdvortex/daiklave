@@ -34,7 +34,11 @@ impl<'view, 'source> Motes<'view, 'source> {
     pub fn committed(
         &self,
     ) -> impl Iterator<Item = (MoteCommitmentId, MoteCommitment<'source>)> + '_ {
-        let other_commitments = self.state.commitments.iter().map(|(k, v)| (MoteCommitmentId::Other(*k), *v));
+        let other_commitments = self
+            .state
+            .commitments
+            .iter()
+            .map(|(k, v)| (MoteCommitmentId::Other(*k), *v));
 
         let weapon_commitments =
             self.weapons.iter().filter_map(|(weapon_id, equipped)| {
@@ -47,8 +51,8 @@ impl<'view, 'source> Motes<'view, 'source> {
                     Some(WeaponType::Unarmed) => None,
                     Some(WeaponType::Mundane(_, _, _)) => None,
                     Some(WeaponType::Artifact(artifact_weapon_id, weapon, attunement)) => {
-                        if let Some(personal) = attunement {
-                            Some((
+                        attunement.map(|personal| {
+                            (
                                 MoteCommitmentId::AttunedArtifact(ArtifactId::Weapon(
                                     artifact_weapon_id,
                                 )),
@@ -57,10 +61,8 @@ impl<'view, 'source> Motes<'view, 'source> {
                                     peripheral: 5 - personal.min(5),
                                     personal: personal.min(5),
                                 },
-                            ))
-                        } else {
-                            None
-                        }
+                            )
+                        })
                     }
                 }
             });

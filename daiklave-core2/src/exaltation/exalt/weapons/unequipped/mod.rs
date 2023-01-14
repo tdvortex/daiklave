@@ -255,13 +255,16 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
         }
     }
 
-    pub fn unattune_artifact_weapon(&mut self, artifact_weapon_id: ArtifactWeaponId) -> Result<(u8, u8), CharacterMutationError> {
+    pub fn unattune_artifact_weapon(
+        &mut self,
+        artifact_weapon_id: ArtifactWeaponId,
+    ) -> Result<(u8, u8), CharacterMutationError> {
         let attunement = self
-        .artifact
-        .get_mut(&artifact_weapon_id)
-        .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
-        .1
-        .take();
+            .artifact
+            .get_mut(&artifact_weapon_id)
+            .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
+            .1
+            .take();
 
         if let Some(personal) = attunement {
             Ok((5 - 5.min(personal), 5.min(personal)))

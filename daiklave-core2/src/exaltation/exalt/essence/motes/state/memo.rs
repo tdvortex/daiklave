@@ -3,8 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::exaltation::exalt::essence::{
-    mote_commitment::{MoteCommitmentMemo},
-    mote_pool::MotePool, OtherMoteCommitmentId,
+    mote_commitment::MoteCommitmentMemo, mote_pool::MotePool, OtherMoteCommitmentId,
 };
 
 use super::MotesState;

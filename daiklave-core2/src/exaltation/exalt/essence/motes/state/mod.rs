@@ -3,8 +3,7 @@ mod memo;
 use std::collections::HashMap;
 
 use crate::exaltation::exalt::essence::{
-    mote_commitment::{MoteCommitment},
-    mote_pool::MotePool, OtherMoteCommitmentId,
+    mote_commitment::MoteCommitment, mote_pool::MotePool, OtherMoteCommitmentId,
 };
 
 pub(crate) use self::memo::MotesStateMemo;

@@ -261,12 +261,7 @@ impl<'view, 'source> Exalt<'source> {
             return Err(e);
         }
 
-        if let Entry::Vacant(e) = self
-            .essence
-            .motes
-            .commitments_mut()
-            .entry(*id)
-        {
+        if let Entry::Vacant(e) = self.essence.motes.commitments_mut().entry(*id) {
             e.insert(MoteCommitment {
                 name,
                 peripheral: peripheral_committed,
@@ -326,18 +321,16 @@ impl<'view, 'source> Exalt<'source> {
                 ArtifactId::Wonder(wonder_id) => self
                     .wonders
                     .0
-                    .get(&wonder_id)
+                    .get(wonder_id)
                     .ok_or(CharacterMutationError::ArtifactError(
                         ArtifactError::NotFound,
                     ))?
                     .1
                     .is_some(),
             },
-            MoteCommitmentId::Other(other_id) => self
-                .essence
-                .motes
-                .commitments()
-                .contains_key(&other_id),
+            MoteCommitmentId::Other(other_id) => {
+                self.essence.motes.commitments().contains_key(other_id)
+            }
         } {
             Ok(())
         } else {
@@ -350,21 +343,22 @@ impl<'view, 'source> Exalt<'source> {
         id: &MoteCommitmentId,
     ) -> Result<&mut Self, CharacterMutationError> {
         let (peripheral, personal) = match id {
-            MoteCommitmentId::AttunedArtifact(artifact_id) => {
-                match artifact_id {
-                    ArtifactId::Weapon(artifact_weapon_id) => {
-                        self.weapons.unattune_artifact_weapon(*artifact_weapon_id)?
-                    }
-                    ArtifactId::Armor(artifact_armor_id) => {
-                        self.armor.unattune_artifact_armor(*artifact_armor_id)?
-                    }
-                    ArtifactId::Wonder(wonder_id) => {
-                        self.wonders.unattune_wonder(*wonder_id)?
-                    }
+            MoteCommitmentId::AttunedArtifact(artifact_id) => match artifact_id {
+                ArtifactId::Weapon(artifact_weapon_id) => {
+                    self.weapons.unattune_artifact_weapon(*artifact_weapon_id)?
                 }
-            }
+                ArtifactId::Armor(artifact_armor_id) => {
+                    self.armor.unattune_artifact_armor(*artifact_armor_id)?
+                }
+                ArtifactId::Wonder(wonder_id) => self.wonders.unattune_wonder(*wonder_id)?,
+            },
             MoteCommitmentId::Other(other_id) => {
-                let commitment = self.essence.motes.commitments.remove(other_id).ok_or(CharacterMutationError::EssenceError(EssenceError::NotFound))?;
+                let commitment = self
+                    .essence
+                    .motes
+                    .commitments
+                    .remove(other_id)
+                    .ok_or(CharacterMutationError::EssenceError(EssenceError::NotFound))?;
                 (commitment.peripheral, commitment.personal)
             }
         };

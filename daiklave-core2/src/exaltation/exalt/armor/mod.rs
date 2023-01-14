@@ -8,7 +8,8 @@ use crate::{
         armor_item::{
             artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
             mundane::{MundaneArmor, MundaneArmorView},
-            ArmorId, ArmorItem, ArmorType, BaseArmorId, EquippedArmor, EquippedArmorNoAttunement, ArmorWeightClass,
+            ArmorId, ArmorItem, ArmorType, ArmorWeightClass, BaseArmorId, EquippedArmor,
+            EquippedArmorNoAttunement,
         },
         ArmorError,
     },
@@ -351,7 +352,10 @@ impl<'source> ExaltArmor<'source> {
         }
     }
 
-    pub fn unattune_artifact_armor(&mut self, artifact_armor_id: ArtifactArmorId) -> Result<(u8, u8), CharacterMutationError> {
+    pub fn unattune_artifact_armor(
+        &mut self,
+        artifact_armor_id: ArtifactArmorId,
+    ) -> Result<(u8, u8), CharacterMutationError> {
         let armor = self
             .equipped
             .as_mut()
