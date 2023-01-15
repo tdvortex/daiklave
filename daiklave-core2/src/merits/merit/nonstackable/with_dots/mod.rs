@@ -6,6 +6,7 @@ pub(crate) use memo::NonStackableMeritWithDotsMemo;
 
 use crate::{book_reference::BookReference, merits::merit::MeritType};
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum NonStackableMeritWithDots<'source> {
     Zero(ZeroDotsNonStackableMerit<'source>),
     One(OneDotNonStackableMerit<'source>),
@@ -16,6 +17,17 @@ pub(crate) enum NonStackableMeritWithDots<'source> {
 }
 
 impl<'source> NonStackableMeritWithDots<'source> {
+    pub fn as_memo(&self) -> NonStackableMeritWithDotsMemo {
+        match self {
+            NonStackableMeritWithDots::Zero(zero) => NonStackableMeritWithDotsMemo::Zero(zero.as_memo()),
+            NonStackableMeritWithDots::One(one) => NonStackableMeritWithDotsMemo::One(one.as_memo()),
+            NonStackableMeritWithDots::Two(two) => NonStackableMeritWithDotsMemo::Two(two.as_memo()),
+            NonStackableMeritWithDots::Three(three) => NonStackableMeritWithDotsMemo::Three(three.as_memo()),
+            NonStackableMeritWithDots::Four(four) => NonStackableMeritWithDotsMemo::Four(four.as_memo()),
+            NonStackableMeritWithDots::Five(five) => NonStackableMeritWithDotsMemo::Five(five.as_memo()),
+        }
+    }
+
     pub fn template_name(&self) -> &'source str {
         match self {
             NonStackableMeritWithDots::Zero(zero) => zero.name(),

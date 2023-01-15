@@ -3,13 +3,14 @@ pub(crate) use id::StackableMeritTemplateId;
 pub use id::{StackableMeritId};
 
 mod view;
+use serde::{Serialize, Deserialize};
 pub(crate) use view::StackableMeritView;
 
 use self::with_dots::StackableMeritWithDotsMemo;
 
 mod with_dots;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StackableMerit {
     detail: String,
     dotted: StackableMeritWithDotsMemo,

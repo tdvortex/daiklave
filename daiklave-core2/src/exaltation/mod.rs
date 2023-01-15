@@ -163,12 +163,15 @@ impl<'source> Exaltation<'source> {
         let armor = std::mem::take(exalt.armor_mut()).into();
         let wonders = std::mem::take(exalt.wonders_mut()).into();
 
+        // Assume no Exalted Healing
+
         *self = Exaltation::Mortal(Box::new(Mortal {
             martial_arts_styles,
             sorcery,
             weapons,
             armor,
             wonders,
+            exalted_healing: false,
         }));
         Ok(self)
     }

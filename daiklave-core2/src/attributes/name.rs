@@ -1,5 +1,7 @@
+use serde::{Serialize, Deserialize};
+
 /// The nine attributes.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum AttributeName {
     /// Strength
     Strength,

@@ -1,10 +1,15 @@
 use crate::{book_reference::BookReference, merits::merit::MeritType};
 
-use super::with_dots::NonStackableMeritWithDots;
+use super::{with_dots::NonStackableMeritWithDots, NonStackableMerit};
 
-pub(crate) struct NonStackableMeritView<'source>(NonStackableMeritWithDots<'source>);
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct NonStackableMeritView<'source>(pub NonStackableMeritWithDots<'source>);
 
 impl<'source> NonStackableMeritView<'source>{
+    pub fn as_memo(&self) -> NonStackableMerit {
+        NonStackableMerit(self.0.as_memo())
+    }
+
     pub fn template_name(&self) -> &'source str {
         self.0.template_name()
     }

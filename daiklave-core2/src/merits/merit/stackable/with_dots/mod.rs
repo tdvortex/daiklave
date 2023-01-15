@@ -10,6 +10,7 @@ mod dots;
 mod memo;
 pub(crate) use memo::StackableMeritWithDotsMemo;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum StackableMeritWithDots<'source> {
     Zero(ZeroDotsStackableMerit<'source>),
     One(OneDotStackableMerit<'source>),
@@ -20,6 +21,17 @@ pub(crate) enum StackableMeritWithDots<'source> {
 }
 
 impl<'source> StackableMeritWithDots<'source> {
+    pub fn as_memo(&self) -> StackableMeritWithDotsMemo {
+        match self {
+            StackableMeritWithDots::Zero(zero) => StackableMeritWithDotsMemo::Zero(zero.as_memo()),
+            StackableMeritWithDots::One(one) => StackableMeritWithDotsMemo::One(one.as_memo()),
+            StackableMeritWithDots::Two(two) => StackableMeritWithDotsMemo::Two(two.as_memo()),
+            StackableMeritWithDots::Three(three) => StackableMeritWithDotsMemo::Three(three.as_memo()),
+            StackableMeritWithDots::Four(four) => StackableMeritWithDotsMemo::Four(four.as_memo()),
+            StackableMeritWithDots::Five(five) => StackableMeritWithDotsMemo::Five(five.as_memo()),
+        }
+    }
+
     pub fn template_id(&self) -> MeritTemplateId {
         match self {
             StackableMeritWithDots::Zero(zero) => zero.template_id(),
@@ -55,12 +67,12 @@ impl<'source> StackableMeritWithDots<'source> {
 
     pub fn dots(&self) -> u8 {
         match self {
-            StackableMeritWithDots::Zero(zero) => 0,
-            StackableMeritWithDots::One(one) => 1,
-            StackableMeritWithDots::Two(two) => 2,
-            StackableMeritWithDots::Three(three) => 3,
-            StackableMeritWithDots::Four(four) => 4,
-            StackableMeritWithDots::Five(five) => 5,
+            StackableMeritWithDots::Zero(_) => 0,
+            StackableMeritWithDots::One(_) => 1,
+            StackableMeritWithDots::Two(_) => 2,
+            StackableMeritWithDots::Three(_) => 3,
+            StackableMeritWithDots::Four(_) => 4,
+            StackableMeritWithDots::Five(_) => 5,
         }
     }
 

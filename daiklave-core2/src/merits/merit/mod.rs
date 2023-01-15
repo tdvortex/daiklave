@@ -8,22 +8,25 @@ pub use merit_type::MeritType;
 
 mod nonstackable;
 pub use nonstackable::NonStackableMerit;
+pub(crate) use nonstackable::{NonStackableMeritId, NonStackableMeritView};
 
 mod prerequisite;
 
 mod source;
+pub(crate) use source::MeritSource;
 
 mod stackable;
 pub use stackable::{StackableMerit, StackableMeritId};
+pub(crate) use stackable::StackableMeritView;
 
 mod template;
 
 use crate::{book_reference::BookReference};
 
-use self::{template::MeritTemplateId, source::MeritSource};
+use self::{template::MeritTemplateId};
 
 /// A single Merit possessed by a character.
-pub struct Merit<'source>(MeritSource<'source>);
+pub struct Merit<'source>(pub(crate) MeritSource<'source>);
 
 impl<'source> Merit<'source> {
     /// The Id of this instance of the merit as owned by the character.

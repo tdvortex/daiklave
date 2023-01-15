@@ -46,6 +46,7 @@ pub(crate) struct Mortal<'source> {
     pub sorcery: Option<TerrestrialCircleSorcerer<'source>>,
     pub weapons: MortalWeapons<'source>,
     pub wonders: MortalWonders<'source>,
+    pub exalted_healing: bool,
 }
 
 impl<'source> Mortal<'source> {
@@ -59,6 +60,7 @@ impl<'source> Mortal<'source> {
             self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
             self.weapons.as_memo(),
             self.wonders.as_memo(),
+            self.exalted_healing,
         )
     }
 

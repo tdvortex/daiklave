@@ -127,4 +127,22 @@ impl<'source> ArmorItem<'source> {
     pub fn open_slots(&self) -> u8 {
         self.0.open_slots()
     }
+
+    /// If the armor is an artifact, the number of merit dots associated with
+    /// its merits. None for mundane armor.
+    pub fn merit_dots(&self) -> Option<u8> {
+        self.0.merit_dots()
+    }
+
+    /// If the armor is an artifact, and it has lore, the lore of the artifact
+    /// armor.
+    pub fn lore(&self) -> Option<&'source str> {
+        self.0.lore()
+    }
+
+    /// If the armor is an artifact, and it has powers, the powers of the
+    /// artifact armor.
+    pub fn powers(&self) -> Option<&'source str> {
+        self.0.powers()
+    }
 }

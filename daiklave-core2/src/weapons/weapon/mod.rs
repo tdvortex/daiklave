@@ -105,6 +105,12 @@ impl<'view, 'source> Weapon<'source> {
         self.0.book_reference()
     }
 
+    /// If the weapon is an artifact, the number of merit dots it is worth.
+    /// Returns None for mundane weapons.
+    pub fn merit_dots(&self) -> Option<u8> {
+        self.0.merit_dots()
+    }
+
     /// If the weapon is an artifact, it may have a lore description. Always
     /// None for mundane weapons.
     pub fn lore(&self) -> Option<&'source str> {

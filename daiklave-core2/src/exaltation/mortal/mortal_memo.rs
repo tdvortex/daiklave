@@ -19,6 +19,7 @@ pub(crate) struct MortalMemo {
     sorcery: Option<TerrestrialCircleSorcererMemo>,
     weapons: MortalWeaponsMemo,
     wonders: MortalWondersMemo,
+    exalted_healing: bool,
 }
 
 impl<'source> MortalMemo {
@@ -28,6 +29,7 @@ impl<'source> MortalMemo {
         sorcery: Option<TerrestrialCircleSorcererMemo>,
         weapons: MortalWeaponsMemo,
         wonders: MortalWondersMemo,
+        exalted_healing: bool,
     ) -> Self {
         Self {
             armor,
@@ -35,6 +37,7 @@ impl<'source> MortalMemo {
             sorcery,
             weapons,
             wonders,
+            exalted_healing
         }
     }
 
@@ -50,6 +53,7 @@ impl<'source> MortalMemo {
             weapons: self.weapons.as_ref(),
             armor: self.armor.as_ref(),
             wonders: self.wonders.as_ref(),
+            exalted_healing: self.exalted_healing,
         }
     }
 }

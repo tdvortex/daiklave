@@ -6,7 +6,7 @@ pub(crate) enum MeritSource<'source> {
     Artifact(ArtifactId, &'source str, u8),
     DemenseNoManse(UniqueId, &'source str, GeomancyLevel),
     DemenseWithManse(HearthstoneId, &'source str, GeomancyLevel),
-    ExaltedHealing(bool),
+    ExaltedHealing(bool), // is_exalt
     HearthstoneNoManse(HearthstoneId, &'source str, GeomancyLevel),
     HearthstoneWithManse(HearthstoneId, &'source str, GeomancyLevel),
     Manse(HearthstoneId, &'source str, GeomancyLevel),

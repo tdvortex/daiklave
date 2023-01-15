@@ -79,6 +79,14 @@ impl<'view, 'source> WeaponType<'source> {
         }
     }
 
+    pub fn merit_dots(&self) -> Option<u8> {
+        match self {
+            WeaponType::Unarmed => None,
+            WeaponType::Mundane(_, _, _) => None,
+            WeaponType::Artifact(_, artifact, _) => Some(artifact.merit_dots),
+        }
+    }
+
     pub fn lore(&'view self) -> Option<&'source str> {
         match self {
             WeaponType::Mundane(_, _, _) | WeaponType::Unarmed => None,

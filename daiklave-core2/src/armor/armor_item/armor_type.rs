@@ -136,4 +136,25 @@ impl<'source> ArmorType<'source> {
             ArmorType::Mundane(_, _) => 0,
         }
     }
+
+    pub fn merit_dots(&self) -> Option<u8> {
+        match self {
+            ArmorType::Artifact(_, no_attunement, _) => Some(no_attunement.merit_dots),
+            ArmorType::Mundane(_, _) => None,
+        }
+    }
+
+    pub fn lore(&self) -> Option<&'source str> {
+        match self {
+            ArmorType::Artifact(_, no_attunement, _) => no_attunement.lore,
+            ArmorType::Mundane(_, _) => None,
+        }
+    }
+
+    pub fn powers(&self) -> Option<&'source str> {
+        match self {
+            ArmorType::Artifact(_, no_attunement, _) => no_attunement.powers,
+            ArmorType::Mundane(_, _) => None,
+        }
+    }
 }

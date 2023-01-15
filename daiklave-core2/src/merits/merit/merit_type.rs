@@ -1,5 +1,7 @@
+use serde::{Serialize, Deserialize};
+
 /// The purchase constraints on a specific merit.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum MeritType {
     /// Innate merits may only be purchased at character creation except with
     /// Storyteller permission or dramatic story effects like Wyld mutation.

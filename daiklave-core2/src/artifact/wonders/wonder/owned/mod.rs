@@ -64,4 +64,9 @@ impl<'source> OwnedWonder<'source> {
     pub fn open_slots(&self) -> u8 {
         self.1.open_slots()
     }
+
+    /// The number of merit dots this Wonder is worth.
+    pub fn merit_dots(&self) -> u8 {
+        self.1.merit_dots
+    }
 }

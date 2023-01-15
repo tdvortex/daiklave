@@ -20,15 +20,20 @@ use crate::{
     },
     health::{DamageLevel, Health, WoundPenalty},
     hearthstones::{
-        hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId, HearthstoneOrigin,
-        HearthstoneStability, Hearthstones, UnslottedHearthstone,
+        hearthstone::{GeomancyLevel, HearthstoneTemplate},
+        HearthstoneError, HearthstoneId, HearthstoneOrigin, HearthstoneStability, Hearthstones,
+        UnslottedHearthstone,
     },
     martial_arts::{MartialArts, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
+    merits::{merit::{
+        NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
+    }, Merits},
     name_and_concept::ConceptError,
     sorcery::{
         ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
         TerrestrialSpell,
     },
+    unique_id::UniqueId,
     weapons::{
         weapon::{
             equipped::EquipHand, mundane::MundaneWeapon, AttackRange, BaseWeaponId, Equipped,
@@ -53,6 +58,9 @@ pub struct Character<'source> {
     pub(crate) abilities: AbilitiesVanilla<'source>,
     pub(crate) craft: Craft<'source>,
     pub(crate) hearthstone_inventory: HashMap<HearthstoneId, UnslottedHearthstone<'source>>,
+    pub(crate) demenses_no_manse: HashMap<UniqueId, (&'source str, GeomancyLevel)>,
+    pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMeritView<'source>>,
+    pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMeritView<'source>>,
 }
 
 impl<'source> Default for Character<'source> {
@@ -67,6 +75,9 @@ impl<'source> Default for Character<'source> {
             abilities: Default::default(),
             craft: Default::default(),
             hearthstone_inventory: Default::default(),
+            demenses_no_manse: Default::default(),
+            stackable_merits: Default::default(),
+            nonstackable_merits: Default::default(),
         }
     }
 }
@@ -85,6 +96,21 @@ impl<'view, 'source> Character<'source> {
             craft: self.craft.as_memo(),
             hearthstone_inventory: self
                 .hearthstone_inventory
+                .iter()
+                .map(|(k, v)| (*k, v.as_memo()))
+                .collect(),
+            demenses_no_manse: self
+                .demenses_no_manse
+                .iter()
+                .map(|(k, (s, g))| (*k, (s.to_string(), *g)))
+                .collect(),
+            nonstackable_merits: self
+                .nonstackable_merits
+                .iter()
+                .map(|(k, v)| (*k, v.as_memo()))
+                .collect(),
+            stackable_merits: self
+                .stackable_merits
                 .iter()
                 .map(|(k, v)| (*k, v.as_memo()))
                 .collect(),
@@ -1779,5 +1805,10 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.attune_artifact(artifact_id, first)?;
         Ok(self)
+    }
+
+    /// Access all Merits owned by the character.
+    pub fn merits(&'view self) -> Merits<'view, 'source> {
+        Merits(self)
     }
 }

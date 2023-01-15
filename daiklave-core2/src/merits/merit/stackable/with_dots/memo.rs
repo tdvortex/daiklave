@@ -1,6 +1,8 @@
+use serde::{Serialize, Deserialize};
+
 use super::{dots::{ZeroDotsStackableMeritMemo, OneDotStackableMeritMemo, TwoDotsStackableMeritMemo, ThreeDotsStackableMeritMemo, FourDotsStackableMeritMemo, FiveDotsStackableMeritMemo}, StackableMeritWithDots};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum StackableMeritWithDotsMemo {
     Zero(ZeroDotsStackableMeritMemo),
     One(OneDotStackableMeritMemo),

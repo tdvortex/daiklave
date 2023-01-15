@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::merits::merit::{template::MeritTemplateWithDotsMemo, stackable::StackableMeritTemplateId};
 
 use super::{ZeroDotsStackableMerit, OneDotStackableMerit, TwoDotsStackableMerit, ThreeDotsStackableMerit, FourDotsStackableMerit, FiveDotsStackableMerit};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct ZeroDotsStackableMeritMemo(StackableMeritTemplateId, MeritTemplateWithDotsMemo);
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub(crate) struct ZeroDotsStackableMeritMemo(pub StackableMeritTemplateId, pub MeritTemplateWithDotsMemo);
 
 impl<'source> ZeroDotsStackableMeritMemo {
     pub fn as_ref(&'source self) -> ZeroDotsStackableMerit<'source> {
@@ -11,8 +13,8 @@ impl<'source> ZeroDotsStackableMeritMemo {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct OneDotStackableMeritMemo(StackableMeritTemplateId, MeritTemplateWithDotsMemo);
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub(crate) struct OneDotStackableMeritMemo(pub StackableMeritTemplateId, pub MeritTemplateWithDotsMemo);
 
 impl<'source> OneDotStackableMeritMemo {
     pub fn as_ref(&'source self) -> OneDotStackableMerit<'source> {
@@ -20,8 +22,8 @@ impl<'source> OneDotStackableMeritMemo {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct TwoDotsStackableMeritMemo(StackableMeritTemplateId, MeritTemplateWithDotsMemo);
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub(crate) struct TwoDotsStackableMeritMemo(pub StackableMeritTemplateId, pub MeritTemplateWithDotsMemo);
 
 impl<'source> TwoDotsStackableMeritMemo {
     pub fn as_ref(&'source self) -> TwoDotsStackableMerit<'source> {
@@ -29,8 +31,8 @@ impl<'source> TwoDotsStackableMeritMemo {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct ThreeDotsStackableMeritMemo(StackableMeritTemplateId, MeritTemplateWithDotsMemo);
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub(crate) struct ThreeDotsStackableMeritMemo(pub StackableMeritTemplateId, pub MeritTemplateWithDotsMemo);
 
 impl<'source> ThreeDotsStackableMeritMemo {
     pub fn as_ref(&'source self) -> ThreeDotsStackableMerit<'source> {
@@ -38,8 +40,8 @@ impl<'source> ThreeDotsStackableMeritMemo {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct FourDotsStackableMeritMemo(StackableMeritTemplateId, MeritTemplateWithDotsMemo);
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub(crate) struct FourDotsStackableMeritMemo(pub StackableMeritTemplateId, pub MeritTemplateWithDotsMemo);
 
 
 impl<'source> FourDotsStackableMeritMemo {
@@ -48,8 +50,8 @@ impl<'source> FourDotsStackableMeritMemo {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct FiveDotsStackableMeritMemo(StackableMeritTemplateId, MeritTemplateWithDotsMemo);
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub(crate) struct FiveDotsStackableMeritMemo(pub StackableMeritTemplateId, pub MeritTemplateWithDotsMemo);
 
 impl<'source> FiveDotsStackableMeritMemo {
     pub fn as_ref(&'source self) -> FiveDotsStackableMerit<'source> {
