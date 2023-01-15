@@ -2,7 +2,8 @@ use crate::{merits::merit::{template::MeritTemplateId, MeritType}, book_referenc
 
 pub(crate) use self::dots::{
     FiveDotsStackableMerit, FourDotsStackableMerit, OneDotStackableMerit, ThreeDotsStackableMerit,
-    TwoDotsStackableMerit, ZeroDotsStackableMerit,
+    TwoDotsStackableMerit, ZeroDotsStackableMerit, FiveDotsStackableMeritMemo, FourDotsStackableMeritMemo, OneDotStackableMeritMemo, ThreeDotsStackableMeritMemo,
+    TwoDotsStackableMeritMemo, ZeroDotsStackableMeritMemo,
 };
 
 mod dots;

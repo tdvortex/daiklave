@@ -2,18 +2,21 @@ mod id;
 pub(crate) use id::StackableMeritTemplateId;
 pub use id::{StackableMeritId};
 
+mod template;
+pub use template::StackableMeritTemplate;
+
 mod view;
 use serde::{Serialize, Deserialize};
 pub(crate) use view::StackableMeritView;
 
-use self::with_dots::StackableMeritWithDotsMemo;
+pub(crate) use with_dots::{StackableMeritWithDotsMemo, ZeroDotsStackableMeritMemo, OneDotStackableMeritMemo, TwoDotsStackableMeritMemo, ThreeDotsStackableMeritMemo, FourDotsStackableMeritMemo, FiveDotsStackableMeritMemo};
 
 mod with_dots;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StackableMerit {
-    detail: String,
-    dotted: StackableMeritWithDotsMemo,
+    pub(crate) detail: String,
+    pub(crate) dotted: StackableMeritWithDotsMemo,
 }
 
 impl<'source> StackableMerit {

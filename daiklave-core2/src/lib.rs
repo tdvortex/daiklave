@@ -17,7 +17,7 @@ use exaltation::exalt::{
 use health::{DamageLevel, WoundPenalty};
 use hearthstones::{hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId};
 use martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId};
-use merits::merit::{MeritId, StackableMeritId, StackableMerit, NonStackableMerit};
+use merits::merit::{MeritId, StackableMeritId, StackableMerit, NonStackableMerit, NonStackableMeritId};
 use name_and_concept::ConceptError;
 use sorcery::SorceryError;
 use thiserror::Error;
@@ -179,7 +179,7 @@ pub enum CharacterMutation {
     /// Add a stackable merit with an id for this instance and detail
     AddStackableMerit(StackableMeritId, StackableMerit),
     /// Add a nonstackable merit
-    AddNonStackableMerit(NonStackableMerit),
+    AddNonStackableMerit(NonStackableMeritId, NonStackableMerit),
     /// Remove a merit from the character
     RemoveMerit(MeritId),
 }

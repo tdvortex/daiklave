@@ -1,5 +1,10 @@
 mod dots;
-pub(crate) use dots::{ZeroDotsNonStackableMerit, ZeroDotsNonStackableMeritMemo, OneDotNonStackableMerit, OneDotNonStackableMeritMemo, TwoDotsNonStackableMerit, TwoDotsNonStackableMeritMemo, ThreeDotsNonStackableMerit, ThreeDotsNonStackableMeritMemo, FiveDotsNonStackableMerit, FiveDotsNonStackableMeritMemo, FourDotsNonStackableMerit, FourDotsNonStackableMeritMemo};
+pub(crate) use dots::{
+    FiveDotsNonStackableMerit, FiveDotsNonStackableMeritMemo, FourDotsNonStackableMerit,
+    FourDotsNonStackableMeritMemo, OneDotNonStackableMerit, OneDotNonStackableMeritMemo,
+    ThreeDotsNonStackableMerit, ThreeDotsNonStackableMeritMemo, TwoDotsNonStackableMerit,
+    TwoDotsNonStackableMeritMemo, ZeroDotsNonStackableMerit, ZeroDotsNonStackableMeritMemo,
+};
 
 mod memo;
 pub(crate) use memo::NonStackableMeritWithDotsMemo;
@@ -19,12 +24,24 @@ pub(crate) enum NonStackableMeritWithDots<'source> {
 impl<'source> NonStackableMeritWithDots<'source> {
     pub fn as_memo(&self) -> NonStackableMeritWithDotsMemo {
         match self {
-            NonStackableMeritWithDots::Zero(zero) => NonStackableMeritWithDotsMemo::Zero(zero.as_memo()),
-            NonStackableMeritWithDots::One(one) => NonStackableMeritWithDotsMemo::One(one.as_memo()),
-            NonStackableMeritWithDots::Two(two) => NonStackableMeritWithDotsMemo::Two(two.as_memo()),
-            NonStackableMeritWithDots::Three(three) => NonStackableMeritWithDotsMemo::Three(three.as_memo()),
-            NonStackableMeritWithDots::Four(four) => NonStackableMeritWithDotsMemo::Four(four.as_memo()),
-            NonStackableMeritWithDots::Five(five) => NonStackableMeritWithDotsMemo::Five(five.as_memo()),
+            NonStackableMeritWithDots::Zero(zero) => {
+                NonStackableMeritWithDotsMemo::Zero(zero.as_memo())
+            }
+            NonStackableMeritWithDots::One(one) => {
+                NonStackableMeritWithDotsMemo::One(one.as_memo())
+            }
+            NonStackableMeritWithDots::Two(two) => {
+                NonStackableMeritWithDotsMemo::Two(two.as_memo())
+            }
+            NonStackableMeritWithDots::Three(three) => {
+                NonStackableMeritWithDotsMemo::Three(three.as_memo())
+            }
+            NonStackableMeritWithDots::Four(four) => {
+                NonStackableMeritWithDotsMemo::Four(four.as_memo())
+            }
+            NonStackableMeritWithDots::Five(five) => {
+                NonStackableMeritWithDotsMemo::Five(five.as_memo())
+            }
         }
     }
 
