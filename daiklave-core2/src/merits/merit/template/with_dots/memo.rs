@@ -8,7 +8,7 @@ pub(crate) struct MeritTemplateWithDotsMemo {
     book_reference: Option<BookReference>,
     merit_type: MeritType,
     shared_description: String,
-    dot_description: String,
+    dot_description: Option<String>,
     prerequisites: Vec<MeritPrerequisite>,
 }
 
@@ -19,7 +19,7 @@ impl<'source> MeritTemplateWithDotsMemo {
             book_reference: self.book_reference,
             merit_type: self.merit_type,
             shared_description: self.shared_description.as_str(),
-            dot_description: self.shared_description.as_str(),
+            dot_description: self.dot_description.as_deref(),
             prerequisites: self.prerequisites.clone(),
         }
     }

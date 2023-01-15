@@ -8,7 +8,7 @@ pub(crate) struct MeritTemplateWithDots<'source> {
     book_reference: Option<BookReference>,
     merit_type: MeritType,
     shared_description: &'source str,
-    dot_description: &'source str,
+    dot_description: Option<&'source str>,
     prerequisites: Vec<MeritPrerequisite>,
 }
 
@@ -25,7 +25,7 @@ impl<'source> MeritTemplateWithDots<'source> {
         self.merit_type
     }
 
-    pub fn description(&self) -> (&'source str, &'source str) {
+    pub fn description(&self) -> (&'source str, Option<&'source str>) {
         (self.shared_description, self.dot_description)
     }
 

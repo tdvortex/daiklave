@@ -1,4 +1,4 @@
-use crate::merits::merit::template::MeritTemplateId;
+use crate::{merits::merit::{template::MeritTemplateId, MeritType}, book_reference::BookReference};
 
 use super::with_dots::StackableMeritWithDots;
 
@@ -14,5 +14,25 @@ impl<'source> StackableMeritView<'source> {
 
     pub fn template_name(&self) -> &'source str {
         self.dotted.template_name()
+    }
+
+    pub fn book_reference(&self) -> Option<BookReference> {
+        self.dotted.book_reference()
+    }
+
+    pub fn detail(&self) -> &'source str {
+        self.detail
+    }
+
+    pub fn dots(&self) -> u8 {
+        self.dotted.dots()
+    }
+
+    pub fn merit_type(&self) -> MeritType {
+        self.dotted.merit_type()
+    }
+
+    pub fn description(&self) -> (&'source str, Option<&'source str>) {
+        self.dotted.description()
     }
 }
