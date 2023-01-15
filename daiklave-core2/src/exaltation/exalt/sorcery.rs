@@ -11,7 +11,7 @@ pub(crate) enum ExaltSorcery<'view, 'source> {
 }
 
 impl<'view, 'source> ExaltSorcery<'view, 'source> {
-    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits> {
+    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         match self {
             ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer.archetype(id),
         }

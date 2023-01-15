@@ -27,7 +27,7 @@ pub(crate) struct SolarCircleSorcerer<'source> {
     pub(in crate::sorcery::circles) solar_spells: HashMap<SpellId, &'source SolarSpell>,
 }
 
-impl<'source> SolarCircleSorcerer<'source> {
+impl<'view, 'source> SolarCircleSorcerer<'source> {
     pub fn as_memo(&self) -> SolarCircleSorcererMemo {
         SolarCircleSorcererMemo {
             archetypes: self
@@ -65,7 +65,7 @@ impl<'source> SolarCircleSorcerer<'source> {
         }
     }
 
-    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits> {
+    pub fn archetype(&'view self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         if self.circle_archetypes.contains(&id) {
             self.archetypes.get(&id).map(|(archetype, merits)| (*archetype, merits))
         } else {

@@ -15,7 +15,7 @@ pub struct Sorcery<'view, 'source>(pub(crate) ExaltationSorcery<'view, 'source>)
 
 impl<'view, 'source> Sorcery<'view, 'source> {
     /// The details of a specific sorcerous archetype, if it exists.
-    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits> {
+    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         self.0.archetype(id)
     }
 

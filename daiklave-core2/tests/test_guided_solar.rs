@@ -790,6 +790,7 @@ fn test_guided_solar() {
             .unwrap()
             .archetype(SorceryArchetypeId(UniqueId::Placeholder(1)))
             .unwrap()
+            .0
             .name(),
         "Bargain with Mara"
     );

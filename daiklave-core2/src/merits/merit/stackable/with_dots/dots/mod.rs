@@ -22,7 +22,7 @@ impl<'source> ZeroDotsStackableMerit<'source> {
     }
 
     pub fn template_id(&self) -> MeritTemplateId {
-        MeritTemplateId::StackableMerit(self.0)
+        MeritTemplateId::Stackable(self.0)
     }
 }
 
@@ -43,7 +43,7 @@ impl<'source> OneDotStackableMerit<'source> {
     }
 
     pub fn template_id(&self) -> MeritTemplateId {
-        MeritTemplateId::StackableMerit(self.0)
+        MeritTemplateId::Stackable(self.0)
     }
 }
 
@@ -64,7 +64,7 @@ impl<'source> TwoDotsStackableMerit<'source> {
     }
 
     pub fn template_id(&self) -> MeritTemplateId {
-        MeritTemplateId::StackableMerit(self.0)
+        MeritTemplateId::Stackable(self.0)
     }
 }
 
@@ -85,7 +85,7 @@ impl<'source> ThreeDotsStackableMerit<'source> {
     }
 
     pub fn template_id(&self) -> MeritTemplateId {
-        MeritTemplateId::StackableMerit(self.0)
+        MeritTemplateId::Stackable(self.0)
     }
 }
 
@@ -106,7 +106,7 @@ impl<'source> FourDotsStackableMerit<'source> {
     }
     
     pub fn template_id(&self) -> MeritTemplateId {
-        MeritTemplateId::StackableMerit(self.0)
+        MeritTemplateId::Stackable(self.0)
     }
 }
 
@@ -127,6 +127,6 @@ impl<'source> FiveDotsStackableMerit<'source> {
     }
 
     pub fn template_id(&self) -> MeritTemplateId {
-        MeritTemplateId::StackableMerit(self.0)
+        MeritTemplateId::Stackable(self.0)
     }
 }

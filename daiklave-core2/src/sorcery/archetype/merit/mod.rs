@@ -13,3 +13,25 @@ pub struct SorceryArchetypeMerit {
     dots: u8,
     description: String,
 }
+
+impl<'source> SorceryArchetypeMerit {
+    /// The name of the merit.
+    pub fn name(&'source self) -> &'source str {
+        self.name.as_str()
+    }
+    
+    /// The book reference for the merit.
+    pub fn book_reference(&self) -> Option<BookReference> {
+        self.book_reference
+    }
+
+    /// The cost of the merit in dots.
+    pub fn dots(&self) -> u8 {
+        self.dots
+    }
+
+    /// The merit's description.
+    pub fn description(&'source self) -> &'source str {
+        self.description.as_str()
+    }
+}

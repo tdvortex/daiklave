@@ -62,7 +62,7 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
         }
     }
 
-    pub fn archetype(&'view self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits> {
+    pub fn archetype(&'view self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         if id == self.archetype_id {
             Some((
                 self.archetype,

@@ -139,21 +139,21 @@ impl<'view, 'source> Merits<'view, 'source> {
                     None
                 }
             }
-            MeritId::NonStackableMerit(nonstackable_id) => self
+            MeritId::NonStackable(nonstackable_id) => self
                 .0
                 .nonstackable_merits
                 .get(&nonstackable_id)
                 .map(|merit| {
-                    Merit(MeritSource::NonStackableMerit(
+                    Merit(MeritSource::NonStackable(
                         nonstackable_id,
                         merit.clone(),
                     ))
                 }),
-            MeritId::StackableMerit(stackable_id) => self
+            MeritId::Stackable(stackable_id) => self
                 .0
                 .stackable_merits
                 .get(&stackable_id)
-                .map(|merit| Merit(MeritSource::StackableMerit(stackable_id, *merit))),
+                .map(|merit| Merit(MeritSource::Stackable(stackable_id, *merit))),
             MeritId::LocalTongues => {
                 let purchased = self.0.languages.iter().filter(|(language, native)| {
                     !native && matches!(language, Language::LocalTongue(_))
@@ -171,6 +171,14 @@ impl<'view, 'source> Merits<'view, 'source> {
                 } else {
                     None
                 }
+            }
+            MeritId::SorceryArchetype(sorcery_archetype_id, sorcery_archetype_merit_id) => {
+                self
+                .0
+                .sorcery()
+                .and_then(|sorcery| sorcery.archetype(sorcery_archetype_id))
+                .and_then(|(_archetype, merits)| merits.get(&sorcery_archetype_merit_id))
+                .map(|sorcery_archetype_merit| Merit(MeritSource::SorceryArchetype((sorcery_archetype_id, sorcery_archetype_merit_id), *sorcery_archetype_merit)))
             }
         }
     }

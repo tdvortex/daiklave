@@ -31,7 +31,7 @@ impl<'view, 'source> SolarSorcererView<'source> {
         }
     }
 
-    pub fn archetype(&'view self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits> {
+    pub fn archetype(&'view self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         match self {
             SolarSorcererView::Terrestrial(terrestrial) => terrestrial.archetype(id),
             SolarSorcererView::Celestial(celestial) => celestial.archetype(id),

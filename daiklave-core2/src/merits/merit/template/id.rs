@@ -1,4 +1,4 @@
-use crate::merits::merit::{nonstackable::NonStackableMeritId, stackable::StackableMeritTemplateId};
+use crate::{merits::merit::{nonstackable::NonStackableMeritId, stackable::StackableMeritTemplateId}, sorcery::{SorceryArchetypeMeritId, SorceryArchetypeId}};
 
 pub enum MeritTemplateId {
     /// The template for the Artifact merit.
@@ -19,8 +19,11 @@ pub enum MeritTemplateId {
     MortalSorcerer,
     /// The template for a non-stackable merit, unique for each character. Note
     /// that the template Id is the same as the instance Id.
-    NonStackableMerit(NonStackableMeritId),
+    NonStackable(NonStackableMeritId),
+    /// The template for a sorcery archetype merit. These are always 
+    /// non-stackable.
+    SorceryArchetype(SorceryArchetypeId, SorceryArchetypeMeritId),
     /// The template for a stackable merit, which is not necessarily unique for
     /// a character. Note that the 
-    StackableMerit(StackableMeritTemplateId),
+    Stackable(StackableMeritTemplateId),
 }
