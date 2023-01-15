@@ -17,6 +17,7 @@ use exaltation::exalt::{
 use health::{DamageLevel, WoundPenalty};
 use hearthstones::{hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId};
 use martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId};
+use merits::merit::{MeritId, StackableMeritId, StackableMerit, NonStackableMerit};
 use name_and_concept::ConceptError;
 use sorcery::SorceryError;
 use thiserror::Error;
@@ -68,6 +69,7 @@ pub mod weapons;
 mod character;
 mod character_memo;
 pub(crate) mod craft;
+mod merits;
 mod name_and_concept;
 mod willpower;
 
@@ -174,6 +176,12 @@ pub enum CharacterMutation {
     RemoveHearthstone(HearthstoneId),
     /// Attune to an artifact, committing motes to its ongoing use.
     AttuneArtifact(ArtifactId, MotePoolName),
+    /// Add a stackable merit with an id for this instance and detail
+    AddStackableMerit(StackableMeritId, StackableMerit),
+    /// Add a nonstackable merit
+    AddNonStackableMerit(NonStackableMerit),
+    /// Remove a merit from the character
+    RemoveMerit(MeritId),
 }
 
 /// An error representing something that could go wrong with a

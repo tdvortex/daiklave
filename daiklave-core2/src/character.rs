@@ -186,6 +186,9 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AttuneArtifact(artifact_id, first) => {
                 self.check_attune_artifact(*artifact_id, *first)
             }
+            CharacterMutation::AddStackableMerit(_, _) => todo!(),
+            CharacterMutation::AddNonStackableMerit(_) => todo!(),
+            CharacterMutation::RemoveMerit(_) => todo!(),
         }
     }
 
@@ -277,6 +280,9 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AttuneArtifact(artifact_id, first) => {
                 self.attune_artifact(*artifact_id, *first)
             }
+            CharacterMutation::AddStackableMerit(_, _) => todo!(),
+            CharacterMutation::AddNonStackableMerit(_) => todo!(),
+            CharacterMutation::RemoveMerit(_) => todo!(),
         }
     }
 

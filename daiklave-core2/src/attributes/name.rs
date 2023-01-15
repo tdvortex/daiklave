@@ -1,5 +1,5 @@
 /// The nine attributes.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum AttributeName {
     /// Strength
     Strength,
