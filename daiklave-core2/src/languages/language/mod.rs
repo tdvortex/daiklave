@@ -15,6 +15,15 @@ pub enum Language<'source> {
     LocalTongue(&'source str),
 }
 
+impl<'source> Language<'source> {
+    pub(crate) fn as_memo(&self) -> LanguageMutation {
+        match self {
+            Language::MajorLanguage(major) => LanguageMutation::MajorLanguage(*major),
+            Language::LocalTongue(local) => LanguageMutation::LocalTongue(local.to_string()),
+        }
+    }
+}
+
 impl<'source> Default for Language<'source> {
     fn default() -> Self {
         Self::MajorLanguage(Default::default())

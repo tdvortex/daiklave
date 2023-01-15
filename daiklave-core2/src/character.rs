@@ -42,7 +42,7 @@ use crate::{
         WeaponError, Weapons,
     },
     willpower::Willpower,
-    CharacterMemo, CharacterMutation, CharacterMutationError,
+    CharacterMemo, CharacterMutation, CharacterMutationError, languages::Languages,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -61,6 +61,7 @@ pub struct Character<'source> {
     pub(crate) demenses_no_manse: HashMap<UniqueId, (&'source str, GeomancyLevel)>,
     pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMeritView<'source>>,
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMeritView<'source>>,
+    pub(crate) languages: Languages<'source>,
 }
 
 impl<'source> Default for Character<'source> {
@@ -78,6 +79,7 @@ impl<'source> Default for Character<'source> {
             demenses_no_manse: Default::default(),
             stackable_merits: Default::default(),
             nonstackable_merits: Default::default(),
+            languages: Default::default(),
         }
     }
 }
@@ -114,6 +116,7 @@ impl<'view, 'source> Character<'source> {
                 .iter()
                 .map(|(k, v)| (*k, v.as_memo()))
                 .collect(),
+            languages: self.languages.as_memo(),
         }
     }
 
@@ -1814,5 +1817,10 @@ impl<'view, 'source> Character<'source> {
     /// Access all Merits owned by the character.
     pub fn merits(&'view self) -> Merits<'view, 'source> {
         Merits(self)
+    }
+
+    /// Get all languages spoken by the character.
+    pub fn languages(&'view self) -> &'view Languages<'source> {
+        &self.languages
     }
 }

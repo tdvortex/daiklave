@@ -10,7 +10,7 @@ use crate::{
     health::Health,
     hearthstones::{HearthstoneId, UnslottedHearthstoneMemo, hearthstone::GeomancyLevel},
     willpower::Willpower,
-    Character, unique_id::UniqueId, merits::merit::{StackableMeritId, StackableMerit, NonStackableMerit, NonStackableMeritId},
+    Character, unique_id::UniqueId, merits::merit::{StackableMeritId, StackableMerit, NonStackableMerit, NonStackableMeritId}, languages::LanguagesMemo,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -29,6 +29,7 @@ pub struct CharacterMemo {
     pub(crate) demenses_no_manse: HashMap<UniqueId, (String, GeomancyLevel)>,
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMerit>,
     pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMerit>,
+    pub(crate) languages: LanguagesMemo,
 }
 
 impl<'source> CharacterMemo {
@@ -51,6 +52,7 @@ impl<'source> CharacterMemo {
             demenses_no_manse: self.demenses_no_manse.iter().map(|(k, (s, g))| (*k, (s.as_str(), *g))).collect(),
             nonstackable_merits: self.nonstackable_merits.iter().map(|(k, v)| (*k, v.as_ref())).collect(),
             stackable_merits: self.stackable_merits.iter().map(|(k, v)| (*k, v.as_ref())).collect(),
+            languages: self.languages.as_ref(),
         }
     }
 }

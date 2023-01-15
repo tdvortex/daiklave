@@ -2,7 +2,7 @@ pub mod merit;
 
 use crate::{
     armor::armor_item::ArmorId, artifact::ArtifactId, exaltation::Exaltation,
-    weapons::weapon::WeaponId, Character,
+    weapons::weapon::WeaponId, Character, languages::language::Language,
 };
 
 use self::merit::{Merit, MeritId, MeritSource};
@@ -154,8 +154,24 @@ impl<'view, 'source> Merits<'view, 'source> {
                 .stackable_merits
                 .get(&stackable_id)
                 .map(|merit| Merit(MeritSource::StackableMerit(stackable_id, *merit))),
-            MeritId::LocalTongues => todo!(),
-            MeritId::MajorLanguage(_) => todo!(),
+            MeritId::LocalTongues => {
+                let purchased = self.0.languages.iter().filter(|(language, native)| {
+                    !native && matches!(language, Language::LocalTongue(_))
+                }).count();
+
+                if purchased > 0 {
+                    Some(Merit(MeritSource::LocalTongues(purchased)))
+                } else {
+                    None
+                }
+            }
+            MeritId::MajorLanguage(major) => {
+                if self.0.languages.other_languages.contains(&Language::MajorLanguage(major)) {
+                    Some(Merit(MeritSource::MajorLanguage(major)))
+                } else {
+                    None
+                }
+            }
         }
     }
 
