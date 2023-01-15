@@ -38,7 +38,7 @@ impl<'source> Languages<'source> {
         for language in self.other_languages.iter().copied() {
             match language {
                 Language::MajorLanguage(major) => {major_language_merits.push(Merit(MeritSource::MajorLanguage(major)));}
-                Language::LocalTongue(local) => {local_tongues_count += 1;}
+                Language::LocalTongue(_) => {local_tongues_count += 1;}
             }
         }
 

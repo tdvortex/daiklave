@@ -4,7 +4,7 @@ use crate::sorcery::{
     circles::{
         celestial::CelestialSpell, sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell,
     },
-    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, Spell, SpellId,
+    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, Spell, SpellId, SorceryArchetypeMeritId, SorceryArchetypeMerit, SorceryArchetypeWithMerits,
 };
 
 use super::{sorcerer_memo::SolarCircleSorcererMemo, SolarSpell};
@@ -12,7 +12,7 @@ use super::{sorcerer_memo::SolarCircleSorcererMemo, SolarSpell};
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct SolarCircleSorcerer<'source> {
     pub(in crate::sorcery::circles) archetypes:
-        HashMap<SorceryArchetypeId, &'source SorceryArchetype>,
+        HashMap<SorceryArchetypeId, (&'source SorceryArchetype, HashMap<SorceryArchetypeMeritId, &'source SorceryArchetypeMerit>)>,
     pub(in crate::sorcery::circles) circle_archetypes: [SorceryArchetypeId; 3],
     pub(in crate::sorcery::circles) shaping_ritual_ids: [ShapingRitualId; 3],
     pub(in crate::sorcery::circles) shaping_rituals: [&'source ShapingRitual; 3],
@@ -33,7 +33,10 @@ impl<'source> SolarCircleSorcerer<'source> {
             archetypes: self
                 .archetypes
                 .iter()
-                .map(|(k, v)| (*k, (*v).to_owned()))
+                .map(|(k, (archetype, merits))| (*k, (
+                    (*archetype).to_owned(),
+                    merits.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
+                )))
                 .collect(),
             circle_archetypes: self.circle_archetypes,
             shaping_ritual_ids: self.shaping_ritual_ids,
@@ -62,9 +65,9 @@ impl<'source> SolarCircleSorcerer<'source> {
         }
     }
 
-    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&'source SorceryArchetype> {
+    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits> {
         if self.circle_archetypes.contains(&id) {
-            self.archetypes.get(&id).copied()
+            self.archetypes.get(&id).map(|(archetype, merits)| (*archetype, merits))
         } else {
             None
         }

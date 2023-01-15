@@ -1,20 +1,11 @@
 mod archetype;
-mod archetype_id;
 pub(crate) mod circles;
 mod error;
-mod shaping_ritual;
-mod shaping_ritual_id;
 mod spell;
-mod spell_id;
 
-pub use archetype::SorceryArchetype;
-pub use archetype_id::SorceryArchetypeId;
+pub use archetype::{SorceryArchetype, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryArchetypeId, ShapingRitual, ShapingRitualId, SorceryArchetypeWithMerits};
 pub(crate) use error::SorceryError;
-pub use shaping_ritual::ShapingRitual;
-pub use shaping_ritual_id::ShapingRitualId;
-pub use spell::Spell;
-pub use spell_id::SpellId;
-
+pub use spell::{Spell, SpellId};
 pub use circles::{CelestialSpell, SolarSpell, SorceryCircle, TerrestrialSpell};
 
 use crate::exaltation::ExaltationSorcery;
@@ -24,7 +15,7 @@ pub struct Sorcery<'view, 'source>(pub(crate) ExaltationSorcery<'view, 'source>)
 
 impl<'view, 'source> Sorcery<'view, 'source> {
     /// The details of a specific sorcerous archetype, if it exists.
-    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&'source SorceryArchetype> {
+    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits> {
         self.0.archetype(id)
     }
 

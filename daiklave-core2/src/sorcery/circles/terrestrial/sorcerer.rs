@@ -3,23 +3,24 @@ use std::collections::HashMap;
 use crate::sorcery::{
     circles::{celestial::sorcerer::CelestialCircleSorcerer, solar::sorcerer::SolarCircleSorcerer},
     ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryError, Spell,
-    SpellId,
+    SpellId, SorceryArchetypeMeritId, SorceryArchetypeWithMerits, SorceryArchetypeMerit,
 };
 
 use super::{sorcerer_memo::TerrestrialCircleSorcererMemo, TerrestrialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TerrestrialCircleSorcerer<'source> {
-    pub(in crate::sorcery::circles) archetype_id: SorceryArchetypeId,
-    pub(in crate::sorcery::circles) archetype: &'source SorceryArchetype,
-    pub(in crate::sorcery::circles) shaping_ritual_id: ShapingRitualId,
-    pub(in crate::sorcery::circles) shaping_ritual: &'source ShapingRitual,
-    pub(in crate::sorcery::circles) control_spell_id: SpellId,
-    pub(in crate::sorcery::circles) control_spell: &'source TerrestrialSpell,
-    pub(in crate::sorcery::circles) other_spells: HashMap<SpellId, &'source TerrestrialSpell>,
+    pub archetype_id: SorceryArchetypeId,
+    pub archetype: &'source SorceryArchetype,
+    pub archetype_merits: HashMap<SorceryArchetypeMeritId, &'source SorceryArchetypeMerit>,
+    pub shaping_ritual_id: ShapingRitualId,
+    pub shaping_ritual: &'source ShapingRitual,
+    pub control_spell_id: SpellId,
+    pub control_spell: &'source TerrestrialSpell,
+    pub other_spells: HashMap<SpellId, &'source TerrestrialSpell>,
 }
 
-impl<'source> TerrestrialCircleSorcerer<'source> {
+impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
     pub fn new(
         archetype_id: SorceryArchetypeId,
         archetype: &'source SorceryArchetype,
@@ -35,6 +36,7 @@ impl<'source> TerrestrialCircleSorcerer<'source> {
         Ok(Self {
             archetype_id,
             archetype,
+            archetype_merits: HashMap::new(),
             shaping_ritual_id,
             shaping_ritual,
             control_spell_id,
@@ -47,6 +49,7 @@ impl<'source> TerrestrialCircleSorcerer<'source> {
         TerrestrialCircleSorcererMemo {
             archetype_id: self.archetype_id,
             archetype: self.archetype.to_owned(),
+            archetype_merits: self.archetype_merits.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
             shaping_ritual_id: self.shaping_ritual_id,
             shaping_ritual: self.shaping_ritual.to_owned(),
             control_spell_id: self.control_spell_id,
@@ -59,9 +62,12 @@ impl<'source> TerrestrialCircleSorcerer<'source> {
         }
     }
 
-    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&'source SorceryArchetype> {
+    pub fn archetype(&'view self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits> {
         if id == self.archetype_id {
-            Some(self.archetype)
+            Some((
+                self.archetype,
+                &self.archetype_merits
+            ))
         } else {
             None
         }
@@ -85,6 +91,12 @@ impl<'view, 'source> From<&'view CelestialCircleSorcerer<'source>>
             archetype: celestial
                 .archetypes
                 .get(&celestial.circle_archetypes[0])
+                .map(|(archetype, _merits)| *archetype)
+                .expect("Archetypes should be owned"),
+            archetype_merits: celestial
+                .archetypes
+                .get(&celestial.circle_archetypes[0])
+                .map(|(_archetype, merits)| merits.to_owned())
                 .expect("Archetypes should be owned"),
             shaping_ritual_id: celestial.shaping_ritual_ids[0],
             shaping_ritual: celestial.shaping_rituals[0],
@@ -104,6 +116,12 @@ impl<'view, 'source> From<&'view SolarCircleSorcerer<'source>>
             archetype: solar
                 .archetypes
                 .get(&solar.circle_archetypes[0])
+                .map(|(archetype, _merits)| *archetype)
+                .expect("Archetypes should be owned"),
+            archetype_merits: solar
+                .archetypes
+                .get(&solar.circle_archetypes[0])
+                .map(|(_archetype, merits)| merits.to_owned())
                 .expect("Archetypes should be owned"),
             shaping_ritual_id: solar.shaping_ritual_ids[0],
             shaping_ritual: solar.shaping_rituals[0],

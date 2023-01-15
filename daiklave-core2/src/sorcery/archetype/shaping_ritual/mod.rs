@@ -1,8 +1,11 @@
+mod id;
+pub use id::ShapingRitualId;
+
 use serde::{Deserialize, Serialize};
 
 use crate::book_reference::BookReference;
 
-use super::archetype_id::SorceryArchetypeId;
+use super::SorceryArchetypeId;
 
 /// A shaping ritual, one method that a sorcerous archetype might use to
 /// generate Sorcerous Motes.

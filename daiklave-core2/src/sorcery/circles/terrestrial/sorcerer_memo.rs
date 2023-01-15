@@ -3,20 +3,21 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::sorcery::{
-    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
+    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId, SorceryArchetypeMeritId, SorceryArchetypeMerit,
 };
 
 use super::{sorcerer::TerrestrialCircleSorcerer, TerrestrialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct TerrestrialCircleSorcererMemo {
-    pub(in crate::sorcery::circles) archetype_id: SorceryArchetypeId,
-    pub(in crate::sorcery::circles) archetype: SorceryArchetype,
-    pub(in crate::sorcery::circles) shaping_ritual_id: ShapingRitualId,
-    pub(in crate::sorcery::circles) shaping_ritual: ShapingRitual,
-    pub(in crate::sorcery::circles) control_spell_id: SpellId,
-    pub(in crate::sorcery::circles) control_spell: TerrestrialSpell,
-    pub(in crate::sorcery::circles) other_spells: HashMap<SpellId, TerrestrialSpell>,
+    pub archetype_id: SorceryArchetypeId,
+    pub archetype: SorceryArchetype,
+    pub archetype_merits: HashMap<SorceryArchetypeMeritId, SorceryArchetypeMerit>,
+    pub shaping_ritual_id: ShapingRitualId,
+    pub shaping_ritual: ShapingRitual,
+    pub control_spell_id: SpellId,
+    pub control_spell: TerrestrialSpell,
+    pub other_spells: HashMap<SpellId, TerrestrialSpell>,
 }
 
 impl<'source> TerrestrialCircleSorcererMemo {
@@ -24,6 +25,7 @@ impl<'source> TerrestrialCircleSorcererMemo {
         TerrestrialCircleSorcerer {
             archetype_id: self.archetype_id,
             archetype: &self.archetype,
+            archetype_merits: self.archetype_merits.iter().map(|(k, v)| (*k, v)).collect(),
             shaping_ritual_id: self.shaping_ritual_id,
             shaping_ritual: &self.shaping_ritual,
             control_spell_id: self.control_spell_id,

@@ -4,14 +4,21 @@ use serde::{Deserialize, Serialize};
 
 use crate::sorcery::{
     circles::{celestial::CelestialSpell, terrestrial::TerrestrialSpell},
-    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
+    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
+    SorceryArchetypeMeritId, SpellId,
 };
 
 use super::{sorcerer::SolarCircleSorcerer, SolarSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SolarCircleSorcererMemo {
-    pub(in crate::sorcery::circles) archetypes: HashMap<SorceryArchetypeId, SorceryArchetype>,
+    pub(in crate::sorcery::circles) archetypes: HashMap<
+        SorceryArchetypeId,
+        (
+            SorceryArchetype,
+            HashMap<SorceryArchetypeMeritId, SorceryArchetypeMerit>,
+        ),
+    >,
     pub(in crate::sorcery::circles) circle_archetypes: [SorceryArchetypeId; 3],
     pub(in crate::sorcery::circles) shaping_ritual_ids: [ShapingRitualId; 3],
     pub(in crate::sorcery::circles) shaping_rituals: [ShapingRitual; 3],
@@ -29,7 +36,17 @@ pub(crate) struct SolarCircleSorcererMemo {
 impl<'source> SolarCircleSorcererMemo {
     pub fn as_ref(&'source self) -> SolarCircleSorcerer<'source> {
         SolarCircleSorcerer {
-            archetypes: self.archetypes.iter().map(|(k, v)| (*k, v)).collect(),
+            archetypes: self
+                .archetypes
+                .iter()
+                .map(|(k, (archetype, merits))| {
+                    (
+                        *k,
+                        (archetype, 
+                        merits.iter().map(|(k, v)| (*k, v)).collect()),
+                    )
+                })
+                .collect(),
             circle_archetypes: self.circle_archetypes,
             shaping_ritual_ids: self.shaping_ritual_ids,
             shaping_rituals: {

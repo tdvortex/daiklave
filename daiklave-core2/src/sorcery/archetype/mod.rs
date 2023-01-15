@@ -1,3 +1,15 @@
+mod id;
+pub use id::SorceryArchetypeId;
+
+mod merit;
+pub use merit::{SorceryArchetypeMerit, SorceryArchetypeMeritId};
+
+mod shaping_ritual;
+pub use shaping_ritual::{ShapingRitual, ShapingRitualId};
+
+mod with_merits;
+pub use with_merits::SorceryArchetypeWithMerits;
+
 use serde::{Deserialize, Serialize};
 
 use crate::book_reference::BookReference;

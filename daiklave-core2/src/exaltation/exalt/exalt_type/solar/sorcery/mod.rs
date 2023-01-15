@@ -7,8 +7,8 @@ use crate::sorcery::{
         celestial::sorcerer::CelestialCircleSorcerer, solar::sorcerer::SolarCircleSorcerer,
         terrestrial::sorcerer::TerrestrialCircleSorcerer,
     },
-    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle, Spell,
-    SpellId,
+    ShapingRitual, ShapingRitualId, SorceryArchetypeId, SorceryCircle, Spell,
+    SpellId, SorceryArchetypeWithMerits,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -18,7 +18,7 @@ pub(crate) enum SolarSorcererView<'source> {
     Solar(SolarCircleSorcerer<'source>),
 }
 
-impl<'source> SolarSorcererView<'source> {
+impl<'view, 'source> SolarSorcererView<'source> {
     pub fn as_memo(&self) -> SolarSorcererMemo {
         match self {
             SolarSorcererView::Terrestrial(view) => {
@@ -31,7 +31,7 @@ impl<'source> SolarSorcererView<'source> {
         }
     }
 
-    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<&'source SorceryArchetype> {
+    pub fn archetype(&'view self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits> {
         match self {
             SolarSorcererView::Terrestrial(terrestrial) => terrestrial.archetype(id),
             SolarSorcererView::Celestial(celestial) => celestial.archetype(id),

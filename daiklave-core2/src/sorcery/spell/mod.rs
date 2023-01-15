@@ -1,3 +1,6 @@
+mod id;
+pub use id::SpellId;
+
 use serde::{Deserialize, Serialize};
 
 use crate::{
