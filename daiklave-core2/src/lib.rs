@@ -16,8 +16,9 @@ use exaltation::exalt::{
 };
 use health::{DamageLevel, WoundPenalty};
 use hearthstones::{hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId};
+use languages::language::LanguageMutation;
 use martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId};
-use merits::merit::{MeritId, StackableMeritId, StackableMerit, NonStackableMerit, NonStackableMeritId};
+use merits::merit::{StackableMeritId, StackableMerit, NonStackableMerit, NonStackableMeritId};
 use name_and_concept::ConceptError;
 use sorcery::SorceryError;
 use thiserror::Error;
@@ -68,6 +69,7 @@ pub mod weapons;
 
 mod character;
 mod character_memo;
+mod languages;
 pub(crate) mod craft;
 mod merits;
 mod name_and_concept;
@@ -180,8 +182,12 @@ pub enum CharacterMutation {
     AddStackableMerit(StackableMeritId, StackableMerit),
     /// Add a nonstackable merit
     AddNonStackableMerit(NonStackableMeritId, NonStackableMerit),
-    /// Remove a merit from the character
-    RemoveMerit(MeritId),
+    /// Add a language
+    AddLanguage(LanguageMutation),
+    /// Set the character's native language.
+    SetNativeLanguage(LanguageMutation),
+    /// Remove a language from the character
+    RemoveLanguage(LanguageMutation),
 }
 
 /// An error representing something that could go wrong with a

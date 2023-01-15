@@ -1,11 +1,11 @@
-use crate::{artifact::ArtifactId, hearthstones::HearthstoneId, martial_arts::MartialArtsStyleId, unique_id::UniqueId};
+use crate::{artifact::ArtifactId, hearthstones::HearthstoneId, martial_arts::MartialArtsStyleId, unique_id::UniqueId, languages::language::MajorLanguage};
 
 use super::{stackable::StackableMeritId, nonstackable::NonStackableMeritId};
 
 /// The Id for a specific instance of a merit as owned by a character. Not to
 /// be confused with MeritTemplateId, which describes a specific merit without
 /// any identifying details.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum MeritId {
     /// The merit associated with a specific owned Artifact.
     Artifact(ArtifactId),
@@ -23,6 +23,10 @@ pub enum MeritId {
     /// The merit associated with a Hearthstone acquired for free with the
     /// Manse merit.
     HearthstoneWithManse(HearthstoneId),
+    /// The Local Tongues variant of the Languages merit.
+    LocalTongues,
+    /// The Language Merit, except for its Local Tongues variant.
+    MajorLanguage(MajorLanguage),
     /// The merit associated with the Manse merit. Keys off the hearthstone
     /// acquired with it.
     Manse(HearthstoneId),

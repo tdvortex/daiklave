@@ -9,6 +9,8 @@ pub enum MeritTemplateId {
     ExaltedHealing,
     /// The template associated with the Hearthstone merit.
     Hearthstone,
+    /// The template associate with the Language merit.
+    Language,
     /// The template associated with the Manse merit.
     Manse,
     /// The template associated with the Martial Artist merit.

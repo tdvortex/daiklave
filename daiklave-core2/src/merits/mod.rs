@@ -154,6 +154,8 @@ impl<'view, 'source> Merits<'view, 'source> {
                 .stackable_merits
                 .get(&stackable_id)
                 .map(|merit| Merit(MeritSource::StackableMerit(stackable_id, *merit))),
+            MeritId::LocalTongues => todo!(),
+            MeritId::MajorLanguage(_) => todo!(),
         }
     }
 

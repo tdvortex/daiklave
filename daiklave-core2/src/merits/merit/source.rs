@@ -1,6 +1,8 @@
-use crate::{hearthstones::{hearthstone::GeomancyLevel, HearthstoneId}, artifact::ArtifactId, unique_id::UniqueId, book_reference::{BookReference, Book}, martial_arts::MartialArtsStyleId};
+use std::ops::Div;
 
-use super::{StackableMeritId, MeritId, template::MeritTemplateId, MeritType, constants::{artifact::{ARTIFACT_SHARED, ARTIFACT_TWO, ARTIFACT_FOUR, ARTIFACT_FIVE, ARTIFACT_NA, ARTIFACT_THREE}, demense::{DEMENSE_SHARED, DEMENSE_STANDARD, DEMENSE_GREATER}, exalted_healing::EXALTED_HEALING, hearthstone::{HEARTHSTONE_SHARED, HEARTHSTONE_STANDARD, HEARTHSTONE_GREATER, HEARTHSTONE_MANSE_STANDARD, HEARTHSTONE_MANSE_GREATER}, manse::{MANSE_SHARED, MANSE_STANDARD, MANSE_GREATER}, martial_arts::MARTIAL_ARTIST, mortal_sorcerer::MORTAL_SORCERY}, nonstackable::{NonStackableMeritView, NonStackableMeritId}, stackable::StackableMeritView};
+use crate::{hearthstones::{hearthstone::GeomancyLevel, HearthstoneId}, artifact::ArtifactId, unique_id::UniqueId, book_reference::{BookReference, Book}, martial_arts::MartialArtsStyleId, languages::language::MajorLanguage};
+
+use super::{StackableMeritId, MeritId, template::MeritTemplateId, MeritType, constants::{artifact::{ARTIFACT_SHARED, ARTIFACT_TWO, ARTIFACT_FOUR, ARTIFACT_FIVE, ARTIFACT_NA, ARTIFACT_THREE}, demense::{DEMENSE_SHARED, DEMENSE_STANDARD, DEMENSE_GREATER}, exalted_healing::EXALTED_HEALING, hearthstone::{HEARTHSTONE_SHARED, HEARTHSTONE_STANDARD, HEARTHSTONE_GREATER, HEARTHSTONE_MANSE_STANDARD, HEARTHSTONE_MANSE_GREATER}, manse::{MANSE_SHARED, MANSE_STANDARD, MANSE_GREATER}, martial_arts::MARTIAL_ARTIST, mortal_sorcerer::MORTAL_SORCERY, languages::{LANGUAGE_SHARED, LANGUAGE_LOCAL_TONGUES, LANGUAGE_DRAGONTONGUE, LANGUAGE_FLAMETONGUE, LANGUAGE_FORESTTONGUE, LANGUAGE_GUILD_CANT, LANGUAGE_HIGH_REALM, LANGUAGE_LOW_REALM, LANGUAGE_OLD_REALM, LANGUAGE_RIVERSPEAK, LANGUAGE_SEATONGUE, LANGUAGE_SKYTONGUE}}, nonstackable::{NonStackableMeritView, NonStackableMeritId}, stackable::StackableMeritView};
 
 pub(crate) enum MeritSource<'source> {
     Artifact(ArtifactId, &'source str, u8),
@@ -9,6 +11,8 @@ pub(crate) enum MeritSource<'source> {
     ExaltedHealing(bool), // is_exalt
     HearthstoneNoManse(HearthstoneId, &'source str, GeomancyLevel),
     HearthstoneWithManse(HearthstoneId, &'source str, GeomancyLevel),
+    LocalTongues(usize),
+    MajorLanguage(MajorLanguage),
     Manse(HearthstoneId, &'source str, GeomancyLevel),
     MartialArtist(MartialArtsStyleId, &'source str),
     MortalSorcerer,
@@ -25,6 +29,8 @@ impl<'source> MeritSource<'source> {
             MeritSource::ExaltedHealing(_) => MeritId::ExaltedHealing,
             MeritSource::HearthstoneNoManse(hearthstone_id, _, _) => MeritId::HearthstoneNoManse(*hearthstone_id),
             MeritSource::HearthstoneWithManse(hearthstone_id, _, _) => MeritId::HearthstoneWithManse(*hearthstone_id),
+            MeritSource::LocalTongues(_) => MeritId::LocalTongues,
+            MeritSource::MajorLanguage(major) => MeritId::MajorLanguage(*major),
             MeritSource::Manse(hearthstone_id, _, _) => MeritId::Manse(*hearthstone_id),
             MeritSource::MartialArtist(style_id, _) => MeritId::MartialArtist(*style_id),
             MeritSource::MortalSorcerer => MeritId::MortalSorcerer,
@@ -41,6 +47,8 @@ impl<'source> MeritSource<'source> {
             MeritSource::ExaltedHealing(_) => MeritTemplateId::ExaltedHealing,
             MeritSource::HearthstoneNoManse(_, _, _) => MeritTemplateId::Hearthstone,
             MeritSource::HearthstoneWithManse(_, _, _) => MeritTemplateId::Hearthstone,
+            MeritSource::LocalTongues(_) => MeritTemplateId::Language,
+            MeritSource::MajorLanguage(_) => MeritTemplateId::Language,
             MeritSource::Manse(_, _, _) => MeritTemplateId::Manse,
             MeritSource::MartialArtist(_, _) => MeritTemplateId::MartialArtist,
             MeritSource::MortalSorcerer => MeritTemplateId::MortalSorcerer,
@@ -57,6 +65,8 @@ impl<'source> MeritSource<'source> {
             MeritSource::ExaltedHealing(_) => "Exalted Healing",
             MeritSource::HearthstoneNoManse(_, _, _) => "Hearthstone",
             MeritSource::HearthstoneWithManse(_, _, _) => "Hearthstone",
+            MeritSource::LocalTongues(_) => "Language",
+            MeritSource::MajorLanguage(_) => "Language",
             MeritSource::Manse(_, _, _) => "Manse",
             MeritSource::MartialArtist(_, _) => "Martial Artist",
             MeritSource::MortalSorcerer => "Terrestrial Circle Sorcerer (Mortal)",
@@ -73,6 +83,8 @@ impl<'source> MeritSource<'source> {
             MeritSource::ExaltedHealing(_) => Some(BookReference::new(Book::CoreRulebook, 165)),
             MeritSource::HearthstoneNoManse(_, _, _) => Some(BookReference::new(Book::CoreRulebook, 161)),
             MeritSource::HearthstoneWithManse(_, _, _) => Some(BookReference::new(Book::CoreRulebook, 161)),
+            MeritSource::LocalTongues(_) => Some(BookReference::new(Book::CoreRulebook, 162)),
+            MeritSource::MajorLanguage(_) => Some(BookReference::new(Book::CoreRulebook, 162)),
             MeritSource::Manse(_, _, _) => Some(BookReference::new(Book::CoreRulebook, 163)),
             MeritSource::MartialArtist(_, _) => Some(BookReference::new(Book::CoreRulebook, 163)),
             MeritSource::MortalSorcerer => Some(BookReference::new(Book::CoreRulebook, 470)),
@@ -94,6 +106,21 @@ impl<'source> MeritSource<'source> {
             MeritSource::MortalSorcerer => None,
             MeritSource::NonStackableMerit(_, _) => None,
             MeritSource::StackableMerit(_, stackable) => Some(stackable.detail()),
+            MeritSource::LocalTongues(_) => Some("Local Tongues"),
+            MeritSource::MajorLanguage(major) => Some(
+                match major {
+                    MajorLanguage::Dragontongue => "Dragontongue",
+                    MajorLanguage::Flametongue => "Flametongue",
+                    MajorLanguage::ForestTongue => "Forest-Tongue",
+                    MajorLanguage::GuildCant => "Guild Cant",
+                    MajorLanguage::HighRealm => "High Realm",
+                    MajorLanguage::LowRealm => "Low Realm",
+                    MajorLanguage::OldRealm => "Old Realm",
+                    MajorLanguage::Riverspeak => "Riverspeak",
+                    MajorLanguage::Seatongue => "Seatongue",
+                    MajorLanguage::Skytongue => "Skytongue",
+                }
+            )
         }
     }
 
@@ -111,6 +138,10 @@ impl<'source> MeritSource<'source> {
                 GeomancyLevel::Greater => 4,
             },
             MeritSource::HearthstoneWithManse(_, _, _) => 0,
+            MeritSource::LocalTongues(count) => {
+                ((*count).min(u8::MAX as usize) + 3).div(4) as u8
+            }
+            MeritSource::MajorLanguage(_) => 1,
             MeritSource::Manse(_, _, geomancy_level) => match geomancy_level {
                 GeomancyLevel::Standard => 3,
                 GeomancyLevel::Greater => 5,
@@ -131,6 +162,8 @@ impl<'source> MeritSource<'source> {
             MeritSource::HearthstoneNoManse(_, _, _) => MeritType::Story,
             MeritSource::HearthstoneWithManse(_, _, _) => MeritType::Story,
             MeritSource::Manse(_, _, _) => MeritType::Story,
+            MeritSource::LocalTongues(_) => MeritType::Purchased,
+            MeritSource::MajorLanguage(_) => MeritType::Purchased,
             MeritSource::MartialArtist(_, _) => MeritType::Purchased,
             MeritSource::MortalSorcerer => MeritType::Story,
             MeritSource::NonStackableMerit(_, nonstackable) => nonstackable.merit_type(),
@@ -166,6 +199,21 @@ impl<'source> MeritSource<'source> {
                 GeomancyLevel::Standard => (HEARTHSTONE_SHARED, Some(HEARTHSTONE_MANSE_STANDARD)),
                 GeomancyLevel::Greater => (HEARTHSTONE_SHARED, Some(HEARTHSTONE_MANSE_GREATER)),
             },
+            MeritSource::LocalTongues(_) => (LANGUAGE_SHARED, Some(LANGUAGE_LOCAL_TONGUES)),
+            MeritSource::MajorLanguage(major) => (LANGUAGE_SHARED, Some(
+                match major {
+                    MajorLanguage::Dragontongue => LANGUAGE_DRAGONTONGUE,
+                    MajorLanguage::Flametongue => LANGUAGE_FLAMETONGUE,
+                    MajorLanguage::ForestTongue => LANGUAGE_FORESTTONGUE,
+                    MajorLanguage::GuildCant => LANGUAGE_GUILD_CANT,
+                    MajorLanguage::HighRealm => LANGUAGE_HIGH_REALM,
+                    MajorLanguage::LowRealm => LANGUAGE_LOW_REALM,
+                    MajorLanguage::OldRealm => LANGUAGE_OLD_REALM,
+                    MajorLanguage::Riverspeak => LANGUAGE_RIVERSPEAK,
+                    MajorLanguage::Seatongue => LANGUAGE_SEATONGUE,
+                    MajorLanguage::Skytongue => LANGUAGE_SKYTONGUE,
+                }
+            )),
             MeritSource::Manse(_, _, geomancy_level) => match geomancy_level {
                 GeomancyLevel::Standard => (MANSE_SHARED, Some(MANSE_STANDARD)),
                 GeomancyLevel::Greater => (MANSE_SHARED, Some(MANSE_GREATER)),

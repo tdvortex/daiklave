@@ -214,7 +214,9 @@ impl<'view, 'source> Character<'source> {
             }
             CharacterMutation::AddStackableMerit(_, _) => todo!(),
             CharacterMutation::AddNonStackableMerit(_, _) => todo!(),
-            CharacterMutation::RemoveMerit(_) => todo!(),
+            CharacterMutation::AddLanguage(_) => todo!(),
+            CharacterMutation::SetNativeLanguage(_) => todo!(),
+            CharacterMutation::RemoveLanguage(_) => todo!(),
         }
     }
 
@@ -308,7 +310,9 @@ impl<'view, 'source> Character<'source> {
             }
             CharacterMutation::AddStackableMerit(_, _) => todo!(),
             CharacterMutation::AddNonStackableMerit(_, _) => todo!(),
-            CharacterMutation::RemoveMerit(_) => todo!(),
+            CharacterMutation::AddLanguage(_) => todo!(),
+            CharacterMutation::SetNativeLanguage(_) => todo!(),
+            CharacterMutation::RemoveLanguage(_) => todo!(),
         }
     }
 
