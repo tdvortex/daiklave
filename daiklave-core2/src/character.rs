@@ -26,7 +26,7 @@ use crate::{
     },
     martial_arts::{MartialArts, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     merits::{merit::{
-        NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView, MeritError, StackableMerit,
+        NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView, MeritError, StackableMerit, NonStackableMerit,
     }, Merits},
     name_and_concept::ConceptError,
     sorcery::{
@@ -218,7 +218,9 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AddStackableMerit(stackable_merit_id, stackable_merit) => {
                 self.check_add_stackable_merit(*stackable_merit_id, stackable_merit)
             }
-            CharacterMutation::AddNonStackableMerit(_, _) => todo!(),
+            CharacterMutation::AddNonStackableMerit(nonstackable_merit_id, nonstackable_merit) => {
+                self.check_add_nonstackable_merit(*nonstackable_merit_id, nonstackable_merit)
+            }
             CharacterMutation::AddLanguage(_) => todo!(),
             CharacterMutation::SetNativeLanguage(_) => todo!(),
             CharacterMutation::RemoveLanguage(_) => todo!(),
@@ -324,7 +326,9 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AddStackableMerit(stackable_merit_id, stackable_merit) => {
                 self.add_stackable_merit(*stackable_merit_id, stackable_merit)
             }
-            CharacterMutation::AddNonStackableMerit(_, _) => todo!(),
+            CharacterMutation::AddNonStackableMerit(nonstackable_merit_id, nonstackable_merit) => {
+                self.add_nonstackable_merit(*nonstackable_merit_id, nonstackable_merit)
+            }
             CharacterMutation::AddLanguage(_) => todo!(),
             CharacterMutation::SetNativeLanguage(_) => todo!(),
             CharacterMutation::RemoveLanguage(_) => todo!(),
@@ -1857,6 +1861,25 @@ impl<'view, 'source> Character<'source> {
     pub fn add_stackable_merit(&mut self, stackable_merit_id: StackableMeritId, stackable_merit: &'source StackableMerit) -> Result<&mut Self, CharacterMutationError> {
         if let Entry::Vacant(e) = self.stackable_merits.entry(stackable_merit_id) {
             e.insert(stackable_merit.as_ref());
+            Ok(self)
+        } else {
+            Err(CharacterMutationError::MeritError(MeritError::DuplicateMerit))
+        }
+    }
+
+    /// Checks if a nonstackable merit can be added to the character.
+    pub fn check_add_nonstackable_merit(&self, nonstackable_merit_id: NonStackableMeritId, _nonstackable_merit: &'source NonStackableMerit) -> Result<(), CharacterMutationError> {
+        if self.nonstackable_merits.contains_key(&nonstackable_merit_id) {
+            Err(CharacterMutationError::MeritError(MeritError::DuplicateMerit))
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Adds a nonstackable merit to the character.
+    pub fn add_nonstackable_merit(&mut self, nonstackable_merit_id: NonStackableMeritId, nonstackable_merit: &'source NonStackableMerit) -> Result<&mut Self, CharacterMutationError> {
+        if let Entry::Vacant(e) = self.nonstackable_merits.entry(nonstackable_merit_id) {
+            e.insert(nonstackable_merit.as_ref());
             Ok(self)
         } else {
             Err(CharacterMutationError::MeritError(MeritError::DuplicateMerit))
