@@ -1,6 +1,6 @@
 use std::ops::Div;
 
-use crate::{hearthstones::{hearthstone::GeomancyLevel, HearthstoneId}, artifact::ArtifactId, unique_id::UniqueId, book_reference::{BookReference, Book}, martial_arts::MartialArtsStyleId, languages::language::MajorLanguage, sorcery::{SorceryArchetypeId, SorceryArchetypeMeritId, SorceryArchetypeMerit}};
+use crate::{hearthstones::{hearthstone::GeomancyLevel, HearthstoneId}, artifact::ArtifactId, unique_id::UniqueId, book_reference::{BookReference, Book}, martial_arts::MartialArtsStyleId, languages::language::MajorLanguage, sorcery::{SorceryArchetypeMeritId, SorceryArchetypeMerit}};
 
 use super::{StackableMeritId, MeritId, template::MeritTemplateId, MeritType, constants::{artifact::{ARTIFACT_SHARED, ARTIFACT_TWO, ARTIFACT_FOUR, ARTIFACT_FIVE, ARTIFACT_NA, ARTIFACT_THREE}, demense::{DEMENSE_SHARED, DEMENSE_STANDARD, DEMENSE_GREATER}, exalted_healing::EXALTED_HEALING, hearthstone::{HEARTHSTONE_SHARED, HEARTHSTONE_STANDARD, HEARTHSTONE_GREATER, HEARTHSTONE_MANSE_STANDARD, HEARTHSTONE_MANSE_GREATER}, manse::{MANSE_SHARED, MANSE_STANDARD, MANSE_GREATER}, martial_arts::MARTIAL_ARTIST, mortal_sorcerer::MORTAL_SORCERY, languages::{LANGUAGE_SHARED, LANGUAGE_LOCAL_TONGUES, LANGUAGE_DRAGONTONGUE, LANGUAGE_FLAMETONGUE, LANGUAGE_FORESTTONGUE, LANGUAGE_GUILD_CANT, LANGUAGE_HIGH_REALM, LANGUAGE_LOW_REALM, LANGUAGE_OLD_REALM, LANGUAGE_RIVERSPEAK, LANGUAGE_SEATONGUE, LANGUAGE_SKYTONGUE}}, nonstackable::{NonStackableMeritView, NonStackableMeritId}, stackable::StackableMeritView};
 
@@ -17,7 +17,7 @@ pub(crate) enum MeritSource<'source> {
     MartialArtist(MartialArtsStyleId, &'source str),
     MortalSorcerer,
     NonStackable(NonStackableMeritId, NonStackableMeritView<'source>),
-    SorceryArchetype((SorceryArchetypeId, SorceryArchetypeMeritId), &'source SorceryArchetypeMerit),
+    SorceryArchetype(SorceryArchetypeMeritId, &'source SorceryArchetypeMerit),
     Stackable(StackableMeritId, StackableMeritView<'source>),
 }
 
@@ -37,7 +37,7 @@ impl<'source> MeritSource<'source> {
             MeritSource::MortalSorcerer => MeritId::MortalSorcerer,
             MeritSource::NonStackable(nonstackable_id, _) => MeritId::NonStackable(*nonstackable_id),
             MeritSource::Stackable(stackable_merit_id, _) => MeritId::Stackable(*stackable_merit_id),
-            MeritSource::SorceryArchetype((archetype_id, merit_id), _) => MeritId::SorceryArchetype(*archetype_id, *merit_id),
+            MeritSource::SorceryArchetype(merit_id, _) => MeritId::SorceryArchetype(*merit_id),
         }
     }
 
@@ -56,7 +56,7 @@ impl<'source> MeritSource<'source> {
             MeritSource::MortalSorcerer => MeritTemplateId::MortalSorcerer,
             MeritSource::NonStackable(nonstackable_id, _) => MeritTemplateId::NonStackable(*nonstackable_id),
             MeritSource::Stackable(_, stackable_merit) => stackable_merit.template_id(),
-            MeritSource::SorceryArchetype((archetype_id, merit_id), _) => MeritTemplateId::SorceryArchetype(*archetype_id, *merit_id),
+            MeritSource::SorceryArchetype(merit_id, _) => MeritTemplateId::SorceryArchetype(*merit_id),
         }
     }
 

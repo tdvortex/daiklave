@@ -1,4 +1,4 @@
-use crate::{artifact::ArtifactId, hearthstones::HearthstoneId, martial_arts::MartialArtsStyleId, unique_id::UniqueId, languages::language::MajorLanguage, sorcery::{SorceryArchetypeId, SorceryArchetypeMeritId}};
+use crate::{artifact::ArtifactId, hearthstones::HearthstoneId, martial_arts::MartialArtsStyleId, unique_id::UniqueId, languages::language::MajorLanguage, sorcery::{SorceryArchetypeMeritId}};
 
 use super::{stackable::StackableMeritId, nonstackable::NonStackableMeritId};
 
@@ -41,7 +41,7 @@ pub enum MeritId {
     /// Pain Tolerance.
     NonStackable(NonStackableMeritId),
     /// A merit which associated with a specific Sorcery Archetype.
-    SorceryArchetype(SorceryArchetypeId, SorceryArchetypeMeritId),
+    SorceryArchetype(SorceryArchetypeMeritId),
     /// A merit which is stackable and requires a qualifying descriptor for
     /// each purchase. Examples include Allies, Language, or Resources.
     Stackable(StackableMeritId),

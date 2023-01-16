@@ -226,6 +226,8 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::RemoveCelestialSorcery => todo!(),
             CharacterMutation::AddSolarSorcery(_) => todo!(),
             CharacterMutation::RemoveSolarSorcery => todo!(),
+            CharacterMutation::AddSorceryArchetypeMerit(_, _, _) => todo!(),
+            CharacterMutation::RemoveSorceryArchetypeMerit(_) => todo!(),
         }
     }
 
@@ -328,6 +330,8 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::RemoveCelestialSorcery => todo!(),
             CharacterMutation::AddSolarSorcery(_) => todo!(),
             CharacterMutation::RemoveSolarSorcery => todo!(),
+            CharacterMutation::AddSorceryArchetypeMerit(_, _, _) => todo!(),
+            CharacterMutation::RemoveSorceryArchetypeMerit(_) => todo!(),
         }
     }
 

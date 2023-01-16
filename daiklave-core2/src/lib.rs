@@ -20,7 +20,7 @@ use languages::language::LanguageMutation;
 use martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId};
 use merits::merit::{StackableMeritId, StackableMerit, NonStackableMerit, NonStackableMeritId};
 use name_and_concept::ConceptError;
-use sorcery::{SorceryError, circles::{terrestrial::AddTerrestrialSorcery, celestial::AddCelestialSorcery, solar::AddSolarSorcery}};
+use sorcery::{SorceryError, circles::{terrestrial::AddTerrestrialSorcery, celestial::AddCelestialSorcery, solar::AddSolarSorcery}, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId};
 use thiserror::Error;
 
 /// Structs related to a character's Abilities (skills) and specialties.
@@ -209,6 +209,10 @@ pub enum CharacterMutation {
     /// Removes Solar circle sorcery from the character, making them a 
     /// Celestial circle sorcerer.
     RemoveSolarSorcery,
+    /// Adds a merit tied to a Sorcery Archetype owned by the character.
+    AddSorceryArchetypeMerit(SorceryArchetypeId, SorceryArchetypeMeritId, SorceryArchetypeMerit),
+    /// Removes a sorcery archetype merit.
+    RemoveSorceryArchetypeMerit(SorceryArchetypeMeritId),
 }
 
 /// An error representing something that could go wrong with a

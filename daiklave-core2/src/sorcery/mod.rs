@@ -19,6 +19,11 @@ impl<'view, 'source> Sorcery<'view, 'source> {
         self.0.archetype(id)
     }
 
+    /// Iterates over all sorcerous archetypes the character possesses by their Id.
+    pub fn archetypes(&self) -> impl Iterator<Item = SorceryArchetypeId> + '_ {
+        self.0.archetypes_iter()
+    }
+
     /// The shaping ritual the character learned at a specific circle induction.
     pub fn shaping_ritual(
         &self,

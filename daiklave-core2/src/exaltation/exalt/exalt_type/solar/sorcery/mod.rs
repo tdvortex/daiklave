@@ -39,6 +39,18 @@ impl<'view, 'source> SolarSorcererView<'source> {
         }
     }
 
+    pub fn archetypes_iter(&self) -> impl Iterator<Item = SorceryArchetypeId> + '_ {
+        match self {
+            SolarSorcererView::Terrestrial(terrestrial) => std::iter::once(terrestrial.archetype_id).collect::<Vec<SorceryArchetypeId>>(),
+            SolarSorcererView::Celestial(celestial) => {
+                celestial.archetypes.keys().copied().collect::<Vec<SorceryArchetypeId>>()
+            }
+            SolarSorcererView::Solar(solar) => {
+                solar.archetypes.keys().copied().collect::<Vec<SorceryArchetypeId>>()
+            }
+        }.into_iter()
+    }
+
     pub fn shaping_ritual(
         &self,
         circle: SorceryCircle,

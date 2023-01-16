@@ -17,6 +17,12 @@ impl<'view, 'source> ExaltSorcery<'view, 'source> {
         }
     }
 
+    pub fn archetypes_iter(&self) -> impl Iterator<Item = SorceryArchetypeId> + '_ {
+        match self {
+            ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer.archetypes_iter().collect::<Vec<SorceryArchetypeId>>(),
+        }.into_iter()
+    }
+
     pub fn shaping_ritual(
         &self,
         circle: SorceryCircle,

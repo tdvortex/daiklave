@@ -2,7 +2,7 @@ pub mod merit;
 
 use crate::{
     armor::armor_item::ArmorId, artifact::ArtifactId, exaltation::Exaltation,
-    weapons::weapon::WeaponId, Character, languages::language::Language,
+    languages::language::Language, weapons::weapon::WeaponId, Character,
 };
 
 use self::merit::{Merit, MeritId, MeritSource};
@@ -77,38 +77,44 @@ impl<'view, 'source> Merits<'view, 'source> {
                         ))
                     })
                 }),
-            MeritId::ExaltedHealing => {
-                match &self.0.exaltation {
-                    Exaltation::Mortal(mortal) => {
-                        if mortal.exalted_healing {
-                            Some(Merit(MeritSource::ExaltedHealing(false)))
-                        } else {
-                            None
-                        }
+            MeritId::ExaltedHealing => match &self.0.exaltation {
+                Exaltation::Mortal(mortal) => {
+                    if mortal.exalted_healing {
+                        Some(Merit(MeritSource::ExaltedHealing(false)))
+                    } else {
+                        None
                     }
-                    Exaltation::Exalt(_) => Some(Merit(MeritSource::ExaltedHealing(true))),
                 }
-            }
-            MeritId::HearthstoneNoManse(hearthstone_id) => {
-                self.0
+                Exaltation::Exalt(_) => Some(Merit(MeritSource::ExaltedHealing(true))),
+            },
+            MeritId::HearthstoneNoManse(hearthstone_id) => self
+                .0
                 .hearthstones()
                 .get(hearthstone_id)
                 .and_then(|hearthstone| {
                     if hearthstone.manse_and_demense().is_some() {
                         None
                     } else {
-                        Some(Merit(MeritSource::HearthstoneNoManse(hearthstone_id, hearthstone.name(), hearthstone.geomancy_level())))
+                        Some(Merit(MeritSource::HearthstoneNoManse(
+                            hearthstone_id,
+                            hearthstone.name(),
+                            hearthstone.geomancy_level(),
+                        )))
                     }
-                })
-            }
-            MeritId::HearthstoneWithManse(hearthstone_id) => {
-                self.0
+                }),
+            MeritId::HearthstoneWithManse(hearthstone_id) => self
+                .0
                 .hearthstones()
                 .get(hearthstone_id)
                 .and_then(|hearthstone| {
-                    hearthstone.manse_and_demense().map(|_| Merit(MeritSource::HearthstoneWithManse(hearthstone_id, hearthstone.name(), hearthstone.geomancy_level())))
-                })
-            }
+                    hearthstone.manse_and_demense().map(|_| {
+                        Merit(MeritSource::HearthstoneWithManse(
+                            hearthstone_id,
+                            hearthstone.name(),
+                            hearthstone.geomancy_level(),
+                        ))
+                    })
+                }),
             MeritId::Manse(hearthstone_id) => {
                 self.0
                     .hearthstones()
@@ -143,21 +149,21 @@ impl<'view, 'source> Merits<'view, 'source> {
                 .0
                 .nonstackable_merits
                 .get(&nonstackable_id)
-                .map(|merit| {
-                    Merit(MeritSource::NonStackable(
-                        nonstackable_id,
-                        merit.clone(),
-                    ))
-                }),
+                .map(|merit| Merit(MeritSource::NonStackable(nonstackable_id, merit.clone()))),
             MeritId::Stackable(stackable_id) => self
                 .0
                 .stackable_merits
                 .get(&stackable_id)
                 .map(|merit| Merit(MeritSource::Stackable(stackable_id, *merit))),
             MeritId::LocalTongues => {
-                let purchased = self.0.languages.iter().filter(|(language, native)| {
-                    !native && matches!(language, Language::LocalTongue(_))
-                }).count();
+                let purchased = self
+                    .0
+                    .languages
+                    .iter()
+                    .filter(|(language, native)| {
+                        !native && matches!(language, Language::LocalTongue(_))
+                    })
+                    .count();
 
                 if purchased > 0 {
                     Some(Merit(MeritSource::LocalTongues(purchased)))
@@ -166,19 +172,32 @@ impl<'view, 'source> Merits<'view, 'source> {
                 }
             }
             MeritId::MajorLanguage(major) => {
-                if self.0.languages.other_languages.contains(&Language::MajorLanguage(major)) {
+                if self
+                    .0
+                    .languages
+                    .other_languages
+                    .contains(&Language::MajorLanguage(major))
+                {
                     Some(Merit(MeritSource::MajorLanguage(major)))
                 } else {
                     None
                 }
             }
-            MeritId::SorceryArchetype(sorcery_archetype_id, sorcery_archetype_merit_id) => {
-                self
-                .0
-                .sorcery()
-                .and_then(|sorcery| sorcery.archetype(sorcery_archetype_id))
-                .and_then(|(_archetype, merits)| merits.get(&sorcery_archetype_merit_id))
-                .map(|sorcery_archetype_merit| Merit(MeritSource::SorceryArchetype((sorcery_archetype_id, sorcery_archetype_merit_id), *sorcery_archetype_merit)))
+            MeritId::SorceryArchetype(sorcery_archetype_merit_id) => {
+                self.0.sorcery().and_then(|sorcery| {
+                    sorcery.archetypes().find_map(|archetype_id| {
+                        sorcery.archetype(archetype_id).and_then(|(_, merits)| {
+                            merits
+                                .get(&sorcery_archetype_merit_id)
+                                .map(|sorcery_archetype_merit| {
+                                    Merit(MeritSource::SorceryArchetype(
+                                        sorcery_archetype_merit_id,
+                                        *sorcery_archetype_merit,
+                                    ))
+                                })
+                        })
+                    })
+                })
             }
         }
     }
