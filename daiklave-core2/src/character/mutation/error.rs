@@ -10,7 +10,7 @@ use crate::{
     merits::merit::MeritError,
     name_and_concept::ConceptError,
     sorcery::SorceryError,
-    weapons::WeaponError,
+    weapons::WeaponError, languages::LanguageError,
 };
 
 /// An error representing something that could go wrong with a
@@ -38,6 +38,9 @@ pub enum CharacterMutationError {
     /// Error related to hearthstones
     #[error("Hearthstone error")]
     HearthstoneError(#[from] HearthstoneError),
+    /// Error related to languages
+    #[error("Language error")]
+    LanguageError(#[from] LanguageError),
     /// Error related to Martial Arts
     #[error("Martial Arts error")]
     MartialArtsError(#[from] MartialArtsError),

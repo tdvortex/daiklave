@@ -184,9 +184,15 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AddNonStackableMerit(nonstackable_merit_id, nonstackable_merit) => {
                 self.check_add_nonstackable_merit(*nonstackable_merit_id, nonstackable_merit)
             }
-            CharacterMutation::AddLanguage(_) => todo!(),
-            CharacterMutation::SetNativeLanguage(_) => todo!(),
-            CharacterMutation::RemoveLanguage(_) => todo!(),
+            CharacterMutation::AddLanguage(language_mutation) => {
+                self.check_add_language(language_mutation)
+            }
+            CharacterMutation::SetNativeLanguage(language_mutation) => {
+                self.check_set_native_language(language_mutation)
+            }
+            CharacterMutation::RemoveLanguage(language_mutation) => {
+                self.check_remove_language(language_mutation)
+            }
             CharacterMutation::AddTerrestrialSorcery(_) => todo!(),
             CharacterMutation::RemoveTerrestrialSorcery => todo!(),
             CharacterMutation::AddCelestialSorcery(_) => todo!(),
@@ -292,9 +298,15 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AddNonStackableMerit(nonstackable_merit_id, nonstackable_merit) => {
                 self.add_nonstackable_merit(*nonstackable_merit_id, nonstackable_merit)
             }
-            CharacterMutation::AddLanguage(_) => todo!(),
-            CharacterMutation::SetNativeLanguage(_) => todo!(),
-            CharacterMutation::RemoveLanguage(_) => todo!(),
+            CharacterMutation::AddLanguage(language_mutation) => {
+                self.add_language(language_mutation)
+            }
+            CharacterMutation::SetNativeLanguage(language_mutation) => {
+                self.set_native_language(language_mutation)
+            }
+            CharacterMutation::RemoveLanguage(language_mutation) => {
+                self.remove_language(language_mutation)
+            }
             CharacterMutation::AddTerrestrialSorcery(_) => todo!(),
             CharacterMutation::RemoveTerrestrialSorcery => todo!(),
             CharacterMutation::AddCelestialSorcery(_) => todo!(),
