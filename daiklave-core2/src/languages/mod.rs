@@ -31,7 +31,7 @@ impl<'source> Languages<'source> {
         std::iter::once((self.native_language, true)).chain(self.other_languages.iter().copied().map(|language| (language, false)))
     }
 
-    pub(crate) fn iter_merits(&self) -> impl Iterator<Item = Merit<'source>> {
+    pub(crate) fn _iter_merits(&self) -> impl Iterator<Item = Merit<'source>> {
         let mut major_language_merits = Vec::new();
         let mut local_tongues_count = 0;
 
