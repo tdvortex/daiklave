@@ -20,7 +20,7 @@ use languages::language::LanguageMutation;
 use martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId};
 use merits::merit::{StackableMeritId, StackableMerit, NonStackableMerit, NonStackableMeritId};
 use name_and_concept::ConceptError;
-use sorcery::SorceryError;
+use sorcery::{SorceryError, circles::{terrestrial::AddTerrestrialSorcery, celestial::AddCelestialSorcery, solar::AddSolarSorcery}};
 use thiserror::Error;
 
 /// Structs related to a character's Abilities (skills) and specialties.
@@ -188,6 +188,27 @@ pub enum CharacterMutation {
     SetNativeLanguage(LanguageMutation),
     /// Remove a language from the character
     RemoveLanguage(LanguageMutation),
+    /// Adds Terrestrial circle sorcery to the character. The archetype,
+    /// shaping ritual, and control spell must be provided, along with an
+    /// Id for each.
+    AddTerrestrialSorcery(AddTerrestrialSorcery),
+    /// Removes Terrestrial circle sorcery from the character, making them no
+    /// longer a sorcerer.
+    RemoveTerrestrialSorcery,
+    /// Increases the character from Terrestrial sorcery to Celestial. If the
+    /// character is adding a shaping ritual to an already-known archetype, the
+    /// SorceryArchetype text may be left as None, otherwise it is required.
+    AddCelestialSorcery(AddCelestialSorcery),
+    /// Removes Celestial circle sorcery from the character, making them a
+    /// Terrestrial circle sorcerer.
+    RemoveCelestialSorcery,
+    /// Increases the character from Celestial sorcery to Solar circle. If the
+    /// character is adding a shaping ritual to an already-known archetype, the
+    /// SorceryArchetype text may be left as None, otherwise it is required.
+    AddSolarSorcery(AddSolarSorcery),
+    /// Removes Solar circle sorcery from the character, making them a 
+    /// Celestial circle sorcerer.
+    RemoveSolarSorcery,
 }
 
 /// An error representing something that could go wrong with a

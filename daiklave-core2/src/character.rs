@@ -220,6 +220,12 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AddLanguage(_) => todo!(),
             CharacterMutation::SetNativeLanguage(_) => todo!(),
             CharacterMutation::RemoveLanguage(_) => todo!(),
+            CharacterMutation::AddTerrestrialSorcery(_) => todo!(),
+            CharacterMutation::RemoveTerrestrialSorcery => todo!(),
+            CharacterMutation::AddCelestialSorcery(_) => todo!(),
+            CharacterMutation::RemoveCelestialSorcery => todo!(),
+            CharacterMutation::AddSolarSorcery(_) => todo!(),
+            CharacterMutation::RemoveSolarSorcery => todo!(),
         }
     }
 
@@ -316,6 +322,12 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AddLanguage(_) => todo!(),
             CharacterMutation::SetNativeLanguage(_) => todo!(),
             CharacterMutation::RemoveLanguage(_) => todo!(),
+            CharacterMutation::AddTerrestrialSorcery(_) => todo!(),
+            CharacterMutation::RemoveTerrestrialSorcery => todo!(),
+            CharacterMutation::AddCelestialSorcery(_) => todo!(),
+            CharacterMutation::RemoveCelestialSorcery => todo!(),
+            CharacterMutation::AddSolarSorcery(_) => todo!(),
+            CharacterMutation::RemoveSolarSorcery => todo!(),
         }
     }
 
