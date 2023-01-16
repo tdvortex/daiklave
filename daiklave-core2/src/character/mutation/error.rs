@@ -6,11 +6,12 @@ use crate::{
     attributes::AttributeError,
     exaltation::exalt::essence::EssenceError,
     hearthstones::HearthstoneError,
+    languages::LanguageError,
     martial_arts::MartialArtsError,
     merits::merit::MeritError,
     name_and_concept::ConceptError,
     sorcery::SorceryError,
-    weapons::WeaponError, languages::LanguageError,
+    weapons::WeaponError,
 };
 
 /// An error representing something that could go wrong with a

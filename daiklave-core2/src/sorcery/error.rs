@@ -10,4 +10,8 @@ pub enum SorceryError {
     /// Shaping rituals require specific sorcerous archetypes to use.
     #[error("Missing an archetype for a shaping ritual")]
     MissingArchetype,
+    /// Only Solars can learn Solar sorcery, and only Celestial Exalts can
+    /// learn Celestial sorcery.
+    #[error("Wrong Exalt type for this sorcery level")]
+    WrongExaltType,
 }

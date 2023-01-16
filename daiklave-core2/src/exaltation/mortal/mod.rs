@@ -24,7 +24,7 @@ use crate::{
     martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
-        SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell, SorceryError,
+        SorceryArchetype, SorceryArchetypeId, SorceryError, SpellId, TerrestrialSpell,
     },
     weapons::{
         weapon::{
@@ -151,7 +151,9 @@ impl<'source> Mortal<'source> {
         control_spell: &'source TerrestrialSpell,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self.sorcery.is_some() {
-            return Err(CharacterMutationError::SorceryError(SorceryError::CircleSequence));
+            return Err(CharacterMutationError::SorceryError(
+                SorceryError::CircleSequence,
+            ));
         }
 
         self.sorcery = Some(TerrestrialCircleSorcerer::new(
@@ -176,9 +178,13 @@ impl<'source> Mortal<'source> {
         _control_spell: &'source TerrestrialSpell,
     ) -> Result<(), CharacterMutationError> {
         if self.sorcery.is_some() {
-            return Err(CharacterMutationError::SorceryError(SorceryError::CircleSequence));
+            return Err(CharacterMutationError::SorceryError(
+                SorceryError::CircleSequence,
+            ));
         } else if shaping_ritual.archetype_id() != archetype_id {
-            return Err(CharacterMutationError::SorceryError(SorceryError::MissingArchetype));
+            return Err(CharacterMutationError::SorceryError(
+                SorceryError::MissingArchetype,
+            ));
         } else {
             Ok(())
         }
@@ -186,7 +192,9 @@ impl<'source> Mortal<'source> {
 
     pub fn remove_terrestrial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
         if self.sorcery.is_none() {
-            Err(CharacterMutationError::SorceryError(SorceryError::CircleSequence))
+            Err(CharacterMutationError::SorceryError(
+                SorceryError::CircleSequence,
+            ))
         } else {
             self.sorcery = None;
             Ok(self)
@@ -195,7 +203,9 @@ impl<'source> Mortal<'source> {
 
     pub fn check_remove_terrestrial_sorcery(&self) -> Result<(), CharacterMutationError> {
         if self.sorcery.is_none() {
-            Err(CharacterMutationError::SorceryError(SorceryError::CircleSequence))
+            Err(CharacterMutationError::SorceryError(
+                SorceryError::CircleSequence,
+            ))
         } else {
             Ok(())
         }

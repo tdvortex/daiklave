@@ -26,8 +26,8 @@ use crate::{
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
-        TerrestrialSpell,
+        CelestialSpell, ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype,
+        SorceryArchetypeId, SorceryError, SpellId, TerrestrialSpell,
     },
     weapons::weapon::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
@@ -366,8 +366,12 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn remove_terrestrial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(mortal) => {mortal.remove_terrestrial_sorcery()?;},
-            Exaltation::Exalt(exalt) => {exalt.remove_terrestrial_sorcery()?;},
+            Exaltation::Mortal(mortal) => {
+                mortal.remove_terrestrial_sorcery()?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.remove_terrestrial_sorcery()?;
+            }
         }
         Ok(self)
     }
@@ -376,6 +380,82 @@ impl<'view, 'source> Exaltation<'source> {
         match self {
             Exaltation::Mortal(mortal) => mortal.check_remove_terrestrial_sorcery(),
             Exaltation::Exalt(exalt) => exalt.check_remove_terrestrial_sorcery(),
+        }
+    }
+
+    pub fn add_celestial_sorcery(
+        &mut self,
+        archetype_id: SorceryArchetypeId,
+        archetype: Option<&'source SorceryArchetype>,
+        shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        control_spell_id: SpellId,
+        control_spell: &'source CelestialSpell,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(_) => {
+                return Err(CharacterMutationError::SorceryError(
+                    SorceryError::WrongExaltType,
+                ));
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.add_celestial_sorcery(
+                    archetype_id,
+                    archetype,
+                    shaping_ritual_id,
+                    shaping_ritual,
+                    control_spell_id,
+                    control_spell,
+                )?;
+            }
+        }
+        Ok(self)
+    }
+
+    pub fn check_add_celestial_sorcery(
+        &self,
+        archetype_id: SorceryArchetypeId,
+        archetype: Option<&'source SorceryArchetype>,
+        shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        control_spell_id: SpellId,
+        control_spell: &'source CelestialSpell,
+    ) -> Result<(), CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(_) => Err(CharacterMutationError::SorceryError(
+                SorceryError::WrongExaltType,
+            )),
+            Exaltation::Exalt(exalt) => exalt.check_add_celestial_sorcery(
+                archetype_id,
+                archetype,
+                shaping_ritual_id,
+                shaping_ritual,
+                control_spell_id,
+                control_spell,
+            ),
+        }
+    }
+
+    pub(crate) fn remove_celestial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(_) => {
+                return Err(CharacterMutationError::SorceryError(
+                    SorceryError::WrongExaltType,
+                ));
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.remove_celestial_sorcery()?;
+            }
+        }
+        Ok(self)
+    }
+
+    pub(crate) fn check_remove_celestial_sorcery(&self) -> Result<(), CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(_) => Err(CharacterMutationError::SorceryError(
+                SorceryError::WrongExaltType,
+            )),
+            Exaltation::Exalt(exalt) => exalt.check_remove_celestial_sorcery(),
         }
     }
 
