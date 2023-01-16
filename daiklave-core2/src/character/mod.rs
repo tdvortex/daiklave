@@ -1,5 +1,11 @@
+mod event_source;
+pub use event_source::CharacterEventSource;
+
 mod memo;
 pub use memo::CharacterMemo;
+
+mod mutation;
+pub use mutation::{CharacterMutation, CharacterMutationError};
 
 use std::collections::{HashMap, hash_map::Entry};
 
@@ -45,7 +51,7 @@ use crate::{
         WeaponError, Weapons,
     },
     willpower::Willpower,
-    CharacterMutation, CharacterMutationError, languages::Languages,
+    languages::Languages,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
