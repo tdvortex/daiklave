@@ -1,3 +1,6 @@
+mod memo;
+pub use memo::CharacterMemo;
+
 use std::collections::{HashMap, hash_map::Entry};
 
 use crate::{
@@ -42,7 +45,7 @@ use crate::{
         WeaponError, Weapons,
     },
     willpower::Willpower,
-    CharacterMemo, CharacterMutation, CharacterMutationError, languages::Languages,
+    CharacterMutation, CharacterMutationError, languages::Languages,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource

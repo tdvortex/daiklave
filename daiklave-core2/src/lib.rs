@@ -75,8 +75,7 @@ mod merits;
 mod name_and_concept;
 mod willpower;
 
-pub use character::Character;
-pub use character_memo::CharacterMemo;
+pub use character::{Character, CharacterMemo};
 use weapons::{
     weapon::{equipped::EquipHand, mundane::MundaneWeapon, BaseWeaponId, Equipped, WeaponId},
     WeaponError,
