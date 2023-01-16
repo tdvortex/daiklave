@@ -106,6 +106,12 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
             ));
         }
 
+        if shaping_ritual_id == self.shaping_ritual_id {
+            return Err(CharacterMutationError::SorceryError(
+                SorceryError::DuplicateShapingRitual,
+            ));
+        }
+
         let mut archetypes = HashMap::new();
 
         archetypes.insert(

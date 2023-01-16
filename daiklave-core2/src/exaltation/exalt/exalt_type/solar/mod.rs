@@ -18,7 +18,7 @@ use crate::{
     exaltation::exalt::Limit,
     sorcery::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, CelestialSpell, ShapingRitual,
-        ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryError, SpellId,
+        ShapingRitualId, SolarSpell, SorceryArchetype, SorceryArchetypeId, SorceryError, SpellId,
         TerrestrialSpell,
     },
     CharacterMutationError,
@@ -217,6 +217,81 @@ impl<'source> Solar<'source> {
 
     pub(crate) fn check_remove_celestial_sorcery(&self) -> Result<(), CharacterMutationError> {
         if !matches!(self.sorcery, Some(SolarSorcererView::Celestial(_))) {
+            Err(CharacterMutationError::SorceryError(
+                SorceryError::CircleSequence,
+            ))
+        } else {
+            Ok(())
+        }
+    }
+
+    pub(crate) fn add_solar_sorcery(
+        &mut self,
+        archetype_id: SorceryArchetypeId,
+        archetype: Option<&'source SorceryArchetype>,
+        shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        control_spell_id: SpellId,
+        control_spell: &'source SolarSpell,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        let solar = match &self.sorcery {
+            Some(SolarSorcererView::Celestial(celestial)) => celestial.upgrade(
+                archetype_id,
+                archetype,
+                shaping_ritual_id,
+                shaping_ritual,
+                control_spell_id,
+                control_spell,
+            ),
+            _ => Err(CharacterMutationError::SorceryError(
+                SorceryError::CircleSequence,
+            )),
+        }?;
+        self.sorcery = Some(SolarSorcererView::Solar(solar));
+        Ok(self)
+    }
+
+    pub(crate) fn check_add_solar_sorcery(
+        &self,
+        archetype_id: SorceryArchetypeId,
+        archetype: Option<&'source SorceryArchetype>,
+        _shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        _control_spell_id: SpellId,
+        _control_spell: &'source SolarSpell,
+    ) -> Result<(), CharacterMutationError> {
+        if let Some(SolarSorcererView::Celestial(celestial)) = &self.sorcery {
+            if shaping_ritual.archetype_id() != archetype_id {
+                Err(CharacterMutationError::SorceryError(
+                    SorceryError::MissingArchetype,
+                ))
+            } else if archetype.is_none() && !celestial.archetypes.contains_key(&archetype_id) {
+                Err(CharacterMutationError::SorceryError(
+                    SorceryError::MissingArchetype,
+                ))
+            } else {
+                Ok(())
+            }
+        } else {
+            Err(CharacterMutationError::SorceryError(
+                SorceryError::CircleSequence,
+            ))
+        }
+    }
+
+    pub(crate) fn remove_solar_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        if let Some(SolarSorcererView::Solar(solar)) = &mut self.sorcery {
+            self.sorcery = Some(SolarSorcererView::Celestial((&*solar).into()));
+            Ok(self)
+        } else {
+            Err(CharacterMutationError::SorceryError(
+                SorceryError::CircleSequence,
+            ))
+        }
+    }
+
+    pub(crate) fn check_remove_solar_sorcery(&self) -> Result<(), CharacterMutationError> {
+        if !matches!(self.sorcery, Some(SolarSorcererView::Solar(_))) {
             Err(CharacterMutationError::SorceryError(
                 SorceryError::CircleSequence,
             ))

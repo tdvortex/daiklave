@@ -7,6 +7,10 @@ pub enum SorceryError {
     /// reverse if the player changes their mind.
     #[error("Sorcery must progress as None <-> Terrestrial <-> Celestial <-> Solar only")]
     CircleSequence,
+    /// Characters with multiple Circles need a different Shaping Ritual for
+    /// each.
+    #[error("Each Circle needs its own Shaping Ritual")]
+    DuplicateShapingRitual,
     /// Shaping rituals require specific sorcerous archetypes to use.
     #[error("Missing an archetype for a shaping ritual")]
     MissingArchetype,

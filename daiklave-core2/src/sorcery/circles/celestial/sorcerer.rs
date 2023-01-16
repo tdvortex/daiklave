@@ -1,10 +1,16 @@
 use std::collections::HashMap;
 
-use crate::sorcery::{
-    archetype::SorceryArchetypeMeritId,
-    circles::{sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell},
-    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
-    Spell, SpellId,
+use crate::{
+    sorcery::{
+        archetype::SorceryArchetypeMeritId,
+        circles::{
+            solar::sorcerer::SolarCircleSorcerer, sorcery_circle::SorceryCircle,
+            terrestrial::TerrestrialSpell,
+        },
+        ShapingRitual, ShapingRitualId, SolarSpell, SorceryArchetype, SorceryArchetypeId,
+        SorceryArchetypeMerit, SorceryError, Spell, SpellId,
+    },
+    CharacterMutationError,
 };
 
 use super::{sorcerer_memo::CelestialCircleSorcererMemo, spell::CelestialSpell};
@@ -105,6 +111,90 @@ impl<'view, 'source> CelestialCircleSorcerer<'source> {
                 self.celestial_control_spell,
             )),
             SorceryCircle::Solar => None,
+        }
+    }
+
+    pub fn upgrade(
+        &self,
+        archetype_id: SorceryArchetypeId,
+        archetype: Option<&'source SorceryArchetype>,
+        shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        control_spell_id: SpellId,
+        control_spell: &'source SolarSpell,
+    ) -> Result<SolarCircleSorcerer<'source>, CharacterMutationError> {
+        if shaping_ritual_id == self.shaping_ritual_ids[0]
+            || shaping_ritual_id == self.shaping_ritual_ids[1]
+        {
+            return Err(CharacterMutationError::SorceryError(
+                SorceryError::DuplicateShapingRitual,
+            ));
+        }
+
+        let mut archetypes = self.archetypes.clone();
+
+        if !archetypes.contains_key(&archetype_id) {
+            if let Some(archetype) = archetype {
+                archetypes.insert(archetype_id, (archetype, HashMap::new()));
+            } else {
+                return Err(CharacterMutationError::SorceryError(
+                    SorceryError::MissingArchetype,
+                ));
+            }
+        }
+
+        Ok(SolarCircleSorcerer {
+            archetypes,
+            circle_archetypes: [
+                self.circle_archetypes[0],
+                self.circle_archetypes[1],
+                archetype_id,
+            ],
+            shaping_ritual_ids: [
+                self.shaping_ritual_ids[0],
+                self.shaping_ritual_ids[1],
+                shaping_ritual_id,
+            ],
+            shaping_rituals: [
+                self.shaping_rituals[0],
+                self.shaping_rituals[1],
+                shaping_ritual,
+            ],
+            terrestrial_control_spell_id: self.terrestrial_control_spell_id,
+            terrestrial_control_spell: self.terrestrial_control_spell,
+            terrestrial_spells: self.terrestrial_spells.clone(),
+            celestial_control_spell_id: self.celestial_control_spell_id,
+            celestial_control_spell: self.celestial_control_spell,
+            celestial_spells: self.celestial_spells.clone(),
+            solar_control_spell_id: control_spell_id,
+            solar_control_spell: control_spell,
+            solar_spells: HashMap::new(),
+        })
+    }
+}
+
+impl<'view, 'source> From<&'view SolarCircleSorcerer<'source>>
+    for CelestialCircleSorcerer<'source>
+{
+    fn from(solar: &'view SolarCircleSorcerer<'source>) -> Self {
+        let mut archetypes = solar.archetypes.clone();
+        if solar.circle_archetypes[2] != solar.circle_archetypes[0]
+            && solar.circle_archetypes[2] != solar.circle_archetypes[1]
+        {
+            archetypes.remove(&solar.circle_archetypes[2]);
+        }
+
+        Self {
+            archetypes,
+            circle_archetypes: [solar.circle_archetypes[0], solar.circle_archetypes[1]],
+            shaping_ritual_ids: [solar.shaping_ritual_ids[0], solar.shaping_ritual_ids[1]],
+            shaping_rituals: [solar.shaping_rituals[0], solar.shaping_rituals[1]],
+            terrestrial_control_spell_id: solar.terrestrial_control_spell_id,
+            terrestrial_control_spell: solar.terrestrial_control_spell,
+            terrestrial_spells: solar.terrestrial_spells.clone(),
+            celestial_control_spell_id: solar.celestial_control_spell_id,
+            celestial_control_spell: solar.celestial_control_spell,
+            celestial_spells: solar.celestial_spells.clone(),
         }
     }
 }

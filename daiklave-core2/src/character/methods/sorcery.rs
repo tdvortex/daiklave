@@ -1,6 +1,6 @@
 use crate::{
     sorcery::{
-        CelestialSpell, ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype,
+        CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery, SorceryArchetype,
         SorceryArchetypeId, SpellId, TerrestrialSpell,
     },
     Character, CharacterMutationError,
@@ -87,7 +87,7 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 
-    /// Checks if the character can have Terrestrial Circle sorcery added.
+    /// Checks if the character can have Celestial Circle sorcery added.
     pub fn check_add_celestial_sorcery(
         &self,
         archetype_id: SorceryArchetypeId,
@@ -117,5 +117,58 @@ impl<'view, 'source> Character<'source> {
     /// Checks if Celestial circle sorcery can be removed from the character.
     pub fn check_remove_celestial_sorcery(&self) -> Result<(), CharacterMutationError> {
         self.exaltation.check_remove_celestial_sorcery()
+    }
+
+    /// Upgrades the character from Celestial to Solar sorcery.
+    pub fn add_solar_sorcery(
+        &mut self,
+        archetype_id: SorceryArchetypeId,
+        archetype: Option<&'source SorceryArchetype>,
+        shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        control_spell_id: SpellId,
+        control_spell: &'source SolarSpell,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.exaltation.add_solar_sorcery(
+            archetype_id,
+            archetype,
+            shaping_ritual_id,
+            shaping_ritual,
+            control_spell_id,
+            control_spell,
+        )?;
+        Ok(self)
+    }
+
+    /// Checks if the character can have Terrestrial Circle sorcery added.
+    pub fn check_add_solar_sorcery(
+        &self,
+        archetype_id: SorceryArchetypeId,
+        archetype: Option<&'source SorceryArchetype>,
+        shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        control_spell_id: SpellId,
+        control_spell: &'source SolarSpell,
+    ) -> Result<(), CharacterMutationError> {
+        self.exaltation.check_add_solar_sorcery(
+            archetype_id,
+            archetype,
+            shaping_ritual_id,
+            shaping_ritual,
+            control_spell_id,
+            control_spell,
+        )?;
+        Ok(())
+    }
+
+    /// Removes Solar circle sorcery from the character.
+    pub fn remove_solar_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        self.exaltation.remove_solar_sorcery()?;
+        Ok(self)
+    }
+
+    /// Checks if Solar circle sorcery can be removed from the character.
+    pub fn check_remove_solar_sorcery(&self) -> Result<(), CharacterMutationError> {
+        self.exaltation.check_remove_solar_sorcery()
     }
 }

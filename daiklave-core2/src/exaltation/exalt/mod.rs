@@ -40,7 +40,7 @@ use crate::{
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{MartialArtsCharmId, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        CelestialSpell, ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype,
+        CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery, SorceryArchetype,
         SorceryArchetypeId, SpellId, TerrestrialSpell,
     },
     weapons::{
@@ -684,6 +684,66 @@ impl<'view, 'source> Exalt<'source> {
     pub fn check_remove_celestial_sorcery(&self) -> Result<(), CharacterMutationError> {
         match &self.exalt_type {
             ExaltType::Solar(solar) => solar.check_remove_celestial_sorcery(),
+        }
+    }
+
+    pub fn add_solar_sorcery(
+        &mut self,
+        archetype_id: SorceryArchetypeId,
+        archetype: Option<&'source SorceryArchetype>,
+        shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        control_spell_id: SpellId,
+        control_spell: &'source SolarSpell,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match &mut self.exalt_type {
+            ExaltType::Solar(solar) => {
+                solar.add_solar_sorcery(
+                    archetype_id,
+                    archetype,
+                    shaping_ritual_id,
+                    shaping_ritual,
+                    control_spell_id,
+                    control_spell,
+                )?;
+            }
+        }
+        Ok(self)
+    }
+
+    pub fn check_add_solar_sorcery(
+        &self,
+        archetype_id: SorceryArchetypeId,
+        archetype: Option<&'source SorceryArchetype>,
+        shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        control_spell_id: SpellId,
+        control_spell: &'source SolarSpell,
+    ) -> Result<(), CharacterMutationError> {
+        match &self.exalt_type {
+            ExaltType::Solar(solar) => solar.check_add_solar_sorcery(
+                archetype_id,
+                archetype,
+                shaping_ritual_id,
+                shaping_ritual,
+                control_spell_id,
+                control_spell,
+            ),
+        }
+    }
+
+    pub fn remove_solar_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        match &mut self.exalt_type {
+            ExaltType::Solar(solar) => {
+                solar.remove_solar_sorcery()?;
+            }
+        }
+        Ok(self)
+    }
+
+    pub fn check_remove_solar_sorcery(&self) -> Result<(), CharacterMutationError> {
+        match &self.exalt_type {
+            ExaltType::Solar(solar) => solar.check_remove_solar_sorcery(),
         }
     }
 
