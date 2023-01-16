@@ -24,7 +24,7 @@ use crate::{
     martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
-        SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell,
+        SorceryArchetype, SorceryArchetypeId, SpellId, TerrestrialSpell, SorceryError,
     },
     weapons::{
         weapon::{
@@ -150,6 +150,10 @@ impl<'source> Mortal<'source> {
         control_spell_id: SpellId,
         control_spell: &'source TerrestrialSpell,
     ) -> Result<&mut Self, CharacterMutationError> {
+        if self.sorcery.is_some() {
+            return Err(CharacterMutationError::SorceryError(SorceryError::CircleSequence));
+        }
+
         self.sorcery = Some(TerrestrialCircleSorcerer::new(
             archetype_id,
             archetype,
@@ -160,6 +164,41 @@ impl<'source> Mortal<'source> {
         )?);
 
         Ok(self)
+    }
+
+    pub fn check_add_terrestrial_sorcery(
+        &self,
+        archetype_id: SorceryArchetypeId,
+        _archetype: &'source SorceryArchetype,
+        _shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        _control_spell_id: SpellId,
+        _control_spell: &'source TerrestrialSpell,
+    ) -> Result<(), CharacterMutationError> {
+        if self.sorcery.is_some() {
+            return Err(CharacterMutationError::SorceryError(SorceryError::CircleSequence));
+        } else if shaping_ritual.archetype_id() != archetype_id {
+            return Err(CharacterMutationError::SorceryError(SorceryError::MissingArchetype));
+        } else {
+            Ok(())
+        }
+    }
+
+    pub fn remove_terrestrial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        if self.sorcery.is_none() {
+            Err(CharacterMutationError::SorceryError(SorceryError::CircleSequence))
+        } else {
+            self.sorcery = None;
+            Ok(self)
+        }
+    }
+
+    pub fn check_remove_terrestrial_sorcery(&self) -> Result<(), CharacterMutationError> {
+        if self.sorcery.is_none() {
+            Err(CharacterMutationError::SorceryError(SorceryError::CircleSequence))
+        } else {
+            Ok(())
+        }
     }
 
     pub fn get_weapon(

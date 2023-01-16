@@ -588,6 +588,43 @@ impl<'view, 'source> Exalt<'source> {
         Ok(self)
     }
 
+    pub fn check_add_terrestrial_sorcery(
+        &self,
+        archetype_id: SorceryArchetypeId,
+        archetype: &'source SorceryArchetype,
+        shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        control_spell_id: SpellId,
+        control_spell: &'source TerrestrialSpell,
+    ) -> Result<(), CharacterMutationError> {
+        match &self.exalt_type {
+            ExaltType::Solar(solar) => {
+                solar.check_add_terrestrial_sorcery(
+                    archetype_id,
+                    archetype,
+                    shaping_ritual_id,
+                    shaping_ritual,
+                    control_spell_id,
+                    control_spell,
+                )?;
+            }
+        }
+        Ok(())
+    }
+
+    pub fn remove_terrestrial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        match &mut self.exalt_type {
+            ExaltType::Solar(solar) => {solar.remove_terrestrial_sorcery()?;}
+        }
+        Ok(self)
+    }
+
+    pub fn check_remove_terrestrial_sorcery(&self) -> Result<(), CharacterMutationError> {
+        match &self.exalt_type {
+            ExaltType::Solar(solar) => solar.check_remove_terrestrial_sorcery(),
+        }
+    }
+
     pub(crate) fn sorcery(&'view self) -> Option<Sorcery<'view, 'source>> {
         match self.exalt_type() {
             ExaltType::Solar(solar) => solar

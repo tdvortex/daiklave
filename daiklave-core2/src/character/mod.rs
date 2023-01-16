@@ -193,8 +193,19 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::RemoveLanguage(language_mutation) => {
                 self.check_remove_language(language_mutation)
             }
-            CharacterMutation::AddTerrestrialSorcery(_) => todo!(),
-            CharacterMutation::RemoveTerrestrialSorcery => todo!(),
+            CharacterMutation::AddTerrestrialSorcery(add_terrestrial) => {
+                self.check_add_terrestrial_sorcery(
+                    add_terrestrial.0, 
+                    &add_terrestrial.1, 
+                    add_terrestrial.2, 
+                    &add_terrestrial.3, 
+                    add_terrestrial.4, 
+                    &add_terrestrial.5
+                )
+            }
+            CharacterMutation::RemoveTerrestrialSorcery => {
+                self.check_remove_terrestrial_sorcery()
+            }
             CharacterMutation::AddCelestialSorcery(_) => todo!(),
             CharacterMutation::RemoveCelestialSorcery => todo!(),
             CharacterMutation::AddSolarSorcery(_) => todo!(),
@@ -307,8 +318,19 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::RemoveLanguage(language_mutation) => {
                 self.remove_language(language_mutation)
             }
-            CharacterMutation::AddTerrestrialSorcery(_) => todo!(),
-            CharacterMutation::RemoveTerrestrialSorcery => todo!(),
+            CharacterMutation::AddTerrestrialSorcery(add_terrestrial) => {
+                self.add_terrestrial_sorcery(
+                    add_terrestrial.0, 
+                    &add_terrestrial.1, 
+                    add_terrestrial.2, 
+                    &add_terrestrial.3, 
+                    add_terrestrial.4, 
+                    &add_terrestrial.5
+                )
+            }
+            CharacterMutation::RemoveTerrestrialSorcery => {
+                self.remove_terrestrial_sorcery()
+            }
             CharacterMutation::AddCelestialSorcery(_) => todo!(),
             CharacterMutation::RemoveCelestialSorcery => todo!(),
             CharacterMutation::AddSolarSorcery(_) => todo!(),

@@ -33,4 +33,36 @@ impl<'view, 'source> Character<'source> {
         )?;
         Ok(self)
     }
+
+    /// Checks if the character can have Terrestrial Circle sorcery added.
+    pub fn check_add_terrestrial_sorcery(
+        &self,
+        archetype_id: SorceryArchetypeId,
+        archetype: &'source SorceryArchetype,
+        shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        control_spell_id: SpellId,
+        control_spell: &'source TerrestrialSpell,
+    ) -> Result<(), CharacterMutationError> {
+        self.exaltation.check_add_terrestrial_sorcery(
+            archetype_id,
+            archetype,
+            shaping_ritual_id,
+            shaping_ritual,
+            control_spell_id,
+            control_spell,
+        )?;
+        Ok(())
+    }
+
+    /// Removes Terrestrial circle sorcery from the character.
+    pub fn remove_terrestrial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        self.exaltation.remove_terrestrial_sorcery()?;
+        Ok(self)
+    }
+
+    /// Checks if Terrestrial circle sorcery can be removed from the character.
+    pub fn check_remove_terrestrial_sorcery(&self) -> Result<(), CharacterMutationError> {
+        self.exaltation.check_remove_terrestrial_sorcery()
+    }
 }

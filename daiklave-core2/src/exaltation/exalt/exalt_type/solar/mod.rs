@@ -103,6 +103,45 @@ impl<'source> Solar<'source> {
             ))
         }
     }
+
+    pub(crate) fn check_add_terrestrial_sorcery(
+        &self,
+        archetype_id: SorceryArchetypeId,
+        _archetype: &'source SorceryArchetype,
+        _shaping_ritual_id: ShapingRitualId,
+        shaping_ritual: &'source ShapingRitual,
+        _control_spell_id: SpellId,
+        _control_spell: &'source TerrestrialSpell,
+    ) -> Result<(), CharacterMutationError> {
+        if self.sorcery.is_some() {
+            Err(CharacterMutationError::SorceryError(
+                SorceryError::CircleSequence,
+            ))
+        } else if shaping_ritual.archetype_id() != archetype_id {
+            Err(CharacterMutationError::SorceryError(SorceryError::MissingArchetype))
+        } else {
+            Ok(())
+        }
+    }
+
+    pub(crate) fn remove_terrestrial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        match self.sorcery {
+            Some(SolarSorcererView::Terrestrial(_)) => {
+                self.sorcery = None;
+                Ok(self)
+            }
+            _ => Err(CharacterMutationError::SorceryError(SorceryError::CircleSequence))
+        }
+    }
+
+    pub(crate) fn check_remove_terrestrial_sorcery(&self) -> Result<(), CharacterMutationError> {
+        match self.sorcery {
+            Some(SolarSorcererView::Terrestrial(_)) => {
+                Ok(())
+            }
+            _ => Err(CharacterMutationError::SorceryError(SorceryError::CircleSequence))
+        }
+    }
 }
 
 impl<'view, 'source> Solar<'source> {
