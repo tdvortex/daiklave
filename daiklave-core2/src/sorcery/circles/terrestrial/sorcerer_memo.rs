@@ -3,7 +3,8 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::sorcery::{
-    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId, SorceryArchetypeMeritId, SorceryArchetypeMerit,
+    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
+    SorceryArchetypeMeritId, SpellId,
 };
 
 use super::{sorcerer::TerrestrialCircleSorcerer, TerrestrialSpell};

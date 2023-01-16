@@ -1,7 +1,7 @@
 mod abilities;
+mod armor;
 mod artifact;
 mod attributes;
-mod armor;
 mod concept;
 mod craft;
 mod essence;

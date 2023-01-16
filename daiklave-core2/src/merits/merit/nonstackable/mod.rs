@@ -22,7 +22,10 @@ use super::MeritError;
 pub struct NonStackableMerit(pub(crate) NonStackableMeritWithDotsMemo);
 
 impl<'source> NonStackableMerit {
-    pub fn new(template: NonStackableMeritTemplate, dots: u8) -> Result<(NonStackableMeritId, NonStackableMerit), MeritError> {
+    pub fn new(
+        template: NonStackableMeritTemplate,
+        dots: u8,
+    ) -> Result<(NonStackableMeritId, NonStackableMerit), MeritError> {
         let template_id = template.0;
         let with_dots = template.1.set_dots(dots)?;
         let dotted = match dots {
@@ -32,7 +35,9 @@ impl<'source> NonStackableMerit {
             3 => NonStackableMeritWithDotsMemo::Three(ThreeDotsNonStackableMeritMemo(with_dots)),
             4 => NonStackableMeritWithDotsMemo::Four(FourDotsNonStackableMeritMemo(with_dots)),
             5 => NonStackableMeritWithDotsMemo::Five(FiveDotsNonStackableMeritMemo(with_dots)),
-            _ => {return Err(MeritError::InvalidDotRating);}
+            _ => {
+                return Err(MeritError::InvalidDotRating);
+            }
         };
 
         Ok((template_id, Self(dotted)))

@@ -2,7 +2,7 @@ use crate::{
     exaltation::exalt::ExaltSorcery,
     sorcery::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
-        SorceryArchetypeId, SorceryCircle, Spell, SpellId, SorceryArchetypeWithMerits,
+        SorceryArchetypeId, SorceryArchetypeWithMerits, SorceryCircle, Spell, SpellId,
     },
 };
 
@@ -12,7 +12,10 @@ pub(crate) enum ExaltationSorcery<'view, 'source> {
 }
 
 impl<'view, 'source> ExaltationSorcery<'view, 'source> {
-    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
+    pub fn archetype(
+        &self,
+        id: SorceryArchetypeId,
+    ) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         match self {
             ExaltationSorcery::Mortal(terrestrial) => (*terrestrial).archetype(id),
             ExaltationSorcery::Exalt(exalt_switch) => exalt_switch.archetype(id),
@@ -21,9 +24,14 @@ impl<'view, 'source> ExaltationSorcery<'view, 'source> {
 
     pub fn archetypes_iter(&self) -> impl Iterator<Item = SorceryArchetypeId> + '_ {
         match self {
-            ExaltationSorcery::Mortal(terrestrial) => std::iter::once(terrestrial.archetype_id).collect::<Vec<SorceryArchetypeId>>(),
-            ExaltationSorcery::Exalt(exalt) => exalt.archetypes_iter().collect::<Vec<SorceryArchetypeId>>(),
-        }.into_iter()
+            ExaltationSorcery::Mortal(terrestrial) => {
+                std::iter::once(terrestrial.archetype_id).collect::<Vec<SorceryArchetypeId>>()
+            }
+            ExaltationSorcery::Exalt(exalt) => {
+                exalt.archetypes_iter().collect::<Vec<SorceryArchetypeId>>()
+            }
+        }
+        .into_iter()
     }
 
     pub fn shaping_ritual(

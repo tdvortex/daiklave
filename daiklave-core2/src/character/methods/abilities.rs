@@ -1,15 +1,18 @@
-use crate::{Character, abilities::{AbilitiesVanilla, Abilities, AbilityNameVanilla, AbilityError, AbilityRating}, CharacterMutationError};
+use crate::{
+    abilities::{Abilities, AbilitiesVanilla, AbilityError, AbilityNameVanilla, AbilityRating},
+    Character, CharacterMutationError,
+};
 
 impl<'view, 'source> Character<'source> {
     pub(crate) fn vanilla_abilities(&'view self) -> &'view AbilitiesVanilla<'source> {
         &self.abilities
     }
-    
+
     /// Get read-only access to a character’s Abilities.
     pub fn abilities(&'view self) -> Abilities<'view, 'source> {
         Abilities(self)
     }
-    
+
     /// Check if an ability's dots can be set to a specific level.
     pub fn check_set_ability_dots(
         &self,
@@ -24,7 +27,7 @@ impl<'view, 'source> Character<'source> {
             Ok(())
         }
     }
-    
+
     /// Set an ability's dots to a specific dot value. If this sets the ability
     /// to 0 dots, will erase all specialties.
     pub fn set_ability_dots(
@@ -36,7 +39,7 @@ impl<'view, 'source> Character<'source> {
         self.abilities.get_mut(ability_name).set_dots(dots)?;
         Ok(self)
     }
-    
+
     /// Checks if a specialty can be added to an ability. Errors if ability is
     /// 0 dots or specialty is not unique.
     pub fn check_add_specialty(
@@ -58,7 +61,7 @@ impl<'view, 'source> Character<'source> {
             ))
         }
     }
-    
+
     /// Adds a specialty to an ability.
     pub fn add_specialty(
         &mut self,
@@ -71,7 +74,7 @@ impl<'view, 'source> Character<'source> {
             .add_specialty(specialty)?;
         Ok(self)
     }
-    
+
     /// Checks if a specialty can be removed from an ability. Returns an error
     /// if specialty does not exist.
     pub fn check_remove_specialty(
@@ -93,7 +96,7 @@ impl<'view, 'source> Character<'source> {
             ))
         }
     }
-    
+
     /// Removes a specialty from an ability.
     pub fn remove_specialty(
         &mut self,

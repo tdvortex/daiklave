@@ -1,11 +1,17 @@
-use crate::{Character, sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, TerrestrialSpell, Sorcery}, CharacterMutationError};
+use crate::{
+    sorcery::{
+        ShapingRitual, ShapingRitualId, Sorcery, SorceryArchetype, SorceryArchetypeId, SpellId,
+        TerrestrialSpell,
+    },
+    Character, CharacterMutationError,
+};
 
 impl<'view, 'source> Character<'source> {
     /// The character's Sorcery abilities, if any.
     pub fn sorcery(&'view self) -> Option<Sorcery<'view, 'source>> {
         self.exaltation.sorcery()
     }
-    
+
     /// If the character was not already a sorcerer, adds the first circle of
     /// sorcery.
     pub fn add_terrestrial_sorcery(

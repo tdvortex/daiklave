@@ -1,4 +1,14 @@
-use crate::{Character, weapons::{Weapons, weapon::{BaseWeaponId, mundane::MundaneWeapon, WeaponId, Equipped, EquipHand, WeaponWeightClass, AttackRange}, WeaponError}, CharacterMutationError, attributes::AttributeName};
+use crate::{
+    attributes::AttributeName,
+    weapons::{
+        weapon::{
+            mundane::MundaneWeapon, AttackRange, BaseWeaponId, EquipHand, Equipped, WeaponId,
+            WeaponWeightClass,
+        },
+        WeaponError, Weapons,
+    },
+    Character, CharacterMutationError,
+};
 
 impl<'view, 'source> Character<'source> {
     /// The character's Weapons.

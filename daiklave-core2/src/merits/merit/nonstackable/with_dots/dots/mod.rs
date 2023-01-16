@@ -3,7 +3,10 @@ use std::ops::Deref;
 use crate::merits::merit::template::MeritTemplateWithDots;
 
 mod memo;
-pub(crate) use memo::{FiveDotsNonStackableMeritMemo, FourDotsNonStackableMeritMemo, ThreeDotsNonStackableMeritMemo, TwoDotsNonStackableMeritMemo, OneDotNonStackableMeritMemo, ZeroDotsNonStackableMeritMemo};
+pub(crate) use memo::{
+    FiveDotsNonStackableMeritMemo, FourDotsNonStackableMeritMemo, OneDotNonStackableMeritMemo,
+    ThreeDotsNonStackableMeritMemo, TwoDotsNonStackableMeritMemo, ZeroDotsNonStackableMeritMemo,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct ZeroDotsNonStackableMerit<'source>(MeritTemplateWithDots<'source>);

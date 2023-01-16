@@ -4,15 +4,21 @@ use crate::sorcery::{
     circles::{
         celestial::CelestialSpell, sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell,
     },
-    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, Spell, SpellId, SorceryArchetypeMeritId, SorceryArchetypeMerit, SorceryArchetypeWithMerits,
+    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
+    SorceryArchetypeMeritId, SorceryArchetypeWithMerits, Spell, SpellId,
 };
 
 use super::{sorcerer_memo::SolarCircleSorcererMemo, SolarSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct SolarCircleSorcerer<'source> {
-    pub(crate) archetypes:
-        HashMap<SorceryArchetypeId, (&'source SorceryArchetype, HashMap<SorceryArchetypeMeritId, &'source SorceryArchetypeMerit>)>,
+    pub(crate) archetypes: HashMap<
+        SorceryArchetypeId,
+        (
+            &'source SorceryArchetype,
+            HashMap<SorceryArchetypeMeritId, &'source SorceryArchetypeMerit>,
+        ),
+    >,
     pub(crate) circle_archetypes: [SorceryArchetypeId; 3],
     pub(crate) shaping_ritual_ids: [ShapingRitualId; 3],
     pub(crate) shaping_rituals: [&'source ShapingRitual; 3],
@@ -33,10 +39,15 @@ impl<'view, 'source> SolarCircleSorcerer<'source> {
             archetypes: self
                 .archetypes
                 .iter()
-                .map(|(k, (archetype, merits))| (*k, (
-                    (*archetype).to_owned(),
-                    merits.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
-                )))
+                .map(|(k, (archetype, merits))| {
+                    (
+                        *k,
+                        (
+                            (*archetype).to_owned(),
+                            merits.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
+                        ),
+                    )
+                })
                 .collect(),
             circle_archetypes: self.circle_archetypes,
             shaping_ritual_ids: self.shaping_ritual_ids,
@@ -65,9 +76,14 @@ impl<'view, 'source> SolarCircleSorcerer<'source> {
         }
     }
 
-    pub fn archetype(&'view self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
+    pub fn archetype(
+        &'view self,
+        id: SorceryArchetypeId,
+    ) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         if self.circle_archetypes.contains(&id) {
-            self.archetypes.get(&id).map(|(archetype, merits)| (*archetype, merits))
+            self.archetypes
+                .get(&id)
+                .map(|(archetype, merits)| (*archetype, merits))
         } else {
             None
         }

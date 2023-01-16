@@ -1,8 +1,8 @@
 use crate::{
     exaltation::exalt::exalt_type::solar::SolarSorcererView,
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetypeId, SorceryCircle, Spell,
-        SpellId, SorceryArchetypeWithMerits,
+        ShapingRitual, ShapingRitualId, SorceryArchetypeId, SorceryArchetypeWithMerits,
+        SorceryCircle, Spell, SpellId,
     },
 };
 
@@ -11,7 +11,10 @@ pub(crate) enum ExaltSorcery<'view, 'source> {
 }
 
 impl<'view, 'source> ExaltSorcery<'view, 'source> {
-    pub fn archetype(&self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
+    pub fn archetype(
+        &self,
+        id: SorceryArchetypeId,
+    ) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         match self {
             ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer.archetype(id),
         }
@@ -19,8 +22,11 @@ impl<'view, 'source> ExaltSorcery<'view, 'source> {
 
     pub fn archetypes_iter(&self) -> impl Iterator<Item = SorceryArchetypeId> + '_ {
         match self {
-            ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer.archetypes_iter().collect::<Vec<SorceryArchetypeId>>(),
-        }.into_iter()
+            ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer
+                .archetypes_iter()
+                .collect::<Vec<SorceryArchetypeId>>(),
+        }
+        .into_iter()
     }
 
     pub fn shaping_ritual(

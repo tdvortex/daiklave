@@ -1,6 +1,6 @@
 use crate::{
     abilities::AbilityNameVanilla,
-    martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId, MartialArts},
+    martial_arts::{MartialArts, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     Character, CharacterMutationError,
 };
 

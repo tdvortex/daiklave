@@ -21,14 +21,27 @@ mod source;
 pub(crate) use source::MeritSource;
 
 mod stackable;
-pub use stackable::{StackableMerit, StackableMeritId, StackableMeritTemplate};
 pub(crate) use stackable::StackableMeritView;
+pub use stackable::{StackableMerit, StackableMeritId, StackableMeritTemplate};
 
 mod template;
 
-use crate::{book_reference::BookReference};
+use crate::book_reference::BookReference;
 
-use self::{template::MeritTemplateId, builder::MeritTemplateBuilder, stackable::{StackableMeritWithDotsMemo, ZeroDotsStackableMeritMemo, OneDotStackableMeritMemo, TwoDotsStackableMeritMemo, ThreeDotsStackableMeritMemo, FourDotsStackableMeritMemo, FiveDotsStackableMeritMemo}, nonstackable::{NonStackableMeritTemplate, NonStackableMeritWithDotsMemo, ZeroDotsNonStackableMeritMemo, OneDotNonStackableMeritMemo, TwoDotsNonStackableMeritMemo, ThreeDotsNonStackableMeritMemo, FourDotsNonStackableMeritMemo, FiveDotsNonStackableMeritMemo}};
+use self::{
+    builder::MeritTemplateBuilder,
+    nonstackable::{
+        FiveDotsNonStackableMeritMemo, FourDotsNonStackableMeritMemo, NonStackableMeritTemplate,
+        NonStackableMeritWithDotsMemo, OneDotNonStackableMeritMemo, ThreeDotsNonStackableMeritMemo,
+        TwoDotsNonStackableMeritMemo, ZeroDotsNonStackableMeritMemo,
+    },
+    stackable::{
+        FiveDotsStackableMeritMemo, FourDotsStackableMeritMemo, OneDotStackableMeritMemo,
+        StackableMeritWithDotsMemo, ThreeDotsStackableMeritMemo, TwoDotsStackableMeritMemo,
+        ZeroDotsStackableMeritMemo,
+    },
+    template::MeritTemplateId,
+};
 
 /// A single Merit possessed by a character.
 pub struct Merit<'source>(pub(crate) MeritSource<'source>);
@@ -42,27 +55,42 @@ impl<'source> Merit<'source> {
         }
     }
 
-    pub fn new_stackable(dots: u8, detail: String, template: StackableMeritTemplate) -> Result<StackableMerit, MeritError> {
+    pub fn new_stackable(
+        dots: u8,
+        detail: String,
+        template: StackableMeritTemplate,
+    ) -> Result<StackableMerit, MeritError> {
         let template_id = template.0;
         let with_dots = template.1.set_dots(dots)?;
 
         let dotted = match dots {
-            0 => StackableMeritWithDotsMemo::Zero(ZeroDotsStackableMeritMemo(template_id, with_dots)),
+            0 => {
+                StackableMeritWithDotsMemo::Zero(ZeroDotsStackableMeritMemo(template_id, with_dots))
+            }
             1 => StackableMeritWithDotsMemo::One(OneDotStackableMeritMemo(template_id, with_dots)),
             2 => StackableMeritWithDotsMemo::Two(TwoDotsStackableMeritMemo(template_id, with_dots)),
-            3 => StackableMeritWithDotsMemo::Three(ThreeDotsStackableMeritMemo(template_id, with_dots)),
-            4 => StackableMeritWithDotsMemo::Four(FourDotsStackableMeritMemo(template_id, with_dots)),
-            5 => StackableMeritWithDotsMemo::Five(FiveDotsStackableMeritMemo(template_id, with_dots)),
-            _ => {return Err(MeritError::InvalidDotRating);}
+            3 => StackableMeritWithDotsMemo::Three(ThreeDotsStackableMeritMemo(
+                template_id,
+                with_dots,
+            )),
+            4 => {
+                StackableMeritWithDotsMemo::Four(FourDotsStackableMeritMemo(template_id, with_dots))
+            }
+            5 => {
+                StackableMeritWithDotsMemo::Five(FiveDotsStackableMeritMemo(template_id, with_dots))
+            }
+            _ => {
+                return Err(MeritError::InvalidDotRating);
+            }
         };
 
-        Ok(StackableMerit{
-            detail,
-            dotted,
-        })
+        Ok(StackableMerit { detail, dotted })
     }
 
-    pub fn new_nonstackable(dots: u8, template: NonStackableMeritTemplate) -> Result<(NonStackableMeritId, NonStackableMerit), MeritError> {
+    pub fn new_nonstackable(
+        dots: u8,
+        template: NonStackableMeritTemplate,
+    ) -> Result<(NonStackableMeritId, NonStackableMerit), MeritError> {
         let template_id = template.0;
         let with_dots = template.1.set_dots(dots)?;
 
@@ -73,7 +101,9 @@ impl<'source> Merit<'source> {
             3 => NonStackableMeritWithDotsMemo::Three(ThreeDotsNonStackableMeritMemo(with_dots)),
             4 => NonStackableMeritWithDotsMemo::Four(FourDotsNonStackableMeritMemo(with_dots)),
             5 => NonStackableMeritWithDotsMemo::Five(FiveDotsNonStackableMeritMemo(with_dots)),
-            _ => {return Err(MeritError::InvalidDotRating);}
+            _ => {
+                return Err(MeritError::InvalidDotRating);
+            }
         };
 
         Ok((template_id, NonStackableMerit(dotted)))
@@ -101,7 +131,7 @@ impl<'source> Merit<'source> {
     }
 
     /// If the merit is stackable, the detail element describing this unique
-    /// instance. For example, if the instance were "Allies (Ragara Kvin)", 
+    /// instance. For example, if the instance were "Allies (Ragara Kvin)",
     /// this would return Some("Ragara Kvin").
     pub fn detail(&self) -> Option<&'source str> {
         self.0.detail()
@@ -127,13 +157,3 @@ impl<'source> Merit<'source> {
         self.0.description()
     }
 }
-
-
-
-
-
-
-
-
-
-

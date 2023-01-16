@@ -5,12 +5,9 @@ pub use fixed::FixedMeritTemplateBuilder;
 pub use variable::VariableMeritTemplateBuilder;
 pub use with_type::MeritTemplateBuilderWithType;
 
-use crate::{abilities::AbilityName, book_reference::BookReference, attributes::AttributeName};
+use crate::{abilities::AbilityName, attributes::AttributeName, book_reference::BookReference};
 
-use super::{
-    prerequisite::MeritPrerequisite,
-    MeritType,
-};
+use super::{prerequisite::MeritPrerequisite, MeritType};
 
 pub struct MeritTemplateBuilder {
     pub(crate) name: String,
@@ -65,9 +62,3 @@ impl MeritTemplateBuilder {
         }
     }
 }
-
-
-
-
-
-

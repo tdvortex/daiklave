@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// One of the major languages spoken in Creation. Most are actually a set of
 /// local dialects that are mutually intelligible.
@@ -18,7 +18,7 @@ pub enum MajorLanguage {
     HighRealm,
     /// The language of the common folk of the Realm.
     LowRealm,
-    /// The language of spirits and sorcery. **Note**: This 
+    /// The language of spirits and sorcery. **Note**: This
     /// language requires either Lore 1+ or Occult 1+ to take.
     OldRealm,
     /// The language group of the Scavenger Lands.

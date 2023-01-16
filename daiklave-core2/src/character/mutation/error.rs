@@ -1,6 +1,17 @@
 use thiserror::Error;
 
-use crate::{abilities::AbilityError, armor::{ArmorError, armor_item::artifact::ArtifactError}, attributes::AttributeError, name_and_concept::ConceptError, exaltation::exalt::essence::EssenceError, hearthstones::HearthstoneError, martial_arts::MartialArtsError, merits::merit::MeritError, sorcery::SorceryError, weapons::WeaponError};
+use crate::{
+    abilities::AbilityError,
+    armor::{armor_item::artifact::ArtifactError, ArmorError},
+    attributes::AttributeError,
+    exaltation::exalt::essence::EssenceError,
+    hearthstones::HearthstoneError,
+    martial_arts::MartialArtsError,
+    merits::merit::MeritError,
+    name_and_concept::ConceptError,
+    sorcery::SorceryError,
+    weapons::WeaponError,
+};
 
 /// An error representing something that could go wrong with a
 /// CharacterMutation.

@@ -1,4 +1,7 @@
-use crate::{Character, health::{Health, WoundPenalty, DamageLevel}, CharacterMutationError};
+use crate::{
+    health::{DamageLevel, Health, WoundPenalty},
+    Character, CharacterMutationError,
+};
 
 impl<'source> Character<'source> {
     /// Gets the character's health state (read-only).

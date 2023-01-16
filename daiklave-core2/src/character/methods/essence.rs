@@ -1,7 +1,9 @@
-use crate::{Character, exaltation::exalt::essence::{Essence, MotePoolName, OtherMoteCommitmentId, MoteCommitmentId}, CharacterMutationError};
+use crate::{
+    exaltation::exalt::essence::{Essence, MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
+    Character, CharacterMutationError,
+};
 
 impl<'view, 'source> Character<'source> {
-
     /// None for mortals.
     pub fn essence(&'view self) -> Option<Essence<'view, 'source>> {
         self.exaltation.essence()

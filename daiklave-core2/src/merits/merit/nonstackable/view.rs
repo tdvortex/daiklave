@@ -5,7 +5,7 @@ use super::{with_dots::NonStackableMeritWithDots, NonStackableMerit};
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct NonStackableMeritView<'source>(pub NonStackableMeritWithDots<'source>);
 
-impl<'source> NonStackableMeritView<'source>{
+impl<'source> NonStackableMeritView<'source> {
     pub fn as_memo(&self) -> NonStackableMerit {
         NonStackableMerit(self.0.as_memo())
     }

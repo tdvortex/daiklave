@@ -1,4 +1,7 @@
-use crate::{merits::merit::{template::MeritTemplateId, MeritType}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{template::MeritTemplateId, MeritType},
+};
 
 use super::{with_dots::StackableMeritWithDots, StackableMerit};
 
@@ -10,7 +13,10 @@ pub(crate) struct StackableMeritView<'source> {
 
 impl<'source> StackableMeritView<'source> {
     pub fn as_memo(&self) -> StackableMerit {
-        StackableMerit { detail: self.detail.to_owned(), dotted: self.dotted.as_memo() }
+        StackableMerit {
+            detail: self.detail.to_owned(),
+            dotted: self.dotted.as_memo(),
+        }
     }
 
     pub fn template_id(&self) -> MeritTemplateId {

@@ -1,7 +1,10 @@
 mod memo;
 pub(crate) use memo::MeritTemplateWithDotsMemo;
 
-use crate::{book_reference::BookReference, merits::merit::{MeritType, prerequisite::MeritPrerequisite}};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{prerequisite::MeritPrerequisite, MeritType},
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct MeritTemplateWithDots<'source> {
@@ -10,7 +13,7 @@ pub(crate) struct MeritTemplateWithDots<'source> {
     merit_type: MeritType,
     shared_description: &'source str,
     dot_description: Option<&'source str>,
-    prerequisites: &'source[MeritPrerequisite],
+    prerequisites: &'source [MeritPrerequisite],
 }
 
 impl<'source> MeritTemplateWithDots<'source> {

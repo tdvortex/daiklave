@@ -1,4 +1,4 @@
-use crate::{Character, CharacterMutationError, abilities::AbilityError, craft::Craft};
+use crate::{abilities::AbilityError, craft::Craft, Character, CharacterMutationError};
 
 impl<'view, 'source> Character<'source> {
     /// The character's Craft abilities and specialties.

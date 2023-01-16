@@ -1,4 +1,7 @@
-use crate::{Character, attributes::{Attributes, AttributeName, AttributeError}, CharacterMutationError};
+use crate::{
+    attributes::{AttributeError, AttributeName, Attributes},
+    Character, CharacterMutationError,
+};
 
 impl<'source> Character<'source> {
     /// Gets a struct reference for the character's attributes.
@@ -33,4 +36,3 @@ impl<'source> Character<'source> {
         Ok(self)
     }
 }
-

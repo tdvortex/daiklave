@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use crate::sorcery::{
     circles::{celestial::sorcerer::CelestialCircleSorcerer, solar::sorcerer::SolarCircleSorcerer},
-    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryError, Spell,
-    SpellId, SorceryArchetypeMeritId, SorceryArchetypeWithMerits, SorceryArchetypeMerit,
+    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
+    SorceryArchetypeMeritId, SorceryArchetypeWithMerits, SorceryError, Spell, SpellId,
 };
 
 use super::{sorcerer_memo::TerrestrialCircleSorcererMemo, TerrestrialSpell};
@@ -49,7 +49,11 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
         TerrestrialCircleSorcererMemo {
             archetype_id: self.archetype_id,
             archetype: self.archetype.to_owned(),
-            archetype_merits: self.archetype_merits.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
+            archetype_merits: self
+                .archetype_merits
+                .iter()
+                .map(|(k, v)| (*k, (*v).to_owned()))
+                .collect(),
             shaping_ritual_id: self.shaping_ritual_id,
             shaping_ritual: self.shaping_ritual.to_owned(),
             control_spell_id: self.control_spell_id,
@@ -62,12 +66,12 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
         }
     }
 
-    pub fn archetype(&'view self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
+    pub fn archetype(
+        &'view self,
+        id: SorceryArchetypeId,
+    ) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         if id == self.archetype_id {
-            Some((
-                self.archetype,
-                &self.archetype_merits
-            ))
+            Some((self.archetype, &self.archetype_merits))
         } else {
             None
         }

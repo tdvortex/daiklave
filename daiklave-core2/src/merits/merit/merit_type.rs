@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// The purchase constraints on a specific merit.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

@@ -1,7 +1,29 @@
 mod error;
 pub use error::CharacterMutationError;
 
-use crate::{exaltation::exalt::{exalt_type::solar::NewSolar, essence::{MotePoolName, OtherMoteCommitmentId, MoteCommitmentId}}, health::{WoundPenalty, DamageLevel}, attributes::AttributeName, abilities::AbilityNameVanilla, martial_arts::{MartialArtsStyleId, MartialArtsStyle}, weapons::weapon::{BaseWeaponId, mundane::MundaneWeapon, WeaponId, EquipHand, Equipped}, artifact::{Artifact, ArtifactId}, armor::armor_item::{BaseArmorId, mundane::MundaneArmor, ArmorId}, hearthstones::{HearthstoneId, hearthstone::HearthstoneTemplate}, merits::merit::{StackableMeritId, StackableMerit, NonStackableMeritId, NonStackableMerit}, languages::language::LanguageMutation, sorcery::{circles::{terrestrial::AddTerrestrialSorcery, celestial::AddCelestialSorcery, solar::AddSolarSorcery}, SorceryArchetypeId, SorceryArchetypeMeritId, SorceryArchetypeMerit}};
+use crate::{
+    abilities::AbilityNameVanilla,
+    armor::armor_item::{mundane::MundaneArmor, ArmorId, BaseArmorId},
+    artifact::{Artifact, ArtifactId},
+    attributes::AttributeName,
+    exaltation::exalt::{
+        essence::{MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
+        exalt_type::solar::NewSolar,
+    },
+    health::{DamageLevel, WoundPenalty},
+    hearthstones::{hearthstone::HearthstoneTemplate, HearthstoneId},
+    languages::language::LanguageMutation,
+    martial_arts::{MartialArtsStyle, MartialArtsStyleId},
+    merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
+    sorcery::{
+        circles::{
+            celestial::AddCelestialSorcery, solar::AddSolarSorcery,
+            terrestrial::AddTerrestrialSorcery,
+        },
+        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+    },
+    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId},
+};
 
 /// The API for the character, expressed as an owned struct. Each mutation has
 /// an associated pub method on Character and CharacterEventSource which
@@ -127,11 +149,15 @@ pub enum CharacterMutation {
     /// character is adding a shaping ritual to an already-known archetype, the
     /// SorceryArchetype text may be left as None, otherwise it is required.
     AddSolarSorcery(AddSolarSorcery),
-    /// Removes Solar circle sorcery from the character, making them a 
+    /// Removes Solar circle sorcery from the character, making them a
     /// Celestial circle sorcerer.
     RemoveSolarSorcery,
     /// Adds a merit tied to a Sorcery Archetype owned by the character.
-    AddSorceryArchetypeMerit(SorceryArchetypeId, SorceryArchetypeMeritId, SorceryArchetypeMerit),
+    AddSorceryArchetypeMerit(
+        SorceryArchetypeId,
+        SorceryArchetypeMeritId,
+        SorceryArchetypeMerit,
+    ),
     /// Removes a sorcery archetype merit.
     RemoveSorceryArchetypeMerit(SorceryArchetypeMeritId),
 }

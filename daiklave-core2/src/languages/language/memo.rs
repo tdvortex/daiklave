@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use super::{MajorLanguage, Language};
+use super::{Language, MajorLanguage};
 
 /// The details of a language to be added or removed.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

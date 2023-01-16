@@ -1,6 +1,9 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{book_reference::BookReference, merits::merit::{MeritType, prerequisite::MeritPrerequisite}};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{prerequisite::MeritPrerequisite, MeritType},
+};
 
 use super::MeritTemplateWithDots;
 

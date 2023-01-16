@@ -1,4 +1,4 @@
-use crate::{CharacterMutation, Character, CharacterMutationError};
+use crate::{Character, CharacterMutation, CharacterMutationError};
 
 /// A container to hold a successfully applied sequence of mutations, with
 /// capability to undo/redo mutations.

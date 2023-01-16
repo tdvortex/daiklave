@@ -3,15 +3,21 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::sorcery::{
-    circles::terrestrial::TerrestrialSpell, ShapingRitual, ShapingRitualId, SorceryArchetype,
-    SorceryArchetypeId, SpellId, archetype::SorceryArchetypeMeritId, SorceryArchetypeMerit,
+    archetype::SorceryArchetypeMeritId, circles::terrestrial::TerrestrialSpell, ShapingRitual,
+    ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit, SpellId,
 };
 
 use super::{sorcerer::CelestialCircleSorcerer, spell::CelestialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct CelestialCircleSorcererMemo {
-    pub(in crate::sorcery::circles) archetypes: HashMap<SorceryArchetypeId, (SorceryArchetype, HashMap<SorceryArchetypeMeritId, SorceryArchetypeMerit>)>,
+    pub(in crate::sorcery::circles) archetypes: HashMap<
+        SorceryArchetypeId,
+        (
+            SorceryArchetype,
+            HashMap<SorceryArchetypeMeritId, SorceryArchetypeMerit>,
+        ),
+    >,
     pub(in crate::sorcery::circles) circle_archetypes: [SorceryArchetypeId; 2],
     pub(in crate::sorcery::circles) shaping_ritual_ids: [ShapingRitualId; 2],
     pub(in crate::sorcery::circles) shaping_rituals: [ShapingRitual; 2],
@@ -26,11 +32,16 @@ pub(crate) struct CelestialCircleSorcererMemo {
 impl<'source> CelestialCircleSorcererMemo {
     pub fn as_ref(&'source self) -> CelestialCircleSorcerer<'source> {
         CelestialCircleSorcerer {
-            archetypes: self.archetypes.iter().map(|(k, (archetype, merits))| {
-                (*k, (archetype, merits.iter().map(|(k, v)| {
-                    (*k, v)
-                }).collect()))
-            }).collect(),
+            archetypes: self
+                .archetypes
+                .iter()
+                .map(|(k, (archetype, merits))| {
+                    (
+                        *k,
+                        (archetype, merits.iter().map(|(k, v)| (*k, v)).collect()),
+                    )
+                })
+                .collect(),
             circle_archetypes: self.circle_archetypes,
             shaping_ritual_ids: self.shaping_ritual_ids,
             shaping_rituals: {

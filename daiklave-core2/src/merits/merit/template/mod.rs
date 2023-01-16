@@ -9,7 +9,7 @@ pub(crate) use with_dots::{MeritTemplateWithDots, MeritTemplateWithDotsMemo};
 
 use crate::book_reference::BookReference;
 
-use super::{MeritType, MeritError, prerequisite::MeritPrerequisite};
+use super::{prerequisite::MeritPrerequisite, MeritError, MeritType};
 
 pub struct MeritTemplate {
     pub(crate) name: String,
@@ -27,16 +27,14 @@ impl MeritTemplate {
                 if dots != fixed {
                     Err(MeritError::InvalidDotRating)
                 } else {
-                    Ok(
-                        MeritTemplateWithDotsMemo { 
-                            name: self.name,
-                            book_reference: self.book_reference,
-                            merit_type: self.merit_type,
-                            shared_description: self.shared_description,
-                            dot_description: None,
-                            prerequisites: self.prerequisites,
-                        }
-                    )
+                    Ok(MeritTemplateWithDotsMemo {
+                        name: self.name,
+                        book_reference: self.book_reference,
+                        merit_type: self.merit_type,
+                        shared_description: self.shared_description,
+                        dot_description: None,
+                        prerequisites: self.prerequisites,
+                    })
                 }
             }
             MeritTemplateDotOptions::Variable(mut options) => {
@@ -45,16 +43,14 @@ impl MeritTemplate {
                 } else if options[dots as usize].is_none() {
                     Err(MeritError::InvalidDotRating)
                 } else {
-                    Ok(
-                        MeritTemplateWithDotsMemo { 
-                            name: self.name,
-                            book_reference: self.book_reference,
-                            merit_type: self.merit_type,
-                            shared_description: self.shared_description,
-                            dot_description: options[dots as usize].take(),
-                            prerequisites: self.prerequisites,
-                        }
-                    )
+                    Ok(MeritTemplateWithDotsMemo {
+                        name: self.name,
+                        book_reference: self.book_reference,
+                        merit_type: self.merit_type,
+                        shared_description: self.shared_description,
+                        dot_description: options[dots as usize].take(),
+                        prerequisites: self.prerequisites,
+                    })
                 }
             }
         }

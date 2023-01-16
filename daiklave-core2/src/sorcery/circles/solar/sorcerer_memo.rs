@@ -42,8 +42,7 @@ impl<'source> SolarCircleSorcererMemo {
                 .map(|(k, (archetype, merits))| {
                     (
                         *k,
-                        (archetype, 
-                        merits.iter().map(|(k, v)| (*k, v)).collect()),
+                        (archetype, merits.iter().map(|(k, v)| (*k, v)).collect()),
                     )
                 })
                 .collect(),

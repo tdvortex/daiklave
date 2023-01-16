@@ -1,9 +1,13 @@
-use crate::{merits::merit::{template::MeritTemplateId, MeritType}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{template::MeritTemplateId, MeritType},
+};
 
 pub(crate) use self::dots::{
-    FiveDotsStackableMerit, FourDotsStackableMerit, OneDotStackableMerit, ThreeDotsStackableMerit,
-    TwoDotsStackableMerit, ZeroDotsStackableMerit, FiveDotsStackableMeritMemo, FourDotsStackableMeritMemo, OneDotStackableMeritMemo, ThreeDotsStackableMeritMemo,
-    TwoDotsStackableMeritMemo, ZeroDotsStackableMeritMemo,
+    FiveDotsStackableMerit, FiveDotsStackableMeritMemo, FourDotsStackableMerit,
+    FourDotsStackableMeritMemo, OneDotStackableMerit, OneDotStackableMeritMemo,
+    ThreeDotsStackableMerit, ThreeDotsStackableMeritMemo, TwoDotsStackableMerit,
+    TwoDotsStackableMeritMemo, ZeroDotsStackableMerit, ZeroDotsStackableMeritMemo,
 };
 
 mod dots;
@@ -27,7 +31,9 @@ impl<'source> StackableMeritWithDots<'source> {
             StackableMeritWithDots::Zero(zero) => StackableMeritWithDotsMemo::Zero(zero.as_memo()),
             StackableMeritWithDots::One(one) => StackableMeritWithDotsMemo::One(one.as_memo()),
             StackableMeritWithDots::Two(two) => StackableMeritWithDotsMemo::Two(two.as_memo()),
-            StackableMeritWithDots::Three(three) => StackableMeritWithDotsMemo::Three(three.as_memo()),
+            StackableMeritWithDots::Three(three) => {
+                StackableMeritWithDotsMemo::Three(three.as_memo())
+            }
             StackableMeritWithDots::Four(four) => StackableMeritWithDotsMemo::Four(four.as_memo()),
             StackableMeritWithDots::Five(five) => StackableMeritWithDotsMemo::Five(five.as_memo()),
         }

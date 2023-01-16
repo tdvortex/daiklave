@@ -37,7 +37,7 @@ impl<'source> MortalMemo {
             sorcery,
             weapons,
             wonders,
-            exalted_healing
+            exalted_healing,
         }
     }
 

@@ -1,4 +1,4 @@
-use crate::{Character, willpower::Willpower, CharacterMutationError};
+use crate::{willpower::Willpower, Character, CharacterMutationError};
 
 impl<'source> Character<'source> {
     /// Returns the character's current willpower amount and permanent rating.

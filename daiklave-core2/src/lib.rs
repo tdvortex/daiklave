@@ -48,10 +48,12 @@ pub mod sorcery;
 pub mod weapons;
 
 mod character;
-mod languages;
 pub(crate) mod craft;
+mod languages;
 mod merits;
 mod name_and_concept;
 mod willpower;
 
-pub use character::{Character, CharacterMemo, CharacterEventSource, CharacterMutation, CharacterMutationError};
+pub use character::{
+    Character, CharacterEventSource, CharacterMemo, CharacterMutation, CharacterMutationError,
+};

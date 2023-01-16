@@ -1,4 +1,7 @@
-use crate::{Character, exaltation::exalt::exalt_type::solar::{Solar, NewSolar}, CharacterMutationError};
+use crate::{
+    exaltation::exalt::exalt_type::solar::{NewSolar, Solar},
+    Character, CharacterMutationError,
+};
 
 impl<'source> Character<'source> {
     /// Returns true if character is a Solar.

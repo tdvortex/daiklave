@@ -1,4 +1,10 @@
-use crate::{Character, armor::{Armor, armor_item::{BaseArmorId, mundane::MundaneArmor, ArmorId}, ArmorError}, CharacterMutationError};
+use crate::{
+    armor::{
+        armor_item::{mundane::MundaneArmor, ArmorId, BaseArmorId},
+        Armor, ArmorError,
+    },
+    Character, CharacterMutationError,
+};
 
 impl<'view, 'source> Character<'source> {
     /// The character's Armor items.

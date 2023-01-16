@@ -1,8 +1,11 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::merits::merit::template::MeritTemplateWithDotsMemo;
 
-use super::{ZeroDotsNonStackableMerit, OneDotNonStackableMerit, TwoDotsNonStackableMerit, ThreeDotsNonStackableMerit, FourDotsNonStackableMerit, FiveDotsNonStackableMerit};
+use super::{
+    FiveDotsNonStackableMerit, FourDotsNonStackableMerit, OneDotNonStackableMerit,
+    ThreeDotsNonStackableMerit, TwoDotsNonStackableMerit, ZeroDotsNonStackableMerit,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct ZeroDotsNonStackableMeritMemo(pub MeritTemplateWithDotsMemo);

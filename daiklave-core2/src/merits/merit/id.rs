@@ -1,6 +1,9 @@
-use crate::{artifact::ArtifactId, hearthstones::HearthstoneId, martial_arts::MartialArtsStyleId, unique_id::UniqueId, languages::language::MajorLanguage, sorcery::{SorceryArchetypeMeritId}};
+use crate::{
+    artifact::ArtifactId, hearthstones::HearthstoneId, languages::language::MajorLanguage,
+    martial_arts::MartialArtsStyleId, sorcery::SorceryArchetypeMeritId, unique_id::UniqueId,
+};
 
-use super::{stackable::StackableMeritId, nonstackable::NonStackableMeritId};
+use super::{nonstackable::NonStackableMeritId, stackable::StackableMeritId};
 
 /// The Id for a specific instance of a merit as owned by a character. Not to
 /// be confused with MeritTemplateId, which describes a specific merit without
@@ -34,10 +37,10 @@ pub enum MeritId {
     /// style.
     MartialArtist(MartialArtsStyleId),
     /// For mortals, the merit associated with the acquisition of Terrestrial
-    /// circle sorcery. 
+    /// circle sorcery.
     MortalSorcerer,
     /// A merit which is not stackable and requires no additional detail, apart
-    /// from the number of dots invested. Examples include Ambidextrous and 
+    /// from the number of dots invested. Examples include Ambidextrous and
     /// Pain Tolerance.
     NonStackable(NonStackableMeritId),
     /// A merit which associated with a specific Sorcery Archetype.

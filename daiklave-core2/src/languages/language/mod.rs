@@ -4,7 +4,7 @@ pub use major::MajorLanguage;
 mod memo;
 pub use memo::LanguageMutation;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// A language spoken by a character.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

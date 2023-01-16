@@ -7,8 +7,8 @@ use crate::sorcery::{
         celestial::sorcerer::CelestialCircleSorcerer, solar::sorcerer::SolarCircleSorcerer,
         terrestrial::sorcerer::TerrestrialCircleSorcerer,
     },
-    ShapingRitual, ShapingRitualId, SorceryArchetypeId, SorceryCircle, Spell,
-    SpellId, SorceryArchetypeWithMerits,
+    ShapingRitual, ShapingRitualId, SorceryArchetypeId, SorceryArchetypeWithMerits, SorceryCircle,
+    Spell, SpellId,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -31,7 +31,10 @@ impl<'view, 'source> SolarSorcererView<'source> {
         }
     }
 
-    pub fn archetype(&'view self, id: SorceryArchetypeId) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
+    pub fn archetype(
+        &'view self,
+        id: SorceryArchetypeId,
+    ) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         match self {
             SolarSorcererView::Terrestrial(terrestrial) => terrestrial.archetype(id),
             SolarSorcererView::Celestial(celestial) => celestial.archetype(id),
@@ -41,14 +44,21 @@ impl<'view, 'source> SolarSorcererView<'source> {
 
     pub fn archetypes_iter(&self) -> impl Iterator<Item = SorceryArchetypeId> + '_ {
         match self {
-            SolarSorcererView::Terrestrial(terrestrial) => std::iter::once(terrestrial.archetype_id).collect::<Vec<SorceryArchetypeId>>(),
-            SolarSorcererView::Celestial(celestial) => {
-                celestial.archetypes.keys().copied().collect::<Vec<SorceryArchetypeId>>()
+            SolarSorcererView::Terrestrial(terrestrial) => {
+                std::iter::once(terrestrial.archetype_id).collect::<Vec<SorceryArchetypeId>>()
             }
-            SolarSorcererView::Solar(solar) => {
-                solar.archetypes.keys().copied().collect::<Vec<SorceryArchetypeId>>()
-            }
-        }.into_iter()
+            SolarSorcererView::Celestial(celestial) => celestial
+                .archetypes
+                .keys()
+                .copied()
+                .collect::<Vec<SorceryArchetypeId>>(),
+            SolarSorcererView::Solar(solar) => solar
+                .archetypes
+                .keys()
+                .copied()
+                .collect::<Vec<SorceryArchetypeId>>(),
+        }
+        .into_iter()
     }
 
     pub fn shaping_ritual(

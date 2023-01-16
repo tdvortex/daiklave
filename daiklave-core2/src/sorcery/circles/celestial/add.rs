@@ -1,4 +1,6 @@
-use crate::sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, SpellId, ShapingRitual};
+use crate::sorcery::{
+    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
+};
 
 use super::CelestialSpell;
 
@@ -8,5 +10,5 @@ pub type AddCelestialSorcery = Box<(
     ShapingRitualId,
     ShapingRitual,
     SpellId,
-    CelestialSpell
+    CelestialSpell,
 )>;

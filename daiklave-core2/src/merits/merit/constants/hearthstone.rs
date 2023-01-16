@@ -6,4 +6,5 @@ pub const HEARTHSTONE_MANSE_STANDARD: &str = "This hearthstone is linked to a ma
 pub const HEARTHSTONE_MANSE_GREATER: &str = "This hearthstone is exceptionally powerful and was created from an exceptionally potent manse and demense. \
     If slotted into an attuned artifact, the character receives the benefits of the Manse merit anywhere they go.";
 pub const HEARTHSTONE_STANDARD: &str = "This hearthstone is not linked to a manse.";
-pub const HEARTHSTONE_GREATER: &str = "This hearthstone is exceptionally powerful, but is not linked to a manse.";
+pub const HEARTHSTONE_GREATER: &str =
+    "This hearthstone is exceptionally powerful, but is not linked to a manse.";

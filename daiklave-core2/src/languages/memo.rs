@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use super::{language::LanguageMutation, Languages};
 
@@ -12,6 +12,13 @@ pub(crate) struct LanguagesMemo {
 
 impl<'source> LanguagesMemo {
     pub fn as_ref(&'source self) -> Languages<'source> {
-        Languages { native_language: self.native_language.as_ref(), other_languages: self.other_languages.iter().map(|memo| memo.as_ref()).collect() }
+        Languages {
+            native_language: self.native_language.as_ref(),
+            other_languages: self
+                .other_languages
+                .iter()
+                .map(|memo| memo.as_ref())
+                .collect(),
+        }
     }
 }

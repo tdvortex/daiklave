@@ -6,7 +6,6 @@ impl<'source> Character<'source> {
         self.name
     }
 
-
     /// Checks if the character's name can be changed.
     pub fn check_set_name(&self, _name: &str) -> Result<(), CharacterMutationError> {
         Ok(())

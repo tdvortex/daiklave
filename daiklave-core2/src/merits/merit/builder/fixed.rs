@@ -1,4 +1,15 @@
-use crate::{book_reference::BookReference, merits::merit::{MeritType, prerequisite::MeritPrerequisite, stackable::StackableMeritTemplateId, StackableMeritTemplate, MeritError, template::{MeritTemplate, MeritTemplateDotOptions}, NonStackableMeritId, nonstackable::NonStackableMeritTemplate}, abilities::AbilityName, attributes::AttributeName};
+use crate::{
+    abilities::AbilityName,
+    attributes::AttributeName,
+    book_reference::BookReference,
+    merits::merit::{
+        nonstackable::NonStackableMeritTemplate,
+        prerequisite::MeritPrerequisite,
+        stackable::StackableMeritTemplateId,
+        template::{MeritTemplate, MeritTemplateDotOptions},
+        MeritError, MeritType, NonStackableMeritId, StackableMeritTemplate,
+    },
+};
 
 pub struct FixedMeritTemplateBuilder {
     pub(crate) name: String,

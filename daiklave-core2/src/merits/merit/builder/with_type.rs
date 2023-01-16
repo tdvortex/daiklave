@@ -1,4 +1,9 @@
-use crate::{book_reference::BookReference, merits::merit::{MeritType, prerequisite::MeritPrerequisite}, abilities::AbilityName, attributes::AttributeName};
+use crate::{
+    abilities::AbilityName,
+    attributes::AttributeName,
+    book_reference::BookReference,
+    merits::merit::{prerequisite::MeritPrerequisite, MeritType},
+};
 
 use super::{FixedMeritTemplateBuilder, VariableMeritTemplateBuilder};
 
@@ -65,7 +70,7 @@ impl MeritTemplateBuilderWithType {
             merit_type: self.merit_type,
             shared_description,
             dot_descriptions: Vec::new(),
-            prerequisites: self.prerequisites
+            prerequisites: self.prerequisites,
         }
     }
 }

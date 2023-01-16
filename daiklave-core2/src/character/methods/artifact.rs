@@ -1,4 +1,19 @@
-use crate::{Character, artifact::{Artifact, ArtifactId, wonders::Wonders}, CharacterMutationError, weapons::{weapon::{WeaponId, Equipped}, WeaponError}, armor::{armor_item::{ArmorId, artifact::ArtifactError}, ArmorError}, exaltation::{exalt::essence::{MotePoolName, EssenceError}, Exaltation}};
+use crate::{
+    armor::{
+        armor_item::{artifact::ArtifactError, ArmorId},
+        ArmorError,
+    },
+    artifact::{wonders::Wonders, Artifact, ArtifactId},
+    exaltation::{
+        exalt::essence::{EssenceError, MotePoolName},
+        Exaltation,
+    },
+    weapons::{
+        weapon::{Equipped, WeaponId},
+        WeaponError,
+    },
+    Character, CharacterMutationError,
+};
 
 impl<'view, 'source> Character<'source> {
     /// Gets the character's artifact Wonders.

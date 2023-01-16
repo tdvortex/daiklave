@@ -8,9 +8,12 @@ use crate::{
     craft::CraftMemo,
     exaltation::ExaltationMemo,
     health::Health,
-    hearthstones::{HearthstoneId, UnslottedHearthstoneMemo, hearthstone::GeomancyLevel},
+    hearthstones::{hearthstone::GeomancyLevel, HearthstoneId, UnslottedHearthstoneMemo},
+    languages::LanguagesMemo,
+    merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
+    unique_id::UniqueId,
     willpower::Willpower,
-    Character, unique_id::UniqueId, merits::merit::{StackableMeritId, StackableMerit, NonStackableMerit, NonStackableMeritId}, languages::LanguagesMemo,
+    Character,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -49,9 +52,21 @@ impl<'source> CharacterMemo {
                 .iter()
                 .map(|(k, v)| (*k, v.as_ref()))
                 .collect(),
-            demenses_no_manse: self.demenses_no_manse.iter().map(|(k, (s, g))| (*k, (s.as_str(), *g))).collect(),
-            nonstackable_merits: self.nonstackable_merits.iter().map(|(k, v)| (*k, v.as_ref())).collect(),
-            stackable_merits: self.stackable_merits.iter().map(|(k, v)| (*k, v.as_ref())).collect(),
+            demenses_no_manse: self
+                .demenses_no_manse
+                .iter()
+                .map(|(k, (s, g))| (*k, (s.as_str(), *g)))
+                .collect(),
+            nonstackable_merits: self
+                .nonstackable_merits
+                .iter()
+                .map(|(k, v)| (*k, v.as_ref()))
+                .collect(),
+            stackable_merits: self
+                .stackable_merits
+                .iter()
+                .map(|(k, v)| (*k, v.as_ref()))
+                .collect(),
             languages: self.languages.as_ref(),
         }
     }

@@ -1,10 +1,10 @@
 mod id;
 pub use id::SorceryArchetypeMeritId;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::book_reference::BookReference;
 
-/// A merit which is made available to sorcerers following a specific 
+/// A merit which is made available to sorcerers following a specific
 /// Archetype.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SorceryArchetypeMerit {
@@ -19,7 +19,7 @@ impl<'source> SorceryArchetypeMerit {
     pub fn name(&'source self) -> &'source str {
         self.name.as_str()
     }
-    
+
     /// The book reference for the merit.
     pub fn book_reference(&self) -> Option<BookReference> {
         self.book_reference

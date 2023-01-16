@@ -1,4 +1,6 @@
-use crate::sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId};
+use crate::sorcery::{
+    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
+};
 
 use super::SolarSpell;
 
@@ -8,5 +10,5 @@ pub type AddSolarSorcery = Box<(
     ShapingRitualId,
     ShapingRitual,
     SpellId,
-    SolarSpell
+    SolarSpell,
 )>;

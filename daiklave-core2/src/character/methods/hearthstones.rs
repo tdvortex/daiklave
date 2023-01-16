@@ -1,4 +1,16 @@
-use crate::{Character, hearthstones::{Hearthstones, HearthstoneId, hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneStability, UnslottedHearthstone, HearthstoneOrigin}, CharacterMutationError, artifact::ArtifactId, weapons::{weapon::WeaponId, WeaponError}, armor::{armor_item::{ArmorId, artifact::ArtifactError}, ArmorError}};
+use crate::{
+    armor::{
+        armor_item::{artifact::ArtifactError, ArmorId},
+        ArmorError,
+    },
+    artifact::ArtifactId,
+    hearthstones::{
+        hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId, HearthstoneOrigin,
+        HearthstoneStability, Hearthstones, UnslottedHearthstone,
+    },
+    weapons::{weapon::WeaponId, WeaponError},
+    Character, CharacterMutationError,
+};
 
 impl<'view, 'source> Character<'source> {
     /// Gets the character's Hearthstones.
@@ -424,4 +436,3 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 }
-
