@@ -3,6 +3,9 @@ use thiserror::Error;
 /// An error relating to Merits.
 #[derive(Debug, Error)]
 pub enum MeritError {
+    /// Can't have two merits with the same Id
+    #[error("Can't have two merits with the same Id")]
+    DuplicateMerit,
     /// Merit templates require at least one valid dot rating.
     #[error("At least one valid rating required")]
     MissingDotRating,

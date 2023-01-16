@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, hash_map::Entry};
 
 use crate::{
     abilities::{Abilities, AbilitiesVanilla, AbilityError, AbilityNameVanilla, AbilityRating},
@@ -26,7 +26,7 @@ use crate::{
     },
     martial_arts::{MartialArts, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     merits::{merit::{
-        NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
+        NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView, MeritError, StackableMerit,
     }, Merits},
     name_and_concept::ConceptError,
     sorcery::{
@@ -215,7 +215,9 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AttuneArtifact(artifact_id, first) => {
                 self.check_attune_artifact(*artifact_id, *first)
             }
-            CharacterMutation::AddStackableMerit(_, _) => todo!(),
+            CharacterMutation::AddStackableMerit(stackable_merit_id, stackable_merit) => {
+                self.check_add_stackable_merit(*stackable_merit_id, stackable_merit)
+            }
             CharacterMutation::AddNonStackableMerit(_, _) => todo!(),
             CharacterMutation::AddLanguage(_) => todo!(),
             CharacterMutation::SetNativeLanguage(_) => todo!(),
@@ -319,7 +321,9 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AttuneArtifact(artifact_id, first) => {
                 self.attune_artifact(*artifact_id, *first)
             }
-            CharacterMutation::AddStackableMerit(_, _) => todo!(),
+            CharacterMutation::AddStackableMerit(stackable_merit_id, stackable_merit) => {
+                self.add_stackable_merit(*stackable_merit_id, stackable_merit)
+            }
             CharacterMutation::AddNonStackableMerit(_, _) => todo!(),
             CharacterMutation::AddLanguage(_) => todo!(),
             CharacterMutation::SetNativeLanguage(_) => todo!(),
@@ -1838,5 +1842,24 @@ impl<'view, 'source> Character<'source> {
     /// Get all languages spoken by the character.
     pub fn languages(&'view self) -> &'view Languages<'source> {
         &self.languages
+    }
+
+    /// Checks if a stackable merit can be added to the character
+    pub fn check_add_stackable_merit(&self, stackable_merit_id: StackableMeritId, _stackable_merit: &'source StackableMerit) -> Result<(), CharacterMutationError> {
+        if self.stackable_merits.contains_key(&stackable_merit_id) {
+            Err(CharacterMutationError::MeritError(MeritError::DuplicateMerit))
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Adds a stackable merit to the character. 
+    pub fn add_stackable_merit(&mut self, stackable_merit_id: StackableMeritId, stackable_merit: &'source StackableMerit) -> Result<&mut Self, CharacterMutationError> {
+        if let Entry::Vacant(e) = self.stackable_merits.entry(stackable_merit_id) {
+            e.insert(stackable_merit.as_ref());
+            Ok(self)
+        } else {
+            Err(CharacterMutationError::MeritError(MeritError::DuplicateMerit))
+        }
     }
 }

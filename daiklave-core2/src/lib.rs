@@ -18,7 +18,7 @@ use health::{DamageLevel, WoundPenalty};
 use hearthstones::{hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId};
 use languages::language::LanguageMutation;
 use martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId};
-use merits::merit::{StackableMeritId, StackableMerit, NonStackableMerit, NonStackableMeritId};
+use merits::merit::{StackableMeritId, StackableMerit, NonStackableMerit, NonStackableMeritId, MeritError};
 use name_and_concept::ConceptError;
 use sorcery::{SorceryError, circles::{terrestrial::AddTerrestrialSorcery, celestial::AddCelestialSorcery, solar::AddSolarSorcery}, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId};
 use thiserror::Error;
@@ -243,6 +243,9 @@ pub enum CharacterMutationError {
     /// Error related to Martial Arts
     #[error("Martial Arts error")]
     MartialArtsError(#[from] MartialArtsError),
+    /// Error related to merits
+    #[error("Merit error")]
+    MeritError(#[from] MeritError),
     /// Error related to Sorcery
     #[error("Sorcery error")]
     SorceryError(#[from] SorceryError),
