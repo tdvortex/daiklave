@@ -204,6 +204,138 @@ impl<'view, 'source> Merits<'view, 'source> {
 
     /// Iterates over all Merits owned by the character by their Id.
     pub fn iter(&self) -> impl Iterator<Item = MeritId> + '_ {
-        vec![].into_iter()
+        // Collect merits Ids into a single vec to minimize heap allocations
+        let mut output: Vec<MeritId> = Vec::new();
+
+        // Artifact weapons
+        self.0
+            .weapons()
+            .iter()
+            .filter_map(|(weapon_id, equipped)| {
+                self.0
+                    .weapons()
+                    .get(weapon_id, equipped)
+                    .and_then(|weapon| {
+                        if let WeaponId::Artifact(artifact_weapon_id) = weapon.id() {
+                            Some(MeritId::Artifact(ArtifactId::Weapon(artifact_weapon_id)))
+                        } else {
+                            None
+                        }
+                    })
+            })
+            .for_each(|merit_id| output.push(merit_id));
+
+        // Artifact armor
+        self.0
+            .armor()
+            .iter()
+            .filter_map(|armor_id| {
+                if let ArmorId::Artifact(artifact_armor_id) = armor_id {
+                    Some(MeritId::Artifact(ArtifactId::Armor(artifact_armor_id)))
+                } else {
+                    None
+                }
+            })
+            .for_each(|merit_id| output.push(merit_id));
+
+        // Wonders
+        self.0
+            .wonders()
+            .iter()
+            .map(|wonder_id| MeritId::Artifact(ArtifactId::Wonder(wonder_id)))
+            .for_each(|merit_id| output.push(merit_id));
+
+        // Demenses without manses
+        self.0
+            .demenses_no_manse
+            .keys()
+            .map(|unique_id| MeritId::DemenseNoManse(*unique_id))
+            .for_each(|merit_id| output.push(merit_id));
+
+        // Hearthstones and manses
+        self.0
+            .hearthstones()
+            .iter()
+            .filter_map(|hearthstone_id| self.0.hearthstones().get(hearthstone_id))
+            .for_each(|hearthstone| {
+                if hearthstone.manse_and_demense().is_some() {
+                    let hearthstone_id = hearthstone.id();
+                    output.push(MeritId::Manse(hearthstone_id));
+                    output.push(MeritId::DemenseWithManse(hearthstone_id));
+                    output.push(MeritId::HearthstoneWithManse(hearthstone_id));
+                } else {
+                    output.push(MeritId::HearthstoneNoManse(hearthstone.id()));
+                }
+            });
+
+        // Exalted healing
+        match &self.0.exaltation {
+            Exaltation::Mortal(mortal) => {
+                if mortal.exalted_healing {
+                    output.push(MeritId::ExaltedHealing);
+                }
+            }
+            Exaltation::Exalt(_) => output.push(MeritId::ExaltedHealing),
+        }
+
+        // Non-native languages
+        let mut local_added = false;
+        self.0
+            .languages()
+            .iter()
+            .for_each(|(language, _is_native)| match language {
+                Language::MajorLanguage(major) => output.push(MeritId::MajorLanguage(major)),
+                Language::LocalTongue(_) => {
+                    if !local_added {
+                        output.push(MeritId::LocalTongues);
+                        local_added = true;
+                    }
+                }
+            });
+
+        // Martial arts
+        self.0
+            .martial_arts()
+            .iter()
+            .map(|style_id| MeritId::MartialArtist(style_id))
+            .for_each(|merit_id| output.push(merit_id));
+
+        // Mortal sorcerer
+        match &self.0.exaltation {
+            Exaltation::Mortal(mortal) => {
+                if mortal.sorcery.is_some() {
+                    output.push(MeritId::MortalSorcerer);
+                }
+            }
+            Exaltation::Exalt(_) => {}
+        }
+
+        // Non-stackable merits
+        self.0
+            .nonstackable_merits
+            .keys()
+            .map(|nonstackable_merit_id| MeritId::NonStackable(*nonstackable_merit_id))
+            .for_each(|merit_id| output.push(merit_id));
+
+        // Stackable merits
+        self.0
+            .stackable_merits
+            .keys()
+            .map(|stackable_merit_id| MeritId::Stackable(*stackable_merit_id))
+            .for_each(|merit_id| output.push(merit_id));
+
+        // Sorcery merits
+        if let Some(sorcery) = self.0.sorcery() {
+            sorcery
+                .archetypes()
+                .filter_map(|archetype_id| sorcery.archetype(archetype_id))
+                .for_each(|(_, merits)| {
+                    merits.keys().for_each(|sorcery_archetype_merit_id| {
+                        output.push(MeritId::SorceryArchetype(*sorcery_archetype_merit_id));
+                    })
+                })
+        }
+
+        output.into_iter()
     }
 }
