@@ -41,7 +41,8 @@ use crate::{
     martial_arts::{MartialArtsCharmId, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery, SorceryArchetype,
-        SorceryArchetypeId, SpellId, TerrestrialSpell,
+        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SpellId,
+        TerrestrialSpell,
     },
     weapons::{
         weapon::{
@@ -1125,6 +1126,62 @@ impl<'view, 'source> Exalt<'source> {
                 .ok_or(CharacterMutationError::EssenceError(
                     EssenceError::NoAttunementCost,
                 )),
+        }
+    }
+
+    pub fn add_sorcery_archetype_merit(
+        &mut self,
+        sorcery_archetype_id: SorceryArchetypeId,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match &mut self.exalt_type {
+            ExaltType::Solar(solar) => {
+                solar.add_sorcery_archetype_merit(
+                    sorcery_archetype_id,
+                    sorcery_archetype_merit_id,
+                    sorcery_archetype_merit,
+                )?;
+            }
+        }
+        Ok(self)
+    }
+
+    pub fn check_add_sorcery_archetype_merit(
+        &self,
+        sorcery_archetype_id: SorceryArchetypeId,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+    ) -> Result<(), CharacterMutationError> {
+        match &self.exalt_type {
+            ExaltType::Solar(solar) => solar.check_add_sorcery_archetype_merit(
+                sorcery_archetype_id,
+                sorcery_archetype_merit_id,
+                sorcery_archetype_merit,
+            ),
+        }
+    }
+
+    pub fn remove_sorcery_archetype_merit(
+        &mut self,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match &mut self.exalt_type {
+            ExaltType::Solar(solar) => {
+                solar.remove_sorcery_archetype_merit(sorcery_archetype_merit_id)?;
+            }
+        }
+        Ok(self)
+    }
+
+    pub fn check_remove_sorcery_archetype_merit(
+        &self,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+    ) -> Result<(), CharacterMutationError> {
+        match &self.exalt_type {
+            ExaltType::Solar(solar) => {
+                solar.check_remove_sorcery_archetype_merit(sorcery_archetype_merit_id)
+            }
         }
     }
 }

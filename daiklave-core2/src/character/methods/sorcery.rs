@@ -1,7 +1,8 @@
 use crate::{
     sorcery::{
         CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery, SorceryArchetype,
-        SorceryArchetypeId, SpellId, TerrestrialSpell,
+        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SpellId,
+        TerrestrialSpell,
     },
     Character, CharacterMutationError,
 };
@@ -170,5 +171,53 @@ impl<'view, 'source> Character<'source> {
     /// Checks if Solar circle sorcery can be removed from the character.
     pub fn check_remove_solar_sorcery(&self) -> Result<(), CharacterMutationError> {
         self.exaltation.check_remove_solar_sorcery()
+    }
+
+    /// Adds a merit to a Sorcery Archetype owned by the character
+    pub fn add_sorcery_archetype_merit(
+        &mut self,
+        sorcery_archetype_id: SorceryArchetypeId,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.exaltation.add_sorcery_archetype_merit(
+            sorcery_archetype_id,
+            sorcery_archetype_merit_id,
+            sorcery_archetype_merit,
+        )?;
+        Ok(self)
+    }
+
+    /// Checks if a specific merit can be added to a Sorcery Archetype owned by the character
+    pub fn check_add_sorcery_archetype_merit(
+        &self,
+        sorcery_archetype_id: SorceryArchetypeId,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+    ) -> Result<(), CharacterMutationError> {
+        self.exaltation.check_add_sorcery_archetype_merit(
+            sorcery_archetype_id,
+            sorcery_archetype_merit_id,
+            sorcery_archetype_merit,
+        )
+    }
+
+    /// Removes a merit from a Sorcery Archetype owned by a character
+    pub fn remove_sorcery_archetype_merit(
+        &mut self,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.exaltation
+            .remove_sorcery_archetype_merit(sorcery_archetype_merit_id)?;
+        Ok(self)
+    }
+
+    /// Checks if a specific Sorcery Archetype merit can be removed.
+    pub fn check_remove_sorcery_archetype_merit(
+        &self,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+    ) -> Result<(), CharacterMutationError> {
+        self.exaltation
+            .check_remove_sorcery_archetype_merit(sorcery_archetype_merit_id)
     }
 }

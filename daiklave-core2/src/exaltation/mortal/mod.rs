@@ -22,9 +22,11 @@ use crate::{
     artifact::wonders::{OwnedWonder, Wonder, WonderId},
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
+    merits::merit::MeritError,
     sorcery::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
-        SorceryArchetype, SorceryArchetypeId, SorceryError, SpellId, TerrestrialSpell,
+        SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+        SorceryError, SpellId, TerrestrialSpell,
     },
     weapons::{
         weapon::{
@@ -454,5 +456,99 @@ impl<'source> Mortal<'source> {
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         self.wonders.unslot_hearthstone(wonder_id, hearthstone_id)
+    }
+
+    pub fn add_sorcery_archetype_merit(
+        &mut self,
+        sorcery_archetype_id: SorceryArchetypeId,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if let Some(terrestrial) = &mut self.sorcery {
+            if terrestrial.archetype_id != sorcery_archetype_id {
+                Err(CharacterMutationError::SorceryError(
+                    SorceryError::MissingArchetype,
+                ))
+            } else if let Entry::Vacant(e) = terrestrial
+                .archetype_merits
+                .entry(sorcery_archetype_merit_id)
+            {
+                e.insert(sorcery_archetype_merit);
+                Ok(self)
+            } else {
+                Err(CharacterMutationError::MeritError(
+                    MeritError::DuplicateMerit,
+                ))
+            }
+        } else {
+            Err(CharacterMutationError::SorceryError(
+                SorceryError::MissingArchetype,
+            ))
+        }
+    }
+
+    pub fn check_add_sorcery_archetype_merit(
+        &self,
+        sorcery_archetype_id: SorceryArchetypeId,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        _sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+    ) -> Result<(), CharacterMutationError> {
+        if let Some(terrestrial) = &self.sorcery {
+            if terrestrial.archetype_id != sorcery_archetype_id {
+                Err(CharacterMutationError::SorceryError(
+                    SorceryError::MissingArchetype,
+                ))
+            } else if terrestrial
+                .archetype_merits
+                .contains_key(&sorcery_archetype_merit_id)
+            {
+                Err(CharacterMutationError::MeritError(
+                    MeritError::DuplicateMerit,
+                ))
+            } else {
+                Ok(())
+            }
+        } else {
+            Err(CharacterMutationError::SorceryError(
+                SorceryError::MissingArchetype,
+            ))
+        }
+    }
+
+    pub fn remove_sorcery_archetype_merit(
+        &mut self,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if let Some(terrestrial) = &mut self.sorcery {
+            if terrestrial
+                .archetype_merits
+                .remove(&sorcery_archetype_merit_id)
+                .is_none()
+            {
+                Err(CharacterMutationError::MeritError(MeritError::NotFound))
+            } else {
+                Ok(self)
+            }
+        } else {
+            Err(CharacterMutationError::MeritError(MeritError::NotFound))
+        }
+    }
+
+    pub fn check_remove_sorcery_archetype_merit(
+        &self,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+    ) -> Result<(), CharacterMutationError> {
+        if let Some(terrestrial) = &self.sorcery {
+            if !terrestrial
+                .archetype_merits
+                .contains_key(&sorcery_archetype_merit_id)
+            {
+                Err(CharacterMutationError::MeritError(MeritError::NotFound))
+            } else {
+                Ok(())
+            }
+        } else {
+            Err(CharacterMutationError::MeritError(MeritError::NotFound))
+        }
     }
 }

@@ -27,7 +27,8 @@ use crate::{
     martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery, SorceryArchetype,
-        SorceryArchetypeId, SorceryError, SpellId, TerrestrialSpell,
+        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError, SpellId,
+        TerrestrialSpell,
     },
     weapons::weapon::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
@@ -1147,5 +1148,82 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Exalt(exalt) => exalt.attune_artifact(artifact_id, first),
         }?;
         Ok(self)
+    }
+
+    pub fn add_sorcery_archetype_merit(
+        &mut self,
+        sorcery_archetype_id: SorceryArchetypeId,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {
+                mortal.add_sorcery_archetype_merit(
+                    sorcery_archetype_id,
+                    sorcery_archetype_merit_id,
+                    sorcery_archetype_merit,
+                )?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.add_sorcery_archetype_merit(
+                    sorcery_archetype_id,
+                    sorcery_archetype_merit_id,
+                    sorcery_archetype_merit,
+                )?;
+            }
+        }
+        Ok(self)
+    }
+
+    /// Checks if a specific merit can be added to a Sorcery Archetype owned by the character
+    pub fn check_add_sorcery_archetype_merit(
+        &self,
+        sorcery_archetype_id: SorceryArchetypeId,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+    ) -> Result<(), CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => mortal.check_add_sorcery_archetype_merit(
+                sorcery_archetype_id,
+                sorcery_archetype_merit_id,
+                sorcery_archetype_merit,
+            ),
+            Exaltation::Exalt(exalt) => exalt.check_add_sorcery_archetype_merit(
+                sorcery_archetype_id,
+                sorcery_archetype_merit_id,
+                sorcery_archetype_merit,
+            ),
+        }
+    }
+
+    /// Removes a merit from a Sorcery Archetype owned by a character
+    pub fn remove_sorcery_archetype_merit(
+        &mut self,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {
+                mortal.remove_sorcery_archetype_merit(sorcery_archetype_merit_id)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.remove_sorcery_archetype_merit(sorcery_archetype_merit_id)?;
+            }
+        }
+        Ok(self)
+    }
+
+    /// Checks if a specific Sorcery Archetype merit can be removed.
+    pub fn check_remove_sorcery_archetype_merit(
+        &self,
+        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+    ) -> Result<(), CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(mortal) => {
+                mortal.check_remove_sorcery_archetype_merit(sorcery_archetype_merit_id)
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.check_remove_sorcery_archetype_merit(sorcery_archetype_merit_id)
+            }
+        }
     }
 }

@@ -222,8 +222,18 @@ impl<'view, 'source> Character<'source> {
                 &add_solar.5,
             ),
             CharacterMutation::RemoveSolarSorcery => self.check_remove_solar_sorcery(),
-            CharacterMutation::AddSorceryArchetypeMerit(_, _, _) => todo!(),
-            CharacterMutation::RemoveSorceryArchetypeMerit(_) => todo!(),
+            CharacterMutation::AddSorceryArchetypeMerit(
+                sorcery_archetype_id,
+                sorcery_archetype_merit_id,
+                sorcery_archetype_merit,
+            ) => self.check_add_sorcery_archetype_merit(
+                *sorcery_archetype_id,
+                *sorcery_archetype_merit_id,
+                sorcery_archetype_merit,
+            ),
+            CharacterMutation::RemoveSorceryArchetypeMerit(sorcery_archetype_merit_id) => {
+                self.check_remove_sorcery_archetype_merit(*sorcery_archetype_merit_id)
+            }
         }
     }
 
@@ -358,8 +368,18 @@ impl<'view, 'source> Character<'source> {
                 &add_solar.5,
             ),
             CharacterMutation::RemoveSolarSorcery => self.remove_solar_sorcery(),
-            CharacterMutation::AddSorceryArchetypeMerit(_, _, _) => todo!(),
-            CharacterMutation::RemoveSorceryArchetypeMerit(_) => todo!(),
+            CharacterMutation::AddSorceryArchetypeMerit(
+                sorcery_archetype_id,
+                sorcery_archetype_merit_id,
+                sorcery_archetype_merit,
+            ) => self.add_sorcery_archetype_merit(
+                *sorcery_archetype_id,
+                *sorcery_archetype_merit_id,
+                sorcery_archetype_merit,
+            ),
+            CharacterMutation::RemoveSorceryArchetypeMerit(sorcery_archetype_merit_id) => {
+                self.remove_sorcery_archetype_merit(*sorcery_archetype_merit_id)
+            }
         }
     }
 }
