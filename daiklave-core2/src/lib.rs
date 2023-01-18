@@ -35,8 +35,14 @@ pub mod health;
 /// Hearthstones logic
 pub mod hearthstones;
 
+/// Languages of the Realm and Threshold
+pub mod languages;
+
 /// Martial Arts style logic
 pub mod martial_arts;
+
+/// Merits logic
+pub mod merits;
 /// Contains the Id enum and a variety of specific Id subtypes, to be used as
 /// unique keys.
 pub mod unique_id;
@@ -49,8 +55,6 @@ pub mod weapons;
 
 mod character;
 pub(crate) mod craft;
-mod languages;
-mod merits;
 mod name_and_concept;
 mod willpower;
 

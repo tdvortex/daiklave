@@ -1,6 +1,5 @@
 mod id;
-pub use id::StackableMeritId;
-pub(crate) use id::StackableMeritTemplateId;
+pub use id::{StackableMeritId, StackableMeritTemplateId};
 
 mod template;
 pub use template::StackableMeritTemplate;

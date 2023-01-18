@@ -11,7 +11,7 @@ use crate::{
         exalt_type::solar::NewSolar,
     },
     health::{DamageLevel, WoundPenalty},
-    hearthstones::{hearthstone::HearthstoneTemplate, HearthstoneId},
+    hearthstones::{hearthstone::{HearthstoneTemplate, GeomancyLevel}, HearthstoneId},
     languages::language::LanguageMutation,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
@@ -22,7 +22,7 @@ use crate::{
         },
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
-    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId},
+    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId}, unique_id::UniqueId,
 };
 
 /// The API for the character, expressed as an owned struct. Each mutation has
@@ -112,6 +112,8 @@ pub enum CharacterMutation {
     AddManse(String, String, HearthstoneId, HearthstoneTemplate),
     /// Add a hearthstone to a character without a manse.
     AddHearthstone(HearthstoneId, HearthstoneTemplate),
+    /// Add a demense to a character without a manse.
+    AddDemense(UniqueId, String, GeomancyLevel),
     /// Slot a hearthstone into an artifact.
     SlotHearthstone(ArtifactId, HearthstoneId),
     /// Unslot a hearthstone from its current position.
@@ -131,6 +133,9 @@ pub enum CharacterMutation {
     SetNativeLanguage(LanguageMutation),
     /// Remove a language from the character
     RemoveLanguage(LanguageMutation),
+    /// Adds the Exalted Healing merit to the character. This is not required
+    /// for Exalts.
+    AddExaltedHealing,
     /// Adds Terrestrial circle sorcery to the character. The archetype,
     /// shaping ritual, and control spell must be provided, along with an
     /// Id for each.

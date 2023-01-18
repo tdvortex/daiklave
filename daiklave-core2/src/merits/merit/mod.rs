@@ -22,7 +22,7 @@ pub(crate) use source::MeritSource;
 
 mod stackable;
 pub(crate) use stackable::StackableMeritView;
-pub use stackable::{StackableMerit, StackableMeritId, StackableMeritTemplate};
+pub use stackable::{StackableMerit, StackableMeritId, StackableMeritTemplate, StackableMeritTemplateId};
 
 mod template;
 

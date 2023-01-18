@@ -11,6 +11,7 @@ use crate::book_reference::BookReference;
 
 use super::{prerequisite::MeritPrerequisite, MeritError, MeritType};
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MeritTemplate {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,

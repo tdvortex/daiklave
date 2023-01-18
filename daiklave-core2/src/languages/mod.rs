@@ -1,5 +1,6 @@
 mod error;
 pub use error::LanguageError;
+/// Details of individual languages.
 pub mod language;
 mod memo;
 pub(crate) use memo::LanguagesMemo;

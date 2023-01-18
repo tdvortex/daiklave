@@ -234,6 +234,8 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::RemoveSorceryArchetypeMerit(sorcery_archetype_merit_id) => {
                 self.check_remove_sorcery_archetype_merit(*sorcery_archetype_merit_id)
             }
+            CharacterMutation::AddDemense(_, _, _) => todo!(),
+            CharacterMutation::AddExaltedHealing => todo!(),
         }
     }
 
@@ -380,6 +382,8 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::RemoveSorceryArchetypeMerit(sorcery_archetype_merit_id) => {
                 self.remove_sorcery_archetype_merit(*sorcery_archetype_merit_id)
             }
+            CharacterMutation::AddDemense(_, _, _) => todo!(),
+            CharacterMutation::AddExaltedHealing => todo!(),
         }
     }
 }

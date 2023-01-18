@@ -5,7 +5,10 @@ use super::{Language, MajorLanguage};
 /// The details of a language to be added or removed.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum LanguageMutation {
+    /// One of the major regional languages of Creation, or other significant
+    /// language.
     MajorLanguage(MajorLanguage),
+    /// A local tongue not widely spoken.
     LocalTongue(String),
 }
 

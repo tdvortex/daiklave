@@ -88,7 +88,7 @@ fn test_armor() {
     event_source.apply_mutation(mutation).unwrap();
 
     // Add some artifact armor
-    let artifact_articulated_plate = Artifact::Armor(
+    let mutation = CharacterMutation::AddArtifact(Artifact::Armor(
         ArtifactArmorId(UniqueId::Placeholder(1)),
         ArmorItem::artifact("Brilliant Sentinel")
             .base_artifact(
@@ -111,9 +111,7 @@ fn test_armor() {
             )
             .book_reference(BookReference::new(Book::CoreRulebook, 616))
             .build(),
-    );
-
-    let mutation = CharacterMutation::AddArtifact(artifact_articulated_plate);
+    ));
     event_source
         .as_character_view()
         .unwrap()

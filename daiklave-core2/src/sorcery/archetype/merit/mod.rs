@@ -8,10 +8,10 @@ use crate::book_reference::BookReference;
 /// Archetype.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SorceryArchetypeMerit {
-    name: String,
-    book_reference: Option<BookReference>,
-    dots: u8,
-    description: String,
+    pub name: String,
+    pub book_reference: Option<BookReference>,
+    pub dots: u8,
+    pub description: String,
 }
 
 impl<'source> SorceryArchetypeMerit {
