@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use daiklave_core2::{CharacterEventSource, CharacterMutation, artifact::{Artifact, MagicMaterial, wonders::WonderId}, unique_id::UniqueId, weapons::weapon::{ArtifactWeaponId, Weapon, BaseWeaponId, WeaponWeightClass, OptionalWeaponTag}, book_reference::{BookReference, Book}, armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, BaseArmorId, ArmorWeightClass}, hearthstones::{hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory}, HearthstoneId}, martial_arts::{MartialArtsStyle, MartialArtsStyleId}, abilities::{AbilityNameVanilla}, sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, Spell, TerrestrialSpell, SorceryArchetypeMerit, SorceryArchetypeMeritId}, charms::{CharmCost, CharmCostType, CharmKeyword}, languages::language::{LanguageMutation, MajorLanguage}, merits::merit::{Merit, StackableMeritId, MeritType, StackableMeritTemplateId}};
+use daiklave_core2::{CharacterEventSource, CharacterMutation, artifact::{Artifact, MagicMaterial, wonders::WonderId}, unique_id::UniqueId, weapons::weapon::{ArtifactWeaponId, Weapon, BaseWeaponId, WeaponWeightClass, OptionalWeaponTag}, book_reference::{BookReference, Book}, armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, BaseArmorId, ArmorWeightClass}, hearthstones::{hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory}, HearthstoneId}, martial_arts::{MartialArtsStyle, MartialArtsStyleId}, abilities::{AbilityNameVanilla}, sorcery::{SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, SpellId, Spell, TerrestrialSpell, SorceryArchetypeMerit, SorceryArchetypeMeritId}, charms::{CharmCost, CharmCostType, CharmKeyword}, languages::language::{LanguageMutation, MajorLanguage}, merits::merit::{Merit, StackableMeritId, MeritType, StackableMeritTemplateId, StackableMerit}};
 
 #[test]
 fn test_merits() {
@@ -213,18 +213,21 @@ fn test_merits() {
     event_source.apply_mutation(mutation).unwrap();
 
     // A sorcery archetype merit
-    let mutation = CharacterMutation::AddSorceryArchetypeMerit(SorceryArchetypeId(UniqueId::Placeholder(1)), SorceryArchetypeMeritId(UniqueId::Placeholder(1)), SorceryArchetypeMerit {
-        name: "Astral Meditation".to_owned(),
-        book_reference: Some(BookReference::new(Book::CoreRulebook, 470)),
-        dots: 1,
-        description: " The talisman serves as a \
+    let mutation = CharacterMutation::AddSorceryArchetypeMerit(
+        SorceryArchetypeId(UniqueId::Placeholder(1)),
+        SorceryArchetypeMeritId(UniqueId::Placeholder(1)),
+        SorceryArchetypeMerit::new(
+        "Astral Meditation".to_owned(), 
+        Some(BookReference::new(Book::CoreRulebook, 470)), 
+        1, 
+        "The talisman serves as a \
         gateway through which the sorcerer may send her presence \
         to distant corners of Creation. Once per day, while wearing \
         the talisman, she may waive the Willpower costs of a spell \
         that allows her to sense things remotely or project her \
         presence from afar, such as Silent Words of Dreams and \
-        Nightmares".to_owned(),
-    });
+        Nightmares".to_owned(), 
+        ));
     event_source.apply_mutation(mutation).unwrap();
 
     // A major language
@@ -253,9 +256,9 @@ fn test_merits() {
         .unwrap();
 
     // Check you can't add a merit with the wrong number of dots
-    assert!(Merit::new_stackable(3, "A three-dot retainer".to_owned(), retainers.clone()).is_err());
+    assert!(StackableMerit::new(retainers.clone(), 3, "A three-dot retainer".to_owned()).is_err());
     
-    let mutation = CharacterMutation::AddStackableMerit(StackableMeritId(UniqueId::Placeholder(1)), Merit::new_stackable(2, "An expert bodyguard".to_owned(), retainers).unwrap());
+    let mutation = CharacterMutation::AddStackableMerit(StackableMeritId(UniqueId::Placeholder(1)), StackableMerit::new(retainers, 2, "An expert bodyguard".to_owned()).unwrap());
     event_source.apply_mutation(mutation).unwrap();
 
     // A nonstackable merit without requirements
@@ -267,6 +270,9 @@ fn test_merits() {
     // Exalted Healing should be gone
     // Sorcery should not be a merit
     // Sorcery archetype merit should still exist
-    // Remove all of the merits
+    // Dropping Occult below 3 removes sorcery and sorcery merits
+    // Dropping Brawl to 0 removes Martial Arts and Martial Artist merit
+    // Dropping an ability or attribute removes dependent merits
+    // Remove the rest of the merits
     // No merits left
 }

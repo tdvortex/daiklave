@@ -1,3 +1,4 @@
+/// Builder path for making new merits.
 pub mod builder;
 
 pub(crate) mod constants;
@@ -35,11 +36,6 @@ use self::{
         NonStackableMeritWithDotsMemo, OneDotNonStackableMeritMemo, ThreeDotsNonStackableMeritMemo,
         TwoDotsNonStackableMeritMemo, ZeroDotsNonStackableMeritMemo,
     },
-    stackable::{
-        FiveDotsStackableMeritMemo, FourDotsStackableMeritMemo, OneDotStackableMeritMemo,
-        StackableMeritWithDotsMemo, ThreeDotsStackableMeritMemo, TwoDotsStackableMeritMemo,
-        ZeroDotsStackableMeritMemo,
-    },
     template::MeritTemplateId,
 };
 
@@ -47,6 +43,8 @@ use self::{
 pub struct Merit<'source>(pub(crate) MeritSource<'source>);
 
 impl<'source> Merit<'source> {
+    /// Starts building a new merit template, which may be stackable, 
+    /// nonstackable, or a sorcery archetype merit.
     pub fn new_template(name: String) -> MeritTemplateBuilder {
         MeritTemplateBuilder {
             name,
@@ -55,38 +53,7 @@ impl<'source> Merit<'source> {
         }
     }
 
-    pub fn new_stackable(
-        dots: u8,
-        detail: String,
-        template: StackableMeritTemplate,
-    ) -> Result<StackableMerit, MeritError> {
-        let template_id = template.0;
-        let with_dots = template.1.set_dots(dots)?;
-
-        let dotted = match dots {
-            0 => {
-                StackableMeritWithDotsMemo::Zero(ZeroDotsStackableMeritMemo(template_id, with_dots))
-            }
-            1 => StackableMeritWithDotsMemo::One(OneDotStackableMeritMemo(template_id, with_dots)),
-            2 => StackableMeritWithDotsMemo::Two(TwoDotsStackableMeritMemo(template_id, with_dots)),
-            3 => StackableMeritWithDotsMemo::Three(ThreeDotsStackableMeritMemo(
-                template_id,
-                with_dots,
-            )),
-            4 => {
-                StackableMeritWithDotsMemo::Four(FourDotsStackableMeritMemo(template_id, with_dots))
-            }
-            5 => {
-                StackableMeritWithDotsMemo::Five(FiveDotsStackableMeritMemo(template_id, with_dots))
-            }
-            _ => {
-                return Err(MeritError::InvalidDotRating);
-            }
-        };
-
-        Ok(StackableMerit { detail, dotted })
-    }
-
+    /// Instantiates a new nonstackable merit with a dot level.
     pub fn new_nonstackable(
         dots: u8,
         template: NonStackableMeritTemplate,

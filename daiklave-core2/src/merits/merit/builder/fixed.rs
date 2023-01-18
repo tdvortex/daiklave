@@ -11,6 +11,7 @@ use crate::{
     },
 };
 
+/// A merit template builder for a merit with only a single dot value.
 pub struct FixedMeritTemplateBuilder {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
@@ -21,11 +22,16 @@ pub struct FixedMeritTemplateBuilder {
 }
 
 impl FixedMeritTemplateBuilder {
+    /// Sets the book reference for the merit.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
         self
     }
 
+    /// Adds a requirement that a certain ability is rated at or above a
+    /// dot threshold. If a merit has any prerequisites, they are treated as an
+    /// "or" relationship--the merit can be added as long as any prerequisite
+    /// is satisfied.
     pub fn ability_prerequisite(mut self, ability_name: AbilityName, dots: u8) -> Self {
         let upsert = MeritPrerequisite::Ability(ability_name, dots);
         if let Some(existing) = self.prerequisites.iter_mut().find(|prereq| {
@@ -42,6 +48,10 @@ impl FixedMeritTemplateBuilder {
         self
     }
 
+    /// Adds a requirement that a certain attribute is rated at or above a
+    /// dot threshold. If a merit has any prerequisites, they are treated as an
+    /// "or" relationship--the merit can be added as long as any prerequisite
+    /// is satisfied.
     pub fn attribute_prerequisite(mut self, attribute_name: AttributeName, dots: u8) -> Self {
         let upsert = MeritPrerequisite::Attribute(attribute_name, dots);
         if let Some(existing) = self.prerequisites.iter_mut().find(|prereq| {
@@ -58,6 +68,8 @@ impl FixedMeritTemplateBuilder {
         self
     }
 
+    /// Completes the builder, returning a stackable merit template. Errors if
+    /// the dot value is not in the range [0, 5] inclusive.
     pub fn stackable(
         self,
         id: StackableMeritTemplateId,
@@ -79,6 +91,8 @@ impl FixedMeritTemplateBuilder {
         }
     }
 
+    /// Completes the builder, returning a nonstackable merit template. Errors if
+    /// the dot value is not in the range [0, 5] inclusive.
     pub fn nonstackable(
         self,
         id: NonStackableMeritId,

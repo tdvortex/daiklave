@@ -7,6 +7,8 @@ use crate::{
 
 use super::{FixedMeritTemplateBuilder, VariableMeritTemplateBuilder};
 
+/// A merit builder after it has been clarified as Innate, Purchased, Story, or
+/// Supernatural.
 pub struct MeritTemplateBuilderWithType {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
@@ -15,11 +17,16 @@ pub struct MeritTemplateBuilderWithType {
 }
 
 impl MeritTemplateBuilderWithType {
+    /// Sets the book reference for the merit.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
         self
     }
 
+    /// Adds a requirement that a certain ability is rated at or above a
+    /// dot threshold. If a merit has any prerequisites, they are treated as an
+    /// "or" relationship--the merit can be added as long as any prerequisite
+    /// is satisfied.
     pub fn ability_prerequisite(mut self, ability_name: AbilityName, dots: u8) -> Self {
         let upsert = MeritPrerequisite::Ability(ability_name, dots);
         if let Some(existing) = self.prerequisites.iter_mut().find(|prereq| {
@@ -36,6 +43,10 @@ impl MeritTemplateBuilderWithType {
         self
     }
 
+    /// Adds a requirement that a certain attribute is rated at or above a
+    /// dot threshold. If a merit has any prerequisites, they are treated as an
+    /// "or" relationship--the merit can be added as long as any prerequisite
+    /// is satisfied.
     pub fn attribute_prerequisite(mut self, attribute_name: AttributeName, dots: u8) -> Self {
         let upsert = MeritPrerequisite::Attribute(attribute_name, dots);
         if let Some(existing) = self.prerequisites.iter_mut().find(|prereq| {
@@ -52,6 +63,8 @@ impl MeritTemplateBuilderWithType {
         self
     }
 
+    /// Defines the merit template to only have a single dot rating, and a
+    /// flat description for that merit.
     pub fn fixed_dots(self, dots: u8, description: String) -> FixedMeritTemplateBuilder {
         FixedMeritTemplateBuilder {
             name: self.name,
@@ -63,6 +76,8 @@ impl MeritTemplateBuilderWithType {
         }
     }
 
+    /// Defines the merit template to be purchasable at multiple ratings, with
+    /// a static description applicable to all ratings.
     pub fn variable_dots(self, shared_description: String) -> VariableMeritTemplateBuilder {
         VariableMeritTemplateBuilder {
             name: self.name,

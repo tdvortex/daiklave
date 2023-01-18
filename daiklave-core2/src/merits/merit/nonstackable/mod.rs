@@ -18,10 +18,13 @@ pub(crate) use view::NonStackableMeritView;
 
 use super::MeritError;
 
+/// A merit which is nonstackable, i.e. can only be purchased once per
+/// character. 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct NonStackableMerit(pub(crate) NonStackableMeritWithDotsMemo);
 
 impl<'source> NonStackableMerit {
+    /// Instantiates a new nonstackable merit from a template. 
     pub fn new(
         template: NonStackableMeritTemplate,
         dots: u8,

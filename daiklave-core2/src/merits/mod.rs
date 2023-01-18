@@ -1,3 +1,4 @@
+/// Details for an individual merit.
 pub mod merit;
 
 use crate::{

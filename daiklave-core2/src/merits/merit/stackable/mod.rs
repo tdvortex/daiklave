@@ -18,6 +18,8 @@ use super::MeritError;
 
 mod with_dots;
 
+/// A merit which may be purchased more than once, along with a detail for this
+/// specific instance.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StackableMerit {
     pub(crate) detail: String,
@@ -25,6 +27,8 @@ pub struct StackableMerit {
 }
 
 impl<'source> StackableMerit {
+    /// Creates a new Stackable merit from a template. Errors if an invalid
+    /// number of dots is specified.
     pub fn new(
         template: StackableMeritTemplate,
         dots: u8,
