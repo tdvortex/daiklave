@@ -234,10 +234,24 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::RemoveSorceryArchetypeMerit(sorcery_archetype_merit_id) => {
                 self.check_remove_sorcery_archetype_merit(*sorcery_archetype_merit_id)
             }
-            CharacterMutation::AddDemense(_, _, _) => todo!(),
-            CharacterMutation::AddExaltedHealing => todo!(),
-            CharacterMutation::RemoveStackableMerit(_) => todo!(),
-            CharacterMutation::RemoveNonStackableMerit(_) => todo!(),
+            CharacterMutation::AddDemense(demense_id, name, geomancy_level) => {
+                self.check_add_demense(*demense_id, name.as_str(), *geomancy_level)
+            }
+            CharacterMutation::AddExaltedHealing => {
+                self.check_add_exalted_healing()
+            }
+            CharacterMutation::RemoveStackableMerit(stackable_merit_id) => {
+                self.check_remove_stackable_merit(*stackable_merit_id)
+            }
+            CharacterMutation::RemoveNonStackableMerit(nonstackable_merit_id) => {
+                self.check_remove_nonstackable_merit(*nonstackable_merit_id)
+            }
+            CharacterMutation::RemoveExaltedHealing => {
+                self.check_remove_exalted_healing()
+            }
+            CharacterMutation::RemoveDemense(demense_id) => {
+                self.check_remove_demense(*demense_id)
+            }
         }
     }
 
@@ -384,10 +398,24 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::RemoveSorceryArchetypeMerit(sorcery_archetype_merit_id) => {
                 self.remove_sorcery_archetype_merit(*sorcery_archetype_merit_id)
             }
-            CharacterMutation::AddDemense(_, _, _) => todo!(),
-            CharacterMutation::AddExaltedHealing => todo!(),
-            CharacterMutation::RemoveStackableMerit(_) => todo!(),
-            CharacterMutation::RemoveNonStackableMerit(_) => todo!(),
+            CharacterMutation::AddDemense(demense_id, name, geomancy_level) => {
+                self.add_demense(*demense_id, name.as_str(), *geomancy_level)
+            }
+            CharacterMutation::AddExaltedHealing => {
+                self.add_exalted_healing()
+            }
+            CharacterMutation::RemoveStackableMerit(stackable_merit_id) => {
+                self.remove_stackable_merit(*stackable_merit_id)
+            }
+            CharacterMutation::RemoveNonStackableMerit(nonstackable_merit_id) => {
+                self.remove_nonstackable_merit(*nonstackable_merit_id)
+            }
+            CharacterMutation::RemoveExaltedHealing => {
+                self.remove_exalted_healing()
+            }
+            CharacterMutation::RemoveDemense(demense_id) => {
+                self.remove_demense(*demense_id)
+            }
         }
     }
 }

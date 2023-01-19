@@ -6,6 +6,9 @@ pub enum MeritError {
     /// Can't have two merits with the same Id
     #[error("Can't have two merits with the same Id")]
     DuplicateMerit,
+    /// All Exalts must have Exalted Healing
+    #[error("Exalted Healing is required for all Exalts")]
+    ExaltedHealing,
     /// Merit templates require at least one valid dot rating.
     #[error("At least one valid rating required")]
     MissingDotRating,

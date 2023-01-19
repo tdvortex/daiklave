@@ -39,8 +39,6 @@ fn test_merits() {
     // Characters have no merits by default
     assert!(character.merits().iter().next().is_none());
 
-
-
     // Add a bunch of merits (and things which read as merits)
     // Artifact weapon
     // Create and add a unique artifact weapon
@@ -737,6 +735,55 @@ fn test_merits() {
         )))
         .is_none());
 
+    // Remove the artifacts
+    [
+        ArtifactId::Weapon(ArtifactWeaponId(UniqueId::Placeholder(1))),
+        ArtifactId::Armor(ArtifactArmorId(UniqueId::Placeholder(1))),
+        ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))),
+    ]
+    .into_iter()
+    .map(|artifact_id| CharacterMutation::RemoveArtifact(artifact_id))
+    .fold(Ok(&mut event_source), |acc, mutation| {
+        acc.and_then(|source| source.apply_mutation(mutation))
+    })
+    .unwrap();
+
+    // Remove the hearthstone and the manse
+    [
+        HearthstoneId(UniqueId::Placeholder(1)),
+        HearthstoneId(UniqueId::Placeholder(2)),
+    ]
+    .into_iter()
+    .map(|hearthstone_id| CharacterMutation::RemoveHearthstone(hearthstone_id))
+    .fold(Ok(&mut event_source), |acc, mutation| {
+        acc.and_then(|source| source.apply_mutation(mutation))
+    })
+    .unwrap();
+
+    // Remove the demense
+    event_source
+        .apply_mutation(CharacterMutation::RemoveDemense(UniqueId::Placeholder(1)))
+        .unwrap();
+
+    // Remove languages
+    [
+        "Local language",
+        "Another local language",
+        "A third local language",
+        "Local language number 4",
+        "Fifth and final local language",
+    ]
+    .into_iter()
+    .map(|s| LanguageMutation::LocalTongue(s.to_owned()))
+    .chain(std::iter::once(LanguageMutation::MajorLanguage(
+        MajorLanguage::HighRealm,
+    )))
+    .map(|language_mutation| CharacterMutation::RemoveLanguage(language_mutation))
+    .fold(Ok(&mut event_source), |acc, mutation| {
+        acc.and_then(|source| source.apply_mutation(mutation))
+    })
+    .unwrap();
+
     // Remove the stackable and nonstackable merits
     let mutation =
         CharacterMutation::RemoveStackableMerit(StackableMeritId(UniqueId::Placeholder(1)));
@@ -758,4 +805,16 @@ fn test_merits() {
             1
         ))))
         .is_none());
+
+    // Only merit left should be Exalted Healing
+    assert!(merits.get(MeritId::ExaltedHealing).is_some());
+
+    // Change character back to be mortal
+    event_source.apply_mutation(CharacterMutation::SetMortal).unwrap();
+    let character = event_source.as_character_view().unwrap();
+    let merits = character.merits();
+
+    // No merits left
+    assert!(merits.iter().next().is_none());
+
 }

@@ -118,6 +118,8 @@ pub enum CharacterMutation {
     AddHearthstone(HearthstoneId, HearthstoneTemplate),
     /// Add a demense to a character without a manse.
     AddDemense(UniqueId, String, GeomancyLevel),
+    /// Remove a demense (without a manse) from a character.
+    RemoveDemense(UniqueId),
     /// Slot a hearthstone into an artifact.
     SlotHearthstone(ArtifactId, HearthstoneId),
     /// Unslot a hearthstone from its current position.
@@ -144,6 +146,9 @@ pub enum CharacterMutation {
     /// Adds the Exalted Healing merit to the character. This is not required
     /// for Exalts.
     AddExaltedHealing,
+    /// Removes the Exalted Healing merit from the character. This is not
+    /// allowed for Exalts.
+    RemoveExaltedHealing,
     /// Adds Terrestrial circle sorcery to the character. The archetype,
     /// shaping ritual, and control spell must be provided, along with an
     /// Id for each.

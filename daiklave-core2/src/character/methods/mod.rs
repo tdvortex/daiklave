@@ -4,6 +4,7 @@ mod artifact;
 mod attributes;
 mod concept;
 mod craft;
+mod demesne;
 mod essence;
 mod exaltation;
 mod health;
