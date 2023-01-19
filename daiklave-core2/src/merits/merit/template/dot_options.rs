@@ -14,9 +14,14 @@ impl MeritTemplateDotOptions {
                 }
             }
             MeritTemplateDotOptions::Variable(maybe_detail) => {
-                maybe_detail.iter().enumerate().for_each(|(i, maybe_description)| if maybe_description.is_some() {
-                    to_iter[i] = Some(i as u8);
-                });
+                maybe_detail
+                    .iter()
+                    .enumerate()
+                    .for_each(|(i, maybe_description)| {
+                        if maybe_description.is_some() {
+                            to_iter[i] = Some(i as u8);
+                        }
+                    });
             }
         }
 

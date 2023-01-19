@@ -11,7 +11,10 @@ use crate::{
         exalt_type::solar::NewSolar,
     },
     health::{DamageLevel, WoundPenalty},
-    hearthstones::{hearthstone::{HearthstoneTemplate, GeomancyLevel}, HearthstoneId},
+    hearthstones::{
+        hearthstone::{GeomancyLevel, HearthstoneTemplate},
+        HearthstoneId,
+    },
     languages::language::LanguageMutation,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
@@ -22,7 +25,8 @@ use crate::{
         },
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
-    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId}, unique_id::UniqueId,
+    unique_id::UniqueId,
+    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId},
 };
 
 /// The API for the character, expressed as an owned struct. Each mutation has
@@ -125,8 +129,12 @@ pub enum CharacterMutation {
     AttuneArtifact(ArtifactId, MotePoolName),
     /// Add a stackable merit with an id for this instance and detail
     AddStackableMerit(StackableMeritId, StackableMerit),
+    /// Remove a stackable merit
+    RemoveStackableMerit(StackableMeritId),
     /// Add a nonstackable merit
     AddNonStackableMerit(NonStackableMeritId, NonStackableMerit),
+    /// Remove a nonstackable merit
+    RemoveNonStackableMerit(NonStackableMeritId),
     /// Add a language
     AddLanguage(LanguageMutation),
     /// Set the character's native language.

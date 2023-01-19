@@ -236,6 +236,8 @@ impl<'view, 'source> Character<'source> {
             }
             CharacterMutation::AddDemense(_, _, _) => todo!(),
             CharacterMutation::AddExaltedHealing => todo!(),
+            CharacterMutation::RemoveStackableMerit(_) => todo!(),
+            CharacterMutation::RemoveNonStackableMerit(_) => todo!(),
         }
     }
 
@@ -384,6 +386,8 @@ impl<'view, 'source> Character<'source> {
             }
             CharacterMutation::AddDemense(_, _, _) => todo!(),
             CharacterMutation::AddExaltedHealing => todo!(),
+            CharacterMutation::RemoveStackableMerit(_) => todo!(),
+            CharacterMutation::RemoveNonStackableMerit(_) => todo!(),
         }
     }
 }

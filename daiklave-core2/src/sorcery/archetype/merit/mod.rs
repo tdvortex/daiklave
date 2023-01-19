@@ -2,7 +2,7 @@ mod id;
 pub use id::SorceryArchetypeMeritId;
 use serde::{Deserialize, Serialize};
 
-use crate::{book_reference::BookReference};
+use crate::book_reference::BookReference;
 
 /// A merit which is made available to sorcerers following a specific
 /// Archetype. These are always inherently nonstackable, fixed-dot, and have no
@@ -17,7 +17,12 @@ pub struct SorceryArchetypeMerit {
 
 impl<'source> SorceryArchetypeMerit {
     /// Creates a new Sorcery Archetype merit.
-    pub fn new(name: String, book_reference: Option<BookReference>, dots: u8, description: String) -> Self {
+    pub fn new(
+        name: String,
+        book_reference: Option<BookReference>,
+        dots: u8,
+        description: String,
+    ) -> Self {
         SorceryArchetypeMerit {
             name,
             book_reference,

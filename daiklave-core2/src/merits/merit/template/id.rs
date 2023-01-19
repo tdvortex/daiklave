@@ -1,8 +1,12 @@
+use serde::{Deserialize, Serialize};
+
 use crate::{
     merits::merit::{nonstackable::NonStackableMeritId, stackable::StackableMeritTemplateId},
     sorcery::SorceryArchetypeMeritId,
 };
 
+/// The Id of a merit template which may be instatiated by a character.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum MeritTemplateId {
     /// The template for the Artifact merit.
     Artifact,
