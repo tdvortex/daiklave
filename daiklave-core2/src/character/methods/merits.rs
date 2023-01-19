@@ -75,10 +75,7 @@ impl<'view, 'source> Character<'source> {
         }
     }
 
-    fn check_merit_prerequisites<P>(
-        &self,
-        prerequisites: P,
-    ) -> Result<(), CharacterMutationError>
+    fn check_merit_prerequisites<P>(&self, prerequisites: P) -> Result<(), CharacterMutationError>
     where
         P: ExactSizeIterator<Item = MeritPrerequisite>,
     {
@@ -136,7 +133,9 @@ impl<'view, 'source> Character<'source> {
                 }
             }
             if !qualified {
-                return Err(CharacterMutationError::MeritError(MeritError::PrerequisitesNotMet));
+                return Err(CharacterMutationError::MeritError(
+                    MeritError::PrerequisitesNotMet,
+                ));
             }
         }
         Ok(())
@@ -279,5 +278,43 @@ impl<'view, 'source> Character<'source> {
                 MeritError::ExaltedHealing,
             )),
         }
+    }
+
+    pub(crate) fn correct_merits(&mut self) {
+        self.nonstackable_merits
+            .iter()
+            .filter_map(|(id, merit)| {
+                if self
+                    .check_merit_prerequisites(merit.prerequisites())
+                    .is_err()
+                {
+                    Some(*id)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<NonStackableMeritId>>()
+            .into_iter()
+            .for_each(|id| {
+                self.nonstackable_merits.remove(&id);
+            });
+
+        self.stackable_merits
+            .iter()
+            .filter_map(|(id, merit)| {
+                if self
+                    .check_merit_prerequisites(merit.prerequisites())
+                    .is_err()
+                {
+                    Some(*id)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<StackableMeritId>>()
+            .into_iter()
+            .for_each(|id| {
+                self.stackable_merits.remove(&id);
+            });
     }
 }

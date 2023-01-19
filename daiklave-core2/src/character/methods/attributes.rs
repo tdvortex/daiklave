@@ -1,6 +1,6 @@
 use crate::{
     attributes::{AttributeError, AttributeName, Attributes},
-    Character, CharacterMutationError,
+    Character, CharacterMutationError, abilities::AbilityNameVanilla,
 };
 
 impl<'source> Character<'source> {
@@ -31,8 +31,21 @@ impl<'source> Character<'source> {
         attribute_name: AttributeName,
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_set_attribute(attribute_name, dots)?;
-        self.attributes.set_dots(attribute_name, dots)?;
-        Ok(self)
+        if !(1..=5).contains(&dots) {
+            Err(CharacterMutationError::AttributeError(
+                AttributeError::InvalidRating,
+            ))
+        } else {
+            let old_dots = self.attributes().get(attribute_name).dots();
+            self.attributes.set_dots(attribute_name, dots)?;
+            if old_dots > dots {
+                if attribute_name == AttributeName::Intelligence {
+                    self.exaltation.correct_sorcery_level(self.abilities().get(AbilityNameVanilla::Occult).dots(), dots, self.essence().map_or(1, |essence| essence.rating()));
+                }
+
+                self.correct_merits();
+            }
+            Ok(self)
+        }
     }
 }

@@ -18,4 +18,9 @@ pub enum SorceryError {
     /// learn Celestial sorcery.
     #[error("Wrong Exalt type for this sorcery level")]
     WrongExaltType,
+    /// Terrestrial Circle requires Occult 3 (or Intelligence 3 for Lunars).
+    /// Celestial Circle requires Essence 3 and Occult 4 (or Intelligence 4 for
+    /// Lunars.) Solar Circle requires Essence 5 and Occult 5.
+    #[error("Insufficient Occult and/or Essence")]
+    PrerequisitesNotMet,
 }

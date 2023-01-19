@@ -41,7 +41,7 @@ use crate::{
     martial_arts::{MartialArtsCharmId, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery, SorceryArchetype,
-        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SpellId,
+        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError, SpellId,
         TerrestrialSpell,
     },
     weapons::{
@@ -573,9 +573,17 @@ impl<'view, 'source> Exalt<'source> {
         shaping_ritual: &'source ShapingRitual,
         control_spell_id: SpellId,
         control_spell: &'source TerrestrialSpell,
+        occult_dots: u8,
+        _intelligence_dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => {
+                if occult_dots < 3 {
+                    return Err(CharacterMutationError::SorceryError(
+                        SorceryError::PrerequisitesNotMet,
+                    ));
+                }
+
                 solar.add_terrestrial_sorcery(
                     archetype_id,
                     archetype,
@@ -597,9 +605,17 @@ impl<'view, 'source> Exalt<'source> {
         shaping_ritual: &'source ShapingRitual,
         control_spell_id: SpellId,
         control_spell: &'source TerrestrialSpell,
+        occult_dots: u8,
+        _intelligence_dots: u8,
     ) -> Result<(), CharacterMutationError> {
         match &self.exalt_type {
             ExaltType::Solar(solar) => {
+                if occult_dots < 3 {
+                    return Err(CharacterMutationError::SorceryError(
+                        SorceryError::PrerequisitesNotMet,
+                    ));
+                }
+
                 solar.check_add_terrestrial_sorcery(
                     archetype_id,
                     archetype,
@@ -636,9 +652,17 @@ impl<'view, 'source> Exalt<'source> {
         shaping_ritual: &'source ShapingRitual,
         control_spell_id: SpellId,
         control_spell: &'source CelestialSpell,
+        occult_dots: u8,
+        _intelligence_dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => {
+                if occult_dots < 4 {
+                    return Err(CharacterMutationError::SorceryError(
+                        SorceryError::PrerequisitesNotMet,
+                    ));
+                }
+
                 solar.add_celestial_sorcery(
                     archetype_id,
                     archetype,
@@ -660,16 +684,25 @@ impl<'view, 'source> Exalt<'source> {
         shaping_ritual: &'source ShapingRitual,
         control_spell_id: SpellId,
         control_spell: &'source CelestialSpell,
+        occult_dots: u8,
+        _intelligence_dots: u8,
     ) -> Result<(), CharacterMutationError> {
         match &self.exalt_type {
-            ExaltType::Solar(solar) => solar.check_add_celestial_sorcery(
-                archetype_id,
-                archetype,
-                shaping_ritual_id,
-                shaping_ritual,
-                control_spell_id,
-                control_spell,
-            ),
+            ExaltType::Solar(solar) => {
+                if occult_dots < 4 {
+                    return Err(CharacterMutationError::SorceryError(
+                        SorceryError::PrerequisitesNotMet,
+                    ));
+                }
+                solar.check_add_celestial_sorcery(
+                    archetype_id,
+                    archetype,
+                    shaping_ritual_id,
+                    shaping_ritual,
+                    control_spell_id,
+                    control_spell,
+                )
+            }
         }
     }
 
@@ -696,9 +729,15 @@ impl<'view, 'source> Exalt<'source> {
         shaping_ritual: &'source ShapingRitual,
         control_spell_id: SpellId,
         control_spell: &'source SolarSpell,
+        occult_dots: u8,
+        essence_rating: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => {
+                if occult_dots < 5 || essence_rating < 5 {
+                    return Err(CharacterMutationError::SorceryError(SorceryError::PrerequisitesNotMet));
+                }
+
                 solar.add_solar_sorcery(
                     archetype_id,
                     archetype,
@@ -720,16 +759,23 @@ impl<'view, 'source> Exalt<'source> {
         shaping_ritual: &'source ShapingRitual,
         control_spell_id: SpellId,
         control_spell: &'source SolarSpell,
+        occult_dots: u8,
+        essence_rating: u8,
     ) -> Result<(), CharacterMutationError> {
         match &self.exalt_type {
-            ExaltType::Solar(solar) => solar.check_add_solar_sorcery(
+            ExaltType::Solar(solar) => {
+                if occult_dots < 5 || essence_rating < 5 {
+                    return Err(CharacterMutationError::SorceryError(SorceryError::PrerequisitesNotMet));
+                }
+
+                solar.check_add_solar_sorcery(
                 archetype_id,
                 archetype,
                 shaping_ritual_id,
                 shaping_ritual,
                 control_spell_id,
                 control_spell,
-            ),
+            )},
         }
     }
 
@@ -1181,6 +1227,14 @@ impl<'view, 'source> Exalt<'source> {
         match &self.exalt_type {
             ExaltType::Solar(solar) => {
                 solar.check_remove_sorcery_archetype_merit(sorcery_archetype_merit_id)
+            }
+        }
+    }
+
+    pub fn correct_sorcery_level(&mut self, occult_dots: u8, _intelligence_dots: u8, essence_rating: u8) {
+        match &mut self.exalt_type {
+            ExaltType::Solar(solar) => {
+                solar.correct_sorcery_level(occult_dots, essence_rating)
             }
         }
     }

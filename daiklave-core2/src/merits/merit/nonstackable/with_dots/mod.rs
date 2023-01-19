@@ -9,7 +9,7 @@ pub(crate) use dots::{
 mod memo;
 pub(crate) use memo::NonStackableMeritWithDotsMemo;
 
-use crate::{book_reference::BookReference, merits::merit::MeritType};
+use crate::{book_reference::BookReference, merits::merit::{MeritType, MeritPrerequisite}};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum NonStackableMeritWithDots<'source> {
@@ -97,6 +97,17 @@ impl<'source> NonStackableMeritWithDots<'source> {
             NonStackableMeritWithDots::Three(three) => three.description(),
             NonStackableMeritWithDots::Four(four) => four.description(),
             NonStackableMeritWithDots::Five(five) => five.description(),
+        }
+    }
+
+    pub fn prerequisites(&self) -> impl ExactSizeIterator<Item = MeritPrerequisite> + '_ {
+        match self {
+            NonStackableMeritWithDots::Zero(zero) => zero.prerequisites(),
+            NonStackableMeritWithDots::One(one) => one.prerequisites(),
+            NonStackableMeritWithDots::Two(two) => two.prerequisites(),
+            NonStackableMeritWithDots::Three(three) => three.prerequisites(),
+            NonStackableMeritWithDots::Four(four) => four.prerequisites(),
+            NonStackableMeritWithDots::Five(five) => five.prerequisites(),
         }
     }
 }

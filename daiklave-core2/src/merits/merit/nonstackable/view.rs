@@ -1,4 +1,4 @@
-use crate::{book_reference::BookReference, merits::merit::MeritType};
+use crate::{book_reference::BookReference, merits::merit::{MeritType, MeritPrerequisite}};
 
 use super::{with_dots::NonStackableMeritWithDots, NonStackableMerit};
 
@@ -28,5 +28,9 @@ impl<'source> NonStackableMeritView<'source> {
 
     pub fn description(&self) -> (&'source str, Option<&'source str>) {
         self.0.description()
+    }
+
+    pub fn prerequisites(&self) -> impl ExactSizeIterator<Item = MeritPrerequisite> + '_ {
+        self.0.prerequisites()
     }
 }

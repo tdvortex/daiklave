@@ -1,6 +1,6 @@
 use crate::{
     book_reference::BookReference,
-    merits::merit::{template::MeritTemplateId, MeritType},
+    merits::merit::{template::MeritTemplateId, MeritType, MeritPrerequisite},
 };
 
 use super::{with_dots::StackableMeritWithDots, StackableMerit};
@@ -45,5 +45,9 @@ impl<'source> StackableMeritView<'source> {
 
     pub fn description(&self) -> (&'source str, Option<&'source str>) {
         self.dotted.description()
+    }
+
+    pub fn prerequisites(&self) -> impl ExactSizeIterator<Item = MeritPrerequisite> + '_ {
+        self.dotted.prerequisites()
     }
 }

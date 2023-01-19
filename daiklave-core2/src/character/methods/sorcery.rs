@@ -4,7 +4,7 @@ use crate::{
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SpellId,
         TerrestrialSpell,
     },
-    Character, CharacterMutationError,
+    Character, CharacterMutationError, abilities::AbilityNameVanilla, attributes::AttributeName,
 };
 
 impl<'view, 'source> Character<'source> {
@@ -31,6 +31,8 @@ impl<'view, 'source> Character<'source> {
             shaping_ritual,
             control_spell_id,
             control_spell,
+            self.abilities().get(AbilityNameVanilla::Occult).dots(),
+            self.attributes().get(AttributeName::Intelligence).dots(),
         )?;
         Ok(self)
     }
@@ -52,6 +54,8 @@ impl<'view, 'source> Character<'source> {
             shaping_ritual,
             control_spell_id,
             control_spell,
+            self.abilities().get(AbilityNameVanilla::Occult).dots(),
+            self.attributes().get(AttributeName::Intelligence).dots(),
         )?;
         Ok(())
     }
@@ -84,6 +88,9 @@ impl<'view, 'source> Character<'source> {
             shaping_ritual,
             control_spell_id,
             control_spell,
+            self.abilities().get(AbilityNameVanilla::Occult).dots(),
+            self.attributes().get(AttributeName::Intelligence).dots(),
+            self.essence().map_or(1, |essence| essence.rating()),
         )?;
         Ok(self)
     }
@@ -105,6 +112,9 @@ impl<'view, 'source> Character<'source> {
             shaping_ritual,
             control_spell_id,
             control_spell,
+            self.abilities().get(AbilityNameVanilla::Occult).dots(),
+            self.attributes().get(AttributeName::Intelligence).dots(),
+            self.essence().map_or(1, |essence| essence.rating()),
         )?;
         Ok(())
     }
@@ -137,6 +147,8 @@ impl<'view, 'source> Character<'source> {
             shaping_ritual,
             control_spell_id,
             control_spell,
+            self.abilities().get(AbilityNameVanilla::Occult).dots(),
+            self.essence().map_or(1, |essence| essence.rating()),
         )?;
         Ok(self)
     }
@@ -158,6 +170,8 @@ impl<'view, 'source> Character<'source> {
             shaping_ritual,
             control_spell_id,
             control_spell,
+            self.abilities().get(AbilityNameVanilla::Occult).dots(),
+            self.essence().map_or(1, |essence| essence.rating()),
         )?;
         Ok(())
     }

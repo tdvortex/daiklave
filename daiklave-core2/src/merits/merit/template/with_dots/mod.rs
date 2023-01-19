@@ -43,4 +43,8 @@ impl<'source> MeritTemplateWithDots<'source> {
     pub fn description(&self) -> (&'source str, Option<&'source str>) {
         (self.shared_description, self.dot_description)
     }
+
+    pub fn prerequisites(&self) -> impl ExactSizeIterator<Item = MeritPrerequisite> + '_ {
+        self.prerequisites.iter().copied()
+    }
 }

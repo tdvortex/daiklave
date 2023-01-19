@@ -1,5 +1,6 @@
 use crate::{
     abilities::{Abilities, AbilitiesVanilla, AbilityError, AbilityNameVanilla, AbilityRating},
+    attributes::AttributeName,
     Character, CharacterMutationError,
 };
 
@@ -42,29 +43,19 @@ impl<'view, 'source> Character<'source> {
         self.abilities.get_mut(ability_name).set_dots(dots)?;
 
         if old_dots > dots {
-            if ability_name == AbilityNameVanilla::Occult {
-                match dots {
-                    0 | 1 | 2 => {
-                        self.exaltation.remove_solar_sorcery().ok();
-                        self.exaltation.remove_celestial_sorcery().ok();
-                        self.exaltation.remove_terrestrial_sorcery().ok();
-                    }
-                    3 => {
-                        self.exaltation.remove_solar_sorcery().ok();
-                        self.exaltation.remove_celestial_sorcery().ok();
-                    }
-                    4 => {
-                        self.exaltation.remove_solar_sorcery().ok();
-                    }
-                    _ => {}
-                }
-            }
+            self.exaltation.correct_sorcery_level(
+                dots,
+                self.attributes().get(AttributeName::Intelligence).dots(),
+                self.essence().map_or(1, |essence| essence.rating()),
+            );
 
             if ability_name == AbilityNameVanilla::Brawl && dots == 0 {
                 for style_id in self.martial_arts().iter() {
                     self.remove_martial_arts_style(style_id).ok();
                 }
             }
+
+            self.correct_merits();
         }
 
         Ok(self)

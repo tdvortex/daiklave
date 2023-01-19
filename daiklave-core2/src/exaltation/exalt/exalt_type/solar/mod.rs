@@ -506,6 +506,20 @@ impl<'source> Solar<'source> {
             None => Err(CharacterMutationError::MeritError(MeritError::NotFound)),
         }
     }
+
+    pub(crate) fn correct_sorcery_level(&mut self, occult_dots: u8, essence_rating: u8) {
+        if (occult_dots < 5 || essence_rating < 5) && matches!(self.sorcery, Some(SolarSorcererView::Solar(_))) {
+            self.remove_solar_sorcery().ok();
+        }
+
+        if (occult_dots < 4 || essence_rating < 3) && matches!(self.sorcery, Some(SolarSorcererView::Celestial(_))) {
+            self.remove_celestial_sorcery().ok();
+        }
+
+        if occult_dots < 3 && self.sorcery.is_some() {
+            self.remove_terrestrial_sorcery().ok();
+        }
+    }
 }
 
 impl<'view, 'source> Solar<'source> {

@@ -1,6 +1,6 @@
 use crate::{
     book_reference::BookReference,
-    merits::merit::{template::MeritTemplateId, MeritType},
+    merits::merit::{template::MeritTemplateId, MeritType, MeritPrerequisite},
 };
 
 pub(crate) use self::dots::{
@@ -102,6 +102,17 @@ impl<'source> StackableMeritWithDots<'source> {
             StackableMeritWithDots::Three(three) => three.description(),
             StackableMeritWithDots::Four(four) => four.description(),
             StackableMeritWithDots::Five(five) => five.description(),
+        }
+    }
+
+    pub fn prerequisites(&self) -> impl ExactSizeIterator<Item = MeritPrerequisite> + '_ {
+        match self {
+            StackableMeritWithDots::Zero(zero) => zero.prerequisites(),
+            StackableMeritWithDots::One(one) => one.prerequisites(),
+            StackableMeritWithDots::Two(two) => two.prerequisites(),
+            StackableMeritWithDots::Three(three) => three.prerequisites(),
+            StackableMeritWithDots::Four(four) => four.prerequisites(),
+            StackableMeritWithDots::Five(five) => five.prerequisites(),
         }
     }
 }
