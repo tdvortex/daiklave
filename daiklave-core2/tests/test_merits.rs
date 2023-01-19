@@ -693,8 +693,9 @@ fn test_merits() {
     );
     assert!(exalted_healing.description().1.is_none());
 
-    // Sorcery should not be a merit
+    // Sorcery should not be a merit, but should exist
     assert!(merits.get(MeritId::MortalSorcerer).is_none());
+    assert!(character.sorcery().is_some());
 
     // Sorcery archetype merit should still exist
     assert!(merits

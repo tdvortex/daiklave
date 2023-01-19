@@ -34,7 +34,7 @@ use self::{builder::SolarBuilder, caste::SolarCaste};
 pub struct Solar<'source> {
     caste: SolarCaste,
     favored_abilities: [AbilityName; 5],
-    sorcery: Option<SolarSorcererView<'source>>,
+    pub(crate) sorcery: Option<SolarSorcererView<'source>>,
     limit: Limit<'source>,
 }
 

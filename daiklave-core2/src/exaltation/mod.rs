@@ -583,7 +583,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn set_solar_view(
         &mut self,
-        solar: Solar<'source>,
+        mut solar: Solar<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self.is_solar() {
             return Ok(self);
@@ -593,6 +593,13 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Mortal(mortal) => {
                 // Default to essence 1
                 // Preserve martial arts styles, with empty Charms set
+                // Preserve terrestrial circle sorcery if it exists
+                if let Some(terrestrial) = mortal.sorcery.take() {
+                    if solar.sorcery.is_none() {
+                        solar.sorcery = Some(SolarSorcererView::Terrestrial(terrestrial));
+                    }
+                }
+
                 *self = Self::Exalt(Box::new(Exalt::new(
                     std::mem::take(&mut mortal.armor).into(),
                     EssenceState {
@@ -625,6 +632,14 @@ impl<'view, 'source> Exaltation<'source> {
                 }
 
                 // Preserve martial arts styles (including charms)
+                // Preserve sorcery
+                if let Some(solar_sorcerer) = match &mut exalt.exalt_type {
+                    ExaltType::Solar(solar) => solar.sorcery.take(),
+                } {
+                    if solar.sorcery.is_none() {
+                        solar.sorcery = Some(solar_sorcerer);
+                    }
+                }
 
                 *self = Self::Exalt(Box::new(Exalt::new(
                     std::mem::take(exalt.armor_mut()),

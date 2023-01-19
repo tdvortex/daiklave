@@ -72,7 +72,7 @@ pub(crate) struct Exalt<'source> {
     armor: ExaltArmor<'source>,
     essence: EssenceState<'source>,
     martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
-    exalt_type: ExaltType<'source>,
+    pub(crate) exalt_type: ExaltType<'source>,
     weapons: ExaltWeapons<'source>,
     wonders: ExaltWonders<'source>,
 }
