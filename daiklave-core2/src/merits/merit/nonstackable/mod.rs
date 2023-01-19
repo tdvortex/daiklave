@@ -16,7 +16,7 @@ mod with_dots;
 mod view;
 pub(crate) use view::NonStackableMeritView;
 
-use super::MeritError;
+use super::{MeritError, prerequisite::MeritPrerequisite};
 
 /// A merit which is nonstackable, i.e. can only be purchased once per
 /// character.
@@ -48,5 +48,11 @@ impl<'source> NonStackableMerit {
 
     pub(crate) fn as_ref(&'source self) -> NonStackableMeritView<'source> {
         NonStackableMeritView(self.0.as_ref())
+    }
+
+    /// Iterates over all prerequisites. If any prerequisite is met, the merit
+    /// is purchasable. If an empty iterator, then it is also purchasable.
+    pub fn prerequisites(&self) -> impl ExactSizeIterator<Item = MeritPrerequisite> + '_ {
+        self.0.prerequisites()
     }
 }

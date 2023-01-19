@@ -444,7 +444,9 @@ fn test_merits() {
         .unwrap();
     assert_eq!(
         eye.id(),
-        MeritId::HearthstoneNoManse(HearthstoneId(UniqueId::Placeholder(1)))
+        MeritId::HearthstoneWithManse(HearthstoneId(
+            UniqueId::Placeholder(2),
+        ))
     );
     assert_eq!(eye.template_name(), "Hearthstone");
     assert_eq!(
@@ -596,7 +598,7 @@ fn test_merits() {
     assert_eq!(retainers.template_name(), "Retainers");
     assert_eq!(
         retainers.book_reference(),
-        Some(BookReference::new(Book::CoreRulebook, 162))
+        Some(BookReference::new(Book::CoreRulebook, 164))
     );
     assert_eq!(retainers.detail().unwrap(), "An expert bodyguard");
     assert_eq!(retainers.dots(), 2);

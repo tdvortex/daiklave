@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 
+use crate::merits::merit::prerequisite::MeritPrerequisite;
+
 use super::{
     FiveDotsNonStackableMeritMemo, FourDotsNonStackableMeritMemo, NonStackableMeritWithDots,
     OneDotNonStackableMeritMemo, ThreeDotsNonStackableMeritMemo, TwoDotsNonStackableMeritMemo,
@@ -33,6 +35,17 @@ impl<'source> NonStackableMeritWithDotsMemo {
             NonStackableMeritWithDotsMemo::Five(five) => {
                 NonStackableMeritWithDots::Five(five.as_ref())
             }
+        }
+    }
+
+    pub fn prerequisites(&self) -> impl ExactSizeIterator<Item = MeritPrerequisite> + '_ {
+        match self {
+            NonStackableMeritWithDotsMemo::Zero(zero) => zero.0.prerequisites.iter().copied(),
+            NonStackableMeritWithDotsMemo::One(one) => one.0.prerequisites.iter().copied(),
+            NonStackableMeritWithDotsMemo::Two(two) => two.0.prerequisites.iter().copied(),
+            NonStackableMeritWithDotsMemo::Three(three) => three.0.prerequisites.iter().copied(),
+            NonStackableMeritWithDotsMemo::Four(four) => four.0.prerequisites.iter().copied(),
+            NonStackableMeritWithDotsMemo::Five(five) => five.0.prerequisites.iter().copied(),
         }
     }
 }

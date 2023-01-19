@@ -14,7 +14,7 @@ pub(crate) use with_dots::{
     ZeroDotsStackableMeritMemo,
 };
 
-use super::MeritError;
+use super::{MeritError, MeritPrerequisite};
 
 mod with_dots;
 
@@ -65,5 +65,11 @@ impl<'source> StackableMerit {
             detail: self.detail.as_str(),
             dotted: self.dotted.as_ref(),
         }
+    }
+
+    /// Iterates over all prerequisites. If any prerequisite is met, the merit
+    /// is purchasable. If an empty iterator, then it is also purchasable.
+    pub fn prerequisites(&self) -> impl ExactSizeIterator<Item = MeritPrerequisite> + '_ {
+        self.dotted.prerequisites()
     }
 }

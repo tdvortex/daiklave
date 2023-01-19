@@ -17,6 +17,7 @@ pub(crate) use nonstackable::NonStackableMeritView;
 pub use nonstackable::{NonStackableMerit, NonStackableMeritId};
 
 mod prerequisite;
+pub use prerequisite::MeritPrerequisite;
 
 mod source;
 pub(crate) use source::MeritSource;
