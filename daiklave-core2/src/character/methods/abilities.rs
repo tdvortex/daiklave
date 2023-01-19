@@ -29,14 +29,44 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Set an ability's dots to a specific dot value. If this sets the ability
-    /// to 0 dots, will erase all specialties.
+    /// to 0 dots, will erase all specialties. If Occult is lowered, may cause
+    /// Sorcery circles to be dropped. If Brawl is lowered to 0, will cause all
+    /// Martial Arts styles to be dropped.
     pub fn set_ability_dots(
         &mut self,
         ability_name: AbilityNameVanilla,
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_set_ability_dots(ability_name, dots)?;
+        let old_dots = self.abilities().get(ability_name).dots();
         self.abilities.get_mut(ability_name).set_dots(dots)?;
+
+        if old_dots > dots {
+            if ability_name == AbilityNameVanilla::Occult {
+                match dots {
+                    0 | 1 | 2 => {
+                        self.exaltation.remove_solar_sorcery().ok();
+                        self.exaltation.remove_celestial_sorcery().ok();
+                        self.exaltation.remove_terrestrial_sorcery().ok();
+                    }
+                    3 => {
+                        self.exaltation.remove_solar_sorcery().ok();
+                        self.exaltation.remove_celestial_sorcery().ok();
+                    }
+                    4 => {
+                        self.exaltation.remove_solar_sorcery().ok();
+                    }
+                    _ => {}
+                }
+            }
+
+            if ability_name == AbilityNameVanilla::Brawl && dots == 0 {
+                for style_id in self.martial_arts().iter() {
+                    self.remove_martial_arts_style(style_id).ok();
+                }
+            }
+        }
+
         Ok(self)
     }
 

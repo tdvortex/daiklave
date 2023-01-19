@@ -482,7 +482,7 @@ impl<'view, 'source> Exalt<'source> {
         &self,
         id: MartialArtsStyleId,
     ) -> Result<(), CharacterMutationError> {
-        if self.martial_arts_styles.contains_key(&id) {
+        if !self.martial_arts_styles.contains_key(&id) {
             Err(CharacterMutationError::MartialArtsError(
                 MartialArtsError::StyleNotFound,
             ))
