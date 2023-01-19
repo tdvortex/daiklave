@@ -321,7 +321,7 @@ fn test_merits() {
     poisoning."
                 .to_owned(),
         )
-        .nonstackable(NonStackableMeritId(UniqueId::Placeholder(1)))
+        .nonstackable(NonStackableMeritId(UniqueId::Placeholder(2)))
         .unwrap();
 
     let (merit_id, merit) = NonStackableMerit::new(iron_stomach, 1).unwrap();
