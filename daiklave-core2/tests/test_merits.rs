@@ -38,7 +38,10 @@ fn test_merits() {
     let character = event_source.as_character_view().unwrap();
     // Characters have no merits by default
     assert!(character.merits().iter().next().is_none());
-    // Add a bunch of merit (and things which read as merits)
+
+
+
+    // Add a bunch of merits (and things which read as merits)
     // Artifact weapon
     // Create and add a unique artifact weapon
     let mutation = CharacterMutation::AddArtifact(Artifact::Weapon(

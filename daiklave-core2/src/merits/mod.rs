@@ -281,18 +281,19 @@ impl<'view, 'source> Merits<'view, 'source> {
 
         // Non-native languages
         let mut local_added = false;
-        self.0
-            .languages()
-            .iter()
-            .for_each(|(language, _is_native)| match language {
-                Language::MajorLanguage(major) => output.push(MeritId::MajorLanguage(major)),
-                Language::LocalTongue(_) => {
-                    if !local_added {
-                        output.push(MeritId::LocalTongues);
-                        local_added = true;
+        self.0.languages().iter().for_each(|(language, is_native)| {
+            if !is_native {
+                match language {
+                    Language::MajorLanguage(major) => output.push(MeritId::MajorLanguage(major)),
+                    Language::LocalTongue(_) => {
+                        if !local_added {
+                            output.push(MeritId::LocalTongues);
+                            local_added = true;
+                        }
                     }
                 }
-            });
+            }
+        });
 
         // Martial arts
         self.0
