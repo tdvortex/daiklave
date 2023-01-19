@@ -17,7 +17,7 @@ impl<'view, 'source> Character<'source> {
         let language = language_mutation.as_ref();
 
         if self.languages.native_language == language
-            || self.languages.other_languages.insert(language)
+            || !self.languages.other_languages.insert(language)
         {
             Err(CharacterMutationError::LanguageError(
                 LanguageError::DuplicateLanguage,
