@@ -6,12 +6,6 @@ impl<'source> Character<'source> {
         &self.willpower
     }
 
-    /// Checks if the character's current willpower can be set to the specified
-    /// amount.
-    pub fn check_set_current_willpower(&self, _amount: u8) -> Result<(), CharacterMutationError> {
-        Ok(())
-    }
-
     /// Sets the character's willpower to the specified amount. This is allowed
     /// to exceed their ordinary rating.
     pub fn set_current_willpower(
@@ -20,12 +14,6 @@ impl<'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.willpower.current = amount;
         Ok(self)
-    }
-
-    /// Checks if the character's permanent willpower can be set to the
-    /// specified dot level.
-    pub fn check_set_willpower_rating(&self, _dots: u8) -> Result<(), CharacterMutationError> {
-        Ok(())
     }
 
     /// Sets the character's permanent willpower rating to the specified dots

@@ -17,7 +17,7 @@ pub enum HearthstoneError {
     NotSlotted,
     /// Hearthstones must be unique
     #[error("Hearthstones must be unique")]
-    UniqueHearthstone,
+    DuplicateHearthstone,
     /// Wild-Born hearthstones cannot have an associated manse
     #[error("WildBorn hearthstones cannot have manses")]
     WildBornWithManse,

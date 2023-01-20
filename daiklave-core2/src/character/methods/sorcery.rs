@@ -37,38 +37,10 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 
-    /// Checks if the character can have Terrestrial Circle sorcery added.
-    pub fn check_add_terrestrial_sorcery(
-        &self,
-        archetype_id: SorceryArchetypeId,
-        archetype: &'source SorceryArchetype,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell,
-    ) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_add_terrestrial_sorcery(
-            archetype_id,
-            archetype,
-            shaping_ritual_id,
-            shaping_ritual,
-            control_spell_id,
-            control_spell,
-            self.abilities().get(AbilityNameVanilla::Occult).dots(),
-            self.attributes().get(AttributeName::Intelligence).dots(),
-        )?;
-        Ok(())
-    }
-
     /// Removes Terrestrial circle sorcery from the character.
     pub fn remove_terrestrial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.remove_terrestrial_sorcery()?;
         Ok(self)
-    }
-
-    /// Checks if Terrestrial circle sorcery can be removed from the character.
-    pub fn check_remove_terrestrial_sorcery(&self) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_remove_terrestrial_sorcery()
     }
 
     /// Upgrades the character from Terrestrial to Celestial sorcery.
@@ -95,39 +67,10 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 
-    /// Checks if the character can have Celestial Circle sorcery added.
-    pub fn check_add_celestial_sorcery(
-        &self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source CelestialSpell,
-    ) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_add_celestial_sorcery(
-            archetype_id,
-            archetype,
-            shaping_ritual_id,
-            shaping_ritual,
-            control_spell_id,
-            control_spell,
-            self.abilities().get(AbilityNameVanilla::Occult).dots(),
-            self.attributes().get(AttributeName::Intelligence).dots(),
-            self.essence().map_or(1, |essence| essence.rating()),
-        )?;
-        Ok(())
-    }
-
     /// Removes Celestial circle sorcery from the character.
     pub fn remove_celestial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.remove_celestial_sorcery()?;
         Ok(self)
-    }
-
-    /// Checks if Celestial circle sorcery can be removed from the character.
-    pub fn check_remove_celestial_sorcery(&self) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_remove_celestial_sorcery()
     }
 
     /// Upgrades the character from Celestial to Solar sorcery.
@@ -153,38 +96,10 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 
-    /// Checks if the character can have Terrestrial Circle sorcery added.
-    pub fn check_add_solar_sorcery(
-        &self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source SolarSpell,
-    ) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_add_solar_sorcery(
-            archetype_id,
-            archetype,
-            shaping_ritual_id,
-            shaping_ritual,
-            control_spell_id,
-            control_spell,
-            self.abilities().get(AbilityNameVanilla::Occult).dots(),
-            self.essence().map_or(1, |essence| essence.rating()),
-        )?;
-        Ok(())
-    }
-
     /// Removes Solar circle sorcery from the character.
     pub fn remove_solar_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.remove_solar_sorcery()?;
         Ok(self)
-    }
-
-    /// Checks if Solar circle sorcery can be removed from the character.
-    pub fn check_remove_solar_sorcery(&self) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_remove_solar_sorcery()
     }
 
     /// Adds a merit to a Sorcery Archetype owned by the character
@@ -202,20 +117,6 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 
-    /// Checks if a specific merit can be added to a Sorcery Archetype owned by the character
-    pub fn check_add_sorcery_archetype_merit(
-        &self,
-        sorcery_archetype_id: SorceryArchetypeId,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
-        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
-    ) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_add_sorcery_archetype_merit(
-            sorcery_archetype_id,
-            sorcery_archetype_merit_id,
-            sorcery_archetype_merit,
-        )
-    }
-
     /// Removes a merit from a Sorcery Archetype owned by a character
     pub fn remove_sorcery_archetype_merit(
         &mut self,
@@ -224,14 +125,5 @@ impl<'view, 'source> Character<'source> {
         self.exaltation
             .remove_sorcery_archetype_merit(sorcery_archetype_merit_id)?;
         Ok(self)
-    }
-
-    /// Checks if a specific Sorcery Archetype merit can be removed.
-    pub fn check_remove_sorcery_archetype_merit(
-        &self,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
-    ) -> Result<(), CharacterMutationError> {
-        self.exaltation
-            .check_remove_sorcery_archetype_merit(sorcery_archetype_merit_id)
     }
 }

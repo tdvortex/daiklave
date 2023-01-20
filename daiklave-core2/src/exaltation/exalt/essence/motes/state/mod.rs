@@ -56,11 +56,6 @@ impl<'source> MotesState<'source> {
     pub(crate) fn personal_mut(&mut self) -> &mut MotePool {
         &mut self.personal
     }
-
-    pub(crate) fn commitments(&self) -> &HashMap<OtherMoteCommitmentId, MoteCommitment<'source>> {
-        &self.commitments
-    }
-
     pub(crate) fn commitments_mut(
         &mut self,
     ) -> &mut HashMap<OtherMoteCommitmentId, MoteCommitment<'source>> {

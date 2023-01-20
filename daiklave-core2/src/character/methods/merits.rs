@@ -18,29 +18,13 @@ impl<'view, 'source> Character<'source> {
         Merits(self)
     }
 
-    /// Checks if a stackable merit can be added to the character
-    pub fn check_add_stackable_merit(
-        &self,
-        stackable_merit_id: StackableMeritId,
-        stackable_merit: &'source StackableMerit,
-    ) -> Result<(), CharacterMutationError> {
-        self.check_merit_prerequisites(stackable_merit.prerequisites())?;
-        if self.stackable_merits.contains_key(&stackable_merit_id) {
-            Err(CharacterMutationError::MeritError(
-                MeritError::DuplicateMerit,
-            ))
-        } else {
-            Ok(())
-        }
-    }
-
     /// Adds a stackable merit to the character.
     pub fn add_stackable_merit(
         &mut self,
         stackable_merit_id: StackableMeritId,
         stackable_merit: &'source StackableMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_merit_prerequisites(stackable_merit.prerequisites())?;
+        self.validate_merit_prerequisites(stackable_merit.prerequisites())?;
         if let Entry::Vacant(e) = self.stackable_merits.entry(stackable_merit_id) {
             e.insert(stackable_merit.as_ref());
             Ok(self)
@@ -48,18 +32,6 @@ impl<'view, 'source> Character<'source> {
             Err(CharacterMutationError::MeritError(
                 MeritError::DuplicateMerit,
             ))
-        }
-    }
-
-    /// Checks if a stackable merit can be removed from the character.
-    pub fn check_remove_stackable_merit(
-        &self,
-        stackable_merit_id: StackableMeritId,
-    ) -> Result<(), CharacterMutationError> {
-        if self.stackable_merits.contains_key(&stackable_merit_id) {
-            Ok(())
-        } else {
-            Err(CharacterMutationError::MeritError(MeritError::NotFound))
         }
     }
 
@@ -75,7 +47,7 @@ impl<'view, 'source> Character<'source> {
         }
     }
 
-    fn check_merit_prerequisites<P>(&self, prerequisites: P) -> Result<(), CharacterMutationError>
+    fn validate_merit_prerequisites<P>(&self, prerequisites: P) -> Result<(), CharacterMutationError>
     where
         P: ExactSizeIterator<Item = MeritPrerequisite>,
     {
@@ -141,33 +113,13 @@ impl<'view, 'source> Character<'source> {
         Ok(())
     }
 
-    /// Checks if a nonstackable merit can be added to the character.
-    pub fn check_add_nonstackable_merit(
-        &self,
-        nonstackable_merit_id: NonStackableMeritId,
-        nonstackable_merit: &'source NonStackableMerit,
-    ) -> Result<(), CharacterMutationError> {
-        self.check_merit_prerequisites(nonstackable_merit.prerequisites())?;
-
-        if self
-            .nonstackable_merits
-            .contains_key(&nonstackable_merit_id)
-        {
-            Err(CharacterMutationError::MeritError(
-                MeritError::DuplicateMerit,
-            ))
-        } else {
-            Ok(())
-        }
-    }
-
     /// Adds a nonstackable merit to the character.
     pub fn add_nonstackable_merit(
         &mut self,
         nonstackable_merit_id: NonStackableMeritId,
         nonstackable_merit: &'source NonStackableMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_merit_prerequisites(nonstackable_merit.prerequisites())?;
+        self.validate_merit_prerequisites(nonstackable_merit.prerequisites())?;
 
         if let Entry::Vacant(e) = self.nonstackable_merits.entry(nonstackable_merit_id) {
             e.insert(nonstackable_merit.as_ref());
@@ -176,21 +128,6 @@ impl<'view, 'source> Character<'source> {
             Err(CharacterMutationError::MeritError(
                 MeritError::DuplicateMerit,
             ))
-        }
-    }
-
-    /// Checks if a nonstackable merit can be removed from the character.
-    pub fn check_remove_nonstackable_merit(
-        &self,
-        nonstackable_merit_id: NonStackableMeritId,
-    ) -> Result<(), CharacterMutationError> {
-        if self
-            .nonstackable_merits
-            .contains_key(&nonstackable_merit_id)
-        {
-            Ok(())
-        } else {
-            Err(CharacterMutationError::MeritError(MeritError::NotFound))
         }
     }
 
@@ -229,24 +166,6 @@ impl<'view, 'source> Character<'source> {
         }
     }
 
-    /// Checks if the Exalted Healing merit can be added to the character.
-    pub fn check_add_exalted_healing(&self) -> Result<(), CharacterMutationError> {
-        match &self.exaltation {
-            crate::exaltation::Exaltation::Mortal(mortal) => {
-                if mortal.exalted_healing {
-                    Err(CharacterMutationError::MeritError(
-                        MeritError::DuplicateMerit,
-                    ))
-                } else {
-                    Ok(())
-                }
-            }
-            crate::exaltation::Exaltation::Exalt(_) => Err(CharacterMutationError::MeritError(
-                MeritError::DuplicateMerit,
-            )),
-        }
-    }
-
     /// Removes the Exalted Healing merit from the character.
     pub fn remove_exalted_healing(&mut self) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.exaltation {
@@ -264,28 +183,12 @@ impl<'view, 'source> Character<'source> {
         }
     }
 
-    /// Checks if the Exalted Healing merit can be removed from the character.
-    pub fn check_remove_exalted_healing(&self) -> Result<(), CharacterMutationError> {
-        match &self.exaltation {
-            crate::exaltation::Exaltation::Mortal(mortal) => {
-                if !mortal.exalted_healing {
-                    Err(CharacterMutationError::MeritError(MeritError::NotFound))
-                } else {
-                    Ok(())
-                }
-            }
-            crate::exaltation::Exaltation::Exalt(_) => Err(CharacterMutationError::MeritError(
-                MeritError::ExaltedHealing,
-            )),
-        }
-    }
-
     pub(crate) fn correct_merits(&mut self) {
         self.nonstackable_merits
             .iter()
             .filter_map(|(id, merit)| {
                 if self
-                    .check_merit_prerequisites(merit.prerequisites())
+                    .validate_merit_prerequisites(merit.prerequisites())
                     .is_err()
                 {
                     Some(*id)
@@ -303,7 +206,7 @@ impl<'view, 'source> Character<'source> {
             .iter()
             .filter_map(|(id, merit)| {
                 if self
-                    .check_merit_prerequisites(merit.prerequisites())
+                    .validate_merit_prerequisites(merit.prerequisites())
                     .is_err()
                 {
                     Some(*id)

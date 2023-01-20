@@ -1,6 +1,5 @@
 use crate::{
-    abilities::AbilityNameVanilla,
-    martial_arts::{MartialArts, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
+    martial_arts::{MartialArts, MartialArtsStyle, MartialArtsStyleId},
     Character, CharacterMutationError,
 };
 
@@ -10,39 +9,15 @@ impl<'view, 'source> Character<'source> {
         MartialArts(&self.exaltation)
     }
 
-    /// Checks if a Martial Arts style can be added to the character.
-    pub fn check_add_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-        style: &MartialArtsStyle,
-    ) -> Result<(), CharacterMutationError> {
-        if self.abilities().get(AbilityNameVanilla::Brawl).dots() < 1 {
-            return Err(CharacterMutationError::MartialArtsError(
-                MartialArtsError::PrerequsitesNotMet,
-            ));
-        }
-
-        self.exaltation.check_add_martial_arts_style(id, style)
-    }
-
     /// Adds a Martial Arts style to the character.
     pub fn add_martial_arts_style(
         &mut self,
         id: MartialArtsStyleId,
         style: &'source MartialArtsStyle,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_add_martial_arts_style(id, style)?;
         self.exaltation.add_martial_arts_style(id, style)?;
 
         Ok(self)
-    }
-
-    /// Checks if a Martial Arts style can be removed from the character.
-    pub fn check_remove_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-    ) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_remove_martial_arts_style(id)
     }
 
     /// Removes a Martial Arts style from the character.
@@ -52,16 +27,6 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.remove_martial_arts_style(id)?;
         Ok(self)
-    }
-
-    /// Checks if the ability dots for the specified Martial Arts style
-    /// can be set to a given value.
-    pub fn check_set_martial_arts_dots(
-        &self,
-        id: MartialArtsStyleId,
-        dots: u8,
-    ) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_set_martial_arts_dots(id, dots)
     }
 
     /// Sets the ability dots for a specific Martial Arts style.

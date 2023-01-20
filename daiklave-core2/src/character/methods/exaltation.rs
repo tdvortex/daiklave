@@ -11,11 +11,6 @@ impl<'source> Character<'source> {
         self.exaltation.is_exalted()
     }
 
-    /// Checks if character can be de-Exalted and set to be mortal.
-    pub fn check_set_mortal(&self) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_set_mortal()
-    }
-
     /// De-Exalts character, setting them to be mortal. This also reduces their
     /// permanent willpower rating by 2 (reflecting the difference between
     /// mortal default and Exalt default).

@@ -290,6 +290,20 @@ fn test_weapons_event_source() {
     ));
     event_source.apply_mutation(mutation).unwrap();
 
+    // Check that lowering strength below 3 causes a heavy melee two-handed
+    // weapon to unequip
+    let character = event_source
+        .apply_mutation(CharacterMutation::SetAttribute(AttributeName::Strength, 2))
+        .unwrap();
+    assert!(character
+        .weapons()
+        .get(
+            WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(5))),
+            None
+        )
+        .is_some());
+    event_source.undo().unwrap();
+
     // Check you can remove an unequipped mundane weapon
     let mutation = CharacterMutation::RemoveMundaneWeapon(BaseWeaponId(UniqueId::Placeholder(7)));
     event_source.apply_mutation(mutation).unwrap();

@@ -9,7 +9,7 @@ use crate::{
         Exaltation,
     },
     weapons::{
-        weapon::{Equipped, WeaponId},
+        weapon::{WeaponId},
         WeaponError,
     },
     Character, CharacterMutationError,
@@ -21,58 +21,11 @@ impl<'view, 'source> Character<'source> {
         Wonders(&self.exaltation)
     }
 
-    /// Checks if an artifact can be applied to the character. Note that mortals
-    /// are allowed to own artifacts, they just can't attune to them.
-    pub fn check_add_artifact(&self, artifact: &Artifact) -> Result<(), CharacterMutationError> {
-        match artifact {
-            Artifact::Weapon(artifact_weapon_id, _) => {
-                let weapon_id = WeaponId::Artifact(*artifact_weapon_id);
-                let weapons = self.weapons();
-                if weapons.get(weapon_id, None).is_some()
-                    || weapons.get(weapon_id, Some(Equipped::Natural)).is_some()
-                    || weapons.get(weapon_id, Some(Equipped::Worn)).is_some()
-                    || weapons.get(weapon_id, Some(Equipped::MainHand)).is_some()
-                    || weapons.get(weapon_id, Some(Equipped::OffHand)).is_some()
-                    || weapons.get(weapon_id, Some(Equipped::TwoHanded)).is_some()
-                {
-                    Err(CharacterMutationError::WeaponError(
-                        WeaponError::NamedArtifactsUnique,
-                    ))
-                } else {
-                    Ok(())
-                }
-            }
-            Artifact::Armor(artifact_armor_id, _) => {
-                if self
-                    .armor()
-                    .get(ArmorId::Artifact(*artifact_armor_id))
-                    .is_some()
-                {
-                    Err(CharacterMutationError::ArtifactError(
-                        ArtifactError::NamedArtifactsUnique,
-                    ))
-                } else {
-                    Ok(())
-                }
-            }
-            Artifact::Wonder(wonder_id, _) => {
-                if self.wonders().get(*wonder_id).is_some() {
-                    Err(CharacterMutationError::ArtifactError(
-                        ArtifactError::NamedArtifactsUnique,
-                    ))
-                } else {
-                    Ok(())
-                }
-            }
-        }
-    }
-
     /// Adds an artifact to the character.
     pub fn add_artifact(
         &mut self,
         artifact: &'source Artifact,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_add_artifact(artifact)?;
         match artifact {
             Artifact::Weapon(artifact_weapon_id, artifact_memo) => {
                 self.exaltation
@@ -94,7 +47,6 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         artifact_id: ArtifactId,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_remove_artifact(artifact_id)?;
         match artifact_id {
             ArtifactId::Weapon(artifact_weapon_id) => {
                 self.exaltation.remove_artifact_weapon(artifact_weapon_id)?;
@@ -107,48 +59,6 @@ impl<'view, 'source> Character<'source> {
             }
         }
         Ok(self)
-    }
-
-    /// Checks if an artifact can be removed.
-    pub fn check_remove_artifact(
-        &self,
-        artifact_id: ArtifactId,
-    ) -> Result<(), CharacterMutationError> {
-        match artifact_id {
-            ArtifactId::Weapon(artifact_weapon_id) => {
-                if self
-                    .weapons()
-                    .get(WeaponId::Artifact(artifact_weapon_id), None)
-                    .is_none()
-                {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
-                } else {
-                    Ok(())
-                }
-            }
-            ArtifactId::Armor(artifact_armor_id) => {
-                if let Some(armor) = self.armor().get(ArmorId::Artifact(artifact_armor_id)) {
-                    if armor.is_equipped() {
-                        Err(CharacterMutationError::ArmorError(
-                            ArmorError::RemoveEquipped,
-                        ))
-                    } else {
-                        Ok(())
-                    }
-                } else {
-                    Err(CharacterMutationError::ArmorError(ArmorError::NotFound))
-                }
-            }
-            ArtifactId::Wonder(wonder_id) => {
-                if self.wonders().get(wonder_id).is_none() {
-                    Err(CharacterMutationError::ArtifactError(
-                        ArtifactError::NotFound,
-                    ))
-                } else {
-                    Ok(())
-                }
-            }
-        }
     }
 
     /// Checks if an artifact can be attuned.

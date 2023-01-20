@@ -113,20 +113,6 @@ impl<'source> Mortal<'source> {
         Ok(self)
     }
 
-    pub(crate) fn check_set_martial_arts_dots(
-        &self,
-        id: MartialArtsStyleId,
-        _dots: u8,
-    ) -> Result<(), CharacterMutationError> {
-        if self.martial_arts_styles.contains_key(&id) {
-            Ok(())
-        } else {
-            Err(CharacterMutationError::MartialArtsError(
-                MartialArtsError::StyleNotFound,
-            ))
-        }
-    }
-
     pub(crate) fn set_martial_arts_dots(
         &mut self,
         id: MartialArtsStyleId,
@@ -170,28 +156,6 @@ impl<'source> Mortal<'source> {
         Ok(self)
     }
 
-    pub fn check_add_terrestrial_sorcery(
-        &self,
-        archetype_id: SorceryArchetypeId,
-        _archetype: &'source SorceryArchetype,
-        _shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        _control_spell_id: SpellId,
-        _control_spell: &'source TerrestrialSpell,
-    ) -> Result<(), CharacterMutationError> {
-        if self.sorcery.is_some() {
-            return Err(CharacterMutationError::SorceryError(
-                SorceryError::CircleSequence,
-            ));
-        } else if shaping_ritual.archetype_id() != archetype_id {
-            return Err(CharacterMutationError::SorceryError(
-                SorceryError::MissingArchetype,
-            ));
-        } else {
-            Ok(())
-        }
-    }
-
     pub fn remove_terrestrial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
         if self.sorcery.is_none() {
             Err(CharacterMutationError::SorceryError(
@@ -200,16 +164,6 @@ impl<'source> Mortal<'source> {
         } else {
             self.sorcery = None;
             Ok(self)
-        }
-    }
-
-    pub fn check_remove_terrestrial_sorcery(&self) -> Result<(), CharacterMutationError> {
-        if self.sorcery.is_none() {
-            Err(CharacterMutationError::SorceryError(
-                SorceryError::CircleSequence,
-            ))
-        } else {
-            Ok(())
         }
     }
 
@@ -487,34 +441,6 @@ impl<'source> Mortal<'source> {
         }
     }
 
-    pub fn check_add_sorcery_archetype_merit(
-        &self,
-        sorcery_archetype_id: SorceryArchetypeId,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
-        _sorcery_archetype_merit: &'source SorceryArchetypeMerit,
-    ) -> Result<(), CharacterMutationError> {
-        if let Some(terrestrial) = &self.sorcery {
-            if terrestrial.archetype_id != sorcery_archetype_id {
-                Err(CharacterMutationError::SorceryError(
-                    SorceryError::MissingArchetype,
-                ))
-            } else if terrestrial
-                .archetype_merits
-                .contains_key(&sorcery_archetype_merit_id)
-            {
-                Err(CharacterMutationError::MeritError(
-                    MeritError::DuplicateMerit,
-                ))
-            } else {
-                Ok(())
-            }
-        } else {
-            Err(CharacterMutationError::SorceryError(
-                SorceryError::MissingArchetype,
-            ))
-        }
-    }
-
     pub fn remove_sorcery_archetype_merit(
         &mut self,
         sorcery_archetype_merit_id: SorceryArchetypeMeritId,
@@ -528,24 +454,6 @@ impl<'source> Mortal<'source> {
                 Err(CharacterMutationError::MeritError(MeritError::NotFound))
             } else {
                 Ok(self)
-            }
-        } else {
-            Err(CharacterMutationError::MeritError(MeritError::NotFound))
-        }
-    }
-
-    pub fn check_remove_sorcery_archetype_merit(
-        &self,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
-    ) -> Result<(), CharacterMutationError> {
-        if let Some(terrestrial) = &self.sorcery {
-            if !terrestrial
-                .archetype_merits
-                .contains_key(&sorcery_archetype_merit_id)
-            {
-                Err(CharacterMutationError::MeritError(MeritError::NotFound))
-            } else {
-                Ok(())
             }
         } else {
             Err(CharacterMutationError::MeritError(MeritError::NotFound))

@@ -108,28 +108,6 @@ impl<'source> Solar<'source> {
         }
     }
 
-    pub(crate) fn check_add_terrestrial_sorcery(
-        &self,
-        archetype_id: SorceryArchetypeId,
-        _archetype: &'source SorceryArchetype,
-        _shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        _control_spell_id: SpellId,
-        _control_spell: &'source TerrestrialSpell,
-    ) -> Result<(), CharacterMutationError> {
-        if self.sorcery.is_some() {
-            Err(CharacterMutationError::SorceryError(
-                SorceryError::CircleSequence,
-            ))
-        } else if shaping_ritual.archetype_id() != archetype_id {
-            Err(CharacterMutationError::SorceryError(
-                SorceryError::MissingArchetype,
-            ))
-        } else {
-            Ok(())
-        }
-    }
-
     pub(crate) fn remove_terrestrial_sorcery(
         &mut self,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -138,15 +116,6 @@ impl<'source> Solar<'source> {
                 self.sorcery = None;
                 Ok(self)
             }
-            _ => Err(CharacterMutationError::SorceryError(
-                SorceryError::CircleSequence,
-            )),
-        }
-    }
-
-    pub(crate) fn check_remove_terrestrial_sorcery(&self) -> Result<(), CharacterMutationError> {
-        match self.sorcery {
-            Some(SolarSorcererView::Terrestrial(_)) => Ok(()),
             _ => Err(CharacterMutationError::SorceryError(
                 SorceryError::CircleSequence,
             )),
@@ -179,34 +148,6 @@ impl<'source> Solar<'source> {
         Ok(self)
     }
 
-    pub(crate) fn check_add_celestial_sorcery(
-        &self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        _shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        _control_spell_id: SpellId,
-        _control_spell: &'source CelestialSpell,
-    ) -> Result<(), CharacterMutationError> {
-        if let Some(SolarSorcererView::Terrestrial(terrestrial)) = &self.sorcery {
-            if shaping_ritual.archetype_id() != archetype_id {
-                Err(CharacterMutationError::SorceryError(
-                    SorceryError::MissingArchetype,
-                ))
-            } else if archetype.is_none() && terrestrial.archetype_id != archetype_id {
-                Err(CharacterMutationError::SorceryError(
-                    SorceryError::MissingArchetype,
-                ))
-            } else {
-                Ok(())
-            }
-        } else {
-            Err(CharacterMutationError::SorceryError(
-                SorceryError::CircleSequence,
-            ))
-        }
-    }
-
     pub(crate) fn remove_celestial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
         if let Some(SolarSorcererView::Celestial(celestial)) = &mut self.sorcery {
             self.sorcery = Some(SolarSorcererView::Terrestrial((&*celestial).into()));
@@ -215,16 +156,6 @@ impl<'source> Solar<'source> {
             Err(CharacterMutationError::SorceryError(
                 SorceryError::CircleSequence,
             ))
-        }
-    }
-
-    pub(crate) fn check_remove_celestial_sorcery(&self) -> Result<(), CharacterMutationError> {
-        if !matches!(self.sorcery, Some(SolarSorcererView::Celestial(_))) {
-            Err(CharacterMutationError::SorceryError(
-                SorceryError::CircleSequence,
-            ))
-        } else {
-            Ok(())
         }
     }
 
@@ -254,34 +185,6 @@ impl<'source> Solar<'source> {
         Ok(self)
     }
 
-    pub(crate) fn check_add_solar_sorcery(
-        &self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        _shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        _control_spell_id: SpellId,
-        _control_spell: &'source SolarSpell,
-    ) -> Result<(), CharacterMutationError> {
-        if let Some(SolarSorcererView::Celestial(celestial)) = &self.sorcery {
-            if shaping_ritual.archetype_id() != archetype_id {
-                Err(CharacterMutationError::SorceryError(
-                    SorceryError::MissingArchetype,
-                ))
-            } else if archetype.is_none() && !celestial.archetypes.contains_key(&archetype_id) {
-                Err(CharacterMutationError::SorceryError(
-                    SorceryError::MissingArchetype,
-                ))
-            } else {
-                Ok(())
-            }
-        } else {
-            Err(CharacterMutationError::SorceryError(
-                SorceryError::CircleSequence,
-            ))
-        }
-    }
-
     pub(crate) fn remove_solar_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
         if let Some(SolarSorcererView::Solar(solar)) = &mut self.sorcery {
             self.sorcery = Some(SolarSorcererView::Celestial((&*solar).into()));
@@ -290,16 +193,6 @@ impl<'source> Solar<'source> {
             Err(CharacterMutationError::SorceryError(
                 SorceryError::CircleSequence,
             ))
-        }
-    }
-
-    pub(crate) fn check_remove_solar_sorcery(&self) -> Result<(), CharacterMutationError> {
-        if !matches!(self.sorcery, Some(SolarSorcererView::Solar(_))) {
-            Err(CharacterMutationError::SorceryError(
-                SorceryError::CircleSequence,
-            ))
-        } else {
-            Ok(())
         }
     }
 
@@ -365,65 +258,6 @@ impl<'source> Solar<'source> {
         }
     }
 
-    pub(crate) fn check_add_sorcery_archetype_merit(
-        &self,
-        sorcery_archetype_id: SorceryArchetypeId,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
-        _sorcery_archetype_merit: &'source SorceryArchetypeMerit,
-    ) -> Result<(), CharacterMutationError> {
-        match &self.sorcery {
-            Some(SolarSorcererView::Terrestrial(terrestrial)) => {
-                if terrestrial.archetype_id != sorcery_archetype_id {
-                    Err(CharacterMutationError::SorceryError(
-                        SorceryError::MissingArchetype,
-                    ))
-                } else if terrestrial
-                    .archetype_merits
-                    .contains_key(&sorcery_archetype_merit_id)
-                {
-                    Err(CharacterMutationError::MeritError(
-                        MeritError::DuplicateMerit,
-                    ))
-                } else {
-                    Ok(())
-                }
-            }
-            Some(SolarSorcererView::Celestial(celestial)) => {
-                if let Some((_, merits)) = celestial.archetypes.get(&sorcery_archetype_id) {
-                    if merits.contains_key(&sorcery_archetype_merit_id) {
-                        Err(CharacterMutationError::MeritError(
-                            MeritError::DuplicateMerit,
-                        ))
-                    } else {
-                        Ok(())
-                    }
-                } else {
-                    Err(CharacterMutationError::SorceryError(
-                        SorceryError::MissingArchetype,
-                    ))
-                }
-            }
-            Some(SolarSorcererView::Solar(solar)) => {
-                if let Some((_, merits)) = solar.archetypes.get(&sorcery_archetype_id) {
-                    if merits.contains_key(&sorcery_archetype_merit_id) {
-                        Err(CharacterMutationError::MeritError(
-                            MeritError::DuplicateMerit,
-                        ))
-                    } else {
-                        Ok(())
-                    }
-                } else {
-                    Err(CharacterMutationError::SorceryError(
-                        SorceryError::MissingArchetype,
-                    ))
-                }
-            }
-            None => Err(CharacterMutationError::SorceryError(
-                SorceryError::MissingArchetype,
-            )),
-        }
-    }
-
     pub(crate) fn remove_sorcery_archetype_merit(
         &mut self,
         sorcery_archetype_merit_id: SorceryArchetypeMeritId,
@@ -460,47 +294,6 @@ impl<'source> Solar<'source> {
                     Err(CharacterMutationError::MeritError(MeritError::NotFound))
                 } else {
                     Ok(self)
-                }
-            }
-            None => Err(CharacterMutationError::MeritError(MeritError::NotFound)),
-        }
-    }
-
-    pub(crate) fn check_remove_sorcery_archetype_merit(
-        &self,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
-    ) -> Result<(), CharacterMutationError> {
-        match &self.sorcery {
-            Some(SolarSorcererView::Terrestrial(terrestrial)) => {
-                if !terrestrial
-                    .archetype_merits
-                    .contains_key(&sorcery_archetype_merit_id)
-                {
-                    Err(CharacterMutationError::MeritError(MeritError::NotFound))
-                } else {
-                    Ok(())
-                }
-            }
-            Some(SolarSorcererView::Celestial(celestial)) => {
-                if !celestial
-                    .archetypes
-                    .iter()
-                    .any(|(_, (_, merits))| merits.contains_key(&sorcery_archetype_merit_id))
-                {
-                    Err(CharacterMutationError::MeritError(MeritError::NotFound))
-                } else {
-                    Ok(())
-                }
-            }
-            Some(SolarSorcererView::Solar(solar)) => {
-                if !solar
-                    .archetypes
-                    .iter()
-                    .any(|(_, (_, merits))| merits.contains_key(&sorcery_archetype_merit_id))
-                {
-                    Err(CharacterMutationError::MeritError(MeritError::NotFound))
-                } else {
-                    Ok(())
                 }
             }
             None => Err(CharacterMutationError::MeritError(MeritError::NotFound)),

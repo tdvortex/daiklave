@@ -14,12 +14,6 @@ impl<'source> Character<'source> {
         self.exaltation.solar_traits()
     }
 
-    /// Checks if character can be turned into a Solar Exalted with given
-    /// traits.
-    pub fn check_set_solar(&self, solar: &'source NewSolar) -> Result<(), CharacterMutationError> {
-        self.exaltation.check_set_solar(solar.0.as_ref())
-    }
-
     /// Sets a character's Exaltation to be the given Solar exaltation. If the
     /// character was previously mortal, permanent willpower rating is
     /// increased by 2 (reflecting the difference between mortal default and

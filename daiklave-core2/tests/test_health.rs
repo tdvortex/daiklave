@@ -4,7 +4,7 @@ use daiklave_core2::{
 };
 
 #[test]
-fn test_health_character_event_source() {
+fn test_health() {
     // Check default health
     let mut event_source = CharacterEventSource::default();
     let character = event_source.as_character().unwrap();

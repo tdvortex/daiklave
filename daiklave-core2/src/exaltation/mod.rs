@@ -119,10 +119,6 @@ impl<'source> Exaltation<'source> {
         .into_iter()
     }
 
-    pub fn check_set_mortal(&self) -> Result<(), CharacterMutationError> {
-        Ok(())
-    }
-
     pub fn set_mortal(&mut self) -> Result<&mut Self, CharacterMutationError> {
         if self.is_mortal() {
             return Ok(self);
@@ -177,17 +173,6 @@ impl<'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub(crate) fn check_add_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-        style: &MartialArtsStyle,
-    ) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(mortal) => mortal.check_add_martial_arts_style(id, style),
-            Exaltation::Exalt(exalt) => exalt.check_add_martial_arts_style(id, style),
-        }
-    }
-
     pub(crate) fn add_martial_arts_style(
         &mut self,
         id: MartialArtsStyleId,
@@ -204,16 +189,6 @@ impl<'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub(crate) fn check_remove_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-    ) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(mortal) => mortal.check_remove_martial_arts_style(id),
-            Exaltation::Exalt(exalt) => exalt.check_remove_martial_arts_style(id),
-        }
-    }
-
     pub(crate) fn remove_martial_arts_style(
         &mut self,
         id: MartialArtsStyleId,
@@ -227,17 +202,6 @@ impl<'source> Exaltation<'source> {
             }
         }
         Ok(self)
-    }
-
-    pub(crate) fn check_set_martial_arts_dots(
-        &self,
-        id: MartialArtsStyleId,
-        dots: u8,
-    ) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(mortal) => mortal.check_set_martial_arts_dots(id, dots),
-            Exaltation::Exalt(exalt) => exalt.check_set_martial_arts_dots(id, dots),
-        }
     }
 
     pub(crate) fn set_martial_arts_dots(
@@ -339,48 +303,6 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub fn check_add_terrestrial_sorcery(
-        &self,
-        archetype_id: SorceryArchetypeId,
-        archetype: &'source SorceryArchetype,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell,
-        occult_dots: u8,
-        intelligence_dots: u8,
-    ) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(mortal) => {
-                if occult_dots < 3 {
-                    return Err(CharacterMutationError::SorceryError(SorceryError::PrerequisitesNotMet));
-                }
-                
-                mortal.check_add_terrestrial_sorcery(
-                    archetype_id,
-                    archetype,
-                    shaping_ritual_id,
-                    shaping_ritual,
-                    control_spell_id,
-                    control_spell,
-                )?;
-            }
-            Exaltation::Exalt(exalt) => {
-                exalt.check_add_terrestrial_sorcery(
-                    archetype_id,
-                    archetype,
-                    shaping_ritual_id,
-                    shaping_ritual,
-                    control_spell_id,
-                    control_spell,
-                    occult_dots,
-                    intelligence_dots,
-                )?;
-            }
-        }
-        Ok(())
-    }
-
     pub fn remove_terrestrial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
@@ -391,13 +313,6 @@ impl<'view, 'source> Exaltation<'source> {
             }
         }
         Ok(self)
-    }
-
-    pub fn check_remove_terrestrial_sorcery(&self) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(mortal) => mortal.check_remove_terrestrial_sorcery(),
-            Exaltation::Exalt(exalt) => exalt.check_remove_terrestrial_sorcery(),
-        }
     }
 
     pub fn add_celestial_sorcery(
@@ -438,40 +353,6 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub fn check_add_celestial_sorcery(
-        &self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source CelestialSpell,
-        occult_dots: u8,
-        intelligence_dots: u8,
-        essence_rating: u8,
-    ) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::SorceryError(
-                SorceryError::WrongExaltType,
-            )),
-            Exaltation::Exalt(exalt) => {
-                if essence_rating < 3 {
-                    return Err(CharacterMutationError::SorceryError(SorceryError::PrerequisitesNotMet));
-                }
-
-                exalt.check_add_celestial_sorcery(
-                archetype_id,
-                archetype,
-                shaping_ritual_id,
-                shaping_ritual,
-                control_spell_id,
-                control_spell,
-                occult_dots,
-                intelligence_dots,
-            )},
-        }
-    }
-
     pub(crate) fn remove_celestial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => {
@@ -484,15 +365,6 @@ impl<'view, 'source> Exaltation<'source> {
             }
         }
         Ok(self)
-    }
-
-    pub(crate) fn check_remove_celestial_sorcery(&self) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::SorceryError(
-                SorceryError::WrongExaltType,
-            )),
-            Exaltation::Exalt(exalt) => exalt.check_remove_celestial_sorcery(),
-        }
     }
 
     pub fn add_solar_sorcery(
@@ -528,34 +400,6 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub fn check_add_solar_sorcery(
-        &self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source SolarSpell,
-        occult_dots: u8,
-        essence_rating: u8,
-    ) -> Result<(), CharacterMutationError> {
-        match &self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::SorceryError(
-                SorceryError::WrongExaltType,
-            )),
-            Exaltation::Exalt(exalt) => exalt.check_add_solar_sorcery(
-                archetype_id,
-                archetype,
-                shaping_ritual_id,
-                shaping_ritual,
-                control_spell_id,
-                control_spell,
-                occult_dots,
-                essence_rating,
-            ),
-        }
-    }
-
     pub fn remove_solar_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => {
@@ -568,16 +412,6 @@ impl<'view, 'source> Exaltation<'source> {
             }
         }
         Ok(self)
-    }
-
-    /// Checks if Solar circle sorcery can be removed from the character.
-    pub fn check_remove_solar_sorcery(&self) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(_) => Err(CharacterMutationError::SorceryError(
-                SorceryError::WrongExaltType,
-            )),
-            Exaltation::Exalt(exalt) => exalt.check_remove_solar_sorcery(),
-        }
     }
 
     pub(crate) fn sorcery(&'view self) -> Option<Sorcery<'view, 'source>> {
@@ -604,13 +438,6 @@ impl<'view, 'source> Exaltation<'source> {
         } else {
             None
         }
-    }
-
-    pub fn check_set_solar(
-        &self,
-        _solar: &'source SolarMemo,
-    ) -> Result<(), CharacterMutationError> {
-        Ok(())
     }
 
     pub fn set_solar(
@@ -712,19 +539,6 @@ impl<'view, 'source> Exaltation<'source> {
         }
     }
 
-    pub fn check_spend_motes(
-        &self,
-        first: MotePoolName,
-        amount: u8,
-    ) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(_) => {
-                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
-            }
-            Exaltation::Exalt(exalt) => exalt.check_spend_motes(first, amount),
-        }
-    }
-
     pub fn spend_motes(
         &mut self,
         first: MotePoolName,
@@ -737,21 +551,6 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Exalt(exalt) => exalt.spend_motes(first, amount),
         }?;
         Ok(self)
-    }
-
-    pub fn check_commit_motes(
-        &self,
-        id: &OtherMoteCommitmentId,
-        name: &str,
-        first: MotePoolName,
-        amount: u8,
-    ) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(_) => {
-                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
-            }
-            Exaltation::Exalt(exalt) => exalt.check_commit_motes(id, name, first, amount),
-        }
     }
 
     pub fn commit_motes(
@@ -770,15 +569,6 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub fn check_recover_motes(&self, _amount: u8) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(_) => {
-                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
-            }
-            Exaltation::Exalt(_) => Ok(()),
-        }
-    }
-
     pub fn recover_motes(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => {
@@ -787,18 +577,6 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Exalt(exalt) => exalt.recover_motes(amount),
         }?;
         Ok(self)
-    }
-
-    pub fn check_uncommit_motes(
-        &self,
-        id: &MoteCommitmentId,
-    ) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(_) => {
-                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
-            }
-            Exaltation::Exalt(exalt) => exalt.check_uncommit_motes(id),
-        }
     }
 
     pub fn uncommit_motes(
@@ -812,23 +590,6 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Exalt(exalt) => exalt.uncommit_motes(id),
         }?;
         Ok(self)
-    }
-
-    pub fn check_set_essence_rating(&self, rating: u8) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(_) => {
-                Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
-            }
-            Exaltation::Exalt(_) => {
-                if (1..=5).contains(&rating) {
-                    Ok(())
-                } else {
-                    Err(CharacterMutationError::EssenceError(
-                        EssenceError::InvalidRating,
-                    ))
-                }
-            }
-        }
     }
 
     pub fn set_essence_rating(&mut self, rating: u8) -> Result<&mut Self, CharacterMutationError> {
@@ -1248,27 +1009,6 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    /// Checks if a specific merit can be added to a Sorcery Archetype owned by the character
-    pub fn check_add_sorcery_archetype_merit(
-        &self,
-        sorcery_archetype_id: SorceryArchetypeId,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
-        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
-    ) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(mortal) => mortal.check_add_sorcery_archetype_merit(
-                sorcery_archetype_id,
-                sorcery_archetype_merit_id,
-                sorcery_archetype_merit,
-            ),
-            Exaltation::Exalt(exalt) => exalt.check_add_sorcery_archetype_merit(
-                sorcery_archetype_id,
-                sorcery_archetype_merit_id,
-                sorcery_archetype_merit,
-            ),
-        }
-    }
-
     /// Removes a merit from a Sorcery Archetype owned by a character
     pub fn remove_sorcery_archetype_merit(
         &mut self,
@@ -1283,21 +1023,6 @@ impl<'view, 'source> Exaltation<'source> {
             }
         }
         Ok(self)
-    }
-
-    /// Checks if a specific Sorcery Archetype merit can be removed.
-    pub fn check_remove_sorcery_archetype_merit(
-        &self,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
-    ) -> Result<(), CharacterMutationError> {
-        match self {
-            Exaltation::Mortal(mortal) => {
-                mortal.check_remove_sorcery_archetype_merit(sorcery_archetype_merit_id)
-            }
-            Exaltation::Exalt(exalt) => {
-                exalt.check_remove_sorcery_archetype_merit(sorcery_archetype_merit_id)
-            }
-        }
     }
 
     pub fn correct_sorcery_level(&mut self, occult_dots: u8, intelligence_dots: u8, essence_rating: u8) {
