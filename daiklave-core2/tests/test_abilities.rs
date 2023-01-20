@@ -1,9 +1,10 @@
-use daiklave_core2::{abilities::AbilityNameVanilla, Character};
+use daiklave_core2::{abilities::AbilityNameVanilla, CharacterEventSource, CharacterMutation};
 
 #[test]
-fn test_abilities_character_view() {
+fn test_abilities() {
     // Check default abilities
-    let mut character_view = Character::default();
+    let mut event_source = CharacterEventSource::default();
+    let character = event_source.as_character().unwrap();
     let expected: Vec<(AbilityNameVanilla, u8, Option<&str>)> = vec![
         (AbilityNameVanilla::Archery, 0, None),
         (AbilityNameVanilla::Athletics, 0, None),
@@ -33,11 +34,11 @@ fn test_abilities_character_view() {
 
     for (ability_name_vanilla, expected_dots, expected_specialties) in expected.iter() {
         assert_eq!(
-            character_view.abilities().get(*ability_name_vanilla).dots(),
+            character.abilities().get(*ability_name_vanilla).dots(),
             *expected_dots
         );
         assert_eq!(
-            character_view
+            character
                 .abilities()
                 .get(*ability_name_vanilla)
                 .specialties()
@@ -47,14 +48,10 @@ fn test_abilities_character_view() {
     }
 
     // Check set ability dots
-    character_view
-        .check_set_ability_dots(AbilityNameVanilla::Archery, 1)
-        .unwrap();
-    character_view
-        .set_ability_dots(AbilityNameVanilla::Archery, 1)
-        .unwrap();
+    let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Archery, 1);
+    let character = event_source.apply_mutation(mutation).unwrap();
     assert_eq!(
-        character_view
+        character
             .abilities()
             .get(AbilityNameVanilla::Archery)
             .dots(),
@@ -62,14 +59,11 @@ fn test_abilities_character_view() {
     );
 
     // Check add specialty
-    character_view
-        .check_add_specialty(AbilityNameVanilla::Archery, "Firewands")
-        .unwrap();
-    character_view
-        .add_specialty(AbilityNameVanilla::Archery, "Firewands")
-        .unwrap();
+    let mutation =
+        CharacterMutation::AddSpecialty(AbilityNameVanilla::Archery, "Firewands".to_owned());
+    let character = event_source.apply_mutation(mutation).unwrap();
     assert_eq!(
-        character_view
+        character
             .abilities()
             .get(AbilityNameVanilla::Archery)
             .specialties()
@@ -78,14 +72,11 @@ fn test_abilities_character_view() {
     );
 
     // Check remove specialty
-    character_view
-        .check_remove_specialty(AbilityNameVanilla::Archery, "Firewands")
-        .unwrap();
-    character_view
-        .remove_specialty(AbilityNameVanilla::Archery, "Firewands")
-        .unwrap();
+    let mutation =
+        CharacterMutation::RemoveSpecialty(AbilityNameVanilla::Archery, "Firewands".to_owned());
+    let character = event_source.apply_mutation(mutation).unwrap();
     assert_eq!(
-        character_view
+        character
             .abilities()
             .get(AbilityNameVanilla::Archery)
             .specialties()
@@ -94,33 +85,49 @@ fn test_abilities_character_view() {
     );
 
     // Check can't add specialties to zero-rated abilities
-    assert!(character_view
-        .check_add_specialty(AbilityNameVanilla::Athletics, "Bad specialty")
-        .is_err());
+    let mutation =
+        CharacterMutation::AddSpecialty(AbilityNameVanilla::Athletics, "Bad specialty".to_owned());
+    assert!(event_source.apply_mutation(mutation).is_err());
 
     // Check can't remove nonexistent specialties
-    assert!(character_view
-        .check_remove_specialty(AbilityNameVanilla::Athletics, "Bad specialty")
-        .is_err());
+    let mutation = CharacterMutation::RemoveSpecialty(
+        AbilityNameVanilla::Athletics,
+        "Bad specialty".to_owned(),
+    );
+    assert!(event_source.apply_mutation(mutation).is_err());
 
     // Check can't add duplicate specialties
-    character_view
-        .add_specialty(AbilityNameVanilla::Archery, "Firewands")
-        .unwrap();
-    assert!(character_view
-        .check_add_specialty(AbilityNameVanilla::Archery, "Firewands")
-        .is_err());
+    let mutation =
+        CharacterMutation::AddSpecialty(AbilityNameVanilla::Archery, "Firewands".to_owned());
+    event_source.apply_mutation(mutation.clone()).unwrap();
+    assert!(event_source.apply_mutation(mutation).is_err());
 
     // Check setting an ability to zero removes all specialties
-    character_view
-        .set_ability_dots(AbilityNameVanilla::Archery, 0)
-        .unwrap();
+    let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Archery, 0);
+    let character = event_source.apply_mutation(mutation).unwrap();
     assert_eq!(
-        character_view
+        character
             .abilities()
             .get(AbilityNameVanilla::Archery)
             .specialties()
             .next(),
         None
     );
+
+    // Check we can undo the full history
+    assert!(!event_source.can_redo());
+    assert!(event_source.undo().is_ok());
+    assert!(event_source.undo().is_ok());
+    assert!(event_source.undo().is_ok());
+    assert!(event_source.undo().is_ok());
+    assert!(event_source.undo().is_ok());
+    assert!(!event_source.can_undo());
+
+    // Check we can redo the full history
+    assert!(event_source.redo().is_ok());
+    assert!(event_source.redo().is_ok());
+    assert!(event_source.redo().is_ok());
+    assert!(event_source.redo().is_ok());
+    assert!(event_source.redo().is_ok());
+    assert!(!event_source.can_redo());
 }

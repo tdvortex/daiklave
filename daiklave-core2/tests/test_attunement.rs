@@ -118,9 +118,7 @@ fn test_attunement() {
 
     // Mortals can't attune to anything
     assert!(event_source
-        .as_character_view()
-        .unwrap()
-        .check_mutation(&CharacterMutation::AttuneArtifact(
+        .apply_mutation(CharacterMutation::AttuneArtifact(
             ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))),
             MotePoolName::Peripheral
         ))
@@ -146,9 +144,7 @@ fn test_attunement() {
 
     // Can't attune to a missing artifact
     assert!(event_source
-        .as_character_view()
-        .unwrap()
-        .check_mutation(&CharacterMutation::AttuneArtifact(
+        .apply_mutation(CharacterMutation::AttuneArtifact(
             ArtifactId::Wonder(WonderId(UniqueId::Placeholder(666))),
             MotePoolName::Peripheral
         ))
@@ -167,13 +163,12 @@ fn test_attunement() {
             MotePoolName::Peripheral,
         ))
         .unwrap();
-    event_source
+    let character = event_source
         .apply_mutation(CharacterMutation::AttuneArtifact(
             ArtifactId::Armor(ArtifactArmorId(UniqueId::Placeholder(1))),
             MotePoolName::Peripheral,
         ))
         .unwrap();
-    let character = event_source.as_character_view().unwrap();
     assert_eq!(
         character
             .essence()
@@ -202,8 +197,8 @@ fn test_attunement() {
     assert_eq!(character.essence().unwrap().motes().peripheral().spent(), 0);
 
     // Exalts cannot attune to no-attunement Wonders
-    assert!(character
-        .check_mutation(&CharacterMutation::AttuneArtifact(
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AttuneArtifact(
             ArtifactId::Wonder(WonderId(UniqueId::Placeholder(2))),
             MotePoolName::Peripheral,
         ))
@@ -224,7 +219,7 @@ fn test_attunement() {
             ))),
         ))
         .unwrap();
-    event_source
+    let character = event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
             MoteCommitmentId::AttunedArtifact(ArtifactId::Weapon(ArtifactWeaponId(
                 UniqueId::Placeholder(1),
@@ -232,7 +227,6 @@ fn test_attunement() {
         ))
         .unwrap();
 
-    let character = event_source.as_character_view().unwrap();
     assert_eq!(
         character
             .essence()
@@ -264,8 +258,8 @@ fn test_attunement() {
     );
 
     // Can't unattune from an artifact that is already unattuned
-    assert!(character
-        .check_mutation(&CharacterMutation::UncommitMotes(
+    assert!(event_source
+        .apply_mutation(CharacterMutation::UncommitMotes(
             MoteCommitmentId::AttunedArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(
                 1
             ))))

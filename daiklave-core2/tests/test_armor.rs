@@ -11,11 +11,11 @@ use daiklave_core2::{
 #[test]
 fn test_armor() {
     let mut event_source = CharacterEventSource::default();
-    let character_view = event_source.as_character_view().unwrap();
+    let character = event_source.as_character().unwrap();
 
     // Characters have no armor by default
-    assert!(character_view.armor().iter().next().is_none());
-    assert!(character_view.armor().worn().is_none());
+    assert!(character.armor().iter().next().is_none());
+    assert!(character.armor().worn().is_none());
 
     // Add some armor
     let chain_shirt = ArmorItem::base("Chain Shirt (Mundane)")
@@ -26,18 +26,12 @@ fn test_armor() {
 
     let mutation =
         CharacterMutation::AddMundaneArmor(BaseArmorId(UniqueId::Placeholder(1)), chain_shirt);
-    event_source
-        .as_character_view()
-        .unwrap()
-        .check_mutation(&mutation)
-        .unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character_view = event_source.as_character_view().unwrap();
+    let character = event_source.apply_mutation(mutation).unwrap();
 
     // Armor should initially be unequipped
-    assert!(character_view.armor().worn().is_none());
+    assert!(character.armor().worn().is_none());
     assert_eq!(
-        character_view
+        character
             .armor()
             .get(ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1))))
             .unwrap()
@@ -45,23 +39,21 @@ fn test_armor() {
         ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1)))
     );
     assert_eq!(
-        character_view.armor().iter().next().unwrap(),
+        character.armor().iter().next().unwrap(),
         ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1)))
     );
 
     // Equip the armor
     let mutation =
         CharacterMutation::EquipArmor(ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1))));
-    character_view.check_mutation(&mutation).unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character_view = event_source.as_character_view().unwrap();
+    let character = event_source.apply_mutation(mutation).unwrap();
 
     // Check the properties of the armor
     assert_eq!(
-        character_view.armor().iter().next().unwrap(),
+        character.armor().iter().next().unwrap(),
         (ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1))))
     );
-    let chain_shirt = character_view.armor().worn().unwrap();
+    let chain_shirt = character.armor().worn().unwrap();
     assert_eq!(
         chain_shirt.id(),
         ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1)))
@@ -84,7 +76,6 @@ fn test_armor() {
 
     // Unequip the armor
     let mutation = CharacterMutation::UnequipArmor;
-    character_view.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
 
     // Add some artifact armor
@@ -112,34 +103,24 @@ fn test_armor() {
             .book_reference(BookReference::new(Book::CoreRulebook, 616))
             .build(),
     ));
-    event_source
-        .as_character_view()
-        .unwrap()
-        .check_mutation(&mutation)
-        .unwrap();
     event_source.apply_mutation(mutation).unwrap();
-    let character_view = event_source.as_character_view().unwrap();
-
+    
     // Equip the artifact armor
     let mutation =
         CharacterMutation::EquipArmor(ArmorId::Artifact(ArtifactArmorId(UniqueId::Placeholder(1))));
-    character_view.check_mutation(&mutation).unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character_view = event_source.as_character_view().unwrap();
+    let character = event_source.apply_mutation(mutation).unwrap();
 
     assert_eq!(
-        character_view.armor().worn().unwrap().id(),
+        character.armor().worn().unwrap().id(),
         ArmorId::Artifact(ArtifactArmorId(UniqueId::Placeholder(1)))
     );
 
     // Equipping another piece of armor should swap the two
     let mutation =
         CharacterMutation::EquipArmor(ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1))));
-    character_view.check_mutation(&mutation).unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character_view = event_source.as_character_view().unwrap();
+    let character = event_source.apply_mutation(mutation).unwrap();
     assert_eq!(
-        character_view.armor().worn().unwrap().id(),
+        character.armor().worn().unwrap().id(),
         ArmorId::Mundane(BaseArmorId(UniqueId::Placeholder(1)))
     );
 
@@ -147,25 +128,20 @@ fn test_armor() {
     let mutation = CharacterMutation::RemoveArtifact(ArtifactId::Armor(ArtifactArmorId(
         UniqueId::Placeholder(1),
     )));
-    character_view.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
-    let character_view = event_source.as_character_view().unwrap();
 
     // Check you can't remove equipped armor
     let mutation = CharacterMutation::RemoveMundaneArmor(BaseArmorId(UniqueId::Placeholder(1)));
-    assert!(character_view.check_mutation(&mutation).is_err());
+    assert!(event_source.apply_mutation(mutation).is_err());
 
     // Check we can remove it if we unequip first
     let mutation = CharacterMutation::UnequipArmor;
-    character_view.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
 
     let mutation = CharacterMutation::RemoveMundaneArmor(BaseArmorId(UniqueId::Placeholder(1)));
-    event_source.apply_mutation(mutation).unwrap();
+    let character = event_source.apply_mutation(mutation).unwrap();
 
-    assert!(event_source
-        .as_character_view()
-        .unwrap()
+    assert!(character
         .armor()
         .iter()
         .next()

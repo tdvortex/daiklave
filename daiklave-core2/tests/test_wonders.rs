@@ -8,7 +8,7 @@ use daiklave_core2::{
 #[test]
 fn test_wonders() {
     let mut event_source = CharacterEventSource::default();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.as_character().unwrap();
 
     // Default: no wonders
     assert!(character.wonders().iter().next().is_none());
@@ -24,9 +24,7 @@ fn test_wonders() {
             .build(),
     );
     let mutation = CharacterMutation::AddArtifact(wonder);
-    character.check_mutation(&mutation).unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.apply_mutation(mutation).unwrap();
 
     // Check the wonder's properties
     assert_eq!(
@@ -52,7 +50,7 @@ fn test_wonders() {
     let mutation =
         CharacterMutation::RemoveArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))));
     event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.as_character().unwrap();
 
     assert!(character
         .wonders()

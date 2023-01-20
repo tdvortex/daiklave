@@ -35,7 +35,7 @@ use daiklave_core2::{
 #[test]
 fn test_merits() {
     let mut event_source = CharacterEventSource::default();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.as_character().unwrap();
     // Characters have no merits by default
     assert!(character.merits().iter().next().is_none());
 
@@ -263,10 +263,9 @@ fn test_merits() {
     ]
     .into_iter()
     .map(|s| CharacterMutation::AddLanguage(LanguageMutation::LocalTongue(s.to_owned())))
-    .fold(Ok(&mut event_source), |acc, mutation| {
-        acc.and_then(|es| es.apply_mutation(mutation))
-    })
-    .unwrap();
+    .for_each(|mutation| {
+        event_source.apply_mutation(mutation).unwrap();
+    });
 
     // A stackable merit
     let retainers = Merit::new_template("Retainers".to_owned())
@@ -335,7 +334,7 @@ fn test_merits() {
     event_source.apply_mutation(mutation).unwrap();
 
     // Check that all these merits exist and have the right properties
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.as_character().unwrap();
     let merits = character.merits();
     let volcano_cutter = merits
         .get(MeritId::Artifact(ArtifactId::Weapon(ArtifactWeaponId(
@@ -673,7 +672,7 @@ fn test_merits() {
         .unwrap();
     let mutation = CharacterMutation::SetSolar(new_solar);
     event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.as_character().unwrap();
     let merits = character.merits();
 
     // Exalted Healing should be free
@@ -707,7 +706,7 @@ fn test_merits() {
     // Dropping Occult below 3 removes sorcery and sorcery merits
     let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 2);
     event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.as_character().unwrap();
     assert!(character.sorcery().is_none());
     let merits = character.merits();
     assert!(merits
@@ -719,7 +718,7 @@ fn test_merits() {
     // Dropping Brawl to 0 removes Martial Arts and Martial Artist merit
     let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Brawl, 0);
     event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.as_character().unwrap();
     let merits = character.merits();
     assert!(merits
         .get(MeritId::MartialArtist(MartialArtsStyleId(
@@ -730,7 +729,7 @@ fn test_merits() {
     // Dropping an ability or attribute removes dependent merits
     let mutation = CharacterMutation::SetAttribute(AttributeName::Stamina, 2);
     event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.as_character().unwrap();
     let merits = character.merits();
     assert!(merits
         .get(MeritId::NonStackable(NonStackableMeritId(
@@ -746,10 +745,9 @@ fn test_merits() {
     ]
     .into_iter()
     .map(|artifact_id| CharacterMutation::RemoveArtifact(artifact_id))
-    .fold(Ok(&mut event_source), |acc, mutation| {
-        acc.and_then(|source| source.apply_mutation(mutation))
-    })
-    .unwrap();
+    .for_each(|mutation| {
+        event_source.apply_mutation(mutation).unwrap();
+    });
 
     // Remove the hearthstone and the manse
     [
@@ -758,10 +756,9 @@ fn test_merits() {
     ]
     .into_iter()
     .map(|hearthstone_id| CharacterMutation::RemoveHearthstone(hearthstone_id))
-    .fold(Ok(&mut event_source), |acc, mutation| {
-        acc.and_then(|source| source.apply_mutation(mutation))
-    })
-    .unwrap();
+    .for_each(|mutation| {
+        event_source.apply_mutation(mutation).unwrap();
+    });
 
     // Remove the demense
     event_source
@@ -782,10 +779,9 @@ fn test_merits() {
         MajorLanguage::HighRealm,
     )))
     .map(|language_mutation| CharacterMutation::RemoveLanguage(language_mutation))
-    .fold(Ok(&mut event_source), |acc, mutation| {
-        acc.and_then(|source| source.apply_mutation(mutation))
-    })
-    .unwrap();
+    .for_each(|mutation| {
+        event_source.apply_mutation(mutation).unwrap();
+    });
 
     // Remove the stackable and nonstackable merits
     let mutation =
@@ -796,7 +792,7 @@ fn test_merits() {
         CharacterMutation::RemoveNonStackableMerit(NonStackableMeritId(UniqueId::Placeholder(1)));
     event_source.apply_mutation(mutation).unwrap();
 
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.as_character().unwrap();
     let merits = character.merits();
     assert!(merits
         .get(MeritId::NonStackable(NonStackableMeritId(
@@ -814,7 +810,7 @@ fn test_merits() {
 
     // Change character back to be mortal
     event_source.apply_mutation(CharacterMutation::SetMortal).unwrap();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.as_character().unwrap();
     let merits = character.merits();
 
     // No merits left

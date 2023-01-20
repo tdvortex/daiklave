@@ -13,7 +13,7 @@ use daiklave_core2::{
 #[test]
 fn test_weapons_event_source() {
     let mut event_source = CharacterEventSource::default();
-    let mut character_view = event_source.as_character_view().unwrap();
+    let mut character_view = event_source.as_character().unwrap();
     // Default characters have the Unarmed weapon
     let unarmed = character_view
         .weapons()
@@ -166,12 +166,12 @@ fn test_weapons_event_source() {
         ),
     ]
     .into_iter()
-    .fold(&mut event_source, |source, mutation| {
-        source.apply_mutation(mutation).unwrap()
+    .for_each(|mutation| {
+        event_source.apply_mutation(mutation).unwrap();
     });
 
     // Can have multiple copies of an unequipped mundane weapon
-    let character_view = event_source.as_character_view().unwrap();
+    let character_view = event_source.as_character().unwrap();
     assert_eq!(
         character_view
             .weapons()
@@ -212,12 +212,12 @@ fn test_weapons_event_source() {
         ),
     ]
     .into_iter()
-    .fold(&mut event_source, |source, mutation| {
-        source.apply_mutation(mutation).unwrap()
+    .for_each(|mutation| {
+        event_source.apply_mutation(mutation).unwrap();
     });
 
     // An equipped weapon always shows up as a quantity of 1
-    let character_view = event_source.as_character_view().unwrap();
+    let character_view = event_source.as_character().unwrap();
     assert_eq!(
         character_view
             .weapons()
@@ -296,19 +296,11 @@ fn test_weapons_event_source() {
 
     // Check you cannot remove a missing mundane weapon
     let mutation = CharacterMutation::RemoveMundaneWeapon(BaseWeaponId(UniqueId::Placeholder(7)));
-    assert!(event_source
-        .as_character_view()
-        .unwrap()
-        .check_mutation(&mutation)
-        .is_err());
+    assert!(event_source.apply_mutation(mutation).is_err());
 
     // Check you cannot remove an equipped mundane weapon without unequipped copies
     let mutation = CharacterMutation::RemoveMundaneWeapon(BaseWeaponId(UniqueId::Placeholder(5)));
-    assert!(event_source
-        .as_character_view()
-        .unwrap()
-        .check_mutation(&mutation)
-        .is_err());
+    assert!(event_source.apply_mutation(mutation).is_err());
 
     // Check you can remove an unequipped artifact weapon
     let mutation = CharacterMutation::RemoveArtifact(ArtifactId::Weapon(ArtifactWeaponId(

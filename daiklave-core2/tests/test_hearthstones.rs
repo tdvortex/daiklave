@@ -18,7 +18,7 @@ use daiklave_core2::{
 #[test]
 fn test_hearthstones() {
     let mut event_source = CharacterEventSource::default();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.as_character().unwrap();
 
     // Characters have no hearthstones by default
     assert!(character.hearthstones().iter().next().is_none());
@@ -47,9 +47,7 @@ fn test_hearthstones() {
 
     let mutation =
         CharacterMutation::AddHearthstone(HearthstoneId(UniqueId::Placeholder(1)), jewel);
-    character.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
 
     let eye = Hearthstone::builder("Hierophant's Eye".to_string())
         .book_reference(BookReference::new(Book::CoreRulebook, 610))
@@ -70,9 +68,7 @@ fn test_hearthstones() {
     let demense = "A cool place".to_owned();
     let mutation =
         CharacterMutation::AddManse(manse, demense, HearthstoneId(UniqueId::Placeholder(2)), eye);
-    character.check_mutation(&mutation).unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.apply_mutation(mutation).unwrap();
 
     // Check the properties
     let eye_get = character
@@ -97,8 +93,8 @@ fn test_hearthstones() {
     );
 
     // Check you can't add a duplicate hearthstone
-    assert!(character
-        .check_mutation(&CharacterMutation::AddHearthstone(
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AddHearthstone(
             HearthstoneId(UniqueId::Placeholder(1)),
             jewel_clone
         ))
@@ -139,9 +135,7 @@ fn test_hearthstones() {
         ArtifactWeaponId(UniqueId::Placeholder(1)),
         adorei,
     ));
-    character.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
 
     let freedoms_cadence = ArmorItem::artifact("Freedom's Cadence")
         .book_reference(BookReference::new(Book::CoreRulebook, 621))
@@ -178,9 +172,7 @@ fn test_hearthstones() {
         ArtifactArmorId(UniqueId::Placeholder(1)),
         freedoms_cadence,
     ));
-    character.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
 
     let hearthstone_amulet = Artifact::wonder_builder("Hearthstone Amulet")
         .attunement_cost(1)
@@ -209,26 +201,20 @@ fn test_hearthstones() {
         WonderId(UniqueId::Placeholder(1)),
         hearthstone_amulet,
     ));
-    character.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
 
     // Check slotting into all three artifacts
     let mutation = CharacterMutation::SlotHearthstone(
         ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))),
         HearthstoneId(UniqueId::Placeholder(2)),
     );
-    character.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
 
     let mutation = CharacterMutation::SlotHearthstone(
         ArtifactId::Armor(ArtifactArmorId(UniqueId::Placeholder(1))),
         HearthstoneId(UniqueId::Placeholder(1)),
     );
-    character.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
 
     // If a hearthstone is already slotted, reslotting it will remove it from
     // the original position
@@ -236,9 +222,7 @@ fn test_hearthstones() {
         ArtifactId::Weapon(ArtifactWeaponId(UniqueId::Placeholder(1))),
         HearthstoneId(UniqueId::Placeholder(2)),
     );
-    character.check_mutation(&mutation).unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.apply_mutation(mutation).unwrap();
     assert_eq!(
         character
             .weapons()
@@ -263,15 +247,11 @@ fn test_hearthstones() {
 
     // Check you can unslot a hearthstone
     let mutation = CharacterMutation::UnslotHearthstone(HearthstoneId(UniqueId::Placeholder(1)));
-    character.check_mutation(&mutation).unwrap();
     event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
 
     // Check you can remove an unslotted hearthstone
     let mutation = CharacterMutation::RemoveHearthstone(HearthstoneId(UniqueId::Placeholder(1)));
-    character.check_mutation(&mutation).unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character = event_source.as_character_view().unwrap();
+    let character = event_source.apply_mutation(mutation).unwrap();
     assert!(character
         .hearthstones()
         .get(HearthstoneId(UniqueId::Placeholder(1)))

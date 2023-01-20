@@ -27,63 +27,51 @@ fn test_name_and_concept_character_view() {
 fn test_name_and_concept_character_event_source() {
     // Check default name and concept
     let mut event_source = CharacterEventSource::default();
-    let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.name(), "New Character");
-    assert!(character_view.concept().is_none());
+    let character = event_source.as_character().unwrap();
+    assert_eq!(character.name(), "New Character");
+    assert!(character.concept().is_none());
 
     // Check set name
     let mutation = CharacterMutation::SetName("Drifting Leaves".to_owned());
-    character_view.check_mutation(&mutation).unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.name(), "Drifting Leaves");
+    let character = event_source.apply_mutation(mutation).unwrap();
+    assert_eq!(character.name(), "Drifting Leaves");
 
     // Check set concept
     let mutation = CharacterMutation::SetConcept("Wandering ronin".to_owned());
-    character_view.check_mutation(&mutation).unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.concept(), Some("Wandering ronin"));
+    let character = event_source.apply_mutation(mutation).unwrap();
+    assert_eq!(character.concept(), Some("Wandering ronin"));
 
     // Check remove concept
     let mutation = CharacterMutation::RemoveConcept;
-    character_view.check_mutation(&mutation).unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character_view = event_source.as_character_view().unwrap();
-    assert!(character_view.concept().is_none());
+    let character = event_source.apply_mutation(mutation).unwrap();
+    assert!(character.concept().is_none());
 
     // Check that we can undo the full history
     assert!(!event_source.can_redo());
     assert!(event_source.can_undo());
-    assert!(event_source.undo());
-    let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.concept(), Some("Wandering ronin"));
+    let character = event_source.undo().unwrap();
+    assert_eq!(character.concept(), Some("Wandering ronin"));
 
     assert!(event_source.can_redo());
     assert!(event_source.can_undo());
-    assert!(event_source.undo());
-    let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.name(), "Drifting Leaves");
+    let character = event_source.undo().unwrap();
+    assert_eq!(character.name(), "Drifting Leaves");
 
     assert!(event_source.can_redo());
     assert!(event_source.can_undo());
-    assert!(event_source.undo());
-    let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.name(), "New Character");
-    assert!(character_view.concept().is_none());
+    let character = event_source.undo().unwrap();
+    assert_eq!(character.name(), "New Character");
+    assert!(character.concept().is_none());
 
     assert!(!event_source.can_undo());
 
     // Check we can redo the full history
-    assert!(event_source.redo());
-    let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.name(), "Drifting Leaves");
+    let character = event_source.redo().unwrap();
+    assert_eq!(character.name(), "Drifting Leaves");
 
-    assert!(event_source.redo());
-    let character_view = event_source.as_character_view().unwrap();
-    assert_eq!(character_view.concept(), Some("Wandering ronin"));
+    let character = event_source.redo().unwrap();
+    assert_eq!(character.concept(), Some("Wandering ronin"));
 
-    assert!(event_source.redo());
-    let character_view = event_source.as_character_view().unwrap();
-    assert!(character_view.concept().is_none());
+    let character = event_source.redo().unwrap();
+    assert!(character.concept().is_none());
 }

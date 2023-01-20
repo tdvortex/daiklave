@@ -8,11 +8,11 @@ use daiklave_core2::{
 fn test_exalt_type() {
     // Check default is mortal
     let mut event_source = CharacterEventSource::default();
-    let character_view = event_source.as_character_view().unwrap();
+    let character_view = event_source.as_character().unwrap();
     assert!(character_view.is_mortal());
 
     // Confirm toggle to solar
-    let add_solar = Solar::builder()
+    let new_solar = Solar::builder()
         .twilight()
         .caste_ability(TwilightAbility::Bureaucracy)
         .caste_ability(TwilightAbility::Craft)
@@ -29,41 +29,33 @@ fn test_exalt_type() {
         .build()
         .unwrap();
 
-    let mutation = CharacterMutation::SetSolar(add_solar);
-    character_view.check_mutation(&mutation).unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character_view = event_source.as_character_view().unwrap();
-    assert!(character_view.is_solar());
+    let mutation = CharacterMutation::SetSolar(new_solar);
+    let character = event_source.apply_mutation(mutation).unwrap();
+    assert!(character.is_solar());
 
     // Check toggle to mortal
     let mutation = CharacterMutation::SetMortal;
-    character_view.check_mutation(&mutation).unwrap();
-    event_source.apply_mutation(mutation).unwrap();
-    let character_view = event_source.as_character_view().unwrap();
-    assert!(character_view.is_mortal());
+    let character = event_source.apply_mutation(mutation).unwrap();
+    assert!(character.is_mortal());
 
     // Check we can undo full history
     assert!(!event_source.can_redo());
     assert!(event_source.can_undo());
-    assert!(event_source.undo());
-    let character_view = event_source.as_character_view().unwrap();
-    assert!(character_view.is_solar());
+    let character = event_source.undo().unwrap();
+    assert!(character.is_solar());
 
     assert!(event_source.can_redo());
     assert!(event_source.can_undo());
-    assert!(event_source.undo());
-    let character_view = event_source.as_character_view().unwrap();
-    assert!(character_view.is_mortal());
+    let character = event_source.undo().unwrap();
+    assert!(character.is_mortal());
 
     assert!(event_source.can_redo());
     assert!(!event_source.can_undo());
 
     // Check we can redo full history
-    assert!(event_source.redo());
-    let character_view = event_source.as_character_view().unwrap();
-    assert!(character_view.is_solar());
+    let character = event_source.redo().unwrap();
+    assert!(character.is_solar());
 
-    assert!(event_source.redo());
-    let character_view = event_source.as_character_view().unwrap();
-    assert!(character_view.is_mortal());
+    let character = event_source.redo().unwrap();
+    assert!(character.is_mortal());
 }
