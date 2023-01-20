@@ -67,12 +67,11 @@ impl<'source> AbilityRating<'source> {
         new_specialty: &'source str,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let AbilityRating::NonZero(_, specialties) = self {
-            if specialties.contains(new_specialty) {
+            if !specialties.insert(new_specialty) {
                 Err(CharacterMutationError::AbilityError(
                     AbilityError::DuplicateSpecialty,
                 ))
             } else {
-                specialties.insert(new_specialty);
                 Ok(self)
             }
         } else {
