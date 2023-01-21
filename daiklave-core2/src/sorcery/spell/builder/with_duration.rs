@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, num::NonZeroU8};
 
 use crate::{book_reference::BookReference, sorcery::{SorceryCircle, spell::{cost::SpellCost, SpellKeyword}}};
 
@@ -10,6 +10,8 @@ pub struct SpellBuilderWithDuration {
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
     pub(crate) keywords: HashSet<SpellKeyword>,
+    pub(crate) control_spell_description: Option<String>,
+    pub(crate) distortion: Option<(NonZeroU8, String)>,
     pub(crate) circle: SorceryCircle,
     pub(crate) cost: SpellCost,
     pub(crate) duration: String,
@@ -34,6 +36,18 @@ impl SpellBuilderWithDuration {
         self
     }
 
+    /// Describes the control spell bonus of the Spell, if any.
+    pub fn control_spell_description(mut self, description: String) -> Self {
+        self.control_spell_description = Some(description);
+        self
+    }
+
+    /// Describes the methods opposing sorcerers may use to distort this spell.
+    pub fn distortion(mut self, goal_number: NonZeroU8, description: String) -> Self {
+        self.distortion = Some((goal_number, description));
+        self
+    }
+
     /// Provides a description for the spell's effect.
     pub fn description(self, description: String) -> SpellBuilderWithDescription {
         SpellBuilderWithDescription {
@@ -44,7 +58,9 @@ impl SpellBuilderWithDuration {
             cost: self.cost,
             duration: self.duration,
             description,
-            keywords: self.keywords
+            keywords: self.keywords,
+            control_spell_description: self.control_spell_description,
+            distortion: self.distortion,
         }
     }
 }

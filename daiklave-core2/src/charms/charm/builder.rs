@@ -31,6 +31,8 @@ impl CharmBuilder {
             book_reference: self.book_reference,
             summary: self.summary,
             keywords: HashSet::new(),
+            control_spell_description: None,    
+            distortion: None,
         }
     }
 

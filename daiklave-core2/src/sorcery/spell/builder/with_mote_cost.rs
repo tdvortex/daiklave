@@ -11,6 +11,8 @@ pub struct SpellBuilderWithMoteCost {
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
     pub(crate) keywords: HashSet<SpellKeyword>,
+    pub(crate) control_spell_description: Option<String>,
+    pub(crate) distortion: Option<(NonZeroU8, String)>,
     pub(crate) circle: SorceryCircle,
     pub(crate) mote_cost: u8,
 }
@@ -34,6 +36,18 @@ impl SpellBuilderWithMoteCost {
         self
     }
 
+    /// Describes the control spell bonus of the Spell, if any.
+    pub fn control_spell_description(mut self, description: String) -> Self {
+        self.control_spell_description = Some(description);
+        self
+    }
+
+    /// Describes the methods opposing sorcerers may use to distort this spell.
+    pub fn distortion(mut self, goal_number: NonZeroU8, description: String) -> Self {
+        self.distortion = Some((goal_number, description));
+        self
+    }
+
     /// Sets the Willpower cost to cast the spell.
     pub fn willpower(self, willpower: NonZeroU8) -> SpellBuilderWithWillpower {
         let cost = SpellCost {
@@ -47,7 +61,9 @@ impl SpellBuilderWithMoteCost {
             summary: self.summary,
             circle: self.circle,
             cost,
-            keywords: self.keywords
+            keywords: self.keywords,
+            control_spell_description: self.control_spell_description,
+            distortion: self.distortion,
         }
     }
 }

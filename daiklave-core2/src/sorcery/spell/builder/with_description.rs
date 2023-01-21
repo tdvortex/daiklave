@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, num::NonZeroU8};
 
 use crate::{charms::charm::CharmMutation, book_reference::BookReference, sorcery::{spell::{cost::SpellCost, Spell, SpellKeyword}, SorceryCircle, TerrestrialSpell, CelestialSpell, SolarSpell}};
 
@@ -9,6 +9,8 @@ pub struct SpellBuilderWithDescription {
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
     pub(crate) keywords: HashSet<SpellKeyword>,
+    pub(crate) control_spell_description: Option<String>,
+    pub(crate) distortion: Option<(NonZeroU8, String)>,
     pub(crate) circle: SorceryCircle,
     pub(crate) cost: SpellCost,
     pub(crate) duration: String,
@@ -34,6 +36,18 @@ impl SpellBuilderWithDescription {
         self
     }
 
+    /// Describes the control spell bonus of the Spell, if any.
+    pub fn control_spell_description(mut self, description: String) -> Self {
+        self.control_spell_description = Some(description);
+        self
+    }
+
+    /// Describes the methods opposing sorcerers may use to distort this spell.
+    pub fn distortion(mut self, goal_number: NonZeroU8, description: String) -> Self {
+        self.distortion = Some((goal_number, description));
+        self
+    }
+
     /// Completes the builder, returning the Spell as a CharmMutation.
     pub fn build(self) -> CharmMutation {
         let spell = Spell {
@@ -44,6 +58,8 @@ impl SpellBuilderWithDescription {
             description: self.description,
             book_reference: self.book_reference,
             keywords: self.keywords,
+            control_spell_description: self.control_spell_description,
+            distortion: self.distortion,
         };
 
         match self.circle {

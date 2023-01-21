@@ -4,7 +4,7 @@ pub mod builder;
 mod cost;
 mod id;
 mod keyword;
-use std::collections::HashSet;
+use std::{collections::HashSet, num::NonZeroU8};
 
 pub use id::SpellId;
 pub use keyword::SpellKeyword;
@@ -24,6 +24,8 @@ pub struct Spell {
     cost: SpellCost,
     duration: String,
     description: String,
+    control_spell_description: Option<String>,
+    distortion: Option<(NonZeroU8, String)>,
     book_reference: Option<BookReference>,
     keywords: HashSet<SpellKeyword>,
 }
@@ -57,5 +59,16 @@ impl Spell {
     /// A description of the spell.
     pub fn description(&self) -> &str {
         self.description.as_str()
+    }
+
+    /// Describes the extra effect a sorcerer gets if this is a Control spell.
+    pub fn control_spell_description(&self) -> Option<&str> {
+        self.control_spell_description.as_deref()
+    }
+
+    /// Describes the methods opposing sorcerers may use to distort this spell,
+    /// as well as the Goal Number of such attempts.
+    pub fn distortion(&self) -> Option<(NonZeroU8, &str)> {
+        self.distortion.as_ref().map(|(goal_number, text)| (*goal_number, text.as_str()))
     }
 }
