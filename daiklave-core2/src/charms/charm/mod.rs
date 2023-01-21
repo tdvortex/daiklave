@@ -13,10 +13,10 @@ use crate::{
 };
 pub use mutation::CharmMutation;
 
-use self::{spirit::EclipseCharm, evocation::Evocation};
+use self::{evocation::Evocation};
 
 pub use id::CharmId;
-pub use spirit::{SpiritCharmId, SpiritCharmKeyword};
+pub use spirit::{SpiritCharmId, SpiritCharmKeyword, EclipseCharm};
 
 /// A Charm possessed by a character.
 pub enum Charm<'source> {

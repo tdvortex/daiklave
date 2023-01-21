@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     abilities::AbilityName,
     exaltation::exalt::{
@@ -94,6 +96,7 @@ impl EclipseBuilder {
             caste: SolarCasteMemo::Eclipse(EclipseMemo {
                 caste_not_supernal,
                 supernal,
+                eclipse_charms: HashMap::new(),
             }),
             favored_abilities,
             sorcery: None,
