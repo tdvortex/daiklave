@@ -3,72 +3,124 @@ pub mod builder;
 
 mod cost;
 mod id;
+mod inner;
 mod keyword;
-use std::{collections::HashSet, num::NonZeroU8};
+mod mutation;
+
+use std::num::NonZeroU8;
 
 pub use id::SpellId;
+pub(crate) use inner::SpellInner;
 pub use keyword::SpellKeyword;
-
-use serde::{Deserialize, Serialize};
+pub use mutation::SpellMutation;
 
 use crate::book_reference::BookReference;
 
 use self::cost::SpellCost;
 
-/// A Sorcery Spell. Note that this is almost never used directly; instead,
-/// it is typically wrapped in TerrestrialSpell, CelestialSpell, or SolarSpell.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Spell {
-    name: String,
-    summary: Option<String>,
-    cost: SpellCost,
-    duration: String,
-    description: String,
-    control_spell_description: Option<String>,
-    distortion: Option<(NonZeroU8, String)>,
-    book_reference: Option<BookReference>,
-    keywords: HashSet<SpellKeyword>,
+use super::{CelestialSpell, SolarSpell, SorceryCircle, TerrestrialSpell};
+
+/// A Spell, grouped by its Circle.
+pub enum Spell<'source> {
+    /// The First Circle of spells, accessible to all Exalts and some mortals.
+    Terrestrial(&'source TerrestrialSpell),
+    /// The Second Circle of spells, accessible to Solars, Lunars, and 
+    /// Sidereals.
+    Celestial(&'source CelestialSpell),
+    /// The Third Circle of spells, accessible only to the Chosen of the
+    /// Unconquered Sun.
+    Solar(&'source SolarSpell),
 }
 
-impl Spell {
+impl<'source> Spell<'source> {
+    /// The Circle of the spell.
+    pub fn circle(&self) -> SorceryCircle {
+        match self {
+            Spell::Terrestrial(_) => SorceryCircle::Terrestrial,
+            Spell::Celestial(_) => SorceryCircle::Celestial,
+            Spell::Solar(_) => SorceryCircle::Solar,
+        }
+    }
+
     /// The Spell's name.
-    pub fn name(&self) -> &str {
-        self.name.as_str()
+    pub fn name(&self) -> &'source str {
+        match self {
+            Spell::Terrestrial(terrestrial) => terrestrial.name.as_str(),
+            Spell::Celestial(celestial) => celestial.name.as_str(),
+            Spell::Solar(solar) => solar.name.as_str(),
+        }
     }
 
     /// The book reference for the spell, if any
-    pub fn book_reference(&self) -> Option<&BookReference> {
-        self.book_reference.as_ref()
+    pub fn book_reference(&self) -> Option<BookReference> {
+        match self {
+            Spell::Terrestrial(terrestrial) => terrestrial.book_reference,
+            Spell::Celestial(celestial) => celestial.book_reference,
+            Spell::Solar(solar) => solar.book_reference,
+        }
     }
 
     /// The costs required to cast the spell
-    pub fn costs(&self) -> &SpellCost {
-        &self.cost
+    pub fn costs(&self) -> SpellCost {
+        match self {
+            Spell::Terrestrial(terrestrial) => terrestrial.cost,
+            Spell::Celestial(celestial) => celestial.cost,
+            Spell::Solar(solar) => solar.cost,
+        }
     }
 
     /// The keywords of this spell.
     pub fn keywords(&self) -> impl Iterator<Item = SpellKeyword> + '_ {
-        self.keywords.iter().copied()
+        match self {
+            Spell::Terrestrial(terrestrial) => terrestrial.keywords.iter().copied(),
+            Spell::Celestial(celestial) => celestial.keywords.iter().copied(),
+            Spell::Solar(solar) => solar.keywords.iter().copied(),
+        }
     }
 
     /// The duration of the spell effect after casting.
-    pub fn duration(&self) -> &str {
-        self.duration.as_str()
+    pub fn duration(&self) -> &'source str {
+        match self {
+            Spell::Terrestrial(terrestrial) => terrestrial.duration.as_str(),
+            Spell::Celestial(celestial) => celestial.duration.as_str(),
+            Spell::Solar(solar) => solar.duration.as_str(),
+        }
     }
 
     /// A description of the spell.
-    pub fn description(&self) -> &str {
-        self.description.as_str()
+    pub fn description(&self) -> &'source str {
+        match self {
+            Spell::Terrestrial(terrestrial) => terrestrial.description.as_str(),
+            Spell::Celestial(celestial) => celestial.description.as_str(),
+            Spell::Solar(solar) => solar.description.as_str(),
+        }
     }
 
     /// Describes the extra effect a sorcerer gets if this is a Control spell.
-    pub fn control_spell_description(&self) -> Option<&str> {
-        self.control_spell_description.as_deref()
+    pub fn control_spell_description(&self) -> Option<&'source str> {
+        match self {
+            Spell::Terrestrial(terrestrial) => terrestrial.control_spell_description.as_deref(),
+            Spell::Celestial(celestial) => celestial.control_spell_description.as_deref(),
+            Spell::Solar(solar) => solar.control_spell_description.as_deref(),
+        }
     }
 
     /// Describes the methods opposing sorcerers may use to distort this spell,
     /// as well as the Goal Number of such attempts.
-    pub fn distortion(&self) -> Option<(NonZeroU8, &str)> {
-        self.distortion.as_ref().map(|(goal_number, text)| (*goal_number, text.as_str()))
+    pub fn distortion(&self) -> Option<(NonZeroU8, &'source str)> {
+        match self {
+            Spell::Terrestrial(terrestrial) => terrestrial
+                .distortion
+                .as_ref()
+                .map(|(goal_number, text)| (*goal_number, text.as_str())),
+            Spell::Celestial(celestial) => celestial
+                .distortion
+                .as_ref()
+                .map(|(goal_number, text)| (*goal_number, text.as_str())),
+            Spell::Solar(solar) => solar
+                .distortion
+                .as_ref()
+                .map(|(goal_number, text)| (*goal_number, text.as_str())),
+        }
     }
 }

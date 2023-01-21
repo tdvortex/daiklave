@@ -9,7 +9,7 @@ mod spirit;
 use crate::{
     exaltation::exalt::exalt_type::solar::charm::SolarCharm,
     martial_arts::MartialArtsCharm,
-    sorcery::{CelestialSpell, SolarSpell, TerrestrialSpell},
+    sorcery::{spell::Spell},
 };
 pub use mutation::CharmMutation;
 
@@ -29,12 +29,8 @@ pub enum Charm<'source> {
     MartialArts(&'source MartialArtsCharm),
     /// A Solar charm.
     Solar(&'source SolarCharm),
-    /// A Spell of the Terrestrial Circle.
-    TerrestrialSpell(&'source TerrestrialSpell),
-    /// A Spell of the Celestial Circle.
-    CelestialSpell(&'source CelestialSpell),
-    /// A Spell of the Solar Circle.
-    SolarSpell(&'source SolarSpell),
+    /// A Spell.
+    Spell(Spell<'source>),
 }
 
 impl<'source> Charm<'source> {

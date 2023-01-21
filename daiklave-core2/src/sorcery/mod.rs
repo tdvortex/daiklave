@@ -14,7 +14,7 @@ pub(crate) use error::SorceryError;
 
 use crate::exaltation::ExaltationSorcery;
 
-use self::spell::{Spell, SpellId};
+use self::spell::{SpellId, Spell};
 
 /// A character's Sorcery abilities.
 pub struct Sorcery<'view, 'source>(pub(crate) ExaltationSorcery<'view, 'source>);
@@ -42,7 +42,7 @@ impl<'view, 'source> Sorcery<'view, 'source> {
     }
 
     /// The control spell the character learned at a specific circle induction.
-    pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, &'source Spell)> {
+    pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, Spell<'source>)> {
         self.0.control_spell(circle)
     }
 }

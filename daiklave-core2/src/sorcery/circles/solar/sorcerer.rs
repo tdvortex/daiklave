@@ -4,8 +4,7 @@ use crate::sorcery::{
     circles::{
         celestial::CelestialSpell, sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell,
     },
-    spell::Spell,
-    spell::SpellId,
+    spell::{SpellId, Spell},
     ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
     SorceryArchetypeMeritId, SorceryArchetypeWithMerits,
 };
@@ -102,17 +101,17 @@ impl<'view, 'source> SolarCircleSorcerer<'source> {
         }
     }
 
-    pub fn control_spell(&self, circle: SorceryCircle) -> (SpellId, &'source Spell) {
+    pub fn control_spell(&self, circle: SorceryCircle) -> (SpellId, Spell<'source>) {
         match circle {
             SorceryCircle::Terrestrial => (
                 self.terrestrial_control_spell_id,
-                self.terrestrial_control_spell,
+                Spell::Terrestrial(self.terrestrial_control_spell),
             ),
             SorceryCircle::Celestial => (
                 self.celestial_control_spell_id,
-                self.celestial_control_spell,
+                Spell::Celestial(self.celestial_control_spell),
             ),
-            SorceryCircle::Solar => (self.solar_control_spell_id, self.solar_control_spell),
+            SorceryCircle::Solar => (self.solar_control_spell_id, Spell::Solar(self.solar_control_spell)),
         }
     }
 }

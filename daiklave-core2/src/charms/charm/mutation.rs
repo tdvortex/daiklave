@@ -1,7 +1,7 @@
 use crate::{
     exaltation::exalt::exalt_type::solar::charm::SolarCharm,
     martial_arts::MartialArtsCharm,
-    sorcery::{CelestialSpell, SolarSpell, TerrestrialSpell},
+    sorcery::{spell::SpellMutation},
 };
 
 use super::{evocation::Evocation, spirit::EclipseCharm};
@@ -17,10 +17,6 @@ pub enum CharmMutation {
     MartialArts(MartialArtsCharm),
     /// A Solar charm.
     Solar(SolarCharm),
-    /// A Spell of the Terrestrial Circle.
-    TerrestrialSpell(TerrestrialSpell),
-    /// A Spell of the Celestial Circle.
-    CelestialSpell(CelestialSpell),
-    /// A Spell of the Solar Circle.
-    SolarSpell(SolarSpell),
+    /// A Spell.
+    Spell(SpellMutation),
 }

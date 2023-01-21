@@ -1,6 +1,6 @@
 use std::{collections::HashSet, num::NonZeroU8};
 
-use crate::{charms::charm::CharmMutation, book_reference::BookReference, sorcery::{spell::{cost::SpellCost, Spell, SpellKeyword}, SorceryCircle, TerrestrialSpell, CelestialSpell, SolarSpell}};
+use crate::{book_reference::BookReference, sorcery::{spell::{cost::SpellCost, SpellInner, SpellKeyword, SpellMutation}, SorceryCircle}};
 
 /// A Spell builder after the spell's description has been provided. To finish
 /// the build, call build().
@@ -49,8 +49,8 @@ impl SpellBuilderWithDescription {
     }
 
     /// Completes the builder, returning the Spell as a CharmMutation.
-    pub fn build(self) -> CharmMutation {
-        let spell = Spell {
+    pub fn build(self) -> SpellMutation {
+        let inner = SpellInner {
             name: self.name,
             summary: self.summary,
             cost: self.cost,
@@ -63,9 +63,9 @@ impl SpellBuilderWithDescription {
         };
 
         match self.circle {
-            SorceryCircle::Terrestrial => CharmMutation::TerrestrialSpell(TerrestrialSpell::from_spell(spell)),
-            SorceryCircle::Celestial => CharmMutation::CelestialSpell(CelestialSpell::from_spell(spell)),
-            SorceryCircle::Solar => CharmMutation::SolarSpell(SolarSpell::from_spell(spell)),
+            SorceryCircle::Terrestrial => SpellMutation::Terrestrial(inner.into()),
+            SorceryCircle::Celestial => SpellMutation::Celestial(inner.into()),
+            SorceryCircle::Solar => SpellMutation::Solar(inner.into()),
         }
     }
 }

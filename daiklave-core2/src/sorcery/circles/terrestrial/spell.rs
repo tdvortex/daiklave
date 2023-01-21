@@ -2,23 +2,23 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::sorcery::spell::Spell;
+use crate::sorcery::spell::SpellInner;
 
 /// A Spell of the first (Terrestrial) Circle. Derefs to Spell.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct TerrestrialSpell(Spell);
-
-impl TerrestrialSpell {
-    /// Wraps a Spell as a TerrestrialSpell
-    pub fn from_spell(spell: Spell) -> Self {
-        Self(spell)
-    }
-}
+pub struct TerrestrialSpell(SpellInner);
 
 impl Deref for TerrestrialSpell {
-    type Target = Spell;
+    type Target = SpellInner;
 
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+
+impl From<SpellInner> for TerrestrialSpell {
+    fn from(inner: SpellInner) -> Self {
+        Self(inner)
     }
 }
