@@ -1,6 +1,6 @@
 use std::{collections::HashSet, num::NonZeroU8};
 
-use crate::{book_reference::BookReference, sorcery::{spell::{cost::SpellCost, SpellInner, SpellKeyword, SpellMutation}, SorceryCircle}};
+use crate::{book_reference::BookReference, sorcery::{spell::{cost::SpellCost, SpellInner, SpellKeyword, SpellMutation}, SorceryCircle, TerrestrialSpell, CelestialSpell, SolarSpell}};
 
 /// A Spell builder after the spell's description has been provided. To finish
 /// the build, call build().
@@ -11,7 +11,6 @@ pub struct SpellBuilderWithDescription {
     pub(crate) keywords: HashSet<SpellKeyword>,
     pub(crate) control_spell_description: Option<String>,
     pub(crate) distortion: Option<(NonZeroU8, String)>,
-    pub(crate) circle: SorceryCircle,
     pub(crate) cost: SpellCost,
     pub(crate) duration: String,
     pub(crate) description: String,
@@ -48,9 +47,8 @@ impl SpellBuilderWithDescription {
         self
     }
 
-    /// Completes the builder, returning the Spell as a CharmMutation.
-    pub fn build(self) -> SpellMutation {
-        let inner = SpellInner {
+    fn build_inner(self) -> SpellInner {
+        SpellInner {
             name: self.name,
             summary: self.summary,
             cost: self.cost,
@@ -60,12 +58,30 @@ impl SpellBuilderWithDescription {
             keywords: self.keywords,
             control_spell_description: self.control_spell_description,
             distortion: self.distortion,
-        };
+        }
+    }
 
-        match self.circle {
-            SorceryCircle::Terrestrial => SpellMutation::Terrestrial(inner.into()),
-            SorceryCircle::Celestial => SpellMutation::Celestial(inner.into()),
-            SorceryCircle::Solar => SpellMutation::Solar(inner.into()),
+    /// Completes the builder, returning a Terrestrial spell.
+    pub fn build_terrestrial(self) -> TerrestrialSpell {
+        TerrestrialSpell::from(self.build_inner())
+    }
+
+    /// Completes the builder, returning a Celestial spell.
+    pub fn build_celestial(self) -> CelestialSpell {
+        CelestialSpell::from(self.build_inner())
+    }
+
+    /// Completes the builder, returning a Solar spell.
+    pub fn build_solar(self) -> SolarSpell {
+        SolarSpell::from(self.build_inner())
+    }
+
+    /// Completes the builder, returning a Spell with the selected Circle.
+    pub fn build(self, circle: SorceryCircle) -> SpellMutation {
+        match circle {
+            SorceryCircle::Terrestrial => SpellMutation::Terrestrial(self.build_terrestrial()),
+            SorceryCircle::Celestial => SpellMutation::Celestial(self.build_celestial()),
+            SorceryCircle::Solar => SpellMutation::Solar(self.build_solar()),
         }
     }
 }

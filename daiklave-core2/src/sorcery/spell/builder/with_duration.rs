@@ -1,6 +1,6 @@
 use std::{collections::HashSet, num::NonZeroU8};
 
-use crate::{book_reference::BookReference, sorcery::{SorceryCircle, spell::{cost::SpellCost, SpellKeyword}}};
+use crate::{book_reference::BookReference, sorcery::{spell::{cost::SpellCost, SpellKeyword}}};
 
 use super::SpellBuilderWithDescription;
 
@@ -12,7 +12,6 @@ pub struct SpellBuilderWithDuration {
     pub(crate) keywords: HashSet<SpellKeyword>,
     pub(crate) control_spell_description: Option<String>,
     pub(crate) distortion: Option<(NonZeroU8, String)>,
-    pub(crate) circle: SorceryCircle,
     pub(crate) cost: SpellCost,
     pub(crate) duration: String,
 }
@@ -54,7 +53,6 @@ impl SpellBuilderWithDuration {
             name: self.name,
             book_reference: self.book_reference,
             summary: self.summary,
-            circle: self.circle,
             cost: self.cost,
             duration: self.duration,
             description,

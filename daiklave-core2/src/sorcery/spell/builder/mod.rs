@@ -1,24 +1,22 @@
-mod with_circle;
 mod with_description;
 mod with_duration;
 mod with_mote_cost;
 mod with_willpower;
 use std::{collections::HashSet, num::NonZeroU8};
 
-pub use with_circle::SpellBuilderWithCircle;
 pub use with_description::SpellBuilderWithDescription;
 pub use with_duration::SpellBuilderWithDuration;
 pub use with_mote_cost::SpellBuilderWithMoteCost;
 pub use with_willpower::SpellBuilderWithWillpower;
 
-use crate::{book_reference::BookReference, sorcery::SorceryCircle};
+use crate::{book_reference::BookReference};
 
 use super::SpellKeyword;
 
 /// Builder for a Spell. Required fields: name (already specified),
-/// circle, sorcerous motes (or ritual), willpower cost (1+), duration, and
-/// description. Optional fields: book reference, summary, keywords, control
-/// spell description, and distortion description.
+/// sorcerous motes (or ritual), willpower cost (1+), duration, description,
+/// and finally circle. Optional fields: book reference, summary, keywords, 
+/// control spell description, and distortion description.
 pub struct SpellBuilder {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
@@ -59,16 +57,30 @@ impl SpellBuilder {
         self
     }
 
-    /// Sets the book reference for this Spell.
-    pub fn circle(self, circle: SorceryCircle) -> SpellBuilderWithCircle {
-        SpellBuilderWithCircle {
+    /// Sets a Sorcerous Motes cost to cast this spell.
+    pub fn sorcerous_motes(self, sorcerous_motes: NonZeroU8) -> SpellBuilderWithMoteCost {
+        SpellBuilderWithMoteCost {
             name: self.name,
             book_reference: self.book_reference,
             summary: self.summary,
+            mote_cost: sorcerous_motes.get(),
             keywords: self.keywords,
             control_spell_description: self.control_spell_description,
             distortion: self.distortion,
-            circle,
+        }
+    }
+
+    /// Defines this spell as a Ritual; this costs no explicit Sorcerous Motes
+    /// to use, but can only be cast outside of combat.
+    pub fn ritual(self) -> SpellBuilderWithMoteCost {
+        SpellBuilderWithMoteCost {
+            name: self.name,
+            book_reference: self.book_reference,
+            summary: self.summary,
+            mote_cost: 0,
+            keywords: self.keywords,
+            control_spell_description: self.control_spell_description,
+            distortion: self.distortion,
         }
     }
 }

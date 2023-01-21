@@ -4,11 +4,10 @@ use daiklave_core2::{
     abilities::AbilityNameVanilla,
     attributes::AttributeName,
     book_reference::{Book, BookReference},
-    charms::charm::Charm,
     guided::{ExaltationChoice, GuidedEventSource, GuidedMutation},
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        spell::{SpellId, SpellKeyword, SpellMutation},
+        spell::{SpellId, SpellKeyword, Spell},
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle,
     },
     unique_id::UniqueId,
@@ -316,21 +315,17 @@ fn test_guided_mortal() {
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Add control spell
-    let SpellMutation::Terrestrial(control_spell) = Charm::new("Corrupted Words".to_owned())
-        .book_reference(BookReference::new(Book::CoreRulebook, 472))
-        .spell()
-        .circle(SorceryCircle::Terrestrial)
-        .sorcerous_motes(NonZeroU8::new(15).unwrap())
-        .willpower(NonZeroU8::new(1).unwrap())
-        .keyword(SpellKeyword::Psyche)
-        .duration("Indefinite".to_owned())
-        .description("Really long spell description".to_owned())
-        .control_spell_description("A sorcerer who knows Corrupted Words as her control spell may[...]".to_owned())
-        .distortion(NonZeroU8::new(15).unwrap(), "Distorting this curse makes it possible for the victoimt to speak around[...]".to_owned())
-        .summary("Forbids the target from speaking on a specific topic.".to_owned())
-        .build() else {
-            panic!("Should have made a Terrestrial spell");
-    };
+    let control_spell = Spell::new("Corrupted Words".to_owned())
+    .book_reference(BookReference::new(Book::CoreRulebook, 472))
+    .sorcerous_motes(NonZeroU8::new(15).unwrap())
+    .willpower(NonZeroU8::new(1).unwrap())
+    .keyword(SpellKeyword::Psyche)
+    .duration("Indefinite".to_owned())
+    .description("Really long spell description".to_owned())
+    .control_spell_description("A sorcerer who knows Corrupted Words as her control spell may[...]".to_owned())
+    .distortion(NonZeroU8::new(15).unwrap(), "Distorting this curse makes it possible for the victoimt to speak around[...]".to_owned())
+    .summary("Forbids the target from speaking on a specific topic.".to_owned())
+    .build_terrestrial();
     let control_spell_id = SpellId(UniqueId::Placeholder(1));
 
     let mutation = GuidedMutation::SetControlSpell(control_spell_id, control_spell);

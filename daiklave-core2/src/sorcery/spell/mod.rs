@@ -7,7 +7,7 @@ mod inner;
 mod keyword;
 mod mutation;
 
-use std::num::NonZeroU8;
+use std::{num::NonZeroU8, collections::HashSet};
 
 pub use id::SpellId;
 pub(crate) use inner::SpellInner;
@@ -16,7 +16,7 @@ pub use mutation::SpellMutation;
 
 use crate::book_reference::BookReference;
 
-use self::cost::SpellCost;
+use self::{cost::SpellCost, builder::SpellBuilder};
 
 use super::{CelestialSpell, SolarSpell, SorceryCircle, TerrestrialSpell};
 
@@ -33,6 +33,18 @@ pub enum Spell<'source> {
 }
 
 impl<'source> Spell<'source> {
+    /// Starts constructing a new Spell.
+    pub fn new(name: String) -> SpellBuilder {
+        SpellBuilder {
+            name,
+            book_reference: None,
+            summary: None,
+            keywords: HashSet::new(),
+            control_spell_description: None,
+            distortion: None,
+        }
+    }
+
     /// The Circle of the spell.
     pub fn circle(&self) -> SorceryCircle {
         match self {

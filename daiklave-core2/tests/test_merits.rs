@@ -6,7 +6,6 @@ use daiklave_core2::{
     artifact::{wonders::WonderId, Artifact, ArtifactId, MagicMaterial},
     attributes::AttributeName,
     book_reference::{Book, BookReference},
-    charms::{charm::Charm},
     exaltation::exalt::exalt_type::solar::{
         caste::{DawnCasteAbility, DawnSupernalAbility},
         Solar,
@@ -23,7 +22,7 @@ use daiklave_core2::{
     },
     sorcery::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
-        SorceryArchetypeMerit, SorceryArchetypeMeritId, spell::{SpellMutation, SpellKeyword, SpellId}, SorceryCircle,
+        SorceryArchetypeMerit, SorceryArchetypeMeritId, spell::{SpellKeyword, SpellId, Spell},
     },
     unique_id::UniqueId,
     weapons::weapon::{
@@ -197,10 +196,8 @@ fn test_merits() {
     event_source.apply_mutation(mutation).unwrap();
 
 
-    let SpellMutation::Terrestrial(control_spell) = Charm::new("Death of Obsidian Butterflies".to_owned())
-        .spell()
+    let control_spell = Spell::new("Death of Obsidian Butterflies".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 470))
-        .circle(SorceryCircle::Terrestrial)
         .keyword(SpellKeyword::DecisiveOnly)
         .keyword(SpellKeyword::Perilous)
         .sorcerous_motes(NonZeroU8::new(15).unwrap())
@@ -209,10 +206,7 @@ fn test_merits() {
         .description("Sculpting Essence into volant black glass, the sorcerer unleashes a cascade of obsidian butterflies[...]".to_owned())
         .control_spell_description("A sorcerer who knows Death of Obsidian Butterflies as her control spell gains (Essence) bonus dice to the spells attack roll[...]".to_owned())
         .summary("AOE attack that makes difficult terrain".to_owned())
-        .build() else {
-            panic!("Should have made a Terrestrial spell")
-        };
-
+        .build_terrestrial();
 
     let mutation = CharacterMutation::AddTerrestrialSorcery(
         Box::new((
