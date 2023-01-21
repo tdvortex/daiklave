@@ -2,7 +2,7 @@ use std::ops::Deref;
 
 use serde::{Deserialize, Serialize};
 
-use crate::sorcery::Spell;
+use crate::sorcery::spell::Spell;
 
 /// A Spell of the first (Terrestrial) Circle. Derefs to Spell.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

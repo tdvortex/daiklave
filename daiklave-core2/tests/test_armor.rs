@@ -104,7 +104,7 @@ fn test_armor() {
             .build(),
     ));
     event_source.apply_mutation(mutation).unwrap();
-    
+
     // Equip the artifact armor
     let mutation =
         CharacterMutation::EquipArmor(ArmorId::Artifact(ArtifactArmorId(UniqueId::Placeholder(1))));
@@ -141,9 +141,5 @@ fn test_armor() {
     let mutation = CharacterMutation::RemoveMundaneArmor(BaseArmorId(UniqueId::Placeholder(1)));
     let character = event_source.apply_mutation(mutation).unwrap();
 
-    assert!(character
-        .armor()
-        .iter()
-        .next()
-        .is_none())
+    assert!(character.armor().iter().next().is_none())
 }

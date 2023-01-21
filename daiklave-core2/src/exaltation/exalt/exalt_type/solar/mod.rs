@@ -24,9 +24,9 @@ use crate::{
     exaltation::exalt::Limit,
     merits::merit::MeritError,
     sorcery::{
-        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, CelestialSpell, ShapingRitual,
-        ShapingRitualId, SolarSpell, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
-        SorceryArchetypeMeritId, SorceryError, SpellId, TerrestrialSpell,
+        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, spell::SpellId, CelestialSpell,
+        ShapingRitual, ShapingRitualId, SolarSpell, SorceryArchetype, SorceryArchetypeId,
+        SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError, TerrestrialSpell,
     },
     CharacterMutationError,
 };
@@ -305,11 +305,15 @@ impl<'source> Solar<'source> {
     }
 
     pub(crate) fn correct_sorcery_level(&mut self, occult_dots: u8, essence_rating: u8) {
-        if (occult_dots < 5 || essence_rating < 5) && matches!(self.sorcery, Some(SolarSorcererView::Solar(_))) {
+        if (occult_dots < 5 || essence_rating < 5)
+            && matches!(self.sorcery, Some(SolarSorcererView::Solar(_)))
+        {
             self.remove_solar_sorcery().ok();
         }
 
-        if (occult_dots < 4 || essence_rating < 3) && matches!(self.sorcery, Some(SolarSorcererView::Celestial(_))) {
+        if (occult_dots < 4 || essence_rating < 3)
+            && matches!(self.sorcery, Some(SolarSorcererView::Celestial(_)))
+        {
             self.remove_celestial_sorcery().ok();
         }
 

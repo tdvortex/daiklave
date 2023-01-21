@@ -40,9 +40,9 @@ use crate::{
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{MartialArtsCharmId, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery, SorceryArchetype,
-        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError, SpellId,
-        TerrestrialSpell,
+        spell::SpellId, CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery,
+        SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+        SorceryError, TerrestrialSpell,
     },
     weapons::{
         weapon::{
@@ -581,7 +581,9 @@ impl<'view, 'source> Exalt<'source> {
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => {
                 if occult_dots < 5 || essence_rating < 5 {
-                    return Err(CharacterMutationError::SorceryError(SorceryError::PrerequisitesNotMet));
+                    return Err(CharacterMutationError::SorceryError(
+                        SorceryError::PrerequisitesNotMet,
+                    ));
                 }
 
                 solar.add_solar_sorcery(
@@ -1017,11 +1019,14 @@ impl<'view, 'source> Exalt<'source> {
         Ok(self)
     }
 
-    pub fn correct_sorcery_level(&mut self, occult_dots: u8, _intelligence_dots: u8, essence_rating: u8) {
+    pub fn correct_sorcery_level(
+        &mut self,
+        occult_dots: u8,
+        _intelligence_dots: u8,
+        essence_rating: u8,
+    ) {
         match &mut self.exalt_type {
-            ExaltType::Solar(solar) => {
-                solar.correct_sorcery_level(occult_dots, essence_rating)
-            }
+            ExaltType::Solar(solar) => solar.correct_sorcery_level(occult_dots, essence_rating),
         }
     }
 }

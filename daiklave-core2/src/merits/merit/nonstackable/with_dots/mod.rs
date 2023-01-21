@@ -9,7 +9,10 @@ pub(crate) use dots::{
 mod memo;
 pub(crate) use memo::NonStackableMeritWithDotsMemo;
 
-use crate::{book_reference::BookReference, merits::merit::{MeritType, MeritPrerequisite}};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{MeritPrerequisite, MeritType},
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum NonStackableMeritWithDots<'source> {

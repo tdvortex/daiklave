@@ -1,13 +1,17 @@
-use crate::{martial_arts::MartialArtsCharm, sorcery::{TerrestrialSpell, CelestialSpell, SolarSpell}, exaltation::exalt::exalt_type::solar::charm::SolarCharm};
+use crate::{
+    exaltation::exalt::exalt_type::solar::charm::SolarCharm,
+    martial_arts::MartialArtsCharm,
+    sorcery::{CelestialSpell, SolarSpell, TerrestrialSpell},
+};
 
-use super::{spirit::EclipseCharm, evocation::Evocation};
+use super::{evocation::Evocation, spirit::EclipseCharm};
 
 /// A Charm to be added to a character.
 pub enum CharmMutation {
-    /// A Spirit charm with the Eclipse keyword, purchasable by Eclipse caste 
+    /// A Spirit charm with the Eclipse keyword, purchasable by Eclipse caste
     /// Solars.
     Eclipse(EclipseCharm),
-    /// An Evocation of an artifact or hearthstone. 
+    /// An Evocation of an artifact or hearthstone.
     Evocation(Evocation),
     /// A Martial Arts charm for a specific style.
     MartialArts(MartialArtsCharm),

@@ -5,7 +5,7 @@ use crate::{
     attributes::AttributeName,
     martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
+        spell::SpellId, ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
         TerrestrialSpell,
     },
     Character, CharacterMutation, CharacterMutationError,

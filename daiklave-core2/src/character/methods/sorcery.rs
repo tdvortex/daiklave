@@ -1,10 +1,12 @@
 use crate::{
+    abilities::AbilityNameVanilla,
+    attributes::AttributeName,
     sorcery::{
-        CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery, SorceryArchetype,
-        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SpellId,
+        spell::SpellId, CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery,
+        SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
         TerrestrialSpell,
     },
-    Character, CharacterMutationError, abilities::AbilityNameVanilla, attributes::AttributeName,
+    Character, CharacterMutationError,
 };
 
 impl<'view, 'source> Character<'source> {

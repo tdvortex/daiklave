@@ -81,7 +81,9 @@ impl<'view, 'source> Character<'source> {
             e.insert(unslotted);
             Ok(self)
         } else {
-            Err(CharacterMutationError::HearthstoneError(HearthstoneError::DuplicateHearthstone))
+            Err(CharacterMutationError::HearthstoneError(
+                HearthstoneError::DuplicateHearthstone,
+            ))
         }
     }
 

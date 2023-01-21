@@ -5,11 +5,14 @@ use std::collections::HashSet;
 pub use id::SolarCharmId;
 pub use keyword::SolarCharmKeyword;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{book_reference::BookReference, charms::{CharmCost, CharmActionType}};
+use crate::{
+    book_reference::BookReference,
+    charms::{CharmActionType, CharmCost},
+};
 
-/// A Solar charm. 
+/// A Solar charm.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SolarCharm {
     book_reference: Option<BookReference>,

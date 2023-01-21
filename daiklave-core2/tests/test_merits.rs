@@ -443,9 +443,7 @@ fn test_merits() {
         .unwrap();
     assert_eq!(
         eye.id(),
-        MeritId::HearthstoneWithManse(HearthstoneId(
-            UniqueId::Placeholder(2),
-        ))
+        MeritId::HearthstoneWithManse(HearthstoneId(UniqueId::Placeholder(2),))
     );
     assert_eq!(eye.template_name(), "Hearthstone");
     assert_eq!(
@@ -809,11 +807,12 @@ fn test_merits() {
     assert!(merits.get(MeritId::ExaltedHealing).is_some());
 
     // Change character back to be mortal
-    event_source.apply_mutation(CharacterMutation::SetMortal).unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::SetMortal)
+        .unwrap();
     let character = event_source.as_character().unwrap();
     let merits = character.merits();
 
     // No merits left
     assert!(merits.iter().next().is_none());
-
 }

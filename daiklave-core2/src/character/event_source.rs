@@ -55,7 +55,7 @@ impl<'source> CharacterEventSource {
     /// Applies a character mutation, and returns the Character after the
     pub fn apply_mutation(
         &'source mut self,
-        mutation: CharacterMutation
+        mutation: CharacterMutation,
     ) -> Result<Character<'source>, CharacterMutationError> {
         self.as_character()?.apply_mutation(&mutation)?;
         self.future = Vec::new();

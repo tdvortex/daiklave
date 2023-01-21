@@ -4,7 +4,7 @@ mod martial_artist;
 mod style;
 mod style_id;
 
-pub use charm::{MartialArtsCharm, MartialArtsCharmKeyword, MartialArtsCharmId};
+pub use charm::{MartialArtsCharm, MartialArtsCharmId, MartialArtsCharmKeyword};
 pub(crate) use error::MartialArtsError;
 
 pub use martial_artist::MartialArtist;

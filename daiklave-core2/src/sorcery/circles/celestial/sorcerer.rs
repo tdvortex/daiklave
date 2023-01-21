@@ -7,8 +7,9 @@ use crate::{
             solar::sorcerer::SolarCircleSorcerer, sorcery_circle::SorceryCircle,
             terrestrial::TerrestrialSpell,
         },
+        spell::{Spell, SpellId},
         ShapingRitual, ShapingRitualId, SolarSpell, SorceryArchetype, SorceryArchetypeId,
-        SorceryArchetypeMerit, SorceryError, Spell, SpellId,
+        SorceryArchetypeMerit, SorceryError,
     },
     CharacterMutationError,
 };

@@ -1,16 +1,19 @@
-use std::collections::HashSet;
+use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{book_reference::BookReference, charms::{CharmCost, CharmActionType}};
+use crate::{
+    book_reference::BookReference,
+    charms::{CharmActionType, CharmCostType},
+};
 
-use self::evokable_id::EvokableItemId;
-
+pub mod builder;
 mod evokable_id;
 mod id;
 mod keyword;
-pub use keyword::EvocationKeyword;
+pub use evokable_id::EvokableId;
 pub use id::EvocationId;
+pub use keyword::EvocationKeyword;
 
 use super::CharmId;
 
@@ -18,18 +21,18 @@ use super::CharmId;
 /// Artifact.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Evocation {
-    evokable_id: EvokableItemId,
+    evokable_id: EvokableId,
     book_reference: Option<BookReference>,
     name: String,
     summary: Option<String>,
     description: String,
     resonant: Option<String>,
     dissonant: Option<String>,
-    essence_required: u8,
+    essence_required: NonZeroU8,
     evocation_tree: HashSet<EvocationId>,
     upgrade_charm: Option<CharmId>,
     keywords: HashSet<EvocationKeyword>,
-    costs: Vec<CharmCost>,
+    costs: HashMap<CharmCostType, NonZeroU8>,
     action_type: CharmActionType,
     duration: String,
 }

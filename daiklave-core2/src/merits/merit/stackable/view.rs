@@ -1,6 +1,6 @@
 use crate::{
     book_reference::BookReference,
-    merits::merit::{template::MeritTemplateId, MeritType, MeritPrerequisite},
+    merits::merit::{template::MeritTemplateId, MeritPrerequisite, MeritType},
 };
 
 use super::{with_dots::StackableMeritWithDots, StackableMerit};

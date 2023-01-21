@@ -4,8 +4,10 @@ use crate::sorcery::{
     circles::{
         celestial::CelestialSpell, sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell,
     },
+    spell::Spell,
+    spell::SpellId,
     ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
-    SorceryArchetypeMeritId, SorceryArchetypeWithMerits, Spell, SpellId,
+    SorceryArchetypeMeritId, SorceryArchetypeWithMerits,
 };
 
 use super::{sorcerer_memo::SolarCircleSorcererMemo, SolarSpell};

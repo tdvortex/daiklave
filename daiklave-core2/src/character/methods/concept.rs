@@ -18,9 +18,11 @@ impl<'source> Character<'source> {
     /// Removes the character's concept.
     pub fn remove_concept(&mut self) -> Result<&mut Self, CharacterMutationError> {
         if self.concept.is_none() {
-            return Err(CharacterMutationError::ConceptError(ConceptError::NoConcept));
+            return Err(CharacterMutationError::ConceptError(
+                ConceptError::NoConcept,
+            ));
         }
-        
+
         self.concept = None;
         Ok(self)
     }

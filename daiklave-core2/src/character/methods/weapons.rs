@@ -1,11 +1,13 @@
 use crate::{
+    attributes::AttributeName,
     weapons::{
         weapon::{
-            mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId, WeaponWeightClass, AttackRange,
+            mundane::MundaneWeapon, AttackRange, BaseWeaponId, EquipHand, Equipped, WeaponId,
+            WeaponWeightClass,
         },
-        Weapons, WeaponError,
+        WeaponError, Weapons,
     },
-    Character, CharacterMutationError, attributes::AttributeName,
+    Character, CharacterMutationError,
 };
 
 impl<'view, 'source> Character<'source> {

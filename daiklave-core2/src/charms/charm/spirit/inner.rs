@@ -1,8 +1,11 @@
 use std::collections::HashSet;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{book_reference::BookReference, charms::{CharmCost, CharmActionType}};
+use crate::{
+    book_reference::BookReference,
+    charms::{CharmActionType, CharmCost},
+};
 
 use super::SpiritCharmKeyword;
 

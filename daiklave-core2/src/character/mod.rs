@@ -228,21 +228,15 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::AddDemense(demense_id, name, geomancy_level) => {
                 self.add_demense(*demense_id, name.as_str(), *geomancy_level)
             }
-            CharacterMutation::AddExaltedHealing => {
-                self.add_exalted_healing()
-            }
+            CharacterMutation::AddExaltedHealing => self.add_exalted_healing(),
             CharacterMutation::RemoveStackableMerit(stackable_merit_id) => {
                 self.remove_stackable_merit(*stackable_merit_id)
             }
             CharacterMutation::RemoveNonStackableMerit(nonstackable_merit_id) => {
                 self.remove_nonstackable_merit(*nonstackable_merit_id)
             }
-            CharacterMutation::RemoveExaltedHealing => {
-                self.remove_exalted_healing()
-            }
-            CharacterMutation::RemoveDemense(demense_id) => {
-                self.remove_demense(*demense_id)
-            }
+            CharacterMutation::RemoveExaltedHealing => self.remove_exalted_healing(),
+            CharacterMutation::RemoveDemense(demense_id) => self.remove_demense(*demense_id),
         }
     }
 }

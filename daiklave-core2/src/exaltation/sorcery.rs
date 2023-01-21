@@ -1,8 +1,10 @@
 use crate::{
     exaltation::exalt::ExaltSorcery,
     sorcery::{
-        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
-        SorceryArchetypeId, SorceryArchetypeWithMerits, SorceryCircle, Spell, SpellId,
+        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer,
+        spell::{Spell, SpellId},
+        ShapingRitual, ShapingRitualId, SorceryArchetypeId, SorceryArchetypeWithMerits,
+        SorceryCircle,
     },
 };
 

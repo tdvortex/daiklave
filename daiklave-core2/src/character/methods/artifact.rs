@@ -8,10 +8,7 @@ use crate::{
         exalt::essence::{EssenceError, MotePoolName},
         Exaltation,
     },
-    weapons::{
-        weapon::{WeaponId},
-        WeaponError,
-    },
+    weapons::{weapon::WeaponId, WeaponError},
     Character, CharacterMutationError,
 };
 

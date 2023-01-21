@@ -26,9 +26,9 @@ use crate::{
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery, SorceryArchetype,
-        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError, SpellId,
-        TerrestrialSpell,
+        spell::SpellId, CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery,
+        SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+        SorceryError, TerrestrialSpell,
     },
     weapons::weapon::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
@@ -275,7 +275,9 @@ impl<'view, 'source> Exaltation<'source> {
         match self {
             Exaltation::Mortal(mortal) => {
                 if occult_dots < 3 {
-                    return Err(CharacterMutationError::SorceryError(SorceryError::PrerequisitesNotMet));
+                    return Err(CharacterMutationError::SorceryError(
+                        SorceryError::PrerequisitesNotMet,
+                    ));
                 }
 
                 mortal.add_terrestrial_sorcery(
@@ -335,7 +337,9 @@ impl<'view, 'source> Exaltation<'source> {
             }
             Exaltation::Exalt(exalt) => {
                 if essence_rating < 3 {
-                    return Err(CharacterMutationError::SorceryError(SorceryError::PrerequisitesNotMet));
+                    return Err(CharacterMutationError::SorceryError(
+                        SorceryError::PrerequisitesNotMet,
+                    ));
                 }
 
                 exalt.add_celestial_sorcery(
@@ -596,7 +600,9 @@ impl<'view, 'source> Exaltation<'source> {
         match self {
             Exaltation::Exalt(exalt) => {
                 if !(1..=5).contains(&rating) {
-                    return Err(CharacterMutationError::EssenceError(EssenceError::InvalidRating));
+                    return Err(CharacterMutationError::EssenceError(
+                        EssenceError::InvalidRating,
+                    ));
                 }
 
                 let old_rating = exalt.essence().rating();
@@ -611,7 +617,7 @@ impl<'view, 'source> Exaltation<'source> {
                     }
                 }
                 Ok(self)
-            },
+            }
             Exaltation::Mortal(_) => {
                 Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
             }
@@ -1025,7 +1031,12 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub fn correct_sorcery_level(&mut self, occult_dots: u8, intelligence_dots: u8, essence_rating: u8) {
+    pub fn correct_sorcery_level(
+        &mut self,
+        occult_dots: u8,
+        intelligence_dots: u8,
+        essence_rating: u8,
+    ) {
         match self {
             Exaltation::Mortal(mortal) => {
                 if mortal.sorcery.is_some() && occult_dots < 3 {

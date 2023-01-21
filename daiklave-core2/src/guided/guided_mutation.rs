@@ -2,7 +2,7 @@ use crate::{
     abilities::AbilityName,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
+        spell::SpellId, ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
         TerrestrialSpell,
     },
     CharacterMutation,

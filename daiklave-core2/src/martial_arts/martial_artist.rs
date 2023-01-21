@@ -3,7 +3,10 @@ use crate::{
     exaltation::ExaltationMartialArtist, weapons::weapon::BaseWeaponId,
 };
 
-use super::{charm::{MartialArtsCharm, MartialArtsCharmId}, MartialArtsStyleId};
+use super::{
+    charm::{MartialArtsCharm, MartialArtsCharmId},
+    MartialArtsStyleId,
+};
 
 use crate::abilities::AbilityType;
 

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// The various types of costs that must be paid to use a Charm (or Spell)
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, PartialOrd, Ord)]
 pub enum CharmCostType {
     /// Spend or commit motes
     Motes,

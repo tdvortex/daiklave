@@ -1,5 +1,5 @@
 use crate::sorcery::{
-    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SpellId,
+    spell::SpellId, ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
 };
 
 use super::CelestialSpell;

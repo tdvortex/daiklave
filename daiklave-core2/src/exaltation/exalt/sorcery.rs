@@ -1,8 +1,9 @@
 use crate::{
     exaltation::exalt::exalt_type::solar::SolarSorcererView,
     sorcery::{
+        spell::{Spell, SpellId},
         ShapingRitual, ShapingRitualId, SorceryArchetypeId, SorceryArchetypeWithMerits,
-        SorceryCircle, Spell, SpellId,
+        SorceryCircle,
     },
 };
 

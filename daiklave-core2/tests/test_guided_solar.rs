@@ -8,8 +8,8 @@ use daiklave_core2::{
     guided::{ExaltationChoice, GuidedEventSource, GuidedMutation},
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, Spell,
-        SpellId, TerrestrialSpell,
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, Spell, SpellId,
+        TerrestrialSpell,
     },
     unique_id::UniqueId,
     weapons::weapon::BaseWeaponId,

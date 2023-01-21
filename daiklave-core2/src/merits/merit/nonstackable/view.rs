@@ -1,4 +1,7 @@
-use crate::{book_reference::BookReference, merits::merit::{MeritType, MeritPrerequisite}};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{MeritPrerequisite, MeritType},
+};
 
 use super::{with_dots::NonStackableMeritWithDots, NonStackableMerit};
 

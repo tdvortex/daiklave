@@ -1,6 +1,4 @@
-use daiklave_core2::{
-    attributes::AttributeName, CharacterEventSource, CharacterMutation,
-};
+use daiklave_core2::{attributes::AttributeName, CharacterEventSource, CharacterMutation};
 
 #[test]
 fn test_attributes() {
@@ -17,18 +15,17 @@ fn test_attributes() {
         AttributeName::Appearance,
         AttributeName::Intelligence,
         AttributeName::Perception,
-        AttributeName::Wits
-    ].into_iter().for_each(|name| assert_eq!(attributes.get(name).dots(), 1));
+        AttributeName::Wits,
+    ]
+    .into_iter()
+    .for_each(|name| assert_eq!(attributes.get(name).dots(), 1));
 
     // Check setting attributes
     let mutation = CharacterMutation::SetAttribute(AttributeName::Strength, 2);
     let character = event_source.apply_mutation(mutation).unwrap();
 
     assert_eq!(
-        character
-            .attributes()
-            .get(AttributeName::Strength)
-            .dots(),
+        character.attributes().get(AttributeName::Strength).dots(),
         2
     );
 
@@ -42,19 +39,13 @@ fn test_attributes() {
     assert!(!event_source.can_redo());
     let character = event_source.undo().unwrap();
     assert_eq!(
-        character
-            .attributes()
-            .get(AttributeName::Strength)
-            .dots(),
+        character.attributes().get(AttributeName::Strength).dots(),
         1
     );
     assert!(!event_source.can_undo());
     let character = event_source.redo().unwrap();
     assert_eq!(
-        character
-            .attributes()
-            .get(AttributeName::Strength)
-            .dots(),
+        character.attributes().get(AttributeName::Strength).dots(),
         2
     );
 }

@@ -24,9 +24,9 @@ use crate::{
     martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     merits::merit::MeritError,
     sorcery::{
-        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, ShapingRitual, ShapingRitualId,
-        SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
-        SorceryError, SpellId, TerrestrialSpell,
+        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, spell::SpellId, ShapingRitual,
+        ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
+        SorceryArchetypeMeritId, SorceryError, TerrestrialSpell,
     },
     weapons::{
         weapon::{

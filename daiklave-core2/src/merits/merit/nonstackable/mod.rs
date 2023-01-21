@@ -16,7 +16,7 @@ mod with_dots;
 mod view;
 pub(crate) use view::NonStackableMeritView;
 
-use super::{MeritError, prerequisite::MeritPrerequisite};
+use super::{prerequisite::MeritPrerequisite, MeritError};
 
 /// A merit which is nonstackable, i.e. can only be purchased once per
 /// character.

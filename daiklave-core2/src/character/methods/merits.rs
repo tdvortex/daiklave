@@ -47,7 +47,10 @@ impl<'view, 'source> Character<'source> {
         }
     }
 
-    fn validate_merit_prerequisites<P>(&self, prerequisites: P) -> Result<(), CharacterMutationError>
+    fn validate_merit_prerequisites<P>(
+        &self,
+        prerequisites: P,
+    ) -> Result<(), CharacterMutationError>
     where
         P: ExactSizeIterator<Item = MeritPrerequisite>,
     {

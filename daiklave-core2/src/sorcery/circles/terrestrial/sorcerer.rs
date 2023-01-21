@@ -5,9 +5,10 @@ use crate::{
         circles::{
             celestial::sorcerer::CelestialCircleSorcerer, solar::sorcerer::SolarCircleSorcerer,
         },
+        spell::Spell,
+        spell::SpellId,
         CelestialSpell, ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
         SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryArchetypeWithMerits, SorceryError,
-        Spell, SpellId,
     },
     CharacterMutationError,
 };

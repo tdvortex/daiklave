@@ -34,27 +34,24 @@ impl<'source> Character<'source> {
                 }
 
                 if attribute_name == AttributeName::Strength && dots < 3 {
-                    let maybe_weapon_id = self
-                    .weapons()
-                    .iter()
-                    .find_map(|(weapon_id, equipped)| {
-                        if let Some(Equipped::TwoHanded) = equipped {
-                            self.weapons().get(weapon_id, equipped).and_then(|weapon| {
-                                if weapon.weight_class() == WeaponWeightClass::Heavy
-                                    && weapon.damage(AttackRange::Melee).is_some()
-                                {
-                                    Some(weapon.id())
-                                } else {
-                                    None
-                                }
-                            })
-                        } else {
-                            None
-                        }
-                    });
+                    let maybe_weapon_id =
+                        self.weapons().iter().find_map(|(weapon_id, equipped)| {
+                            if let Some(Equipped::TwoHanded) = equipped {
+                                self.weapons().get(weapon_id, equipped).and_then(|weapon| {
+                                    if weapon.weight_class() == WeaponWeightClass::Heavy
+                                        && weapon.damage(AttackRange::Melee).is_some()
+                                    {
+                                        Some(weapon.id())
+                                    } else {
+                                        None
+                                    }
+                                })
+                            } else {
+                                None
+                            }
+                        });
 
-                    if let Some(weapon_id) = maybe_weapon_id
-                    {
+                    if let Some(weapon_id) = maybe_weapon_id {
                         self.unequip_weapon(weapon_id, Equipped::TwoHanded)?;
                     }
                 }

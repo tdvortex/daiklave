@@ -1,18 +1,19 @@
+/// Builder path for constructing a Spell.
+pub mod builder;
+
 mod cost;
 mod id;
 mod keyword;
-use std::{collections::HashSet};
+use std::collections::HashSet;
 
 pub use id::SpellId;
 pub use keyword::SpellKeyword;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    book_reference::BookReference,
-};
+use crate::book_reference::BookReference;
 
-use self::cost::{SpellCost};
+use self::cost::SpellCost;
 
 /// A Sorcery Spell. Note that this is almost never used directly; instead,
 /// it is typically wrapped in TerrestrialSpell, CelestialSpell, or SolarSpell.

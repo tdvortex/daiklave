@@ -1,22 +1,29 @@
+mod builder;
+pub use builder::CharmBuilder;
+
 mod evocation;
 mod id;
 mod mutation;
 mod spirit;
+use crate::{
+    exaltation::exalt::exalt_type::solar::charm::SolarCharm,
+    martial_arts::MartialArtsCharm,
+    sorcery::{CelestialSpell, SolarSpell, TerrestrialSpell},
+};
 pub use mutation::CharmMutation;
-use crate::{martial_arts::MartialArtsCharm, sorcery::{TerrestrialSpell, SolarSpell, CelestialSpell}, exaltation::exalt::exalt_type::solar::charm::SolarCharm};
 
-use self::{spirit::EclipseCharm};
+use self::spirit::EclipseCharm;
 
-pub use id::CharmId;
 pub use evocation::{Evocation, EvocationId, EvocationKeyword};
+pub use id::CharmId;
 pub use spirit::{SpiritCharmId, SpiritCharmKeyword};
 
 /// A Charm possessed by a character.
 pub enum Charm<'source> {
-    /// A Spirit charm with the Eclipse keyword, purchasable by Eclipse caste 
+    /// A Spirit charm with the Eclipse keyword, purchasable by Eclipse caste
     /// Solars.
     Eclipse(&'source EclipseCharm),
-    /// An Evocation of an artifact or hearthstone. 
+    /// An Evocation of an artifact or hearthstone.
     Evocation(&'source Evocation),
     /// A Martial Arts charm for a specific style.
     MartialArts(&'source MartialArtsCharm),
@@ -28,4 +35,15 @@ pub enum Charm<'source> {
     CelestialSpell(&'source CelestialSpell),
     /// A Spell of the Solar Circle.
     SolarSpell(&'source SolarSpell),
+}
+
+impl<'source> Charm<'source> {
+    /// Begins construction of a new Charm.
+    pub fn new(name: String) -> CharmBuilder {
+        CharmBuilder {
+            name,
+            book_reference: None,
+            summary: None,
+        }
+    }
 }

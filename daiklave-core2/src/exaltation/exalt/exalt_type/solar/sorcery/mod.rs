@@ -7,8 +7,8 @@ use crate::sorcery::{
         celestial::sorcerer::CelestialCircleSorcerer, solar::sorcerer::SolarCircleSorcerer,
         terrestrial::sorcerer::TerrestrialCircleSorcerer,
     },
+    spell::{Spell, SpellId},
     ShapingRitual, ShapingRitualId, SorceryArchetypeId, SorceryArchetypeWithMerits, SorceryCircle,
-    Spell, SpellId,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]

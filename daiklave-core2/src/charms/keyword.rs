@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{exaltation::exalt::exalt_type::solar::charm::SolarCharmKeyword, sorcery::SpellKeyword, martial_arts::MartialArtsCharmKeyword};
+use crate::{
+    exaltation::exalt::exalt_type::solar::charm::SolarCharmKeyword,
+    martial_arts::MartialArtsCharmKeyword, sorcery::spell::SpellKeyword,
+};
 
 use super::charm::{EvocationKeyword, SpiritCharmKeyword};
 

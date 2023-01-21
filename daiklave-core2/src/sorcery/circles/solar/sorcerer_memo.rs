@@ -4,8 +4,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::sorcery::{
     circles::{celestial::CelestialSpell, terrestrial::TerrestrialSpell},
+    spell::SpellId,
     ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
-    SorceryArchetypeMeritId, SpellId,
+    SorceryArchetypeMeritId,
 };
 
 use super::{sorcerer::SolarCircleSorcerer, SolarSpell};
