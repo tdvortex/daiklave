@@ -13,33 +13,15 @@ use crate::{
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Spell {
     name: String,
+    summary: Option<String>,
+    duration: String,
+    description: String,
     book_reference: Option<BookReference>,
     costs: Vec<CharmCost>,
     keywords: Vec<CharmKeyword>,
-    duration: String,
-    description: String,
 }
 
 impl Spell {
-    /// Creates a new Spell
-    pub fn new(
-        name: String,
-        book_reference: Option<BookReference>,
-        costs: Vec<CharmCost>,
-        keywords: Vec<CharmKeyword>,
-        duration: String,
-        description: String,
-    ) -> Self {
-        Self {
-            name,
-            book_reference,
-            costs,
-            keywords,
-            duration,
-            description,
-        }
-    }
-
     /// The Spell's name.
     pub fn name(&self) -> &str {
         self.name.as_str()

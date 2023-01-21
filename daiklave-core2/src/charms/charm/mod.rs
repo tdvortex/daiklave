@@ -27,17 +27,3 @@ pub enum Charm<'source> {
     /// A Spell of the Solar Circle.
     SolarSpell(&'source SolarSpell),
 }
-
-impl<'source> Charm<'source> {
-    pub(crate) fn as_memo(&self) -> CharmMutation {
-        match self {
-            Charm::Eclipse(view) => CharmMutation::Eclipse((*view).to_owned()),
-            Charm::Evocation(view) => CharmMutation::Evocation((*view).to_owned()),
-            Charm::MartialArts(view) => CharmMutation::MartialArts((*view).to_owned()),
-            Charm::Solar(view) => CharmMutation::Solar((*view).to_owned()),
-            Charm::TerrestrialSpell(view) => CharmMutation::TerrestrialSpell((*view).to_owned()),
-            Charm::CelestialSpell(view) => CharmMutation::CelestialSpell((*view).to_owned()),
-            Charm::SolarSpell(view) => CharmMutation::SolarSpell((*view).to_owned()),
-        }
-    }
-}
