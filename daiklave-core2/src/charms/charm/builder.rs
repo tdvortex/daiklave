@@ -2,7 +2,7 @@ use std::collections::{HashSet, HashMap};
 
 use crate::{book_reference::BookReference, sorcery::spell::builder::SpellBuilder};
 
-use super::evocation::{builder::EvocationBuilder, EvokableId};
+use super::{evocation::{builder::EvocationBuilder, EvokableId}, spirit::builder::SpiritCharmBuilder};
 
 /// Builder for constructing a new Charm (or spell).
 pub struct CharmBuilder {
@@ -50,6 +50,19 @@ impl CharmBuilder {
             upgrade_charm: None,
             keywords: HashSet::new(),
             costs: HashMap::new(),
+        }
+    }
+
+    /// Constructs the charm as a Spirit charm, which may or may not also be
+    /// an Eclipse Charm.
+    pub fn spirit(self) -> SpiritCharmBuilder {
+        SpiritCharmBuilder {
+            name: self.name,
+            book_reference: self.book_reference,
+            summary: self.summary,
+            keywords: HashSet::new(),
+            costs: HashMap::new(),
+            
         }
     }
 }

@@ -1,3 +1,3 @@
 use super::inner::SpiritCharmInner;
 
-pub struct _NonEclipseCharm(pub(crate) SpiritCharmInner);
+pub struct NonEclipseCharm(pub(crate) SpiritCharmInner);

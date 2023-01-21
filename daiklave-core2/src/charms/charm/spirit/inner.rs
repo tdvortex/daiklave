@@ -1,23 +1,23 @@
-use std::collections::HashSet;
+use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
 
 use serde::{Deserialize, Serialize};
 
 use crate::{
     book_reference::BookReference,
-    charms::{CharmActionType, CharmCost},
+    charms::{CharmActionType, CharmCostType},
 };
 
 use super::SpiritCharmKeyword;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SpiritCharmInner {
-    book_reference: Option<BookReference>,
-    name: String,
-    summary: Option<String>,
-    description: String,
-    essence_required: u8,
-    keywords: HashSet<SpiritCharmKeyword>,
-    costs: Vec<CharmCost>,
-    action_type: CharmActionType,
-    duration: String,
+    pub book_reference: Option<BookReference>,
+    pub name: String,
+    pub summary: Option<String>,
+    pub description: String,
+    pub essence_required: NonZeroU8,
+    pub keywords: HashSet<SpiritCharmKeyword>,
+    pub costs: HashMap<CharmCostType, NonZeroU8>,
+    pub action_type: CharmActionType,
+    pub duration: String,
 }
