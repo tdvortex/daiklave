@@ -3,6 +3,10 @@ pub mod caste;
 
 /// A builder path for constructing a new Solar.
 pub mod builder;
+
+/// Details of a Solar Charm.
+pub mod charm;
+
 mod error;
 mod memo;
 mod new;
