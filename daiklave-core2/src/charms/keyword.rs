@@ -21,6 +21,9 @@ pub enum CharmKeyword {
     Counterattack,
     /// Only applies to Decisive attacks
     DecisiveOnly,
+    /// Effects are limited when the Exalt's type is dissonant with the Magic
+    /// Material of its construction.
+    Dissonant,
     /// Dual (different applications to Decisive and Withering)
     Dual,
     /// An Excellency Charm
@@ -39,6 +42,9 @@ pub enum CharmKeyword {
     Psyche,
     /// Cannot be used while crashed
     Perilous,
+    /// Has additional effect when the Exalt is resonant with the Magic
+    /// Material of the artifact
+    Resonant,
     /// Requires a ritual to cast
     Ritual,
     /// Charm requires spending Crafting experience

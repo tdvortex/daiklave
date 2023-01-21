@@ -1,6 +1,9 @@
 mod eclipse;
 mod inner;
 mod noneclipse;
+mod id;
+
+pub use id::SpiritCharmId;
 
 pub use eclipse::EclipseCharm;
 pub use noneclipse::_NonEclipseCharm;
