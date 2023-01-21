@@ -5,8 +5,6 @@ use serde::{Deserialize, Serialize};
 pub enum CharmCostType {
     /// Spend or commit motes
     Motes,
-    /// Shape Sorcery for a sufficient quantity of Sorcerous Motes
-    SorcerousMotes,
     /// Spend Willpower
     Willpower,
     /// Take Bashing damage

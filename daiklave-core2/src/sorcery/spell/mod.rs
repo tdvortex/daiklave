@@ -1,6 +1,7 @@
+mod cost;
 mod id;
 mod keyword;
-use std::collections::HashSet;
+use std::{collections::HashSet};
 
 pub use id::SpellId;
 pub use keyword::SpellKeyword;
@@ -9,8 +10,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     book_reference::BookReference,
-    charms::{CharmCost, CharmCostType},
 };
+
+use self::cost::{SpellCost};
 
 /// A Sorcery Spell. Note that this is almost never used directly; instead,
 /// it is typically wrapped in TerrestrialSpell, CelestialSpell, or SolarSpell.
@@ -18,10 +20,10 @@ use crate::{
 pub struct Spell {
     name: String,
     summary: Option<String>,
+    cost: SpellCost,
     duration: String,
     description: String,
     book_reference: Option<BookReference>,
-    costs: Vec<CharmCost>,
     keywords: HashSet<SpellKeyword>,
 }
 
@@ -36,14 +38,9 @@ impl Spell {
         self.book_reference.as_ref()
     }
 
-    /// Returns true if the spell is a ritual
-    pub fn ritual(&self) -> bool {
-        !self.costs.iter().any(|cost| cost.cost_type() == CharmCostType::SorcerousMotes)
-    }
-
     /// The costs required to cast the spell
-    pub fn costs(&self) -> &[CharmCost] {
-        &self.costs
+    pub fn costs(&self) -> &SpellCost {
+        &self.cost
     }
 
     /// The keywords of this spell.
