@@ -1,7 +1,7 @@
 mod builder;
 pub use builder::CharmBuilder;
 
-mod evocation;
+pub mod evocation;
 mod id;
 mod mutation;
 mod spirit;
@@ -12,9 +12,8 @@ use crate::{
 };
 pub use mutation::CharmMutation;
 
-use self::spirit::EclipseCharm;
+use self::{spirit::EclipseCharm, evocation::Evocation};
 
-pub use evocation::{Evocation, EvocationId, EvocationKeyword};
 pub use id::CharmId;
 pub use spirit::{SpiritCharmId, SpiritCharmKeyword};
 

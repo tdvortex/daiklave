@@ -30,6 +30,7 @@ impl CharmBuilder {
             name: self.name,
             book_reference: self.book_reference,
             summary: self.summary,
+            keywords: HashSet::new(),
         }
     }
 

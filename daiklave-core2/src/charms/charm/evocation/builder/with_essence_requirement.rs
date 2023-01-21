@@ -1,6 +1,6 @@
 use std::{num::NonZeroU8, collections::{HashSet, HashMap}};
 
-use crate::{charms::{charm::{evocation::EvokableId, EvocationId, CharmId, EvocationKeyword}, CharmCostType, CharmActionType}, book_reference::BookReference};
+use crate::{charms::{charm::{evocation::{EvokableId, EvocationId, EvocationKeyword}, CharmId}, CharmCostType, CharmActionType}, book_reference::BookReference};
 
 use super::EvocationBuilderWithActionType;
 
