@@ -1,15 +1,15 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, num::NonZeroU8};
 
 use daiklave_core2::{
     abilities::AbilityNameVanilla,
     attributes::AttributeName,
     book_reference::{Book, BookReference},
-    charms::{CharmCost, CharmCostType, CharmKeyword},
+    charms::charm::Charm,
     guided::{ExaltationChoice, GuidedEventSource, GuidedMutation},
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle, Spell,
-        SpellId, TerrestrialSpell,
+        spell::{SpellId, SpellKeyword, SpellMutation},
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle,
     },
     unique_id::UniqueId,
     weapons::weapon::BaseWeaponId,
@@ -316,17 +316,21 @@ fn test_guided_mortal() {
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Add control spell
-    let control_spell = TerrestrialSpell::from_spell(Spell::new(
-        "Corrupted Words".to_owned(),
-        Some(BookReference::new(Book::CoreRulebook, 472)),
-        vec![
-            CharmCost::new(CharmCostType::SorcerousMotes, 15),
-            CharmCost::new(CharmCostType::Willpower, 1),
-        ],
-        vec![CharmKeyword::Psyche],
-        "Indefinite".to_owned(),
-        "Really long spell description".to_owned(),
-    ));
+    let SpellMutation::Terrestrial(control_spell) = Charm::new("Corrupted Words".to_owned())
+        .book_reference(BookReference::new(Book::CoreRulebook, 472))
+        .spell()
+        .circle(SorceryCircle::Terrestrial)
+        .sorcerous_motes(NonZeroU8::new(15).unwrap())
+        .willpower(NonZeroU8::new(1).unwrap())
+        .keyword(SpellKeyword::Psyche)
+        .duration("Indefinite".to_owned())
+        .description("Really long spell description".to_owned())
+        .control_spell_description("A sorcerer who knows Corrupted Words as her control spell may[...]".to_owned())
+        .distortion(NonZeroU8::new(15).unwrap(), "Distorting this curse makes it possible for the victoimt to speak around[...]".to_owned())
+        .summary("Forbids the target from speaking on a specific topic.".to_owned())
+        .build() else {
+            panic!("Should have made a Terrestrial spell");
+    };
     let control_spell_id = SpellId(UniqueId::Placeholder(1));
 
     let mutation = GuidedMutation::SetControlSpell(control_spell_id, control_spell);
