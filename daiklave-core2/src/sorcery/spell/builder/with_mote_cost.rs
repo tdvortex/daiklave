@@ -4,6 +4,8 @@ use crate::{book_reference::BookReference, sorcery::{SorceryCircle, spell::{cost
 
 use super::SpellBuilderWithWillpower;
 
+/// A Spell builder after the Sorcerous Mote cost has been specified (or set
+/// to be a ritual).
 pub struct SpellBuilderWithMoteCost {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
@@ -14,16 +16,25 @@ pub struct SpellBuilderWithMoteCost {
 }
 
 impl SpellBuilderWithMoteCost {
+    /// Sets the book reference for this Spell.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
         self
     }
 
+    /// Provides a short summary of the Spell.
     pub fn summary(mut self, summary: String) -> Self {
         self.summary = Some(summary);
         self
     }
 
+    /// Adds a keyword to the Spell.
+    pub fn keyword(mut self, keyword: SpellKeyword) -> Self {
+        self.keywords.insert(keyword);
+        self
+    }
+
+    /// Sets the Willpower cost to cast the spell.
     pub fn willpower(self, willpower: NonZeroU8) -> SpellBuilderWithWillpower {
         let cost = SpellCost {
             motes_cost: NonZeroU8::new(self.mote_cost).map_or(SpellMotesCost::Ritual, SpellMotesCost::SorcerousMotes),

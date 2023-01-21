@@ -1,6 +1,7 @@
 mod builder;
 pub use builder::CharmBuilder;
 
+/// Evocations of artifacts and hearthstones.
 pub mod evocation;
 mod id;
 mod mutation;

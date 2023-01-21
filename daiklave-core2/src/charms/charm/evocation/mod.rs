@@ -7,6 +7,7 @@ use crate::{
     charms::{CharmActionType, CharmCostType},
 };
 
+/// A builder path to construct an Evocation.
 pub mod builder;
 mod evokable_id;
 mod id;
