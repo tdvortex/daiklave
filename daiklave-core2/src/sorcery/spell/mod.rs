@@ -1,11 +1,15 @@
 mod id;
+mod keyword;
+use std::collections::HashSet;
+
 pub use id::SpellId;
+pub use keyword::SpellKeyword;
 
 use serde::{Deserialize, Serialize};
 
 use crate::{
     book_reference::BookReference,
-    charms::{CharmCost, CharmKeyword},
+    charms::{CharmCost, CharmCostType},
 };
 
 /// A Sorcery Spell. Note that this is almost never used directly; instead,
@@ -18,7 +22,7 @@ pub struct Spell {
     description: String,
     book_reference: Option<BookReference>,
     costs: Vec<CharmCost>,
-    keywords: Vec<CharmKeyword>,
+    keywords: HashSet<SpellKeyword>,
 }
 
 impl Spell {
@@ -32,14 +36,19 @@ impl Spell {
         self.book_reference.as_ref()
     }
 
+    /// Returns true if the spell is a ritual
+    pub fn ritual(&self) -> bool {
+        !self.costs.iter().any(|cost| cost.cost_type() == CharmCostType::SorcerousMotes)
+    }
+
     /// The costs required to cast the spell
     pub fn costs(&self) -> &[CharmCost] {
         &self.costs
     }
 
     /// The keywords of this spell.
-    pub fn keywords(&self) -> &[CharmKeyword] {
-        &self.keywords
+    pub fn keywords(&self) -> impl Iterator<Item = SpellKeyword> + '_ {
+        self.keywords.iter().copied()
     }
 
     /// The duration of the spell effect after casting.

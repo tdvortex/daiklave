@@ -1,13 +1,16 @@
+mod id;
+mod keyword;
+
 use std::collections::HashSet;
 
-use serde::{Deserialize, Serialize};
+pub use id::MartialArtsCharmId;
+pub use keyword::MartialArtsCharmKeyword;
 
-use crate::{
-    book_reference::BookReference,
-    charms::{CharmActionType, CharmCost, CharmKeyword},
-};
+use serde::{Serialize, Deserialize};
 
-use super::{charm_id::MartialArtsCharmId, style_id::MartialArtsStyleId};
+use crate::{book_reference::BookReference, charms::{CharmCost, CharmActionType}};
+
+use super::MartialArtsStyleId;
 
 /// A Martial Arts charm.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -20,7 +23,7 @@ pub struct MartialArtsCharm {
     essence_required: u8,
     ability_required: u8,
     charms_required: HashSet<MartialArtsCharmId>,
-    keywords: HashSet<CharmKeyword>,
+    keywords: HashSet<MartialArtsCharmKeyword>,
     costs: Vec<CharmCost>,
     action_type: CharmActionType,
     duration: String,
@@ -68,9 +71,9 @@ impl MartialArtsCharm {
         self.charms_required.iter().copied()
     }
 
-    /// An iterator of the Charm keywords (Mute, Perilous, etc) associated with
+    /// An iterator of the Charm keywords associated with
     /// this Charm.
-    pub fn keywords(&self) -> impl Iterator<Item = CharmKeyword> + '_ {
+    pub fn keywords(&self) -> impl Iterator<Item = MartialArtsCharmKeyword> + '_ {
         self.keywords.iter().copied()
     }
 

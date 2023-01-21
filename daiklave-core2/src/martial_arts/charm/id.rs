@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use serde::{Deserialize, Serialize};
+use serde::{Serialize, Deserialize};
 
 use crate::unique_id::UniqueId;
 

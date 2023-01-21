@@ -2,7 +2,9 @@ use std::collections::HashSet;
 
 use serde::{Serialize, Deserialize};
 
-use crate::{book_reference::BookReference, charms::{CharmKeyword, CharmCost, CharmActionType}};
+use crate::{book_reference::BookReference, charms::{CharmCost, CharmActionType}};
+
+use super::SpiritCharmKeyword;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SpiritCharmInner {
@@ -11,7 +13,7 @@ pub(crate) struct SpiritCharmInner {
     summary: Option<String>,
     description: String,
     essence_required: u8,
-    keywords: HashSet<CharmKeyword>,
+    keywords: HashSet<SpiritCharmKeyword>,
     costs: Vec<CharmCost>,
     action_type: CharmActionType,
     duration: String,

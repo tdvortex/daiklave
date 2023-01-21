@@ -5,9 +5,11 @@ mod spirit;
 pub use mutation::CharmMutation;
 use crate::{martial_arts::MartialArtsCharm, sorcery::{TerrestrialSpell, SolarSpell, CelestialSpell}, exaltation::exalt::exalt_type::solar::charm::SolarCharm};
 
-use self::{spirit::EclipseCharm, evocation::Evocation};
+use self::{spirit::EclipseCharm};
 
 pub use id::CharmId;
+pub use evocation::{Evocation, EvocationId, EvocationKeyword};
+pub use spirit::{SpiritCharmId, SpiritCharmKeyword};
 
 /// A Charm possessed by a character.
 pub enum Charm<'source> {

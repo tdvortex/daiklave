@@ -2,16 +2,20 @@ use std::collections::HashSet;
 
 use serde::{Serialize, Deserialize};
 
-use crate::{book_reference::BookReference, charms::{CharmKeyword, CharmCost, CharmActionType}};
+use crate::{book_reference::BookReference, charms::{CharmCost, CharmActionType}};
 
 use self::evokable_id::EvokableItemId;
 
 mod evokable_id;
 mod id;
+mod keyword;
+pub use keyword::EvocationKeyword;
 pub use id::EvocationId;
 
 use super::CharmId;
 
+/// A Charm which is drawn from the unique power of a Hearthstone or named
+/// Artifact.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Evocation {
     evokable_id: EvokableItemId,
@@ -24,7 +28,7 @@ pub struct Evocation {
     essence_required: u8,
     evocation_tree: HashSet<EvocationId>,
     upgrade_charm: Option<CharmId>,
-    keywords: HashSet<CharmKeyword>,
+    keywords: HashSet<EvocationKeyword>,
     costs: Vec<CharmCost>,
     action_type: CharmActionType,
     duration: String,

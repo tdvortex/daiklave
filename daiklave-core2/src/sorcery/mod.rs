@@ -9,7 +9,7 @@ pub use archetype::{
 };
 pub use circles::{CelestialSpell, SolarSpell, SorceryCircle, TerrestrialSpell};
 pub(crate) use error::SorceryError;
-pub use spell::{Spell, SpellId};
+pub use spell::{Spell, SpellId, SpellKeyword};
 
 use crate::exaltation::ExaltationSorcery;
 
