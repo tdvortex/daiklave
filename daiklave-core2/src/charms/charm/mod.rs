@@ -8,7 +8,7 @@ mod mutation;
 mod spirit;
 use crate::{
     exaltation::exalt::exalt_type::solar::charm::SolarCharm,
-    martial_arts::MartialArtsCharm,
+    martial_arts::charm::MartialArtsCharm,
     sorcery::{spell::Spell},
 };
 pub use mutation::CharmMutation;

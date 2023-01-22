@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     exaltation::exalt::exalt_type::solar::charm::SolarCharmKeyword,
-    martial_arts::MartialArtsCharmKeyword, sorcery::spell::SpellKeyword,
+    martial_arts::charm::MartialArtsCharmKeyword, sorcery::spell::SpellKeyword,
 };
 
 use super::charm::{SpiritCharmKeyword, evocation::EvocationKeyword};
@@ -35,6 +35,8 @@ pub enum CharmKeyword {
     Dissonant,
     /// Dual (different applications to Decisive and Withering)
     Dual,
+    /// The Charm is purchasable by Eclipse Caste Solars.
+    Eclipse,
     /// The Charm has additional effect when used by Sidereals.
     Enlightenment,
     /// An Excellency Charm
@@ -160,14 +162,11 @@ impl From<MartialArtsCharmKeyword> for CharmKeyword {
             MartialArtsCharmKeyword::Counterattack => Self::Counterattack,
             MartialArtsCharmKeyword::DecisiveOnly => Self::DecisiveOnly,
             MartialArtsCharmKeyword::Dual => Self::Dual,
-            MartialArtsCharmKeyword::Enlightenment => Self::Enlightenment,
             MartialArtsCharmKeyword::Form => Self::Form,
-            MartialArtsCharmKeyword::Mastery => Self::Mastery,
             MartialArtsCharmKeyword::Mute => Self::Mute,
             MartialArtsCharmKeyword::Psyche => Self::Psyche,
             MartialArtsCharmKeyword::Perilous => Self::Perilous,
             MartialArtsCharmKeyword::Stackable => Self::Stackable,
-            MartialArtsCharmKeyword::Terrestrial => Self::Terrestrial,
             MartialArtsCharmKeyword::Uniform => Self::Uniform,
             MartialArtsCharmKeyword::WitheringOnly => Self::WitheringOnly,
         }

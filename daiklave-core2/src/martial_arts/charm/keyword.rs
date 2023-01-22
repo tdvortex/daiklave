@@ -13,12 +13,8 @@ pub enum MartialArtsCharmKeyword {
     DecisiveOnly,
     /// Dual (different applications to Decisive and Withering)
     Dual,
-    /// The Charm has additional effect when used by Sidereals.
-    Enlightenment,
     /// The key Form ability for a Martial Arts style.
     Form,
-    /// Charm has additional effect when used by Solars or Sidereals.
-    Mastery,
     /// Does not increase Anima when used
     Mute,
     /// Mind-affecting Charms
@@ -27,9 +23,6 @@ pub enum MartialArtsCharmKeyword {
     Perilous,
     /// Can be applied multiple times
     Stackable,
-    /// Charm has reduced effect or increased cost when used by the
-    /// Dragon-Blooded.
-    Terrestrial,
     /// Affects Withering and Decisive attacks equally
     Uniform,
     /// Applies to Withering attacks only

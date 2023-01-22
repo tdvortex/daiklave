@@ -38,7 +38,7 @@ use crate::{
     },
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::{HearthstoneId, UnslottedHearthstone},
-    martial_arts::{MartialArtsCharmId, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
+    martial_arts::{charm::MartialArtsCharmId, MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
         spell::SpellId, CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery,
         SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,

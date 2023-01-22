@@ -1,10 +1,10 @@
-mod charm;
+/// Details of an individual Martial Arts Charm.
+pub mod charm;
 mod error;
 mod martial_artist;
 mod style;
 mod style_id;
 
-pub use charm::{MartialArtsCharm, MartialArtsCharmId, MartialArtsCharmKeyword};
 pub(crate) use error::MartialArtsError;
 
 pub use martial_artist::MartialArtist;

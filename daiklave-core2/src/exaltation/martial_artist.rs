@@ -5,7 +5,7 @@ use crate::{
     exaltation::{
         exalt::martial_arts::ExaltMartialArtist, mortal::martial_arts::MortalMartialArtist,
     },
-    martial_arts::{MartialArtsCharm, MartialArtsCharmId},
+    martial_arts::charm::{MartialArtsCharm, MartialArtsCharmId},
     weapons::weapon::BaseWeaponId,
 };
 

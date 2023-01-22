@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    exaltation::exalt::exalt_type::solar::charm::SolarCharmId, martial_arts::MartialArtsCharmId,
-    sorcery::spell::SpellId,
+    exaltation::exalt::exalt_type::solar::charm::SolarCharmId,
+    sorcery::spell::SpellId, martial_arts::charm::MartialArtsCharmId,
 };
 
 use super::{evocation::EvocationId, spirit::SpiritCharmId};
