@@ -3,7 +3,7 @@ use crate::{
         armor_item::{artifact::ArtifactError, ArmorId},
         ArmorError,
     },
-    artifact::{wonders::Wonders, Artifact, ArtifactId},
+    artifact::{wonders::Wonders, Artifact, ArtifactId, MagicMaterial, Sonance},
     exaltation::{
         exalt::essence::{EssenceError, MotePoolName},
         Exaltation,
@@ -172,5 +172,15 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.attune_artifact(artifact_id, first)?;
         Ok(self)
+    }
+
+    /// Checks if the character is Resonant, Dissonant, or neither with a
+    /// magic material.
+    pub fn sonance(&self, magic_material: MagicMaterial) -> Option<Sonance> {
+        if let Exaltation::Exalt(exalt) = &self.exaltation {
+            exalt.exalt_type.sonance(magic_material)
+        } else {
+            None
+        }
     }
 }

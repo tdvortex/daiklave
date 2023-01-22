@@ -7,12 +7,14 @@ use crate::{
 pub mod builder;
 mod id;
 mod magic_material;
+mod sonance;
 
 /// Artifacts which are not weapons, armor, or warstriders.
 pub mod wonders;
 
 pub use id::ArtifactId;
 pub use magic_material::MagicMaterial;
+pub use sonance::Sonance;
 
 use self::{
     builder::wonder::WonderBuilder,

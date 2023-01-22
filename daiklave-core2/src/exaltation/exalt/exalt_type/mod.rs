@@ -5,6 +5,8 @@ mod exalt_type_memo;
 
 pub(crate) use exalt_type_memo::ExaltTypeMemo;
 
+use crate::artifact::{Sonance, MagicMaterial};
+
 use self::solar::Solar;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -26,6 +28,12 @@ impl<'source> ExaltType<'source> {
     pub fn solar_traits(&self) -> Option<&Solar> {
         match self {
             ExaltType::Solar(solar_traits) => Some(solar_traits),
+        }
+    }
+
+    pub fn sonance(&self, magic_material: MagicMaterial) -> Option<Sonance> {
+        match (self, magic_material) {
+            (ExaltType::Solar(_), _) => Some(Sonance::Resonant),
         }
     }
 }
