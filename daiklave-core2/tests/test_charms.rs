@@ -194,6 +194,7 @@ fn test_solar_charms() {
 fn test_evocations() {
     let mut event_source = CharacterEventSource::default();
     // Mortals cannot add Evocations, even if they have the artifact/hearthstone
+    let spring_razor_id = ArtifactWeaponId(UniqueId::Placeholder(1));
     let spring_razor = Weapon::artifact("Spring Razor".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 619))
         .lore(
@@ -219,12 +220,8 @@ fn test_evocations() {
         .merit_dots(3)
         .hearthstone_slots(2)
         .build();
-    event_source
-        .apply_mutation(CharacterMutation::AddArtifact(Artifact::Weapon(
-            ArtifactWeaponId(UniqueId::Placeholder(1)),
-            spring_razor,
-        )))
-        .unwrap();
+
+    event_source.apply_mutation(CharacterMutation::AddArtifact(Artifact::Weapon(spring_razor_id, spring_razor))).unwrap();
     
     let carbuncle = Hearthstone::builder("Candent Carbuncle".to_owned())
     .book_reference(BookReference::new(Book::CoreRulebook, 607))

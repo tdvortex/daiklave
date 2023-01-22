@@ -1036,7 +1036,7 @@ impl<'view, 'source> Exalt<'source> {
             unmet_evocation_prereqs.remove(&known_evocation_id);
         }
 
-        if unmet_evocation_prereqs.is_empty() {
+        if !unmet_evocation_prereqs.is_empty() {
             return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet)); 
         }
 
