@@ -435,7 +435,7 @@ fn test_guided_solar() {
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Add control spell
-    let control_spell = Spell::build("Corrupted Words".to_owned())
+    let control_spell = Spell::builder("Corrupted Words".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 472))
         .sorcerous_motes(NonZeroU8::new(15).unwrap())
         .willpower(NonZeroU8::new(1).unwrap())

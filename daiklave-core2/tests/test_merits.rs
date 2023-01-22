@@ -197,7 +197,7 @@ fn test_merits() {
     let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 3);
     event_source.apply_mutation(mutation).unwrap();
 
-    let control_spell = Spell::build("Death of Obsidian Butterflies".to_owned())
+    let control_spell = Spell::builder("Death of Obsidian Butterflies".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 470))
         .keyword(SpellKeyword::DecisiveOnly)
         .keyword(SpellKeyword::Perilous)

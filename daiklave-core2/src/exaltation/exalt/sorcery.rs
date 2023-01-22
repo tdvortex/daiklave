@@ -7,6 +7,7 @@ use crate::{
     },
 };
 
+#[derive(Debug, Clone, Copy)]
 pub(crate) enum ExaltSorcery<'view, 'source> {
     Solar(&'view SolarSorcererView<'source>),
 }
@@ -42,6 +43,18 @@ impl<'view, 'source> ExaltSorcery<'view, 'source> {
     pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, Spell<'source>)> {
         match self {
             ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer.control_spell(circle),
+        }
+    }
+
+    pub fn get_spell(&self, spell_id: SpellId) -> Option<(Spell<'source>, bool)> {
+        match self {
+            ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer.get_spell(spell_id),
+        }
+    }
+
+    pub fn spells_iter(&self) -> impl Iterator<Item = SpellId> + '_ {
+        match self {
+            ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer.spells_iter(),
         }
     }
 }

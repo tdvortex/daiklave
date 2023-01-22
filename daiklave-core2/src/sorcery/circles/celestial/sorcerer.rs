@@ -168,6 +168,27 @@ impl<'view, 'source> CelestialCircleSorcerer<'source> {
             solar_spells: HashMap::new(),
         })
     }
+
+    pub fn get_spell(&self, spell_id: SpellId) -> Option<(Spell<'source>, bool)> {
+        if spell_id == self.terrestrial_control_spell_id {
+            Some((Spell::Terrestrial(self.terrestrial_control_spell), true))
+        } else if spell_id == self.celestial_control_spell_id {
+            Some((Spell::Celestial(self.celestial_control_spell), true))
+        } else {
+            self
+            .terrestrial_spells
+            .get(&spell_id)
+            .map(|terrestrial_spell| (Spell::Terrestrial(*terrestrial_spell), false))
+            .or_else(|| self.celestial_spells.get(&spell_id).map(|celestial_spell| (Spell::Celestial(*celestial_spell), false)))
+        }
+    }
+
+    pub fn spells_iter(&self) -> impl Iterator<Item = SpellId> + '_ {
+        std::iter::once(self.terrestrial_control_spell_id)
+        .chain(self.terrestrial_spells.keys().copied())
+        .chain(std::iter::once(self.celestial_control_spell_id))
+        .chain(self.celestial_spells.keys().copied())
+    }
 }
 
 impl<'view, 'source> From<&'view SolarCircleSorcerer<'source>>

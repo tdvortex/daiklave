@@ -85,4 +85,20 @@ impl<'view, 'source> SolarSorcererView<'source> {
             (SolarSorcererView::Solar(solar), circle) => Some(solar.control_spell(circle)),
         }
     }
+
+    pub fn get_spell(&self, spell_id: SpellId) -> Option<(Spell<'source>, bool)> {
+        match self {
+            SolarSorcererView::Terrestrial(terrestrial) => terrestrial.get_spell(spell_id),
+            SolarSorcererView::Celestial(celestial) => celestial.get_spell(spell_id),
+            SolarSorcererView::Solar(solar) => solar.get_spell(spell_id),
+        }
+    }
+
+    pub fn spells_iter(&self) -> impl Iterator<Item = SpellId> + '_ {
+        match self {
+            SolarSorcererView::Terrestrial(terrestrial) => terrestrial.spells_iter().collect::<Vec<SpellId>>(),
+            SolarSorcererView::Celestial(celestial) => celestial.spells_iter().collect::<Vec<SpellId>>(),
+            SolarSorcererView::Solar(solar) => solar.spells_iter().collect::<Vec<SpellId>>(),
+        }.into_iter()
+    }
 }

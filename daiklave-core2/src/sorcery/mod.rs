@@ -1,6 +1,8 @@
 mod archetype;
 pub(crate) mod circles;
 mod error;
+mod spells;
+pub use spells::Spells;
 
 /// Properties of an individual Spell.
 pub mod spell;
@@ -47,5 +49,10 @@ impl<'view, 'source> Sorcery<'view, 'source> {
     /// The control spell the character learned at a specific circle induction.
     pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, Spell<'source>)> {
         self.0.control_spell(circle)
+    }
+
+    /// Access the spells the sorcerer knows.
+    pub fn spells(&self) -> Spells<'view, 'source> {
+        Spells(self.0)
     }
 }

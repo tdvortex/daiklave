@@ -1,4 +1,7 @@
+use serde::{Deserialize, Serialize};
+
 /// One of the three tiers of Sorcery.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SorceryCircle {
     /// The first and lowest circle. Usable by everyone, including some mortals
     Terrestrial,
