@@ -12,7 +12,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
         SorceryArchetypeMerit, SorceryError,
     },
-    CharacterMutationError,
+    CharacterMutationError, charms::CharmError,
 };
 
 use super::{sorcerer_memo::CelestialCircleSorcererMemo, spell::CelestialSpell};
@@ -188,6 +188,36 @@ impl<'view, 'source> CelestialCircleSorcerer<'source> {
         .chain(self.terrestrial_spells.keys().copied())
         .chain(std::iter::once(self.celestial_control_spell_id))
         .chain(self.celestial_spells.keys().copied())
+    }
+
+    pub fn add_terrestrial_spell(&mut self, spell_id: SpellId, spell: &'source TerrestrialSpell) -> Result<&mut Self, CharacterMutationError> {
+        if self.terrestrial_control_spell_id == spell_id || self.celestial_control_spell_id == spell_id || self.terrestrial_spells.contains_key(&spell_id) || self.celestial_spells.contains_key(&spell_id) {
+            Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm))
+        } else {
+            self.terrestrial_spells.insert(spell_id, spell);
+            Ok(self)
+        }
+    }
+
+    pub fn add_celestial_spell(&mut self, spell_id: SpellId, spell: &'source CelestialSpell) -> Result<&mut Self, CharacterMutationError> {
+        if self.terrestrial_control_spell_id == spell_id || self.celestial_control_spell_id == spell_id || self.terrestrial_spells.contains_key(&spell_id) || self.celestial_spells.contains_key(&spell_id) {
+            Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm))
+        } else {
+            self.celestial_spells.insert(spell_id, spell); 
+            Ok(self)
+        }
+    }
+
+    pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
+        if self.terrestrial_spells.remove(&spell_id).is_none() && self.celestial_spells.remove(&spell_id).is_none() {
+            if spell_id == self.celestial_control_spell_id || spell_id == self.terrestrial_control_spell_id {
+                Err(CharacterMutationError::SorceryError(SorceryError::RemoveControlSpell))
+            } else {
+                Err(CharacterMutationError::CharmError(CharmError::NotFound))
+            }
+        } else {
+            Ok(self)
+        }
     }
 }
 

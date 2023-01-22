@@ -23,4 +23,7 @@ pub enum SorceryError {
     /// Lunars.) Solar Circle requires Essence 5 and Occult 5.
     #[error("Insufficient Occult and/or Essence")]
     PrerequisitesNotMet,
+    /// Cannot remove a Control Spell.
+    #[error("Cannot remove a Control Spell.")]
+    RemoveControlSpell,
 }

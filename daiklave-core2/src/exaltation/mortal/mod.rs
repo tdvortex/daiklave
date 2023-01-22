@@ -25,7 +25,7 @@ use crate::{
     merits::merit::MeritError,
     sorcery::{
         circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
-        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
+        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError, spell::{SpellId, SpellMutation},
     },
     weapons::{
         weapon::{
@@ -35,7 +35,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError,
+    CharacterMutationError, charms::CharmError,
 };
 
 use self::martial_arts::MortalMartialArtist;
@@ -451,6 +451,42 @@ impl<'source> Mortal<'source> {
             }
         } else {
             Err(CharacterMutationError::MeritError(MeritError::NotFound))
+        }
+    }
+
+    pub fn add_spell(
+        &mut self,
+        spell_id: SpellId,
+        spell: &'source SpellMutation,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if let Some(terrestrial) = &mut self.sorcery {
+            match spell {
+                SpellMutation::Terrestrial(terrestrial_spell) => {
+                    if terrestrial.control_spell_id == spell_id || terrestrial.other_spells.contains_key(&spell_id) {
+                        Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm))
+                    } else {
+                        terrestrial.other_spells.insert(spell_id, terrestrial_spell);
+                        Ok(self)
+                    }
+                }
+                _ => Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet))
+            }
+        } else {
+            Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet))
+        }
+    }
+
+    pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
+        if let Some(terrestrial) = &mut self.sorcery {
+            if terrestrial.other_spells.remove(&spell_id).is_some() {
+                Ok(self)
+            } else if terrestrial.control_spell_id == spell_id {
+                Err(CharacterMutationError::SorceryError(SorceryError::RemoveControlSpell))
+            } else {
+                Err(CharacterMutationError::CharmError(CharmError::NotFound))
+            }
+        } else {
+            Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet))
         }
     }
 }

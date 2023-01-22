@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
-use crate::sorcery::{
+use crate::{sorcery::{
     circles::{
-        celestial::CelestialSpell, sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell,
+        celestial::CelestialSpell, sorcery_circle::SorceryCircle, terrestrial::{TerrestrialSpell},
     },
-    spell::{Spell, SpellId},
+    spell::{Spell, SpellId, SpellMutation},
     ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
-    SorceryArchetypeMeritId, SorceryArchetypeWithMerits,
-};
+    SorceryArchetypeMeritId, SorceryArchetypeWithMerits, SorceryError,
+}, CharacterMutationError, charms::CharmError};
 
 use super::{sorcerer_memo::SolarCircleSorcererMemo, SolarSpell};
 
@@ -141,5 +141,40 @@ impl<'view, 'source> SolarCircleSorcerer<'source> {
         .chain(self.terrestrial_spells.keys().copied())
         .chain(std::iter::once(self.celestial_control_spell_id))
         .chain(self.celestial_spells.keys().copied())
+    }
+
+    pub fn add_spell(&mut self, spell_id: SpellId, spell: &'source SpellMutation) -> Result<&mut Self, CharacterMutationError> {
+        if self.terrestrial_control_spell_id == spell_id 
+        || self.celestial_control_spell_id == spell_id 
+        || self.solar_control_spell_id == spell_id 
+        || self.terrestrial_spells.contains_key(&spell_id) 
+        || self.celestial_spells.contains_key(&spell_id) 
+        || self.solar_spells.contains_key(&spell_id)
+        {
+            Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm))
+        } else {
+            match spell {
+                SpellMutation::Terrestrial(terrestrial_spell) => {self.terrestrial_spells.insert(spell_id, terrestrial_spell);}
+                SpellMutation::Celestial(celestial_spell) => {self.celestial_spells.insert(spell_id, celestial_spell);}
+                SpellMutation::Solar(solar_spell) => {self.solar_spells.insert(spell_id, solar_spell);}
+            }
+            Ok(self)
+        }
+    }
+
+
+    pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
+        if self.terrestrial_spells.remove(&spell_id).is_none() 
+        && self.celestial_spells.remove(&spell_id).is_none() 
+        && self.solar_spells.remove(&spell_id).is_none()
+        {
+            if spell_id == self.solar_control_spell_id ||spell_id == self.celestial_control_spell_id || spell_id == self.terrestrial_control_spell_id {
+                Err(CharacterMutationError::SorceryError(SorceryError::RemoveControlSpell))
+            } else {
+                Err(CharacterMutationError::CharmError(CharmError::NotFound))
+            }
+        } else {
+            Ok(self)
+        }
     }
 }

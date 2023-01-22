@@ -116,11 +116,14 @@ impl<'view, 'source> Character<'source> {
         spell_id: SpellId,
         spell: &'source SpellMutation,
     ) -> Result<&mut Self, CharacterMutationError> {
-        todo!()
+        self.exaltation.add_spell(spell_id, spell)?;
+        Ok(self)
     }
 
     /// Removes a Spell from the character. Control Spells cannot be removed.
     pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
-        todo!()
+        self.exaltation.remove_spell(spell_id)?;
+        self.correct_evocations(&[]);
+        Ok(self)
     }
 }

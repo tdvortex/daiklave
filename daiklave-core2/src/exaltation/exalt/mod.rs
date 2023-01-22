@@ -53,7 +53,7 @@ use crate::{
             celestial::AddCelestialSorcery, solar::AddSolarSorcery,
             terrestrial::AddTerrestrialSorceryView,
         },
-        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
+        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError, spell::{SpellId, SpellMutation},
     },
     weapons::{
         weapon::{
@@ -1095,6 +1095,24 @@ impl<'view, 'source> Exalt<'source> {
         }
 
         self.evocations.push((evocation_id, evocation));
+        Ok(self)
+    }
+
+    pub fn add_spell(
+        &mut self,
+        spell_id: SpellId,
+        spell: &'source SpellMutation,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match &mut self.exalt_type {
+            ExaltType::Solar(solar) => {solar.add_spell(spell_id, spell)?;}
+        }
+        Ok(self)
+    }
+
+    pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
+        match &mut self.exalt_type {
+            ExaltType::Solar(solar) => {solar.remove_spell(spell_id)?;}
+        }
         Ok(self)
     }
 }

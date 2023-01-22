@@ -11,7 +11,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
         SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryArchetypeWithMerits, SorceryError,
     },
-    CharacterMutationError,
+    CharacterMutationError, charms::CharmError,
 };
 
 use super::{sorcerer_memo::TerrestrialCircleSorcererMemo, TerrestrialSpell};
@@ -153,6 +153,27 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
 
     pub fn spells_iter(&self) -> impl Iterator<Item = SpellId> + '_ {
         std::iter::once(self.control_spell_id).chain(self.other_spells.keys().copied())
+    }
+
+    pub fn add_terrestrial_spell(&mut self, spell_id: SpellId, spell: &'source TerrestrialSpell) -> Result<&mut Self, CharacterMutationError> {
+        if self.control_spell_id == spell_id || self.other_spells.contains_key(&spell_id)  {
+            Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm))
+        } else {
+            self.other_spells.insert(spell_id, spell);
+            Ok(self)
+        }
+    }
+
+    pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
+        if self.other_spells.remove(&spell_id).is_none() {
+            if spell_id == self.control_spell_id {
+                Err(CharacterMutationError::SorceryError(SorceryError::RemoveControlSpell))
+            } else {
+                Err(CharacterMutationError::CharmError(CharmError::NotFound))
+            }
+        } else {
+            Ok(self)
+        }
     }
 }
 
