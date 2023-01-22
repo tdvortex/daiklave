@@ -20,7 +20,7 @@ pub(crate) use sorcery::ExaltSorcery;
 pub(crate) use weapons::{ExaltEquippedWeapons, ExaltHands, ExaltUnequippedWeapons, ExaltWeapons};
 pub(crate) use wonders::ExaltWonders;
 
-use std::collections::{hash_map::Entry, HashMap};
+use std::collections::{hash_map::Entry, HashMap, HashSet};
 
 use crate::{
     abilities::{AbilityError, AbilityRating},
@@ -59,7 +59,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError, charms::charm::Charm,
+    CharacterMutationError, charms::{charm::{Charm, evocation::{EvocationId, Evocation}, CharmId}, CharmError},
 };
 
 use self::{
@@ -73,45 +73,29 @@ use self::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Exalt<'source> {
-    armor: ExaltArmor<'source>,
-    essence: EssenceState<'source>,
-    martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
+    pub(crate) armor: ExaltArmor<'source>,
+    pub(crate) essence: EssenceState<'source>,
+    pub(crate) evocations: Vec<(EvocationId, &'source Evocation)>,
+    pub(crate) martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
     pub(crate) exalt_type: ExaltType<'source>,
-    weapons: ExaltWeapons<'source>,
-    wonders: ExaltWonders<'source>,
+    pub(crate) weapons: ExaltWeapons<'source>,
+    pub(crate) wonders: ExaltWonders<'source>,
 }
 
 impl<'view, 'source> Exalt<'source> {
-    pub fn new(
-        armor: ExaltArmor<'source>,
-        essence: EssenceState<'source>,
-        martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
-        exalt_type: ExaltType<'source>,
-        weapons: ExaltWeapons<'source>,
-        wonders: ExaltWonders<'source>,
-    ) -> Self {
-        Self {
-            essence,
-            martial_arts_styles,
-            exalt_type,
-            weapons,
-            armor,
-            wonders,
-        }
-    }
-
     pub fn as_memo(&self) -> ExaltMemo {
-        ExaltMemo::new(
-            self.armor.as_memo(),
-            self.essence.as_memo(),
-            self.martial_arts_styles
-                .iter()
-                .map(|(k, v)| (*k, v.as_memo()))
-                .collect(),
-            self.exalt_type.as_memo(),
-            self.weapons.as_memo(),
-            self.wonders.as_memo(),
-        )
+        ExaltMemo {
+            armor: self.armor.as_memo(),
+            essence: self.essence.as_memo(),
+            evocations: self.evocations.iter().map(|(id, charm)| (*id, (*charm).to_owned())).collect(),
+            martial_arts_styles: self.martial_arts_styles
+            .iter()
+            .map(|(k, v)| (*k, v.as_memo()))
+            .collect(),
+            exalt_type: self.exalt_type.as_memo(),
+            weapons: self.weapons.as_memo(),
+            wonders: self.wonders.as_memo(),
+        }
     }
 
     pub fn exalt_type(&self) -> &ExaltType<'source> {
@@ -1016,5 +1000,47 @@ impl<'view, 'source> Exalt<'source> {
         match &self.exalt_type {
             ExaltType::Solar(solar) => solar.solar_charms.iter().map(|(id, _)| *id).collect::<Vec<SolarCharmId>>().into_iter(),
         }
+    }
+
+    pub fn add_evocation(&mut self, evocation_id: EvocationId, evocation: &'source Evocation) -> Result<&mut Self, CharacterMutationError> {
+        let actual_essence = self.essence.rating;
+        if evocation.essence_required() > actual_essence {
+            return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+        }
+
+        if let Some(charm_id) = evocation.upgrade() {
+            match charm_id {
+                CharmId::Spirit(_) => todo!(),
+                CharmId::Evocation(evocation_id) => {
+                    if !self.evocations.iter().any(|(known_evocation_id, _)| known_evocation_id == &evocation_id) {
+                        return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+                    }
+                }
+                CharmId::MartialArts(_) => todo!(),
+                CharmId::Solar(solar_charm_id) => {
+                    if self.get_solar_charm(solar_charm_id).is_none() {
+                        return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+                    }
+                }
+                CharmId::Spell(_) => todo!(),
+            }
+        }
+
+        let mut unmet_evocation_prereqs = evocation.evocation_prerequisites().collect::<HashSet<EvocationId>>();
+
+        for known_evocation_id in self.evocations.iter().map(|(evocation_id, _)| *evocation_id) {
+            if unmet_evocation_prereqs.is_empty() {
+                break;
+            }
+
+            unmet_evocation_prereqs.remove(&known_evocation_id);
+        }
+
+        if unmet_evocation_prereqs.is_empty() {
+            return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet)); 
+        }
+
+        self.evocations.push((evocation_id, evocation));
+        Ok(self)
     }
 }

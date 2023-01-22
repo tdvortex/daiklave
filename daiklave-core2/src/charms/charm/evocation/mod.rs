@@ -100,6 +100,11 @@ impl Evocation {
         self.dissonant.as_deref()
     }
 
+    /// The Essence level required to learn this Evocation.
+    pub fn essence_required(&self) -> u8 {
+        self.essence_required.get()
+    }
+
     /// The other Evocations (typically on the same Artifact/Hearthstone) 
     /// which the Exalt must have to purchase this Charm.
     pub fn evocation_prerequisites(&self) -> impl Iterator<Item = EvocationId> + '_ {
@@ -108,7 +113,7 @@ impl Evocation {
 
     /// If the Evocation is an upgrade to a non-Evocation Charm, the Id of that
     /// Charm.
-    pub fn upgrades(&self) -> Option<CharmId> {
+    pub fn upgrade(&self) -> Option<CharmId> {
         self.upgrade_charm
     }
 

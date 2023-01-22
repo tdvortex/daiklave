@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::martial_arts::MartialArtsStyleId;
+use crate::{martial_arts::MartialArtsStyleId, charms::charm::evocation::{Evocation, EvocationId}};
 
 use super::{
     armor::ExaltArmorMemo, essence::EssenceStateMemo, exalt_type::ExaltTypeMemo,
@@ -12,44 +12,28 @@ use super::{
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct ExaltMemo {
-    armor: ExaltArmorMemo,
-    essence: EssenceStateMemo,
-    martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistMemo>,
-    exalt_type: ExaltTypeMemo,
-    weapons: ExaltWeaponsMemo,
-    wonders: ExaltWondersMemo,
+    pub(crate) armor: ExaltArmorMemo,
+    pub(crate) essence: EssenceStateMemo,
+    pub(crate) evocations: Vec<(EvocationId, Evocation)>,
+    pub(crate) martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistMemo>,
+    pub(crate) exalt_type: ExaltTypeMemo,
+    pub(crate) weapons: ExaltWeaponsMemo,
+    pub(crate) wonders: ExaltWondersMemo,
 }
 
 impl<'source> ExaltMemo {
-    pub(in crate::exaltation::exalt) fn new(
-        armor: ExaltArmorMemo,
-        essence: EssenceStateMemo,
-        martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistMemo>,
-        exalt_type: ExaltTypeMemo,
-        weapons: ExaltWeaponsMemo,
-        wonders: ExaltWondersMemo,
-    ) -> Self {
-        Self {
-            armor,
-            essence,
-            martial_arts_styles,
-            exalt_type,
-            weapons,
-            wonders,
-        }
-    }
-
     pub fn as_ref(&'source self) -> Exalt<'source> {
-        Exalt::new(
-            self.armor.as_ref(),
-            self.essence.as_ref(),
-            self.martial_arts_styles
-                .iter()
-                .map(|(k, v)| (*k, v.as_ref()))
-                .collect(),
-            self.exalt_type.as_ref(),
-            self.weapons.as_ref(),
-            self.wonders.as_ref(),
-        )
+        Exalt {
+            armor: self.armor.as_ref(),
+            essence: self.essence.as_ref(),
+            evocations: self.evocations.iter().map(|(id, charm)| (*id, charm)).collect(),
+            martial_arts_styles: self.martial_arts_styles
+            .iter()
+            .map(|(k, v)| (*k, v.as_ref()))
+            .collect(),
+            exalt_type: self.exalt_type.as_ref(),
+            weapons: self.weapons.as_ref(),
+            wonders: self.wonders.as_ref(),
+        }
     }
 }
