@@ -7,22 +7,25 @@ pub use with_description::SpiritCharmBuilderWithDescription;
 pub use with_duration::SpiritCharmBuilderWithDuration;
 pub use with_essence_requirement::SpiritCharmBuilderWithEssenceRequirement;
 
-use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
-use crate::{book_reference::BookReference, charms::{CharmCostType}};
+use crate::{book_reference::BookReference, charms::CharmCostType};
 
 use super::SpiritCharmKeyword;
 
 /// A builder for a Spirit Charm. Required fields, in order, are:
 /// name (already specified), Essence requirement, action type, duration,
-/// description, and finally if it is an Eclipse charm. Optional fields: 
+/// description, and finally if it is an Eclipse charm. Optional fields:
 /// book reference, charm keywords, charm costs, and a short summary.
 pub struct SpiritCharmBuilder {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
     pub(crate) keywords: HashSet<SpiritCharmKeyword>,
-    pub(crate) costs: HashMap<CharmCostType, NonZeroU8>
+    pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
 }
 
 impl SpiritCharmBuilder {
@@ -46,9 +49,12 @@ impl SpiritCharmBuilder {
 
     /// Adds a cost to use this Charm.
     pub fn cost(mut self, cost_type: CharmCostType, amount: NonZeroU8) -> Self {
-        self.costs.entry(cost_type).and_modify(|prior| {
-            *prior = (*prior).saturating_add(amount.get());
-        }).or_insert(amount);
+        self.costs
+            .entry(cost_type)
+            .and_modify(|prior| {
+                *prior = (*prior).saturating_add(amount.get());
+            })
+            .or_insert(amount);
 
         self
     }

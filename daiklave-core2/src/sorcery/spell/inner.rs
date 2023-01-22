@@ -1,6 +1,6 @@
-use std::{num::NonZeroU8, collections::HashSet};
+use std::{collections::HashSet, num::NonZeroU8};
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::book_reference::BookReference;
 
@@ -18,4 +18,3 @@ pub struct SpellInner {
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) keywords: HashSet<SpellKeyword>,
 }
-

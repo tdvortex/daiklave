@@ -4,7 +4,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     abilities::AbilityRatingMemo,
-    martial_arts::{charm::{MartialArtsCharm, MartialArtsCharmId}, MartialArtsStyle},
+    martial_arts::{
+        charm::{MartialArtsCharm, MartialArtsCharmId},
+        MartialArtsStyle,
+    },
 };
 
 use super::ExaltMartialArtist;

@@ -3,7 +3,10 @@ use std::collections::HashMap;
 use crate::{
     abilities::AbilityRating,
     exaltation::mortal::martial_arts::MortalMartialArtist,
-    martial_arts::{charm::{MartialArtsCharm, MartialArtsCharmId}, MartialArtsStyle},
+    martial_arts::{
+        charm::{MartialArtsCharm, MartialArtsCharmId},
+        MartialArtsStyle,
+    },
 };
 
 use super::ExaltMartialArtistMemo;

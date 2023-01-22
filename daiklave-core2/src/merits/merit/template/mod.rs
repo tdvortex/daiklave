@@ -39,9 +39,7 @@ impl MeritTemplate {
                 }
             }
             MeritTemplateDotOptions::Variable(mut options) => {
-                if !(0..=5).contains(&dots) {
-                    Err(MeritError::InvalidDotRating)
-                } else if options[dots as usize].is_none() {
+                if !(0..=5).contains(&dots) || options[dots as usize].is_none() {
                     Err(MeritError::InvalidDotRating)
                 } else {
                     Ok(MeritTemplateWithDotsMemo {

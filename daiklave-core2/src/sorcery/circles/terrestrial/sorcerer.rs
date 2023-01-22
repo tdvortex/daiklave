@@ -1,13 +1,14 @@
-use std::collections::HashMap;
+use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
     sorcery::{
         circles::{
-            celestial::sorcerer::CelestialCircleSorcerer, solar::sorcerer::SolarCircleSorcerer,
+            celestial::{sorcerer::CelestialCircleSorcerer, AddCelestialSorcery},
+            solar::sorcerer::SolarCircleSorcerer,
         },
-        spell::{Spell},
+        spell::Spell,
         spell::SpellId,
-        CelestialSpell, ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
+        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
         SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryArchetypeWithMerits, SorceryError,
     },
     CharacterMutationError,
@@ -89,26 +90,23 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
     }
 
     pub fn control_spell(&self) -> (SpellId, Spell<'source>) {
-        
-        (self.control_spell_id, Spell::Terrestrial(self.control_spell))
+        (
+            self.control_spell_id,
+            Spell::Terrestrial(self.control_spell),
+        )
     }
 
     pub fn upgrade(
         &self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source CelestialSpell,
+        add_sorcery: &'source AddCelestialSorcery,
     ) -> Result<CelestialCircleSorcerer<'source>, CharacterMutationError> {
-        if shaping_ritual.archetype_id() != archetype_id {
+        if add_sorcery.shaping_ritual.archetype_id() != add_sorcery.archetype_id {
             return Err(CharacterMutationError::SorceryError(
                 SorceryError::MissingArchetype,
             ));
         }
 
-        if shaping_ritual_id == self.shaping_ritual_id {
+        if add_sorcery.shaping_ritual_id == self.shaping_ritual_id {
             return Err(CharacterMutationError::SorceryError(
                 SorceryError::DuplicateShapingRitual,
             ));
@@ -121,25 +119,26 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
             (self.archetype, self.archetype_merits.clone()),
         );
 
-        if !archetypes.contains_key(&archetype_id) {
-            if let Some(new_archetype) = archetype {
-                archetypes.insert(archetype_id, (new_archetype, HashMap::new()));
+        if let Entry::Vacant(e) = archetypes.entry(add_sorcery.archetype_id) {
+            if let Some(new_archetype) = &add_sorcery.archetype {
+                e.insert((new_archetype, HashMap::new()));
             } else {
                 return Err(CharacterMutationError::SorceryError(
                     SorceryError::MissingArchetype,
                 ));
             }
         }
+
         Ok(CelestialCircleSorcerer {
             archetypes,
-            circle_archetypes: [self.archetype_id, archetype_id],
-            shaping_ritual_ids: [self.shaping_ritual_id, shaping_ritual_id],
-            shaping_rituals: [self.shaping_ritual, shaping_ritual],
+            circle_archetypes: [self.archetype_id, add_sorcery.archetype_id],
+            shaping_ritual_ids: [self.shaping_ritual_id, add_sorcery.shaping_ritual_id],
+            shaping_rituals: [self.shaping_ritual, &add_sorcery.shaping_ritual],
             terrestrial_control_spell_id: self.control_spell_id,
             terrestrial_control_spell: self.control_spell,
             terrestrial_spells: self.other_spells.clone(),
-            celestial_control_spell_id: control_spell_id,
-            celestial_control_spell: control_spell,
+            celestial_control_spell_id: add_sorcery.control_spell_id,
+            celestial_control_spell: &add_sorcery.control_spell,
             celestial_spells: HashMap::new(),
         })
     }

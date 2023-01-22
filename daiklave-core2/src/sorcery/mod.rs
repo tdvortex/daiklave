@@ -9,12 +9,15 @@ pub use archetype::{
     ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
     SorceryArchetypeMeritId, SorceryArchetypeWithMerits,
 };
-pub use circles::{CelestialSpell, SolarSpell, SorceryCircle, TerrestrialSpell};
+pub use circles::{
+    AddCelestialSorcery, AddSolarSorcery, AddTerrestrialSorcery, CelestialSpell, SolarSpell,
+    SorceryCircle, TerrestrialSpell,
+};
 pub(crate) use error::SorceryError;
 
 use crate::exaltation::ExaltationSorcery;
 
-use self::spell::{SpellId, Spell};
+use self::spell::{Spell, SpellId};
 
 /// A character's Sorcery abilities.
 pub struct Sorcery<'view, 'source>(pub(crate) ExaltationSorcery<'view, 'source>);

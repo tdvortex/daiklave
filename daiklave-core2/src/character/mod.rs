@@ -47,7 +47,7 @@ pub struct Character<'source> {
     pub(crate) languages: Languages<'source>,
 }
 
-impl<'view, 'source> Character<'source> {
+impl<'source> Character<'source> {
     /// Clones the character and all contained values into an owned struct.
     pub fn as_memo(&self) -> CharacterMemo {
         CharacterMemo {
@@ -185,33 +185,15 @@ impl<'view, 'source> Character<'source> {
             CharacterMutation::RemoveLanguage(language_mutation) => {
                 self.remove_language(language_mutation)
             }
-            CharacterMutation::AddTerrestrialSorcery(add_terrestrial) => self
-                .add_terrestrial_sorcery(
-                    add_terrestrial.0,
-                    &add_terrestrial.1,
-                    add_terrestrial.2,
-                    &add_terrestrial.3,
-                    add_terrestrial.4,
-                    &add_terrestrial.5,
-                ),
+            CharacterMutation::AddTerrestrialSorcery(add_terrestrial) => {
+                self.add_terrestrial_sorcery(add_terrestrial)
+            }
             CharacterMutation::RemoveTerrestrialSorcery => self.remove_terrestrial_sorcery(),
-            CharacterMutation::AddCelestialSorcery(add_celestial) => self.add_celestial_sorcery(
-                add_celestial.0,
-                add_celestial.1.as_ref(),
-                add_celestial.2,
-                &add_celestial.3,
-                add_celestial.4,
-                &add_celestial.5,
-            ),
+            CharacterMutation::AddCelestialSorcery(add_celestial) => {
+                self.add_celestial_sorcery(add_celestial)
+            }
             CharacterMutation::RemoveCelestialSorcery => self.remove_celestial_sorcery(),
-            CharacterMutation::AddSolarSorcery(add_solar) => self.add_solar_sorcery(
-                add_solar.0,
-                add_solar.1.as_ref(),
-                add_solar.2,
-                &add_solar.3,
-                add_solar.4,
-                &add_solar.5,
-            ),
+            CharacterMutation::AddSolarSorcery(add_solar) => self.add_solar_sorcery(add_solar),
             CharacterMutation::RemoveSolarSorcery => self.remove_solar_sorcery(),
             CharacterMutation::AddSorceryArchetypeMerit(
                 sorcery_archetype_id,

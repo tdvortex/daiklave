@@ -7,7 +7,7 @@ use crate::sorcery::{
         celestial::sorcerer::CelestialCircleSorcerer, solar::sorcerer::SolarCircleSorcerer,
         terrestrial::sorcerer::TerrestrialCircleSorcerer,
     },
-    spell::{SpellId, Spell},
+    spell::{Spell, SpellId},
     ShapingRitual, ShapingRitualId, SorceryArchetypeId, SorceryArchetypeWithMerits, SorceryCircle,
 };
 

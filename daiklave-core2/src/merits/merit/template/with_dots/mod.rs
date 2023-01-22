@@ -24,7 +24,7 @@ impl<'source> MeritTemplateWithDots<'source> {
             merit_type: self.merit_type,
             shared_description: self.shared_description.to_owned(),
             dot_description: self.dot_description.map(|s| s.to_owned()),
-            prerequisites: self.prerequisites.iter().copied().collect(),
+            prerequisites: self.prerequisites.to_vec(),
         }
     }
 

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::charms::charm::{SpiritCharmId, EclipseCharm};
+use crate::charms::charm::{EclipseCharm, SpiritCharmId};
 
 use super::{Eclipse, EclipseAbility};
 

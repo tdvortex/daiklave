@@ -62,7 +62,7 @@ impl<'view, 'source> Merits<'view, 'source> {
                     .demenses_no_manse
                     .get(&demense_id)
                     .map(|(name, geomancy)| {
-                        Merit(MeritSource::DemenseNoManse(demense_id, *name, *geomancy))
+                        Merit(MeritSource::DemenseNoManse(demense_id, name, *geomancy))
                     })
             }
             MeritId::DemenseWithManse(hearthstone_id) => self
@@ -193,7 +193,7 @@ impl<'view, 'source> Merits<'view, 'source> {
                                 .map(|sorcery_archetype_merit| {
                                     Merit(MeritSource::SorceryArchetype(
                                         sorcery_archetype_merit_id,
-                                        *sorcery_archetype_merit,
+                                        sorcery_archetype_merit,
                                     ))
                                 })
                         })
@@ -299,7 +299,7 @@ impl<'view, 'source> Merits<'view, 'source> {
         self.0
             .martial_arts()
             .iter()
-            .map(|style_id| MeritId::MartialArtist(style_id))
+            .map(MeritId::MartialArtist)
             .for_each(|merit_id| output.push(merit_id));
 
         // Mortal sorcerer

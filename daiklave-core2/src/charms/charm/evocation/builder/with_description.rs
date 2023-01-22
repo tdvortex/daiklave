@@ -1,6 +1,18 @@
-use std::{num::NonZeroU8, collections::{HashSet, HashMap}};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
-use crate::{charms::{CharmActionType, charm::{evocation::{EvokableId, EvocationId, EvocationKeyword}, CharmId, CharmMutation, Evocation}, CharmCostType}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    charms::{
+        charm::{
+            evocation::{EvocationId, EvocationKeyword, EvokableId},
+            CharmId, CharmMutation, Evocation,
+        },
+        CharmActionType, CharmCostType,
+    },
+};
 
 /// An Evocation builder after the description has been provided. To complete
 /// the build process, call build().
@@ -34,14 +46,14 @@ impl EvocationBuilderWithDescription {
         self
     }
 
-    /// Adds a description which applies if the Exalt is resonant with the 
+    /// Adds a description which applies if the Exalt is resonant with the
     /// magic material of the artifact.
     pub fn resonant(mut self, description: String) -> Self {
         self.resonant = Some(description);
         self
     }
 
-    /// Adds a description which applies if the Exalt is dissonant with the 
+    /// Adds a description which applies if the Exalt is dissonant with the
     /// magic material of the artifact.
     pub fn dissonant(mut self, description: String) -> Self {
         self.dissonant = Some(description);
@@ -54,7 +66,7 @@ impl EvocationBuilderWithDescription {
         self
     }
 
-    /// Sets this Evocation as an upgrade of another Charm, usually a 
+    /// Sets this Evocation as an upgrade of another Charm, usually a
     /// Solar Charm (or other Exalt-specific type).
     pub fn upgrades(mut self, charm_id: CharmId) -> Self {
         self.upgrade_charm = Some(charm_id);
@@ -63,9 +75,12 @@ impl EvocationBuilderWithDescription {
 
     /// Adds a cost to use this Charm.
     pub fn cost(mut self, cost_type: CharmCostType, amount: NonZeroU8) -> Self {
-        self.costs.entry(cost_type).and_modify(|prior| {
-            *prior = (*prior).saturating_add(amount.get());
-        }).or_insert(amount);
+        self.costs
+            .entry(cost_type)
+            .and_modify(|prior| {
+                *prior = (*prior).saturating_add(amount.get());
+            })
+            .or_insert(amount);
 
         self
     }

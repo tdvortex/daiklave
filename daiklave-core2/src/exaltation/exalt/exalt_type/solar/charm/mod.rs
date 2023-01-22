@@ -4,7 +4,10 @@ pub mod builder;
 mod ability;
 mod id;
 mod keyword;
-use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
 pub use id::SolarCharmId;
 pub use keyword::SolarCharmKeyword;
@@ -13,10 +16,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     book_reference::BookReference,
-    charms::{CharmActionType, CharmCostType}, 
+    charms::{CharmActionType, CharmCostType},
 };
 
-use self::{builder::SolarCharmBuilder, ability::SolarCharmAbility};
+use self::{ability::SolarCharmAbility, builder::SolarCharmBuilder};
 
 /// A Solar charm.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -37,7 +40,7 @@ pub struct SolarCharm {
 
 impl SolarCharm {
     /// Starts building a new Solar Charm.
-    pub fn new(name: String) -> SolarCharmBuilder {
+    pub fn builder(name: String) -> SolarCharmBuilder {
         SolarCharmBuilder {
             name,
             book_reference: None,

@@ -26,9 +26,11 @@ use crate::{
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        spell::SpellId, CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery,
-        SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
-        SorceryError, TerrestrialSpell,
+        circles::{
+            celestial::AddCelestialSorcery, solar::AddSolarSorcery,
+            terrestrial::AddTerrestrialSorceryView,
+        },
+        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     weapons::weapon::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
@@ -263,12 +265,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn add_terrestrial_sorcery(
         &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: &'source SorceryArchetype,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell,
+        add_terrestrial: AddTerrestrialSorceryView<'source>,
         occult_dots: u8,
         intelligence_dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -280,26 +277,10 @@ impl<'view, 'source> Exaltation<'source> {
                     ));
                 }
 
-                mortal.add_terrestrial_sorcery(
-                    archetype_id,
-                    archetype,
-                    shaping_ritual_id,
-                    shaping_ritual,
-                    control_spell_id,
-                    control_spell,
-                )?;
+                mortal.add_terrestrial_sorcery(add_terrestrial)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.add_terrestrial_sorcery(
-                    archetype_id,
-                    archetype,
-                    shaping_ritual_id,
-                    shaping_ritual,
-                    control_spell_id,
-                    control_spell,
-                    occult_dots,
-                    intelligence_dots,
-                )?;
+                exalt.add_terrestrial_sorcery(add_terrestrial, occult_dots, intelligence_dots)?;
             }
         }
         Ok(self)
@@ -319,12 +300,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn add_celestial_sorcery(
         &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source CelestialSpell,
+        add_sorcery: &'source AddCelestialSorcery,
         occult_dots: u8,
         intelligence_dots: u8,
         essence_rating: u8,
@@ -342,16 +318,7 @@ impl<'view, 'source> Exaltation<'source> {
                     ));
                 }
 
-                exalt.add_celestial_sorcery(
-                    archetype_id,
-                    archetype,
-                    shaping_ritual_id,
-                    shaping_ritual,
-                    control_spell_id,
-                    control_spell,
-                    occult_dots,
-                    intelligence_dots,
-                )?;
+                exalt.add_celestial_sorcery(add_sorcery, occult_dots, intelligence_dots)?;
             }
         }
         Ok(self)
@@ -373,12 +340,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn add_solar_sorcery(
         &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source SolarSpell,
+        add_solar: &'source AddSolarSorcery,
         occult_dots: u8,
         essence_rating: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -389,16 +351,7 @@ impl<'view, 'source> Exaltation<'source> {
                 ));
             }
             Exaltation::Exalt(exalt) => {
-                exalt.add_solar_sorcery(
-                    archetype_id,
-                    archetype,
-                    shaping_ritual_id,
-                    shaping_ritual,
-                    control_spell_id,
-                    control_spell,
-                    occult_dots,
-                    essence_rating,
-                )?;
+                exalt.add_solar_sorcery(add_solar, occult_dots, essence_rating)?;
             }
         }
         Ok(self)

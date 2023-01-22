@@ -1,6 +1,18 @@
-use std::{num::NonZeroU8, collections::{HashSet, HashMap}};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
-use crate::{charms::{CharmActionType, charm::{evocation::{EvokableId, EvocationId, EvocationKeyword}, CharmId}, CharmCostType}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    charms::{
+        charm::{
+            evocation::{EvocationId, EvocationKeyword, EvokableId},
+            CharmId,
+        },
+        CharmActionType, CharmCostType,
+    },
+};
 
 use super::EvocationBuilderWithDuration;
 
@@ -17,7 +29,7 @@ pub struct EvocationBuilderWithActionType {
     pub(crate) upgrade_charm: Option<CharmId>,
     pub(crate) keywords: HashSet<EvocationKeyword>,
     pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
-    pub(crate) action_type: CharmActionType
+    pub(crate) action_type: CharmActionType,
 }
 
 impl EvocationBuilderWithActionType {
@@ -33,14 +45,14 @@ impl EvocationBuilderWithActionType {
         self
     }
 
-    /// Adds a description which applies if the Exalt is resonant with the 
+    /// Adds a description which applies if the Exalt is resonant with the
     /// magic material of the artifact.
     pub fn resonant(mut self, description: String) -> Self {
         self.resonant = Some(description);
         self
     }
 
-    /// Adds a description which applies if the Exalt is dissonant with the 
+    /// Adds a description which applies if the Exalt is dissonant with the
     /// magic material of the artifact.
     pub fn dissonant(mut self, description: String) -> Self {
         self.dissonant = Some(description);
@@ -53,7 +65,7 @@ impl EvocationBuilderWithActionType {
         self
     }
 
-    /// Sets this Evocation as an upgrade of another Charm, usually a 
+    /// Sets this Evocation as an upgrade of another Charm, usually a
     /// Solar Charm (or other Exalt-specific type).
     pub fn upgrades(mut self, charm_id: CharmId) -> Self {
         self.upgrade_charm = Some(charm_id);
@@ -62,9 +74,12 @@ impl EvocationBuilderWithActionType {
 
     /// Adds a cost to use this Charm.
     pub fn cost(mut self, cost_type: CharmCostType, amount: NonZeroU8) -> Self {
-        self.costs.entry(cost_type).and_modify(|prior| {
-            *prior = (*prior).saturating_add(amount.get());
-        }).or_insert(amount);
+        self.costs
+            .entry(cost_type)
+            .and_modify(|prior| {
+                *prior = (*prior).saturating_add(amount.get());
+            })
+            .or_insert(amount);
 
         self
     }

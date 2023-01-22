@@ -3,7 +3,10 @@ pub mod builder;
 mod id;
 mod keyword;
 
-use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
 pub use id::MartialArtsCharmId;
 pub use keyword::MartialArtsCharmKeyword;
@@ -40,7 +43,7 @@ pub struct MartialArtsCharm {
 
 impl MartialArtsCharm {
     /// Starts a builder to create a new Martial Arts Charm.
-    pub fn new(name: String, style: MartialArtsStyleId) -> MartialArtsCharmBuilder {
+    pub fn builder(name: String, style: MartialArtsStyleId) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {
             name,
             style,
@@ -105,6 +108,8 @@ impl MartialArtsCharm {
     /// An iterator of the Charm costs (motes, willpower, etc) associated with
     /// this Charm.
     pub fn costs(&self) -> impl Iterator<Item = CharmCost> + '_ {
-        self.costs.iter().map(|(cost_type, amount)| CharmCost::new(*cost_type, amount.get()))
+        self.costs
+            .iter()
+            .map(|(cost_type, amount)| CharmCost::new(*cost_type, amount.get()))
     }
 }

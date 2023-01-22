@@ -1,7 +1,6 @@
 use crate::{
-    exaltation::exalt::exalt_type::solar::charm::SolarCharm,
-    martial_arts::charm::MartialArtsCharm,
-    sorcery::{spell::SpellMutation},
+    exaltation::exalt::exalt_type::solar::charm::SolarCharm, martial_arts::charm::MartialArtsCharm,
+    sorcery::spell::SpellMutation,
 };
 
 use super::{evocation::Evocation, spirit::EclipseCharm};

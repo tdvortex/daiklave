@@ -5,14 +5,17 @@ mod with_duration;
 mod with_essence_requirement;
 pub use with_essence_requirement::SolarCharmBuilderWithEssenceRequirement;
 
-use std::{num::NonZeroU8, collections::{HashSet, HashMap}};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
-use crate::{book_reference::BookReference, charms::{CharmCostType}};
+use crate::{book_reference::BookReference, charms::CharmCostType};
 
 use super::{SolarCharmId, SolarCharmKeyword};
 
 /// A builder to construct a new Solar Charm. Required fields are name (already
-/// specified), Essence requirement, ability category and required dots, 
+/// specified), Essence requirement, ability category and required dots,
 pub struct SolarCharmBuilder {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
@@ -49,15 +52,21 @@ impl SolarCharmBuilder {
 
     /// Adds a cost to use this Charm.
     pub fn cost(mut self, cost_type: CharmCostType, amount: NonZeroU8) -> Self {
-        self.costs.entry(cost_type).and_modify(|prior| {
-            *prior = (*prior).saturating_add(amount.get());
-        }).or_insert(amount);
+        self.costs
+            .entry(cost_type)
+            .and_modify(|prior| {
+                *prior = (*prior).saturating_add(amount.get());
+            })
+            .or_insert(amount);
 
         self
     }
 
     /// Sets an essence requirement for using this Charm. Maxes out at 5 dots.
-    pub fn essence_required(self, essence_required: NonZeroU8) -> SolarCharmBuilderWithEssenceRequirement {
+    pub fn essence_required(
+        self,
+        essence_required: NonZeroU8,
+    ) -> SolarCharmBuilderWithEssenceRequirement {
         SolarCharmBuilderWithEssenceRequirement {
             name: self.name,
             book_reference: self.book_reference,
@@ -65,14 +74,8 @@ impl SolarCharmBuilder {
             charms_required: self.charms_required,
             keywords: self.keywords,
             costs: self.costs,
-            essence_required: essence_required.clamp(NonZeroU8::new(1).unwrap(), NonZeroU8::new(5).unwrap()),
+            essence_required: essence_required
+                .clamp(NonZeroU8::new(1).unwrap(), NonZeroU8::new(5).unwrap()),
         }
     }
 }
-
-
-
-
-
-
-

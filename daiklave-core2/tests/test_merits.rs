@@ -21,8 +21,9 @@ use daiklave_core2::{
         StackableMerit, StackableMeritId, StackableMeritTemplateId,
     },
     sorcery::{
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
-        SorceryArchetypeMerit, SorceryArchetypeMeritId, spell::{SpellKeyword, SpellId, Spell},
+        spell::{Spell, SpellId, SpellKeyword},
+        AddTerrestrialSorcery, ShapingRitual, ShapingRitualId, SorceryArchetype,
+        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
     unique_id::UniqueId,
     weapons::weapon::{
@@ -195,8 +196,7 @@ fn test_merits() {
     let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 3);
     event_source.apply_mutation(mutation).unwrap();
 
-
-    let control_spell = Spell::new("Death of Obsidian Butterflies".to_owned())
+    let control_spell = Spell::build("Death of Obsidian Butterflies".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 470))
         .keyword(SpellKeyword::DecisiveOnly)
         .keyword(SpellKeyword::Perilous)
@@ -208,16 +208,15 @@ fn test_merits() {
         .summary("AOE attack that makes difficult terrain".to_owned())
         .build_terrestrial();
 
-    let mutation = CharacterMutation::AddTerrestrialSorcery(
-        Box::new((
-        SorceryArchetypeId(UniqueId::Placeholder(1)),
-        SorceryArchetype::new(
-            "The Talisman of Ten Thousand Eyes".to_owned(), 
+    let mutation = CharacterMutation::AddTerrestrialSorcery(Box::new(AddTerrestrialSorcery {
+        archetype_id: SorceryArchetypeId(UniqueId::Placeholder(1)),
+        archetype: SorceryArchetype::new(
+            "The Talisman of Ten Thousand Eyes".to_owned(),
             Some(BookReference::new(Book::CoreRulebook, 470)),
-            "A phylactery of great sorcerous puissance[...]".to_owned()
+            "A phylactery of great sorcerous puissance[...]".to_owned(),
         ),
-        ShapingRitualId(UniqueId::Placeholder(1)),
-        ShapingRitual::new(
+        shaping_ritual_id: ShapingRitualId(UniqueId::Placeholder(1)),
+        shaping_ritual: ShapingRitual::new(
             SorceryArchetypeId(UniqueId::Placeholder(1)),
             Some(BookReference::new(Book::CoreRulebook, 470)),
             "When the sorcerer takes the first shape sorcery action to \
@@ -226,11 +225,12 @@ fn test_merits() {
             its power, she gains (stunt rating + 2) sorcerous motes \
             towards completing this spell. This benefit can only be \
             received once per scene. Stunts to enhance the sorcerer's \
-            control spell do not count against the once per scene limit.".to_owned()
+            control spell do not count against the once per scene limit."
+                .to_owned(),
         ),
-        SpellId(UniqueId::Placeholder(1)),
+        control_spell_id: SpellId(UniqueId::Placeholder(1)),
         control_spell,
-    )));
+    }));
     event_source.apply_mutation(mutation).unwrap();
 
     // A sorcery archetype merit

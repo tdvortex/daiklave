@@ -25,6 +25,6 @@ impl MeritTemplateDotOptions {
             }
         }
 
-        to_iter.into_iter().filter_map(|maybe_u8| maybe_u8)
+        to_iter.into_iter().flatten()
     }
 }

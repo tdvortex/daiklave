@@ -24,9 +24,12 @@ use crate::{
     exaltation::exalt::Limit,
     merits::merit::MeritError,
     sorcery::{
-        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, spell::SpellId, CelestialSpell,
-        ShapingRitual, ShapingRitualId, SolarSpell, SorceryArchetype, SorceryArchetypeId,
-        SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError, TerrestrialSpell,
+        circles::{
+            celestial::AddCelestialSorcery,
+            solar::AddSolarSorcery,
+            terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
+        },
+        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     CharacterMutationError,
 };
@@ -86,22 +89,17 @@ impl<'source> Solar<'source> {
 
     pub(crate) fn add_terrestrial_sorcery(
         &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: &'source SorceryArchetype,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell,
+        add_terrestrial: AddTerrestrialSorceryView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self.sorcery.is_none() {
             self.sorcery = Some(SolarSorcererView::Terrestrial(
                 TerrestrialCircleSorcerer::new(
-                    archetype_id,
-                    archetype,
-                    shaping_ritual_id,
-                    shaping_ritual,
-                    control_spell_id,
-                    control_spell,
+                    add_terrestrial.archetype_id,
+                    add_terrestrial.archetype,
+                    add_terrestrial.shaping_ritual_id,
+                    add_terrestrial.shaping_ritual,
+                    add_terrestrial.control_spell_id,
+                    add_terrestrial.control_spell,
                 )?,
             ));
             Ok(self)
@@ -128,22 +126,10 @@ impl<'source> Solar<'source> {
 
     pub(crate) fn add_celestial_sorcery(
         &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source CelestialSpell,
+        add_celestial: &'source AddCelestialSorcery,
     ) -> Result<&mut Self, CharacterMutationError> {
         let celestial = match &self.sorcery {
-            Some(SolarSorcererView::Terrestrial(terrestrial)) => terrestrial.upgrade(
-                archetype_id,
-                archetype,
-                shaping_ritual_id,
-                shaping_ritual,
-                control_spell_id,
-                control_spell,
-            ),
+            Some(SolarSorcererView::Terrestrial(terrestrial)) => terrestrial.upgrade(add_celestial),
             _ => Err(CharacterMutationError::SorceryError(
                 SorceryError::CircleSequence,
             )),
@@ -165,22 +151,10 @@ impl<'source> Solar<'source> {
 
     pub(crate) fn add_solar_sorcery(
         &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source SolarSpell,
+        add_solar: &'source AddSolarSorcery,
     ) -> Result<&mut Self, CharacterMutationError> {
         let solar = match &self.sorcery {
-            Some(SolarSorcererView::Celestial(celestial)) => celestial.upgrade(
-                archetype_id,
-                archetype,
-                shaping_ritual_id,
-                shaping_ritual,
-                control_spell_id,
-                control_spell,
-            ),
+            Some(SolarSorcererView::Celestial(celestial)) => celestial.upgrade(add_solar),
             _ => Err(CharacterMutationError::SorceryError(
                 SorceryError::CircleSequence,
             )),

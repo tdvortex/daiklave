@@ -24,9 +24,8 @@ use crate::{
     martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     merits::merit::MeritError,
     sorcery::{
-        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, spell::SpellId, ShapingRitual,
-        ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
-        SorceryArchetypeMeritId, SorceryError, TerrestrialSpell,
+        circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
+        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     weapons::{
         weapon::{
@@ -131,12 +130,7 @@ impl<'source> Mortal<'source> {
 
     pub fn add_terrestrial_sorcery(
         &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: &'source SorceryArchetype,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell,
+        add_terrestrial: AddTerrestrialSorceryView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self.sorcery.is_some() {
             return Err(CharacterMutationError::SorceryError(
@@ -145,12 +139,12 @@ impl<'source> Mortal<'source> {
         }
 
         self.sorcery = Some(TerrestrialCircleSorcerer::new(
-            archetype_id,
-            archetype,
-            shaping_ritual_id,
-            shaping_ritual,
-            control_spell_id,
-            control_spell,
+            add_terrestrial.archetype_id,
+            add_terrestrial.archetype,
+            add_terrestrial.shaping_ritual_id,
+            add_terrestrial.shaping_ritual,
+            add_terrestrial.control_spell_id,
+            add_terrestrial.control_spell,
         )?);
 
         Ok(self)

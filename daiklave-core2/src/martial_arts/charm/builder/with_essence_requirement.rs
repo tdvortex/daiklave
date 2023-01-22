@@ -1,6 +1,16 @@
-use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
-use crate::{martial_arts::{MartialArtsStyleId, charm::{MartialArtsCharmId, MartialArtsCharmKeyword}}, book_reference::BookReference, charms::{CharmCostType}};
+use crate::{
+    book_reference::BookReference,
+    charms::CharmCostType,
+    martial_arts::{
+        charm::{MartialArtsCharmId, MartialArtsCharmKeyword},
+        MartialArtsStyleId,
+    },
+};
 
 use super::MartialArtsCharmBuilderWithAbilityRequirement;
 
@@ -64,16 +74,22 @@ impl MartialArtsCharmBuilderWithEssenceRequirement {
 
     /// Adds a cost to use this Charm.
     pub fn cost(mut self, cost_type: CharmCostType, amount: NonZeroU8) -> Self {
-        self.costs.entry(cost_type).and_modify(|prior| {
-            *prior = (*prior).saturating_add(amount.get());
-        }).or_insert(amount);
+        self.costs
+            .entry(cost_type)
+            .and_modify(|prior| {
+                *prior = (*prior).saturating_add(amount.get());
+            })
+            .or_insert(amount);
 
         self
     }
 
     /// Specifies the number of dots in the associated Martial Arts ability
     /// required to learn this Charm. Caps at 5.
-    pub fn ability_required(self, ability_required: NonZeroU8) -> MartialArtsCharmBuilderWithAbilityRequirement {
+    pub fn ability_required(
+        self,
+        ability_required: NonZeroU8,
+    ) -> MartialArtsCharmBuilderWithAbilityRequirement {
         MartialArtsCharmBuilderWithAbilityRequirement {
             name: self.name,
             style: self.style,

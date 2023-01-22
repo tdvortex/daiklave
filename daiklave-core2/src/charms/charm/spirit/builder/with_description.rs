@@ -1,7 +1,21 @@
-use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
-use crate::{book_reference::BookReference, charms::{charm::{SpiritCharmKeyword, spirit::{EclipseCharm, inner::SpiritCharmInner, NonEclipseCharm, SpiritCharm}}, CharmCostType, CharmActionType}};
+use crate::{
+    book_reference::BookReference,
+    charms::{
+        charm::{
+            spirit::{inner::SpiritCharmInner, EclipseCharm, NonEclipseCharm, SpiritCharm},
+            SpiritCharmKeyword,
+        },
+        CharmActionType, CharmCostType,
+    },
+};
 
+/// A Spirit Charm builder after the description has been provided. Complete
+/// the builder using build().
 pub struct SpiritCharmBuilderWithDescription {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
@@ -35,9 +49,12 @@ impl SpiritCharmBuilderWithDescription {
 
     /// Adds a cost to use this Charm.
     pub fn cost(mut self, cost_type: CharmCostType, amount: NonZeroU8) -> Self {
-        self.costs.entry(cost_type).and_modify(|prior| {
-            *prior = (*prior).saturating_add(amount.get());
-        }).or_insert(amount);
+        self.costs
+            .entry(cost_type)
+            .and_modify(|prior| {
+                *prior = (*prior).saturating_add(amount.get());
+            })
+            .or_insert(amount);
 
         self
     }
@@ -66,7 +83,7 @@ impl SpiritCharmBuilderWithDescription {
         NonEclipseCharm(self.build_inner())
     }
 
-    /// Finishes the builder, retuning a Spirit charm, either Eclipse or 
+    /// Finishes the builder, retuning a Spirit charm, either Eclipse or
     /// Non-Eclipse as specified.
     pub fn build(self, eclipse: bool) -> SpiritCharm {
         if eclipse {

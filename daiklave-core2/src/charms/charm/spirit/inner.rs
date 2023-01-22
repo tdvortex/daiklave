@@ -1,4 +1,7 @@
-use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
 use serde::{Deserialize, Serialize};
 

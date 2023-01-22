@@ -16,7 +16,6 @@ impl Deref for TerrestrialSpell {
     }
 }
 
-
 impl From<SpellInner> for TerrestrialSpell {
     fn from(inner: SpellInner) -> Self {
         Self(inner)

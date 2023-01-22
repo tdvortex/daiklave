@@ -1,19 +1,25 @@
-use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
-use crate::{book_reference::BookReference, charms::{charm::CharmId, CharmCostType}};
+use crate::{
+    book_reference::BookReference,
+    charms::{charm::CharmId, CharmCostType},
+};
 
-use super::{EvokableId, EvocationId, EvocationKeyword};
+use super::{EvocationId, EvocationKeyword, EvokableId};
 
-mod with_essence_requirement;
 mod with_action_type;
-mod with_duration;
 mod with_description;
+mod with_duration;
+mod with_essence_requirement;
 pub use with_action_type::EvocationBuilderWithActionType;
-pub use with_essence_requirement::EvocationBuilderWithEssenceRequirement;
-pub use with_duration::EvocationBuilderWithDuration;
 pub use with_description::EvocationBuilderWithDescription;
+pub use with_duration::EvocationBuilderWithDuration;
+pub use with_essence_requirement::EvocationBuilderWithEssenceRequirement;
 
-/// A builder for an Evocation. Required fields (in order): name (already 
+/// A builder for an Evocation. Required fields (in order): name (already
 /// specified), evokable item (already specified), essence requirement,
 /// action type, duration, and description. Optional fields: book reference,
 /// other evocations as prerequisites, a charm which it upgrades, resonant
@@ -44,14 +50,14 @@ impl EvocationBuilder {
         self
     }
 
-    /// Adds a description which applies if the Exalt is resonant with the 
+    /// Adds a description which applies if the Exalt is resonant with the
     /// magic material of the artifact.
     pub fn resonant(mut self, description: String) -> Self {
         self.resonant = Some(description);
         self
     }
 
-    /// Adds a description which applies if the Exalt is dissonant with the 
+    /// Adds a description which applies if the Exalt is dissonant with the
     /// magic material of the artifact.
     pub fn dissonant(mut self, description: String) -> Self {
         self.dissonant = Some(description);
@@ -64,7 +70,7 @@ impl EvocationBuilder {
         self
     }
 
-    /// Sets this Evocation as an upgrade of another Charm, usually a 
+    /// Sets this Evocation as an upgrade of another Charm, usually a
     /// Solar Charm (or other Exalt-specific type).
     pub fn upgrades(mut self, charm_id: CharmId) -> Self {
         self.upgrade_charm = Some(charm_id);
@@ -73,9 +79,12 @@ impl EvocationBuilder {
 
     /// Adds a cost to use this Charm.
     pub fn cost(mut self, cost_type: CharmCostType, amount: NonZeroU8) -> Self {
-        self.costs.entry(cost_type).and_modify(|prior| {
-            *prior = (*prior).saturating_add(amount.get());
-        }).or_insert(amount);
+        self.costs
+            .entry(cost_type)
+            .and_modify(|prior| {
+                *prior = (*prior).saturating_add(amount.get());
+            })
+            .or_insert(amount);
 
         self
     }
@@ -87,19 +96,23 @@ impl EvocationBuilder {
     }
 
     /// Sets an essence requirement for using this Charm. Maxes out at 5 dots.
-    pub fn essence_required(self, essence_required: NonZeroU8) -> EvocationBuilderWithEssenceRequirement {
+    pub fn essence_required(
+        self,
+        essence_required: NonZeroU8,
+    ) -> EvocationBuilderWithEssenceRequirement {
         EvocationBuilderWithEssenceRequirement {
             evokable_id: self.evokable_id,
             book_reference: self.book_reference,
             name: self.name,
             summary: self.summary,
-            essence_required: essence_required.clamp(NonZeroU8::new(1).unwrap(), NonZeroU8::new(5).unwrap()),
+            essence_required: essence_required
+                .clamp(NonZeroU8::new(1).unwrap(), NonZeroU8::new(5).unwrap()),
             resonant: self.resonant,
             dissonant: self.dissonant,
             evocation_tree: self.evocation_tree,
             upgrade_charm: self.upgrade_charm,
             keywords: self.keywords,
-            costs: self.costs
+            costs: self.costs,
         }
     }
 }

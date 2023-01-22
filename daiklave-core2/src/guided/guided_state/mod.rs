@@ -5,8 +5,8 @@ use crate::{
     attributes::AttributeName,
     martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     sorcery::{
-        spell::SpellId, ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
-        TerrestrialSpell,
+        circles::terrestrial::AddTerrestrialSorceryView, spell::SpellId, ShapingRitual,
+        ShapingRitualId, SorceryArchetype, SorceryArchetypeId, TerrestrialSpell,
     },
     Character, CharacterMutation, CharacterMutationError,
 };
@@ -754,14 +754,14 @@ impl<'source> GuidedState<'source> {
                             .set_ability_dots(AbilityNameVanilla::Occult, 3)
                             .map_err(GuidedError::CharacterMutationError)?;
                         self.character_view
-                            .add_terrestrial_sorcery(
+                            .add_terrestrial_sorcery_view(AddTerrestrialSorceryView {
                                 archetype_id,
                                 archetype,
                                 shaping_ritual_id,
                                 shaping_ritual,
                                 control_spell_id,
                                 control_spell,
-                            )
+                            })
                             .map_err(GuidedError::CharacterMutationError)?;
                         Ok(self)
                     }

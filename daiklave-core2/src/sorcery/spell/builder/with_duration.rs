@@ -1,6 +1,9 @@
 use std::{collections::HashSet, num::NonZeroU8};
 
-use crate::{book_reference::BookReference, sorcery::{spell::{cost::SpellCost, SpellKeyword}}};
+use crate::{
+    book_reference::BookReference,
+    sorcery::spell::{cost::SpellCost, SpellKeyword},
+};
 
 use super::SpellBuilderWithDescription;
 

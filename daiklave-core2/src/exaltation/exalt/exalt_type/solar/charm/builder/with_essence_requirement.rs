@@ -1,6 +1,15 @@
-use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
-use crate::{book_reference::BookReference, exaltation::exalt::exalt_type::solar::charm::{SolarCharmId, SolarCharmKeyword, ability::SolarCharmAbility}, charms::CharmCostType};
+use crate::{
+    book_reference::BookReference,
+    charms::CharmCostType,
+    exaltation::exalt::exalt_type::solar::charm::{
+        ability::SolarCharmAbility, SolarCharmId, SolarCharmKeyword,
+    },
+};
 
 use super::with_ability_requirement::SolarCharmBuilderWithAbilityRequirement;
 
@@ -42,18 +51,25 @@ impl SolarCharmBuilderWithEssenceRequirement {
 
     /// Adds a cost to use this Charm.
     pub fn cost(mut self, cost_type: CharmCostType, amount: NonZeroU8) -> Self {
-        self.costs.entry(cost_type).and_modify(|prior| {
-            *prior = (*prior).saturating_add(amount.get());
-        }).or_insert(amount);
+        self.costs
+            .entry(cost_type)
+            .and_modify(|prior| {
+                *prior = (*prior).saturating_add(amount.get());
+            })
+            .or_insert(amount);
 
         self
     }
 
     /// Sets an ability requirement for using this Charm. Maxes out at 5 dots.
     /// Note that this *can* be 0 dots; this is used for Integrity Bridge Charms,
-    /// as they are categorized as Integrity charms despite requiring no 
+    /// as they are categorized as Integrity charms despite requiring no
     /// Integrity dots in some cases.
-    pub fn ability_required(self, ability: SolarCharmAbility, rating: u8) -> SolarCharmBuilderWithAbilityRequirement {
+    pub fn ability_required(
+        self,
+        ability: SolarCharmAbility,
+        rating: u8,
+    ) -> SolarCharmBuilderWithAbilityRequirement {
         SolarCharmBuilderWithAbilityRequirement {
             name: self.name,
             book_reference: self.book_reference,

@@ -1,8 +1,11 @@
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap, HashSet};
 
 use crate::{book_reference::BookReference, sorcery::spell::builder::SpellBuilder};
 
-use super::{evocation::{builder::EvocationBuilder, EvokableId}, spirit::builder::SpiritCharmBuilder};
+use super::{
+    evocation::{builder::EvocationBuilder, EvokableId},
+    spirit::builder::SpiritCharmBuilder,
+};
 
 /// Builder for constructing a new Charm (or spell).
 pub struct CharmBuilder {
@@ -31,7 +34,7 @@ impl CharmBuilder {
             book_reference: self.book_reference,
             summary: self.summary,
             keywords: HashSet::new(),
-            control_spell_description: None,    
+            control_spell_description: None,
             distortion: None,
         }
     }
@@ -62,7 +65,6 @@ impl CharmBuilder {
             summary: self.summary,
             keywords: HashSet::new(),
             costs: HashMap::new(),
-            
         }
     }
 }

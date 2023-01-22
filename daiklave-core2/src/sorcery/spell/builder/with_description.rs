@@ -1,6 +1,12 @@
 use std::{collections::HashSet, num::NonZeroU8};
 
-use crate::{book_reference::BookReference, sorcery::{spell::{cost::SpellCost, SpellInner, SpellKeyword, SpellMutation}, SorceryCircle, TerrestrialSpell, CelestialSpell, SolarSpell}};
+use crate::{
+    book_reference::BookReference,
+    sorcery::{
+        spell::{cost::SpellCost, SpellInner, SpellKeyword, SpellMutation},
+        CelestialSpell, SolarSpell, SorceryCircle, TerrestrialSpell,
+    },
+};
 
 /// A Spell builder after the spell's description has been provided. To finish
 /// the build, call build().

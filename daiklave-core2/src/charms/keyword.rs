@@ -5,7 +5,7 @@ use crate::{
     martial_arts::charm::MartialArtsCharmKeyword, sorcery::spell::SpellKeyword,
 };
 
-use super::charm::{SpiritCharmKeyword, evocation::EvocationKeyword};
+use super::charm::{evocation::EvocationKeyword, SpiritCharmKeyword};
 
 /// All the keywords that may be associated with a specific Charm or Spell.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, PartialOrd, Ord, Hash)]

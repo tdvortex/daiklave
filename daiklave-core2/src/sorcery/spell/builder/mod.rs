@@ -9,13 +9,13 @@ pub use with_duration::SpellBuilderWithDuration;
 pub use with_mote_cost::SpellBuilderWithMoteCost;
 pub use with_willpower::SpellBuilderWithWillpower;
 
-use crate::{book_reference::BookReference};
+use crate::book_reference::BookReference;
 
 use super::SpellKeyword;
 
 /// Builder for a Spell. Required fields: name (already specified),
 /// sorcerous motes (or ritual), willpower cost (1+), duration, description,
-/// and finally circle. Optional fields: book reference, summary, keywords, 
+/// and finally circle. Optional fields: book reference, summary, keywords,
 /// control spell description, and distortion description.
 pub struct SpellBuilder {
     pub(crate) name: String,

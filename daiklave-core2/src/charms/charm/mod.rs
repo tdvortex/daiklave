@@ -5,18 +5,19 @@ pub use builder::CharmBuilder;
 pub mod evocation;
 mod id;
 mod mutation;
-mod spirit;
+/// Evocations of spirits (and other supernatural beings), as well as Eclipse
+/// Charms.
+pub mod spirit;
 use crate::{
-    exaltation::exalt::exalt_type::solar::charm::SolarCharm,
-    martial_arts::charm::MartialArtsCharm,
-    sorcery::{spell::Spell},
+    exaltation::exalt::exalt_type::solar::charm::SolarCharm, martial_arts::charm::MartialArtsCharm,
+    sorcery::spell::Spell,
 };
 pub use mutation::CharmMutation;
 
-use self::{evocation::Evocation};
+use self::evocation::Evocation;
 
 pub use id::CharmId;
-pub use spirit::{SpiritCharmId, SpiritCharmKeyword, EclipseCharm};
+pub use spirit::{EclipseCharm, SpiritCharmId, SpiritCharmKeyword};
 
 /// A Charm possessed by a character.
 pub enum Charm<'source> {
@@ -35,7 +36,7 @@ pub enum Charm<'source> {
 
 impl<'source> Charm<'source> {
     /// Begins construction of a new Charm.
-    pub fn new(name: String) -> CharmBuilder {
+    pub fn builder(name: String) -> CharmBuilder {
         CharmBuilder {
             name,
             book_reference: None,

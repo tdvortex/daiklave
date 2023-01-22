@@ -9,16 +9,21 @@ pub use with_description::MartialArtsCharmBuilderWithDescription;
 pub use with_duration::MartialArtsCharmBuilderWithDuration;
 pub use with_essence_requirement::MartialArtsCharmBuilderWithEssenceRequirement;
 
-use std::{num::NonZeroU8, collections::{HashSet, HashMap}};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
-use crate::{martial_arts::MartialArtsStyleId, book_reference::BookReference, charms::{CharmCostType}};
+use crate::{
+    book_reference::BookReference, charms::CharmCostType, martial_arts::MartialArtsStyleId,
+};
 
 use super::{MartialArtsCharmId, MartialArtsCharmKeyword};
 
 /// A builder path to construct a Martial Arts charm. Required fields, in
 /// order, are: name(already specified), style Id (already specified), Essence
-/// requirement, ability dots requirement, action type, duration, and 
-/// description. Optional fields: book reference, prerequisite Martial Arts 
+/// requirement, ability dots requirement, action type, duration, and
+/// description. Optional fields: book reference, prerequisite Martial Arts
 /// Charms, a Mastery effect, a Terrestrial effect, an Enlightenment effect,
 /// Charm keywords, costs, and a short summary.
 pub struct MartialArtsCharmBuilder {
@@ -79,15 +84,21 @@ impl MartialArtsCharmBuilder {
 
     /// Adds a cost to use this Charm.
     pub fn cost(mut self, cost_type: CharmCostType, amount: NonZeroU8) -> Self {
-        self.costs.entry(cost_type).and_modify(|prior| {
-            *prior = (*prior).saturating_add(amount.get());
-        }).or_insert(amount);
+        self.costs
+            .entry(cost_type)
+            .and_modify(|prior| {
+                *prior = (*prior).saturating_add(amount.get());
+            })
+            .or_insert(amount);
 
         self
     }
 
     /// Sets an essence requirement for using this Charm. Maxes out at 5 dots.
-    pub fn essence_required(self, essence_required: NonZeroU8) -> MartialArtsCharmBuilderWithEssenceRequirement {
+    pub fn essence_required(
+        self,
+        essence_required: NonZeroU8,
+    ) -> MartialArtsCharmBuilderWithEssenceRequirement {
         MartialArtsCharmBuilderWithEssenceRequirement {
             name: self.name,
             style: self.style,

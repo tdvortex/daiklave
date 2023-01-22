@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     exaltation::exalt::exalt_type::solar::charm::SolarCharmId,
-    sorcery::spell::SpellId, martial_arts::charm::MartialArtsCharmId,
+    martial_arts::charm::MartialArtsCharmId, sorcery::spell::SpellId,
 };
 
 use super::{evocation::EvocationId, spirit::SpiritCharmId};

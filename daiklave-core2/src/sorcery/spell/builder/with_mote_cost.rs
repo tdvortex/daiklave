@@ -1,6 +1,12 @@
-use std::{num::NonZeroU8, collections::HashSet};
+use std::{collections::HashSet, num::NonZeroU8};
 
-use crate::{book_reference::BookReference, sorcery::{spell::{cost::{SpellCost, SpellMotesCost}, SpellKeyword}}};
+use crate::{
+    book_reference::BookReference,
+    sorcery::spell::{
+        cost::{SpellCost, SpellMotesCost},
+        SpellKeyword,
+    },
+};
 
 use super::SpellBuilderWithWillpower;
 
@@ -50,7 +56,8 @@ impl SpellBuilderWithMoteCost {
     /// Sets the Willpower cost to cast the spell.
     pub fn willpower(self, willpower: NonZeroU8) -> SpellBuilderWithWillpower {
         let cost = SpellCost {
-            motes_cost: NonZeroU8::new(self.mote_cost).map_or(SpellMotesCost::Ritual, SpellMotesCost::SorcerousMotes),
+            motes_cost: NonZeroU8::new(self.mote_cost)
+                .map_or(SpellMotesCost::Ritual, SpellMotesCost::SorcerousMotes),
             willpower_cost: willpower,
         };
 

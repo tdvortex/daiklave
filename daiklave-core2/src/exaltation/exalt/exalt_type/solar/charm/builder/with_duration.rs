@@ -1,6 +1,15 @@
-use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
-use crate::{book_reference::BookReference, exaltation::exalt::exalt_type::solar::charm::{SolarCharmId, SolarCharmKeyword, ability::SolarCharmAbility}, charms::{CharmCostType, CharmActionType}};
+use crate::{
+    book_reference::BookReference,
+    charms::{CharmActionType, CharmCostType},
+    exaltation::exalt::exalt_type::solar::charm::{
+        ability::SolarCharmAbility, SolarCharmId, SolarCharmKeyword,
+    },
+};
 
 use super::with_description::SolarCharmBuilderWithDescription;
 
@@ -46,9 +55,12 @@ impl SolarCharmBuilderWithDuration {
 
     /// Adds a cost to use this Charm.
     pub fn cost(mut self, cost_type: CharmCostType, amount: NonZeroU8) -> Self {
-        self.costs.entry(cost_type).and_modify(|prior| {
-            *prior = (*prior).saturating_add(amount.get());
-        }).or_insert(amount);
+        self.costs
+            .entry(cost_type)
+            .and_modify(|prior| {
+                *prior = (*prior).saturating_add(amount.get());
+            })
+            .or_insert(amount);
 
         self
     }

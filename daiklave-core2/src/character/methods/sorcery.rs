@@ -2,9 +2,12 @@ use crate::{
     abilities::AbilityNameVanilla,
     attributes::AttributeName,
     sorcery::{
-        spell::SpellId, CelestialSpell, ShapingRitual, ShapingRitualId, SolarSpell, Sorcery,
-        SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
-        TerrestrialSpell,
+        circles::{
+            celestial::AddCelestialSorcery,
+            solar::AddSolarSorcery,
+            terrestrial::{AddTerrestrialSorcery, AddTerrestrialSorceryView},
+        },
+        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
     Character, CharacterMutationError,
 };
@@ -19,20 +22,17 @@ impl<'view, 'source> Character<'source> {
     /// sorcery.
     pub fn add_terrestrial_sorcery(
         &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: &'source SorceryArchetype,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source TerrestrialSpell,
+        add_terrestrial: &'source AddTerrestrialSorcery,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.add_terrestrial_sorcery_view(add_terrestrial.as_ref())
+    }
+
+    pub(crate) fn add_terrestrial_sorcery_view(
+        &mut self,
+        add_terrestrial: AddTerrestrialSorceryView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_terrestrial_sorcery(
-            archetype_id,
-            archetype,
-            shaping_ritual_id,
-            shaping_ritual,
-            control_spell_id,
-            control_spell,
+            add_terrestrial,
             self.abilities().get(AbilityNameVanilla::Occult).dots(),
             self.attributes().get(AttributeName::Intelligence).dots(),
         )?;
@@ -48,20 +48,10 @@ impl<'view, 'source> Character<'source> {
     /// Upgrades the character from Terrestrial to Celestial sorcery.
     pub fn add_celestial_sorcery(
         &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source CelestialSpell,
+        add_celestial: &'source AddCelestialSorcery,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_celestial_sorcery(
-            archetype_id,
-            archetype,
-            shaping_ritual_id,
-            shaping_ritual,
-            control_spell_id,
-            control_spell,
+            add_celestial,
             self.abilities().get(AbilityNameVanilla::Occult).dots(),
             self.attributes().get(AttributeName::Intelligence).dots(),
             self.essence().map_or(1, |essence| essence.rating()),
@@ -78,20 +68,10 @@ impl<'view, 'source> Character<'source> {
     /// Upgrades the character from Celestial to Solar sorcery.
     pub fn add_solar_sorcery(
         &mut self,
-        archetype_id: SorceryArchetypeId,
-        archetype: Option<&'source SorceryArchetype>,
-        shaping_ritual_id: ShapingRitualId,
-        shaping_ritual: &'source ShapingRitual,
-        control_spell_id: SpellId,
-        control_spell: &'source SolarSpell,
+        add_solar: &'source AddSolarSorcery,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_solar_sorcery(
-            archetype_id,
-            archetype,
-            shaping_ritual_id,
-            shaping_ritual,
-            control_spell_id,
-            control_spell,
+            add_solar,
             self.abilities().get(AbilityNameVanilla::Occult).dots(),
             self.essence().map_or(1, |essence| essence.rating()),
         )?;
