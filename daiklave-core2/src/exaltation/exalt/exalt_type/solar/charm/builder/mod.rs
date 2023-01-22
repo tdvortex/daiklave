@@ -1,32 +1,29 @@
+mod with_ability_requirement;
 mod with_action_type;
 mod with_description;
 mod with_duration;
 mod with_essence_requirement;
-pub use with_action_type::SpiritCharmBuilderWithActionType;
-pub use with_description::SpiritCharmBuilderWithDescription;
-pub use with_duration::SpiritCharmBuilderWithDuration;
-pub use with_essence_requirement::SpiritCharmBuilderWithEssenceRequirement;
+pub use with_essence_requirement::SolarCharmBuilderWithEssenceRequirement;
 
-use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
+use std::{num::NonZeroU8, collections::{HashSet, HashMap}};
 
 use crate::{book_reference::BookReference, charms::{CharmCostType}};
 
-use super::SpiritCharmKeyword;
+use super::{SolarCharmId, SolarCharmKeyword};
 
-/// A builder for a Spirit Charm. Required fields, in order, are:
-/// name (already specified), Essence requirement, action type, duration,
-/// description, and finally if it is an Eclipse charm. Optional fields: 
-/// book reference, charm keywords, charm costs, and a short summary.
-pub struct SpiritCharmBuilder {
+/// A builder to construct a new Solar Charm. Required fields are name (already
+/// specified), Essence requirement, ability category and required dots, 
+pub struct SolarCharmBuilder {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
-    pub(crate) keywords: HashSet<SpiritCharmKeyword>,
-    pub(crate) costs: HashMap<CharmCostType, NonZeroU8>
+    pub(crate) charms_required: HashSet<SolarCharmId>,
+    pub(crate) keywords: HashSet<SolarCharmKeyword>,
+    pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
 }
 
-impl SpiritCharmBuilder {
-    /// Sets the book reference for the Evocation.
+impl SolarCharmBuilder {
+    /// Sets the book reference for the Charm.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
         self
@@ -38,8 +35,14 @@ impl SpiritCharmBuilder {
         self
     }
 
+    /// Adds a charm tree prerequisite on other Solar Charms.
+    pub fn charm_prerequisite(mut self, charm_id: SolarCharmId) -> Self {
+        self.charms_required.insert(charm_id);
+        self
+    }
+
     /// Adds a keyword to this Charm.
-    pub fn keyword(mut self, keyword: SpiritCharmKeyword) -> Self {
+    pub fn keyword(mut self, keyword: SolarCharmKeyword) -> Self {
         self.keywords.insert(keyword);
         self
     }
@@ -54,14 +57,22 @@ impl SpiritCharmBuilder {
     }
 
     /// Sets an essence requirement for using this Charm. Maxes out at 5 dots.
-    pub fn essence_required(self, rating: NonZeroU8) -> SpiritCharmBuilderWithEssenceRequirement {
-        SpiritCharmBuilderWithEssenceRequirement {
+    pub fn essence_required(self, essence_required: NonZeroU8) -> SolarCharmBuilderWithEssenceRequirement {
+        SolarCharmBuilderWithEssenceRequirement {
             name: self.name,
             book_reference: self.book_reference,
             summary: self.summary,
+            charms_required: self.charms_required,
             keywords: self.keywords,
             costs: self.costs,
-            essence_required: rating.clamp(NonZeroU8::new(1).unwrap(), NonZeroU8::new(5).unwrap()),
+            essence_required: essence_required.clamp(NonZeroU8::new(1).unwrap(), NonZeroU8::new(5).unwrap()),
         }
     }
 }
+
+
+
+
+
+
+
