@@ -31,7 +31,7 @@ impl<'source> Character<'source> {
     }
 
     /// Adds a Solar Charm to the character.
-    pub fn add_solar_charm(&mut self, solar_charm_id: SolarCharmId, charm: &'source SolarCharm) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_solar_charm(&mut self, solar_charm_id: SolarCharmId, charm: &'source SolarCharm) -> Result<&mut Self, CharacterMutationError> {        
         todo!()
     }
 

@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     book_reference::BookReference,
-    charms::{CharmActionType, CharmCostType},
+    charms::{CharmActionType, CharmCostType, CharmCost},
 };
 
 use self::{builder::SolarCharmBuilder};
@@ -50,5 +50,64 @@ impl SolarCharm {
             keywords: HashSet::new(),
             costs: HashMap::new(),
         }
+    }
+
+    /// The name of the Charm.
+    pub fn name(&self) -> &str {
+        self.name.as_str()
+    }
+
+    /// The book reference of the Charm, if any
+    pub fn book_reference(&self) -> Option<BookReference> {
+        self.book_reference
+    }
+
+    /// A short summary of the Charm if provided
+    pub fn summary(&self) -> Option<&str> {
+        self.summary.as_deref()
+    }
+
+    /// The full Charm text description
+    pub fn description(&self) -> &str {
+        self.description.as_str()
+    }
+
+    /// The Essence requirement for the Charm
+    pub fn essence_required(&self) -> NonZeroU8 {
+        self.essence_required
+    }
+
+    /// The ability associated with the charm, and its minimum rating
+    pub fn ability_requirement(&self) -> (SolarCharmAbility, u8) {
+        (self.ability, self.ability_requirement)
+    }
+
+    /// The Ids of Charms which are prerequisites for this Charm
+    pub fn charm_prerequisites(&self) -> impl Iterator<Item = SolarCharmId> + '_ {
+        self.charms_required.iter().copied()
+    }
+
+    /// Any keywords that the Charm has.
+    pub fn keywords(&self) -> impl Iterator<Item = SolarCharmKeyword> + '_ {
+        let mut list = self.keywords.iter().copied().collect::<Vec<_>>();
+        list.sort();
+        list.into_iter()
+    }
+
+    /// The costs to use the Charm.
+    pub fn costs(&self) -> impl Iterator<Item = CharmCost> + '_ {
+        let mut list = self.costs.iter().map(|(cost_type, amount)| CharmCost::new(*cost_type, amount.get())).collect::<Vec<_>>();
+        list.sort();
+        list.into_iter()
+    }
+
+    /// The action required to use the Charm.
+    pub fn action_type(&self) -> CharmActionType {
+        self.action_type
+    }
+
+    /// The duration of the Charm's effects.
+    pub fn duration(&self) -> &str {
+        self.duration.as_str()
     }
 }
