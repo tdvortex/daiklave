@@ -11,6 +11,7 @@ use std::{
 
 pub use id::SolarCharmId;
 pub use keyword::SolarCharmKeyword;
+pub use ability::SolarCharmAbility;
 
 use serde::{Deserialize, Serialize};
 
@@ -19,7 +20,7 @@ use crate::{
     charms::{CharmActionType, CharmCostType},
 };
 
-use self::{ability::SolarCharmAbility, builder::SolarCharmBuilder};
+use self::{builder::SolarCharmBuilder};
 
 /// A Solar charm.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

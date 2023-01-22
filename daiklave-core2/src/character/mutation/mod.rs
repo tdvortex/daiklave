@@ -26,7 +26,7 @@ use crate::{
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
     unique_id::UniqueId,
-    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId},
+    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId}, charms::charm::{CharmMutation, CharmId},
 };
 
 /// The API for the character, expressed as an owned struct. Each mutation has
@@ -178,4 +178,9 @@ pub enum CharacterMutation {
     ),
     /// Removes a sorcery archetype merit.
     RemoveSorceryArchetypeMerit(SorceryArchetypeMeritId),
+    /// Adds a Charm to the character.
+    AddCharm(CharmMutation),
+    /// Removes a Charm from the character. Note that this may cause cascading
+    /// drops due to Charm tree dependencies.
+    RemoveCharm(CharmId),
 }

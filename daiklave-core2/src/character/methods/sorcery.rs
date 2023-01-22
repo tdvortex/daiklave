@@ -7,7 +7,7 @@ use crate::{
             solar::AddSolarSorcery,
             terrestrial::{AddTerrestrialSorcery, AddTerrestrialSorceryView},
         },
-        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, spell::{SpellMutation, SpellId},
     },
     Character, CharacterMutationError,
 };
@@ -107,5 +107,15 @@ impl<'view, 'source> Character<'source> {
         self.exaltation
             .remove_sorcery_archetype_merit(sorcery_archetype_merit_id)?;
         Ok(self)
+    }
+
+    /// Adds a Spell to the character.
+    pub fn add_spell(&mut self, spell_id: SpellId, spell: &'source SpellMutation) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
+    }
+
+    /// Removes a Spell from the character. Control Spells cannot be removed.
+    pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
     }
 }

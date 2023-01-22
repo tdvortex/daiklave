@@ -1,6 +1,6 @@
 use crate::{
-    exaltation::exalt::exalt_type::solar::{NewSolar, Solar},
-    Character, CharacterMutationError,
+    exaltation::exalt::exalt_type::solar::{NewSolar, Solar, charm::{SolarCharm, SolarCharmId}},
+    Character, CharacterMutationError, charms::charm::{EclipseCharm, SpiritCharmId},
 };
 
 impl<'source> Character<'source> {
@@ -28,5 +28,25 @@ impl<'source> Character<'source> {
         }
         self.exaltation.set_solar(solar.0.as_ref())?;
         Ok(self)
+    }
+
+    /// Adds a Solar Charm to the character.
+    pub fn add_solar_charm(&mut self, solar_charm_id: SolarCharmId, charm: &'source SolarCharm) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
+    }
+
+    /// Removes a Solar Charm from the character.
+    pub fn remove_solar_charm(&mut self, solar_charm_id: SolarCharmId) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
+    }
+
+    /// Adds an Eclipse Charm to the character.
+    pub fn add_eclipse_charm(&mut self, charm_id: SpiritCharmId, charm: &'source EclipseCharm) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
+    }
+
+    /// Removes a Spirit Charm from the character.
+    pub fn remove_spirit_charm(&mut self, charm_id: SpiritCharmId) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
     }
 }

@@ -8,7 +8,7 @@ use crate::{
     charms::{
         charm::{
             evocation::{EvocationId, EvocationKeyword, EvokableId},
-            CharmId, CharmMutation, Evocation,
+            CharmId, Evocation,
         },
         CharmActionType, CharmCostType,
     },
@@ -92,8 +92,8 @@ impl EvocationBuilderWithDescription {
     }
 
     /// Completes the builder and returns a CharmMutation of the Evocation.
-    pub fn build(self) -> CharmMutation {
-        CharmMutation::Evocation(Evocation {
+    pub fn build(self) -> Evocation {
+        Evocation {
             evokable_id: self.evokable_id,
             book_reference: self.book_reference,
             name: self.name,
@@ -108,6 +108,6 @@ impl EvocationBuilderWithDescription {
             costs: self.costs,
             action_type: self.action_type,
             duration: self.duration,
-        })
+        }
     }
 }

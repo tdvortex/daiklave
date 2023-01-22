@@ -1,6 +1,7 @@
 use crate::sorcery::{CelestialSpell, SolarSpell, TerrestrialSpell};
 
 /// A Spell, grouped by its Circle.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SpellMutation {
     /// The First Circle of spells, accessible to all Exalts and some mortals.
     Terrestrial(TerrestrialSpell),
