@@ -72,7 +72,7 @@ fn test_weapons_event_source() {
     [
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(1)),
-            Weapon::base("Tiger Claws")
+            Weapon::base("Tiger Claws".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 581))
                 .weight_class(WeaponWeightClass::Light)
                 .worn()
@@ -82,7 +82,7 @@ fn test_weapons_event_source() {
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(2)),
-            Weapon::base("Axe")
+            Weapon::base("Axe".to_owned())
                 .weight_class(WeaponWeightClass::Medium)
                 .one_handed()
                 .book_reference(BookReference::new(Book::CoreRulebook, 581))
@@ -94,7 +94,7 @@ fn test_weapons_event_source() {
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(3)),
-            Weapon::base("Shield")
+            Weapon::base("Shield".to_owned())
                 .weight_class(WeaponWeightClass::Medium)
                 .one_handed()
                 .bashing()
@@ -105,7 +105,7 @@ fn test_weapons_event_source() {
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(4)),
-            Weapon::base("Hook Sword")
+            Weapon::base("Hook Sword".to_owned())
                 .weight_class(WeaponWeightClass::Medium)
                 .one_handed()
                 .lethal()
@@ -116,7 +116,7 @@ fn test_weapons_event_source() {
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(4)),
-            Weapon::base("Hook Sword")
+            Weapon::base("Hook Sword".to_owned())
                 .weight_class(WeaponWeightClass::Medium)
                 .one_handed()
                 .lethal()
@@ -127,7 +127,7 @@ fn test_weapons_event_source() {
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(5)),
-            Weapon::base("Great Sword")
+            Weapon::base("Great Sword".to_owned())
                 .weight_class(WeaponWeightClass::Heavy)
                 .two_handed()
                 .lethal()
@@ -139,7 +139,7 @@ fn test_weapons_event_source() {
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(6)),
-            Weapon::base("Chakram")
+            Weapon::base("Chakram".to_owned())
                 .weight_class(WeaponWeightClass::Light)
                 .one_handed()
                 .lethal()
@@ -152,7 +152,7 @@ fn test_weapons_event_source() {
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(7)),
-            Weapon::base("Crossbow")
+            Weapon::base("Crossbow".to_owned())
                 .weight_class(WeaponWeightClass::Light)
                 .two_handed()
                 .lethal()
@@ -261,10 +261,10 @@ fn test_weapons_event_source() {
     // Create and add a unique artifact weapon
     let mutation = CharacterMutation::AddArtifact(Artifact::Weapon(
         ArtifactWeaponId(UniqueId::Placeholder(1)),
-        Weapon::artifact("Volcano Cutter")
+        Weapon::artifact("Volcano Cutter".to_owned())
             .base_artifact(
                 BaseWeaponId(UniqueId::Placeholder(8)),
-                Weapon::base("Grand Daiklave")
+                Weapon::base("Grand Daiklave".to_owned())
                     .book_reference(BookReference::new(Book::CoreRulebook, 597))
                     .weight_class(WeaponWeightClass::Heavy)
                     .two_handed()
@@ -277,13 +277,13 @@ fn test_weapons_event_source() {
             .material(MagicMaterial::RedJade)
             .merit_dots(5)
             .hearthstone_slots(2)
-            .lore("Long lore description")
+            .lore("Long lore description".to_owned())
             .powers(
                 "A Solar who attunes to Volcano Cutter awakens Grand \
                 Eruption at no experience cost. By paying an extra three motes \
                 when attuning the grand daiklave, the Solar gains an \
                 additional point of Initiative on any successful withering \
-                attack made with Volcano Cutter which rolls no 1s.",
+                attack made with Volcano Cutter which rolls no 1s.".to_owned(),
             )
             .book_reference(BookReference::new(Book::CoreRulebook, 627))
             .build(),

@@ -44,10 +44,10 @@ fn test_merits() {
     // Create and add a unique artifact weapon
     let mutation = CharacterMutation::AddArtifact(Artifact::Weapon(
         ArtifactWeaponId(UniqueId::Placeholder(1)),
-        Weapon::artifact("Volcano Cutter")
+        Weapon::artifact("Volcano Cutter".to_owned())
             .base_artifact(
                 BaseWeaponId(UniqueId::Placeholder(8)),
-                Weapon::base("Grand Daiklave")
+                Weapon::base("Grand Daiklave".to_owned())
                     .book_reference(BookReference::new(Book::CoreRulebook, 597))
                     .weight_class(WeaponWeightClass::Heavy)
                     .two_handed()
@@ -60,13 +60,13 @@ fn test_merits() {
             .material(MagicMaterial::RedJade)
             .merit_dots(5)
             .hearthstone_slots(2)
-            .lore("Long lore description")
+            .lore("Long lore description".to_owned())
             .powers(
                 "A Solar who attunes to Volcano Cutter awakens Grand \
                 Eruption at no experience cost. By paying an extra three motes \
                 when attuning the grand daiklave, the Solar gains an \
                 additional point of Initiative on any successful withering \
-                attack made with Volcano Cutter which rolls no 1s.",
+                attack made with Volcano Cutter which rolls no 1s.".to_owned(),
             )
             .book_reference(BookReference::new(Book::CoreRulebook, 627))
             .build(),

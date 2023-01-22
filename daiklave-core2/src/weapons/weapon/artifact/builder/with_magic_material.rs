@@ -21,17 +21,18 @@ pub struct ArtifactWeaponBuilderWithMagicMaterial {
 impl ArtifactWeaponBuilderWithMagicMaterial {
     /// Add flavor text to describe the weapon's forging, history, and prior
     /// wielders.
-    pub fn lore(mut self, lore: &str) -> Self {
-        self.lore = Some(lore.to_owned());
+    pub fn lore(mut self, lore: String) -> Self {
+        self.lore = Some(lore);
         self
     }
 
     /// Add passive or unique magical effects that are not Evocations, such as
     /// Beloved Adorei's emotional bond to her wielder.
-    pub fn powers(mut self, powers: &str) -> Self {
-        self.powers = Some(powers.to_owned());
+    pub fn powers(mut self, powers: String) -> Self {
+        self.powers = Some(powers);
         self
     }
+
 
     /// Add a book reference for the weapon. Note that this is a reference for
     /// the named instance of the artifact and not the base weapon.

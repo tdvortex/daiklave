@@ -5,4 +5,6 @@ use serde::{Deserialize, Serialize};
 pub enum Book {
     /// The core rulebook.
     CoreRulebook,
+    /// Arms of the Chosen, featuring a variety of Artifacts and Hearthstones.
+    ArmsOfTheChosen,
 }

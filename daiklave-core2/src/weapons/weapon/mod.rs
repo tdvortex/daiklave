@@ -46,9 +46,9 @@ pub struct Weapon<'source>(pub(crate) WeaponType<'source>);
 impl<'view, 'source> Weapon<'source> {
     /// Starts constructing a base weapon, which is either a mundane
     /// weapon (like "sword") or base artifact weapon (like "daiklave").
-    pub fn base(name: &str) -> BaseWeaponBuilder {
+    pub fn base(name: String) -> BaseWeaponBuilder {
         BaseWeaponBuilder {
-            name: name.to_owned(),
+            name: name,
             book_reference: None,
             attack_range: WeaponRange::ContactOnly,
             tags: HashSet::new(),
@@ -57,9 +57,9 @@ impl<'view, 'source> Weapon<'source> {
 
     /// Starts constructing a unique, named artifact weapon (like "Volcano
     /// Cutter").
-    pub fn artifact(name: &str) -> ArtifactWeaponBuilder {
+    pub fn artifact(name: String) -> ArtifactWeaponBuilder {
         ArtifactWeaponBuilder {
-            name: name.to_owned(),
+            name,
             book_reference: None,
             lore: None,
             powers: None,

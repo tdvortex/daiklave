@@ -40,19 +40,19 @@ fn test_attunement() {
         )
         .build();
 
-    let spring_razor = Weapon::artifact("Spring Razor")
+    let spring_razor = Weapon::artifact("Spring Razor".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 619))
         .lore(
             "Long ago, in the remote jungles of the Silent Crescent,\
-        there once dwelt a hateful dragon named Vasshir.",
+        there once dwelt a hateful dragon named Vasshir.".to_owned(),
         )
         .powers(
             "A Solar or Dragon-Blooded who attunes to Spring Razor \
-            gains Howling Lotus Strike at no cost.",
+            gains Howling Lotus Strike at no cost.".to_owned(),
         )
         .base_artifact(
             BaseWeaponId(UniqueId::Placeholder(1)),
-            Weapon::base("Daiklave")
+            Weapon::base("Daiklave".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 595))
                 .weight_class(WeaponWeightClass::Medium)
                 .one_handed()
