@@ -13,7 +13,7 @@ pub use cost_type::CharmCostType;
 pub use error::CharmError;
 pub use keyword::CharmKeyword;
 
-use crate::{Character};
+use crate::{Character, exaltation::Exaltation};
 
 use self::charm::{CharmId, Charm};
 
@@ -33,7 +33,19 @@ impl<'view, 'source> Charms<'view, 'source> {
     pub fn get(&self, charm_id: CharmId) -> Option<Charm<'source>> {
         match charm_id {
             CharmId::Spirit(_) => todo!(),
-            CharmId::Evocation(_) => todo!(),
+            CharmId::Evocation(evocation_id) => {
+                if let Exaltation::Exalt(exalt) = &self.0.exaltation {
+                    exalt.evocations.iter().find_map(|(known_id, evocation)| {
+                        if known_id == &evocation_id {
+                            Some(Charm::Evocation(*evocation))
+                        } else {
+                            None
+                        }
+                    })
+                } else {
+                    None
+                }
+            }
             CharmId::MartialArts(_) => todo!(),
             CharmId::Solar(solar_charm_id) => self.0.exaltation.get_solar_charm(solar_charm_id),
             CharmId::Spell(_) => todo!(),
