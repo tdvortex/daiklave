@@ -50,9 +50,18 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Changes the essence rating of the character to the specified value.
-    /// This also uncommits all active effects and recovers all motes.
+    /// This also uncommits all active effects and recovers all motes. If
+    /// the rating is decreased, may cause Charms or Sorcery to be lost.
     pub fn set_essence_rating(&mut self, rating: u8) -> Result<&mut Self, CharacterMutationError> {
+        let old_rating = self.essence().map(|essence| essence.rating()).unwrap_or(0);
+        if old_rating == rating {
+            return Ok(self)
+        }        
         self.exaltation.set_essence_rating(rating)?;
+        if old_rating > rating {
+            self.correct_solar_charms(&[]);
+        }
+        
         Ok(self)
     }
 }

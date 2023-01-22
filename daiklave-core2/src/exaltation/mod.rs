@@ -36,7 +36,7 @@ use crate::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
         EquipHand, Equipped, Weapon, WeaponId,
     },
-    CharacterMutationError, charms::CharmError,
+    CharacterMutationError, charms::{CharmError, charm::Charm},
 };
 
 use self::{
@@ -1008,5 +1008,19 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Exalt(exalt) => {exalt.add_solar_charm(solar_charm_id, charm, ability_dots)?;}
         }
         Ok(self)
+    }
+
+    pub fn get_solar_charm(&self, solar_charm_id: SolarCharmId) -> Option<Charm<'source>> {
+        match self {
+            Exaltation::Mortal(_) => None,
+            Exaltation::Exalt(exalt) => exalt.get_solar_charm(solar_charm_id),
+        }
+    }
+
+    pub fn solar_charms_iter(&self) -> impl Iterator<Item = SolarCharmId> + '_ {
+        match self {
+            Exaltation::Mortal(_) => vec![].into_iter(),
+            Exaltation::Exalt(exalt) => exalt.solar_charms_iter().collect::<Vec<SolarCharmId>>().into_iter(),
+        }
     }
 }

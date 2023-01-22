@@ -187,7 +187,6 @@ fn test_solar_charms() {
             SolarCharmId(UniqueId::Placeholder(1)),
         )))
         .unwrap();
-
     assert!(character.charms().get(CharmId::Solar(SolarCharmId(UniqueId::Placeholder(4)))).is_none());
 }
 

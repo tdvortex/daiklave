@@ -31,7 +31,7 @@ use crate::{
         },
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
-    CharacterMutationError, charms::CharmError,
+    CharacterMutationError, charms::{CharmError, charm::Charm},
 };
 
 use self::{builder::SolarBuilder, caste::SolarCaste, charm::{SolarCharmId, SolarCharm}};
@@ -43,7 +43,7 @@ pub struct Solar<'source> {
     favored_abilities: [AbilityName; 5],
     pub(crate) sorcery: Option<SolarSorcererView<'source>>,
     limit: Limit<'source>,
-    solar_charms: Vec<(SolarCharmId, &'source SolarCharm)>,
+    pub(crate) solar_charms: Vec<(SolarCharmId, &'source SolarCharm)>,
 }
 
 impl<'source> Solar<'source> {
@@ -318,6 +318,14 @@ impl<'source> Solar<'source> {
 
         self.solar_charms.push((charm_id, charm));
         Ok(self)
+    }
+
+    pub(crate) fn get_solar_charm(&self, charm_id: SolarCharmId) -> Option<Charm<'source>> {
+        self.solar_charms.iter().find_map(|(solar_charm_id, charm)| if solar_charm_id == &charm_id {
+            Some(Charm::Solar(charm))
+        } else {
+            None
+        })
     }
 }
 

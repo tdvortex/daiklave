@@ -59,7 +59,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError,
+    CharacterMutationError, charms::charm::Charm,
 };
 
 use self::{
@@ -1004,5 +1004,17 @@ impl<'view, 'source> Exalt<'source> {
             ExaltType::Solar(solar) => {solar.add_solar_charm(solar_charm_id, charm, ability_dots, essence_rating)?;}
         }
         Ok(self)
+    }
+
+    pub fn get_solar_charm(&self, solar_charm_id: SolarCharmId) -> Option<Charm<'source>> {
+        match &self.exalt_type {
+            ExaltType::Solar(solar) => solar.get_solar_charm(solar_charm_id),
+        }
+    }
+
+    pub fn solar_charms_iter(&self) -> impl Iterator<Item = SolarCharmId> + '_ {
+        match &self.exalt_type {
+            ExaltType::Solar(solar) => solar.solar_charms.iter().map(|(id, _)| *id).collect::<Vec<SolarCharmId>>().into_iter(),
+        }
     }
 }

@@ -11,6 +11,9 @@ pub enum CharmError {
     /// Mortals cannot have Charms (except possibly Terrestrial spells)
     #[error("Mortals cannot have non-Spell Charms")]
     Mortal,
+    /// Can't remove a Charm that isn't present
+    #[error("Charm not found")]
+    NotFound,
     /// One or more prerequisites to this Charm have not been met
     #[error("Charm prerequisites are not met")]
     PrerequisitesNotMet,

@@ -17,7 +17,8 @@ impl<'view, 'source> Character<'source> {
     /// Set an ability's dots to a specific dot value. If this sets the ability
     /// to 0 dots, will erase all specialties. If Occult is lowered, may cause
     /// Sorcery circles to be dropped. If Brawl is lowered to 0, will cause all
-    /// Martial Arts styles to be dropped.
+    /// Martial Arts styles (and their associated Charm) to be dropped. May 
+    /// cause Solar Charms to be dropped, cascading to all dependent Charms.
     pub fn set_ability_dots(
         &mut self,
         ability_name: AbilityNameVanilla,
@@ -46,6 +47,7 @@ impl<'view, 'source> Character<'source> {
             }
 
             self.correct_merits();
+            self.correct_solar_charms(&[]);
         }
 
         Ok(self)
