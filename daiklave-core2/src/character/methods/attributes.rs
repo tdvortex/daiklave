@@ -25,13 +25,15 @@ impl<'source> Character<'source> {
             let old_dots = self.attributes().get(attribute_name).dots();
             self.attributes.set_dots(attribute_name, dots)?;
             if old_dots > dots {
-                if attribute_name == AttributeName::Intelligence {
+                let sorcery_removed = if attribute_name == AttributeName::Intelligence {
                     self.exaltation.correct_sorcery_level(
                         self.abilities().get(AbilityNameVanilla::Occult).dots(),
                         dots,
                         self.essence().map_or(1, |essence| essence.rating()),
-                    );
-                }
+                    )
+                } else {
+                    false
+                };
 
                 if attribute_name == AttributeName::Strength && dots < 3 {
                     let maybe_weapon_id =
@@ -57,6 +59,11 @@ impl<'source> Character<'source> {
                 }
 
                 self.correct_merits();
+                // Evocations don't depend on attributes, but they may depend
+                // on Spells
+                if sorcery_removed {
+                    self.correct_evocations(&[]);
+                }
             }
             Ok(self)
         }

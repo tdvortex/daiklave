@@ -293,6 +293,8 @@ impl<'view, 'source> Character<'source> {
         self.hearthstone_inventory.remove(&hearthstone_id).ok_or(
             CharacterMutationError::HearthstoneError(HearthstoneError::NotFound),
         )?;
+        // May lose evocations along with the hearthstone
+        self.correct_evocations(&[]);
         Ok(self)
     }
 }

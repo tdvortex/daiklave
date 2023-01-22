@@ -34,20 +34,32 @@ impl<'view, 'source> Character<'source> {
         self.abilities.get_mut(ability_name).set_dots(dots)?;
 
         if old_dots > dots {
-            self.exaltation.correct_sorcery_level(
+            let sorcery_removed = self.exaltation.correct_sorcery_level(
                 dots,
                 self.attributes().get(AttributeName::Intelligence).dots(),
                 self.essence().map_or(1, |essence| essence.rating()),
             );
 
-            if ability_name == AbilityNameVanilla::Brawl && dots == 0 {
+            let ma_style_removed = if ability_name == AbilityNameVanilla::Brawl && dots == 0 {
+                let mut ma_style_removed = false;
                 for style_id in self.martial_arts().iter() {
-                    self.remove_martial_arts_style(style_id).ok();
+                    if self.remove_martial_arts_style(style_id).is_ok() {
+                        ma_style_removed = true;
+                    }
                 }
-            }
+                ma_style_removed
+            } else {
+                false
+            };
 
             self.correct_merits();
-            self.correct_solar_charms(&[]);
+            let solar_charm_removed = self.correct_solar_charms(&[]);
+
+            // Evocations don't depend on abilities, but they may depend on
+            // Spells, Martial Arts, or Solar Charms
+            if sorcery_removed || ma_style_removed || solar_charm_removed {
+                self.correct_evocations(&[]);
+            }
         }
 
         Ok(self)

@@ -25,8 +25,13 @@ impl<'view, 'source> Charms<'view, 'source> {
     /// character by their Ids.
     pub fn iter(&self) -> impl Iterator<Item = CharmId> + '_ {
         let solar_charms = self.0.solar_charms_iter().map(|solar_charm_id| CharmId::Solar(solar_charm_id));
+        let evocations = if let Exaltation::Exalt(exalt) = &self.0.exaltation {
+            exalt.evocations.iter().map(|(evocation_id, _)| CharmId::Evocation(*evocation_id)).collect::<Vec<CharmId>>()
+        } else {
+            vec![]
+        }.into_iter();
 
-        solar_charms
+        solar_charms.chain(evocations)
     }
 
     /// Retrieves a specific Charm by its Id, or returns None if not found.

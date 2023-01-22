@@ -60,6 +60,7 @@ impl<'view, 'source> Character<'source> {
         self.exaltation.set_essence_rating(rating)?;
         if old_rating > rating {
             self.correct_solar_charms(&[]);
+            self.correct_evocations(&[]);
         }
         
         Ok(self)

@@ -55,6 +55,8 @@ impl<'view, 'source> Character<'source> {
                 self.exaltation.remove_wonder(wonder_id)?;
             }
         }
+        // May lose evocations along with the artifact
+        self.correct_evocations(&[]);
         Ok(self)
     }
 

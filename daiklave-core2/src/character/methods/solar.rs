@@ -46,6 +46,8 @@ impl<'source> Character<'source> {
     /// Removes a Solar Charm from the character.
     pub fn remove_solar_charm(&mut self, solar_charm_id: SolarCharmId) -> Result<&mut Self, CharacterMutationError> {
         if self.correct_solar_charms(&[solar_charm_id]) {
+            // May lose evocations which upgrade the solar charm
+            self.correct_evocations(&[]);
             Ok(self)
         } else {
             Err(CharacterMutationError::CharmError(CharmError::NotFound))

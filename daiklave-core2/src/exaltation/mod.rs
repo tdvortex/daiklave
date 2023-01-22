@@ -996,15 +996,18 @@ impl<'view, 'source> Exaltation<'source> {
         occult_dots: u8,
         intelligence_dots: u8,
         essence_rating: u8,
-    ) {
+    ) -> bool {
         match self {
             Exaltation::Mortal(mortal) => {
                 if mortal.sorcery.is_some() && occult_dots < 3 {
                     mortal.sorcery = None;
+                    true
+                } else {
+                    false
                 }
             }
             Exaltation::Exalt(exalt) => {
-                exalt.correct_sorcery_level(occult_dots, intelligence_dots, essence_rating);
+                exalt.correct_sorcery_level(occult_dots, intelligence_dots, essence_rating)
             }
         }
     }

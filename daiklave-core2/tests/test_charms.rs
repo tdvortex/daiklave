@@ -361,9 +361,9 @@ fn test_evocations() {
     assert!(character.charms().get(CharmId::Evocation(seven_widows_venom_id)).is_some());
 
     let character = event_source.apply_mutation(CharacterMutation::RemoveCharm(CharmId::Evocation(howling_lotus_strike_id))).unwrap();
-    assert!(character.charms().get(CharmId::Evocation(howling_lotus_strike_id)).is_some());
-    assert!(character.charms().get(CharmId::Evocation(venom_intensifying_strike_id)).is_some());
-    assert!(character.charms().get(CharmId::Evocation(seven_widows_venom_id)).is_some());
+    assert!(character.charms().get(CharmId::Evocation(howling_lotus_strike_id)).is_none());
+    assert!(character.charms().get(CharmId::Evocation(venom_intensifying_strike_id)).is_none());
+    assert!(character.charms().get(CharmId::Evocation(seven_widows_venom_id)).is_none());
 
     // Upgrade-type Evocations require the upgraded Charm
     let integrity_protecting_prana_id = SolarCharmId(UniqueId::Placeholder(1));

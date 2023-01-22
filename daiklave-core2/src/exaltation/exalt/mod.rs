@@ -976,7 +976,7 @@ impl<'view, 'source> Exalt<'source> {
         occult_dots: u8,
         _intelligence_dots: u8,
         essence_rating: u8,
-    ) {
+    ) -> bool {
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => solar.correct_sorcery_level(occult_dots, essence_rating),
         }
@@ -1028,9 +1028,9 @@ impl<'view, 'source> Exalt<'source> {
 
         let mut unmet_evocation_prereqs = evocation.evocation_prerequisites().collect::<HashSet<EvocationId>>();
 
-        for known_evocation_id in self.evocations.iter().map(|(evocation_id, _)| *evocation_id) {
-            if unmet_evocation_prereqs.is_empty() {
-                break;
+        for known_evocation_id in self.evocations.iter().map(|(known_evocation_id, _)| *known_evocation_id) {
+            if evocation_id == known_evocation_id {
+                return Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm));
             }
 
             unmet_evocation_prereqs.remove(&known_evocation_id);
