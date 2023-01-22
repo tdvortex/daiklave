@@ -38,6 +38,10 @@ impl<'source> Craft<'source> {
         self.0.get(focus).map_or(0, |ability| ability.dots())
     }
 
+    pub fn max(&self) -> u8 {
+        self.0.values().map(|rating| rating.dots()).max().unwrap_or(0)
+    }
+
     pub fn iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         let mut vec: Vec<&str> = self.0.keys().copied().collect();
         vec.sort();

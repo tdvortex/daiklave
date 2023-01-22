@@ -12,7 +12,7 @@ mod memo;
 mod new;
 mod sorcery;
 
-use std::collections::hash_map::Entry;
+use std::collections::{hash_map::Entry, HashSet};
 
 pub use error::SolarError;
 pub(crate) use memo::SolarMemo;
@@ -31,10 +31,10 @@ use crate::{
         },
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
-    CharacterMutationError,
+    CharacterMutationError, charms::CharmError,
 };
 
-use self::{builder::SolarBuilder, caste::SolarCaste};
+use self::{builder::SolarBuilder, caste::SolarCaste, charm::{SolarCharmId, SolarCharm}};
 
 /// Traits which are unique to being a Solar Exalted.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -43,6 +43,7 @@ pub struct Solar<'source> {
     favored_abilities: [AbilityName; 5],
     pub(crate) sorcery: Option<SolarSorcererView<'source>>,
     limit: Limit<'source>,
+    solar_charms: Vec<(SolarCharmId, &'source SolarCharm)>,
 }
 
 impl<'source> Solar<'source> {
@@ -59,6 +60,7 @@ impl<'source> Solar<'source> {
             favored_abilities: self.favored_abilities,
             sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
             limit: self.limit.as_memo(),
+            solar_charms: self.solar_charms.iter().map(|(charm_id, charm)| (*charm_id, (*charm).to_owned())).collect(),
         }
     }
 
@@ -294,6 +296,28 @@ impl<'source> Solar<'source> {
         if occult_dots < 3 && self.sorcery.is_some() {
             self.remove_terrestrial_sorcery().ok();
         }
+    }
+
+    pub(crate) fn add_solar_charm(&mut self, charm_id: SolarCharmId, charm: &'source SolarCharm, ability_dots: u8, essence_rating: u8) -> Result<&mut Self, CharacterMutationError> {
+        if charm.ability_requirement().1 > ability_dots || (Into::<AbilityName>::into( charm.ability_requirement().0) != self.supernal_ability() && charm.essence_required().get() > essence_rating) {
+            return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+        } 
+        let mut unmet_tree_requirements = charm.charm_prerequisites().collect::<HashSet<SolarCharmId>>();
+
+        for known_charm_id in self.solar_charms.iter().map(|(known_charm_id, _)| known_charm_id) {
+            if known_charm_id == &charm_id {
+                return Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm));
+            } else {
+                unmet_tree_requirements.remove(known_charm_id);
+            }
+        }
+
+        if !unmet_tree_requirements.is_empty() {
+            return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+        }
+
+        self.solar_charms.push((charm_id, charm));
+        Ok(self)
     }
 }
 

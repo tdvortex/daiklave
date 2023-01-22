@@ -1,5 +1,5 @@
 use crate::{
-    exaltation::exalt::exalt_type::solar::{NewSolar, Solar, charm::{SolarCharm, SolarCharmId}},
+    exaltation::exalt::exalt_type::solar::{NewSolar, Solar, charm::{SolarCharm, SolarCharmId, SolarCharmAbility}},
     Character, CharacterMutationError, charms::charm::{EclipseCharm, SpiritCharmId},
 };
 
@@ -32,7 +32,13 @@ impl<'source> Character<'source> {
 
     /// Adds a Solar Charm to the character.
     pub fn add_solar_charm(&mut self, solar_charm_id: SolarCharmId, charm: &'source SolarCharm) -> Result<&mut Self, CharacterMutationError> {        
-        todo!()
+        let ability_dots = match charm.ability_requirement() {
+            (SolarCharmAbility::Craft, _) => self.craft().max(),
+            (solar_ability, _) => self.abilities().get(solar_ability.try_into().unwrap()).dots(),
+        };
+
+        self.exaltation.add_solar_charm(solar_charm_id, charm, ability_dots)?;
+        Ok(self)
     }
 
     /// Removes a Solar Charm from the character.

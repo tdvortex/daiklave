@@ -4,11 +4,13 @@ pub mod charm;
 mod action_type;
 mod cost;
 mod cost_type;
+mod error;
 mod keyword;
 
 pub use action_type::CharmActionType;
 pub use cost::CharmCost;
 pub use cost_type::CharmCostType;
+pub use error::CharmError;
 pub use keyword::CharmKeyword;
 
 use crate::Character;

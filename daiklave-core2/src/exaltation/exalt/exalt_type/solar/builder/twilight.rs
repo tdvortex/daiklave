@@ -101,6 +101,7 @@ impl TwilightBuilder {
                 track: 0,
                 trigger: limit_trigger,
             },
+            solar_charms: Vec::new(),
         })))
     }
 }

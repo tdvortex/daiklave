@@ -67,7 +67,7 @@ use self::{
         Essence, EssenceError, EssenceState, MoteCommitment, MoteCommitmentId, MotePoolName,
         OtherMoteCommitmentId,
     },
-    exalt_type::{solar::Solar, ExaltType},
+    exalt_type::{solar::{Solar, charm::{SolarCharmId, SolarCharm}}, ExaltType},
     martial_arts::ExaltMartialArtist,
 };
 
@@ -996,5 +996,13 @@ impl<'view, 'source> Exalt<'source> {
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => solar.correct_sorcery_level(occult_dots, essence_rating),
         }
+    }
+
+    pub fn add_solar_charm(&mut self, solar_charm_id: SolarCharmId, charm: &'source SolarCharm, ability_dots: u8) -> Result<&mut Self, CharacterMutationError> {
+        let essence_rating = self.essence.rating;
+        match &mut self.exalt_type {
+            ExaltType::Solar(solar) => {solar.add_solar_charm(solar_charm_id, charm, ability_dots, essence_rating)?;}
+        }
+        Ok(self)
     }
 }

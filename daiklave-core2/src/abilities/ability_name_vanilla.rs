@@ -1,3 +1,5 @@
+use crate::exaltation::exalt::exalt_type::solar::charm::SolarCharmAbility;
+
 use super::AbilityName;
 
 /// This is used to identify all ability ratings that must exist for a
@@ -119,6 +121,40 @@ impl TryFrom<AbilityName> for AbilityNameVanilla {
             AbilityName::Survival => Ok(Self::Survival),
             AbilityName::Thrown => Ok(Self::Thrown),
             AbilityName::War => Ok(Self::War),
+        }
+    }
+}
+
+impl TryFrom<SolarCharmAbility> for AbilityNameVanilla {
+    type Error = ();
+
+    fn try_from(value: SolarCharmAbility) -> Result<Self, Self::Error> {
+        match value {
+            SolarCharmAbility::Archery => Ok(Self::Archery),
+            SolarCharmAbility::Athletics => Ok(Self::Athletics),
+            SolarCharmAbility::Awareness => Ok(Self::Awareness),
+            SolarCharmAbility::Brawl => Ok(Self::Brawl),
+            SolarCharmAbility::Bureaucracy => Ok(Self::Bureaucracy),
+            SolarCharmAbility::Craft => Err(()),
+            SolarCharmAbility::Dodge => Ok(Self::Dodge),
+            SolarCharmAbility::Integrity => Ok(Self::Integrity),
+            SolarCharmAbility::Investigation => Ok(Self::Investigation),
+            SolarCharmAbility::Larceny => Ok(Self::Larceny),
+            SolarCharmAbility::Linguistics => Ok(Self::Linguistics),
+            SolarCharmAbility::Lore => Ok(Self::Lore),
+            SolarCharmAbility::Medicine => Ok(Self::Medicine),
+            SolarCharmAbility::Melee => Ok(Self::Melee),
+            SolarCharmAbility::Occult => Ok(Self::Occult),
+            SolarCharmAbility::Performance => Ok(Self::Performance),
+            SolarCharmAbility::Presence => Ok(Self::Presence),
+            SolarCharmAbility::Resistance => Ok(Self::Resistance),
+            SolarCharmAbility::Ride => Ok(Self::Ride),
+            SolarCharmAbility::Sail => Ok(Self::Sail),
+            SolarCharmAbility::Socialize => Ok(Self::Socialize),
+            SolarCharmAbility::Stealth => Ok(Self::Stealth),
+            SolarCharmAbility::Survival => Ok(Self::Survival),
+            SolarCharmAbility::Thrown => Ok(Self::Thrown),
+            SolarCharmAbility::War => Ok(Self::War),
         }
     }
 }

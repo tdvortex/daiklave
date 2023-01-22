@@ -36,7 +36,7 @@ use crate::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
         EquipHand, Equipped, Weapon, WeaponId,
     },
-    CharacterMutationError,
+    CharacterMutationError, charms::CharmError,
 };
 
 use self::{
@@ -46,7 +46,7 @@ use self::{
             MotesState, OtherMoteCommitmentId,
         },
         exalt_type::{
-            solar::{Solar, SolarMemo, SolarSorcererView},
+            solar::{Solar, SolarMemo, SolarSorcererView, charm::{SolarCharmId, SolarCharm}},
             ExaltType,
         },
         Exalt,
@@ -1000,5 +1000,13 @@ impl<'view, 'source> Exaltation<'source> {
                 exalt.correct_sorcery_level(occult_dots, intelligence_dots, essence_rating);
             }
         }
+    }
+
+    pub fn add_solar_charm(&mut self, solar_charm_id: SolarCharmId, charm: &'source SolarCharm, ability_dots: u8) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(_) => {return Err(CharacterMutationError::CharmError(CharmError::Mortal));},
+            Exaltation::Exalt(exalt) => {exalt.add_solar_charm(solar_charm_id, charm, ability_dots)?;}
+        }
+        Ok(self)
     }
 }

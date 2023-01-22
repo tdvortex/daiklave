@@ -11,7 +11,7 @@ use crate::{
     merits::merit::MeritError,
     name_and_concept::ConceptError,
     sorcery::SorceryError,
-    weapons::WeaponError,
+    weapons::WeaponError, charms::CharmError,
 };
 
 /// An error representing something that could go wrong with a
@@ -30,6 +30,9 @@ pub enum CharacterMutationError {
     /// Error related to Attributes
     #[error("Attribute Error")]
     AttributeError(#[from] AttributeError),
+    /// Error related to Charms
+    #[error("Charm Error")]
+    CharmError(#[from] CharmError),
     /// Error occurring while trying to modify a character's concept
     #[error("Concept error")]
     ConceptError(#[from] ConceptError),

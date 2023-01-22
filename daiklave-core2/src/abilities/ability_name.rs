@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-use crate::exaltation::exalt::exalt_type::solar::caste::{
+use crate::exaltation::exalt::exalt_type::solar::{caste::{
     dawn::{DawnCasteAbility, DawnSupernalAbility},
     eclipse::EclipseAbility,
     night::NightAbility,
     twilight::TwilightAbility,
     zenith::ZenithAbility,
-};
+}, charm::SolarCharmAbility};
 
 use super::AbilityNameVanilla;
 
@@ -186,6 +186,38 @@ impl From<ZenithAbility> for AbilityName {
             ZenithAbility::Resistance => Self::Resistance,
             ZenithAbility::Survival => Self::Survival,
             ZenithAbility::War => Self::War,
+        }
+    }
+}
+
+impl From<SolarCharmAbility> for AbilityName {
+    fn from(ability: SolarCharmAbility) -> Self {
+        match ability {
+            SolarCharmAbility::Archery => Self::Archery,
+            SolarCharmAbility::Athletics => Self::Athletics,
+            SolarCharmAbility::Awareness => Self::Awareness,
+            SolarCharmAbility::Brawl => Self::Brawl,
+            SolarCharmAbility::Bureaucracy => Self::Bureaucracy,
+            SolarCharmAbility::Craft => Self::Craft,
+            SolarCharmAbility::Dodge => Self::Dodge,
+            SolarCharmAbility::Integrity => Self::Integrity,
+            SolarCharmAbility::Investigation => Self::Investigation,
+            SolarCharmAbility::Larceny => Self::Larceny,
+            SolarCharmAbility::Linguistics => Self::Linguistics,
+            SolarCharmAbility::Lore => Self::Lore,
+            SolarCharmAbility::Medicine => Self::Medicine,
+            SolarCharmAbility::Melee => Self::Melee,
+            SolarCharmAbility::Occult => Self::Occult,
+            SolarCharmAbility::Performance => Self::Performance,
+            SolarCharmAbility::Presence => Self::Presence,
+            SolarCharmAbility::Resistance => Self::Resistance,
+            SolarCharmAbility::Ride => Self::Ride,
+            SolarCharmAbility::Sail => Self::Sail,
+            SolarCharmAbility::Socialize => Self::Socialize,
+            SolarCharmAbility::Stealth => Self::Stealth,
+            SolarCharmAbility::Survival => Self::Survival,
+            SolarCharmAbility::Thrown => Self::Thrown,
+            SolarCharmAbility::War => Self::War,
         }
     }
 }
