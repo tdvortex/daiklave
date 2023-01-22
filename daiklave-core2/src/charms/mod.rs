@@ -35,8 +35,13 @@ impl<'view, 'source> Charms<'view, 'source> {
             vec![]
         }
         .into_iter();
+        let spells = if let Some(sorcery) = self.0.sorcery() {
+            sorcery.spells().iter().map(|spell_id| CharmId::Spell(spell_id)).collect::<Vec<CharmId>>()
+        } else {
+            vec![]
+        }.into_iter();
 
-        solar_charms.chain(evocations)
+        solar_charms.chain(evocations).chain(spells)
     }
 
     /// Retrieves a specific Charm by its Id, or returns None if not found.
@@ -58,7 +63,9 @@ impl<'view, 'source> Charms<'view, 'source> {
             }
             CharmId::MartialArts(_) => todo!(),
             CharmId::Solar(solar_charm_id) => self.0.exaltation.get_solar_charm(solar_charm_id),
-            CharmId::Spell(_) => todo!(),
+            CharmId::Spell(spell_id) => {
+                self.0.sorcery().and_then(|sorcery| sorcery.spells().get(spell_id)).map(|(spell, _)| Charm::Spell(spell))
+            }
         }
     }
 }
