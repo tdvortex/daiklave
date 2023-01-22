@@ -9,18 +9,18 @@ use std::{
     num::NonZeroU8,
 };
 
+pub use ability::SolarCharmAbility;
 pub use id::SolarCharmId;
 pub use keyword::SolarCharmKeyword;
-pub use ability::SolarCharmAbility;
 
 use serde::{Deserialize, Serialize};
 
 use crate::{
     book_reference::BookReference,
-    charms::{CharmActionType, CharmCostType, CharmCost},
+    charms::{CharmActionType, CharmCost, CharmCostType},
 };
 
-use self::{builder::SolarCharmBuilder};
+use self::builder::SolarCharmBuilder;
 
 /// A Solar charm.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -96,7 +96,11 @@ impl SolarCharm {
 
     /// The costs to use the Charm.
     pub fn costs(&self) -> impl Iterator<Item = CharmCost> + '_ {
-        let mut list = self.costs.iter().map(|(cost_type, amount)| CharmCost::new(*cost_type, amount.get())).collect::<Vec<_>>();
+        let mut list = self
+            .costs
+            .iter()
+            .map(|(cost_type, amount)| CharmCost::new(*cost_type, amount.get()))
+            .collect::<Vec<_>>();
         list.sort();
         list.into_iter()
     }

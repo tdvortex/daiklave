@@ -34,7 +34,6 @@ impl ArtifactWeaponBuilderWithMeritDots {
         self
     }
 
-
     /// Add a book reference for the weapon. Note that this is a reference for
     /// the named instance of the artifact and not the base weapon.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {

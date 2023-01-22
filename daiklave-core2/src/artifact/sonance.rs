@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// Represents a (non-neutral) relationship to a Magic Material for an
 /// Exalt type.

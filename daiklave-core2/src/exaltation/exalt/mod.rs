@@ -36,6 +36,13 @@ use crate::{
         wonders::{OwnedWonder, Wonder, WonderId},
         ArtifactId,
     },
+    charms::{
+        charm::{
+            evocation::{Evocation, EvocationId},
+            Charm, CharmId,
+        },
+        CharmError,
+    },
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{
@@ -59,7 +66,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError, charms::{charm::{Charm, evocation::{EvocationId, Evocation}, CharmId}, CharmError},
+    CharacterMutationError,
 };
 
 use self::{
@@ -67,7 +74,13 @@ use self::{
         Essence, EssenceError, EssenceState, MoteCommitment, MoteCommitmentId, MotePoolName,
         OtherMoteCommitmentId,
     },
-    exalt_type::{solar::{Solar, charm::{SolarCharmId, SolarCharm}}, ExaltType},
+    exalt_type::{
+        solar::{
+            charm::{SolarCharm, SolarCharmId},
+            Solar,
+        },
+        ExaltType,
+    },
     martial_arts::ExaltMartialArtist,
 };
 
@@ -87,11 +100,16 @@ impl<'view, 'source> Exalt<'source> {
         ExaltMemo {
             armor: self.armor.as_memo(),
             essence: self.essence.as_memo(),
-            evocations: self.evocations.iter().map(|(id, charm)| (*id, (*charm).to_owned())).collect(),
-            martial_arts_styles: self.martial_arts_styles
-            .iter()
-            .map(|(k, v)| (*k, v.as_memo()))
-            .collect(),
+            evocations: self
+                .evocations
+                .iter()
+                .map(|(id, charm)| (*id, (*charm).to_owned()))
+                .collect(),
+            martial_arts_styles: self
+                .martial_arts_styles
+                .iter()
+                .map(|(k, v)| (*k, v.as_memo()))
+                .collect(),
             exalt_type: self.exalt_type.as_memo(),
             weapons: self.weapons.as_memo(),
             wonders: self.wonders.as_memo(),
@@ -982,10 +1000,17 @@ impl<'view, 'source> Exalt<'source> {
         }
     }
 
-    pub fn add_solar_charm(&mut self, solar_charm_id: SolarCharmId, charm: &'source SolarCharm, ability_dots: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_solar_charm(
+        &mut self,
+        solar_charm_id: SolarCharmId,
+        charm: &'source SolarCharm,
+        ability_dots: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         let essence_rating = self.essence.rating;
         match &mut self.exalt_type {
-            ExaltType::Solar(solar) => {solar.add_solar_charm(solar_charm_id, charm, ability_dots, essence_rating)?;}
+            ExaltType::Solar(solar) => {
+                solar.add_solar_charm(solar_charm_id, charm, ability_dots, essence_rating)?;
+            }
         }
         Ok(self)
     }
@@ -998,46 +1023,75 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn solar_charms_iter(&self) -> impl Iterator<Item = SolarCharmId> + '_ {
         match &self.exalt_type {
-            ExaltType::Solar(solar) => solar.solar_charms.iter().map(|(id, _)| *id).collect::<Vec<SolarCharmId>>().into_iter(),
+            ExaltType::Solar(solar) => solar
+                .solar_charms
+                .iter()
+                .map(|(id, _)| *id)
+                .collect::<Vec<SolarCharmId>>()
+                .into_iter(),
         }
     }
 
-    pub fn add_evocation(&mut self, evocation_id: EvocationId, evocation: &'source Evocation) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_evocation(
+        &mut self,
+        evocation_id: EvocationId,
+        evocation: &'source Evocation,
+    ) -> Result<&mut Self, CharacterMutationError> {
         let actual_essence = self.essence.rating;
         if evocation.essence_required() > actual_essence {
-            return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+            return Err(CharacterMutationError::CharmError(
+                CharmError::PrerequisitesNotMet,
+            ));
         }
 
         if let Some(charm_id) = evocation.upgrade() {
             match charm_id {
                 CharmId::Spirit(_) => todo!(),
                 CharmId::Evocation(evocation_id) => {
-                    if !self.evocations.iter().any(|(known_evocation_id, _)| known_evocation_id == &evocation_id) {
-                        return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+                    if !self
+                        .evocations
+                        .iter()
+                        .any(|(known_evocation_id, _)| known_evocation_id == &evocation_id)
+                    {
+                        return Err(CharacterMutationError::CharmError(
+                            CharmError::PrerequisitesNotMet,
+                        ));
                     }
                 }
                 CharmId::MartialArts(_) => todo!(),
                 CharmId::Solar(solar_charm_id) => {
                     if self.get_solar_charm(solar_charm_id).is_none() {
-                        return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+                        return Err(CharacterMutationError::CharmError(
+                            CharmError::PrerequisitesNotMet,
+                        ));
                     }
                 }
                 CharmId::Spell(_) => todo!(),
             }
         }
 
-        let mut unmet_evocation_prereqs = evocation.evocation_prerequisites().collect::<HashSet<EvocationId>>();
+        let mut unmet_evocation_prereqs = evocation
+            .evocation_prerequisites()
+            .collect::<HashSet<EvocationId>>();
 
-        for known_evocation_id in self.evocations.iter().map(|(known_evocation_id, _)| *known_evocation_id) {
+        for known_evocation_id in self
+            .evocations
+            .iter()
+            .map(|(known_evocation_id, _)| *known_evocation_id)
+        {
             if evocation_id == known_evocation_id {
-                return Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm));
+                return Err(CharacterMutationError::CharmError(
+                    CharmError::DuplicateCharm,
+                ));
             }
 
             unmet_evocation_prereqs.remove(&known_evocation_id);
         }
 
         if !unmet_evocation_prereqs.is_empty() {
-            return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet)); 
+            return Err(CharacterMutationError::CharmError(
+                CharmError::PrerequisitesNotMet,
+            ));
         }
 
         self.evocations.push((evocation_id, evocation));

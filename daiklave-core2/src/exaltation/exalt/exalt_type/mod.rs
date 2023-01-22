@@ -5,7 +5,7 @@ mod exalt_type_memo;
 
 pub(crate) use exalt_type_memo::ExaltTypeMemo;
 
-use crate::artifact::{Sonance, MagicMaterial};
+use crate::artifact::{MagicMaterial, Sonance};
 
 use self::solar::Solar;
 

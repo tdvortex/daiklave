@@ -4,6 +4,7 @@ use crate::{
     abilities::AbilityError,
     armor::{armor_item::artifact::ArtifactError, ArmorError},
     attributes::AttributeError,
+    charms::CharmError,
     exaltation::exalt::essence::EssenceError,
     hearthstones::HearthstoneError,
     languages::LanguageError,
@@ -11,7 +12,7 @@ use crate::{
     merits::merit::MeritError,
     name_and_concept::ConceptError,
     sorcery::SorceryError,
-    weapons::WeaponError, charms::CharmError,
+    weapons::WeaponError,
 };
 
 /// An error representing something that could go wrong with a

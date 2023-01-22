@@ -118,7 +118,8 @@ fn test_hearthstones() {
             daiklave Adorei when he looked upon the Dawn of his\
             Circle, Brother of Brothers, Night of His Heart, whom he\
             considered to be an idiot and perhaps the single greatest\
-            reaver the Celestial Host had ever produced.".to_owned(),
+            reaver the Celestial Host had ever produced."
+                .to_owned(),
         )
         .material(MagicMaterial::Orichalcum)
         .merit_dots(3)
@@ -126,7 +127,8 @@ fn test_hearthstones() {
             "If the Solar who wields Adorei exults in battles, the blade\
             offers +1 to Accuracy upon attunement. The weapon will\
             form an instant Major Tie of affection to a Solar who takes\
-            her out of the darkness of the tomb to carry her into battle[...]".to_owned(),
+            her out of the darkness of the tomb to carry her into battle[...]"
+                .to_owned(),
         )
         .hearthstone_slots(3)
         .build();

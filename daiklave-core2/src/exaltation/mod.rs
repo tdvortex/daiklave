@@ -14,14 +14,21 @@ pub(crate) use memo::ExaltationMemo;
 pub(crate) use sorcery::ExaltationSorcery;
 
 use crate::{
-    armor::{armor_item::{
+    armor::armor_item::{
         artifact::{ArtifactArmorId, ArtifactArmorView},
         mundane::MundaneArmor,
         ArmorId, ArmorItem, BaseArmorId,
-    }},
+    },
     artifact::{
         wonders::{OwnedWonder, Wonder, WonderId},
         ArtifactId,
+    },
+    charms::{
+        charm::{
+            evocation::{Evocation, EvocationId},
+            Charm,
+        },
+        CharmError,
     },
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId},
@@ -32,11 +39,11 @@ use crate::{
         },
         Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
-    weapons::{weapon::{
+    weapons::weapon::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
         EquipHand, Equipped, Weapon, WeaponId,
-    }},
-    CharacterMutationError, charms::{CharmError, charm::{Charm, evocation::{EvocationId, Evocation}}},
+    },
+    CharacterMutationError,
 };
 
 use self::{
@@ -46,7 +53,10 @@ use self::{
             MotesState, OtherMoteCommitmentId,
         },
         exalt_type::{
-            solar::{Solar, SolarMemo, SolarSorcererView, charm::{SolarCharmId, SolarCharm}},
+            solar::{
+                charm::{SolarCharm, SolarCharmId},
+                Solar, SolarMemo, SolarSorcererView,
+            },
             ExaltType,
         },
         Exalt,
@@ -427,27 +437,25 @@ impl<'view, 'source> Exaltation<'source> {
                     }
                 }
 
-                *self = Self::Exalt(Box::new(
-                    Exalt {
-                        armor: std::mem::take(&mut mortal.armor).into(),
-                        essence: EssenceState {
-                            rating: 1,
-                            motes: MotesState {
-                                peripheral: MotePool::new(33, 0),
-                                personal: MotePool::new(13, 0),
-                                commitments: Default::default(),
-                            },
+                *self = Self::Exalt(Box::new(Exalt {
+                    armor: std::mem::take(&mut mortal.armor).into(),
+                    essence: EssenceState {
+                        rating: 1,
+                        motes: MotesState {
+                            peripheral: MotePool::new(33, 0),
+                            personal: MotePool::new(13, 0),
+                            commitments: Default::default(),
                         },
-                        evocations: Vec::new(),
-                        martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles)
+                    },
+                    evocations: Vec::new(),
+                    martial_arts_styles: std::mem::take(&mut mortal.martial_arts_styles)
                         .into_iter()
                         .map(|(id, mortal_artist)| (id, mortal_artist.into()))
                         .collect(),
-                        exalt_type: ExaltType::Solar(solar),
-                        weapons: std::mem::take(&mut mortal.weapons).into(),
-                        wonders: std::mem::take(&mut mortal.wonders).into(),
-                    }
-                ))
+                    exalt_type: ExaltType::Solar(solar),
+                    weapons: std::mem::take(&mut mortal.weapons).into(),
+                    wonders: std::mem::take(&mut mortal.wonders).into(),
+                }))
             }
             Exaltation::Exalt(exalt) => {
                 // Preserve essence rating, but uncommit all motes and unattune all artifacts
@@ -472,24 +480,22 @@ impl<'view, 'source> Exaltation<'source> {
                 }
                 // Preserve Evocations
 
-                *self = Self::Exalt(Box::new(
-                    Exalt {
-                        armor: std::mem::take(&mut exalt.armor),
-                        essence: EssenceState {
-                            rating: exalt.essence().rating(),
-                            motes: MotesState {
-                                peripheral: MotePool::new(26 * exalt.essence().rating() * 7, 0),
-                                personal: MotePool::new(10 + exalt.essence().rating() * 3, 0),
-                                commitments: Default::default(),
-                            },
+                *self = Self::Exalt(Box::new(Exalt {
+                    armor: std::mem::take(&mut exalt.armor),
+                    essence: EssenceState {
+                        rating: exalt.essence().rating(),
+                        motes: MotesState {
+                            peripheral: MotePool::new(26 * exalt.essence().rating() * 7, 0),
+                            personal: MotePool::new(10 + exalt.essence().rating() * 3, 0),
+                            commitments: Default::default(),
                         },
-                        evocations: std::mem::take(&mut exalt.evocations),
-                        martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles),
-                        exalt_type: ExaltType::Solar(solar),
-                        weapons: std::mem::take(&mut exalt.weapons),
-                        wonders: std::mem::take(&mut exalt.wonders),
-                    }
-                ));
+                    },
+                    evocations: std::mem::take(&mut exalt.evocations),
+                    martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles),
+                    exalt_type: ExaltType::Solar(solar),
+                    weapons: std::mem::take(&mut exalt.weapons),
+                    wonders: std::mem::take(&mut exalt.wonders),
+                }));
             }
         }
 
@@ -1012,10 +1018,19 @@ impl<'view, 'source> Exaltation<'source> {
         }
     }
 
-    pub fn add_solar_charm(&mut self, solar_charm_id: SolarCharmId, charm: &'source SolarCharm, ability_dots: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_solar_charm(
+        &mut self,
+        solar_charm_id: SolarCharmId,
+        charm: &'source SolarCharm,
+        ability_dots: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(_) => {return Err(CharacterMutationError::CharmError(CharmError::Mortal));},
-            Exaltation::Exalt(exalt) => {exalt.add_solar_charm(solar_charm_id, charm, ability_dots)?;}
+            Exaltation::Mortal(_) => {
+                return Err(CharacterMutationError::CharmError(CharmError::Mortal));
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.add_solar_charm(solar_charm_id, charm, ability_dots)?;
+            }
         }
         Ok(self)
     }
@@ -1030,14 +1045,25 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn solar_charms_iter(&self) -> impl Iterator<Item = SolarCharmId> + '_ {
         match self {
             Exaltation::Mortal(_) => vec![].into_iter(),
-            Exaltation::Exalt(exalt) => exalt.solar_charms_iter().collect::<Vec<SolarCharmId>>().into_iter(),
+            Exaltation::Exalt(exalt) => exalt
+                .solar_charms_iter()
+                .collect::<Vec<SolarCharmId>>()
+                .into_iter(),
         }
     }
 
-    pub fn add_evocation(&mut self, evocation_id: EvocationId, evocation: &'source Evocation) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_evocation(
+        &mut self,
+        evocation_id: EvocationId,
+        evocation: &'source Evocation,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(_) => {return Err(CharacterMutationError::CharmError(CharmError::Mortal));},
-            Exaltation::Exalt(exalt) => {exalt.add_evocation(evocation_id, evocation)?;}
+            Exaltation::Mortal(_) => {
+                return Err(CharacterMutationError::CharmError(CharmError::Mortal));
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.add_evocation(evocation_id, evocation)?;
+            }
         }
         Ok(self)
     }

@@ -6,13 +6,17 @@ use crate::{
         ArmorError,
     },
     artifact::ArtifactId,
-    charms::{charm::{
-        evocation::{Evocation, EvocationId, EvokableId},
-        Charm, CharmId,
-    }, CharmError},
+    charms::{
+        charm::{
+            evocation::{Evocation, EvocationId, EvokableId},
+            Charm, CharmId,
+        },
+        CharmError,
+    },
+    exaltation::Exaltation,
     hearthstones::HearthstoneError,
     weapons::{weapon::WeaponId, WeaponError},
-    Character, CharacterMutationError, exaltation::Exaltation,
+    Character, CharacterMutationError,
 };
 
 impl<'source> Character<'source> {
@@ -151,7 +155,7 @@ impl<'source> Character<'source> {
             let old_len = exalt.evocations.len();
             exalt.evocations.retain(|(id, _)| !remove_ids.contains(id));
             exalt.evocations.len() < old_len
-        } else { 
+        } else {
             false
         }
     }

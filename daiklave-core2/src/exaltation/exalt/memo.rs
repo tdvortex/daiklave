@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{martial_arts::MartialArtsStyleId, charms::charm::evocation::{Evocation, EvocationId}};
+use crate::{
+    charms::charm::evocation::{Evocation, EvocationId},
+    martial_arts::MartialArtsStyleId,
+};
 
 use super::{
     armor::ExaltArmorMemo, essence::EssenceStateMemo, exalt_type::ExaltTypeMemo,
@@ -26,11 +29,16 @@ impl<'source> ExaltMemo {
         Exalt {
             armor: self.armor.as_ref(),
             essence: self.essence.as_ref(),
-            evocations: self.evocations.iter().map(|(id, charm)| (*id, charm)).collect(),
-            martial_arts_styles: self.martial_arts_styles
-            .iter()
-            .map(|(k, v)| (*k, v.as_ref()))
-            .collect(),
+            evocations: self
+                .evocations
+                .iter()
+                .map(|(id, charm)| (*id, charm))
+                .collect(),
+            martial_arts_styles: self
+                .martial_arts_styles
+                .iter()
+                .map(|(k, v)| (*k, v.as_ref()))
+                .collect(),
             exalt_type: self.exalt_type.as_ref(),
             weapons: self.weapons.as_ref(),
             wonders: self.wonders.as_ref(),

@@ -13,9 +13,9 @@ pub use cost_type::CharmCostType;
 pub use error::CharmError;
 pub use keyword::CharmKeyword;
 
-use crate::{Character, exaltation::Exaltation};
+use crate::{exaltation::Exaltation, Character};
 
-use self::charm::{CharmId, Charm};
+use self::charm::{Charm, CharmId};
 
 /// The interface for all the Charms a character possesses.
 pub struct Charms<'view, 'source>(pub(crate) &'view Character<'source>);
@@ -24,12 +24,17 @@ impl<'view, 'source> Charms<'view, 'source> {
     /// Iterates over all Charms (including Spells and Evocations) owned by the
     /// character by their Ids.
     pub fn iter(&self) -> impl Iterator<Item = CharmId> + '_ {
-        let solar_charms = self.0.solar_charms_iter().map(|solar_charm_id| CharmId::Solar(solar_charm_id));
+        let solar_charms = self.0.solar_charms_iter().map(CharmId::Solar);
         let evocations = if let Exaltation::Exalt(exalt) = &self.0.exaltation {
-            exalt.evocations.iter().map(|(evocation_id, _)| CharmId::Evocation(*evocation_id)).collect::<Vec<CharmId>>()
+            exalt
+                .evocations
+                .iter()
+                .map(|(evocation_id, _)| CharmId::Evocation(*evocation_id))
+                .collect::<Vec<CharmId>>()
         } else {
             vec![]
-        }.into_iter();
+        }
+        .into_iter();
 
         solar_charms.chain(evocations)
     }
@@ -42,7 +47,7 @@ impl<'view, 'source> Charms<'view, 'source> {
                 if let Exaltation::Exalt(exalt) = &self.0.exaltation {
                     exalt.evocations.iter().find_map(|(known_id, evocation)| {
                         if known_id == &evocation_id {
-                            Some(Charm::Evocation(*evocation))
+                            Some(Charm::Evocation(evocation))
                         } else {
                             None
                         }

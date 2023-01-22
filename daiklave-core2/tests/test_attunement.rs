@@ -44,11 +44,13 @@ fn test_attunement() {
         .book_reference(BookReference::new(Book::CoreRulebook, 619))
         .lore(
             "Long ago, in the remote jungles of the Silent Crescent,\
-        there once dwelt a hateful dragon named Vasshir.".to_owned(),
+        there once dwelt a hateful dragon named Vasshir."
+                .to_owned(),
         )
         .powers(
             "A Solar or Dragon-Blooded who attunes to Spring Razor \
-            gains Howling Lotus Strike at no cost.".to_owned(),
+            gains Howling Lotus Strike at no cost."
+                .to_owned(),
         )
         .base_artifact(
             BaseWeaponId(UniqueId::Placeholder(1)),

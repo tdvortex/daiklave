@@ -4,7 +4,7 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 pub enum CharmError {
     /// Can't have the same Charm more than once. If a Charm can be purchased
-    /// more than once, should be recorded as "Charm Name", "Charm Name (x2)", 
+    /// more than once, should be recorded as "Charm Name", "Charm Name (x2)",
     /// etc.
     #[error("Can't have the same Charm more than once")]
     DuplicateCharm,

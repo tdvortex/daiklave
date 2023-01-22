@@ -55,14 +55,14 @@ impl<'view, 'source> Character<'source> {
     pub fn set_essence_rating(&mut self, rating: u8) -> Result<&mut Self, CharacterMutationError> {
         let old_rating = self.essence().map(|essence| essence.rating()).unwrap_or(0);
         if old_rating == rating {
-            return Ok(self)
-        }        
+            return Ok(self);
+        }
         self.exaltation.set_essence_rating(rating)?;
         if old_rating > rating {
             self.correct_solar_charms(&[]);
             self.correct_evocations(&[]);
         }
-        
+
         Ok(self)
     }
 }

@@ -48,7 +48,7 @@ impl<'view, 'source> Weapon<'source> {
     /// weapon (like "sword") or base artifact weapon (like "daiklave").
     pub fn base(name: String) -> BaseWeaponBuilder {
         BaseWeaponBuilder {
-            name: name,
+            name,
             book_reference: None,
             attack_range: WeaponRange::ContactOnly,
             tags: HashSet::new(),

@@ -39,7 +39,11 @@ impl<'source> Craft<'source> {
     }
 
     pub fn max(&self) -> u8 {
-        self.0.values().map(|rating| rating.dots()).max().unwrap_or(0)
+        self.0
+            .values()
+            .map(|rating| rating.dots())
+            .max()
+            .unwrap_or(0)
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &'source str> + '_ {

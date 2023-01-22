@@ -21,6 +21,7 @@ pub(crate) use sorcery::{SolarSorcererMemo, SolarSorcererView};
 
 use crate::{
     abilities::AbilityName,
+    charms::{charm::Charm, CharmError},
     exaltation::exalt::Limit,
     merits::merit::MeritError,
     sorcery::{
@@ -31,10 +32,14 @@ use crate::{
         },
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
-    CharacterMutationError, charms::{CharmError, charm::Charm},
+    CharacterMutationError,
 };
 
-use self::{builder::SolarBuilder, caste::SolarCaste, charm::{SolarCharmId, SolarCharm}};
+use self::{
+    builder::SolarBuilder,
+    caste::SolarCaste,
+    charm::{SolarCharm, SolarCharmId},
+};
 
 /// Traits which are unique to being a Solar Exalted.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -60,7 +65,11 @@ impl<'source> Solar<'source> {
             favored_abilities: self.favored_abilities,
             sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
             limit: self.limit.as_memo(),
-            solar_charms: self.solar_charms.iter().map(|(charm_id, charm)| (*charm_id, (*charm).to_owned())).collect(),
+            solar_charms: self
+                .solar_charms
+                .iter()
+                .map(|(charm_id, charm)| (*charm_id, (*charm).to_owned()))
+                .collect(),
         }
     }
 
@@ -282,45 +291,66 @@ impl<'source> Solar<'source> {
 
     pub(crate) fn correct_sorcery_level(&mut self, occult_dots: u8, essence_rating: u8) -> bool {
         let mut removal_happened = false;
-        
+
         if (occult_dots < 5 || essence_rating < 5)
             && matches!(self.sorcery, Some(SolarSorcererView::Solar(_)))
         {
             let solar_removed = self.remove_solar_sorcery().is_ok();
-            removal_happened =  solar_removed || removal_happened;
+            removal_happened = solar_removed || removal_happened;
         }
 
         if (occult_dots < 4 || essence_rating < 3)
             && matches!(self.sorcery, Some(SolarSorcererView::Celestial(_)))
         {
             let celestial_removed = self.remove_celestial_sorcery().is_ok();
-            removal_happened =  celestial_removed || removal_happened;
+            removal_happened = celestial_removed || removal_happened;
         }
 
         if occult_dots < 3 && self.sorcery.is_some() {
             let terrestrial_removed = self.remove_terrestrial_sorcery().is_ok();
-            removal_happened =  terrestrial_removed || removal_happened;
+            removal_happened = terrestrial_removed || removal_happened;
         }
 
         removal_happened
     }
 
-    pub(crate) fn add_solar_charm(&mut self, charm_id: SolarCharmId, charm: &'source SolarCharm, ability_dots: u8, essence_rating: u8) -> Result<&mut Self, CharacterMutationError> {
-        if charm.ability_requirement().1 > ability_dots || (Into::<AbilityName>::into( charm.ability_requirement().0) != self.supernal_ability() && charm.essence_required().get() > essence_rating) {
-            return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
-        } 
-        let mut unmet_tree_requirements = charm.charm_prerequisites().collect::<HashSet<SolarCharmId>>();
+    pub(crate) fn add_solar_charm(
+        &mut self,
+        charm_id: SolarCharmId,
+        charm: &'source SolarCharm,
+        ability_dots: u8,
+        essence_rating: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if charm.ability_requirement().1 > ability_dots
+            || (Into::<AbilityName>::into(charm.ability_requirement().0) != self.supernal_ability()
+                && charm.essence_required().get() > essence_rating)
+        {
+            return Err(CharacterMutationError::CharmError(
+                CharmError::PrerequisitesNotMet,
+            ));
+        }
+        let mut unmet_tree_requirements = charm
+            .charm_prerequisites()
+            .collect::<HashSet<SolarCharmId>>();
 
-        for known_charm_id in self.solar_charms.iter().map(|(known_charm_id, _)| known_charm_id) {
+        for known_charm_id in self
+            .solar_charms
+            .iter()
+            .map(|(known_charm_id, _)| known_charm_id)
+        {
             if known_charm_id == &charm_id {
-                return Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm));
+                return Err(CharacterMutationError::CharmError(
+                    CharmError::DuplicateCharm,
+                ));
             } else {
                 unmet_tree_requirements.remove(known_charm_id);
             }
         }
 
         if !unmet_tree_requirements.is_empty() {
-            return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+            return Err(CharacterMutationError::CharmError(
+                CharmError::PrerequisitesNotMet,
+            ));
         }
 
         self.solar_charms.push((charm_id, charm));
@@ -328,11 +358,15 @@ impl<'source> Solar<'source> {
     }
 
     pub(crate) fn get_solar_charm(&self, charm_id: SolarCharmId) -> Option<Charm<'source>> {
-        self.solar_charms.iter().find_map(|(solar_charm_id, charm)| if solar_charm_id == &charm_id {
-            Some(Charm::Solar(charm))
-        } else {
-            None
-        })
+        self.solar_charms
+            .iter()
+            .find_map(|(solar_charm_id, charm)| {
+                if solar_charm_id == &charm_id {
+                    Some(Charm::Solar(charm))
+                } else {
+                    None
+                }
+            })
     }
 }
 

@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     book_reference::BookReference,
-    charms::{CharmActionType, CharmCostType, CharmCost},
+    charms::{CharmActionType, CharmCost, CharmCostType},
 };
 
 /// A builder path to construct an Evocation.
@@ -105,7 +105,7 @@ impl Evocation {
         self.essence_required.get()
     }
 
-    /// The other Evocations (typically on the same Artifact/Hearthstone) 
+    /// The other Evocations (typically on the same Artifact/Hearthstone)
     /// which the Exalt must have to purchase this Charm.
     pub fn evocation_prerequisites(&self) -> impl Iterator<Item = EvocationId> + '_ {
         self.evocation_tree.iter().copied()
@@ -119,14 +119,22 @@ impl Evocation {
 
     /// Any keywords the Evocation possesses.
     pub fn keywords(&self) -> impl Iterator<Item = EvocationKeyword> + '_ {
-        let mut output = self.keywords.iter().copied().collect::<Vec<EvocationKeyword>>();
+        let mut output = self
+            .keywords
+            .iter()
+            .copied()
+            .collect::<Vec<EvocationKeyword>>();
         output.sort();
         output.into_iter()
     }
 
     /// The costs required to activate the Evocation (not counting attunement).
     pub fn costs(&self) -> impl Iterator<Item = CharmCost> + '_ {
-        let mut output = self.costs.iter().map(|(cost_type, amount)| CharmCost::new(*cost_type, amount.get())).collect::<Vec<CharmCost>>();
+        let mut output = self
+            .costs
+            .iter()
+            .map(|(cost_type, amount)| CharmCost::new(*cost_type, amount.get()))
+            .collect::<Vec<CharmCost>>();
         output.sort();
         output.into_iter()
     }

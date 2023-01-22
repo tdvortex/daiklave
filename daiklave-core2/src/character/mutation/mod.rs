@@ -6,6 +6,7 @@ use crate::{
     armor::armor_item::{mundane::MundaneArmor, ArmorId, BaseArmorId},
     artifact::{Artifact, ArtifactId},
     attributes::AttributeName,
+    charms::charm::{CharmId, CharmMutation},
     exaltation::exalt::{
         essence::{MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
         exalt_type::solar::NewSolar,
@@ -26,7 +27,7 @@ use crate::{
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
     unique_id::UniqueId,
-    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId}, charms::charm::{CharmMutation, CharmId},
+    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId},
 };
 
 /// The API for the character, expressed as an owned struct. Each mutation has

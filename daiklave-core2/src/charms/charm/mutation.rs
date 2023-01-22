@@ -1,9 +1,14 @@
 use crate::{
-    exaltation::exalt::exalt_type::solar::charm::{SolarCharm, SolarCharmId}, martial_arts::charm::{MartialArtsCharm, MartialArtsCharmId},
-    sorcery::spell::{SpellMutation, SpellId},
+    exaltation::exalt::exalt_type::solar::charm::{SolarCharm, SolarCharmId},
+    martial_arts::charm::{MartialArtsCharm, MartialArtsCharmId},
+    sorcery::spell::{SpellId, SpellMutation},
 };
 
-use super::{evocation::{Evocation, EvocationId}, spirit::EclipseCharm, SpiritCharmId};
+use super::{
+    evocation::{Evocation, EvocationId},
+    spirit::EclipseCharm,
+    SpiritCharmId,
+};
 
 /// A Charm to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]

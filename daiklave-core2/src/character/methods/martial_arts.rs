@@ -1,5 +1,8 @@
 use crate::{
-    martial_arts::{MartialArts, MartialArtsStyle, MartialArtsStyleId, charm::{MartialArtsCharm, MartialArtsCharmId}},
+    martial_arts::{
+        charm::{MartialArtsCharm, MartialArtsCharmId},
+        MartialArts, MartialArtsStyle, MartialArtsStyleId,
+    },
     Character, CharacterMutationError,
 };
 
@@ -40,12 +43,19 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Adds a Martial Arts Charm to the character.
-    pub fn add_martial_arts_charm(&mut self, martial_arts_charm_id: MartialArtsCharmId, martial_arts_charm: &'source MartialArtsCharm) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_martial_arts_charm(
+        &mut self,
+        martial_arts_charm_id: MartialArtsCharmId,
+        martial_arts_charm: &'source MartialArtsCharm,
+    ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
     /// Removes a Martial Arts Charm from the character.
-    pub fn remove_martial_arts_charm(&mut self, martial_arts_charm_id: MartialArtsCharmId) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_martial_arts_charm(
+        &mut self,
+        martial_arts_charm_id: MartialArtsCharmId,
+    ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 }

@@ -16,6 +16,7 @@ use std::collections::HashMap;
 use crate::{
     abilities::AbilitiesVanilla,
     attributes::Attributes,
+    charms::charm::{CharmId, CharmMutation},
     craft::Craft,
     exaltation::Exaltation,
     health::Health,
@@ -25,7 +26,7 @@ use crate::{
         NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
     },
     unique_id::UniqueId,
-    willpower::Willpower, charms::charm::{CharmMutation, CharmId},
+    willpower::Willpower,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -219,24 +220,28 @@ impl<'source> Character<'source> {
             }
             CharacterMutation::RemoveExaltedHealing => self.remove_exalted_healing(),
             CharacterMutation::RemoveDemense(demense_id) => self.remove_demense(*demense_id),
-            CharacterMutation::AddCharm(charm) => {
-                match charm {
-                    CharmMutation::Eclipse(spirit_charm_id, eclipse_charm) => self.add_eclipse_charm(*spirit_charm_id, eclipse_charm),
-                    CharmMutation::Evocation(evocation_id, evocation) => self.add_evocation(*evocation_id, evocation),
-                    CharmMutation::MartialArts(ma_charm_id, ma_charm) => self.add_martial_arts_charm(*ma_charm_id, ma_charm),
-                    CharmMutation::Solar(solar_charm_id, solar_charm) => self.add_solar_charm(*solar_charm_id, solar_charm),
-                    CharmMutation::Spell(spell_id, spell) => self.add_spell(*spell_id, spell),
+            CharacterMutation::AddCharm(charm) => match charm {
+                CharmMutation::Eclipse(spirit_charm_id, eclipse_charm) => {
+                    self.add_eclipse_charm(*spirit_charm_id, eclipse_charm)
                 }
-            }
-            CharacterMutation::RemoveCharm(charm_id) => {
-                match charm_id {
-                    CharmId::Spirit(spirit_charm_id) => self.remove_spirit_charm(*spirit_charm_id),
-                    CharmId::Evocation(evocation_id) => self.remove_evocation(*evocation_id),
-                    CharmId::MartialArts(ma_charm_id) => self.remove_martial_arts_charm(*ma_charm_id),
-                    CharmId::Solar(solar_charm_id) => self.remove_solar_charm(*solar_charm_id),
-                    CharmId::Spell(spell_id) => self.remove_spell(*spell_id),
+                CharmMutation::Evocation(evocation_id, evocation) => {
+                    self.add_evocation(*evocation_id, evocation)
                 }
-            }
+                CharmMutation::MartialArts(ma_charm_id, ma_charm) => {
+                    self.add_martial_arts_charm(*ma_charm_id, ma_charm)
+                }
+                CharmMutation::Solar(solar_charm_id, solar_charm) => {
+                    self.add_solar_charm(*solar_charm_id, solar_charm)
+                }
+                CharmMutation::Spell(spell_id, spell) => self.add_spell(*spell_id, spell),
+            },
+            CharacterMutation::RemoveCharm(charm_id) => match charm_id {
+                CharmId::Spirit(spirit_charm_id) => self.remove_spirit_charm(*spirit_charm_id),
+                CharmId::Evocation(evocation_id) => self.remove_evocation(*evocation_id),
+                CharmId::MartialArts(ma_charm_id) => self.remove_martial_arts_charm(*ma_charm_id),
+                CharmId::Solar(solar_charm_id) => self.remove_solar_charm(*solar_charm_id),
+                CharmId::Spell(spell_id) => self.remove_spell(*spell_id),
+            },
         }
     }
 }

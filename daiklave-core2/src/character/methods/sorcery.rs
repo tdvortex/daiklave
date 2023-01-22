@@ -7,7 +7,8 @@ use crate::{
             solar::AddSolarSorcery,
             terrestrial::{AddTerrestrialSorcery, AddTerrestrialSorceryView},
         },
-        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, spell::{SpellMutation, SpellId},
+        spell::{SpellId, SpellMutation},
+        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
     Character, CharacterMutationError,
 };
@@ -110,7 +111,11 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Adds a Spell to the character.
-    pub fn add_spell(&mut self, spell_id: SpellId, spell: &'source SpellMutation) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_spell(
+        &mut self,
+        spell_id: SpellId,
+        spell: &'source SpellMutation,
+    ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
