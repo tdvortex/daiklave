@@ -9,7 +9,7 @@ pub(crate) use memo::DawnMemo;
 pub use supernal_ability::DawnSupernalAbility;
 pub(crate) use supernal_ability::DawnSupernalLayout;
 
-use crate::abilities::AbilityName;
+use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
 use self::anima_effect::{DAWN_ONE, DAWN_TWO, DAWN_THREE};
 
@@ -88,7 +88,7 @@ impl Dawn {
         }
     }
 
-    pub fn anima_effects(&self) -> [&'static str; 3] {
+    pub fn anima_effects(&self) -> [AnimaEffect<'static>; 3] {
         [
             DAWN_ONE,
             DAWN_TWO,

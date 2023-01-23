@@ -9,7 +9,7 @@ pub(crate) use memo::EclipseMemo;
 
 use crate::{
     abilities::AbilityName,
-    charms::charm::{EclipseCharm, SpiritCharmId},
+    charms::charm::{EclipseCharm, SpiritCharmId}, exaltation::exalt::AnimaEffect,
 };
 
 use self::anima_effect::{ECLIPSE_ONE, ECLIPSE_TWO, ECLIPSE_THREE};
@@ -42,7 +42,7 @@ impl<'source> Eclipse<'source> {
         AbilityName::from(self.supernal)
     }
 
-    pub fn anima_effects(&self) -> [&'static str; 3] {
+    pub fn anima_effects(&self) -> [AnimaEffect<'static>; 3] {
         [
             ECLIPSE_ONE,
             ECLIPSE_TWO,

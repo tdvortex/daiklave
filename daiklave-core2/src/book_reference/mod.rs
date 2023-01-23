@@ -5,8 +5,8 @@ use serde::{Deserialize, Serialize};
 /// A reference to a specific page of a specific Exalted 3e book.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Serialize, Deserialize)]
 pub struct BookReference {
-    book: Book,
-    page_number: i16,
+    pub(crate) book: Book,
+    pub(crate) page_number: i16,
 }
 
 impl BookReference {

@@ -5,7 +5,7 @@ mod memo;
 pub use ability::NightAbility;
 pub(crate) use memo::NightMemo;
 
-use crate::abilities::AbilityName;
+use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
 use self::anima_effect::{NIGHT_ONE, NIGHT_TWO, NIGHT_THREE};
 
@@ -36,7 +36,7 @@ impl Night {
         AbilityName::from(self.supernal)
     }
 
-    pub fn anima_effects(&self) -> [&'static str; 3] {
+    pub fn anima_effects(&self) -> [AnimaEffect<'static>; 3] {
         [
             NIGHT_ONE,
             NIGHT_TWO,

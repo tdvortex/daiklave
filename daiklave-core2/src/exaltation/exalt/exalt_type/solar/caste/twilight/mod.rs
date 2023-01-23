@@ -5,7 +5,7 @@ mod memo;
 pub use ability::TwilightAbility;
 pub(crate) use memo::TwilightMemo;
 
-use crate::abilities::AbilityName;
+use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
 use self::anima_effect::{TWILIGHT_ONE, TWILIGHT_TWO, TWILIGHT_THREE};
 
@@ -39,7 +39,7 @@ impl Twilight {
         AbilityName::from(self.supernal)
     }
 
-    pub fn anima_effects(&self) -> [&'static str; 3] {
+    pub fn anima_effects(&self) -> [AnimaEffect<'static>; 3] {
         [
             TWILIGHT_ONE,
             TWILIGHT_TWO,

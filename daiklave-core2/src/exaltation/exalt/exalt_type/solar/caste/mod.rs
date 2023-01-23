@@ -14,7 +14,7 @@ mod memo;
 
 pub(crate) use memo::SolarCasteMemo;
 
-use crate::abilities::AbilityName;
+use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
 use self::{dawn::Dawn, eclipse::Eclipse, night::Night, twilight::Twilight, zenith::Zenith};
 
@@ -58,7 +58,7 @@ impl<'source> SolarCaste<'source> {
         }
     }
 
-    pub fn anima_effects(&self) -> [&'static str; 3] {
+    pub fn anima_effects(&self) -> [AnimaEffect<'static>; 3] {
         match self {
             SolarCaste::Dawn(dawn) => dawn.anima_effects(),
             SolarCaste::Zenith(zenith) => zenith.anima_effects(),

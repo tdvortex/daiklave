@@ -5,7 +5,7 @@ mod memo;
 pub use ability::ZenithAbility;
 pub(crate) use memo::ZenithMemo;
 
-use crate::abilities::AbilityName;
+use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
 use self::anima_effect::{ZENITH_ONE, ZENITH_TWO, ZENITH_THREE};
 
@@ -39,7 +39,7 @@ impl Zenith {
         AbilityName::from(self.supernal)
     }
 
-    pub fn anima_effects(&self) -> [&'static str; 3] {
+    pub fn anima_effects(&self) -> [AnimaEffect<'static>; 3] {
         [
             ZENITH_ONE,
             ZENITH_TWO,
