@@ -25,6 +25,10 @@ pub mod charms;
 /// Traits which depend on being Mortal or Exalted.
 pub mod exaltation;
 
+/// Flaws, which can earn extra experience or add an interesting dimension to
+/// a character.
+pub mod flaws;
+
 /// A character builder with additional logic for bonus points, free starting
 /// dots, and other constraints.
 pub mod guided;
