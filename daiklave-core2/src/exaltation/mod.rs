@@ -31,13 +31,17 @@ use crate::{
         CharmError,
     },
     hearthstones::{HearthstoneId, UnslottedHearthstone},
-    martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId, charm::{MartialArtsCharmId, MartialArtsCharm}},
+    martial_arts::{
+        charm::{MartialArtsCharm, MartialArtsCharmId},
+        MartialArtist, MartialArtsStyle, MartialArtsStyleId,
+    },
     sorcery::{
         circles::{
             celestial::AddCelestialSorcery, solar::AddSolarSorcery,
             terrestrial::AddTerrestrialSorceryView,
         },
-        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError, spell::{SpellId, SpellMutation},
+        spell::{SpellId, SpellMutation},
+        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     weapons::weapon::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
@@ -1073,16 +1077,24 @@ impl<'view, 'source> Exaltation<'source> {
         spell: &'source SpellMutation,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(mortal) => {mortal.add_spell(spell_id, spell)?;}
-            Exaltation::Exalt(exalt) => {exalt.add_spell(spell_id, spell)?;}
+            Exaltation::Mortal(mortal) => {
+                mortal.add_spell(spell_id, spell)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.add_spell(spell_id, spell)?;
+            }
         }
         Ok(self)
     }
 
     pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(mortal) => {mortal.remove_spell(spell_id)?;}
-            Exaltation::Exalt(exalt) => {exalt.remove_spell(spell_id)?;}
+            Exaltation::Mortal(mortal) => {
+                mortal.remove_spell(spell_id)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.remove_spell(spell_id)?;
+            }
         }
         Ok(self)
     }
@@ -1099,5 +1111,27 @@ impl<'view, 'source> Exaltation<'source> {
                 Ok(self)
             }
         }
+    }
+
+    pub fn get_martial_arts_charm(
+        &self,
+        martial_arts_charm_id: MartialArtsCharmId,
+    ) -> Option<Charm<'source>> {
+        match self {
+            Exaltation::Mortal(_) => None,
+            Exaltation::Exalt(exalt) => exalt
+                .martial_arts_styles
+                .iter()
+                .find_map(|(_, martial_artist)| martial_artist.charms
+                .get(&martial_arts_charm_id)
+                .map(|martial_arts_charm| Charm::MartialArts(martial_arts_charm))),
+        }
+    }
+
+    pub fn martial_arts_charms_iter(&self) -> impl Iterator<Item = MartialArtsCharmId> + '_ {
+        match self {
+            Exaltation::Mortal(_) => vec![],
+            Exaltation::Exalt(exalt) => exalt.martial_arts_styles().iter().flat_map(|(_, martial_artist)| martial_artist.charms.keys().copied()).collect::<Vec<MartialArtsCharmId>>(),
+        }.into_iter()
     }
 }

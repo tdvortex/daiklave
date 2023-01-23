@@ -15,7 +15,7 @@ use super::ExaltMartialArtistMemo;
 pub(crate) struct ExaltMartialArtist<'source> {
     style: &'source MartialArtsStyle,
     ability: AbilityRating<'source>,
-    charms: HashMap<MartialArtsCharmId, &'source MartialArtsCharm>,
+    pub(crate) charms: HashMap<MartialArtsCharmId, &'source MartialArtsCharm>,
 }
 
 impl<'view, 'source> ExaltMartialArtist<'source> {
