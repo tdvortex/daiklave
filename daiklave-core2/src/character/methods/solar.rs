@@ -97,7 +97,7 @@ impl<'source> Character<'source> {
 
             let ExaltType::Solar(solar) = &mut exalt.exalt_type;
             if let SolarCaste::Eclipse(eclipse) = &mut solar.caste {
-                if charm.essence_required() > actual_essence {
+                if charm.essence_required() > actual_essence.get() {
                     Err(CharacterMutationError::CharmError(
                         CharmError::PrerequisitesNotMet,
                     ))
@@ -128,7 +128,7 @@ impl<'source> Character<'source> {
                 let mut ids_to_remove: HashSet<SpiritCharmId> =
                     HashSet::from_iter(force_remove.iter().copied());
                 for (id, charm) in eclipse.eclipse_charms.iter() {
-                    if charm.essence_required() > actual_essence {
+                    if charm.essence_required() > actual_essence.get() {
                         ids_to_remove.insert(*id);
                     }
                 }

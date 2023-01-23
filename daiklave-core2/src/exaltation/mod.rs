@@ -9,6 +9,8 @@ mod martial_artist;
 mod memo;
 mod sorcery;
 
+use std::num::NonZeroU8;
+
 pub(crate) use martial_artist::ExaltationMartialArtist;
 pub(crate) use memo::ExaltationMemo;
 pub(crate) use sorcery::ExaltationSorcery;
@@ -436,7 +438,7 @@ impl<'view, 'source> Exaltation<'source> {
                 *self = Self::Exalt(Box::new(Exalt {
                     armor: std::mem::take(&mut mortal.armor).into(),
                     essence: EssenceState {
-                        rating: 1,
+                        rating: NonZeroU8::new(1).unwrap(),
                         motes: MotesState {
                             peripheral: MotePool::new(33, 0),
                             personal: MotePool::new(13, 0),
@@ -479,7 +481,7 @@ impl<'view, 'source> Exaltation<'source> {
                 *self = Self::Exalt(Box::new(Exalt {
                     armor: std::mem::take(&mut exalt.armor),
                     essence: EssenceState {
-                        rating: exalt.essence().rating(),
+                        rating: exalt.essence.rating,
                         motes: MotesState {
                             peripheral: MotePool::new(26 * exalt.essence().rating() * 7, 0),
                             personal: MotePool::new(10 + exalt.essence().rating() * 3, 0),

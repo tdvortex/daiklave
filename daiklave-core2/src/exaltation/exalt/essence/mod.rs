@@ -21,7 +21,7 @@ pub struct Essence<'view, 'source>(pub(crate) &'view Exalt<'source>);
 impl<'view, 'source> Essence<'view, 'source> {
     /// The Exalt's current Essence rating.
     pub fn rating(&self) -> u8 {
-        self.0.essence.rating
+        self.0.essence.rating.get()
     }
 
     /// The current state of the Exalt's mote pools.

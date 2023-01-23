@@ -20,7 +20,7 @@ pub(crate) use sorcery::ExaltSorcery;
 pub(crate) use weapons::{ExaltEquippedWeapons, ExaltHands, ExaltUnequippedWeapons, ExaltWeapons};
 pub(crate) use wonders::ExaltWonders;
 
-use std::collections::{hash_map::Entry, HashMap, HashSet};
+use std::{collections::{hash_map::Entry, HashMap, HashSet}, num::NonZeroU8};
 
 use crate::{
     abilities::{AbilityError, AbilityName, AbilityRating},
@@ -318,14 +318,18 @@ impl<'view, 'source> Exalt<'source> {
             return Ok(self);
         }
 
-        if !(1..=5).contains(&rating) {
+        if rating > 5 {
             return Err(CharacterMutationError::EssenceError(
                 EssenceError::InvalidRating,
             ));
         }
 
+        let rating = NonZeroU8::new(rating).ok_or(CharacterMutationError::EssenceError(
+            EssenceError::InvalidRating,
+        ))?;
+
         let (new_peripheral, new_personal) = match self.exalt_type {
-            ExaltType::Solar(_) => (rating * 7 + 26, rating * 3 + 10),
+            ExaltType::Solar(_) => (rating.get() * 7 + 26, rating.get() * 3 + 10),
         };
 
         let committed_ids = self
@@ -991,7 +995,7 @@ impl<'view, 'source> Exalt<'source> {
         let essence_rating = self.essence.rating;
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => {
-                solar.add_solar_charm(solar_charm_id, charm, ability_dots, essence_rating)?;
+                solar.add_solar_charm(solar_charm_id, charm, ability_dots, essence_rating.get())?;
             }
         }
         Ok(self)
@@ -1020,7 +1024,7 @@ impl<'view, 'source> Exalt<'source> {
         evocation: &'source Evocation,
     ) -> Result<&mut Self, CharacterMutationError> {
         let actual_essence = self.essence.rating;
-        if evocation.essence_required() > actual_essence {
+        if evocation.essence_required() > actual_essence.get() {
             return Err(CharacterMutationError::CharmError(
                 CharmError::PrerequisitesNotMet,
             ));
@@ -1126,7 +1130,7 @@ impl<'view, 'source> Exalt<'source> {
 
         let required_essence = martial_arts_charm.essence_required();
         let actual_essence = self.essence.rating;
-        if actual_essence < required_essence {
+        if actual_essence.get() < required_essence {
             let mut martial_arts_supernal = false;
             // May still be okay for a Dawn caste, Martial Arts supernal solar
             let ExaltType::Solar(solar) = &self.exalt_type;
@@ -1194,7 +1198,7 @@ impl<'view, 'source> Exalt<'source> {
                         ids_to_remove.insert(*known_charm_id);
                     }
 
-                    if known_charm.essence_required() > actual_essence && !is_martial_arts_supernal
+                    if known_charm.essence_required() > actual_essence.get() && !is_martial_arts_supernal
                     {
                         ids_to_remove.insert(*known_charm_id);
                     }
