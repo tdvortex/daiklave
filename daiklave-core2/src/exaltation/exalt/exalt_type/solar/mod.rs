@@ -30,7 +30,8 @@ use crate::{
             solar::AddSolarSorcery,
             terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
         },
-        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError, spell::{SpellId, SpellMutation},
+        spell::{SpellId, SpellMutation},
+        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     CharacterMutationError,
 };
@@ -375,21 +376,36 @@ impl<'source> Solar<'source> {
         spell: &'source SpellMutation,
     ) -> Result<&mut Self, CharacterMutationError> {
         match (&mut self.sorcery, spell) {
-            (None, _) => Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet)),
-            (Some(SolarSorcererView::Terrestrial(terrestrial)), SpellMutation::Terrestrial(terrestrial_spell)) => {
+            (None, _) => Err(CharacterMutationError::CharmError(
+                CharmError::PrerequisitesNotMet,
+            )),
+            (
+                Some(SolarSorcererView::Terrestrial(terrestrial)),
+                SpellMutation::Terrestrial(terrestrial_spell),
+            ) => {
                 terrestrial.add_terrestrial_spell(spell_id, terrestrial_spell)?;
                 Ok(self)
             }
-            (Some(SolarSorcererView::Terrestrial(_)), _intelligence_dots) => Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet)),
-            (Some(SolarSorcererView::Celestial(celestial)), SpellMutation::Terrestrial(terrestrial_spell)) => {
+            (Some(SolarSorcererView::Terrestrial(_)), _intelligence_dots) => Err(
+                CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet),
+            ),
+            (
+                Some(SolarSorcererView::Celestial(celestial)),
+                SpellMutation::Terrestrial(terrestrial_spell),
+            ) => {
                 celestial.add_terrestrial_spell(spell_id, terrestrial_spell)?;
                 Ok(self)
             }
-            (Some(SolarSorcererView::Celestial(celestial)), SpellMutation::Celestial(celestial_spell)) => {
+            (
+                Some(SolarSorcererView::Celestial(celestial)),
+                SpellMutation::Celestial(celestial_spell),
+            ) => {
                 celestial.add_celestial_spell(spell_id, celestial_spell)?;
                 Ok(self)
             }
-            (Some(SolarSorcererView::Celestial(_)), SpellMutation::Solar(_)) => Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet)),
+            (Some(SolarSorcererView::Celestial(_)), SpellMutation::Solar(_)) => Err(
+                CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet),
+            ),
             (Some(SolarSorcererView::Solar(solar)), spell_mutation) => {
                 solar.add_spell(spell_id, spell_mutation)?;
                 Ok(self)
@@ -399,12 +415,18 @@ impl<'source> Solar<'source> {
 
     pub(crate) fn remove_spell(
         &mut self,
-        spell_id: SpellId
+        spell_id: SpellId,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.sorcery {
-            Some(SolarSorcererView::Terrestrial(terrestrial)) => {terrestrial.remove_spell(spell_id)?;}
-            Some(SolarSorcererView::Celestial(celestial)) => {celestial.remove_spell(spell_id)?;}
-            Some(SolarSorcererView::Solar(solar)) => {solar.remove_spell(spell_id)?;}
+            Some(SolarSorcererView::Terrestrial(terrestrial)) => {
+                terrestrial.remove_spell(spell_id)?;
+            }
+            Some(SolarSorcererView::Celestial(celestial)) => {
+                celestial.remove_spell(spell_id)?;
+            }
+            Some(SolarSorcererView::Solar(solar)) => {
+                solar.remove_spell(spell_id)?;
+            }
             None => todo!(),
         }
         Ok(self)

@@ -1,7 +1,8 @@
-use std::{num::NonZeroU8, collections::HashSet};
+use std::{collections::HashSet, num::NonZeroU8};
 
 use daiklave_core2::{
     abilities::{AbilityName, AbilityNameVanilla},
+    armor::armor_item::ArmorWeightClass,
     artifact::{wonders::WonderId, Artifact, ArtifactId, MagicMaterial},
     book_reference::{Book, BookReference},
     charms::{
@@ -12,7 +13,9 @@ use daiklave_core2::{
         CharmActionType, CharmCostType,
     },
     exaltation::exalt::exalt_type::solar::{
-        caste::{TwilightAbility, ZenithAbility, NightAbility, DawnCasteAbility, DawnSupernalAbility},
+        caste::{
+            DawnCasteAbility, DawnSupernalAbility, NightAbility, TwilightAbility, ZenithAbility,
+        },
         charm::{SolarCharm, SolarCharmAbility, SolarCharmId, SolarCharmKeyword},
         Solar,
     },
@@ -20,11 +23,20 @@ use daiklave_core2::{
         hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory},
         HearthstoneId,
     },
+    martial_arts::{
+        charm::{MartialArtsCharm, MartialArtsCharmId, MartialArtsCharmKeyword},
+        MartialArtsStyle, MartialArtsStyleId,
+    },
+    sorcery::{
+        spell::{Spell, SpellId, SpellKeyword},
+        AddCelestialSorcery, AddSolarSorcery, AddTerrestrialSorcery, ShapingRitual,
+        ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle,
+    },
     unique_id::UniqueId,
     weapons::weapon::{
         ArtifactWeaponId, BaseWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass,
     },
-    CharacterEventSource, CharacterMutation, sorcery::{spell::{SpellId, Spell, SpellKeyword}, SorceryCircle, SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, AddTerrestrialSorcery, AddCelestialSorcery, AddSolarSorcery}, martial_arts::{MartialArtsStyleId, MartialArtsStyle, charm::{MartialArtsCharm, MartialArtsCharmKeyword, MartialArtsCharmId}}, armor::armor_item::ArmorWeightClass,
+    CharacterEventSource, CharacterMutation,
 };
 
 #[test]
@@ -643,63 +655,95 @@ fn test_spells() {
     // Non-sorcerers cannot add Spells
     let cirrus_skiff_id = SpellId(UniqueId::Placeholder(1));
     let cirrus_skiff = Spell::builder("Cirrus Skiff".to_owned())
-    .book_reference(BookReference::new(Book::CoreRulebook, 471))
-    .sorcerous_motes(NonZeroU8::new(15).unwrap())
-    .willpower(NonZeroU8::new(1).unwrap())
-    .duration("Until Ended".to_owned())
-    .summary("Summon cloud to ride on".to_owned())
-    .description("The sorcerer calls down a Cirrus Skiff to bear her skyward, \
+        .book_reference(BookReference::new(Book::CoreRulebook, 471))
+        .sorcerous_motes(NonZeroU8::new(15).unwrap())
+        .willpower(NonZeroU8::new(1).unwrap())
+        .duration("Until Ended".to_owned())
+        .summary("Summon cloud to ride on".to_owned())
+        .description(
+            "The sorcerer calls down a Cirrus Skiff to bear her skyward, \
     a small white puffy cloud just large enough for her and \
-    one other passenger to ride upon.".to_owned())
-    .control_spell_description("A character who knows Cirrus Skiff as her control spell \
-    may cast it with an Indefinite duration.".to_owned())
-    .distortion(NonZeroU8::new(7).unwrap(), "Distorting a Cirrus Skiff \
+    one other passenger to ride upon."
+                .to_owned(),
+        )
+        .control_spell_description(
+            "A character who knows Cirrus Skiff as her control spell \
+    may cast it with an Indefinite duration."
+                .to_owned(),
+        )
+        .distortion(
+            NonZeroU8::new(7).unwrap(),
+            "Distorting a Cirrus Skiff \
     weighs it down, turning the cloud into a heavy, dense fog \
-    for a scene.".to_owned())
-    .build(SorceryCircle::Terrestrial);
+    for a scene."
+                .to_owned(),
+        )
+        .build(SorceryCircle::Terrestrial);
 
-    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(cirrus_skiff_id, cirrus_skiff.clone()))).is_err());
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+            cirrus_skiff_id,
+            cirrus_skiff.clone()
+        )))
+        .is_err());
 
     // Mortal sorcerers can add Terrestrial Spells
-    event_source.apply_mutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 5)).unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::SetAbilityDots(
+            AbilityNameVanilla::Occult,
+            5,
+        ))
+        .unwrap();
 
     let scarred_by_nightmares_id = SorceryArchetypeId(UniqueId::Placeholder(1));
     let scarred_by_nightmares = SorceryArchetype::new(
-        "Scarred by Nightmares".to_owned(), 
-        Some(BookReference::new(Book::CoreRulebook, 468)), 
+        "Scarred by Nightmares".to_owned(),
+        Some(BookReference::new(Book::CoreRulebook, 468)),
         "Perhaps you were a child lost in the warped depths of the \
         Wyld or a hero treading where the logic of the world \
-        crumbles away[...]".to_owned()
+        crumbles away[...]"
+            .to_owned(),
     );
 
     let visions_id = ShapingRitualId(UniqueId::Placeholder(1));
     let visions = ShapingRitual::new(
-        scarred_by_nightmares_id, 
-        Some(BookReference::new(Book::CoreRulebook, 468)), 
+        scarred_by_nightmares_id,
+        Some(BookReference::new(Book::CoreRulebook, 468)),
         "When the sorcerer sleeps, her player may describe the \
-        strange visions that haunt her.".to_owned()
+        strange visions that haunt her."
+            .to_owned(),
     );
 
     let corrupted_words_id = SpellId(UniqueId::Placeholder(2));
     let corrupted_words = Spell::builder("Corrupted Words".to_owned())
-    .book_reference(BookReference::new(Book::CoreRulebook, 472))
-    .sorcerous_motes(NonZeroU8::new(15).unwrap())
-    .willpower(NonZeroU8::new(1).unwrap())
-    .keyword(SpellKeyword::Psyche)
-    .duration("Indefinite".to_owned())
-    .description("The sorcerer speaks words that bind the tongue—she \
+        .book_reference(BookReference::new(Book::CoreRulebook, 472))
+        .sorcerous_motes(NonZeroU8::new(15).unwrap())
+        .willpower(NonZeroU8::new(1).unwrap())
+        .keyword(SpellKeyword::Psyche)
+        .duration("Indefinite".to_owned())
+        .description(
+            "The sorcerer speaks words that bind the tongue—she \
     evokes a seething, bilious mass of green Essence between \
     her hands and casts it down the throat of a victim at short \
     range, where it dissolves into a ward that censors that \
-    character's mind.".to_owned())
-    .control_spell_description("A sorcerer who knows Corrupted Words as her control \
+    character's mind."
+                .to_owned(),
+        )
+        .control_spell_description(
+            "A sorcerer who knows Corrupted Words as her control \
     spell may cast it with no obvious display of magical \
-    intervention.".to_owned())
-    .distortion(NonZeroU8::new(15).unwrap(), "Distorting this curse makes \
+    intervention."
+                .to_owned(),
+        )
+        .distortion(
+            NonZeroU8::new(15).unwrap(),
+            "Distorting this curse makes \
     it possible for the victim to speak around the forbidden \
-    subject matter for five minutes.".to_owned())
-    .summary("Prevent someone from talking about something".to_owned())
-    .build_terrestrial();
+    subject matter for five minutes."
+                .to_owned(),
+        )
+        .summary("Prevent someone from talking about something".to_owned())
+        .build_terrestrial();
 
     let add_terrestrial = AddTerrestrialSorcery {
         archetype_id: scarred_by_nightmares_id,
@@ -707,15 +751,48 @@ fn test_spells() {
         shaping_ritual_id: visions_id,
         shaping_ritual: visions,
         control_spell_id: corrupted_words_id,
-        control_spell: corrupted_words
+        control_spell: corrupted_words,
     };
-    let character = event_source.apply_mutation(CharacterMutation::AddTerrestrialSorcery(Box::new(add_terrestrial))).unwrap();
-    assert!(character.charms().get(CharmId::Spell(corrupted_words_id)).is_some());
-    assert_eq!(character.sorcery().unwrap().spells().get(corrupted_words_id).unwrap().1, true);
+    let character = event_source
+        .apply_mutation(CharacterMutation::AddTerrestrialSorcery(Box::new(
+            add_terrestrial,
+        )))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::Spell(corrupted_words_id))
+        .is_some());
+    assert_eq!(
+        character
+            .sorcery()
+            .unwrap()
+            .spells()
+            .get(corrupted_words_id)
+            .unwrap()
+            .1,
+        true
+    );
 
-    let character = event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(cirrus_skiff_id, cirrus_skiff))).unwrap();
-    assert!(character.charms().get(CharmId::Spell(cirrus_skiff_id)).is_some());
-    assert_eq!(character.sorcery().unwrap().spells().get(cirrus_skiff_id).unwrap().1, false);
+    let character = event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+            cirrus_skiff_id,
+            cirrus_skiff,
+        )))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::Spell(cirrus_skiff_id))
+        .is_some());
+    assert_eq!(
+        character
+            .sorcery()
+            .unwrap()
+            .spells()
+            .get(cirrus_skiff_id)
+            .unwrap()
+            .1,
+        false
+    );
 
     // Solar Terrestrial sorcerers can add Terrestrial Spells
     [
@@ -723,8 +800,14 @@ fn test_spells() {
         AbilityNameVanilla::Awareness,
         AbilityNameVanilla::Brawl,
         AbilityNameVanilla::Bureaucracy,
-        AbilityNameVanilla::Dodge
-    ].into_iter().for_each(|vanilla| {event_source.apply_mutation(CharacterMutation::SetAbilityDots(vanilla, 1)).unwrap();});
+        AbilityNameVanilla::Dodge,
+    ]
+    .into_iter()
+    .for_each(|vanilla| {
+        event_source
+            .apply_mutation(CharacterMutation::SetAbilityDots(vanilla, 1))
+            .unwrap();
+    });
 
     let new_solar = Solar::builder()
         .zenith()
@@ -741,7 +824,9 @@ fn test_spells() {
         .limit_trigger("Some limit trigger".to_owned())
         .build()
         .unwrap();
-    event_source.apply_mutation(CharacterMutation::SetSolar(new_solar)).unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::SetSolar(new_solar))
+        .unwrap();
 
     let butterflies_id = SpellId(UniqueId::Placeholder(3));
     let butterflies = Spell::builder("Death of Obsidian Butterflies".to_owned())
@@ -755,70 +840,112 @@ fn test_spells() {
         .control_spell_description("A sorcerer who knows Death of Obsidian Butterflies as her control spell gains (Essence) bonus dice to the spells attack roll[...]".to_owned())
         .summary("AOE attack that makes difficult terrain".to_owned())
         .build(SorceryCircle::Terrestrial);
-    event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(butterflies_id, butterflies))).unwrap();
-    
+    event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+            butterflies_id,
+            butterflies,
+        )))
+        .unwrap();
+
     // ...but not Celestial Spells or Solar circle spells
     let demon_id = SpellId(UniqueId::Placeholder(4));
     let demon = Spell::builder("Demon of the Second Circle".to_owned())
-    .book_reference(BookReference::new(Book::CoreRulebook, 477))
-    .ritual()
-    .willpower(NonZeroU8::new(3).unwrap())
-    .duration("Instant".to_owned())
-    .summary("Summon a second-circle demon".to_owned())
-    .description("Celestial sorcerers may call upon demons of the Second \
-    Circle, baleful spirits that serve the Yozis.".to_owned())
-    .build(SorceryCircle::Celestial);
+        .book_reference(BookReference::new(Book::CoreRulebook, 477))
+        .ritual()
+        .willpower(NonZeroU8::new(3).unwrap())
+        .duration("Instant".to_owned())
+        .summary("Summon a second-circle demon".to_owned())
+        .description(
+            "Celestial sorcerers may call upon demons of the Second \
+    Circle, baleful spirits that serve the Yozis."
+                .to_owned(),
+        )
+        .build(SorceryCircle::Celestial);
 
     let death_ray_id = SpellId(UniqueId::Placeholder(5));
     let death_ray = Spell::builder("Death Ray".to_owned())
-    .book_reference(BookReference::new(Book::CoreRulebook, 481))
-    .sorcerous_motes(NonZeroU8::new(25).unwrap())
-    .willpower(NonZeroU8::new(2).unwrap())
-    .keyword(SpellKeyword::Aggravated)
-    .keyword(SpellKeyword::DecisiveOnly)
-    .keyword(SpellKeyword::Perilous)
-    .duration("Instant or until ended".to_owned())
-    .summary("Devastating laser beam".to_owned())
-    .description("The Solar Exalted devised this spell to terrify the enemies \
-    of the gods.".to_owned())
-    .control_spell_description("A sorcerer who knows Death Ray as her control spell may \
+        .book_reference(BookReference::new(Book::CoreRulebook, 481))
+        .sorcerous_motes(NonZeroU8::new(25).unwrap())
+        .willpower(NonZeroU8::new(2).unwrap())
+        .keyword(SpellKeyword::Aggravated)
+        .keyword(SpellKeyword::DecisiveOnly)
+        .keyword(SpellKeyword::Perilous)
+        .duration("Instant or until ended".to_owned())
+        .summary("Devastating laser beam".to_owned())
+        .description(
+            "The Solar Exalted devised this spell to terrify the enemies \
+    of the gods."
+                .to_owned(),
+        )
+        .control_spell_description(
+            "A sorcerer who knows Death Ray as her control spell may \
     gain sorcerous motes whenever the Essence blast directly \
-    incapacitates a character or deals damage to a battle group.".to_owned())
-    .distortion(NonZeroU8::new(10).unwrap(), "Distorting the Death Ray
+    incapacitates a character or deals damage to a battle group."
+                .to_owned(),
+        )
+        .distortion(
+            NonZeroU8::new(10).unwrap(),
+            "Distorting the Death Ray
     gives the opposing sorcerer a measure of protection from \
     it, causing the destructive energy to bend and warp around \
-    him before continuing on its original course.".to_owned())
-    .build(SorceryCircle::Solar);
+    him before continuing on its original course."
+                .to_owned(),
+        )
+        .build(SorceryCircle::Solar);
 
-    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(demon_id, demon.clone()))).is_err());
-    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(death_ray_id, death_ray.clone()))).is_err());
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+            demon_id,
+            demon.clone()
+        )))
+        .is_err());
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+            death_ray_id,
+            death_ray.clone()
+        )))
+        .is_err());
 
     // Solar Celestial sorcerer can add Terrestrial or Celestial spells
     let magma_kraken_id = SpellId(UniqueId::Placeholder(6));
     let magma_kraken = Spell::builder("Magma Kraken".to_owned())
-    .book_reference(BookReference::new(Book::CoreRulebook, 478))
-    .sorcerous_motes(NonZeroU8::new(30).unwrap())
-    .willpower(NonZeroU8::new(1).unwrap())
-    .duration("One scene".to_owned())
-    .summary("Summons tentacles of magma from the ground".to_owned())
-    .description("Calling to the Essence of fire and earth that roils deep beneath \
+        .book_reference(BookReference::new(Book::CoreRulebook, 478))
+        .sorcerous_motes(NonZeroU8::new(30).unwrap())
+        .willpower(NonZeroU8::new(1).unwrap())
+        .duration("One scene".to_owned())
+        .summary("Summons tentacles of magma from the ground".to_owned())
+        .description(
+            "Calling to the Essence of fire and earth that roils deep beneath \
     her, the sorcerer wills ten tentacles of lava to erupt from the \
     ground, shaking the earth as they burst forward in torrents \
-    of molten stone.".to_owned())
-    .control_spell_description("A sorcerer who knows Magma Kraken as her control spell \
-    is forever chased by magmatic flame.".to_owned())
-    .distortion(NonZeroU8::new(10).unwrap(), " Distorting a Magma Kraken \
+    of molten stone."
+                .to_owned(),
+        )
+        .control_spell_description(
+            "A sorcerer who knows Magma Kraken as her control spell \
+    is forever chased by magmatic flame."
+                .to_owned(),
+        )
+        .distortion(
+            NonZeroU8::new(10).unwrap(),
+            " Distorting a Magma Kraken \
     renders it incapable of perceiving and attacking the \
     distorting sorcerer as well as all allies within close range \
-    of her.".to_owned())
-    .build_celestial();
+    of her."
+                .to_owned(),
+        )
+        .build_celestial();
 
     let taboo_id = ShapingRitualId(UniqueId::Placeholder(2));
-    let taboo = ShapingRitual::new(scarred_by_nightmares_id, Some(BookReference::new(Book::CoreRulebook, 468)), 
-    "The sorcerer abides by an esoteric taboo or is victim to a \
+    let taboo = ShapingRitual::new(
+        scarred_by_nightmares_id,
+        Some(BookReference::new(Book::CoreRulebook, 468)),
+        "The sorcerer abides by an esoteric taboo or is victim to a \
     delusional belief inspired by the Wyld energies inside her \
     mind, a Defining Derangement which cannot be removed \
-    or altered.".to_owned());
+    or altered."
+            .to_owned(),
+    );
 
     let add_celestial = AddCelestialSorcery {
         archetype_id: scarred_by_nightmares_id,
@@ -826,40 +953,68 @@ fn test_spells() {
         shaping_ritual_id: taboo_id,
         shaping_ritual: taboo,
         control_spell_id: magma_kraken_id,
-        control_spell: magma_kraken
+        control_spell: magma_kraken,
     };
 
-    event_source.apply_mutation(CharacterMutation::SetEssenceRating(3)).unwrap();
-    event_source.apply_mutation(CharacterMutation::AddCelestialSorcery(Box::new(add_celestial))).unwrap();
-    event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(demon_id, demon))).unwrap();
-
+    event_source
+        .apply_mutation(CharacterMutation::SetEssenceRating(3))
+        .unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::AddCelestialSorcery(Box::new(
+            add_celestial,
+        )))
+        .unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+            demon_id, demon,
+        )))
+        .unwrap();
 
     // ...but not Solar circle spells
-    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(death_ray_id, death_ray.clone()))).is_err());
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+            death_ray_id,
+            death_ray.clone()
+        )))
+        .is_err());
 
     // Solar Solar sorcerers can add any spell
     let benediction_id = SpellId(UniqueId::Placeholder(7));
     let benediction = Spell::builder("Benediction of Archgenesis".to_owned())
-    .book_reference(BookReference::new(Book::CoreRulebook, 480))
-    .ritual()
-    .willpower(NonZeroU8::new(3).unwrap())
-    .duration("Instant".to_owned())
-    .summary("Make the land fertile".to_owned())
-    .description("Chanting from one sunrise to the next, the sorcerer \
-    calls down a soft, warm rain that carries life-giving Essence.".to_owned())
-    .control_spell_description("A sorcerer who knows Benediction of Archgenesis as \
+        .book_reference(BookReference::new(Book::CoreRulebook, 480))
+        .ritual()
+        .willpower(NonZeroU8::new(3).unwrap())
+        .duration("Instant".to_owned())
+        .summary("Make the land fertile".to_owned())
+        .description(
+            "Chanting from one sunrise to the next, the sorcerer \
+    calls down a soft, warm rain that carries life-giving Essence."
+                .to_owned(),
+        )
+        .control_spell_description(
+            "A sorcerer who knows Benediction of Archgenesis as \
     her control spell reduces the distance requirement to \
-    one hundred miles.".to_owned())
-    .distortion(NonZeroU8::new(30).unwrap(), "Distorting the Benediction \
+    one hundred miles."
+                .to_owned(),
+        )
+        .distortion(
+            NonZeroU8::new(30).unwrap(),
+            "Distorting the Benediction \
     of Archgenesis causes all plant life within (Essence) miles \
     of the distorting sorcerer to wither and die, leaving a barren \
-    dead zone within the blessed land.".to_owned())
-    .build_solar();
+    dead zone within the blessed land."
+                .to_owned(),
+        )
+        .build_solar();
 
     let emotions_id = ShapingRitualId(UniqueId::Placeholder(3));
-    let emotions = ShapingRitual::new(scarred_by_nightmares_id, Some(BookReference::new(Book::CoreRulebook, 468)), 
-    "The sorcerer may feed on emotional energies like the \
-    raksha, shaping the passions of others through spellcraft.".to_owned());
+    let emotions = ShapingRitual::new(
+        scarred_by_nightmares_id,
+        Some(BookReference::new(Book::CoreRulebook, 468)),
+        "The sorcerer may feed on emotional energies like the \
+    raksha, shaping the passions of others through spellcraft."
+            .to_owned(),
+    );
 
     let add_solar_sorcery = AddSolarSorcery {
         archetype_id: scarred_by_nightmares_id,
@@ -867,11 +1022,22 @@ fn test_spells() {
         shaping_ritual_id: emotions_id,
         shaping_ritual: emotions,
         control_spell_id: benediction_id,
-        control_spell: benediction
+        control_spell: benediction,
     };
-    event_source.apply_mutation(CharacterMutation::SetEssenceRating(5)).unwrap();
-    event_source.apply_mutation(CharacterMutation::AddSolarSorcery(Box::new(add_solar_sorcery))).unwrap();
-    event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(death_ray_id, death_ray))).unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::SetEssenceRating(5))
+        .unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::AddSolarSorcery(Box::new(
+            add_solar_sorcery,
+        )))
+        .unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+            death_ray_id,
+            death_ray,
+        )))
+        .unwrap();
 }
 
 #[test]
@@ -884,93 +1050,168 @@ fn test_martial_arts_charms() {
         "Single Point Shining Into the Void Style".to_owned(),
         "Single Point Shining Into the Void is a sword style that\
         emphasizes blinding speed and deadly-perfect finishing \
-        moves.".to_owned(),
+        moves."
+            .to_owned(),
         HashSet::new(), // Skip weapons for testing
-        Some(ArmorWeightClass::Medium)
+        Some(ArmorWeightClass::Medium),
     );
-    event_source.apply_mutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Brawl, 1)).unwrap();
-    event_source.apply_mutation(CharacterMutation::AddMartialArtsStyle(single_point_id, single_point)).unwrap();
-    event_source.apply_mutation(CharacterMutation::SetMartialArtsDots(single_point_id, 2)).unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::SetAbilityDots(
+            AbilityNameVanilla::Brawl,
+            1,
+        ))
+        .unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::AddMartialArtsStyle(
+            single_point_id,
+            single_point,
+        ))
+        .unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::SetMartialArtsDots(single_point_id, 2))
+        .unwrap();
 
     let gathering_light_concentration_id = MartialArtsCharmId(UniqueId::Placeholder(1));
-    let gathering_light_concentration = MartialArtsCharm::builder("Gathering Light Concentration".to_owned(), single_point_id)
-    .book_reference(BookReference::new(Book::CoreRulebook, 434))
-    .cost(CharmCostType::Motes, NonZeroU8::new(3).unwrap())
-    .essence_required(NonZeroU8::new(1).unwrap())
-    .ability_required(NonZeroU8::new(2).unwrap())
-    .action_type(CharmActionType::Reflexive)
-    .keyword(MartialArtsCharmKeyword::Uniform)
-    .duration("Instant".to_owned())
-    .summary("Reflect onslaught penalties after parry".to_owned())
-    .description("The clashing steel and ferocious blows of the swordsman's \
+    let gathering_light_concentration =
+        MartialArtsCharm::builder("Gathering Light Concentration".to_owned(), single_point_id)
+            .book_reference(BookReference::new(Book::CoreRulebook, 434))
+            .cost(CharmCostType::Motes, NonZeroU8::new(3).unwrap())
+            .essence_required(NonZeroU8::new(1).unwrap())
+            .ability_required(NonZeroU8::new(2).unwrap())
+            .action_type(CharmActionType::Reflexive)
+            .keyword(MartialArtsCharmKeyword::Uniform)
+            .duration("Instant".to_owned())
+            .summary("Reflect onslaught penalties after parry".to_owned())
+            .description(
+                "The clashing steel and ferocious blows of the swordsman's \
     enemies do not disrupt her focus—rather, she welcomes \
     them, gleaning the weaknesses of each foe's fighting style \
-    from their offense.".to_owned())
-    .mastery("At Essence 3+, the Solar may spend an extra 3i \
+    from their offense."
+                    .to_owned(),
+            )
+            .mastery(
+                "At Essence 3+, the Solar may spend an extra 3i \
     when activating Gathering Light Concentration to cancel \
     all onslaught penalties she's suffering from, and inflict \
-    them on her attacker.".to_owned())
-    .build();
+    them on her attacker."
+                    .to_owned(),
+            )
+            .build();
 
-    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(gathering_light_concentration_id, gathering_light_concentration.clone()))).is_err());
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+            gathering_light_concentration_id,
+            gathering_light_concentration.clone()
+        )))
+        .is_err());
 
     // Exalts must have the right MA style
     [
         AbilityNameVanilla::Medicine,
         AbilityNameVanilla::Melee,
         AbilityNameVanilla::Resistance,
-        AbilityNameVanilla::Sail
-    ].into_iter().for_each(|vanilla| {event_source.apply_mutation(CharacterMutation::SetAbilityDots(vanilla, 1)).unwrap();});
+        AbilityNameVanilla::Sail,
+    ]
+    .into_iter()
+    .for_each(|vanilla| {
+        event_source
+            .apply_mutation(CharacterMutation::SetAbilityDots(vanilla, 1))
+            .unwrap();
+    });
 
-    let new_solar = Solar::builder().night()
-    .caste_ability(NightAbility::Athletics)
-    .caste_ability(NightAbility::Awareness)
-    .caste_ability(NightAbility::Dodge)
-    .caste_ability(NightAbility::Larceny)
-    .supernal_ability(NightAbility::Stealth)
-    .favored_ability(AbilityName::Medicine)
-    .favored_ability(AbilityName::Melee)
-    .favored_ability(AbilityName::Brawl)
-    .favored_ability(AbilityName::Resistance)
-    .favored_ability(AbilityName::Sail)
-    .limit_trigger("A limit trigger".to_owned())
-    .build()
-    .unwrap();
+    let new_solar = Solar::builder()
+        .night()
+        .caste_ability(NightAbility::Athletics)
+        .caste_ability(NightAbility::Awareness)
+        .caste_ability(NightAbility::Dodge)
+        .caste_ability(NightAbility::Larceny)
+        .supernal_ability(NightAbility::Stealth)
+        .favored_ability(AbilityName::Medicine)
+        .favored_ability(AbilityName::Melee)
+        .favored_ability(AbilityName::Brawl)
+        .favored_ability(AbilityName::Resistance)
+        .favored_ability(AbilityName::Sail)
+        .limit_trigger("A limit trigger".to_owned())
+        .build()
+        .unwrap();
 
-    event_source.apply_mutation(CharacterMutation::SetSolar(new_solar)).unwrap();
-    let character = event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(gathering_light_concentration_id, gathering_light_concentration))).unwrap();
-    assert!(character.charms().get(CharmId::MartialArts(gathering_light_concentration_id)).is_some());
+    event_source
+        .apply_mutation(CharacterMutation::SetSolar(new_solar))
+        .unwrap();
+    let character = event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+            gathering_light_concentration_id,
+            gathering_light_concentration,
+        )))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::MartialArts(gathering_light_concentration_id))
+        .is_some());
 
     // Exalts must meet the MA ability requirements of charms
     let shining_starfall_execution_id = MartialArtsCharmId(UniqueId::Placeholder(2));
-    let shining_starfall_execution = MartialArtsCharm::builder("Shining Starfall Execution".to_owned(), single_point_id)
-    .book_reference(BookReference::new(Book::CoreRulebook, 434))
-    .cost(CharmCostType::Motes, NonZeroU8::new(6).unwrap())
-    .essence_required(NonZeroU8::new(1).unwrap())
-    .ability_required(NonZeroU8::new(3).unwrap())
-    .action_type(CharmActionType::Supplemental)
-    .keyword(MartialArtsCharmKeyword::DecisiveOnly)
-    .duration("Instant".to_owned())
-    .summary("Extra Decisive damage".to_owned())
-    .description("Committing fully to a lethal blow, the swordsman cleaves \
-    through her enemies with killing speed.".to_owned())
-    .mastery("Shining Starfall Execution also doubles 10s on \
-    the damage roll at Initiative 15+.".to_owned())
-    .build();
+    let shining_starfall_execution =
+        MartialArtsCharm::builder("Shining Starfall Execution".to_owned(), single_point_id)
+            .book_reference(BookReference::new(Book::CoreRulebook, 434))
+            .cost(CharmCostType::Motes, NonZeroU8::new(6).unwrap())
+            .essence_required(NonZeroU8::new(1).unwrap())
+            .ability_required(NonZeroU8::new(3).unwrap())
+            .action_type(CharmActionType::Supplemental)
+            .keyword(MartialArtsCharmKeyword::DecisiveOnly)
+            .duration("Instant".to_owned())
+            .summary("Extra Decisive damage".to_owned())
+            .description(
+                "Committing fully to a lethal blow, the swordsman cleaves \
+    through her enemies with killing speed."
+                    .to_owned(),
+            )
+            .mastery(
+                "Shining Starfall Execution also doubles 10s on \
+    the damage roll at Initiative 15+."
+                    .to_owned(),
+            )
+            .build();
 
-    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(shining_starfall_execution_id, shining_starfall_execution.clone()))).is_err());
-    event_source.apply_mutation(CharacterMutation::SetMartialArtsDots(single_point_id, 5)).unwrap();
-    let character = event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(shining_starfall_execution_id, shining_starfall_execution))).unwrap();
-    assert!(character.charms().get(CharmId::MartialArts(shining_starfall_execution_id)).is_some());
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+            shining_starfall_execution_id,
+            shining_starfall_execution.clone()
+        )))
+        .is_err());
+    event_source
+        .apply_mutation(CharacterMutation::SetMartialArtsDots(single_point_id, 5))
+        .unwrap();
+    let character = event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+            shining_starfall_execution_id,
+            shining_starfall_execution,
+        )))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::MartialArts(shining_starfall_execution_id))
+        .is_some());
 
-    let character = event_source.apply_mutation(CharacterMutation::SetMartialArtsDots(single_point_id, 2)).unwrap();
-    assert!(character.charms().get(CharmId::MartialArts(shining_starfall_execution_id)).is_none());
+    let character = event_source
+        .apply_mutation(CharacterMutation::SetMartialArtsDots(single_point_id, 2))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::MartialArts(shining_starfall_execution_id))
+        .is_none());
     let character = event_source.undo().unwrap();
-    assert!(character.charms().get(CharmId::MartialArts(shining_starfall_execution_id)).is_some());
+    assert!(character
+        .charms()
+        .get(CharmId::MartialArts(shining_starfall_execution_id))
+        .is_some());
 
     // Exalts must meet the Essence requirements of charms
     let form_id = MartialArtsCharmId(UniqueId::Placeholder(3));
-    let form = MartialArtsCharm::builder("Single Point Shining Into the Void Form".to_owned(), single_point_id)
+    let form = MartialArtsCharm::builder(
+        "Single Point Shining Into the Void Form".to_owned(),
+        single_point_id,
+    )
     .book_reference(BookReference::new(Book::CoreRulebook, 434))
     .cost(CharmCostType::Motes, NonZeroU8::new(10).unwrap())
     .essence_required(NonZeroU8::new(2).unwrap())
@@ -981,58 +1222,121 @@ fn test_martial_arts_charms() {
     .charm_prerequisite(gathering_light_concentration_id)
     .charm_prerequisite(shining_starfall_execution_id)
     .summary("Two actions per round".to_owned())
-    .description("Sheathing her blade for a brief moment, the swordsman \
+    .description(
+        "Sheathing her blade for a brief moment, the swordsman \
     centers her mind and Essence. As she draws her sword \
     once again and enters this form, it is as a lightning bolt of \
     flashing steel, moving with unimaginable speed and \
-    control.".to_owned())
+    control."
+            .to_owned(),
+    )
     .mastery("The martial artist gains the following benefits:[...]".to_owned())
-    .terrestrial(" A Dragon-Blood must pay a point of \
-    Willpower each round she wishes to attack twice.".to_owned())
+    .terrestrial(
+        " A Dragon-Blood must pay a point of \
+    Willpower each round she wishes to attack twice."
+            .to_owned(),
+    )
     .build();
 
-    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(form_id, form.clone()))).is_err());
-    event_source.apply_mutation(CharacterMutation::SetEssenceRating(2)).unwrap();
-    let character = event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(form_id, form.clone()))).unwrap();
-    assert!(character.charms().get(CharmId::MartialArts(form_id)).is_some());
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+            form_id,
+            form.clone()
+        )))
+        .is_err());
+    event_source
+        .apply_mutation(CharacterMutation::SetEssenceRating(2))
+        .unwrap();
+    let character = event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+            form_id,
+            form.clone(),
+        )))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::MartialArts(form_id))
+        .is_some());
 
-    let character = event_source.apply_mutation(CharacterMutation::SetEssenceRating(1)).unwrap();
-    assert!(character.charms().get(CharmId::MartialArts(form_id)).is_none());
+    let character = event_source
+        .apply_mutation(CharacterMutation::SetEssenceRating(1))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::MartialArts(form_id))
+        .is_none());
 
     // ...unless they are Dawn Solars with Martial Arts Supernal
-    event_source.apply_mutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Linguistics, 1)).unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::SetAbilityDots(
+            AbilityNameVanilla::Linguistics,
+            1,
+        ))
+        .unwrap();
 
     let new_solar = Solar::builder()
-    .dawn()
-    .caste_ability(DawnCasteAbility::Archery)
-    .caste_ability(DawnCasteAbility::Awareness)
-    .caste_ability(DawnCasteAbility::Dodge)
-    .caste_ability(DawnCasteAbility::Thrown)
-    .supernal_ability(DawnSupernalAbility::MartialArts)
-    .favored_ability(AbilityName::Medicine)
-    .favored_ability(AbilityName::Linguistics)
-    .favored_ability(AbilityName::Melee)
-    .favored_ability(AbilityName::Resistance)
-    .favored_ability(AbilityName::Sail)
-    .limit_trigger("A limit trigger".to_owned())
-    .build()
-    .unwrap();
+        .dawn()
+        .caste_ability(DawnCasteAbility::Archery)
+        .caste_ability(DawnCasteAbility::Awareness)
+        .caste_ability(DawnCasteAbility::Dodge)
+        .caste_ability(DawnCasteAbility::Thrown)
+        .supernal_ability(DawnSupernalAbility::MartialArts)
+        .favored_ability(AbilityName::Medicine)
+        .favored_ability(AbilityName::Linguistics)
+        .favored_ability(AbilityName::Melee)
+        .favored_ability(AbilityName::Resistance)
+        .favored_ability(AbilityName::Sail)
+        .limit_trigger("A limit trigger".to_owned())
+        .build()
+        .unwrap();
 
-    let character = event_source.apply_mutation(CharacterMutation::SetSolar(new_solar)).unwrap();
-    assert!(character.charms().get(CharmId::MartialArts(gathering_light_concentration_id)).is_some());
-    assert!(character.charms().get(CharmId::MartialArts(shining_starfall_execution_id)).is_some());
-    assert!(character.charms().get(CharmId::MartialArts(form_id)).is_none());
+    let character = event_source
+        .apply_mutation(CharacterMutation::SetSolar(new_solar))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::MartialArts(gathering_light_concentration_id))
+        .is_some());
+    assert!(character
+        .charms()
+        .get(CharmId::MartialArts(shining_starfall_execution_id))
+        .is_some());
+    assert!(character
+        .charms()
+        .get(CharmId::MartialArts(form_id))
+        .is_none());
 
-    let character = event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(form_id, form.clone()))).unwrap();
-    assert!(character.charms().get(CharmId::MartialArts(form_id)).is_some());
+    let character = event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+            form_id,
+            form.clone(),
+        )))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::MartialArts(form_id))
+        .is_some());
 
     // Exalts must satisfy the Charm tree prerequisites of their Styles
-    let character = event_source.apply_mutation(CharacterMutation::RemoveCharm(CharmId::MartialArts(shining_starfall_execution_id))).unwrap();
-    assert!(character.charms().get(CharmId::MartialArts(shining_starfall_execution_id)).is_none());
-    assert!(character.charms().get(CharmId::MartialArts(form_id)).is_none());
+    let character = event_source
+        .apply_mutation(CharacterMutation::RemoveCharm(CharmId::MartialArts(
+            shining_starfall_execution_id,
+        )))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::MartialArts(shining_starfall_execution_id))
+        .is_none());
+    assert!(character
+        .charms()
+        .get(CharmId::MartialArts(form_id))
+        .is_none());
 
-    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(form_id, form))).is_err());
-
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+            form_id, form
+        )))
+        .is_err());
 }
 
 #[test]

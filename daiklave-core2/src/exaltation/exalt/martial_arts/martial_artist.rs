@@ -13,7 +13,7 @@ use super::ExaltMartialArtistMemo;
 pub(crate) struct ExaltMartialArtist<'source> {
     pub(crate) style: &'source MartialArtsStyle,
     pub(crate) ability: AbilityRating<'source>,
-    pub(crate) charms: Vec<(MartialArtsCharmId, &'source MartialArtsCharm)>
+    pub(crate) charms: Vec<(MartialArtsCharmId, &'source MartialArtsCharm)>,
 }
 
 impl<'view, 'source> ExaltMartialArtist<'source> {
@@ -21,7 +21,11 @@ impl<'view, 'source> ExaltMartialArtist<'source> {
         ExaltMartialArtistMemo {
             style: self.style.to_owned(),
             ability: self.ability.as_memo(),
-            charms: self.charms.iter().map(|(charm_id, charm)| (*charm_id, (*charm).to_owned())).collect(),
+            charms: self
+                .charms
+                .iter()
+                .map(|(charm_id, charm)| (*charm_id, (*charm).to_owned()))
+                .collect(),
         }
     }
 

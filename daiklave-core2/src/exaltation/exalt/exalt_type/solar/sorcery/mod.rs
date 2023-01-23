@@ -96,9 +96,14 @@ impl<'view, 'source> SolarSorcererView<'source> {
 
     pub fn spells_iter(&self) -> impl Iterator<Item = SpellId> + '_ {
         match self {
-            SolarSorcererView::Terrestrial(terrestrial) => terrestrial.spells_iter().collect::<Vec<SpellId>>(),
-            SolarSorcererView::Celestial(celestial) => celestial.spells_iter().collect::<Vec<SpellId>>(),
+            SolarSorcererView::Terrestrial(terrestrial) => {
+                terrestrial.spells_iter().collect::<Vec<SpellId>>()
+            }
+            SolarSorcererView::Celestial(celestial) => {
+                celestial.spells_iter().collect::<Vec<SpellId>>()
+            }
             SolarSorcererView::Solar(solar) => solar.spells_iter().collect::<Vec<SpellId>>(),
-        }.into_iter()
+        }
+        .into_iter()
     }
 }

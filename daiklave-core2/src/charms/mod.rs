@@ -37,16 +37,27 @@ impl<'view, 'source> Charms<'view, 'source> {
         }
         .into_iter();
 
-        let martial_arts_charms = self.0.exaltation.martial_arts_charms_iter().map(|martial_arts_charm_id| CharmId::MartialArts(martial_arts_charm_id));
-        
+        let martial_arts_charms = self
+            .0
+            .exaltation
+            .martial_arts_charms_iter()
+            .map(CharmId::MartialArts);
+
         let spells = if let Some(sorcery) = self.0.sorcery() {
-            sorcery.spells().iter().map(|spell_id| CharmId::Spell(spell_id)).collect::<Vec<CharmId>>()
+            sorcery
+                .spells()
+                .iter()
+                .map(CharmId::Spell)
+                .collect::<Vec<CharmId>>()
         } else {
             vec![]
-        }.into_iter();
+        }
+        .into_iter();
 
-
-        solar_charms.chain(martial_arts_charms).chain(spells).chain(evocations)
+        solar_charms
+            .chain(martial_arts_charms)
+            .chain(spells)
+            .chain(evocations)
     }
 
     /// Retrieves a specific Charm by its Id, or returns None if not found.
@@ -66,13 +77,16 @@ impl<'view, 'source> Charms<'view, 'source> {
                     None
                 }
             }
-            CharmId::MartialArts(martial_arts_charm_id) => {
-                self.0.exaltation.get_martial_arts_charm(martial_arts_charm_id)
-            }
+            CharmId::MartialArts(martial_arts_charm_id) => self
+                .0
+                .exaltation
+                .get_martial_arts_charm(martial_arts_charm_id),
             CharmId::Solar(solar_charm_id) => self.0.exaltation.get_solar_charm(solar_charm_id),
-            CharmId::Spell(spell_id) => {
-                self.0.sorcery().and_then(|sorcery| sorcery.spells().get(spell_id)).map(|(spell, _)| Charm::Spell(spell))
-            }
+            CharmId::Spell(spell_id) => self
+                .0
+                .sorcery()
+                .and_then(|sorcery| sorcery.spells().get(spell_id))
+                .map(|(spell, _)| Charm::Spell(spell)),
         }
     }
 }

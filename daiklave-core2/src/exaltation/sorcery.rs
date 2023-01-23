@@ -62,10 +62,8 @@ impl<'view, 'source> ExaltationSorcery<'view, 'source> {
 
     pub fn get_spell(&self, spell_id: SpellId) -> Option<(Spell<'source>, bool)> {
         match self {
-            ExaltationSorcery::Mortal(terrestrial) => {
-                terrestrial.get_spell(spell_id)
-            }
-            ExaltationSorcery::Exalt(exalt_switch) => exalt_switch.get_spell(spell_id)
+            ExaltationSorcery::Mortal(terrestrial) => terrestrial.get_spell(spell_id),
+            ExaltationSorcery::Exalt(exalt_switch) => exalt_switch.get_spell(spell_id),
         }
     }
 
@@ -74,7 +72,10 @@ impl<'view, 'source> ExaltationSorcery<'view, 'source> {
             ExaltationSorcery::Mortal(terrestrial) => {
                 terrestrial.spells_iter().collect::<Vec<SpellId>>()
             }
-            ExaltationSorcery::Exalt(exalt_switch) => exalt_switch.spells_iter().collect::<Vec<SpellId>>()
-        }.into_iter()
+            ExaltationSorcery::Exalt(exalt_switch) => {
+                exalt_switch.spells_iter().collect::<Vec<SpellId>>()
+            }
+        }
+        .into_iter()
     }
 }

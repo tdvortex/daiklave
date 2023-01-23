@@ -23,7 +23,7 @@ pub(crate) use wonders::ExaltWonders;
 use std::collections::{hash_map::Entry, HashMap, HashSet};
 
 use crate::{
-    abilities::{AbilityError, AbilityRating, AbilityName},
+    abilities::{AbilityError, AbilityName, AbilityRating},
     armor::{
         armor_item::{
             artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
@@ -46,14 +46,16 @@ use crate::{
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{
-        charm::{MartialArtsCharmId, MartialArtsCharm}, MartialArtsError, MartialArtsStyle, MartialArtsStyleId,
+        charm::{MartialArtsCharm, MartialArtsCharmId},
+        MartialArtsError, MartialArtsStyle, MartialArtsStyleId,
     },
     sorcery::{
         circles::{
             celestial::AddCelestialSorcery, solar::AddSolarSorcery,
             terrestrial::AddTerrestrialSorceryView,
         },
-        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError, spell::{SpellId, SpellMutation},
+        spell::{SpellId, SpellMutation},
+        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     weapons::{
         weapon::{
@@ -417,7 +419,11 @@ impl<'view, 'source> Exalt<'source> {
         self.check_add_martial_arts_style(id, style)?;
         self.martial_arts_styles.insert(
             id,
-            ExaltMartialArtist { style, ability: AbilityRating::Zero, charms: Vec::new() }
+            ExaltMartialArtist {
+                style,
+                ability: AbilityRating::Zero,
+                charms: Vec::new(),
+            },
         );
         Ok(self)
     }
@@ -1080,14 +1086,18 @@ impl<'view, 'source> Exalt<'source> {
         spell: &'source SpellMutation,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.exalt_type {
-            ExaltType::Solar(solar) => {solar.add_spell(spell_id, spell)?;}
+            ExaltType::Solar(solar) => {
+                solar.add_spell(spell_id, spell)?;
+            }
         }
         Ok(self)
     }
 
     pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.exalt_type {
-            ExaltType::Solar(solar) => {solar.remove_spell(spell_id)?;}
+            ExaltType::Solar(solar) => {
+                solar.remove_spell(spell_id)?;
+            }
         }
         Ok(self)
     }
@@ -1097,12 +1107,19 @@ impl<'view, 'source> Exalt<'source> {
         martial_arts_charm_id: MartialArtsCharmId,
         martial_arts_charm: &'source MartialArtsCharm,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let style = self.martial_arts_styles.get(&martial_arts_charm.style()).ok_or(CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound))?;
+        let style = self
+            .martial_arts_styles
+            .get(&martial_arts_charm.style())
+            .ok_or(CharacterMutationError::MartialArtsError(
+                MartialArtsError::StyleNotFound,
+            ))?;
         let required_ability = martial_arts_charm.ability_required();
         let actual_ability = style.ability().dots();
 
         if required_ability > actual_ability {
-            return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+            return Err(CharacterMutationError::CharmError(
+                CharmError::PrerequisitesNotMet,
+            ));
         }
 
         let required_essence = martial_arts_charm.essence_required();
@@ -1110,41 +1127,53 @@ impl<'view, 'source> Exalt<'source> {
         if actual_essence < required_essence {
             let mut martial_arts_supernal = false;
             // May still be okay for a Dawn caste, Martial Arts supernal solar
-            let ExaltType::Solar(solar) = &self.exalt_type; 
+            let ExaltType::Solar(solar) = &self.exalt_type;
             if solar.supernal_ability() == AbilityName::MartialArts {
                 martial_arts_supernal = true;
             }
 
             if !martial_arts_supernal {
                 dbg!(solar.supernal_ability());
-                return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+                return Err(CharacterMutationError::CharmError(
+                    CharmError::PrerequisitesNotMet,
+                ));
             }
         }
 
-        let mut unmet_charm_prerequisites = martial_arts_charm.charms_required().collect::<HashSet<MartialArtsCharmId>>();
+        let mut unmet_charm_prerequisites = martial_arts_charm
+            .charms_required()
+            .collect::<HashSet<MartialArtsCharmId>>();
 
         for known_charm_id in style.charms().map(|(known_charm_id, _)| known_charm_id) {
             if known_charm_id == martial_arts_charm_id {
-                return Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm));
+                return Err(CharacterMutationError::CharmError(
+                    CharmError::DuplicateCharm,
+                ));
             }
 
             unmet_charm_prerequisites.remove(&known_charm_id);
         }
 
         if !unmet_charm_prerequisites.is_empty() {
-            Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet))
+            Err(CharacterMutationError::CharmError(
+                CharmError::PrerequisitesNotMet,
+            ))
         } else {
-            self
-            .martial_arts_styles_mut()
-            .get_mut(&martial_arts_charm.style())
-            .ok_or(CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound))?
-            .charms
-            .push((martial_arts_charm_id, martial_arts_charm));
+            self.martial_arts_styles_mut()
+                .get_mut(&martial_arts_charm.style())
+                .ok_or(CharacterMutationError::MartialArtsError(
+                    MartialArtsError::StyleNotFound,
+                ))?
+                .charms
+                .push((martial_arts_charm_id, martial_arts_charm));
             Ok(self)
         }
     }
 
-    pub(crate) fn correct_martial_arts_charms(&mut self, force_remove: &[MartialArtsCharmId]) -> bool {
+    pub(crate) fn correct_martial_arts_charms(
+        &mut self,
+        force_remove: &[MartialArtsCharmId],
+    ) -> bool {
         let actual_essence = self.essence.rating;
         let is_martial_arts_supernal = {
             let ExaltType::Solar(solar) = &self.exalt_type;
@@ -1156,14 +1185,15 @@ impl<'view, 'source> Exalt<'source> {
         for (_, martial_artist) in self.martial_arts_styles.iter_mut() {
             let actual_ability = martial_artist.ability.dots();
 
-            let ids_to_remove: HashSet<MartialArtsCharmId> = martial_artist.charms
-                .iter()
-                .fold(HashSet::from_iter(force_remove.iter().copied()), |mut ids_to_remove, (known_charm_id, known_charm)| {
+            let ids_to_remove: HashSet<MartialArtsCharmId> = martial_artist.charms.iter().fold(
+                HashSet::from_iter(force_remove.iter().copied()),
+                |mut ids_to_remove, (known_charm_id, known_charm)| {
                     if known_charm.ability_required() > actual_ability {
                         ids_to_remove.insert(*known_charm_id);
                     }
 
-                    if known_charm.essence_required() > actual_essence && !is_martial_arts_supernal {
+                    if known_charm.essence_required() > actual_essence && !is_martial_arts_supernal
+                    {
                         ids_to_remove.insert(*known_charm_id);
                     }
 
@@ -1174,10 +1204,13 @@ impl<'view, 'source> Exalt<'source> {
                     }
 
                     ids_to_remove
-            });
+                },
+            );
 
             let old_len = martial_artist.charms.len();
-            martial_artist.charms.retain(|(known_id, _)| !ids_to_remove.contains(known_id));
+            martial_artist
+                .charms
+                .retain(|(known_id, _)| !ids_to_remove.contains(known_id));
             if old_len > martial_artist.charms.len() {
                 any_removed = true;
             }

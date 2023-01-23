@@ -1,6 +1,7 @@
 use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
+    charms::CharmError,
     sorcery::{
         circles::{
             celestial::{sorcerer::CelestialCircleSorcerer, AddCelestialSorcery},
@@ -11,7 +12,7 @@ use crate::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
         SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryArchetypeWithMerits, SorceryError,
     },
-    CharacterMutationError, charms::CharmError,
+    CharacterMutationError,
 };
 
 use super::{sorcerer_memo::TerrestrialCircleSorcererMemo, TerrestrialSpell};
@@ -147,7 +148,9 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
         if spell_id == self.control_spell_id {
             Some((Spell::Terrestrial(self.control_spell), true))
         } else {
-            self.other_spells.get(&spell_id).map(|terrestrial_spell| (Spell::Terrestrial(*terrestrial_spell), false))
+            self.other_spells
+                .get(&spell_id)
+                .map(|terrestrial_spell| (Spell::Terrestrial(terrestrial_spell), false))
         }
     }
 
@@ -155,9 +158,15 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
         std::iter::once(self.control_spell_id).chain(self.other_spells.keys().copied())
     }
 
-    pub fn add_terrestrial_spell(&mut self, spell_id: SpellId, spell: &'source TerrestrialSpell) -> Result<&mut Self, CharacterMutationError> {
-        if self.control_spell_id == spell_id || self.other_spells.contains_key(&spell_id)  {
-            Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm))
+    pub fn add_terrestrial_spell(
+        &mut self,
+        spell_id: SpellId,
+        spell: &'source TerrestrialSpell,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if self.control_spell_id == spell_id || self.other_spells.contains_key(&spell_id) {
+            Err(CharacterMutationError::CharmError(
+                CharmError::DuplicateCharm,
+            ))
         } else {
             self.other_spells.insert(spell_id, spell);
             Ok(self)
@@ -167,7 +176,9 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
     pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
         if self.other_spells.remove(&spell_id).is_none() {
             if spell_id == self.control_spell_id {
-                Err(CharacterMutationError::SorceryError(SorceryError::RemoveControlSpell))
+                Err(CharacterMutationError::SorceryError(
+                    SorceryError::RemoveControlSpell,
+                ))
             } else {
                 Err(CharacterMutationError::CharmError(CharmError::NotFound))
             }

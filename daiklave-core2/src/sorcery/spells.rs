@@ -1,6 +1,6 @@
 use crate::exaltation::ExaltationSorcery;
 
-use super::{spell::{Spell, SpellId}};
+use super::spell::{Spell, SpellId};
 
 /// The spells known by a sorcerer.
 pub struct Spells<'view, 'source>(pub(crate) ExaltationSorcery<'view, 'source>);

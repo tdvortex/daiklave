@@ -48,11 +48,15 @@ impl<'view, 'source> Character<'source> {
         martial_arts_charm_id: MartialArtsCharmId,
         martial_arts_charm: &'source MartialArtsCharm,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.add_martial_arts_charm(martial_arts_charm_id, martial_arts_charm)?;
+        self.exaltation
+            .add_martial_arts_charm(martial_arts_charm_id, martial_arts_charm)?;
         Ok(self)
     }
 
-    pub(crate) fn correct_martial_arts_charms(&mut self, force_remove: &[MartialArtsCharmId]) -> bool {
+    pub(crate) fn correct_martial_arts_charms(
+        &mut self,
+        force_remove: &[MartialArtsCharmId],
+    ) -> bool {
         self.exaltation.correct_martial_arts_charms(force_remove)
     }
 
@@ -61,7 +65,8 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         martial_arts_charm_id: MartialArtsCharmId,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.remove_martial_arts_charm(martial_arts_charm_id)?;
+        self.exaltation
+            .remove_martial_arts_charm(martial_arts_charm_id)?;
 
         // Evocations may be upgrades to Martial Arts Charms
         // Removing a Martial Arts charm may force removal of an Evocation

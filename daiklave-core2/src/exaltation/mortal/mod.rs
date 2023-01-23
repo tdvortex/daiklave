@@ -20,12 +20,14 @@ use crate::{
         ArmorId, ArmorItem, BaseArmorId,
     },
     artifact::wonders::{OwnedWonder, Wonder, WonderId},
+    charms::CharmError,
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
     merits::merit::MeritError,
     sorcery::{
         circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
-        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError, spell::{SpellId, SpellMutation},
+        spell::{SpellId, SpellMutation},
+        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     weapons::{
         weapon::{
@@ -35,7 +37,7 @@ use crate::{
         },
         WeaponError,
     },
-    CharacterMutationError, charms::CharmError,
+    CharacterMutationError,
 };
 
 use self::martial_arts::MortalMartialArtist;
@@ -462,17 +464,25 @@ impl<'source> Mortal<'source> {
         if let Some(terrestrial) = &mut self.sorcery {
             match spell {
                 SpellMutation::Terrestrial(terrestrial_spell) => {
-                    if terrestrial.control_spell_id == spell_id || terrestrial.other_spells.contains_key(&spell_id) {
-                        Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm))
+                    if terrestrial.control_spell_id == spell_id
+                        || terrestrial.other_spells.contains_key(&spell_id)
+                    {
+                        Err(CharacterMutationError::CharmError(
+                            CharmError::DuplicateCharm,
+                        ))
                     } else {
                         terrestrial.other_spells.insert(spell_id, terrestrial_spell);
                         Ok(self)
                     }
                 }
-                _ => Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet))
+                _ => Err(CharacterMutationError::CharmError(
+                    CharmError::PrerequisitesNotMet,
+                )),
             }
         } else {
-            Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet))
+            Err(CharacterMutationError::CharmError(
+                CharmError::PrerequisitesNotMet,
+            ))
         }
     }
 
@@ -481,12 +491,16 @@ impl<'source> Mortal<'source> {
             if terrestrial.other_spells.remove(&spell_id).is_some() {
                 Ok(self)
             } else if terrestrial.control_spell_id == spell_id {
-                Err(CharacterMutationError::SorceryError(SorceryError::RemoveControlSpell))
+                Err(CharacterMutationError::SorceryError(
+                    SorceryError::RemoveControlSpell,
+                ))
             } else {
                 Err(CharacterMutationError::CharmError(CharmError::NotFound))
             }
         } else {
-            Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet))
+            Err(CharacterMutationError::CharmError(
+                CharmError::PrerequisitesNotMet,
+            ))
         }
     }
 }

@@ -38,7 +38,10 @@ impl<'source> Character<'source> {
         &mut self,
         solar: &'source NewSolar,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let new_willpower_rating = self.willpower().rating().saturating_add(2 * u8::from(self.is_mortal()));
+        let new_willpower_rating = self
+            .willpower()
+            .rating()
+            .saturating_add(2 * u8::from(self.is_mortal()));
         self.exaltation.set_solar(solar.0.as_ref())?;
         self.set_willpower_rating(new_willpower_rating)?;
 

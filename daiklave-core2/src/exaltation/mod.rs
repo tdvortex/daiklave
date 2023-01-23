@@ -1149,7 +1149,10 @@ impl<'view, 'source> Exaltation<'source> {
         }
     }
 
-    pub fn remove_martial_arts_charm(&mut self, martial_arts_charm_id: MartialArtsCharmId) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_martial_arts_charm(
+        &mut self,
+        martial_arts_charm_id: MartialArtsCharmId,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => Err(CharacterMutationError::CharmError(CharmError::Mortal)),
             Exaltation::Exalt(exalt) => {
