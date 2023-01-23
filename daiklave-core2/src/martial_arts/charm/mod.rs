@@ -32,6 +32,7 @@ pub struct MartialArtsCharm {
     description: String,
     mastery: Option<String>,
     terrestrial: Option<String>,
+    enlightenment: Option<String>,
     essence_required: NonZeroU8,
     ability_required: NonZeroU8,
     charms_required: HashSet<MartialArtsCharmId>,
@@ -81,6 +82,21 @@ impl MartialArtsCharm {
     /// The full Charm description.
     pub fn description(&self) -> &str {
         self.description.as_str()
+    }
+
+    /// The description of any Mastery effects on the Charm.
+    pub fn mastery(&self) -> Option<&str> {
+        self.mastery.as_deref()
+    }
+
+    /// The description of any Terrestrial limitations on the Charm.
+    pub fn terrestrial(&self) -> Option<&str> {
+        self.terrestrial.as_deref()
+    }
+
+    /// The description of any Enlightenment enhancements on the Charm.
+    pub fn enlightenment(&self) -> Option<&str> {
+        self.enlightenment.as_deref()
     }
 
     /// The minimum Essence level required to use the Charm.

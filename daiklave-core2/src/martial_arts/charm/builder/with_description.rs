@@ -97,6 +97,7 @@ impl MartialArtsCharmBuilderWithDescription {
             description: self.description,
             mastery: self.mastery,
             terrestrial: self.terrestrial,
+            enlightenment: self.enlightenment,
             essence_required: self.essence_required,
             ability_required: self.ability_required,
             charms_required: self.charms_required,

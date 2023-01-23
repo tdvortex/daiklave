@@ -1,4 +1,4 @@
-use std::num::NonZeroU8;
+use std::{num::NonZeroU8, collections::HashSet};
 
 use daiklave_core2::{
     abilities::{AbilityName, AbilityNameVanilla},
@@ -12,7 +12,7 @@ use daiklave_core2::{
         CharmActionType, CharmCostType,
     },
     exaltation::exalt::exalt_type::solar::{
-        caste::{TwilightAbility, ZenithAbility},
+        caste::{TwilightAbility, ZenithAbility, NightAbility, DawnCasteAbility, DawnSupernalAbility},
         charm::{SolarCharm, SolarCharmAbility, SolarCharmId, SolarCharmKeyword},
         Solar,
     },
@@ -24,7 +24,7 @@ use daiklave_core2::{
     weapons::weapon::{
         ArtifactWeaponId, BaseWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass,
     },
-    CharacterEventSource, CharacterMutation, sorcery::{spell::{SpellId, Spell, SpellKeyword}, SorceryCircle, SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, AddTerrestrialSorcery, AddCelestialSorcery, AddSolarSorcery},
+    CharacterEventSource, CharacterMutation, sorcery::{spell::{SpellId, Spell, SpellKeyword}, SorceryCircle, SorceryArchetypeId, SorceryArchetype, ShapingRitualId, ShapingRitual, AddTerrestrialSorcery, AddCelestialSorcery, AddSolarSorcery}, martial_arts::{MartialArtsStyleId, MartialArtsStyle, charm::{MartialArtsCharm, MartialArtsCharmKeyword, MartialArtsCharmId}}, armor::armor_item::ArmorWeightClass,
 };
 
 #[test]
@@ -876,11 +876,163 @@ fn test_spells() {
 
 #[test]
 fn test_martial_arts_charms() {
+    let mut event_source = CharacterEventSource::default();
     // Mortals cannot add MA charms, even if they have the right style
+    let single_point_id = MartialArtsStyleId(UniqueId::Placeholder(1));
+    let single_point = MartialArtsStyle::new(
+        Some(BookReference::new(Book::CoreRulebook, 434)),
+        "Single Point Shining Into the Void Style".to_owned(),
+        "Single Point Shining Into the Void is a sword style that\
+        emphasizes blinding speed and deadly-perfect finishing \
+        moves.".to_owned(),
+        HashSet::new(), // Skip weapons for testing
+        Some(ArmorWeightClass::Medium)
+    );
+    event_source.apply_mutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Brawl, 1)).unwrap();
+    event_source.apply_mutation(CharacterMutation::AddMartialArtsStyle(single_point_id, single_point)).unwrap();
+    event_source.apply_mutation(CharacterMutation::SetMartialArtsDots(single_point_id, 2)).unwrap();
+
+    let gathering_light_concentration_id = MartialArtsCharmId(UniqueId::Placeholder(1));
+    let gathering_light_concentration = MartialArtsCharm::builder("Gathering Light Concentration".to_owned(), single_point_id)
+    .book_reference(BookReference::new(Book::CoreRulebook, 434))
+    .cost(CharmCostType::Motes, NonZeroU8::new(3).unwrap())
+    .essence_required(NonZeroU8::new(1).unwrap())
+    .ability_required(NonZeroU8::new(2).unwrap())
+    .action_type(CharmActionType::Reflexive)
+    .keyword(MartialArtsCharmKeyword::Uniform)
+    .duration("Instant".to_owned())
+    .summary("Reflect onslaught penalties after parry".to_owned())
+    .description("The clashing steel and ferocious blows of the swordsman's \
+    enemies do not disrupt her focus—rather, she welcomes \
+    them, gleaning the weaknesses of each foe's fighting style \
+    from their offense.".to_owned())
+    .mastery("At Essence 3+, the Solar may spend an extra 3i \
+    when activating Gathering Light Concentration to cancel \
+    all onslaught penalties she's suffering from, and inflict \
+    them on her attacker.".to_owned())
+    .build();
+
+    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(gathering_light_concentration_id, gathering_light_concentration.clone()))).is_err());
+
     // Exalts must have the right MA style
+    [
+        AbilityNameVanilla::Medicine,
+        AbilityNameVanilla::Melee,
+        AbilityNameVanilla::Resistance,
+        AbilityNameVanilla::Sail
+    ].into_iter().for_each(|vanilla| {event_source.apply_mutation(CharacterMutation::SetAbilityDots(vanilla, 1)).unwrap();});
+
+    let new_solar = Solar::builder().night()
+    .caste_ability(NightAbility::Athletics)
+    .caste_ability(NightAbility::Awareness)
+    .caste_ability(NightAbility::Dodge)
+    .caste_ability(NightAbility::Larceny)
+    .supernal_ability(NightAbility::Stealth)
+    .favored_ability(AbilityName::Medicine)
+    .favored_ability(AbilityName::Melee)
+    .favored_ability(AbilityName::Brawl)
+    .favored_ability(AbilityName::Resistance)
+    .favored_ability(AbilityName::Sail)
+    .limit_trigger("A limit trigger".to_owned())
+    .build()
+    .unwrap();
+
+    event_source.apply_mutation(CharacterMutation::SetSolar(new_solar)).unwrap();
+    let character = event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(gathering_light_concentration_id, gathering_light_concentration))).unwrap();
+    assert!(character.charms().get(CharmId::MartialArts(gathering_light_concentration_id)).is_some());
+
     // Exalts must meet the MA ability requirements of charms
+    let shining_starfall_execution_id = MartialArtsCharmId(UniqueId::Placeholder(2));
+    let shining_starfall_execution = MartialArtsCharm::builder("Shining Starfall Execution".to_owned(), single_point_id)
+    .book_reference(BookReference::new(Book::CoreRulebook, 434))
+    .cost(CharmCostType::Motes, NonZeroU8::new(6).unwrap())
+    .essence_required(NonZeroU8::new(1).unwrap())
+    .ability_required(NonZeroU8::new(3).unwrap())
+    .action_type(CharmActionType::Supplemental)
+    .keyword(MartialArtsCharmKeyword::DecisiveOnly)
+    .duration("Instant".to_owned())
+    .summary("Extra Decisive damage".to_owned())
+    .description("Committing fully to a lethal blow, the swordsman cleaves \
+    through her enemies with killing speed.".to_owned())
+    .mastery("Shining Starfall Execution also doubles 10s on
+    the damage roll at Initiative 15+.".to_owned())
+    .build();
+
+    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(shining_starfall_execution_id, shining_starfall_execution.clone()))).is_err());
+    event_source.apply_mutation(CharacterMutation::SetMartialArtsDots(single_point_id, 5)).unwrap();
+    let character = event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(shining_starfall_execution_id, shining_starfall_execution))).unwrap();
+    assert!(character.charms().get(CharmId::MartialArts(shining_starfall_execution_id)).is_some());
+
+    let character = event_source.apply_mutation(CharacterMutation::SetMartialArtsDots(single_point_id, 2)).unwrap();
+    assert!(character.charms().get(CharmId::MartialArts(shining_starfall_execution_id)).is_none());
+    let character = event_source.undo().unwrap();
+    assert!(character.charms().get(CharmId::MartialArts(shining_starfall_execution_id)).is_some());
+
     // Exalts must meet the Essence requirements of charms
+    let form_id = MartialArtsCharmId(UniqueId::Placeholder(3));
+    let form = MartialArtsCharm::builder("Single Point Shining Into the Void Form".to_owned(), single_point_id)
+    .book_reference(BookReference::new(Book::CoreRulebook, 434))
+    .cost(CharmCostType::Motes, NonZeroU8::new(10).unwrap())
+    .essence_required(NonZeroU8::new(2).unwrap())
+    .ability_required(NonZeroU8::new(4).unwrap())
+    .action_type(CharmActionType::Simple)
+    .keyword(MartialArtsCharmKeyword::Form)
+    .duration("One Scene".to_owned())
+    .charm_prerequisite(gathering_light_concentration_id)
+    .charm_prerequisite(shining_starfall_execution_id)
+    .summary("Two actions per round".to_owned())
+    .description("Sheathing her blade for a brief moment, the swordsman \
+    centers her mind and Essence. As she draws her sword \
+    once again and enters this form, it is as a lightning bolt of \
+    flashing steel, moving with unimaginable speed and \
+    control.".to_owned())
+    .mastery("The martial artist gains the following benefits:[...]".to_owned())
+    .terrestrial(" A Dragon-Blood must pay a point of \
+    Willpower each round she wishes to attack twice.".to_owned())
+    .build();
+
+    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(form_id, form.clone()))).is_err());
+    event_source.apply_mutation(CharacterMutation::SetEssenceRating(2)).unwrap();
+    let character = event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(form_id, form.clone()))).unwrap();
+    assert!(character.charms().get(CharmId::MartialArts(form_id)).is_some());
+
+    let character = event_source.apply_mutation(CharacterMutation::SetEssenceRating(1)).unwrap();
+    assert!(character.charms().get(CharmId::MartialArts(form_id)).is_none());
+
     // ...unless they are Dawn Solars with Martial Arts Supernal
+    event_source.apply_mutation(CharacterMutation::SetAbilityDots(AbilityNameVanilla::Linguistics, 1)).unwrap();
+
+    let new_solar = Solar::builder()
+    .dawn()
+    .caste_ability(DawnCasteAbility::Archery)
+    .caste_ability(DawnCasteAbility::Awareness)
+    .caste_ability(DawnCasteAbility::Dodge)
+    .caste_ability(DawnCasteAbility::Melee)
+    .supernal_ability(DawnSupernalAbility::MartialArts)
+    .favored_ability(AbilityName::Medicine)
+    .favored_ability(AbilityName::Linguistics)
+    .favored_ability(AbilityName::Melee)
+    .favored_ability(AbilityName::Resistance)
+    .favored_ability(AbilityName::Sail)
+    .limit_trigger("A limit trigger".to_owned())
+    .build()
+    .unwrap();
+
+    let character = event_source.apply_mutation(CharacterMutation::SetSolar(new_solar)).unwrap();
+    assert!(character.charms().get(CharmId::MartialArts(gathering_light_concentration_id)).is_some());
+    assert!(character.charms().get(CharmId::MartialArts(shining_starfall_execution_id)).is_some());
+    assert!(character.charms().get(CharmId::MartialArts(form_id)).is_none());
+
+    let character = event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(form_id, form.clone()))).unwrap();
+    assert!(character.charms().get(CharmId::MartialArts(form_id)).is_some());
+
+    // Exalts must satisfy the Charm tree prerequisites of their Styles
+    let character = event_source.apply_mutation(CharacterMutation::RemoveCharm(CharmId::MartialArts(shining_starfall_execution_id))).unwrap();
+    assert!(character.charms().get(CharmId::MartialArts(shining_starfall_execution_id)).is_none());
+    assert!(character.charms().get(CharmId::MartialArts(form_id)).is_none());
+
+    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(form_id, form))).is_err());
+
 }
 
 #[test]
