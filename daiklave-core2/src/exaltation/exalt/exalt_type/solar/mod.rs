@@ -435,7 +435,7 @@ impl<'source> Solar<'source> {
             Some(SolarSorcererView::Solar(solar)) => {
                 solar.remove_spell(spell_id)?;
             }
-            None => todo!(),
+            None => {return Err(CharacterMutationError::CharmError(CharmError::NotFound));}
         }
         Ok(self)
     }
