@@ -39,7 +39,7 @@ use crate::{
     charms::{
         charm::{
             evocation::{Evocation, EvocationId},
-            Charm, CharmId,
+            Charm, CharmId, SpiritCharmId,
         },
         CharmError,
     },
@@ -1027,28 +1027,30 @@ impl<'view, 'source> Exalt<'source> {
         }
 
         if let Some(charm_id) = evocation.upgrade() {
-            match charm_id {
-                CharmId::Spirit(_) => todo!(),
-                CharmId::Evocation(evocation_id) => {
-                    if !self
-                        .evocations
-                        .iter()
-                        .any(|(known_evocation_id, _)| known_evocation_id == &evocation_id)
-                    {
-                        return Err(CharacterMutationError::CharmError(
-                            CharmError::PrerequisitesNotMet,
-                        ));
-                    }
+            let charm_exists = match charm_id {
+                CharmId::Spirit(spirit_charm_id) => {
+                    self.get_eclipse_charm(spirit_charm_id).is_some()
                 }
-                CharmId::MartialArts(_) => todo!(),
-                CharmId::Solar(solar_charm_id) => {
-                    if self.get_solar_charm(solar_charm_id).is_none() {
-                        return Err(CharacterMutationError::CharmError(
-                            CharmError::PrerequisitesNotMet,
-                        ));
-                    }
-                }
-                CharmId::Spell(_) => todo!(),
+                CharmId::Evocation(evocation_id) => self
+                    .evocations
+                    .iter()
+                    .any(|(known_evocation_id, _)| known_evocation_id == &evocation_id),
+                CharmId::MartialArts(martial_arts_charm_id) => self
+                    .martial_arts_styles
+                    .iter()
+                    .flat_map(|(_, martial_artist)| martial_artist.charms.iter())
+                    .any(|(charm_id, _)| charm_id == &martial_arts_charm_id),
+                CharmId::Solar(solar_charm_id) => self.get_solar_charm(solar_charm_id).is_some(),
+                CharmId::Spell(spell_id) => self
+                    .sorcery()
+                    .and_then(|sorcery| sorcery.spells().get(spell_id))
+                    .is_some(),
+            };
+
+            if !charm_exists {
+                return Err(CharacterMutationError::CharmError(
+                    CharmError::PrerequisitesNotMet,
+                ));
             }
         }
 
@@ -1217,5 +1219,17 @@ impl<'view, 'source> Exalt<'source> {
         }
 
         any_removed
+    }
+
+    pub fn get_eclipse_charm(&self, spirit_charm_id: SpiritCharmId) -> Option<Charm<'source>> {
+        match &self.exalt_type {
+            ExaltType::Solar(solar) => solar.get_eclipse_charm(spirit_charm_id),
+        }
+    }
+
+    pub fn eclipse_charms_iter(&self) -> impl Iterator<Item = SpiritCharmId> + '_ {
+        match &self.exalt_type {
+            ExaltType::Solar(solar) => solar.eclipse_charms_iter(),
+        }
     }
 }

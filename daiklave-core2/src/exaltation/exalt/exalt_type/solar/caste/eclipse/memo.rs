@@ -25,10 +25,17 @@ impl<'source> EclipseMemo {
         }
     }
 
-    pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(&'source self) -> Eclipse {
+    pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(
+        &'source self,
+    ) -> Eclipse<'source> {
         Eclipse {
             caste_not_supernal: self.caste_not_supernal,
             supernal: self.supernal,
+            eclipse_charms: self
+                .eclipse_charms
+                .iter()
+                .map(|(id, charm)| (*id, charm))
+                .collect(),
         }
     }
 }

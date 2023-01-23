@@ -61,6 +61,7 @@ impl<'view, 'source> Character<'source> {
         if old_rating > rating {
             self.correct_sorcery_level();
             self.correct_solar_charms(&[]);
+            self.correct_eclipse_charms(&[]);
             self.correct_martial_arts_charms(&[]);
             self.correct_evocations(&[]);
         }

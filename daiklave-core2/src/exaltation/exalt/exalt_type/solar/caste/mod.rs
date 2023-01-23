@@ -19,15 +19,15 @@ use crate::abilities::AbilityName;
 use self::{dawn::Dawn, eclipse::Eclipse, night::Night, twilight::Twilight, zenith::Zenith};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) enum SolarCaste {
+pub(crate) enum SolarCaste<'source> {
     Dawn(Dawn),
     Zenith(Zenith),
     Twilight(Twilight),
     Night(Night),
-    Eclipse(Eclipse),
+    Eclipse(Eclipse<'source>),
 }
 
-impl SolarCaste {
+impl<'source> SolarCaste<'source> {
     pub(crate) fn as_memo(&self) -> SolarCasteMemo {
         match self {
             SolarCaste::Dawn(view) => SolarCasteMemo::Dawn(view.as_memo()),

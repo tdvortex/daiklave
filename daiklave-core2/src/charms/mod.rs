@@ -26,6 +26,8 @@ impl<'view, 'source> Charms<'view, 'source> {
     pub fn iter(&self) -> impl Iterator<Item = CharmId> + '_ {
         let solar_charms = self.0.solar_charms_iter().map(CharmId::Solar);
 
+        let eclipse_charms = self.0.exaltation.eclipse_charms_iter().map(CharmId::Spirit);
+
         let evocations = if let Exaltation::Exalt(exalt) = &self.0.exaltation {
             exalt
                 .evocations
@@ -55,6 +57,7 @@ impl<'view, 'source> Charms<'view, 'source> {
         .into_iter();
 
         solar_charms
+            .chain(eclipse_charms)
             .chain(martial_arts_charms)
             .chain(spells)
             .chain(evocations)
@@ -63,7 +66,9 @@ impl<'view, 'source> Charms<'view, 'source> {
     /// Retrieves a specific Charm by its Id, or returns None if not found.
     pub fn get(&self, charm_id: CharmId) -> Option<Charm<'source>> {
         match charm_id {
-            CharmId::Spirit(_) => todo!(),
+            CharmId::Spirit(spirit_charm_id) => {
+                self.0.exaltation.get_eclipse_charm(spirit_charm_id)
+            }
             CharmId::Evocation(evocation_id) => {
                 if let Exaltation::Exalt(exalt) = &self.0.exaltation {
                     exalt.evocations.iter().find_map(|(known_id, evocation)| {

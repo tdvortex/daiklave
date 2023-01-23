@@ -26,7 +26,7 @@ use crate::{
     charms::{
         charm::{
             evocation::{Evocation, EvocationId},
-            Charm,
+            Charm, SpiritCharmId,
         },
         CharmError,
     },
@@ -1163,5 +1163,20 @@ impl<'view, 'source> Exaltation<'source> {
                 }
             }
         }
+    }
+
+    pub fn get_eclipse_charm(&self, spirit_charm_id: SpiritCharmId) -> Option<Charm<'source>> {
+        match self {
+            Exaltation::Mortal(_) => None,
+            Exaltation::Exalt(exalt) => exalt.get_eclipse_charm(spirit_charm_id),
+        }
+    }
+
+    pub fn eclipse_charms_iter(&self) -> impl Iterator<Item = SpiritCharmId> + '_ {
+        match self {
+            Exaltation::Mortal(_) => vec![],
+            Exaltation::Exalt(exalt) => exalt.eclipse_charms_iter().collect::<Vec<SpiritCharmId>>(),
+        }
+        .into_iter()
     }
 }

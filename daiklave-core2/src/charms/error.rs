@@ -17,4 +17,7 @@ pub enum CharmError {
     /// One or more prerequisites to this Charm have not been met
     #[error("Charm prerequisites are not met")]
     PrerequisitesNotMet,
+    /// Charm cannot be purchased by this Exalt type
+    #[error("Wrong Exalt type")]
+    WrongExaltType,
 }

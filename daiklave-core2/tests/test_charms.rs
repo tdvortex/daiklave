@@ -8,13 +8,15 @@ use daiklave_core2::{
     charms::{
         charm::{
             evocation::{Evocation, EvocationId, EvocationKeyword, EvokableId},
-            Charm, CharmId, CharmMutation, spirit::{SpiritCharm}, SpiritCharmId, SpiritCharmKeyword,
+            spirit::SpiritCharm,
+            Charm, CharmId, CharmMutation, SpiritCharmId, SpiritCharmKeyword,
         },
         CharmActionType, CharmCostType,
     },
     exaltation::exalt::exalt_type::solar::{
         caste::{
-            DawnCasteAbility, DawnSupernalAbility, NightAbility, TwilightAbility, ZenithAbility, EclipseAbility,
+            DawnCasteAbility, DawnSupernalAbility, EclipseAbility, NightAbility, TwilightAbility,
+            ZenithAbility,
         },
         charm::{SolarCharm, SolarCharmAbility, SolarCharmId, SolarCharmKeyword},
         Solar,
@@ -1345,19 +1347,27 @@ fn test_eclipse_charms() {
     // Mortals cannot add Eclipse charms
     let towering_wheat_blessing_id = SpiritCharmId(UniqueId::Placeholder(1));
     let towering_wheat_blessing = Charm::builder("Towering Wheat Blessing".to_owned())
-    .spirit()
-    .book_reference(BookReference::new(Book::CoreRulebook, 513))
-    .cost(CharmCostType::Motes, NonZeroU8::new(10).unwrap())
-    .cost(CharmCostType::Willpower, NonZeroU8::new(1).unwrap())
-    .essence_required(NonZeroU8::new(1).unwrap())
-    .action_type(CharmActionType::Simple)
-    .duration("Instant".to_owned())
-    .summary("Makes plants grow suddenly".to_owned())
-    .description("A field guardian may bid plants to \
-    grow far beyond their usual size in an instant.".to_owned())
-    .build_eclipse();
+        .spirit()
+        .book_reference(BookReference::new(Book::CoreRulebook, 513))
+        .cost(CharmCostType::Motes, NonZeroU8::new(10).unwrap())
+        .cost(CharmCostType::Willpower, NonZeroU8::new(1).unwrap())
+        .essence_required(NonZeroU8::new(1).unwrap())
+        .action_type(CharmActionType::Simple)
+        .duration("Instant".to_owned())
+        .summary("Makes plants grow suddenly".to_owned())
+        .description(
+            "A field guardian may bid plants to \
+    grow far beyond their usual size in an instant."
+                .to_owned(),
+        )
+        .build_eclipse();
 
-    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(towering_wheat_blessing_id, towering_wheat_blessing.clone()))).is_err());
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(
+            towering_wheat_blessing_id,
+            towering_wheat_blessing.clone()
+        )))
+        .is_err());
 
     // Non-Eclipse Solars cannot add Eclipse charms
     [
@@ -1389,16 +1399,23 @@ fn test_eclipse_charms() {
         .limit_trigger("A limit trigger".to_owned())
         .build()
         .unwrap();
-    event_source.apply_mutation(CharacterMutation::SetSolar(new_solar)).unwrap();
+    event_source
+        .apply_mutation(CharacterMutation::SetSolar(new_solar))
+        .unwrap();
 
-    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(towering_wheat_blessing_id, towering_wheat_blessing.clone()))).is_err());
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(
+            towering_wheat_blessing_id,
+            towering_wheat_blessing.clone()
+        )))
+        .is_err());
 
     // Eclipse Solars can add Eclipse Charms
     let new_solar = Solar::builder()
         .eclipse()
         .caste_ability(EclipseAbility::Bureaucracy)
         .caste_ability(EclipseAbility::Larceny)
-        .caste_ability(EclipseAbility::Linguistics)
+        .caste_ability(EclipseAbility::Socialize)
         .caste_ability(EclipseAbility::Occult)
         .supernal_ability(EclipseAbility::Presence)
         .favored_ability(AbilityName::Medicine)
@@ -1409,32 +1426,65 @@ fn test_eclipse_charms() {
         .limit_trigger("A limit trigger".to_owned())
         .build()
         .unwrap();
-    event_source.apply_mutation(CharacterMutation::SetSolar(new_solar)).unwrap();
-    let character = event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(towering_wheat_blessing_id, towering_wheat_blessing))).unwrap();
-    assert!(character.charms().get(CharmId::Spirit(towering_wheat_blessing_id)).is_some());
+    event_source
+        .apply_mutation(CharacterMutation::SetSolar(new_solar))
+        .unwrap();
+    let character = event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(
+            towering_wheat_blessing_id,
+            towering_wheat_blessing,
+        )))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::Spirit(towering_wheat_blessing_id))
+        .is_some());
 
     // Eclipse Solars must meet the Essence requirement of Eclipse Charms
     let night_black_carapace_id = SpiritCharmId(UniqueId::Placeholder(2));
     let night_black_carapace = SpiritCharm::builder("Night-Black Carapace".to_owned())
-    .book_reference(BookReference::new(Book::CoreRulebook, 528))
-    .cost(CharmCostType::Motes, NonZeroU8::new(5).unwrap())
-    .cost(CharmCostType::Willpower, NonZeroU8::new(1).unwrap())
-    .essence_required(NonZeroU8::new(4).unwrap())
-    .action_type(CharmActionType::Simple)
-    .keyword(SpiritCharmKeyword::DecisiveOnly)
-    .duration("One scene".to_owned())
-    .summary("Summons artifact armor that can shatter for AOE damage".to_owned())
-    .description(" Darkness swirls in from \
+        .book_reference(BookReference::new(Book::CoreRulebook, 528))
+        .cost(CharmCostType::Motes, NonZeroU8::new(5).unwrap())
+        .cost(CharmCostType::Willpower, NonZeroU8::new(1).unwrap())
+        .essence_required(NonZeroU8::new(4).unwrap())
+        .action_type(CharmActionType::Simple)
+        .keyword(SpiritCharmKeyword::DecisiveOnly)
+        .duration("One scene".to_owned())
+        .summary("Summons artifact armor that can shatter for AOE damage".to_owned())
+        .description(
+            " Darkness swirls in from \
     every corner to clothe Alveua in night-black armor with \
-    the traits of light artifact armor.".to_owned())
-    .build_eclipse();
+    the traits of light artifact armor."
+                .to_owned(),
+        )
+        .build_eclipse();
 
-    assert!(event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(night_black_carapace_id, night_black_carapace.clone()))).is_err());
+    assert!(event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(
+            night_black_carapace_id,
+            night_black_carapace.clone()
+        )))
+        .is_err());
 
-    event_source.apply_mutation(CharacterMutation::SetEssenceRating(4)).unwrap();
-    let character = event_source.apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(night_black_carapace_id, night_black_carapace.clone()))).unwrap();
-    assert!(character.charms().get(CharmId::Spirit(night_black_carapace_id)).is_some());
+    event_source
+        .apply_mutation(CharacterMutation::SetEssenceRating(4))
+        .unwrap();
+    let character = event_source
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(
+            night_black_carapace_id,
+            night_black_carapace.clone(),
+        )))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::Spirit(night_black_carapace_id))
+        .is_some());
 
-    let character = event_source.apply_mutation(CharacterMutation::SetEssenceRating(3)).unwrap();
-    assert!(character.charms().get(CharmId::Spirit(night_black_carapace_id)).is_none());
+    let character = event_source
+        .apply_mutation(CharacterMutation::SetEssenceRating(3))
+        .unwrap();
+    assert!(character
+        .charms()
+        .get(CharmId::Spirit(night_black_carapace_id))
+        .is_none());
 }

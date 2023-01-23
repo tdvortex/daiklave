@@ -21,7 +21,10 @@ pub(crate) use sorcery::{SolarSorcererMemo, SolarSorcererView};
 
 use crate::{
     abilities::AbilityName,
-    charms::{charm::Charm, CharmError},
+    charms::{
+        charm::{Charm, SpiritCharmId},
+        CharmError,
+    },
     exaltation::exalt::Limit,
     merits::merit::MeritError,
     sorcery::{
@@ -45,7 +48,7 @@ use self::{
 /// Traits which are unique to being a Solar Exalted.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Solar<'source> {
-    caste: SolarCaste,
+    pub(crate) caste: SolarCaste<'source>,
     favored_abilities: [AbilityName; 5],
     pub(crate) sorcery: Option<SolarSorcererView<'source>>,
     limit: Limit<'source>,
@@ -430,6 +433,31 @@ impl<'source> Solar<'source> {
             None => todo!(),
         }
         Ok(self)
+    }
+
+    pub(crate) fn get_eclipse_charm(
+        &self,
+        spirit_charm_id: SpiritCharmId,
+    ) -> Option<Charm<'source>> {
+        match &self.caste {
+            SolarCaste::Eclipse(eclipse) => eclipse
+                .eclipse_charms
+                .get(&spirit_charm_id)
+                .map(|eclipse_charm| Charm::Eclipse(eclipse_charm)),
+            _ => None,
+        }
+    }
+
+    pub(crate) fn eclipse_charms_iter(&self) -> impl Iterator<Item = SpiritCharmId> + '_ {
+        match &self.caste {
+            SolarCaste::Eclipse(eclipse) => eclipse
+                .eclipse_charms
+                .keys()
+                .copied()
+                .collect::<Vec<SpiritCharmId>>(),
+            _ => vec![],
+        }
+        .into_iter()
     }
 }
 

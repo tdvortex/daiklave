@@ -236,7 +236,7 @@ impl<'source> Character<'source> {
                 CharmMutation::Spell(spell_id, spell) => self.add_spell(*spell_id, spell),
             },
             CharacterMutation::RemoveCharm(charm_id) => match charm_id {
-                CharmId::Spirit(spirit_charm_id) => self.remove_spirit_charm(*spirit_charm_id),
+                CharmId::Spirit(spirit_charm_id) => self.remove_eclipse_charm(*spirit_charm_id),
                 CharmId::Evocation(evocation_id) => self.remove_evocation(*evocation_id),
                 CharmId::MartialArts(ma_charm_id) => self.remove_martial_arts_charm(*ma_charm_id),
                 CharmId::Solar(solar_charm_id) => self.remove_solar_charm(*solar_charm_id),
