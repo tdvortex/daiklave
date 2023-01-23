@@ -71,7 +71,7 @@ impl<'view, 'source> Character<'source> {
                 ))
             } else if weapon.weight_class() == WeaponWeightClass::Heavy
                 && weapon.damage(AttackRange::Melee).is_some()
-                && self.attributes().dots(AttributeName::Strength) < 3
+                && self.attributes().dots(AttributeName::Strength).get() < 3
             {
                 Err(CharacterMutationError::WeaponError(
                     WeaponError::HeavyMeleeStrengthRequirement,

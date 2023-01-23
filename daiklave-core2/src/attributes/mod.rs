@@ -3,6 +3,8 @@ mod category;
 mod error;
 mod name;
 
+use std::num::NonZeroU8;
+
 pub use attribute::Attribute;
 pub use category::AttributeCategory;
 pub use error::AttributeError;
@@ -15,29 +17,29 @@ use crate::CharacterMutationError;
 /// etc.)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Attributes {
-    strength: u8,
-    dexterity: u8,
-    stamina: u8,
-    charisma: u8,
-    manipulation: u8,
-    appearance: u8,
-    perception: u8,
-    intelligence: u8,
-    wits: u8,
+    strength: NonZeroU8,
+    dexterity: NonZeroU8,
+    stamina: NonZeroU8,
+    charisma: NonZeroU8,
+    manipulation: NonZeroU8,
+    appearance: NonZeroU8,
+    perception: NonZeroU8,
+    intelligence: NonZeroU8,
+    wits: NonZeroU8,
 }
 
 impl Default for Attributes {
     fn default() -> Self {
         Self {
-            strength: 1,
-            dexterity: 1,
-            stamina: 1,
-            charisma: 1,
-            manipulation: 1,
-            appearance: 1,
-            perception: 1,
-            intelligence: 1,
-            wits: 1,
+            strength: NonZeroU8::new(1).unwrap(),
+            dexterity: NonZeroU8::new(1).unwrap(),
+            stamina: NonZeroU8::new(1).unwrap(),
+            charisma: NonZeroU8::new(1).unwrap(),
+            manipulation: NonZeroU8::new(1).unwrap(),
+            appearance: NonZeroU8::new(1).unwrap(),
+            perception: NonZeroU8::new(1).unwrap(),
+            intelligence: NonZeroU8::new(1).unwrap(),
+            wits: NonZeroU8::new(1).unwrap(),
         }
     }
 }
@@ -68,7 +70,7 @@ impl Attributes {
         .map(|attribute_name| self.get(attribute_name))
     }
 
-    pub(crate) fn dots(&self, attribute_name: AttributeName) -> u8 {
+    pub(crate) fn dots(&self, attribute_name: AttributeName) -> NonZeroU8 {
         match attribute_name {
             AttributeName::Strength => self.strength,
             AttributeName::Dexterity => self.dexterity,
@@ -87,41 +89,46 @@ impl Attributes {
         attribute_name: AttributeName,
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if !(1..=5).contains(&dots) {
-            Err(CharacterMutationError::AttributeError(
+        if dots > 5 {
+            return Err(CharacterMutationError::AttributeError(
                 AttributeError::InvalidRating,
-            ))
-        } else {
-            match attribute_name {
-                AttributeName::Strength => {
-                    self.strength = dots;
-                }
-                AttributeName::Dexterity => {
-                    self.dexterity = dots;
-                }
-                AttributeName::Stamina => {
-                    self.stamina = dots;
-                }
-                AttributeName::Charisma => {
-                    self.charisma = dots;
-                }
-                AttributeName::Manipulation => {
-                    self.manipulation = dots;
-                }
-                AttributeName::Appearance => {
-                    self.appearance = dots;
-                }
-                AttributeName::Perception => {
-                    self.perception = dots;
-                }
-                AttributeName::Intelligence => {
-                    self.intelligence = dots;
-                }
-                AttributeName::Wits => {
-                    self.wits = dots;
-                }
-            }
-            Ok(self)
+            ));
         }
+
+        let nonzero = NonZeroU8::new(dots).ok_or(CharacterMutationError::AttributeError(
+            AttributeError::InvalidRating,
+        ))?;
+
+        match attribute_name {
+            AttributeName::Strength => {
+                self.strength = nonzero;
+            }
+            AttributeName::Dexterity => {
+                self.dexterity = nonzero;
+            }
+            AttributeName::Stamina => {
+                self.stamina = nonzero;
+            }
+            AttributeName::Charisma => {
+                self.charisma = nonzero;
+            }
+            AttributeName::Manipulation => {
+                self.manipulation = nonzero;
+            }
+            AttributeName::Appearance => {
+                self.appearance = nonzero;
+            }
+            AttributeName::Perception => {
+                self.perception = nonzero;
+            }
+            AttributeName::Intelligence => {
+                self.intelligence = nonzero;
+            }
+            AttributeName::Wits => {
+                self.wits = nonzero;
+            }
+        }
+
+        Ok(self)
     }
 }

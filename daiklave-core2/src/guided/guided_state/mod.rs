@@ -376,36 +376,36 @@ impl<'source> GuidedState<'source> {
         let physical_attributes = self
             .character_view
             .attributes()
-            .dots(AttributeName::Strength)
+            .dots(AttributeName::Strength).get()
             + self
                 .character_view
                 .attributes()
-                .dots(AttributeName::Dexterity)
+                .dots(AttributeName::Dexterity).get()
             + self
                 .character_view
                 .attributes()
-                .dots(AttributeName::Stamina);
+                .dots(AttributeName::Stamina).get();
         let mental_attributes = self
             .character_view
             .attributes()
-            .dots(AttributeName::Perception)
+            .dots(AttributeName::Perception).get()
             + self
                 .character_view
                 .attributes()
-                .dots(AttributeName::Intelligence)
-            + self.character_view.attributes().dots(AttributeName::Wits);
+                .dots(AttributeName::Intelligence).get()
+            + self.character_view.attributes().dots(AttributeName::Wits).get();
         let social_attributes = self
             .character_view
             .attributes()
-            .dots(AttributeName::Charisma)
+            .dots(AttributeName::Charisma).get()
             + self
                 .character_view
                 .attributes()
-                .dots(AttributeName::Manipulation)
+                .dots(AttributeName::Manipulation).get()
             + self
                 .character_view
                 .attributes()
-                .dots(AttributeName::Appearance);
+                .dots(AttributeName::Appearance).get();
 
         let primary = physical_attributes
             .max(mental_attributes)

@@ -1,3 +1,5 @@
+use std::num::NonZeroU8;
+
 use crate::{
     abilities::AbilityName,
     attributes::AttributeName,
@@ -33,7 +35,7 @@ impl VariableMeritTemplateBuilder {
     /// dot threshold. If a merit has any prerequisites, they are treated as an
     /// "or" relationship--the merit can be added as long as any prerequisite
     /// is satisfied.
-    pub fn ability_prerequisite(mut self, ability_name: AbilityName, dots: u8) -> Self {
+    pub fn ability_prerequisite(mut self, ability_name: AbilityName, dots: NonZeroU8) -> Self {
         let upsert = MeritPrerequisite::Ability(ability_name, dots);
         if let Some(existing) = self.prerequisites.iter_mut().find(|prereq| {
             if let MeritPrerequisite::Ability(existing_name, _) = prereq {
@@ -53,7 +55,7 @@ impl VariableMeritTemplateBuilder {
     /// dot threshold. If a merit has any prerequisites, they are treated as an
     /// "or" relationship--the merit can be added as long as any prerequisite
     /// is satisfied.
-    pub fn attribute_prerequisite(mut self, attribute_name: AttributeName, dots: u8) -> Self {
+    pub fn attribute_prerequisite(mut self, attribute_name: AttributeName, dots: NonZeroU8) -> Self {
         let upsert = MeritPrerequisite::Attribute(attribute_name, dots);
         if let Some(existing) = self.prerequisites.iter_mut().find(|prereq| {
             if let MeritPrerequisite::Attribute(existing_name, _) = prereq {

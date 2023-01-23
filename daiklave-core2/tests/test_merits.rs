@@ -315,8 +315,8 @@ fn test_merits() {
     let iron_stomach = Merit::new_template("Iron Stomach".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 162))
         .merit_type(MeritType::Purchased)
-        .ability_prerequisite(AbilityName::Resistance, 3)
-        .attribute_prerequisite(AttributeName::Stamina, 3)
+        .ability_prerequisite(AbilityName::Resistance, NonZeroU8::new(3).unwrap())
+        .attribute_prerequisite(AttributeName::Stamina, NonZeroU8::new(3).unwrap())
         .fixed_dots(
             1,
             "The character can digest almost anything edible, from live
