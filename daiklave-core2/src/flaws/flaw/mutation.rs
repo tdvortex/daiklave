@@ -1,6 +1,7 @@
 use crate::book_reference::BookReference;
 
 /// A Flaw to be added to a character.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FlawMutation {
     name: String,
     book_reference: Option<BookReference>,

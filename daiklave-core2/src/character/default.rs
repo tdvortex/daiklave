@@ -15,6 +15,7 @@ impl<'source> Default for Character<'source> {
             demenses_no_manse: Default::default(),
             stackable_merits: Default::default(),
             nonstackable_merits: Default::default(),
+            flaws: Default::default(),
             languages: Default::default(),
         }
     }

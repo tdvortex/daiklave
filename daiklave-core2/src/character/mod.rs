@@ -16,6 +16,7 @@ use std::collections::HashMap;
 use crate::{
     abilities::AbilitiesVanilla,
     attributes::Attributes,
+    book_reference::BookReference,
     charms::charm::{CharmId, CharmMutation},
     craft::Craft,
     exaltation::Exaltation,
@@ -45,6 +46,7 @@ pub struct Character<'source> {
     pub(crate) demenses_no_manse: HashMap<UniqueId, (&'source str, GeomancyLevel)>,
     pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMeritView<'source>>,
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMeritView<'source>>,
+    pub(crate) flaws: HashMap<&'source str, (Option<BookReference>, &'source str)>,
     pub(crate) languages: Languages<'source>,
 }
 
@@ -79,6 +81,16 @@ impl<'source> Character<'source> {
                 .stackable_merits
                 .iter()
                 .map(|(k, v)| (*k, v.as_memo()))
+                .collect(),
+            flaws: self
+                .flaws
+                .iter()
+                .map(|(name, (book_reference, description))| {
+                    (
+                        (*name).to_owned(),
+                        (*book_reference, (*description).to_owned()),
+                    )
+                })
                 .collect(),
             languages: self.languages.as_memo(),
         }
@@ -242,6 +254,8 @@ impl<'source> Character<'source> {
                 CharmId::Solar(solar_charm_id) => self.remove_solar_charm(*solar_charm_id),
                 CharmId::Spell(spell_id) => self.remove_spell(*spell_id),
             },
+            CharacterMutation::AddFlaw(_) => todo!(),
+            CharacterMutation::RemoveFlaw(_) => todo!(),
         }
     }
 }

@@ -11,6 +11,7 @@ use crate::{
         essence::{MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
         exalt_type::solar::NewSolar,
     },
+    flaws::flaw::FlawMutation,
     health::{DamageLevel, WoundPenalty},
     hearthstones::{
         hearthstone::{GeomancyLevel, HearthstoneTemplate},
@@ -184,4 +185,8 @@ pub enum CharacterMutation {
     /// Removes a Charm from the character. Note that this may cause cascading
     /// drops due to Charm tree dependencies.
     RemoveCharm(CharmId),
+    /// Adds a Flaw to the character.
+    AddFlaw(FlawMutation),
+    /// Removes a Flaw from the character.
+    RemoveFlaw(String),
 }

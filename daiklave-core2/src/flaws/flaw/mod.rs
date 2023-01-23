@@ -5,9 +5,9 @@ use crate::book_reference::BookReference;
 
 /// A Flaw belonging to a character.
 pub struct Flaw<'source> {
-    name: &'source str,
-    book_reference: Option<BookReference>,
-    description: &'source str,
+    pub(crate) name: &'source str,
+    pub(crate) book_reference: Option<BookReference>,
+    pub(crate) description: &'source str,
 }
 
 impl<'source> Flaw<'source> {

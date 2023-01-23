@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     abilities::AbilitiesMemo,
     attributes::Attributes,
+    book_reference::BookReference,
     craft::CraftMemo,
     exaltation::ExaltationMemo,
     health::Health,
@@ -32,6 +33,7 @@ pub struct CharacterMemo {
     pub(crate) demenses_no_manse: HashMap<UniqueId, (String, GeomancyLevel)>,
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMerit>,
     pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMerit>,
+    pub(crate) flaws: HashMap<String, (Option<BookReference>, String)>,
     pub(crate) languages: LanguagesMemo,
 }
 
@@ -66,6 +68,13 @@ impl<'source> CharacterMemo {
                 .stackable_merits
                 .iter()
                 .map(|(k, v)| (*k, v.as_ref()))
+                .collect(),
+            flaws: self
+                .flaws
+                .iter()
+                .map(|(name, (book_reference, description))| {
+                    (name.as_str(), (*book_reference, description.as_str()))
+                })
                 .collect(),
             languages: self.languages.as_ref(),
         }
