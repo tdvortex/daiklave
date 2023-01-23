@@ -5,6 +5,7 @@ pub mod essence;
 /// Structs and methods related to various Exalt subtypes (Solar, Lunar, etc).
 pub mod exalt_type;
 
+mod anima_effect;
 mod armor;
 mod limit;
 pub(crate) mod martial_arts;
@@ -13,6 +14,7 @@ mod sorcery;
 mod weapons;
 mod wonders;
 
+pub use anima_effect::AnimaEffect;
 pub(crate) use armor::ExaltArmor;
 pub(crate) use limit::{Limit, LimitMemo};
 pub(crate) use memo::ExaltMemo;
@@ -124,6 +126,12 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn essence(&'view self) -> Essence<'view, 'source> {
         Essence(self)
+    }
+
+    pub fn anima_effects(&self) -> impl Iterator<Item = AnimaEffect> {
+        match &self.exalt_type {
+            ExaltType::Solar(solar) => solar.anima_effects(),
+        }
     }
 
     pub fn martial_arts_styles(&self) -> &HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>> {

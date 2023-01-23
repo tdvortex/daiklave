@@ -57,4 +57,14 @@ impl<'source> SolarCaste<'source> {
             SolarCaste::Eclipse(eclipse) => eclipse.supernal_ability(),
         }
     }
+
+    pub fn anima_effects(&self) -> [&'static str; 3] {
+        match self {
+            SolarCaste::Dawn(dawn) => dawn.anima_effects(),
+            SolarCaste::Zenith(zenith) => zenith.anima_effects(),
+            SolarCaste::Twilight(twilight) => twilight.anima_effects(),
+            SolarCaste::Night(night) => night.anima_effects(),
+            SolarCaste::Eclipse(eclipse) => eclipse.anima_effects(),
+        }
+    }
 }

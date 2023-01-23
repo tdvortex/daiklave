@@ -7,6 +7,7 @@ pub mod builder;
 /// Details of a Solar Charm.
 pub mod charm;
 
+mod anima_effect;
 mod error;
 mod memo;
 mod new;
@@ -25,7 +26,7 @@ use crate::{
         charm::{Charm, SpiritCharmId},
         CharmError,
     },
-    exaltation::exalt::Limit,
+    exaltation::exalt::{Limit, AnimaEffect},
     merits::merit::MeritError,
     sorcery::{
         circles::{
@@ -42,7 +43,7 @@ use crate::{
 use self::{
     builder::SolarBuilder,
     caste::SolarCaste,
-    charm::{SolarCharm, SolarCharmId},
+    charm::{SolarCharm, SolarCharmId}, anima_effect::{SOLAR_ONE, SOLAR_TWO},
 };
 
 /// Traits which are unique to being a Solar Exalted.
@@ -100,6 +101,10 @@ impl<'source> Solar<'source> {
         };
 
         self.favored_abilities.iter().any(|&a| a == search_ability)
+    }
+
+    pub(crate) fn anima_effects(&self) -> impl Iterator<Item = AnimaEffect> {
+        [SOLAR_ONE, SOLAR_TWO].into_iter().chain(self.caste.anima_effects().into_iter())
     }
 
     pub(crate) fn add_terrestrial_sorcery(

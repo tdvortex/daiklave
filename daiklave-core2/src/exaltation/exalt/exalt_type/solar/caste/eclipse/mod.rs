@@ -1,4 +1,5 @@
 mod ability;
+mod anima_effect;
 mod memo;
 
 use std::collections::HashMap;
@@ -11,7 +12,8 @@ use crate::{
     charms::charm::{EclipseCharm, SpiritCharmId},
 };
 
-/// Caste traits for the Eclipse Caste Solar.
+use self::anima_effect::{ECLIPSE_ONE, ECLIPSE_TWO, ECLIPSE_THREE};
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Eclipse<'source> {
     pub caste_not_supernal: [EclipseAbility; 4],
@@ -24,7 +26,6 @@ impl<'source> Eclipse<'source> {
         EclipseMemo::new(self.caste_not_supernal, self.supernal)
     }
 
-    /// Returns true if the ability is a chosen Caste ability.
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal
@@ -37,8 +38,15 @@ impl<'source> Eclipse<'source> {
         }
     }
 
-    /// Returns the Eclipse's Supernal ability.
     pub fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
+    }
+
+    pub fn anima_effects(&self) -> [&'static str; 3] {
+        [
+            ECLIPSE_ONE,
+            ECLIPSE_TWO,
+            ECLIPSE_THREE
+        ]
     }
 }

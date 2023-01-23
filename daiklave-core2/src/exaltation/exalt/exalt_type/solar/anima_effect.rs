@@ -1,0 +1,2 @@
+pub(crate) const SOLAR_ONE: &str = "Solars may spend 1 mote to know the exact position of the sun and time of day, even while underground or outside Creation.";
+pub(crate) const SOLAR_TWO: &str = "Solars may spend 1 mote to display their Caste Mark even at Dim anima.";

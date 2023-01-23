@@ -1,4 +1,5 @@
 mod ability;
+mod anima_effect;
 mod memo;
 
 pub use ability::NightAbility;
@@ -6,7 +7,8 @@ pub(crate) use memo::NightMemo;
 
 use crate::abilities::AbilityName;
 
-/// Caste traits for the Night Caste Solar.
+use self::anima_effect::{NIGHT_ONE, NIGHT_TWO, NIGHT_THREE};
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Night {
     pub caste_not_supernal: [NightAbility; 4],
@@ -18,7 +20,6 @@ impl Night {
         NightMemo::new(self.caste_not_supernal, self.supernal)
     }
 
-    /// Returns true if the ability is a chosen Caste ability.
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal
@@ -31,8 +32,15 @@ impl Night {
         }
     }
 
-    /// Returns the Night's Supernal ability.
     pub fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
+    }
+
+    pub fn anima_effects(&self) -> [&'static str; 3] {
+        [
+            NIGHT_ONE,
+            NIGHT_TWO,
+            NIGHT_THREE
+        ]
     }
 }

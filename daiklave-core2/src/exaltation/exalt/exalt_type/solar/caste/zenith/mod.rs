@@ -1,10 +1,13 @@
 mod ability;
+mod anima_effect;
 mod memo;
 
 pub use ability::ZenithAbility;
 pub(crate) use memo::ZenithMemo;
 
 use crate::abilities::AbilityName;
+
+use self::anima_effect::{ZENITH_ONE, ZENITH_TWO, ZENITH_THREE};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Zenith {
@@ -20,7 +23,6 @@ impl Zenith {
         }
     }
 
-    /// Returns true if the ability is a chosen Caste ability.
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal
@@ -33,8 +35,15 @@ impl Zenith {
         }
     }
 
-    /// Returns the Zenith's Supernal ability.
     pub fn supernal_ability(&self) -> AbilityName {
         AbilityName::from(self.supernal)
+    }
+
+    pub fn anima_effects(&self) -> [&'static str; 3] {
+        [
+            ZENITH_ONE,
+            ZENITH_TWO,
+            ZENITH_THREE
+        ]
     }
 }

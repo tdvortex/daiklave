@@ -9,7 +9,7 @@ pub(crate) use error::EssenceError;
 pub use motes::Motes;
 pub(crate) use motes::MotesState;
 
-use super::Exalt;
+use super::{Exalt, AnimaEffect};
 pub use mote_commitment::{MoteCommitment, MoteCommitmentId, OtherMoteCommitmentId};
 pub(crate) use mote_pool::MotePool;
 pub use mote_pool::MotePoolName;
@@ -32,5 +32,10 @@ impl<'view, 'source> Essence<'view, 'source> {
             armor: &self.0.armor,
             wonders: &self.0.wonders,
         }
+    }
+
+    /// The anima effects the Exalt possesses.
+    pub fn anima_effects(&self) -> impl Iterator<Item = AnimaEffect> {
+        self.0.anima_effects()
     }
 }
