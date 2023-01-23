@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, num::NonZeroU8};
 
 use serde::{Deserialize, Serialize};
 
@@ -7,7 +7,7 @@ use super::AbilityRating;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum AbilityRatingMemo {
     Zero,
-    NonZero(u8, HashSet<String>),
+    NonZero(NonZeroU8, HashSet<String>),
 }
 
 impl<'source> AbilityRatingMemo {

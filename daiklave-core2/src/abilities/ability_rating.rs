@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, num::NonZeroU8};
 
 use crate::CharacterMutationError;
 
@@ -7,7 +7,7 @@ use super::{AbilityError, AbilityRatingMemo};
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum AbilityRating<'source> {
     Zero,
-    NonZero(u8, HashSet<&'source str>),
+    NonZero(NonZeroU8, HashSet<&'source str>),
 }
 
 impl<'source> Default for AbilityRating<'source> {
@@ -30,26 +30,28 @@ impl<'source> AbilityRating<'source> {
     pub fn dots(&self) -> u8 {
         match self {
             AbilityRating::Zero => 0,
-            AbilityRating::NonZero(dots, _) => *dots,
+            AbilityRating::NonZero(dots, _) => dots.get(),
         }
     }
 
     pub fn set_dots(&mut self, new_dots: u8) -> Result<&mut Self, CharacterMutationError> {
         if new_dots > 5 {
-            Err(CharacterMutationError::AbilityError(
+            return Err(CharacterMutationError::AbilityError(
                 AbilityError::InvalidRating,
-            ))
-        } else if new_dots == 0 {
-            *self = AbilityRating::Zero;
-            Ok(self)
-        } else if let AbilityRating::NonZero(dots, _) = self {
-            *dots = new_dots;
-            Ok(self)
+            ));
+        } 
+        
+        if let Some(nonzero) = NonZeroU8::new(new_dots) {
+            if let AbilityRating::NonZero(dots, _) = self {
+                *dots = nonzero;
+            } else {
+                // Was zero, now is non zero
+                *self = AbilityRating::NonZero(nonzero, HashSet::new());
+            }
         } else {
-            // Was zero, now is non zero
-            *self = AbilityRating::NonZero(new_dots, HashSet::new());
-            Ok(self)
+            *self = AbilityRating::Zero;
         }
+        Ok(self)
     }
 
     pub fn specialties(&self) -> impl Iterator<Item = &'source str> {

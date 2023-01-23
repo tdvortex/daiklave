@@ -123,14 +123,4 @@ impl<'view, 'source> AbilitiesVanilla<'source> {
             AbilityNameVanilla::War => &mut self.war,
         }
     }
-
-    // /// Get the dot rating for a specific (non-Craft, non-MA) ability.
-    // pub fn dots(&self, ability_name: AbilityNameVanilla) -> u8 {
-    //     self.get(ability_name).dots()
-    // }
-
-    // /// Get an iterator for all specialties associated with a specific ability.
-    // pub fn specialties(&self, ability_name: AbilityNameVanilla) -> impl Iterator<Item = &str> {
-    //     self.get(ability_name).specialties()
-    // }
 }
