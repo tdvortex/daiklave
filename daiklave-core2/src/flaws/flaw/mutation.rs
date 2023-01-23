@@ -3,9 +3,9 @@ use crate::book_reference::BookReference;
 /// A Flaw to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FlawMutation {
-    name: String,
-    book_reference: Option<BookReference>,
-    description: String,
+    pub(crate) name: String,
+    pub(crate) book_reference: Option<BookReference>,
+    pub(crate) description: String,
 }
 
 impl FlawMutation {

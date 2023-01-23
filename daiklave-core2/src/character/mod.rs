@@ -254,8 +254,8 @@ impl<'source> Character<'source> {
                 CharmId::Solar(solar_charm_id) => self.remove_solar_charm(*solar_charm_id),
                 CharmId::Spell(spell_id) => self.remove_spell(*spell_id),
             },
-            CharacterMutation::AddFlaw(_) => todo!(),
-            CharacterMutation::RemoveFlaw(_) => todo!(),
+            CharacterMutation::AddFlaw(flaw_mutation) => self.add_flaw(flaw_mutation),
+            CharacterMutation::RemoveFlaw(name) => self.remove_flaw(name.as_str()),
         }
     }
 }
