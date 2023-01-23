@@ -23,7 +23,7 @@ pub(crate) use wonders::ExaltWonders;
 use std::collections::{hash_map::Entry, HashMap, HashSet};
 
 use crate::{
-    abilities::{AbilityError, AbilityRating},
+    abilities::{AbilityError, AbilityRating, AbilityName},
     armor::{
         armor_item::{
             artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
@@ -46,7 +46,7 @@ use crate::{
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{
-        charm::MartialArtsCharmId, MartialArtsError, MartialArtsStyle, MartialArtsStyleId,
+        charm::{MartialArtsCharmId, MartialArtsCharm}, MartialArtsError, MartialArtsStyle, MartialArtsStyleId,
     },
     sorcery::{
         circles::{
@@ -1114,5 +1114,56 @@ impl<'view, 'source> Exalt<'source> {
             ExaltType::Solar(solar) => {solar.remove_spell(spell_id)?;}
         }
         Ok(self)
+    }
+
+    pub fn add_martial_arts_charm(
+        &mut self,
+        martial_arts_charm_id: MartialArtsCharmId,
+        martial_arts_charm: &'source MartialArtsCharm,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        let style = self.martial_arts_styles.get(&martial_arts_charm.style()).ok_or(CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound))?;
+        let required_ability = martial_arts_charm.ability_required();
+        let actual_ability = style.ability().dots();
+
+        if required_ability > actual_ability {
+            return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+        }
+
+        let required_essence = martial_arts_charm.essence_required();
+        let actual_essence = self.essence.rating;
+        if actual_essence < required_essence {
+            let mut martial_arts_supernal = false;
+            // May still be okay for a Dawn caste, Martial Arts supernal solar
+            let ExaltType::Solar(solar) = &self.exalt_type; 
+            if solar.supernal_ability() == AbilityName::MartialArts {
+                martial_arts_supernal = true;
+            }
+
+            if !martial_arts_supernal {
+                return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
+            }
+        }
+
+        let mut unmet_charm_prerequisites = martial_arts_charm.charms_required().collect::<HashSet<MartialArtsCharmId>>();
+
+        for known_charm_id in style.charms().map(|(known_charm_id, _)| known_charm_id) {
+            if known_charm_id == martial_arts_charm_id {
+                return Err(CharacterMutationError::CharmError(CharmError::DuplicateCharm));
+            }
+
+            unmet_charm_prerequisites.remove(&known_charm_id);
+        }
+
+        if !unmet_charm_prerequisites.is_empty() {
+            Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet))
+        } else {
+            self
+            .martial_arts_styles_mut()
+            .get_mut(&martial_arts_charm.style())
+            .ok_or(CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound))?
+            .charms_mut()
+            .insert(martial_arts_charm_id, martial_arts_charm);
+            Ok(self)
+        }
     }
 }

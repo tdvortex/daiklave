@@ -48,7 +48,8 @@ impl<'view, 'source> Character<'source> {
         martial_arts_charm_id: MartialArtsCharmId,
         martial_arts_charm: &'source MartialArtsCharm,
     ) -> Result<&mut Self, CharacterMutationError> {
-        todo!()
+        self.exaltation.add_martial_arts_charm(martial_arts_charm_id, martial_arts_charm)?;
+        Ok(self)
     }
 
     /// Removes a Martial Arts Charm from the character.

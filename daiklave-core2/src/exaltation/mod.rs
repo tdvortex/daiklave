@@ -31,7 +31,7 @@ use crate::{
         CharmError,
     },
     hearthstones::{HearthstoneId, UnslottedHearthstone},
-    martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId},
+    martial_arts::{MartialArtist, MartialArtsStyle, MartialArtsStyleId, charm::{MartialArtsCharmId, MartialArtsCharm}},
     sorcery::{
         circles::{
             celestial::AddCelestialSorcery, solar::AddSolarSorcery,
@@ -981,7 +981,6 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    /// Removes a merit from a Sorcery Archetype owned by a character
     pub fn remove_sorcery_archetype_merit(
         &mut self,
         sorcery_archetype_merit_id: SorceryArchetypeMeritId,
@@ -1086,5 +1085,19 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Exalt(exalt) => {exalt.remove_spell(spell_id)?;}
         }
         Ok(self)
+    }
+
+    pub fn add_martial_arts_charm(
+        &mut self,
+        martial_arts_charm_id: MartialArtsCharmId,
+        martial_arts_charm: &'source MartialArtsCharm,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(_) => Err(CharacterMutationError::CharmError(CharmError::Mortal)),
+            Exaltation::Exalt(exalt) => {
+                exalt.add_martial_arts_charm(martial_arts_charm_id, martial_arts_charm)?;
+                Ok(self)
+            }
+        }
     }
 }
