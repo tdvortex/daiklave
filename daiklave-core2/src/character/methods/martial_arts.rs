@@ -52,11 +52,20 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 
+    pub(crate) fn correct_martial_arts_charms(&mut self, force_remove: &[MartialArtsCharmId]) -> bool {
+        self.exaltation.correct_martial_arts_charms(force_remove)
+    }
+
     /// Removes a Martial Arts Charm from the character.
     pub fn remove_martial_arts_charm(
         &mut self,
         martial_arts_charm_id: MartialArtsCharmId,
     ) -> Result<&mut Self, CharacterMutationError> {
-        todo!()
+        self.exaltation.remove_martial_arts_charm(martial_arts_charm_id)?;
+
+        // Evocations may be upgrades to Martial Arts Charms
+        // Removing a Martial Arts charm may force removal of an Evocation
+        self.correct_evocations(&[]);
+        Ok(self)
     }
 }

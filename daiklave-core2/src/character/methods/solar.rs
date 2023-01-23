@@ -38,11 +38,14 @@ impl<'source> Character<'source> {
         &mut self,
         solar: &'source NewSolar,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self.is_mortal() {
-            let new_willpower_rating = self.willpower().rating() + 2;
-            self.set_willpower_rating(new_willpower_rating)?;
-        }
+        let new_willpower_rating = self.willpower().rating().saturating_add(2 * u8::from(self.is_mortal()));
         self.exaltation.set_solar(solar.0.as_ref())?;
+        self.set_willpower_rating(new_willpower_rating)?;
+
+        self.correct_merits();
+        self.correct_martial_arts_charms(&[]);
+        self.correct_solar_charms(&[]);
+        self.correct_evocations(&[]);
         Ok(self)
     }
 

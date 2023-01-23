@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::{
     abilities::AbilityRating,
     exaltation::mortal::martial_arts::MortalMartialArtist,
@@ -13,33 +11,18 @@ use super::ExaltMartialArtistMemo;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ExaltMartialArtist<'source> {
-    style: &'source MartialArtsStyle,
-    ability: AbilityRating<'source>,
-    pub(crate) charms: HashMap<MartialArtsCharmId, &'source MartialArtsCharm>,
+    pub(crate) style: &'source MartialArtsStyle,
+    pub(crate) ability: AbilityRating<'source>,
+    pub(crate) charms: Vec<(MartialArtsCharmId, &'source MartialArtsCharm)>
 }
 
 impl<'view, 'source> ExaltMartialArtist<'source> {
-    pub fn new(
-        style: &'source MartialArtsStyle,
-        ability: AbilityRating<'source>,
-        charms: HashMap<MartialArtsCharmId, &'source MartialArtsCharm>,
-    ) -> Self {
-        Self {
-            style,
-            ability,
-            charms,
-        }
-    }
-
     pub fn as_memo(&'view self) -> ExaltMartialArtistMemo {
-        ExaltMartialArtistMemo::new(
-            self.style.to_owned(),
-            self.ability.as_memo(),
-            self.charms
-                .iter()
-                .map(|(k, v)| (*k, (*v).to_owned()))
-                .collect(),
-        )
+        ExaltMartialArtistMemo {
+            style: self.style.to_owned(),
+            ability: self.ability.as_memo(),
+            charms: self.charms.iter().map(|(charm_id, charm)| (*charm_id, (*charm).to_owned())).collect(),
+        }
     }
 
     pub fn style(&'view self) -> &'source MartialArtsStyle {
@@ -59,12 +42,6 @@ impl<'view, 'source> ExaltMartialArtist<'source> {
     ) -> impl Iterator<Item = (MartialArtsCharmId, &'source MartialArtsCharm)> + '_ {
         self.charms.iter().map(|(k, v)| (*k, *v))
     }
-
-    pub fn charms_mut(
-        &'view mut self,
-    ) -> &'view mut HashMap<MartialArtsCharmId, &'source MartialArtsCharm> {
-        &mut self.charms
-    }
 }
 
 impl<'source> From<MortalMartialArtist<'source>> for ExaltMartialArtist<'source> {
@@ -72,7 +49,7 @@ impl<'source> From<MortalMartialArtist<'source>> for ExaltMartialArtist<'source>
         Self {
             style: mortal_artist.style(),
             ability: mortal_artist.ability().to_owned(),
-            charms: HashMap::new(),
+            charms: Vec::new(),
         }
     }
 }

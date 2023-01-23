@@ -417,7 +417,7 @@ impl<'view, 'source> Exalt<'source> {
         self.check_add_martial_arts_style(id, style)?;
         self.martial_arts_styles.insert(
             id,
-            ExaltMartialArtist::new(style, AbilityRating::Zero, HashMap::new()),
+            ExaltMartialArtist { style, ability: AbilityRating::Zero, charms: Vec::new() }
         );
         Ok(self)
     }
@@ -454,35 +454,11 @@ impl<'view, 'source> Exalt<'source> {
                 AbilityError::InvalidRating,
             ))
         } else if let Some(style) = self.martial_arts_styles.get_mut(&id) {
-            if dots < style.ability().dots() {
-                // May have to remove charms
-                let mut prereq_charms_map =
-                    HashMap::<MartialArtsCharmId, Vec<MartialArtsCharmId>>::new();
-                let mut removal_stack = Vec::<MartialArtsCharmId>::new();
-
-                for (charm_id, charm) in style.charms() {
-                    for prereq_charm_id in charm.charms_required() {
-                        prereq_charms_map
-                            .entry(prereq_charm_id)
-                            .or_default()
-                            .push(charm_id);
-                    }
-
-                    if charm.ability_required() > dots {
-                        removal_stack.push(charm_id);
-                    }
-                }
-
-                while let Some(id_to_remove) = removal_stack.pop() {
-                    style.charms_mut().remove(&id_to_remove);
-                    if let Some(dependents) = prereq_charms_map.remove(&id_to_remove) {
-                        for dependent_id in dependents.iter() {
-                            removal_stack.push(*dependent_id);
-                        }
-                    }
-                }
-            }
+            let old_dots = style.ability().dots();
             style.ability_mut().set_dots(dots)?;
+            if old_dots > dots {
+                self.correct_martial_arts_charms(&[]);
+            }
             Ok(self)
         } else {
             Err(CharacterMutationError::MartialArtsError(
@@ -1140,6 +1116,7 @@ impl<'view, 'source> Exalt<'source> {
             }
 
             if !martial_arts_supernal {
+                dbg!(solar.supernal_ability());
                 return Err(CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet));
             }
         }
@@ -1161,9 +1138,51 @@ impl<'view, 'source> Exalt<'source> {
             .martial_arts_styles_mut()
             .get_mut(&martial_arts_charm.style())
             .ok_or(CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound))?
-            .charms_mut()
-            .insert(martial_arts_charm_id, martial_arts_charm);
+            .charms
+            .push((martial_arts_charm_id, martial_arts_charm));
             Ok(self)
         }
+    }
+
+    pub(crate) fn correct_martial_arts_charms(&mut self, force_remove: &[MartialArtsCharmId]) -> bool {
+        let actual_essence = self.essence.rating;
+        let is_martial_arts_supernal = {
+            let ExaltType::Solar(solar) = &self.exalt_type;
+            solar.supernal_ability() == AbilityName::MartialArts
+        };
+
+        let mut any_removed = false;
+
+        for (_, martial_artist) in self.martial_arts_styles.iter_mut() {
+            let actual_ability = martial_artist.ability.dots();
+
+            let ids_to_remove: HashSet<MartialArtsCharmId> = martial_artist.charms
+                .iter()
+                .fold(HashSet::from_iter(force_remove.iter().copied()), |mut ids_to_remove, (known_charm_id, known_charm)| {
+                    if known_charm.ability_required() > actual_ability {
+                        ids_to_remove.insert(*known_charm_id);
+                    }
+
+                    if known_charm.essence_required() > actual_essence && !is_martial_arts_supernal {
+                        ids_to_remove.insert(*known_charm_id);
+                    }
+
+                    for prereq_charm_id in known_charm.charms_required() {
+                        if ids_to_remove.contains(&prereq_charm_id) {
+                            ids_to_remove.insert(*known_charm_id);
+                        }
+                    }
+
+                    ids_to_remove
+            });
+
+            let old_len = martial_artist.charms.len();
+            martial_artist.charms.retain(|(known_id, _)| !ids_to_remove.contains(known_id));
+            if old_len > martial_artist.charms.len() {
+                any_removed = true;
+            }
+        }
+
+        any_removed
     }
 }

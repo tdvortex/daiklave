@@ -954,7 +954,7 @@ fn test_martial_arts_charms() {
     .summary("Extra Decisive damage".to_owned())
     .description("Committing fully to a lethal blow, the swordsman cleaves \
     through her enemies with killing speed.".to_owned())
-    .mastery("Shining Starfall Execution also doubles 10s on
+    .mastery("Shining Starfall Execution also doubles 10s on \
     the damage roll at Initiative 15+.".to_owned())
     .build();
 
@@ -1007,7 +1007,7 @@ fn test_martial_arts_charms() {
     .caste_ability(DawnCasteAbility::Archery)
     .caste_ability(DawnCasteAbility::Awareness)
     .caste_ability(DawnCasteAbility::Dodge)
-    .caste_ability(DawnCasteAbility::Melee)
+    .caste_ability(DawnCasteAbility::Thrown)
     .supernal_ability(DawnSupernalAbility::MartialArts)
     .favored_ability(AbilityName::Medicine)
     .favored_ability(AbilityName::Linguistics)

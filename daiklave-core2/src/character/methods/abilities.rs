@@ -1,6 +1,5 @@
 use crate::{
     abilities::{Abilities, AbilitiesVanilla, AbilityError, AbilityNameVanilla},
-    attributes::AttributeName,
     Character, CharacterMutationError,
 };
 
@@ -34,11 +33,7 @@ impl<'view, 'source> Character<'source> {
         self.abilities.get_mut(ability_name).set_dots(dots)?;
 
         if old_dots > dots {
-            let sorcery_removed = self.exaltation.correct_sorcery_level(
-                dots,
-                self.attributes().get(AttributeName::Intelligence).dots(),
-                self.essence().map_or(1, |essence| essence.rating()),
-            );
+            let sorcery_removed = self.correct_sorcery_level();
 
             let ma_style_removed = if ability_name == AbilityNameVanilla::Brawl && dots == 0 {
                 let mut ma_style_removed = false;

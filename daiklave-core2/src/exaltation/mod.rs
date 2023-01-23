@@ -415,10 +415,6 @@ impl<'view, 'source> Exaltation<'source> {
         &mut self,
         solar: &'source SolarMemo,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self.is_solar() {
-            return Ok(self);
-        }
-
         self.set_solar_view(solar.as_ref())
     }
 
@@ -426,10 +422,6 @@ impl<'view, 'source> Exaltation<'source> {
         &mut self,
         mut solar: Solar<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self.is_solar() {
-            return Ok(self);
-        }
-
         match self {
             Exaltation::Mortal(mortal) => {
                 // Default to essence 1
@@ -473,16 +465,16 @@ impl<'view, 'source> Exaltation<'source> {
                     exalt.uncommit_motes(&commit_id)?;
                 }
 
-                // Preserve martial arts styles (including charms)
+                // If switching solar->solar, try to preserve solar charms
+                let ExaltType::Solar(old_solar) = &mut exalt.exalt_type;
+                solar.solar_charms = std::mem::take(&mut old_solar.solar_charms);
+
+                // Try to preserve martial arts styles (including charms)
+
                 // Preserve sorcery
-                if let Some(solar_sorcerer) = match &mut exalt.exalt_type {
-                    ExaltType::Solar(solar) => solar.sorcery.take(),
-                } {
-                    if solar.sorcery.is_none() {
-                        solar.sorcery = Some(solar_sorcerer);
-                    }
+                if let Some(solar_sorcerer) = old_solar.sorcery.take() {
+                    solar.sorcery = Some(solar_sorcerer);
                 }
-                // Preserve Evocations
 
                 *self = Self::Exalt(Box::new(Exalt {
                     armor: std::mem::take(&mut exalt.armor),
@@ -494,6 +486,7 @@ impl<'view, 'source> Exaltation<'source> {
                             commitments: Default::default(),
                         },
                     },
+                    // Preserve Evocations
                     evocations: std::mem::take(&mut exalt.evocations),
                     martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles),
                     exalt_type: ExaltType::Solar(solar),
@@ -502,7 +495,6 @@ impl<'view, 'source> Exaltation<'source> {
                 }));
             }
         }
-
         Ok(self)
     }
 
@@ -1122,16 +1114,51 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Exalt(exalt) => exalt
                 .martial_arts_styles
                 .iter()
-                .find_map(|(_, martial_artist)| martial_artist.charms
-                .get(&martial_arts_charm_id)
-                .map(|martial_arts_charm| Charm::MartialArts(martial_arts_charm))),
+                .flat_map(|(_, martial_artist)| martial_artist.charms.iter())
+                .find_map(|(known_charm_id, charm)| {
+                    if known_charm_id == &martial_arts_charm_id {
+                        Some(Charm::MartialArts(charm))
+                    } else {
+                        None
+                    }
+                }),
         }
     }
 
     pub fn martial_arts_charms_iter(&self) -> impl Iterator<Item = MartialArtsCharmId> + '_ {
         match self {
             Exaltation::Mortal(_) => vec![],
-            Exaltation::Exalt(exalt) => exalt.martial_arts_styles().iter().flat_map(|(_, martial_artist)| martial_artist.charms.keys().copied()).collect::<Vec<MartialArtsCharmId>>(),
-        }.into_iter()
+            Exaltation::Exalt(exalt) => exalt
+                .martial_arts_styles()
+                .iter()
+                .flat_map(|(_, martial_artist)| {
+                    martial_artist.charms.iter().map(|(charm_id, _)| *charm_id)
+                })
+                .collect::<Vec<MartialArtsCharmId>>(),
+        }
+        .into_iter()
+    }
+
+    pub(crate) fn correct_martial_arts_charms(
+        &mut self,
+        force_remove: &[MartialArtsCharmId],
+    ) -> bool {
+        match self {
+            Exaltation::Mortal(_) => false,
+            Exaltation::Exalt(exalt) => exalt.correct_martial_arts_charms(force_remove),
+        }
+    }
+
+    pub fn remove_martial_arts_charm(&mut self, martial_arts_charm_id: MartialArtsCharmId) -> Result<&mut Self, CharacterMutationError> {
+        match self {
+            Exaltation::Mortal(_) => Err(CharacterMutationError::CharmError(CharmError::Mortal)),
+            Exaltation::Exalt(exalt) => {
+                if exalt.correct_martial_arts_charms(&[martial_arts_charm_id]) {
+                    Ok(self)
+                } else {
+                    Err(CharacterMutationError::CharmError(CharmError::NotFound))
+                }
+            }
+        }
     }
 }

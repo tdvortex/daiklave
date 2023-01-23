@@ -126,4 +126,11 @@ impl<'view, 'source> Character<'source> {
         self.correct_evocations(&[]);
         Ok(self)
     }
+
+    pub(crate) fn correct_sorcery_level(&mut self) -> bool {
+        let occult_dots = self.abilities().get(AbilityNameVanilla::Occult).dots();
+        let intelligence_dots = self.attributes().get(AttributeName::Intelligence).dots();
+        let essence_rating = self.essence().map(|essence| essence.rating()).unwrap_or(0);
+        self.exaltation.correct_sorcery_level(occult_dots, intelligence_dots, essence_rating)
+    }
 }
