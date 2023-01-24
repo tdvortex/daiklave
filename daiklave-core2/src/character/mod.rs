@@ -262,6 +262,9 @@ impl<'source> Character<'source> {
             CharacterMutation::SetIntimacyLevel(id, level) => self.set_intimacy_level(*id, *level),
             CharacterMutation::SetIntimacyDescription(id, description) => self.set_intimacy_description(*id, description.as_str()),
             CharacterMutation::RemoveIntimacy(id) => self.remove_intimacy(*id),
+            CharacterMutation::GainLimit(amount) => self.gain_limit(*amount),
+            CharacterMutation::ReduceLimit(amount) => self.reduce_limit(*amount),
+            CharacterMutation::SetLimitTrigger(trigger) => self.set_limit_trigger(trigger.as_str()),
         }
     }
 }

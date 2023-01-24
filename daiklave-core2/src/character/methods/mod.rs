@@ -14,6 +14,7 @@ mod health;
 mod hearthstones;
 mod intimacies;
 mod languages;
+mod limit;
 mod martial_arts;
 mod merits;
 mod name;

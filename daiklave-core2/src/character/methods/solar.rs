@@ -21,15 +21,6 @@ use crate::{
 };
 
 impl<'source> Character<'source> {
-    /// Returns the character's Exalt Type, if they are Exalted.
-    pub fn exalt_type(&self) -> Option<&ExaltType<'source>> {
-        match &self.exaltation {
-            Exaltation::Mortal(_) => None,
-            Exaltation::Exalt(exalt) => {
-                Some(exalt.exalt_type())
-            }
-        }
-    }
 
     /// Sets a character's Exaltation to be the given Solar exaltation. If the
     /// character was previously mortal, permanent willpower rating is

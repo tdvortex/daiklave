@@ -1,4 +1,6 @@
 mod error;
+use std::num::NonZeroU8;
+
 pub use error::CharacterMutationError;
 
 use crate::{
@@ -197,4 +199,10 @@ pub enum CharacterMutation {
     SetIntimacyDescription(IntimacyId, String),
     /// Removes an Intimacy from a character
     RemoveIntimacy(IntimacyId),
+    /// Increases the Exalt's Limit track.
+    GainLimit(NonZeroU8),
+    /// Reduces the Exalt's Limit track.
+    ReduceLimit(NonZeroU8),
+    /// Sets the Exalt's Limit trigger.
+    SetLimitTrigger(String),
 }

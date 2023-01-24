@@ -50,9 +50,9 @@ use self::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Solar<'source> {
     pub(crate) caste: SolarCaste<'source>,
-    favored_abilities: [AbilityName; 5],
+    pub(crate) favored_abilities: [AbilityName; 5],
     pub(crate) sorcery: Option<SolarSorcererView<'source>>,
-    limit: Limit<'source>,
+    pub(crate) limit: Limit<'source>,
     pub(crate) solar_charms: Vec<(SolarCharmId, &'source SolarCharm)>,
 }
 
@@ -106,6 +106,11 @@ impl<'source> Solar<'source> {
     /// The anima effects which the Solar possesses.
     pub fn anima_effects(&self) -> impl Iterator<Item = AnimaEffect> {
         [SOLAR_ONE, SOLAR_TWO].into_iter().chain(self.caste.anima_effects().into_iter())
+    }
+
+    /// The current state of the Solar's Great Curse.
+    pub fn limit(&self) -> Limit<'source> {
+        self.limit
     }
 
     pub(crate) fn add_terrestrial_sorcery(

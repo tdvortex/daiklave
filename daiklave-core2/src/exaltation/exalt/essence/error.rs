@@ -21,6 +21,9 @@ pub enum EssenceError {
     /// Can't attune to something if it doesn't have an attunement cost
     #[error("No attunement cost, cannot attune")]
     NoAttunementCost,
+    /// Not all Exalted have Limit
+    #[error("Character does not have Limit")]
+    NoLimit,
     /// Mote commitment does not exist
     #[error("Mote commitment not found")]
     NotFound,
