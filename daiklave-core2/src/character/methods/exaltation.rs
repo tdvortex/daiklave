@@ -1,14 +1,14 @@
-use crate::{Character, CharacterMutationError};
+use crate::{Character, CharacterMutationError, exaltation::Exaltation};
 
 impl<'source> Character<'source> {
     /// Returns true if character is not Exalted.
     pub fn is_mortal(&self) -> bool {
-        self.exaltation.is_mortal()
+        matches!(self.exaltation, Exaltation::Mortal(_))
     }
 
     /// Returns true if character is an Exalt.
     pub fn is_exalted(&self) -> bool {
-        self.exaltation.is_exalted()
+        matches!(self.exaltation, Exaltation::Exalt(_))
     }
 
     /// De-Exalts character, setting them to be mortal. This also reduces their

@@ -81,7 +81,6 @@ use self::{
     exalt_type::{
         solar::{
             charm::{SolarCharm, SolarCharmId},
-            Solar,
         },
         ExaltType,
     },
@@ -399,14 +398,6 @@ impl<'view, 'source> Exalt<'source> {
         self.essence.rating = rating;
 
         Ok(self)
-    }
-
-    pub fn is_solar(&self) -> bool {
-        self.exalt_type.is_solar()
-    }
-
-    pub fn solar_traits(&self) -> Option<&Solar> {
-        self.exalt_type.solar_traits()
     }
 
     pub(crate) fn check_add_martial_arts_style(

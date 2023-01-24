@@ -9,29 +9,21 @@ use crate::artifact::{MagicMaterial, Sonance};
 
 use self::solar::Solar;
 
+/// A particular type of Exalt.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) enum ExaltType<'source> {
+pub enum ExaltType<'source> {
+    /// The Solar Exalted, chosen of the Unconquered Sun.
     Solar(Solar<'source>),
 }
 
 impl<'source> ExaltType<'source> {
-    pub fn as_memo(&self) -> ExaltTypeMemo {
+    pub(crate) fn as_memo(&self) -> ExaltTypeMemo {
         match self {
             ExaltType::Solar(view) => ExaltTypeMemo::Solar(view.as_memo()),
         }
     }
 
-    pub fn is_solar(&self) -> bool {
-        true
-    }
-
-    pub fn solar_traits(&self) -> Option<&Solar> {
-        match self {
-            ExaltType::Solar(solar_traits) => Some(solar_traits),
-        }
-    }
-
-    pub fn sonance(&self, magic_material: MagicMaterial) -> Option<Sonance> {
+    pub(crate) fn sonance(&self, magic_material: MagicMaterial) -> Option<Sonance> {
         match (self, magic_material) {
             (ExaltType::Solar(_), _) => Some(Sonance::Resonant),
         }

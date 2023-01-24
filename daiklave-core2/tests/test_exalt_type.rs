@@ -1,6 +1,6 @@
 use daiklave_core2::{
     abilities::AbilityName,
-    exaltation::exalt::exalt_type::solar::{caste::TwilightAbility, Solar},
+    exaltation::exalt::exalt_type::{solar::{caste::TwilightAbility, Solar}, ExaltType},
     CharacterEventSource, CharacterMutation,
 };
 
@@ -8,8 +8,8 @@ use daiklave_core2::{
 fn test_exalt_type() {
     // Check default is mortal
     let mut event_source = CharacterEventSource::default();
-    let character_view = event_source.as_character().unwrap();
-    assert!(character_view.is_mortal());
+    let character = event_source.as_character().unwrap();
+    assert!(character.is_mortal());
 
     // Confirm toggle to solar
     let new_solar = Solar::builder()
@@ -31,31 +31,31 @@ fn test_exalt_type() {
 
     let mutation = CharacterMutation::SetSolar(new_solar);
     let character = event_source.apply_mutation(mutation).unwrap();
-    assert!(character.is_solar());
+    assert!(matches!(character.exalt_type(), Some(ExaltType::Solar(_))));
 
     // Check toggle to mortal
     let mutation = CharacterMutation::SetMortal;
     let character = event_source.apply_mutation(mutation).unwrap();
-    assert!(character.is_mortal());
+    assert!(matches!(character.exalt_type(), None));
 
     // Check we can undo full history
     assert!(!event_source.can_redo());
     assert!(event_source.can_undo());
     let character = event_source.undo().unwrap();
-    assert!(character.is_solar());
+    assert!(matches!(character.exalt_type(), Some(ExaltType::Solar(_))));
 
     assert!(event_source.can_redo());
     assert!(event_source.can_undo());
     let character = event_source.undo().unwrap();
-    assert!(character.is_mortal());
+    assert!(matches!(character.exalt_type(), None));
 
     assert!(event_source.can_redo());
     assert!(!event_source.can_undo());
 
     // Check we can redo full history
     let character = event_source.redo().unwrap();
-    assert!(character.is_solar());
+    assert!(matches!(character.exalt_type(), Some(ExaltType::Solar(_))));
 
     let character = event_source.redo().unwrap();
-    assert!(character.is_mortal());
+    assert!(matches!(character.exalt_type(), None));
 }

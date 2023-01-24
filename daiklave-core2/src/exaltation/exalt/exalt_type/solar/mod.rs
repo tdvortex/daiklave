@@ -103,7 +103,8 @@ impl<'source> Solar<'source> {
         self.favored_abilities.iter().any(|&a| a == search_ability)
     }
 
-    pub(crate) fn anima_effects(&self) -> impl Iterator<Item = AnimaEffect> {
+    /// The anima effects which the Solar possesses.
+    pub fn anima_effects(&self) -> impl Iterator<Item = AnimaEffect> {
         [SOLAR_ONE, SOLAR_TWO].into_iter().chain(self.caste.anima_effects().into_iter())
     }
 

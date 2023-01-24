@@ -94,14 +94,6 @@ impl<'source> Exaltation<'source> {
         }
     }
 
-    pub fn is_mortal(&self) -> bool {
-        matches!(self, Self::Mortal(_))
-    }
-
-    pub fn is_exalted(&self) -> bool {
-        !self.is_mortal()
-    }
-
     pub fn get_weapon(
         &self,
         weapon_id: WeaponId,
@@ -138,7 +130,7 @@ impl<'source> Exaltation<'source> {
     }
 
     pub fn set_mortal(&mut self) -> Result<&mut Self, CharacterMutationError> {
-        if self.is_mortal() {
+        if matches!(self, Exaltation::Mortal(_)) {
             return Ok(self);
         }
 
@@ -394,22 +386,6 @@ impl<'view, 'source> Exaltation<'source> {
                 .as_ref()
                 .map(|terrestrial| Sorcery(ExaltationSorcery::Mortal(terrestrial))),
             Exaltation::Exalt(exalt) => exalt.sorcery(),
-        }
-    }
-
-    pub fn is_solar(&self) -> bool {
-        if let Self::Exalt(exalt_type) = self {
-            exalt_type.is_solar()
-        } else {
-            false
-        }
-    }
-
-    pub fn solar_traits(&self) -> Option<&Solar> {
-        if let Self::Exalt(exalt_type) = self {
-            exalt_type.solar_traits()
-        } else {
-            None
         }
     }
 

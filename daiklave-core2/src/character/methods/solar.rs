@@ -11,7 +11,7 @@ use crate::{
             solar::{
                 caste::SolarCaste,
                 charm::{SolarCharm, SolarCharmAbility, SolarCharmId},
-                NewSolar, Solar,
+                NewSolar,
             },
             ExaltType,
         },
@@ -21,14 +21,14 @@ use crate::{
 };
 
 impl<'source> Character<'source> {
-    /// Returns true if character is a Solar.
-    pub fn is_solar(&self) -> bool {
-        self.exaltation.is_solar()
-    }
-
-    /// Returns the character's Solar-specific traits, or None if not a Solar.
-    pub fn solar_traits(&'source self) -> Option<&Solar> {
-        self.exaltation.solar_traits()
+    /// Returns the character's Exalt Type, if they are Exalted.
+    pub fn exalt_type(&self) -> Option<&ExaltType<'source>> {
+        match &self.exaltation {
+            Exaltation::Mortal(_) => None,
+            Exaltation::Exalt(exalt) => {
+                Some(exalt.exalt_type())
+            }
+        }
     }
 
     /// Sets a character's Exaltation to be the given Solar exaltation. If the
