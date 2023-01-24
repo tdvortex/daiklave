@@ -1,14 +1,9 @@
 use crate::{
-    armor::{
-        armor_item::{artifact::ArtifactError, ArmorId},
-        ArmorError,
-    },
     artifact::{wonders::Wonders, Artifact, ArtifactId, MagicMaterial, Sonance},
     exaltation::{
-        exalt::essence::{EssenceError, MotePoolName},
+        exalt::essence::{MotePoolName},
         Exaltation,
     },
-    weapons::{weapon::WeaponId, WeaponError},
     Character, CharacterMutationError,
 };
 
@@ -58,112 +53,6 @@ impl<'view, 'source> Character<'source> {
         // May lose evocations along with the artifact
         self.correct_evocations(&[]);
         Ok(self)
-    }
-
-    /// Checks if an artifact can be attuned.
-    pub fn check_attune_artifact(
-        &self,
-        artifact_id: ArtifactId,
-        _first: MotePoolName,
-    ) -> Result<(), CharacterMutationError> {
-        if matches!(self.exaltation, Exaltation::Mortal(_)) {
-            return Err(CharacterMutationError::EssenceError(EssenceError::Mortal));
-        }
-
-        match artifact_id {
-            ArtifactId::Wonder(wonder_id) => {
-                let wonder =
-                    self.wonders()
-                        .get(wonder_id)
-                        .ok_or(CharacterMutationError::ArtifactError(
-                            ArtifactError::NotFound,
-                        ))?;
-                if wonder.2.is_some() {
-                    Err(CharacterMutationError::EssenceError(
-                        EssenceError::AlreadyAttuned,
-                    ))
-                } else {
-                    let cost =
-                        wonder
-                            .1
-                            .attunement_cost
-                            .ok_or(CharacterMutationError::EssenceError(
-                                EssenceError::NoAttunementCost,
-                            ))?;
-                    if self.essence().map_or(0, |essence| {
-                        essence.motes().peripheral().available()
-                            + essence.motes().personal().available()
-                    }) < cost
-                    {
-                        Err(CharacterMutationError::EssenceError(
-                            EssenceError::InsufficientMotes,
-                        ))
-                    } else {
-                        Ok(())
-                    }
-                }
-            }
-            ArtifactId::Armor(artifact_armor_id) => {
-                let armor_item = self
-                    .armor()
-                    .get(ArmorId::Artifact(artifact_armor_id))
-                    .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?;
-                if armor_item.is_attuned() {
-                    Err(CharacterMutationError::EssenceError(
-                        EssenceError::AlreadyAttuned,
-                    ))
-                } else if let Some(cost) = armor_item.attunement_cost() {
-                    if self.essence().map_or(0, |essence| {
-                        essence.motes().peripheral().available()
-                            + essence.motes().personal().available()
-                    }) < cost
-                    {
-                        Err(CharacterMutationError::EssenceError(
-                            EssenceError::InsufficientMotes,
-                        ))
-                    } else {
-                        Ok(())
-                    }
-                } else {
-                    Err(CharacterMutationError::EssenceError(
-                        EssenceError::NoAttunementCost,
-                    ))
-                }
-            }
-            ArtifactId::Weapon(artifact_weapon_id) => {
-                let weapon = self
-                    .weapons()
-                    .iter()
-                    .find_map(|(weapon_id, equipped)| {
-                        if weapon_id == WeaponId::Artifact(artifact_weapon_id) {
-                            self.weapons().get(weapon_id, equipped)
-                        } else {
-                            None
-                        }
-                    })
-                    .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?;
-
-                if weapon.is_attuned() {
-                    Err(CharacterMutationError::EssenceError(
-                        EssenceError::AlreadyAttuned,
-                    ))
-                } else if weapon.is_artifact() {
-                    if self.essence().map_or(0, |essence| {
-                        essence.motes().peripheral().available()
-                            + essence.motes().personal().available()
-                    }) < 5
-                    {
-                        Err(CharacterMutationError::EssenceError(
-                            EssenceError::InsufficientMotes,
-                        ))
-                    } else {
-                        Ok(())
-                    }
-                } else {
-                    Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
-                }
-            }
-        }
     }
 
     /// Attunes to the specified artifact.
