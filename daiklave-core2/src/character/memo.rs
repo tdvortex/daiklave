@@ -8,14 +8,16 @@ use crate::{
     book_reference::BookReference,
     craft::CraftMemo,
     exaltation::ExaltationMemo,
+    experience::ExperiencePool,
     health::Health,
     hearthstones::{hearthstone::GeomancyLevel, HearthstoneId, UnslottedHearthstoneMemo},
+    intimacies::intimacy::IntimacyId,
     intimacies::intimacy::IntimacyInnerMemo,
     languages::LanguagesMemo,
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
     unique_id::UniqueId,
     willpower::Willpower,
-    Character, intimacies::intimacy::IntimacyId,
+    Character,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -37,6 +39,7 @@ pub struct CharacterMemo {
     pub(crate) flaws: HashMap<String, (Option<BookReference>, String)>,
     pub(crate) languages: LanguagesMemo,
     pub(crate) intimacies: HashMap<IntimacyId, IntimacyInnerMemo>,
+    pub(crate) experience: ExperiencePool,
 }
 
 impl<'source> CharacterMemo {
@@ -79,7 +82,12 @@ impl<'source> CharacterMemo {
                 })
                 .collect(),
             languages: self.languages.as_ref(),
-            intimacies: self.intimacies.iter().map(|(id, memo)| (*id, memo.as_ref())).collect(),
+            intimacies: self
+                .intimacies
+                .iter()
+                .map(|(id, memo)| (*id, memo.as_ref()))
+                .collect(),
+            experience: self.experience,
         }
     }
 }

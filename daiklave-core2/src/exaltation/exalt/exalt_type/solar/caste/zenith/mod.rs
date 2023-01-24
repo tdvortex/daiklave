@@ -7,7 +7,7 @@ pub(crate) use memo::ZenithMemo;
 
 use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
-use self::anima_effect::{ZENITH_ONE, ZENITH_TWO, ZENITH_THREE};
+use self::anima_effect::{ZENITH_ONE, ZENITH_THREE, ZENITH_TWO};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Zenith {
@@ -40,10 +40,6 @@ impl Zenith {
     }
 
     pub fn anima_effects(&self) -> [AnimaEffect<'static>; 3] {
-        [
-            ZENITH_ONE,
-            ZENITH_TWO,
-            ZENITH_THREE
-        ]
+        [ZENITH_ONE, ZENITH_TWO, ZENITH_THREE]
     }
 }

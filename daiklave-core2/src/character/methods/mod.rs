@@ -9,6 +9,7 @@ mod demesne;
 mod essence;
 mod evocation;
 mod exaltation;
+mod experience;
 mod flaws;
 mod health;
 mod hearthstones;

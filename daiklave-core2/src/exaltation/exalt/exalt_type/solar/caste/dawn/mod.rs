@@ -11,7 +11,7 @@ pub(crate) use supernal_ability::DawnSupernalLayout;
 
 use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
-use self::anima_effect::{DAWN_ONE, DAWN_TWO, DAWN_THREE};
+use self::anima_effect::{DAWN_ONE, DAWN_THREE, DAWN_TWO};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Dawn {
@@ -89,10 +89,6 @@ impl Dawn {
     }
 
     pub fn anima_effects(&self) -> [AnimaEffect<'static>; 3] {
-        [
-            DAWN_ONE,
-            DAWN_TWO,
-            DAWN_THREE
-        ]
+        [DAWN_ONE, DAWN_TWO, DAWN_THREE]
     }
 }

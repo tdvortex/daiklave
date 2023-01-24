@@ -39,8 +39,8 @@ impl<'source> AbilityRating<'source> {
             return Err(CharacterMutationError::AbilityError(
                 AbilityError::InvalidRating,
             ));
-        } 
-        
+        }
+
         if let Some(nonzero) = NonZeroU8::new(new_dots) {
             if let AbilityRating::NonZero(dots, _) = self {
                 *dots = nonzero;

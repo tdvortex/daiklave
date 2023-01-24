@@ -12,6 +12,7 @@ use crate::{
         },
         LimitMemo,
     },
+    experience::ExperiencePool,
 };
 
 /// A builder for an Eclipse caste Solar.
@@ -105,6 +106,7 @@ impl EclipseBuilder {
                 trigger: limit_trigger,
             },
             solar_charms: Vec::new(),
+            experience: ExperiencePool::default(),
         })))
     }
 }

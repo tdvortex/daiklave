@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{abilities::AbilityName, exaltation::exalt::LimitMemo};
+use crate::{abilities::AbilityName, exaltation::exalt::LimitMemo, experience::ExperiencePool};
 
 use super::{
     caste::SolarCasteMemo,
@@ -15,6 +15,7 @@ pub(crate) struct SolarMemo {
     pub sorcery: Option<SolarSorcererMemo>,
     pub limit: LimitMemo,
     pub solar_charms: Vec<(SolarCharmId, SolarCharm)>,
+    pub experience: ExperiencePool,
 }
 
 impl<'source> SolarMemo {
@@ -29,6 +30,7 @@ impl<'source> SolarMemo {
                 .iter()
                 .map(|(charm_id, charm)| (*charm_id, charm))
                 .collect(),
+            experience: self.experience,
         }
     }
 }

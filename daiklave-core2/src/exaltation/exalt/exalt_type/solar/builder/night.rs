@@ -10,6 +10,7 @@ use crate::{
         },
         LimitMemo,
     },
+    experience::ExperiencePool,
 };
 
 /// A builder for a Night caste Solar.
@@ -102,6 +103,7 @@ impl NightBuilder {
                 trigger: limit_trigger,
             },
             solar_charms: Vec::new(),
+            experience: ExperiencePool::default(),
         })))
     }
 }

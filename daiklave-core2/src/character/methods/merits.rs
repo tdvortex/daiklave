@@ -60,8 +60,7 @@ impl<'view, 'source> Character<'source> {
                 match prereq {
                     MeritPrerequisite::Ability(ability_name, dots_required) => match ability_name {
                         AbilityName::Craft => {
-                            if self.craft().max() >= dots_required.get()                                
-                            {
+                            if self.craft().max() >= dots_required.get() {
                                 qualified = true;
                                 break;
                             }
@@ -77,7 +76,7 @@ impl<'view, 'source> Character<'source> {
                                 })
                                 .max()
                                 .unwrap_or(0)
-                                >= dots_required.get()  
+                                >= dots_required.get()
                             {
                                 qualified = true;
                                 break;

@@ -13,6 +13,7 @@ use crate::{
         },
         LimitMemo,
     },
+    experience::ExperiencePool,
 };
 
 /// A builder for a Dawn caste Solar.
@@ -297,6 +298,7 @@ impl DawnBuilder {
                 trigger: limit_trigger,
             },
             solar_charms: Vec::new(),
+            experience: ExperiencePool::default(),
         })))
     }
 }

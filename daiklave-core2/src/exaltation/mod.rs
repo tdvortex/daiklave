@@ -447,7 +447,11 @@ impl<'view, 'source> Exaltation<'source> {
                 let ExaltType::Solar(old_solar) = &mut exalt.exalt_type;
                 solar.solar_charms = std::mem::take(&mut old_solar.solar_charms);
 
-                // Try to preserve martial arts styles (including charms)
+                // If switching solar->solar, preserve Solar experience
+                solar.experience = std::mem::take(&mut old_solar.experience);
+
+                // If switching solar->solar, preserve Limit track
+                solar.limit.track = old_solar.limit.track;
 
                 // Preserve sorcery
                 if let Some(solar_sorcerer) = old_solar.sorcery.take() {
@@ -466,6 +470,7 @@ impl<'view, 'source> Exaltation<'source> {
                     },
                     // Preserve Evocations
                     evocations: std::mem::take(&mut exalt.evocations),
+                    // Try to preserve martial arts styles (including charms)
                     martial_arts_styles: std::mem::take(&mut exalt.martial_arts_styles),
                     exalt_type: ExaltType::Solar(solar),
                     weapons: std::mem::take(&mut exalt.weapons),

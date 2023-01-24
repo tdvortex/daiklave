@@ -1,9 +1,6 @@
 use crate::{
     artifact::{wonders::Wonders, Artifact, ArtifactId, MagicMaterial, Sonance},
-    exaltation::{
-        exalt::essence::{MotePoolName},
-        Exaltation,
-    },
+    exaltation::{exalt::essence::MotePoolName, Exaltation},
     Character, CharacterMutationError,
 };
 

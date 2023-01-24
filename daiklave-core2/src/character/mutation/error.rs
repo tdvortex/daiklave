@@ -6,13 +6,15 @@ use crate::{
     attributes::AttributeError,
     charms::CharmError,
     exaltation::exalt::essence::EssenceError,
+    experience::ExperienceError,
     hearthstones::HearthstoneError,
+    intimacies::intimacy::IntimacyError,
     languages::LanguageError,
     martial_arts::MartialArtsError,
     merits::merit::MeritError,
     name_and_concept::ConceptError,
     sorcery::SorceryError,
-    weapons::WeaponError, intimacies::intimacy::IntimacyError,
+    weapons::WeaponError,
 };
 
 /// An error representing something that could go wrong with a
@@ -29,10 +31,10 @@ pub enum CharacterMutationError {
     #[error("Artifacts error")]
     ArtifactError(#[from] ArtifactError),
     /// Error related to Attributes
-    #[error("Attribute Error")]
+    #[error("Attribute error")]
     AttributeError(#[from] AttributeError),
     /// Error related to Charms
-    #[error("Charm Error")]
+    #[error("Charm error")]
     CharmError(#[from] CharmError),
     /// Error occurring while trying to modify a character's concept
     #[error("Concept error")]
@@ -40,6 +42,9 @@ pub enum CharacterMutationError {
     /// Error related to Essence rating or mote pools
     #[error("Essence error")]
     EssenceError(#[from] EssenceError),
+    /// Error related to character Experience
+    #[error("Experience error")]
+    ExperienceError(#[from] ExperienceError),
     /// Error related to hearthstones
     #[error("Hearthstone error")]
     HearthstoneError(#[from] HearthstoneError),

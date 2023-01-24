@@ -7,7 +7,7 @@ pub(crate) use memo::NightMemo;
 
 use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
-use self::anima_effect::{NIGHT_ONE, NIGHT_TWO, NIGHT_THREE};
+use self::anima_effect::{NIGHT_ONE, NIGHT_THREE, NIGHT_TWO};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Night {
@@ -37,10 +37,6 @@ impl Night {
     }
 
     pub fn anima_effects(&self) -> [AnimaEffect<'static>; 3] {
-        [
-            NIGHT_ONE,
-            NIGHT_TWO,
-            NIGHT_THREE
-        ]
+        [NIGHT_ONE, NIGHT_TWO, NIGHT_THREE]
     }
 }

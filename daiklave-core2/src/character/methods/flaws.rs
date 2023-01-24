@@ -1,6 +1,10 @@
 use std::collections::hash_map::Entry;
 
-use crate::{flaws::{Flaws, flaw::FlawMutation}, Character, CharacterMutationError, merits::merit::MeritError};
+use crate::{
+    flaws::{flaw::FlawMutation, Flaws},
+    merits::merit::MeritError,
+    Character, CharacterMutationError,
+};
 
 impl<'view, 'source> Character<'source> {
     /// Gets the Flaws the character possesses.
@@ -9,7 +13,10 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Adds a Flaw to the character.
-    pub fn add_flaw(&mut self, flaw: &'source FlawMutation) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_flaw(
+        &mut self,
+        flaw: &'source FlawMutation,
+    ) -> Result<&mut Self, CharacterMutationError> {
         let FlawMutation {
             name,
             book_reference,
@@ -20,7 +27,9 @@ impl<'view, 'source> Character<'source> {
             e.insert((*book_reference, description.as_str()));
             Ok(self)
         } else {
-            Err(CharacterMutationError::MeritError(MeritError::DuplicateMerit))
+            Err(CharacterMutationError::MeritError(
+                MeritError::DuplicateMerit,
+            ))
         }
     }
 

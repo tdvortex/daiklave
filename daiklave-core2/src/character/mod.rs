@@ -20,14 +20,16 @@ use crate::{
     charms::charm::{CharmId, CharmMutation},
     craft::Craft,
     exaltation::Exaltation,
+    experience::ExperiencePool,
     health::Health,
     hearthstones::{hearthstone::GeomancyLevel, HearthstoneId, UnslottedHearthstone},
+    intimacies::intimacy::{IntimacyId, IntimacyInner},
     languages::Languages,
     merits::merit::{
         NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
     },
     unique_id::UniqueId,
-    willpower::Willpower, intimacies::intimacy::{IntimacyId, IntimacyInner},
+    willpower::Willpower,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -49,6 +51,7 @@ pub struct Character<'source> {
     pub(crate) flaws: HashMap<&'source str, (Option<BookReference>, &'source str)>,
     pub(crate) languages: Languages<'source>,
     pub(crate) intimacies: HashMap<IntimacyId, IntimacyInner<'source>>,
+    pub(crate) experience: ExperiencePool,
 }
 
 impl<'source> Character<'source> {
@@ -94,7 +97,12 @@ impl<'source> Character<'source> {
                 })
                 .collect(),
             languages: self.languages.as_memo(),
-            intimacies: self.intimacies.iter().map(|(id, inner)| (*id, inner.as_memo())).collect(),
+            intimacies: self
+                .intimacies
+                .iter()
+                .map(|(id, inner)| (*id, inner.as_memo()))
+                .collect(),
+            experience: self.experience,
         }
     }
 
@@ -260,11 +268,17 @@ impl<'source> Character<'source> {
             CharacterMutation::RemoveFlaw(name) => self.remove_flaw(name.as_str()),
             CharacterMutation::AddIntimacy(intimacy) => self.add_intimacy(intimacy),
             CharacterMutation::SetIntimacyLevel(id, level) => self.set_intimacy_level(*id, *level),
-            CharacterMutation::SetIntimacyDescription(id, description) => self.set_intimacy_description(*id, description.as_str()),
+            CharacterMutation::SetIntimacyDescription(id, description) => {
+                self.set_intimacy_description(*id, description.as_str())
+            }
             CharacterMutation::RemoveIntimacy(id) => self.remove_intimacy(*id),
             CharacterMutation::GainLimit(amount) => self.gain_limit(*amount),
             CharacterMutation::ReduceLimit(amount) => self.reduce_limit(*amount),
             CharacterMutation::SetLimitTrigger(trigger) => self.set_limit_trigger(trigger.as_str()),
+            CharacterMutation::GainExperience(amount) => self.gain_base_experience(*amount),
+            CharacterMutation::SpendExperience(amount) => self.spend_base_experience(*amount),
+            CharacterMutation::GainExaltExperience(amount) => self.gain_exalt_experience(*amount),
+            CharacterMutation::SpendExaltExperince(amount) => self.spend_exalt_experience(*amount),
         }
     }
 }

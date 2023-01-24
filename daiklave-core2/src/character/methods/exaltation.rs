@@ -1,4 +1,7 @@
-use crate::{Character, CharacterMutationError, exaltation::{Exaltation, exalt::{exalt_type::ExaltType}}};
+use crate::{
+    exaltation::{exalt::exalt_type::ExaltType, Exaltation},
+    Character, CharacterMutationError,
+};
 
 impl<'source> Character<'source> {
     /// Returns true if character is not Exalted.
@@ -28,9 +31,7 @@ impl<'source> Character<'source> {
     pub fn exalt_type(&self) -> Option<&ExaltType<'source>> {
         match &self.exaltation {
             Exaltation::Mortal(_) => None,
-            Exaltation::Exalt(exalt) => {
-                Some(exalt.exalt_type())
-            }
+            Exaltation::Exalt(exalt) => Some(exalt.exalt_type()),
         }
     }
 }

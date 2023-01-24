@@ -26,7 +26,8 @@ use crate::{
         charm::{Charm, SpiritCharmId},
         CharmError,
     },
-    exaltation::exalt::{Limit, AnimaEffect},
+    exaltation::exalt::{AnimaEffect, Limit},
+    experience::ExperiencePool,
     merits::merit::MeritError,
     sorcery::{
         circles::{
@@ -41,9 +42,10 @@ use crate::{
 };
 
 use self::{
+    anima_effect::{SOLAR_ONE, SOLAR_TWO},
     builder::SolarBuilder,
     caste::SolarCaste,
-    charm::{SolarCharm, SolarCharmId}, anima_effect::{SOLAR_ONE, SOLAR_TWO},
+    charm::{SolarCharm, SolarCharmId},
 };
 
 /// Traits which are unique to being a Solar Exalted.
@@ -51,6 +53,7 @@ use self::{
 pub struct Solar<'source> {
     pub(crate) caste: SolarCaste<'source>,
     pub(crate) favored_abilities: [AbilityName; 5],
+    pub(crate) experience: ExperiencePool,
     pub(crate) sorcery: Option<SolarSorcererView<'source>>,
     pub(crate) limit: Limit<'source>,
     pub(crate) solar_charms: Vec<(SolarCharmId, &'source SolarCharm)>,
@@ -75,6 +78,7 @@ impl<'source> Solar<'source> {
                 .iter()
                 .map(|(charm_id, charm)| (*charm_id, (*charm).to_owned()))
                 .collect(),
+            experience: self.experience,
         }
     }
 
@@ -105,12 +109,19 @@ impl<'source> Solar<'source> {
 
     /// The anima effects which the Solar possesses.
     pub fn anima_effects(&self) -> impl Iterator<Item = AnimaEffect> {
-        [SOLAR_ONE, SOLAR_TWO].into_iter().chain(self.caste.anima_effects().into_iter())
+        [SOLAR_ONE, SOLAR_TWO]
+            .into_iter()
+            .chain(self.caste.anima_effects().into_iter())
     }
 
     /// The current state of the Solar's Great Curse.
     pub fn limit(&self) -> Limit<'source> {
         self.limit
+    }
+
+    /// The Solar's pool of Solar Experience
+    pub fn experience(&self) -> ExperiencePool {
+        self.experience
     }
 
     pub(crate) fn add_terrestrial_sorcery(
@@ -441,7 +452,9 @@ impl<'source> Solar<'source> {
             Some(SolarSorcererView::Solar(solar)) => {
                 solar.remove_spell(spell_id)?;
             }
-            None => {return Err(CharacterMutationError::CharmError(CharmError::NotFound));}
+            None => {
+                return Err(CharacterMutationError::CharmError(CharmError::NotFound));
+            }
         }
         Ok(self)
     }

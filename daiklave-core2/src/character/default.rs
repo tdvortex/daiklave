@@ -18,6 +18,7 @@ impl<'source> Default for Character<'source> {
             flaws: Default::default(),
             languages: Default::default(),
             intimacies: Default::default(),
+            experience: Default::default(),
         }
     }
 }

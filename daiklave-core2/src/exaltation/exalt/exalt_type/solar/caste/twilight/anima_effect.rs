@@ -5,8 +5,8 @@ use crate::{
 
 pub(crate) const TWILIGHT_ONE: AnimaEffect<'static> = AnimaEffect {
     book_reference: Some(BookReference {
-        book: Book::CoreRulebook, 
-        page_number: 176
+        book: Book::CoreRulebook,
+        page_number: 176,
     }),
     description: "A Twilight Caste may reflexively spend 5 motes to gain 5 \
     Hardness for one turn. This is usable even in Initiative Crash. This is \
@@ -16,8 +16,8 @@ pub(crate) const TWILIGHT_ONE: AnimaEffect<'static> = AnimaEffect {
 
 pub(crate) const TWILIGHT_TWO: AnimaEffect<'static> = AnimaEffect {
     book_reference: Some(BookReference {
-        book: Book::CoreRulebook, 
-        page_number: 176
+        book: Book::CoreRulebook,
+        page_number: 176,
     }),
     description: "A Twilight Caste may spend 10 motes to be consumed by their \
     anima. This takes 1 round and is disrupted if they move or are knocked \
@@ -27,8 +27,8 @@ pub(crate) const TWILIGHT_TWO: AnimaEffect<'static> = AnimaEffect {
 
 pub(crate) const TWILIGHT_THREE: AnimaEffect<'static> = AnimaEffect {
     book_reference: Some(BookReference {
-        book: Book::CoreRulebook, 
-        page_number: 176
+        book: Book::CoreRulebook,
+        page_number: 176,
     }),
     description: "A Twilight Case may spend 10 motes and touch an elemental \
     or demon of Essence 3 or less. Roll (Intelligence + Occult) vs the \

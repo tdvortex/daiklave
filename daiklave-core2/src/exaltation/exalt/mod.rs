@@ -24,7 +24,10 @@ pub(crate) use sorcery::ExaltSorcery;
 pub(crate) use weapons::{ExaltEquippedWeapons, ExaltHands, ExaltUnequippedWeapons, ExaltWeapons};
 pub(crate) use wonders::ExaltWonders;
 
-use std::{collections::{hash_map::Entry, HashMap, HashSet}, num::NonZeroU8};
+use std::{
+    collections::{hash_map::Entry, HashMap, HashSet},
+    num::NonZeroU8,
+};
 
 use crate::{
     abilities::{AbilityError, AbilityName, AbilityRating},
@@ -81,9 +84,7 @@ use self::{
         OtherMoteCommitmentId,
     },
     exalt_type::{
-        solar::{
-            charm::{SolarCharm, SolarCharmId},
-        },
+        solar::charm::{SolarCharm, SolarCharmId},
         ExaltType,
     },
     martial_arts::ExaltMartialArtist,
@@ -1199,7 +1200,8 @@ impl<'view, 'source> Exalt<'source> {
                         ids_to_remove.insert(*known_charm_id);
                     }
 
-                    if known_charm.essence_required() > actual_essence.get() && !is_martial_arts_supernal
+                    if known_charm.essence_required() > actual_essence.get()
+                        && !is_martial_arts_supernal
                     {
                         ids_to_remove.insert(*known_charm_id);
                     }

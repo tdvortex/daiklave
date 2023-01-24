@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::intimacies::intimacy::{IntimacyTypeMemo, IntimacyLevel};
+use crate::intimacies::intimacy::{IntimacyLevel, IntimacyTypeMemo};
 
 use super::IntimacyInner;
 

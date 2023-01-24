@@ -7,7 +7,7 @@ pub(crate) use memo::TwilightMemo;
 
 use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
-use self::anima_effect::{TWILIGHT_ONE, TWILIGHT_TWO, TWILIGHT_THREE};
+use self::anima_effect::{TWILIGHT_ONE, TWILIGHT_THREE, TWILIGHT_TWO};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Twilight {
@@ -40,10 +40,6 @@ impl Twilight {
     }
 
     pub fn anima_effects(&self) -> [AnimaEffect<'static>; 3] {
-        [
-            TWILIGHT_ONE,
-            TWILIGHT_TWO,
-            TWILIGHT_THREE
-        ]
+        [TWILIGHT_ONE, TWILIGHT_TWO, TWILIGHT_THREE]
     }
 }

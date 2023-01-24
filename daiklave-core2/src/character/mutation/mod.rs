@@ -1,5 +1,5 @@
 mod error;
-use std::num::NonZeroU8;
+use std::num::{NonZeroU16, NonZeroU8};
 
 pub use error::CharacterMutationError;
 
@@ -19,6 +19,7 @@ use crate::{
         hearthstone::{GeomancyLevel, HearthstoneTemplate},
         HearthstoneId,
     },
+    intimacies::intimacy::{IntimacyId, IntimacyLevel, IntimacyMutation},
     languages::language::LanguageMutation,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
@@ -30,7 +31,7 @@ use crate::{
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
     unique_id::UniqueId,
-    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId}, intimacies::intimacy::{IntimacyLevel, IntimacyMutation, IntimacyId},
+    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId},
 };
 
 /// The API for the character, expressed as an owned struct. Each mutation has
@@ -205,4 +206,12 @@ pub enum CharacterMutation {
     ReduceLimit(NonZeroU8),
     /// Sets the Exalt's Limit trigger.
     SetLimitTrigger(String),
+    /// Adds normal, non-Exalt experience
+    GainExperience(NonZeroU16),
+    /// Spends normal, non-Exalt experience
+    SpendExperience(NonZeroU16),
+    /// Adds Exalt experience (Solar Experience, for example)
+    GainExaltExperience(NonZeroU16),
+    /// Spends Exalt experience
+    SpendExaltExperince(NonZeroU16),
 }

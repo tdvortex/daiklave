@@ -1,6 +1,6 @@
 use crate::Character;
 
-use self::intimacy::{IntimacyId, Intimacy};
+use self::intimacy::{Intimacy, IntimacyId};
 
 /// Details related to a specific Intimacy.
 pub mod intimacy;
@@ -16,9 +16,12 @@ impl<'view, 'source> Intimacies<'view, 'source> {
 
     /// Gets a specific Intimacy if it exists.
     pub fn get(&self, intimacy_id: IntimacyId) -> Option<Intimacy<'source>> {
-        self.0.intimacies.get_key_value(&intimacy_id).map(|(id, inner)| Intimacy {
-            id: *id,
-            inner: *inner
-        })
+        self.0
+            .intimacies
+            .get_key_value(&intimacy_id)
+            .map(|(id, inner)| Intimacy {
+                id: *id,
+                inner: *inner,
+            })
     }
 }

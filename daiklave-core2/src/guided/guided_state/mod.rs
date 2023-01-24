@@ -376,36 +376,48 @@ impl<'source> GuidedState<'source> {
         let physical_attributes = self
             .character_view
             .attributes()
-            .dots(AttributeName::Strength).get()
+            .dots(AttributeName::Strength)
+            .get()
             + self
                 .character_view
                 .attributes()
-                .dots(AttributeName::Dexterity).get()
+                .dots(AttributeName::Dexterity)
+                .get()
             + self
                 .character_view
                 .attributes()
-                .dots(AttributeName::Stamina).get();
+                .dots(AttributeName::Stamina)
+                .get();
         let mental_attributes = self
             .character_view
             .attributes()
-            .dots(AttributeName::Perception).get()
+            .dots(AttributeName::Perception)
+            .get()
             + self
                 .character_view
                 .attributes()
-                .dots(AttributeName::Intelligence).get()
-            + self.character_view.attributes().dots(AttributeName::Wits).get();
+                .dots(AttributeName::Intelligence)
+                .get()
+            + self
+                .character_view
+                .attributes()
+                .dots(AttributeName::Wits)
+                .get();
         let social_attributes = self
             .character_view
             .attributes()
-            .dots(AttributeName::Charisma).get()
+            .dots(AttributeName::Charisma)
+            .get()
             + self
                 .character_view
                 .attributes()
-                .dots(AttributeName::Manipulation).get()
+                .dots(AttributeName::Manipulation)
+                .get()
             + self
                 .character_view
                 .attributes()
-                .dots(AttributeName::Appearance).get();
+                .dots(AttributeName::Appearance)
+                .get();
 
         let primary = physical_attributes
             .max(mental_attributes)

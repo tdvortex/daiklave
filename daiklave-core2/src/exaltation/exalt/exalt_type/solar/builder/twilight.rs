@@ -10,6 +10,7 @@ use crate::{
         },
         LimitMemo,
     },
+    experience::ExperiencePool,
 };
 
 /// A builder for a Twilight caste Solar.
@@ -102,6 +103,7 @@ impl TwilightBuilder {
                 trigger: limit_trigger,
             },
             solar_charms: Vec::new(),
+            experience: ExperiencePool::default(),
         })))
     }
 }

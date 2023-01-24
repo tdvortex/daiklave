@@ -9,7 +9,7 @@ pub(crate) use error::EssenceError;
 pub use motes::Motes;
 pub(crate) use motes::MotesState;
 
-use super::{Exalt, AnimaEffect};
+use super::{AnimaEffect, Exalt};
 pub use mote_commitment::{MoteCommitment, MoteCommitmentId, OtherMoteCommitmentId};
 pub(crate) use mote_pool::MotePool;
 pub use mote_pool::MotePoolName;

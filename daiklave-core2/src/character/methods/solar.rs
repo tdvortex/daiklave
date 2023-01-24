@@ -21,7 +21,6 @@ use crate::{
 };
 
 impl<'source> Character<'source> {
-
     /// Sets a character's Exaltation to be the given Solar exaltation. If the
     /// character was previously mortal, permanent willpower rating is
     /// increased by 2 (reflecting the difference between mortal default and

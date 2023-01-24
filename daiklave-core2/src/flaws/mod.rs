@@ -16,10 +16,13 @@ impl<'view, 'source> Flaws<'view, 'source> {
 
     /// Gets a specific Flaw by its name.
     pub fn get(&self, name: &str) -> Option<Flaw<'source>> {
-        self.0.flaws.get_key_value(name).map(|(&name, &(book_reference, description))| Flaw {
-            name,
-            book_reference,
-            description
-        })
+        self.0
+            .flaws
+            .get_key_value(name)
+            .map(|(&name, &(book_reference, description))| Flaw {
+                name,
+                book_reference,
+                description,
+            })
     }
 }

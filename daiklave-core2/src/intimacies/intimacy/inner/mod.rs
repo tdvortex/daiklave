@@ -1,7 +1,7 @@
 mod memo;
 pub(crate) use memo::IntimacyInnerMemo;
 
-use super::{IntimacyType, IntimacyLevel};
+use super::{IntimacyLevel, IntimacyType};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct IntimacyInner<'source> {

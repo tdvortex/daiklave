@@ -5,8 +5,8 @@ use crate::{
 
 pub(crate) const ZENITH_ONE: AnimaEffect<'static> = AnimaEffect {
     book_reference: Some(BookReference {
-        book: Book::CoreRulebook, 
-        page_number: 176
+        book: Book::CoreRulebook,
+        page_number: 176,
     }),
     description: "A Zenith Caste may spend 1 mote to cremate a corpse, and \
     learn the Intimacies of the deceased. If these Intimacies are postive, the \
@@ -18,8 +18,8 @@ pub(crate) const ZENITH_ONE: AnimaEffect<'static> = AnimaEffect {
 
 pub(crate) const ZENITH_TWO: AnimaEffect<'static> = AnimaEffect {
     book_reference: Some(BookReference {
-        book: Book::CoreRulebook, 
-        page_number: 176
+        book: Book::CoreRulebook,
+        page_number: 176,
     }),
     description: "A Zenith Caste may spend 7 motes and roll (Charisma + \
         Presence) plus (Essence) automatic non-Charm successes to persuade a \
@@ -30,8 +30,8 @@ pub(crate) const ZENITH_TWO: AnimaEffect<'static> = AnimaEffect {
 
 pub(crate) const ZENITH_THREE: AnimaEffect<'static> = AnimaEffect {
     book_reference: Some(BookReference {
-        book: Book::CoreRulebook, 
-        page_number: 176
+        book: Book::CoreRulebook,
+        page_number: 176,
     }),
     description: "A Zenith Caste may spend 10 motes and 1 Willpower after \
     successfully landing a decisive attack against a creature of darkness to \
