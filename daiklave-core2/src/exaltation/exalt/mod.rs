@@ -5,9 +5,11 @@ pub mod essence;
 /// Structs and methods related to various Exalt subtypes (Solar, Lunar, etc).
 pub mod exalt_type;
 
+/// Structs and methods related to the Limit track of the Celestial Exalted.
+pub mod limit;
+
 mod anima_effect;
 mod armor;
-mod limit;
 pub(crate) mod martial_arts;
 mod memo;
 mod sorcery;

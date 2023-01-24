@@ -3,6 +3,7 @@ use std::num::NonZeroU8;
 
 pub(crate) use memo::LimitMemo;
 
+/// The Limit track and trigger of a Celestial Exalted.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Limit<'source> {
     pub(crate) track: u8,
@@ -17,10 +18,12 @@ impl<'source> Limit<'source> {
         }
     }
 
+    /// The current amount of Limit the character possesses.
     pub fn track(&self) -> u8 {
         self.track.min(10)
     }
 
+    /// The character's Limit Trigger.
     pub fn trigger(&self) -> &'source str {
         self.trigger
     }
