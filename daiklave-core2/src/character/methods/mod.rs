@@ -12,6 +12,7 @@ mod exaltation;
 mod flaws;
 mod health;
 mod hearthstones;
+mod intimacies;
 mod languages;
 mod martial_arts;
 mod merits;

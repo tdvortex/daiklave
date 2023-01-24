@@ -12,7 +12,7 @@ use crate::{
     merits::merit::MeritError,
     name_and_concept::ConceptError,
     sorcery::SorceryError,
-    weapons::WeaponError,
+    weapons::WeaponError, intimacies::intimacy::IntimacyError,
 };
 
 /// An error representing something that could go wrong with a
@@ -43,6 +43,9 @@ pub enum CharacterMutationError {
     /// Error related to hearthstones
     #[error("Hearthstone error")]
     HearthstoneError(#[from] HearthstoneError),
+    /// Error related to Intimacies
+    #[error("Intimacy error")]
+    IntimacyError(#[from] IntimacyError),
     /// Error related to languages
     #[error("Language error")]
     LanguageError(#[from] LanguageError),

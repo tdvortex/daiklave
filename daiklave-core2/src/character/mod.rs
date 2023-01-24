@@ -258,6 +258,10 @@ impl<'source> Character<'source> {
             },
             CharacterMutation::AddFlaw(flaw_mutation) => self.add_flaw(flaw_mutation),
             CharacterMutation::RemoveFlaw(name) => self.remove_flaw(name.as_str()),
+            CharacterMutation::AddIntimacy(intimacy) => self.add_intimacy(intimacy),
+            CharacterMutation::SetIntimacyLevel(id, level) => self.set_intimacy_level(*id, *level),
+            CharacterMutation::SetIntimacyDescription(id, description) => self.set_intimacy_description(*id, description.as_str()),
+            CharacterMutation::RemoveIntimacy(id) => self.remove_intimacy(*id),
         }
     }
 }

@@ -1,9 +1,11 @@
+mod error;
 mod id;
 mod inner;
 mod intimacy_type;
 mod level;
 mod mutation;
 
+pub use error::IntimacyError;
 pub use id::IntimacyId;
 pub(crate) use inner::{IntimacyInner, IntimacyInnerMemo};
 pub use intimacy_type::IntimacyType;

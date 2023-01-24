@@ -6,7 +6,7 @@ use self::intimacy::{IntimacyId, Intimacy};
 pub mod intimacy;
 
 /// Interface for a character's Intimacies.
-pub struct Intimacies<'view, 'source>(&'view Character<'source>);
+pub struct Intimacies<'view, 'source>(pub(crate) &'view Character<'source>);
 
 impl<'view, 'source> Intimacies<'view, 'source> {
     /// Iterates over all Intimacies by their Id.

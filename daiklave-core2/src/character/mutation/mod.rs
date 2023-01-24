@@ -28,7 +28,7 @@ use crate::{
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
     unique_id::UniqueId,
-    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId},
+    weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId}, intimacies::intimacy::{IntimacyLevel, IntimacyMutation, IntimacyId},
 };
 
 /// The API for the character, expressed as an owned struct. Each mutation has
@@ -189,4 +189,12 @@ pub enum CharacterMutation {
     AddFlaw(FlawMutation),
     /// Removes a Flaw from the character.
     RemoveFlaw(String),
+    /// Adds an Intimacy to the character.
+    AddIntimacy(IntimacyMutation),
+    /// Sets the level of an existing Intimacy.
+    SetIntimacyLevel(IntimacyId, IntimacyLevel),
+    /// Alters the description of an existing Intimacy.
+    SetIntimacyDescription(IntimacyId, String),
+    /// Removes an Intimacy from a character
+    RemoveIntimacy(IntimacyId),
 }
