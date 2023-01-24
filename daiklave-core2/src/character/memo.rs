@@ -10,11 +10,12 @@ use crate::{
     exaltation::ExaltationMemo,
     health::Health,
     hearthstones::{hearthstone::GeomancyLevel, HearthstoneId, UnslottedHearthstoneMemo},
+    intimacies::intimacy::IntimacyInnerMemo,
     languages::LanguagesMemo,
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
     unique_id::UniqueId,
     willpower::Willpower,
-    Character,
+    Character, intimacies::intimacy::IntimacyId,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -35,6 +36,7 @@ pub struct CharacterMemo {
     pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMerit>,
     pub(crate) flaws: HashMap<String, (Option<BookReference>, String)>,
     pub(crate) languages: LanguagesMemo,
+    pub(crate) intimacies: HashMap<IntimacyId, IntimacyInnerMemo>,
 }
 
 impl<'source> CharacterMemo {
@@ -77,6 +79,7 @@ impl<'source> CharacterMemo {
                 })
                 .collect(),
             languages: self.languages.as_ref(),
+            intimacies: self.intimacies.iter().map(|(id, memo)| (*id, memo.as_ref())).collect(),
         }
     }
 }

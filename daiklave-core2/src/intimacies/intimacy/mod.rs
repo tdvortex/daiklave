@@ -1,22 +1,21 @@
 mod id;
 mod inner;
 mod intimacy_type;
-mod intimacy_type_memo;
 mod level;
 mod mutation;
 
 pub use id::IntimacyId;
-pub(crate) use inner::IntimacyInner;
+pub(crate) use inner::{IntimacyInner, IntimacyInnerMemo};
 pub use intimacy_type::IntimacyType;
-pub(crate) use intimacy_type_memo::IntimacyTypeMemo;
+pub(crate) use intimacy_type::IntimacyTypeMemo;
 pub use level::IntimacyLevel;
 pub use mutation::IntimacyMutation;
 
 /// An Intimacy held by a character.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Intimacy<'source> {
-    id: IntimacyId,
-    inner: IntimacyInner<'source>,
+    pub(crate) id: IntimacyId,
+    pub(crate) inner: IntimacyInner<'source>,
 }
 
 impl<'source> Intimacy<'source> {

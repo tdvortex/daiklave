@@ -17,6 +17,7 @@ impl<'source> Default for Character<'source> {
             nonstackable_merits: Default::default(),
             flaws: Default::default(),
             languages: Default::default(),
+            intimacies: Default::default(),
         }
     }
 }

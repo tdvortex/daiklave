@@ -27,7 +27,7 @@ use crate::{
         NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
     },
     unique_id::UniqueId,
-    willpower::Willpower,
+    willpower::Willpower, intimacies::intimacy::{IntimacyId, IntimacyInner},
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -48,6 +48,7 @@ pub struct Character<'source> {
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMeritView<'source>>,
     pub(crate) flaws: HashMap<&'source str, (Option<BookReference>, &'source str)>,
     pub(crate) languages: Languages<'source>,
+    pub(crate) intimacies: HashMap<IntimacyId, IntimacyInner<'source>>,
 }
 
 impl<'source> Character<'source> {
@@ -93,6 +94,7 @@ impl<'source> Character<'source> {
                 })
                 .collect(),
             languages: self.languages.as_memo(),
+            intimacies: self.intimacies.iter().map(|(id, inner)| (*id, inner.as_memo())).collect(),
         }
     }
 

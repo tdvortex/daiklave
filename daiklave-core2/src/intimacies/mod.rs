@@ -11,11 +11,14 @@ pub struct Intimacies<'view, 'source>(&'view Character<'source>);
 impl<'view, 'source> Intimacies<'view, 'source> {
     /// Iterates over all Intimacies by their Id.
     pub fn iter(&self) -> impl Iterator<Item = IntimacyId> + '_ {
-        vec![].into_iter()
+        self.0.intimacies.keys().copied()
     }
 
     /// Gets a specific Intimacy if it exists.
     pub fn get(&self, intimacy_id: IntimacyId) -> Option<Intimacy<'source>> {
-        todo!()
+        self.0.intimacies.get_key_value(&intimacy_id).map(|(id, inner)| Intimacy {
+            id: *id,
+            inner: *inner
+        })
     }
 }
