@@ -39,6 +39,9 @@ pub mod health;
 /// Hearthstones logic
 pub mod hearthstones;
 
+/// Character Intimacy logic
+pub mod intimacies;
+
 /// Languages of the Realm and Threshold
 pub mod languages;
 
