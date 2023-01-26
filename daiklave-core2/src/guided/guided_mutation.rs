@@ -1,6 +1,6 @@
 use crate::{
     abilities::AbilityName,
-    martial_arts::MartialArtsStyle,
+    martial_arts::style::MartialArtsStyle,
     sorcery::{
         spell::SpellId, ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
         TerrestrialSpell,

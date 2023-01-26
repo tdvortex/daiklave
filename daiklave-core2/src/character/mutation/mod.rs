@@ -21,7 +21,7 @@ use crate::{
     },
     intimacies::intimacy::IntimacyMutation,
     languages::language::LanguageMutation,
-    martial_arts::MartialArtsStyle,
+    martial_arts::style::MartialArtsStyle,
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
     sorcery::{
         circles::{

@@ -1,11 +1,11 @@
-use std::{collections::HashSet, num::NonZeroU8};
+use std::num::NonZeroU8;
 
 use daiklave_core2::{
     abilities::{AbilityName, AbilityNameVanilla},
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     guided::{ExaltationChoice, GuidedEventSource, GuidedMutation},
-    martial_arts::MartialArtsStyle,
+    martial_arts::style::MartialArtsStyle,
     sorcery::{
         spell::{Spell, SpellId, SpellKeyword},
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
@@ -312,42 +312,22 @@ fn test_guided_solar() {
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Add a martial arts style
-    let crane_style = MartialArtsStyle::new(
-        Some(BookReference::new(Book::CoreRulebook, 443)),
-        "Crane Style".to_owned(),
-        "Crane style is a defensive style, emulating the grace of the \
-        crane in avoiding the blows of an enemy. Its students learn \
-        not just to fight with physical blows, but to empathize \
-        with her enemy, speaking or debating with him in an \
-        attempt to bring the fight to an end without violence. \
-        However, those who mistake the Crane master's restraint \
-        for weakness find themselves quickly meeting the ground. \
-        When she must, a student of this style can unleash \
-        devastating counterattacks, flowing with the force of an \
-        enemy's blow so she can strike back in turn. \n\
-        Crane Weapons: Crane style practitioners typically dual \
-        wield a war fan and hook sword, using the fan for defense \
-        while disarming enemies with the sword. Unarmed attacks \
-        usually consist of graceful kicks, but a Crane stylist lacking \
-        his usual weapons might use one hand to deliver rapid \
-        chops while holding back the other for powerful lunges \
-        and sweeping blows. \n \
-        Armor: Crane style is incompatible with armor. \n \
-        Complementary Abilities: Many Crane stylists use \
-        Presence, Performance, or Socialize in combat to sway \
-        their opponents into peaceful resolution or compromise, \
-        and later Charms of this style empower such efforts."
-            .to_owned(),
-        HashSet::from([
-            BaseWeaponId(UniqueId::Placeholder(1)),
-            BaseWeaponId(UniqueId::Placeholder(2)),
-            BaseWeaponId(UniqueId::Placeholder(3)),
-        ]),
-        None,
-    );
+    let (crane_style_name, crane_style) = MartialArtsStyle::builder("Crane Style".to_owned())
+        .book_reference(BookReference::new(Book::CoreRulebook, 443))
+        .description(
+            "Crane style is a defensive style, emulating the grace of the \
+    crane in avoiding the blows of an enemy. Its students learn \
+    not just to fight with physical blows, but to empathize \
+    with her enemy, speaking or debating with him in an \
+    attempt to bring the fight to an end without violence."
+                .to_owned(),
+        )
+        .weapon(BaseWeaponId(UniqueId::Placeholder(1)))
+        .weapon(BaseWeaponId(UniqueId::Placeholder(2)))
+        .weapon(BaseWeaponId(UniqueId::Placeholder(3)))
+        .build();
 
-    let mutation =
-        GuidedMutation::AddMartialArtsStyle("Crane Style".to_owned(), crane_style.clone());
+    let mutation = GuidedMutation::AddMartialArtsStyle(crane_style_name, crane_style.clone());
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 

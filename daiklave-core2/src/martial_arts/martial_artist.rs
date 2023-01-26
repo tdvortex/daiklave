@@ -16,7 +16,7 @@ pub struct MartialArtist<'view, 'source> {
 impl<'view, 'source> MartialArtist<'view, 'source> {
     /// The style's name.
     pub fn name(&self) -> &'source str {
-        self.maybe_exalt.name()
+        self.name
     }
 
     /// The book reference for the style.

@@ -1,4 +1,4 @@
-use std::{collections::HashSet, num::NonZeroU8};
+use std::num::NonZeroU8;
 
 use daiklave_core2::{
     abilities::{AbilityName, AbilityNameVanilla},
@@ -15,7 +15,7 @@ use daiklave_core2::{
         HearthstoneId,
     },
     languages::language::{LanguageMutation, MajorLanguage},
-    martial_arts::MartialArtsStyle,
+    martial_arts::style::MartialArtsStyle,
     merits::merit::{
         Merit, MeritId, MeritTemplateId, MeritType, NonStackableMerit, NonStackableMeritId,
         StackableMerit, StackableMeritId, StackableMeritTemplateId,
@@ -168,19 +168,22 @@ fn test_merits() {
     let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Brawl, 1);
     event_source.apply_mutation(mutation).unwrap();
 
-    let crane_style = MartialArtsStyle::new(
-        Some(BookReference::new(Book::CoreRulebook, 443)),
-        "Crane Style".to_owned(),
-        "Crane style is a defensive style[...]".to_owned(),
-        HashSet::from([
-            BaseWeaponId(UniqueId::Placeholder(1)),
-            BaseWeaponId(UniqueId::Placeholder(2)),
-            BaseWeaponId(UniqueId::Placeholder(3)),
-        ]),
-        None,
-    );
+    let (crane_style_name, crane_style) = MartialArtsStyle::builder("Crane Style".to_owned())
+        .book_reference(BookReference::new(Book::CoreRulebook, 443))
+        .description(
+            "Crane style is a defensive style, emulating the grace of the \
+    crane in avoiding the blows of an enemy. Its students learn \
+    not just to fight with physical blows, but to empathize \
+    with her enemy, speaking or debating with him in an \
+    attempt to bring the fight to an end without violence."
+                .to_owned(),
+        )
+        .weapon(BaseWeaponId(UniqueId::Placeholder(1)))
+        .weapon(BaseWeaponId(UniqueId::Placeholder(2)))
+        .weapon(BaseWeaponId(UniqueId::Placeholder(3)))
+        .build();
 
-    let mutation = CharacterMutation::AddMartialArtsStyle("Crane Style".to_owned(), crane_style);
+    let mutation = CharacterMutation::AddMartialArtsStyle(crane_style_name, crane_style);
     event_source.apply_mutation(mutation).unwrap();
 
     // Exalted Healing

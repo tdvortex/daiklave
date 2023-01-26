@@ -1,4 +1,4 @@
-use std::{collections::HashSet, num::NonZeroU8};
+use std::num::NonZeroU8;
 
 use daiklave_core2::{
     abilities::{AbilityName, AbilityNameVanilla},
@@ -27,7 +27,7 @@ use daiklave_core2::{
     },
     martial_arts::{
         charm::{MartialArtsCharm, MartialArtsCharmId, MartialArtsCharmKeyword},
-        MartialArtsStyle,
+        style::MartialArtsStyle,
     },
     sorcery::{
         spell::{Spell, SpellId, SpellKeyword},
@@ -1046,16 +1046,19 @@ fn test_spells() {
 fn test_martial_arts_charms() {
     let mut event_source = CharacterEventSource::default();
     // Mortals cannot add MA charms, even if they have the right style
-    let single_point = MartialArtsStyle::new(
-        Some(BookReference::new(Book::CoreRulebook, 434)),
-        "Single Point Shining Into the Void Style".to_owned(),
-        "Single Point Shining Into the Void is a sword style that\
-        emphasizes blinding speed and deadly-perfect finishing \
-        moves."
-            .to_owned(),
-        HashSet::new(), // Skip weapons for testing
-        Some(ArmorWeightClass::Medium),
-    );
+    let (single_point_name, single_point) =
+        MartialArtsStyle::builder("Single Point Shining Into the Void Style".to_owned())
+            .book_reference(BookReference::new(Book::CoreRulebook, 434))
+            .description(
+                "Single Point Shining Into the Void is a sword style that\
+    emphasizes blinding speed and deadly-perfect finishing \
+    moves."
+                    .to_owned(),
+            )
+            .weapon(BaseWeaponId(UniqueId::Placeholder(1)))
+            .max_armor_weight(ArmorWeightClass::Medium)
+            .build();
+
     event_source
         .apply_mutation(CharacterMutation::SetAbilityDots(
             AbilityNameVanilla::Brawl,
@@ -1064,7 +1067,7 @@ fn test_martial_arts_charms() {
         .unwrap();
     event_source
         .apply_mutation(CharacterMutation::AddMartialArtsStyle(
-            "Single Point Shining Into the Void Style".to_owned(),
+            single_point_name,
             single_point,
         ))
         .unwrap();

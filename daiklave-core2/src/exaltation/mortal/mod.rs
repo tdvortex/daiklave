@@ -22,7 +22,7 @@ use crate::{
     artifact::wonders::{OwnedWonder, Wonder, WonderId},
     charms::CharmError,
     hearthstones::{HearthstoneId, UnslottedHearthstone},
-    martial_arts::{MartialArtsError, MartialArtsStyle},
+    martial_arts::{style::MartialArtsStyle, MartialArtsError},
     merits::merit::MeritError,
     sorcery::{
         circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},

@@ -15,13 +15,6 @@ pub(crate) enum ExaltationMartialArtist<'view, 'source> {
 }
 
 impl<'view, 'source> ExaltationMartialArtist<'view, 'source> {
-    pub fn name(&self) -> &'source str {
-        match self {
-            ExaltationMartialArtist::Mortal(view) => view.style().name(),
-            ExaltationMartialArtist::Exalt(view) => view.style().name(),
-        }
-    }
-
     pub fn book_reference(&self) -> Option<BookReference> {
         match self {
             ExaltationMartialArtist::Mortal(view) => view.style().book_reference(),

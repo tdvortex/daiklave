@@ -1,3 +1,6 @@
+/// Builder path for constructing a new Martial Arts style.
+pub mod builder;
+
 use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
@@ -7,42 +10,31 @@ use crate::{
     weapons::weapon::BaseWeaponId,
 };
 
+use self::builder::MartialArtsStyleBuilder;
+
 /// A Martial Arts style description.
-#[derive(Debug, Default, PartialEq, Eq, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub struct MartialArtsStyle {
     book_reference: Option<BookReference>,
-    name: String,
     description: String,
+    first_weapon: BaseWeaponId,
     usable_weapons: HashSet<BaseWeaponId>,
     max_armor_weight: Option<ArmorWeightClass>,
 }
 
 impl MartialArtsStyle {
-    /// Construct a new Martial Arts style
-    pub fn new(
-        book_reference: Option<BookReference>,
-        name: String,
-        description: String,
-        usable_weapons: HashSet<BaseWeaponId>,
-        max_armor_weight: Option<ArmorWeightClass>,
-    ) -> Self {
-        Self {
-            book_reference,
+    /// Starts a builder to construct a new Martial Arts style.
+    pub fn builder(name: String) -> MartialArtsStyleBuilder {
+        MartialArtsStyleBuilder {
             name,
-            description,
-            usable_weapons,
-            max_armor_weight,
+            book_reference: None,
+            max_armor_weight: None,
         }
     }
 
     /// The page reference for the style (if any).
     pub fn book_reference(&self) -> Option<BookReference> {
         self.book_reference
-    }
-
-    /// The style's name.
-    pub fn name(&self) -> &str {
-        self.name.as_str()
     }
 
     /// The style's description.
@@ -53,7 +45,7 @@ impl MartialArtsStyle {
     /// A list of weapon ids, which may be either mortal weapons (e.g. sword)
     /// or base artifact weapons (e.g. daiklave), usable by the style.
     pub fn usable_weapon_ids(&self) -> impl Iterator<Item = BaseWeaponId> + '_ {
-        self.usable_weapons.iter().copied()
+        std::iter::once(self.first_weapon).chain(self.usable_weapons.iter().copied())
     }
 
     /// The maximum weight of armor which may be worn with the style, or None

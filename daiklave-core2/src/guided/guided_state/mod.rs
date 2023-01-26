@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use crate::{
     abilities::{AbilityName, AbilityNameVanilla},
     attributes::AttributeName,
-    martial_arts::{MartialArtsError, MartialArtsStyle},
+    martial_arts::{style::MartialArtsStyle, MartialArtsError},
     sorcery::{
         circles::terrestrial::AddTerrestrialSorceryView, spell::SpellId, ShapingRitual,
         ShapingRitualId, SorceryArchetype, SorceryArchetypeId, TerrestrialSpell,

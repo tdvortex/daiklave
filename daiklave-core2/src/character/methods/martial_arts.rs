@@ -1,7 +1,8 @@
 use crate::{
     martial_arts::{
         charm::{MartialArtsCharm, MartialArtsCharmId},
-        MartialArts, MartialArtsStyle,
+        style::MartialArtsStyle,
+        MartialArts,
     },
     Character, CharacterMutationError,
 };

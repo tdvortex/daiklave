@@ -35,7 +35,8 @@ use crate::{
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{
         charm::{MartialArtsCharm, MartialArtsCharmId},
-        MartialArtist, MartialArtsStyle,
+        style::MartialArtsStyle,
+        MartialArtist,
     },
     sorcery::{
         circles::{

@@ -1,6 +1,6 @@
 use crate::{
     abilities::AbilityRating, exaltation::exalt::martial_arts::ExaltMartialArtist,
-    martial_arts::MartialArtsStyle,
+    martial_arts::style::MartialArtsStyle,
 };
 
 use super::MortalMartialArtistMemo;

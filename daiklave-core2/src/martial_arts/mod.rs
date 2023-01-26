@@ -2,12 +2,13 @@
 pub mod charm;
 mod error;
 mod martial_artist;
-mod style;
+
+/// Details of an individual Martial Arts style.
+pub mod style;
 
 pub(crate) use error::MartialArtsError;
 
 pub use martial_artist::MartialArtist;
-pub use style::MartialArtsStyle;
 
 use crate::exaltation::Exaltation;
 

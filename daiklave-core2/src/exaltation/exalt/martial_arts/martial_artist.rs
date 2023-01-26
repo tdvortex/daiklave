@@ -3,7 +3,7 @@ use crate::{
     exaltation::mortal::martial_arts::MortalMartialArtist,
     martial_arts::{
         charm::{MartialArtsCharm, MartialArtsCharmId},
-        MartialArtsStyle,
+        style::MartialArtsStyle,
     },
 };
 

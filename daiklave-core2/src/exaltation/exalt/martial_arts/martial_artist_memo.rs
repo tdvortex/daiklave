@@ -4,7 +4,7 @@ use crate::{
     abilities::AbilityRatingMemo,
     martial_arts::{
         charm::{MartialArtsCharm, MartialArtsCharmId},
-        MartialArtsStyle,
+        style::MartialArtsStyle,
     },
 };
 

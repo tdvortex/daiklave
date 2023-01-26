@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{abilities::AbilityRatingMemo, martial_arts::MartialArtsStyle};
+use crate::{abilities::AbilityRatingMemo, martial_arts::style::MartialArtsStyle};
 
 use super::MortalMartialArtist;
 
