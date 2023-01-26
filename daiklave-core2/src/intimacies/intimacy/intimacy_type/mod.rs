@@ -5,18 +5,17 @@ pub(crate) use memo::IntimacyTypeMemo;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum IntimacyType<'source> {
     /// An emotional connection to a person, place or thing, which may be
-    /// positive or negative. The inner string described the thing the emotion
-    /// pertains to.
-    Tie(&'source str),
+    /// positive or negative.
+    Tie(&'source str, &'source str),
     /// A belief the character holds.
-    Principle,
+    Principle(&'source str),
 }
 
 impl<'source> IntimacyType<'source> {
     pub(crate) fn as_memo(&self) -> IntimacyTypeMemo {
         match self {
-            IntimacyType::Tie(target) => IntimacyTypeMemo::Tie((*target).to_owned()),
-            IntimacyType::Principle => IntimacyTypeMemo::Principle,
+            IntimacyType::Tie(target, description) => IntimacyTypeMemo::Tie((*target).to_owned(), (*description).to_owned()),
+            IntimacyType::Principle(description) => IntimacyTypeMemo::Principle((*description).to_owned()),
         }
     }
 }

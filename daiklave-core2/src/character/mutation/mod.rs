@@ -19,7 +19,7 @@ use crate::{
         hearthstone::{GeomancyLevel, HearthstoneTemplate},
         HearthstoneId,
     },
-    intimacies::intimacy::{IntimacyId, IntimacyLevel, IntimacyMutation},
+    intimacies::intimacy::{IntimacyMutation},
     languages::language::LanguageMutation,
     martial_arts::{MartialArtsStyle, MartialArtsStyleId},
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
@@ -193,12 +193,8 @@ pub enum CharacterMutation {
     RemoveFlaw(String),
     /// Adds an Intimacy to the character.
     AddIntimacy(IntimacyMutation),
-    /// Sets the level of an existing Intimacy.
-    SetIntimacyLevel(IntimacyId, IntimacyLevel),
-    /// Alters the description of an existing Intimacy.
-    SetIntimacyDescription(IntimacyId, String),
     /// Removes an Intimacy from a character
-    RemoveIntimacy(IntimacyId),
+    RemoveIntimacy(IntimacyMutation),
     /// Increases the Exalt's Limit track.
     GainLimit(NonZeroU8),
     /// Reduces the Exalt's Limit track.

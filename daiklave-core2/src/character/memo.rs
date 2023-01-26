@@ -11,8 +11,7 @@ use crate::{
     experience::ExperiencePool,
     health::Health,
     hearthstones::{hearthstone::GeomancyLevel, HearthstoneId, UnslottedHearthstoneMemo},
-    intimacies::intimacy::IntimacyId,
-    intimacies::intimacy::IntimacyInnerMemo,
+    intimacies::intimacy::{IntimacyTypeMemo, IntimacyLevel},
     languages::LanguagesMemo,
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
     willpower::Willpower,
@@ -37,7 +36,7 @@ pub struct CharacterMemo {
     pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMerit>,
     pub(crate) flaws: HashMap<String, (Option<BookReference>, String)>,
     pub(crate) languages: LanguagesMemo,
-    pub(crate) intimacies: HashMap<IntimacyId, IntimacyInnerMemo>,
+    pub(crate) intimacies: HashMap<IntimacyTypeMemo, IntimacyLevel>,
     pub(crate) experience: ExperiencePool,
 }
 
@@ -84,7 +83,7 @@ impl<'source> CharacterMemo {
             intimacies: self
                 .intimacies
                 .iter()
-                .map(|(id, memo)| (*id, memo.as_ref()))
+                .map(|(memo, level)| (memo.as_ref(), *level))
                 .collect(),
             experience: self.experience,
         }

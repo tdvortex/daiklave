@@ -23,7 +23,7 @@ use crate::{
     experience::ExperiencePool,
     health::Health,
     hearthstones::{hearthstone::GeomancyLevel, HearthstoneId, UnslottedHearthstone},
-    intimacies::intimacy::{IntimacyId, IntimacyInner},
+    intimacies::intimacy::{IntimacyType, IntimacyLevel},
     languages::Languages,
     merits::merit::{
         NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
@@ -49,7 +49,7 @@ pub struct Character<'source> {
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMeritView<'source>>,
     pub(crate) flaws: HashMap<&'source str, (Option<BookReference>, &'source str)>,
     pub(crate) languages: Languages<'source>,
-    pub(crate) intimacies: HashMap<IntimacyId, IntimacyInner<'source>>,
+    pub(crate) intimacies: HashMap<IntimacyType<'source>, IntimacyLevel>,
     pub(crate) experience: ExperiencePool,
 }
 
@@ -99,7 +99,7 @@ impl<'source> Character<'source> {
             intimacies: self
                 .intimacies
                 .iter()
-                .map(|(id, inner)| (*id, inner.as_memo()))
+                .map(|(intimacy_type, level)| (intimacy_type.as_memo(), *level))
                 .collect(),
             experience: self.experience,
         }
@@ -266,11 +266,7 @@ impl<'source> Character<'source> {
             CharacterMutation::AddFlaw(flaw_mutation) => self.add_flaw(flaw_mutation),
             CharacterMutation::RemoveFlaw(name) => self.remove_flaw(name.as_str()),
             CharacterMutation::AddIntimacy(intimacy) => self.add_intimacy(intimacy),
-            CharacterMutation::SetIntimacyLevel(id, level) => self.set_intimacy_level(*id, *level),
-            CharacterMutation::SetIntimacyDescription(id, description) => {
-                self.set_intimacy_description(*id, description.as_str())
-            }
-            CharacterMutation::RemoveIntimacy(id) => self.remove_intimacy(*id),
+            CharacterMutation::RemoveIntimacy(intimacy) => self.remove_intimacy(intimacy),
             CharacterMutation::GainLimit(amount) => self.gain_limit(*amount),
             CharacterMutation::ReduceLimit(amount) => self.reduce_limit(*amount),
             CharacterMutation::SetLimitTrigger(trigger) => self.set_limit_trigger(trigger.as_str()),

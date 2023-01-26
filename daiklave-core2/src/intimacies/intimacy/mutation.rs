@@ -1,8 +1,8 @@
-use super::{inner::IntimacyInnerMemo, IntimacyId};
+use super::{IntimacyTypeMemo, IntimacyLevel};
 
 /// An Intimacy to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IntimacyMutation {
-    pub(crate) id: IntimacyId,
-    pub(crate) inner: IntimacyInnerMemo,
+    pub(crate) intimacy_type: IntimacyTypeMemo,
+    pub(crate) level: IntimacyLevel,
 }

@@ -4,15 +4,15 @@ use super::IntimacyType;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub(crate) enum IntimacyTypeMemo {
-    Tie(String),
-    Principle,
+    Tie(String, String),
+    Principle(String),
 }
 
 impl<'source> IntimacyTypeMemo {
-    pub fn as_ref(&'source self) -> IntimacyType<'source> {
+    pub(crate) fn as_ref(&'source self) -> IntimacyType<'source> {
         match self {
-            IntimacyTypeMemo::Tie(target) => IntimacyType::Tie(target.as_str()),
-            IntimacyTypeMemo::Principle => IntimacyType::Principle,
+            IntimacyTypeMemo::Tie(target, description) => IntimacyType::Tie(target.as_str(), description.as_str()),
+            IntimacyTypeMemo::Principle(description) => IntimacyType::Principle(description.as_str()),
         }
     }
 }
