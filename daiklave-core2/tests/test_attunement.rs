@@ -4,7 +4,7 @@ use daiklave_core2::{
     artifact::{wonders::WonderId, Artifact, ArtifactId, MagicMaterial},
     book_reference::{Book, BookReference},
     exaltation::exalt::{
-        essence::{MoteCommitmentId, MotePoolName},
+        essence::{MotePoolName, UncommitMotes},
         exalt_type::solar::{
             caste::{DawnCasteAbility, DawnSupernalAbility},
             Solar,
@@ -209,21 +209,21 @@ fn test_attunement() {
     // Exalts can unattune from everything they've attuned to
     event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            MoteCommitmentId::AttunedArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(
+            UncommitMotes::UnattuneArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(
                 1,
             )))),
         ))
         .unwrap();
     event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            MoteCommitmentId::AttunedArtifact(ArtifactId::Armor(ArtifactArmorId(
+            UncommitMotes::UnattuneArtifact(ArtifactId::Armor(ArtifactArmorId(
                 UniqueId::Placeholder(1),
             ))),
         ))
         .unwrap();
     let character = event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            MoteCommitmentId::AttunedArtifact(ArtifactId::Weapon(ArtifactWeaponId(
+            UncommitMotes::UnattuneArtifact(ArtifactId::Weapon(ArtifactWeaponId(
                 UniqueId::Placeholder(1),
             ))),
         ))
@@ -262,7 +262,7 @@ fn test_attunement() {
     // Can't unattune from an artifact that is already unattuned
     assert!(event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            MoteCommitmentId::AttunedArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(
+            UncommitMotes::UnattuneArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(
                 1
             ))))
         ))

@@ -1,10 +1,9 @@
 use daiklave_core2::{
     abilities::AbilityName,
     exaltation::exalt::{
-        essence::{MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
+        essence::{MoteCommitmentId, MotePoolName, UncommitMotes},
         exalt_type::solar::{caste::EclipseAbility, Solar},
     },
-    unique_id::UniqueId,
     CharacterEventSource, CharacterMutation,
 };
 
@@ -59,7 +58,6 @@ fn test_essence() {
     // Exalts should be able to commit from either peripheral or personal, with
     // overflow splitting across pools
     let mutation = CharacterMutation::CommitMotes(
-        OtherMoteCommitmentId(UniqueId::Placeholder(1)),
         "Peripheral motes committed".to_owned(),
         MotePoolName::Peripheral,
         10,
@@ -72,7 +70,6 @@ fn test_essence() {
     assert_eq!(mote_state.personal().spent(), 10);
 
     let mutation = CharacterMutation::CommitMotes(
-        OtherMoteCommitmentId(UniqueId::Placeholder(2)),
         "Personal motes committed".to_owned(),
         MotePoolName::Personal,
         10,
@@ -85,16 +82,13 @@ fn test_essence() {
     assert_eq!(mote_state.personal().spent(), 10);
     let mut commits_count = 0;
     for (id, commitment) in mote_state.committed() {
-        let name = commitment.name();
         let peripheral_committed = commitment.peripheral();
         let personal_committed = commitment.personal();
         commits_count += 1;
-        if id == MoteCommitmentId::Other(OtherMoteCommitmentId(UniqueId::Placeholder(1))) {
-            assert_eq!(name, "Peripheral motes committed");
+        if id == MoteCommitmentId::Other("Peripheral motes committed") {
             assert_eq!(peripheral_committed, 10);
             assert_eq!(personal_committed, 0);
-        } else if id == MoteCommitmentId::Other(OtherMoteCommitmentId(UniqueId::Placeholder(2))) {
-            assert_eq!(name, "Personal motes committed");
+        } else if id == MoteCommitmentId::Other("Personal motes committed") {
             assert_eq!(peripheral_committed, 7);
             assert_eq!(personal_committed, 3);
         } else {
@@ -111,14 +105,12 @@ fn test_essence() {
 
     // Exalts should not be able to commit more motes than they have available
     let mutation = CharacterMutation::CommitMotes(
-        OtherMoteCommitmentId(UniqueId::Placeholder(3)),
         "Invalid commit".to_owned(),
         MotePoolName::Peripheral,
         255,
     );
     assert!(event_source.apply_mutation(mutation).is_err());
     let mutation = CharacterMutation::CommitMotes(
-        OtherMoteCommitmentId(UniqueId::Placeholder(3)),
         "Invalid commit".to_owned(),
         MotePoolName::Personal,
         255,
@@ -144,9 +136,7 @@ fn test_essence() {
     assert_eq!(mote_state.personal().spent(), 0);
 
     // Uncommitting mote effects should make them spent again
-    let mutation = CharacterMutation::UncommitMotes(MoteCommitmentId::Other(
-        OtherMoteCommitmentId(UniqueId::Placeholder(2)),
-    ));
+    let mutation = CharacterMutation::UncommitMotes(UncommitMotes::Other("Personal motes committed".to_owned()));
     let character = event_source.apply_mutation(mutation).unwrap();
     let mote_state = character.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
@@ -155,12 +145,10 @@ fn test_essence() {
     assert_eq!(mote_state.personal().spent(), 3);
     let mut commits_count = 0;
     for (id, commitment) in mote_state.committed() {
-        let name = commitment.name();
         let peripheral_committed = commitment.peripheral();
         let personal_committed = commitment.personal();
         commits_count += 1;
-        if id == MoteCommitmentId::Other(OtherMoteCommitmentId(UniqueId::Placeholder(1))) {
-            assert_eq!(name, "Peripheral motes committed");
+        if id == MoteCommitmentId::Other("Peripheral motes committed") {
             assert_eq!(peripheral_committed, 10);
             assert_eq!(personal_committed, 0);
         } else {
@@ -169,9 +157,7 @@ fn test_essence() {
     }
     assert_eq!(commits_count, 1);
 
-    let mutation = CharacterMutation::UncommitMotes(MoteCommitmentId::Other(
-        OtherMoteCommitmentId(UniqueId::Placeholder(1)),
-    ));
+    let mutation = CharacterMutation::UncommitMotes(UncommitMotes::Other("Peripheral motes committed".to_owned()));
     let character = event_source.apply_mutation(mutation).unwrap();
     let mote_state = character.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
@@ -183,7 +169,6 @@ fn test_essence() {
     // Changing or lowering essence rating should end all mote commitments
     // and refill essence to full
     let mutation = CharacterMutation::CommitMotes(
-        OtherMoteCommitmentId(UniqueId::Placeholder(3)),
         "Commitment to clear".to_owned(),
         MotePoolName::Personal,
         1,

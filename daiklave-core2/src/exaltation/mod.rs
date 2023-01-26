@@ -56,7 +56,7 @@ use self::{
     exalt::{
         essence::{
             Essence, EssenceError, EssenceState, MoteCommitmentId, MotePool, MotePoolName,
-            MotesState, OtherMoteCommitmentId,
+            MotesState, UncommitMotes,
         },
         exalt_type::{
             solar::{
@@ -434,13 +434,14 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Exalt(exalt) => {
                 // Preserve essence rating, but uncommit all motes and unattune all artifacts
                 let to_uncommit = exalt
-                    .essence()
-                    .motes()
-                    .committed()
-                    .map(|(id, _)| id)
+                    .essence
+                    .motes
+                    .commitments
+                    .iter()
+                    .map(|(name, _)| MoteCommitmentId::Other(*name))
                     .collect::<Vec<MoteCommitmentId>>();
                 for commit_id in to_uncommit.into_iter() {
-                    exalt.uncommit_motes(&commit_id)?;
+                    exalt.uncommit_motes(commit_id)?;
                 }
 
                 // If switching solar->solar, try to preserve solar charms
@@ -504,7 +505,6 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn commit_motes(
         &mut self,
-        id: &OtherMoteCommitmentId,
         name: &'source str,
         first: MotePoolName,
         amount: u8,
@@ -513,7 +513,7 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Mortal(_) => {
                 Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
             }
-            Exaltation::Exalt(exalt) => exalt.commit_motes(id, name, first, amount),
+            Exaltation::Exalt(exalt) => exalt.commit_motes(name, first, amount),
         }?;
         Ok(self)
     }
@@ -530,13 +530,18 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn uncommit_motes(
         &mut self,
-        id: &MoteCommitmentId,
+        name: &'source UncommitMotes,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => {
                 Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
             }
-            Exaltation::Exalt(exalt) => exalt.uncommit_motes(id),
+            Exaltation::Exalt(exalt) => {
+                exalt.uncommit_motes(match name {
+                    UncommitMotes::UnattuneArtifact(artifact_id) => MoteCommitmentId::AttunedArtifact(*artifact_id),
+                    UncommitMotes::Other(name) => MoteCommitmentId::Other(name.as_str()),
+                })
+            }
         }?;
         Ok(self)
     }

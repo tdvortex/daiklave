@@ -81,7 +81,6 @@ use crate::{
 use self::{
     essence::{
         Essence, EssenceError, EssenceState, MoteCommitment, MoteCommitmentId, MotePoolName,
-        OtherMoteCommitmentId,
     },
     exalt_type::{
         solar::charm::{SolarCharm, SolarCharmId},
@@ -214,7 +213,6 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn commit_motes(
         &mut self,
-        id: &OtherMoteCommitmentId,
         name: &'source str,
         first: MotePoolName,
         amount: u8,
@@ -260,14 +258,23 @@ impl<'view, 'source> Exalt<'source> {
             return Err(e);
         }
 
-        if let Entry::Vacant(e) = self.essence.motes.commitments_mut().entry(*id) {
+        if let Entry::Vacant(e) = self.essence.motes.commitments.entry(name) {
             e.insert(MoteCommitment {
-                name,
                 peripheral: peripheral_committed,
                 personal: personal_committed,
             });
             Ok(self)
         } else {
+            self.essence
+            .motes
+            .peripheral_mut()
+            .uncommit(peripheral_committed)?;
+
+            self.essence
+                .motes
+                .personal_mut()
+                .uncommit(personal_committed)?;
+
             Err(CharacterMutationError::EssenceError(
                 EssenceError::DuplicateCommitment,
             ))
@@ -296,24 +303,24 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn uncommit_motes(
         &mut self,
-        id: &MoteCommitmentId,
+        name: MoteCommitmentId<'_>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let (peripheral, personal) = match id {
+        let (peripheral, personal) = match name {
             MoteCommitmentId::AttunedArtifact(artifact_id) => match artifact_id {
                 ArtifactId::Weapon(artifact_weapon_id) => {
-                    self.weapons.unattune_artifact_weapon(*artifact_weapon_id)?
+                    self.weapons.unattune_artifact_weapon(artifact_weapon_id)?
                 }
                 ArtifactId::Armor(artifact_armor_id) => {
-                    self.armor.unattune_artifact_armor(*artifact_armor_id)?
+                    self.armor.unattune_artifact_armor(artifact_armor_id)?
                 }
-                ArtifactId::Wonder(wonder_id) => self.wonders.unattune_wonder(*wonder_id)?,
+                ArtifactId::Wonder(wonder_id) => self.wonders.unattune_wonder(wonder_id)?,
             },
-            MoteCommitmentId::Other(other_id) => {
+            MoteCommitmentId::Other(other_name) => {
                 let commitment = self
                     .essence
                     .motes
                     .commitments
-                    .remove(other_id)
+                    .remove(other_name)
                     .ok_or(CharacterMutationError::EssenceError(EssenceError::NotFound))?;
                 (commitment.peripheral, commitment.personal)
             }
@@ -343,13 +350,14 @@ impl<'view, 'source> Exalt<'source> {
         };
 
         let committed_ids = self
-            .essence()
-            .motes()
-            .committed()
-            .map(|x| x.0)
+            .essence
+            .motes
+            .commitments
+            .iter()
+            .map(|x| MoteCommitmentId::Other(*x.0))
             .collect::<Vec<MoteCommitmentId>>();
         for id in committed_ids {
-            self.uncommit_motes(&id).unwrap();
+            self.uncommit_motes(id).unwrap();
         }
 
         let spent_peripheral = self.essence().motes().peripheral().spent();

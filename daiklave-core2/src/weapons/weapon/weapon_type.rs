@@ -44,17 +44,15 @@ impl<'view, 'source> WeaponType<'source> {
         }
     }
 
-    pub fn mote_commitment(&self) -> Option<(ArtifactWeaponId, MoteCommitment<'source>)> {
+    pub fn mote_commitment(&self) -> Option<(ArtifactWeaponId, MoteCommitment)> {
         match self {
             WeaponType::Mundane(_, _, _) | WeaponType::Unarmed => None,
-            WeaponType::Artifact(artifact_weapon_id, named_artifact, maybe_personal) => {
+            WeaponType::Artifact(artifact_weapon_id, _artifact_weapon, maybe_personal) => {
                 let personal = *maybe_personal.as_ref()?;
                 let peripheral = 5 - 5.min(personal);
-                let name = named_artifact.name();
                 Some((
                     *artifact_weapon_id,
                     MoteCommitment {
-                        name,
                         peripheral,
                         personal,
                     },

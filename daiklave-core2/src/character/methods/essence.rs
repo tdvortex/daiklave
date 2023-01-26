@@ -1,5 +1,5 @@
 use crate::{
-    exaltation::exalt::essence::{Essence, MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
+    exaltation::exalt::essence::{Essence, MotePoolName, UncommitMotes},
     Character, CharacterMutationError,
 };
 
@@ -23,12 +23,11 @@ impl<'view, 'source> Character<'source> {
     /// packages them into a commitment package to be later uncommitted.
     pub fn commit_motes(
         &mut self,
-        id: &OtherMoteCommitmentId,
         name: &'source str,
         first: MotePoolName,
         amount: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.commit_motes(id, name, first, amount)?;
+        self.exaltation.commit_motes(name, first, amount)?;
         Ok(self)
     }
 
@@ -43,9 +42,9 @@ impl<'view, 'source> Character<'source> {
     /// as spent motes to be later recovered.
     pub fn uncommit_motes(
         &mut self,
-        id: &MoteCommitmentId,
+        name: &'source UncommitMotes,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.uncommit_motes(id)?;
+        self.exaltation.uncommit_motes(name)?;
         Ok(self)
     }
 

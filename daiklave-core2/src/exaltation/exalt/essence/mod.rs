@@ -10,7 +10,7 @@ pub use motes::Motes;
 pub(crate) use motes::MotesState;
 
 use super::{AnimaEffect, Exalt};
-pub use mote_commitment::{MoteCommitment, MoteCommitmentId, OtherMoteCommitmentId};
+pub use mote_commitment::{MoteCommitment, MoteCommitmentId, UncommitMotes};
 pub(crate) use mote_pool::MotePool;
 pub use mote_pool::MotePoolName;
 

@@ -117,11 +117,11 @@ impl<'source> Character<'source> {
             CharacterMutation::SetMortal => self.set_mortal(),
             CharacterMutation::SetSolar(solar_traits) => self.set_solar(solar_traits),
             CharacterMutation::SpendMotes(first, amount) => self.spend_motes(*first, *amount),
-            CharacterMutation::CommitMotes(id, name, first, amount) => {
-                self.commit_motes(id, name, *first, *amount)
+            CharacterMutation::CommitMotes(name, first, amount) => {
+                self.commit_motes(name, *first, *amount)
             }
             CharacterMutation::RecoverMotes(amount) => self.recover_motes(*amount),
-            CharacterMutation::UncommitMotes(id) => self.uncommit_motes(id),
+            CharacterMutation::UncommitMotes(name) => self.uncommit_motes(name),
             CharacterMutation::SetEssenceRating(rating) => self.set_essence_rating(*rating),
             CharacterMutation::SetCurrentWillpower(amount) => self.set_current_willpower(*amount),
             CharacterMutation::SetWillpowerRating(dots) => self.set_willpower_rating(*dots),

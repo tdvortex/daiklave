@@ -10,7 +10,7 @@ use crate::{
     attributes::AttributeName,
     charms::charm::{CharmId, CharmMutation},
     exaltation::exalt::{
-        essence::{MoteCommitmentId, MotePoolName, OtherMoteCommitmentId},
+        essence::{MotePoolName, UncommitMotes},
         exalt_type::solar::NewSolar,
     },
     flaws::flaw::FlawMutation,
@@ -52,11 +52,11 @@ pub enum CharacterMutation {
     /// Spend motes, starting with one pool
     SpendMotes(MotePoolName, u8),
     /// Commit motes into a persistent effect, starting with one pool
-    CommitMotes(OtherMoteCommitmentId, String, MotePoolName, u8),
+    CommitMotes(String, MotePoolName, u8),
     /// Recover motes, always starting from peripheral
     RecoverMotes(u8),
     /// Uncommit motes from a peristent effect
-    UncommitMotes(MoteCommitmentId),
+    UncommitMotes(UncommitMotes),
     /// Set the Essence rating of the character. Note: also ends all mote
     /// commitments and recovers all motes.
     SetEssenceRating(u8),

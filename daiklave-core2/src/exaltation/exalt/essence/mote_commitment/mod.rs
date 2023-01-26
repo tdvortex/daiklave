@@ -1,31 +1,19 @@
 mod id;
-mod memo;
+mod name;
 
-pub use id::{MoteCommitmentId, OtherMoteCommitmentId};
-pub(crate) use memo::MoteCommitmentMemo;
+pub use id::{MoteCommitmentId};
+pub use name::UncommitMotes;
+use serde::{Serialize, Deserialize};
+
 
 /// A single committed mote effect.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct MoteCommitment<'source> {
-    pub(crate) name: &'source str,
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct MoteCommitment {
     pub(crate) peripheral: u8,
     pub(crate) personal: u8,
 }
 
-impl<'source> MoteCommitment<'source> {
-    pub(crate) fn as_memo(&self) -> MoteCommitmentMemo {
-        MoteCommitmentMemo {
-            name: self.name.to_owned(),
-            peripheral: self.peripheral,
-            personal: self.personal,
-        }
-    }
-
-    /// The name of the effect.
-    pub fn name(&self) -> &'source str {
-        self.name
-    }
-
+impl MoteCommitment {
     /// The number of peripheral motes committed to the effect.
     pub fn peripheral(&self) -> u8 {
         self.peripheral

@@ -33,7 +33,7 @@ impl<'view, 'source> Motes<'view, 'source> {
     /// artifact attunement)
     pub fn committed(
         &self,
-    ) -> impl Iterator<Item = (MoteCommitmentId, MoteCommitment<'source>)> + '_ {
+    ) -> impl Iterator<Item = (MoteCommitmentId, MoteCommitment)> + '_ {
         let other_commitments = self
             .state
             .commitments
@@ -50,14 +50,13 @@ impl<'view, 'source> Motes<'view, 'source> {
                     None => None,
                     Some(WeaponType::Unarmed) => None,
                     Some(WeaponType::Mundane(_, _, _)) => None,
-                    Some(WeaponType::Artifact(artifact_weapon_id, weapon, attunement)) => {
+                    Some(WeaponType::Artifact(artifact_weapon_id, _weapon, attunement)) => {
                         attunement.map(|personal| {
                             (
                                 MoteCommitmentId::AttunedArtifact(ArtifactId::Weapon(
                                     artifact_weapon_id,
                                 )),
                                 MoteCommitment {
-                                    name: weapon.name(),
                                     peripheral: 5 - personal.min(5),
                                     personal: personal.min(5),
                                 },
@@ -84,7 +83,6 @@ impl<'view, 'source> Motes<'view, 'source> {
                                     artifact_armor_id,
                                 )),
                                 MoteCommitment {
-                                    name: armor.name(),
                                     peripheral: amount - personal.min(amount),
                                     personal: personal.min(amount),
                                 },
@@ -104,7 +102,6 @@ impl<'view, 'source> Motes<'view, 'source> {
                         Some((
                             MoteCommitmentId::AttunedArtifact(ArtifactId::Wonder(wonder.0)),
                             MoteCommitment {
-                                name: wonder.name(),
                                 peripheral: amount - personal.min(amount),
                                 personal: personal.min(amount),
                             },
