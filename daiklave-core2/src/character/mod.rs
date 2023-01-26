@@ -28,7 +28,6 @@ use crate::{
     merits::merit::{
         NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
     },
-    unique_id::UniqueId,
     willpower::Willpower,
 };
 
@@ -45,7 +44,7 @@ pub struct Character<'source> {
     pub(crate) abilities: AbilitiesVanilla<'source>,
     pub(crate) craft: Craft<'source>,
     pub(crate) hearthstone_inventory: HashMap<HearthstoneId, UnslottedHearthstone<'source>>,
-    pub(crate) demenses_no_manse: HashMap<UniqueId, (&'source str, GeomancyLevel)>,
+    pub(crate) demenses_no_manse: HashMap<&'source str, GeomancyLevel>,
     pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMeritView<'source>>,
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMeritView<'source>>,
     pub(crate) flaws: HashMap<&'source str, (Option<BookReference>, &'source str)>,
@@ -74,7 +73,7 @@ impl<'source> Character<'source> {
             demenses_no_manse: self
                 .demenses_no_manse
                 .iter()
-                .map(|(k, (s, g))| (*k, (s.to_string(), *g)))
+                .map(|(k, v)| ((*k).to_owned(), (*v)))
                 .collect(),
             nonstackable_merits: self
                 .nonstackable_merits
@@ -230,8 +229,8 @@ impl<'source> Character<'source> {
             CharacterMutation::RemoveSorceryArchetypeMerit(sorcery_archetype_merit_id) => {
                 self.remove_sorcery_archetype_merit(*sorcery_archetype_merit_id)
             }
-            CharacterMutation::AddDemense(demense_id, name, geomancy_level) => {
-                self.add_demense(*demense_id, name.as_str(), *geomancy_level)
+            CharacterMutation::AddDemense(name, geomancy_level) => {
+                self.add_demense(name.as_str(), *geomancy_level)
             }
             CharacterMutation::AddExaltedHealing => self.add_exalted_healing(),
             CharacterMutation::RemoveStackableMerit(stackable_merit_id) => {
@@ -241,7 +240,7 @@ impl<'source> Character<'source> {
                 self.remove_nonstackable_merit(*nonstackable_merit_id)
             }
             CharacterMutation::RemoveExaltedHealing => self.remove_exalted_healing(),
-            CharacterMutation::RemoveDemense(demense_id) => self.remove_demense(*demense_id),
+            CharacterMutation::RemoveDemense(name) => self.remove_demense(name.as_str()),
             CharacterMutation::AddCharm(charm) => match charm {
                 CharmMutation::Eclipse(spirit_charm_id, eclipse_charm) => {
                     self.add_eclipse_charm(*spirit_charm_id, eclipse_charm)

@@ -57,12 +57,12 @@ impl<'view, 'source> Merits<'view, 'source> {
                     ))
                 }),
             },
-            MeritId::DemenseNoManse(demense_id) => {
+            MeritId::DemenseNoManse(name) => {
                 self.0
                     .demenses_no_manse
-                    .get(&demense_id)
+                    .get_key_value(name)
                     .map(|(name, geomancy)| {
-                        Merit(MeritSource::DemenseNoManse(demense_id, name, *geomancy))
+                        Merit(MeritSource::DemenseNoManse(name, *geomancy))
                     })
             }
             MeritId::DemenseWithManse(hearthstone_id) => self

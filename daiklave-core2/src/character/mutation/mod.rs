@@ -30,7 +30,6 @@ use crate::{
         },
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
-    unique_id::UniqueId,
     weapons::weapon::{mundane::MundaneWeapon, BaseWeaponId, EquipHand, Equipped, WeaponId},
 };
 
@@ -122,9 +121,9 @@ pub enum CharacterMutation {
     /// Add a hearthstone to a character without a manse.
     AddHearthstone(HearthstoneId, HearthstoneTemplate),
     /// Add a demense to a character without a manse.
-    AddDemense(UniqueId, String, GeomancyLevel),
+    AddDemense(String, GeomancyLevel),
     /// Remove a demense (without a manse) from a character.
-    RemoveDemense(UniqueId),
+    RemoveDemense(String),
     /// Slot a hearthstone into an artifact.
     SlotHearthstone(ArtifactId, HearthstoneId),
     /// Unslot a hearthstone from its current position.

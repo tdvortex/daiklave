@@ -1,6 +1,6 @@
 use crate::{
     artifact::ArtifactId, hearthstones::HearthstoneId, languages::language::MajorLanguage,
-    martial_arts::MartialArtsStyleId, sorcery::SorceryArchetypeMeritId, unique_id::UniqueId,
+    martial_arts::MartialArtsStyleId, sorcery::SorceryArchetypeMeritId,
 };
 
 use super::{nonstackable::NonStackableMeritId, stackable::StackableMeritId};
@@ -9,11 +9,11 @@ use super::{nonstackable::NonStackableMeritId, stackable::StackableMeritId};
 /// be confused with MeritTemplateId, which describes a specific merit without
 /// any identifying details.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum MeritId {
+pub enum MeritId<'a> {
     /// The merit associated with a specific owned Artifact.
     Artifact(ArtifactId),
     /// The merit associated with a standalone Demense, without a manse.
-    DemenseNoManse(UniqueId),
+    DemenseNoManse(&'a str),
     /// The merit associated with a Demense acquired through the Manse merit.
     /// Keys off the hearthstone associated with the manse and demense.
     DemenseWithManse(HearthstoneId),

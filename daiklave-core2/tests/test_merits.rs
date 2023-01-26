@@ -139,7 +139,6 @@ fn test_merits() {
 
     // Standalone demense
     let mutation = CharacterMutation::AddDemense(
-        UniqueId::Placeholder(1),
         "Nowhere special".to_owned(),
         GeomancyLevel::Standard,
     );
@@ -425,11 +424,11 @@ fn test_merits() {
     assert!(jewel.description().1.is_some());
 
     let nowhere = merits
-        .get(MeritId::DemenseNoManse(UniqueId::Placeholder(1)))
+        .get(MeritId::DemenseNoManse("Nowhere special"))
         .unwrap();
     assert_eq!(
         nowhere.id(),
-        MeritId::DemenseNoManse(UniqueId::Placeholder(1))
+        MeritId::DemenseNoManse("Nowhere special")
     );
     assert_eq!(nowhere.template_name(), "Demense");
     assert_eq!(
@@ -766,7 +765,7 @@ fn test_merits() {
 
     // Remove the demense
     event_source
-        .apply_mutation(CharacterMutation::RemoveDemense(UniqueId::Placeholder(1)))
+        .apply_mutation(CharacterMutation::RemoveDemense("Nowhere special".to_owned()))
         .unwrap();
 
     // Remove languages

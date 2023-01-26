@@ -15,7 +15,6 @@ use crate::{
     intimacies::intimacy::IntimacyInnerMemo,
     languages::LanguagesMemo,
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
-    unique_id::UniqueId,
     willpower::Willpower,
     Character,
 };
@@ -33,7 +32,7 @@ pub struct CharacterMemo {
     pub(crate) abilities: AbilitiesMemo,
     pub(crate) craft: CraftMemo,
     pub(crate) hearthstone_inventory: HashMap<HearthstoneId, UnslottedHearthstoneMemo>,
-    pub(crate) demenses_no_manse: HashMap<UniqueId, (String, GeomancyLevel)>,
+    pub(crate) demenses_no_manse: HashMap<String, GeomancyLevel>,
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMerit>,
     pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMerit>,
     pub(crate) flaws: HashMap<String, (Option<BookReference>, String)>,
@@ -62,7 +61,7 @@ impl<'source> CharacterMemo {
             demenses_no_manse: self
                 .demenses_no_manse
                 .iter()
-                .map(|(k, (s, g))| (*k, (s.as_str(), *g)))
+                .map(|(k, v)| (k.as_str(), *v))
                 .collect(),
             nonstackable_merits: self
                 .nonstackable_merits

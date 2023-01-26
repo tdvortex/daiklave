@@ -7,7 +7,6 @@ use crate::{
     languages::language::MajorLanguage,
     martial_arts::MartialArtsStyleId,
     sorcery::{SorceryArchetypeMerit, SorceryArchetypeMeritId},
-    unique_id::UniqueId,
 };
 
 use super::{
@@ -40,7 +39,7 @@ use super::{
 
 pub(crate) enum MeritSource<'source> {
     Artifact(ArtifactId, &'source str, u8),
-    DemenseNoManse(UniqueId, &'source str, GeomancyLevel),
+    DemenseNoManse(&'source str, GeomancyLevel),
     DemenseWithManse(HearthstoneId, &'source str, GeomancyLevel),
     ExaltedHealing(bool), // is_exalt
     HearthstoneNoManse(HearthstoneId, &'source str, GeomancyLevel),
@@ -59,7 +58,7 @@ impl<'source> MeritSource<'source> {
     pub fn id(&self) -> MeritId {
         match self {
             MeritSource::Artifact(artifact_id, _, _) => MeritId::Artifact(*artifact_id),
-            MeritSource::DemenseNoManse(unique_id, _, _) => MeritId::DemenseNoManse(*unique_id),
+            MeritSource::DemenseNoManse(name, _) => MeritId::DemenseNoManse(name),
             MeritSource::DemenseWithManse(hearthstone_id, _, _) => {
                 MeritId::DemenseWithManse(*hearthstone_id)
             }
@@ -88,7 +87,7 @@ impl<'source> MeritSource<'source> {
     pub fn template_id(&self) -> MeritTemplateId {
         match self {
             MeritSource::Artifact(_, _, _) => MeritTemplateId::Artifact,
-            MeritSource::DemenseNoManse(_, _, _) => MeritTemplateId::Demense,
+            MeritSource::DemenseNoManse(_, _) => MeritTemplateId::Demense,
             MeritSource::DemenseWithManse(_, _, _) => MeritTemplateId::Demense,
             MeritSource::ExaltedHealing(_) => MeritTemplateId::ExaltedHealing,
             MeritSource::HearthstoneNoManse(_, _, _) => MeritTemplateId::Hearthstone,
@@ -111,7 +110,7 @@ impl<'source> MeritSource<'source> {
     pub fn template_name(&self) -> &'source str {
         match self {
             MeritSource::Artifact(_, _, _) => "Artifact",
-            MeritSource::DemenseNoManse(_, _, _) => "Demense",
+            MeritSource::DemenseNoManse(_, _) => "Demense",
             MeritSource::DemenseWithManse(_, _, _) => "Demense",
             MeritSource::ExaltedHealing(_) => "Exalted Healing",
             MeritSource::HearthstoneNoManse(_, _, _) => "Hearthstone",
@@ -130,7 +129,7 @@ impl<'source> MeritSource<'source> {
     pub fn book_reference(&self) -> Option<BookReference> {
         match self {
             MeritSource::Artifact(_, _, _) => Some(BookReference::new(Book::CoreRulebook, 159)),
-            MeritSource::DemenseNoManse(_, _, _) => {
+            MeritSource::DemenseNoManse(_, _) => {
                 Some(BookReference::new(Book::CoreRulebook, 160))
             }
             MeritSource::DemenseWithManse(_, _, _) => {
@@ -157,7 +156,7 @@ impl<'source> MeritSource<'source> {
     pub fn detail(&self) -> Option<&'source str> {
         match self {
             MeritSource::Artifact(_, name, _) => Some(*name),
-            MeritSource::DemenseNoManse(_, name, _) => Some(*name),
+            MeritSource::DemenseNoManse(name, _) => Some(*name),
             MeritSource::DemenseWithManse(_, name, _) => Some(*name),
             MeritSource::ExaltedHealing(_) => None,
             MeritSource::HearthstoneNoManse(_, name, _) => Some(*name),
@@ -187,7 +186,7 @@ impl<'source> MeritSource<'source> {
     pub fn dots(&self) -> u8 {
         match self {
             MeritSource::Artifact(_, _, dots) => *dots,
-            MeritSource::DemenseNoManse(_, _, geomancy_level) => match geomancy_level {
+            MeritSource::DemenseNoManse(_, geomancy_level) => match geomancy_level {
                 GeomancyLevel::Standard => 2,
                 GeomancyLevel::Greater => 4,
             },
@@ -215,7 +214,7 @@ impl<'source> MeritSource<'source> {
     pub fn merit_type(&self) -> MeritType {
         match self {
             MeritSource::Artifact(_, _, _) => MeritType::Story,
-            MeritSource::DemenseNoManse(_, _, _) => MeritType::Story,
+            MeritSource::DemenseNoManse(_, _) => MeritType::Story,
             MeritSource::DemenseWithManse(_, _, _) => MeritType::Story,
             MeritSource::ExaltedHealing(_) => MeritType::Supernatural,
             MeritSource::HearthstoneNoManse(_, _, _) => MeritType::Story,
@@ -240,7 +239,7 @@ impl<'source> MeritSource<'source> {
                 5 => (ARTIFACT_SHARED, Some(ARTIFACT_FIVE)),
                 _ => (ARTIFACT_SHARED, Some(ARTIFACT_NA)),
             },
-            MeritSource::DemenseNoManse(_, _, geomancy_level) => match geomancy_level {
+            MeritSource::DemenseNoManse(_, geomancy_level) => match geomancy_level {
                 GeomancyLevel::Standard => (DEMENSE_SHARED, Some(DEMENSE_STANDARD)),
                 GeomancyLevel::Greater => (DEMENSE_SHARED, Some(DEMENSE_GREATER)),
             },
