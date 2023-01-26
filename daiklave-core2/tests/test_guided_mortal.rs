@@ -5,7 +5,7 @@ use daiklave_core2::{
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     guided::{ExaltationChoice, GuidedEventSource, GuidedMutation},
-    martial_arts::{MartialArtsStyle, MartialArtsStyleId},
+    martial_arts::MartialArtsStyle,
     sorcery::{
         spell::{Spell, SpellId, SpellKeyword},
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle,
@@ -191,29 +191,22 @@ fn test_guided_mortal() {
         None,
     );
 
-    let mutation = GuidedMutation::AddMartialArtsStyle(
-        MartialArtsStyleId(UniqueId::Placeholder(1)),
-        crane_style.clone(),
-    );
+    let mutation =
+        GuidedMutation::AddMartialArtsStyle("Crane Style".to_owned(), crane_style.clone());
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Check can't add martial arts style with the same Id
-    let mutation = GuidedMutation::AddMartialArtsStyle(
-        MartialArtsStyleId(UniqueId::Placeholder(1)),
-        crane_style,
-    );
+    let mutation = GuidedMutation::AddMartialArtsStyle("Crane Style".to_owned(), crane_style);
     assert!(guided_builder.check_mutation(&mutation).is_err());
 
     // Remove a martial arts style
-    let mutation =
-        GuidedMutation::RemoveMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)));
+    let mutation = GuidedMutation::RemoveMartialArtsStyle("Crane Style".to_owned());
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Check can't remove absent martial arts style
-    let mutation =
-        GuidedMutation::RemoveMartialArtsStyle(MartialArtsStyleId(UniqueId::Placeholder(1)));
+    let mutation = GuidedMutation::RemoveMartialArtsStyle("Crane Style".to_owned());
     assert!(guided_builder.check_mutation(&mutation).is_err());
 
     // Undo removal
@@ -236,10 +229,7 @@ fn test_guided_mortal() {
         HashSet::from([BaseWeaponId(UniqueId::Placeholder(1))]),
         None,
     );
-    let mutation = GuidedMutation::AddMartialArtsStyle(
-        MartialArtsStyleId(UniqueId::Placeholder(2)),
-        dummy_style,
-    );
+    let mutation = GuidedMutation::AddMartialArtsStyle("Dummy style".to_owned(), dummy_style);
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -381,10 +371,7 @@ fn test_guided_mortal() {
     // Check you can't add dots to an unowned Martial Arts style
     assert!(guided_builder
         .check_mutation(&GuidedMutation::CharacterMutation(
-            CharacterMutation::SetMartialArtsDots(
-                MartialArtsStyleId(UniqueId::Placeholder(666)),
-                1
-            )
+            CharacterMutation::SetMartialArtsDots("Missing style".to_owned(), 1)
         ))
         .is_err());
 
@@ -404,7 +391,7 @@ fn test_guided_mortal() {
     );
 
     let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(
-        MartialArtsStyleId(UniqueId::Placeholder(1)),
+        "Crane Style".to_owned(),
         4,
     ));
     guided_builder.check_mutation(&mutation).unwrap();
@@ -415,7 +402,7 @@ fn test_guided_mortal() {
             .unwrap()
             .as_character_view()
             .martial_arts()
-            .style(MartialArtsStyleId(UniqueId::Placeholder(1)))
+            .style("Crane Style")
             .unwrap()
             .ability()
             .dots(),
@@ -445,7 +432,7 @@ fn test_guided_mortal() {
 
     // Check purchasing 28 dots of abilities, all 3 or below, costs no bonus points
     let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetMartialArtsDots(
-        MartialArtsStyleId(UniqueId::Placeholder(1)),
+        "Crane Style".to_owned(),
         3,
     ));
     guided_builder.apply_mutation(mutation).unwrap();
@@ -525,7 +512,7 @@ fn test_guided_mortal() {
     assert_eq!(
         character_view
             .martial_arts()
-            .style(MartialArtsStyleId(UniqueId::Placeholder(1)))
+            .style("Crane Style")
             .unwrap()
             .name(),
         "Crane Style"
@@ -533,7 +520,7 @@ fn test_guided_mortal() {
     assert_eq!(
         character_view
             .martial_arts()
-            .style(MartialArtsStyleId(UniqueId::Placeholder(1)))
+            .style("Crane Style")
             .unwrap()
             .ability()
             .dots(),

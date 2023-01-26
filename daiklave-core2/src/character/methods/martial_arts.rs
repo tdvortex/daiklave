@@ -1,7 +1,7 @@
 use crate::{
     martial_arts::{
         charm::{MartialArtsCharm, MartialArtsCharmId},
-        MartialArts, MartialArtsStyle, MartialArtsStyleId,
+        MartialArts, MartialArtsStyle,
     },
     Character, CharacterMutationError,
 };
@@ -15,10 +15,10 @@ impl<'view, 'source> Character<'source> {
     /// Adds a Martial Arts style to the character.
     pub fn add_martial_arts_style(
         &mut self,
-        id: MartialArtsStyleId,
+        name: &'source str,
         style: &'source MartialArtsStyle,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.add_martial_arts_style(id, style)?;
+        self.exaltation.add_martial_arts_style(name, style)?;
 
         Ok(self)
     }
@@ -26,19 +26,19 @@ impl<'view, 'source> Character<'source> {
     /// Removes a Martial Arts style from the character.
     pub fn remove_martial_arts_style(
         &mut self,
-        id: MartialArtsStyleId,
+        name: &'source str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.remove_martial_arts_style(id)?;
+        self.exaltation.remove_martial_arts_style(name)?;
         Ok(self)
     }
 
     /// Sets the ability dots for a specific Martial Arts style.
     pub fn set_martial_arts_dots(
         &mut self,
-        id: MartialArtsStyleId,
+        name: &'source str,
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.set_martial_arts_dots(id, dots)?;
+        self.exaltation.set_martial_arts_dots(name, dots)?;
         Ok(self)
     }
 

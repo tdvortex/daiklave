@@ -104,17 +104,11 @@ fn test_essence() {
     assert!(event_source.apply_mutation(mutation).is_err());
 
     // Exalts should not be able to commit more motes than they have available
-    let mutation = CharacterMutation::CommitMotes(
-        "Invalid commit".to_owned(),
-        MotePoolName::Peripheral,
-        255,
-    );
+    let mutation =
+        CharacterMutation::CommitMotes("Invalid commit".to_owned(), MotePoolName::Peripheral, 255);
     assert!(event_source.apply_mutation(mutation).is_err());
-    let mutation = CharacterMutation::CommitMotes(
-        "Invalid commit".to_owned(),
-        MotePoolName::Personal,
-        255,
-    );
+    let mutation =
+        CharacterMutation::CommitMotes("Invalid commit".to_owned(), MotePoolName::Personal, 255);
     assert!(event_source.apply_mutation(mutation).is_err());
 
     // Recovering essence should refill peripheral first
@@ -136,7 +130,9 @@ fn test_essence() {
     assert_eq!(mote_state.personal().spent(), 0);
 
     // Uncommitting mote effects should make them spent again
-    let mutation = CharacterMutation::UncommitMotes(UncommitMotes::Other("Personal motes committed".to_owned()));
+    let mutation = CharacterMutation::UncommitMotes(UncommitMotes::Other(
+        "Personal motes committed".to_owned(),
+    ));
     let character = event_source.apply_mutation(mutation).unwrap();
     let mote_state = character.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
@@ -157,7 +153,9 @@ fn test_essence() {
     }
     assert_eq!(commits_count, 1);
 
-    let mutation = CharacterMutation::UncommitMotes(UncommitMotes::Other("Peripheral motes committed".to_owned()));
+    let mutation = CharacterMutation::UncommitMotes(UncommitMotes::Other(
+        "Peripheral motes committed".to_owned(),
+    ));
     let character = event_source.apply_mutation(mutation).unwrap();
     let mote_state = character.essence().unwrap().motes();
     assert_eq!(mote_state.peripheral().available(), 16);
@@ -168,11 +166,8 @@ fn test_essence() {
 
     // Changing or lowering essence rating should end all mote commitments
     // and refill essence to full
-    let mutation = CharacterMutation::CommitMotes(
-        "Commitment to clear".to_owned(),
-        MotePoolName::Personal,
-        1,
-    );
+    let mutation =
+        CharacterMutation::CommitMotes("Commitment to clear".to_owned(), MotePoolName::Personal, 1);
     event_source.apply_mutation(mutation).unwrap();
 
     let mutation = CharacterMutation::SetEssenceRating(2);

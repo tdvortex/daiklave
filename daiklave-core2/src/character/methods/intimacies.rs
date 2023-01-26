@@ -19,9 +19,10 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         intimacy: &'source IntimacyMutation,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let IntimacyMutation { 
-            intimacy_type, 
-            level} = intimacy;
+        let IntimacyMutation {
+            intimacy_type,
+            level,
+        } = intimacy;
 
         if let Entry::Vacant(e) = self.intimacies.entry(intimacy_type.as_ref()) {
             e.insert(*level);
@@ -34,8 +35,15 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Removes an Intimacy from the character.
-    pub fn remove_intimacy(&mut self, intimacy: &'source IntimacyMutation) -> Result<&mut Self, CharacterMutationError> {
-        if self.intimacies.remove(&intimacy.intimacy_type.as_ref()).is_some() {
+    pub fn remove_intimacy(
+        &mut self,
+        intimacy: &'source IntimacyMutation,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if self
+            .intimacies
+            .remove(&intimacy.intimacy_type.as_ref())
+            .is_some()
+        {
             Ok(self)
         } else {
             Err(CharacterMutationError::IntimacyError(

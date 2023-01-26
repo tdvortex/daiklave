@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use crate::{
     abilities::{AbilityName, AbilityNameVanilla},
     attributes::AttributeName,
-    martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
+    martial_arts::{MartialArtsError, MartialArtsStyle},
     sorcery::{
         circles::terrestrial::AddTerrestrialSorceryView, spell::SpellId, ShapingRitual,
         ShapingRitualId, SorceryArchetype, SorceryArchetypeId, TerrestrialSpell,
@@ -33,7 +33,7 @@ pub struct GuidedState<'source> {
     pub(in crate::guided) solar_supernal_ability: Option<AbilityName>,
     pub(in crate::guided) solar_favored_abilities: Option<HashSet<AbilityName>>,
     pub(in crate::guided) martial_arts_styles:
-        Option<HashMap<MartialArtsStyleId, &'source MartialArtsStyle>>,
+        Option<HashMap<&'source str, &'source MartialArtsStyle>>,
     pub(in crate::guided) sorcery_archetype:
         Option<(SorceryArchetypeId, &'source SorceryArchetype)>,
     pub(in crate::guided) shaping_ritual: Option<(ShapingRitualId, &'source ShapingRitual)>,
@@ -90,11 +90,11 @@ impl<'source> GuidedState<'source> {
             GuidedMutation::RemoveSolarFavoredAbility(ability) => {
                 self = self.remove_solar_favored_ability(ability)?;
             }
-            GuidedMutation::AddMartialArtsStyle(id, style) => {
+            GuidedMutation::AddMartialArtsStyle(name, style) => {
                 if let Some(true) = self
                     .martial_arts_styles
                     .as_ref()
-                    .map(|hashmap| hashmap.contains_key(id))
+                    .map(|hashmap| hashmap.contains_key(name.as_str()))
                 {
                     return Err(GuidedError::CharacterMutationError(
                         CharacterMutationError::MartialArtsError(MartialArtsError::DuplicateStyle),
@@ -108,17 +108,20 @@ impl<'source> GuidedState<'source> {
                 self.martial_arts_styles
                     .as_mut()
                     .unwrap()
-                    .insert(*id, style);
+                    .insert(name.as_str(), style);
                 self.merit_dots += 4;
                 self.update_bonus_points();
             }
-            GuidedMutation::RemoveMartialArtsStyle(id) => {
+            GuidedMutation::RemoveMartialArtsStyle(name) => {
                 if let Some(true) = self
                     .martial_arts_styles
                     .as_ref()
-                    .map(|hashmap| hashmap.contains_key(id))
+                    .map(|hashmap| hashmap.contains_key(name.as_str()))
                 {
-                    self.martial_arts_styles.as_mut().unwrap().remove(id);
+                    self.martial_arts_styles
+                        .as_mut()
+                        .unwrap()
+                        .remove(name.as_str());
                     self.merit_dots -= 4;
                     self.update_bonus_points();
                 } else {

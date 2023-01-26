@@ -23,7 +23,7 @@ use crate::{
     experience::ExperiencePool,
     health::Health,
     hearthstones::{hearthstone::GeomancyLevel, HearthstoneId, UnslottedHearthstone},
-    intimacies::intimacy::{IntimacyType, IntimacyLevel},
+    intimacies::intimacy::{IntimacyLevel, IntimacyType},
     languages::Languages,
     merits::merit::{
         NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
@@ -144,12 +144,14 @@ impl<'source> Character<'source> {
             CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
                 self.remove_specialty(*ability_name, specialty.as_str())
             }
-            CharacterMutation::AddMartialArtsStyle(id, style) => {
-                self.add_martial_arts_style(*id, style)
+            CharacterMutation::AddMartialArtsStyle(name, style) => {
+                self.add_martial_arts_style(name.as_str(), style)
             }
-            CharacterMutation::RemoveMartialArtsStyle(id) => self.remove_martial_arts_style(*id),
-            CharacterMutation::SetMartialArtsDots(id, dots) => {
-                self.set_martial_arts_dots(*id, *dots)
+            CharacterMutation::RemoveMartialArtsStyle(name) => {
+                self.remove_martial_arts_style(name.as_str())
+            }
+            CharacterMutation::SetMartialArtsDots(name, dots) => {
+                self.set_martial_arts_dots(name.as_str(), *dots)
             }
             CharacterMutation::SetCraftDots(focus, dots) => {
                 self.set_craft_dots(focus.as_str(), *dots)

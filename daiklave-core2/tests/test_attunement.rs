@@ -209,9 +209,7 @@ fn test_attunement() {
     // Exalts can unattune from everything they've attuned to
     event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            UncommitMotes::UnattuneArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(
-                1,
-            )))),
+            UncommitMotes::UnattuneArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1)))),
         ))
         .unwrap();
     event_source
@@ -262,9 +260,7 @@ fn test_attunement() {
     // Can't unattune from an artifact that is already unattuned
     assert!(event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            UncommitMotes::UnattuneArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(
-                1
-            ))))
+            UncommitMotes::UnattuneArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))))
         ))
         .is_err());
 }

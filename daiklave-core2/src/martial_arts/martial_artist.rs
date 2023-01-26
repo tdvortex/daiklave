@@ -3,27 +3,17 @@ use crate::{
     exaltation::ExaltationMartialArtist, weapons::weapon::BaseWeaponId,
 };
 
-use super::{
-    charm::{MartialArtsCharm, MartialArtsCharmId},
-    MartialArtsStyleId,
-};
+use super::charm::{MartialArtsCharm, MartialArtsCharmId};
 
 use crate::abilities::AbilityType;
 
 /// A specific Martial Arts style as known by a character.
 pub struct MartialArtist<'view, 'source> {
-    id: MartialArtsStyleId,
-    maybe_exalt: ExaltationMartialArtist<'view, 'source>,
+    pub(crate) name: &'source str,
+    pub(crate) maybe_exalt: ExaltationMartialArtist<'view, 'source>,
 }
 
 impl<'view, 'source> MartialArtist<'view, 'source> {
-    pub(crate) fn new(
-        id: MartialArtsStyleId,
-        maybe_exalt: ExaltationMartialArtist<'view, 'source>,
-    ) -> Self {
-        Self { id, maybe_exalt }
-    }
-
     /// The style's name.
     pub fn name(&self) -> &'source str {
         self.maybe_exalt.name()
@@ -55,7 +45,7 @@ impl<'view, 'source> MartialArtist<'view, 'source> {
     /// style, including rating and specialties.
     pub fn ability(&'view self) -> Ability<'view, 'source> {
         Ability(AbilityType::MartialArts(
-            self.id,
+            self.name,
             self.maybe_exalt.ability_rating(),
         ))
     }

@@ -35,7 +35,7 @@ use crate::{
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{
         charm::{MartialArtsCharm, MartialArtsCharmId},
-        MartialArtist, MartialArtsStyle, MartialArtsStyleId,
+        MartialArtist, MartialArtsStyle,
     },
     sorcery::{
         circles::{
@@ -185,15 +185,15 @@ impl<'source> Exaltation<'source> {
 
     pub(crate) fn add_martial_arts_style(
         &mut self,
-        id: MartialArtsStyleId,
+        name: &'source str,
         style: &'source MartialArtsStyle,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.add_martial_arts_style(id, style)?;
+                mortal.add_martial_arts_style(name, style)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.add_martial_arts_style(id, style)?;
+                exalt.add_martial_arts_style(name, style)?;
             }
         }
         Ok(self)
@@ -201,14 +201,14 @@ impl<'source> Exaltation<'source> {
 
     pub(crate) fn remove_martial_arts_style(
         &mut self,
-        id: MartialArtsStyleId,
+        name: &'source str,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.remove_martial_arts_style(id)?;
+                mortal.remove_martial_arts_style(name)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.remove_martial_arts_style(id)?;
+                exalt.remove_martial_arts_style(name)?;
             }
         }
         Ok(self)
@@ -216,15 +216,15 @@ impl<'source> Exaltation<'source> {
 
     pub(crate) fn set_martial_arts_dots(
         &mut self,
-        id: MartialArtsStyleId,
+        name: &'source str,
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.set_martial_arts_dots(id, dots)?;
+                mortal.set_martial_arts_dots(name, dots)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.set_martial_arts_dots(id, dots)?;
+                exalt.set_martial_arts_dots(name, dots)?;
             }
         }
         Ok(self)
@@ -234,32 +234,39 @@ impl<'source> Exaltation<'source> {
 impl<'view, 'source> Exaltation<'source> {
     pub(crate) fn martial_artist(
         &'view self,
-        id: MartialArtsStyleId,
+        name: &'view str,
     ) -> Option<MartialArtist<'view, 'source>> {
         match self {
-            Exaltation::Mortal(mortal) => Some(MartialArtist::new(
-                id,
-                ExaltationMartialArtist::Mortal(mortal.martial_arts_styles.get(&id)?),
-            )),
-            Exaltation::Exalt(exalt) => Some(MartialArtist::new(
-                id,
-                ExaltationMartialArtist::Exalt(exalt.martial_arts_styles().get(&id)?),
-            )),
+            Exaltation::Mortal(mortal) => {
+                let (name, mortal_martial_artist) =
+                    mortal.martial_arts_styles.get_key_value(name)?;
+                Some(MartialArtist {
+                    name,
+                    maybe_exalt: ExaltationMartialArtist::Mortal(mortal_martial_artist),
+                })
+            }
+            Exaltation::Exalt(exalt) => {
+                let (name, exalt_martial_artist) = exalt.martial_arts_styles.get_key_value(name)?;
+                Some(MartialArtist {
+                    name,
+                    maybe_exalt: ExaltationMartialArtist::Exalt(exalt_martial_artist),
+                })
+            }
         }
     }
 
-    pub(crate) fn martial_arts_id_iter(&'view self) -> impl Iterator<Item = MartialArtsStyleId> {
+    pub(crate) fn martial_arts_id_iter(&'view self) -> impl Iterator<Item = &'source str> {
         let mut ids = match self {
             Exaltation::Mortal(mortal) => mortal
                 .martial_arts_styles
                 .keys()
                 .copied()
-                .collect::<Vec<MartialArtsStyleId>>(),
+                .collect::<Vec<&str>>(),
             Exaltation::Exalt(exalt) => exalt
                 .martial_arts_styles()
                 .keys()
                 .copied()
-                .collect::<Vec<MartialArtsStyleId>>(),
+                .collect::<Vec<&str>>(),
         };
 
         ids.sort_by(|a, b| {
@@ -536,12 +543,12 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Mortal(_) => {
                 Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
             }
-            Exaltation::Exalt(exalt) => {
-                exalt.uncommit_motes(match name {
-                    UncommitMotes::UnattuneArtifact(artifact_id) => MoteCommitmentId::AttunedArtifact(*artifact_id),
-                    UncommitMotes::Other(name) => MoteCommitmentId::Other(name.as_str()),
-                })
-            }
+            Exaltation::Exalt(exalt) => exalt.uncommit_motes(match name {
+                UncommitMotes::UnattuneArtifact(artifact_id) => {
+                    MoteCommitmentId::AttunedArtifact(*artifact_id)
+                }
+                UncommitMotes::Other(name) => MoteCommitmentId::Other(name.as_str()),
+            }),
         }?;
         Ok(self)
     }

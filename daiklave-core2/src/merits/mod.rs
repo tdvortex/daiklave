@@ -13,7 +13,7 @@ pub struct Merits<'view, 'source>(pub(crate) &'view Character<'source>);
 
 impl<'view, 'source> Merits<'view, 'source> {
     /// Gets a specific Merit belonging to the character (if it exists).
-    pub fn get(&self, merit_id: MeritId) -> Option<Merit<'source>> {
+    pub fn get(&self, merit_id: MeritId<'view>) -> Option<Merit<'source>> {
         match merit_id {
             MeritId::Artifact(artifact_id) => match artifact_id {
                 ArtifactId::Weapon(artifact_weapon_id) => self
@@ -57,14 +57,11 @@ impl<'view, 'source> Merits<'view, 'source> {
                     ))
                 }),
             },
-            MeritId::DemenseNoManse(name) => {
-                self.0
-                    .demenses_no_manse
-                    .get_key_value(name)
-                    .map(|(name, geomancy)| {
-                        Merit(MeritSource::DemenseNoManse(name, *geomancy))
-                    })
-            }
+            MeritId::DemenseNoManse(name) => self
+                .0
+                .demenses_no_manse
+                .get_key_value(name)
+                .map(|(name, geomancy)| Merit(MeritSource::DemenseNoManse(name, *geomancy))),
             MeritId::DemenseWithManse(hearthstone_id) => self
                 .0
                 .hearthstones()
@@ -130,11 +127,16 @@ impl<'view, 'source> Merits<'view, 'source> {
                         })
                     })
             }
-            MeritId::MartialArtist(style_id) => self
-                .0
-                .martial_arts()
-                .style(style_id)
-                .map(|style| Merit(MeritSource::MartialArtist(style_id, style.name()))),
+            MeritId::MartialArtist(style_name) => match &self.0.exaltation {
+                Exaltation::Mortal(mortal) => mortal
+                    .martial_arts_styles
+                    .get_key_value(style_name)
+                    .map(|(k, _)| Merit(MeritSource::MartialArtist(*k))),
+                Exaltation::Exalt(exalt) => exalt
+                    .martial_arts_styles
+                    .get_key_value(style_name)
+                    .map(|(k, _)| Merit(MeritSource::MartialArtist(*k))),
+            },
             MeritId::MortalSorcerer => {
                 if let Exaltation::Mortal(mortal) = &self.0.exaltation {
                     if mortal.sorcery.is_some() {

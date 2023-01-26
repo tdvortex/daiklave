@@ -22,7 +22,7 @@ use crate::{
     artifact::wonders::{OwnedWonder, Wonder, WonderId},
     charms::CharmError,
     hearthstones::{HearthstoneId, UnslottedHearthstone},
-    martial_arts::{MartialArtsError, MartialArtsStyle, MartialArtsStyleId},
+    martial_arts::{MartialArtsError, MartialArtsStyle},
     merits::merit::MeritError,
     sorcery::{
         circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
@@ -45,7 +45,7 @@ use self::martial_arts::MortalMartialArtist;
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct Mortal<'source> {
     pub armor: MortalArmor<'source>,
-    pub martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtist<'source>>,
+    pub martial_arts_styles: HashMap<&'source str, MortalMartialArtist<'source>>,
     pub sorcery: Option<TerrestrialCircleSorcerer<'source>>,
     pub weapons: MortalWeapons<'source>,
     pub wonders: MortalWonders<'source>,
@@ -54,72 +54,56 @@ pub(crate) struct Mortal<'source> {
 
 impl<'source> Mortal<'source> {
     pub fn as_memo(&self) -> MortalMemo {
-        MortalMemo::new(
-            self.armor.as_memo(),
-            self.martial_arts_styles
+        MortalMemo {
+            armor: self.armor.as_memo(),
+            martial_arts_styles: self
+                .martial_arts_styles
                 .iter()
-                .map(|(k, v)| (*k, v.as_memo()))
+                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
                 .collect(),
-            self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
-            self.weapons.as_memo(),
-            self.wonders.as_memo(),
-            self.exalted_healing,
-        )
-    }
-
-    pub(crate) fn check_add_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-        _style: &MartialArtsStyle,
-    ) -> Result<(), CharacterMutationError> {
-        if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::MartialArtsError(
-                MartialArtsError::DuplicateStyle,
-            ))
-        } else {
-            Ok(())
+            sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
+            weapons: self.weapons.as_memo(),
+            wonders: self.wonders.as_memo(),
+            exalted_healing: self.exalted_healing,
         }
     }
 
     pub(crate) fn add_martial_arts_style(
         &mut self,
-        id: MartialArtsStyleId,
+        name: &'source str,
         style: &'source MartialArtsStyle,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_add_martial_arts_style(id, style)?;
-        self.martial_arts_styles
-            .insert(id, MortalMartialArtist::new(style, AbilityRating::Zero));
-        Ok(self)
-    }
-
-    pub(crate) fn check_remove_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-    ) -> Result<(), CharacterMutationError> {
-        if !self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::MartialArtsError(
-                MartialArtsError::StyleNotFound,
-            ))
+        if let Entry::Vacant(e) = self.martial_arts_styles.entry(name) {
+            e.insert(MortalMartialArtist {
+                style,
+                ability: AbilityRating::Zero,
+            });
+            Ok(self)
         } else {
-            Ok(())
+            Err(CharacterMutationError::MartialArtsError(
+                MartialArtsError::DuplicateStyle,
+            ))
         }
     }
 
     pub(crate) fn remove_martial_arts_style(
         &mut self,
-        id: MartialArtsStyleId,
+        name: &'source str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_remove_martial_arts_style(id)?;
-        self.martial_arts_styles.remove(&id);
+        self.martial_arts_styles
+            .remove(name)
+            .ok_or(CharacterMutationError::MartialArtsError(
+                MartialArtsError::StyleNotFound,
+            ))?;
         Ok(self)
     }
 
     pub(crate) fn set_martial_arts_dots(
         &mut self,
-        id: MartialArtsStyleId,
+        name: &'source str,
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if let Some(style) = self.martial_arts_styles.get_mut(&id) {
+        if let Some(style) = self.martial_arts_styles.get_mut(name) {
             // Mortals have no charms to lose if dots are zero
             style.ability_mut().set_dots(dots)?;
             Ok(self)

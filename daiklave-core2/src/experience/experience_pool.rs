@@ -20,7 +20,7 @@ impl ExperiencePool {
         self.unspent
     }
 
-    /// The total number of experience points, both 
+    /// The total number of experience points, both
     pub fn total(&self) -> u16 {
         self.unspent.saturating_add(self.spent)
     }

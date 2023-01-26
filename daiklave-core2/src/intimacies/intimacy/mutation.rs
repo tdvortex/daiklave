@@ -1,4 +1,4 @@
-use super::{IntimacyTypeMemo, IntimacyLevel};
+use super::{IntimacyLevel, IntimacyTypeMemo};
 
 /// An Intimacy to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]

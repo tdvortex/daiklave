@@ -40,8 +40,7 @@ impl<'source> Intimacy<'source> {
     /// quality of a Tie, or is a statement of the Principle.
     pub fn description(&self) -> &'source str {
         match self.intimacy_type {
-            IntimacyType::Tie(_, description)
-            | IntimacyType::Principle(description) => description
+            IntimacyType::Tie(_, description) | IntimacyType::Principle(description) => description,
         }
     }
 }

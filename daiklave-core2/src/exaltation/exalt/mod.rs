@@ -54,7 +54,7 @@ use crate::{
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{
         charm::{MartialArtsCharm, MartialArtsCharmId},
-        MartialArtsError, MartialArtsStyle, MartialArtsStyleId,
+        MartialArtsError, MartialArtsStyle,
     },
     sorcery::{
         circles::{
@@ -94,7 +94,7 @@ pub(crate) struct Exalt<'source> {
     pub(crate) armor: ExaltArmor<'source>,
     pub(crate) essence: EssenceState<'source>,
     pub(crate) evocations: Vec<(EvocationId, &'source Evocation)>,
-    pub(crate) martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>>,
+    pub(crate) martial_arts_styles: HashMap<&'source str, ExaltMartialArtist<'source>>,
     pub(crate) exalt_type: ExaltType<'source>,
     pub(crate) weapons: ExaltWeapons<'source>,
     pub(crate) wonders: ExaltWonders<'source>,
@@ -113,7 +113,7 @@ impl<'view, 'source> Exalt<'source> {
             martial_arts_styles: self
                 .martial_arts_styles
                 .iter()
-                .map(|(k, v)| (*k, v.as_memo()))
+                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
                 .collect(),
             exalt_type: self.exalt_type.as_memo(),
             weapons: self.weapons.as_memo(),
@@ -135,13 +135,13 @@ impl<'view, 'source> Exalt<'source> {
         }
     }
 
-    pub fn martial_arts_styles(&self) -> &HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>> {
+    pub fn martial_arts_styles(&self) -> &HashMap<&'source str, ExaltMartialArtist<'source>> {
         &self.martial_arts_styles
     }
 
     pub fn martial_arts_styles_mut(
         &mut self,
-    ) -> &mut HashMap<MartialArtsStyleId, ExaltMartialArtist<'source>> {
+    ) -> &mut HashMap<&'source str, ExaltMartialArtist<'source>> {
         &mut self.martial_arts_styles
     }
 
@@ -266,9 +266,9 @@ impl<'view, 'source> Exalt<'source> {
             Ok(self)
         } else {
             self.essence
-            .motes
-            .peripheral_mut()
-            .uncommit(peripheral_committed)?;
+                .motes
+                .peripheral_mut()
+                .uncommit(peripheral_committed)?;
 
             self.essence
                 .motes
@@ -411,69 +411,47 @@ impl<'view, 'source> Exalt<'source> {
         Ok(self)
     }
 
-    pub(crate) fn check_add_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-        _style: &MartialArtsStyle,
-    ) -> Result<(), CharacterMutationError> {
-        if self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::MartialArtsError(
-                MartialArtsError::DuplicateStyle,
-            ))
-        } else {
-            Ok(())
-        }
-    }
-
     pub(crate) fn add_martial_arts_style(
         &mut self,
-        id: MartialArtsStyleId,
+        name: &'source str,
         style: &'source MartialArtsStyle,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_add_martial_arts_style(id, style)?;
-        self.martial_arts_styles.insert(
-            id,
-            ExaltMartialArtist {
+        if let Entry::Vacant(e) = self.martial_arts_styles.entry(name) {
+            e.insert(ExaltMartialArtist {
                 style,
                 ability: AbilityRating::Zero,
                 charms: Vec::new(),
-            },
-        );
-        Ok(self)
-    }
-
-    pub(crate) fn check_remove_martial_arts_style(
-        &self,
-        id: MartialArtsStyleId,
-    ) -> Result<(), CharacterMutationError> {
-        if !self.martial_arts_styles.contains_key(&id) {
-            Err(CharacterMutationError::MartialArtsError(
-                MartialArtsError::StyleNotFound,
-            ))
+            });
+            Ok(self)
         } else {
-            Ok(())
+            Err(CharacterMutationError::MartialArtsError(
+                MartialArtsError::DuplicateStyle,
+            ))
         }
     }
 
     pub(crate) fn remove_martial_arts_style(
         &mut self,
-        id: MartialArtsStyleId,
+        name: &'source str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_remove_martial_arts_style(id)?;
-        self.martial_arts_styles.remove(&id);
+        self.martial_arts_styles
+            .remove(&name)
+            .ok_or(CharacterMutationError::MartialArtsError(
+                MartialArtsError::StyleNotFound,
+            ))?;
         Ok(self)
     }
 
     pub(crate) fn set_martial_arts_dots(
         &mut self,
-        id: MartialArtsStyleId,
+        name: &'source str,
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         if dots > 5 {
             Err(CharacterMutationError::AbilityError(
                 AbilityError::InvalidRating,
             ))
-        } else if let Some(style) = self.martial_arts_styles.get_mut(&id) {
+        } else if let Some(style) = self.martial_arts_styles.get_mut(&name) {
             let old_dots = style.ability().dots();
             style.ability_mut().set_dots(dots)?;
             if old_dots > dots {

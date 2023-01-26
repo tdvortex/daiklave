@@ -14,21 +14,19 @@ use std::{
     num::NonZeroU8,
 };
 
-use crate::{
-    book_reference::BookReference, charms::CharmCostType, martial_arts::MartialArtsStyleId,
-};
+use crate::{book_reference::BookReference, charms::CharmCostType};
 
 use super::{MartialArtsCharmId, MartialArtsCharmKeyword};
 
 /// A builder path to construct a Martial Arts charm. Required fields, in
-/// order, are: name(already specified), style Id (already specified), Essence
+/// order, are: name(already specified), style name (already specified), Essence
 /// requirement, ability dots requirement, action type, duration, and
 /// description. Optional fields: book reference, prerequisite Martial Arts
 /// Charms, a Mastery effect, a Terrestrial effect, an Enlightenment effect,
 /// Charm keywords, costs, and a short summary.
 pub struct MartialArtsCharmBuilder {
     pub(crate) name: String,
-    pub(crate) style: MartialArtsStyleId,
+    pub(crate) style: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) charms_required: HashSet<MartialArtsCharmId>,
     pub(crate) mastery: Option<String>,

@@ -15,7 +15,7 @@ use daiklave_core2::{
         HearthstoneId,
     },
     languages::language::{LanguageMutation, MajorLanguage},
-    martial_arts::{MartialArtsStyle, MartialArtsStyleId},
+    martial_arts::MartialArtsStyle,
     merits::merit::{
         Merit, MeritId, MeritTemplateId, MeritType, NonStackableMerit, NonStackableMeritId,
         StackableMerit, StackableMeritId, StackableMeritTemplateId,
@@ -138,10 +138,8 @@ fn test_merits() {
     event_source.apply_mutation(mutation).unwrap();
 
     // Standalone demense
-    let mutation = CharacterMutation::AddDemense(
-        "Nowhere special".to_owned(),
-        GeomancyLevel::Standard,
-    );
+    let mutation =
+        CharacterMutation::AddDemense("Nowhere special".to_owned(), GeomancyLevel::Standard);
     event_source.apply_mutation(mutation).unwrap();
 
     // Manse, hearthstone, and demense
@@ -182,10 +180,7 @@ fn test_merits() {
         None,
     );
 
-    let mutation = CharacterMutation::AddMartialArtsStyle(
-        MartialArtsStyleId(UniqueId::Placeholder(1)),
-        crane_style,
-    );
+    let mutation = CharacterMutation::AddMartialArtsStyle("Crane Style".to_owned(), crane_style);
     event_source.apply_mutation(mutation).unwrap();
 
     // Exalted Healing
@@ -426,10 +421,7 @@ fn test_merits() {
     let nowhere = merits
         .get(MeritId::DemenseNoManse("Nowhere special"))
         .unwrap();
-    assert_eq!(
-        nowhere.id(),
-        MeritId::DemenseNoManse("Nowhere special")
-    );
+    assert_eq!(nowhere.id(), MeritId::DemenseNoManse("Nowhere special"));
     assert_eq!(nowhere.template_name(), "Demense");
     assert_eq!(
         nowhere.book_reference(),
@@ -479,15 +471,8 @@ fn test_merits() {
     assert_eq!(manse.template_id(), MeritTemplateId::Manse);
     assert!(manse.description().1.is_some());
 
-    let ma_crane = merits
-        .get(MeritId::MartialArtist(MartialArtsStyleId(
-            UniqueId::Placeholder(1),
-        )))
-        .unwrap();
-    assert_eq!(
-        ma_crane.id(),
-        MeritId::MartialArtist(MartialArtsStyleId(UniqueId::Placeholder(1)))
-    );
+    let ma_crane = merits.get(MeritId::MartialArtist("Crane Style")).unwrap();
+    assert_eq!(ma_crane.id(), MeritId::MartialArtist("Crane Style"));
     assert_eq!(ma_crane.template_name(), "Martial Artist");
     assert_eq!(
         ma_crane.book_reference(),
@@ -723,11 +708,7 @@ fn test_merits() {
     event_source.apply_mutation(mutation).unwrap();
     let character = event_source.as_character().unwrap();
     let merits = character.merits();
-    assert!(merits
-        .get(MeritId::MartialArtist(MartialArtsStyleId(
-            UniqueId::Placeholder(1)
-        )))
-        .is_none());
+    assert!(merits.get(MeritId::MartialArtist("Crane Style")).is_none());
 
     // Dropping an ability or attribute removes dependent merits
     let mutation = CharacterMutation::SetAttribute(AttributeName::Stamina, 2);
@@ -765,7 +746,9 @@ fn test_merits() {
 
     // Remove the demense
     event_source
-        .apply_mutation(CharacterMutation::RemoveDemense("Nowhere special".to_owned()))
+        .apply_mutation(CharacterMutation::RemoveDemense(
+            "Nowhere special".to_owned(),
+        ))
         .unwrap();
 
     // Remove languages

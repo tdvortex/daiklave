@@ -31,9 +31,7 @@ impl<'view, 'source> Motes<'view, 'source> {
 
     /// All effects the Exalt has currently committed motes to (including
     /// artifact attunement)
-    pub fn committed(
-        &self,
-    ) -> impl Iterator<Item = (MoteCommitmentId, MoteCommitment)> + '_ {
+    pub fn committed(&self) -> impl Iterator<Item = (MoteCommitmentId, MoteCommitment)> + '_ {
         let other_commitments = self
             .state
             .commitments

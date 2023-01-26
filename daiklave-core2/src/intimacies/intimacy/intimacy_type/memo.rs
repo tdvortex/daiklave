@@ -11,8 +11,12 @@ pub(crate) enum IntimacyTypeMemo {
 impl<'source> IntimacyTypeMemo {
     pub(crate) fn as_ref(&'source self) -> IntimacyType<'source> {
         match self {
-            IntimacyTypeMemo::Tie(target, description) => IntimacyType::Tie(target.as_str(), description.as_str()),
-            IntimacyTypeMemo::Principle(description) => IntimacyType::Principle(description.as_str()),
+            IntimacyTypeMemo::Tie(target, description) => {
+                IntimacyType::Tie(target.as_str(), description.as_str())
+            }
+            IntimacyTypeMemo::Principle(description) => {
+                IntimacyType::Principle(description.as_str())
+            }
         }
     }
 }

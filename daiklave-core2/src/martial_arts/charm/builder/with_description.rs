@@ -6,17 +6,14 @@ use std::{
 use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
-    martial_arts::{
-        charm::{MartialArtsCharm, MartialArtsCharmId, MartialArtsCharmKeyword},
-        MartialArtsStyleId,
-    },
+    martial_arts::charm::{MartialArtsCharm, MartialArtsCharmId, MartialArtsCharmKeyword},
 };
 
 /// A Martial Arts Charm builder after the description has been provided. To
 /// complete the builder, call build().
 pub struct MartialArtsCharmBuilderWithDescription {
     pub(crate) name: String,
-    pub(crate) style: MartialArtsStyleId,
+    pub(crate) style: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) charms_required: HashSet<MartialArtsCharmId>,
     pub(crate) mastery: Option<String>,

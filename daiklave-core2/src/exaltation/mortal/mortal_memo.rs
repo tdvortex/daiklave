@@ -2,10 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    martial_arts::MartialArtsStyleId,
-    sorcery::circles::terrestrial::sorcerer_memo::TerrestrialCircleSorcererMemo,
-};
+use crate::sorcery::circles::terrestrial::sorcerer_memo::TerrestrialCircleSorcererMemo;
 
 use super::{
     armor::MortalArmorMemo, martial_arts::MortalMartialArtistMemo, weapons::MortalWeaponsMemo,
@@ -14,39 +11,21 @@ use super::{
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MortalMemo {
-    armor: MortalArmorMemo,
-    martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtistMemo>,
-    sorcery: Option<TerrestrialCircleSorcererMemo>,
-    weapons: MortalWeaponsMemo,
-    wonders: MortalWondersMemo,
-    exalted_healing: bool,
+    pub armor: MortalArmorMemo,
+    pub martial_arts_styles: HashMap<String, MortalMartialArtistMemo>,
+    pub sorcery: Option<TerrestrialCircleSorcererMemo>,
+    pub weapons: MortalWeaponsMemo,
+    pub wonders: MortalWondersMemo,
+    pub exalted_healing: bool,
 }
 
 impl<'source> MortalMemo {
-    pub fn new(
-        armor: MortalArmorMemo,
-        martial_arts_styles: HashMap<MartialArtsStyleId, MortalMartialArtistMemo>,
-        sorcery: Option<TerrestrialCircleSorcererMemo>,
-        weapons: MortalWeaponsMemo,
-        wonders: MortalWondersMemo,
-        exalted_healing: bool,
-    ) -> Self {
-        Self {
-            armor,
-            martial_arts_styles,
-            sorcery,
-            weapons,
-            wonders,
-            exalted_healing,
-        }
-    }
-
     pub fn as_ref(&'source self) -> Mortal<'source> {
         Mortal {
             martial_arts_styles: {
                 self.martial_arts_styles
                     .iter()
-                    .map(|(k, v)| (*k, v.as_ref()))
+                    .map(|(k, v)| (k.as_str(), v.as_ref()))
                     .collect()
             },
             sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_ref()),

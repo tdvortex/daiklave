@@ -14,8 +14,12 @@ pub enum IntimacyType<'source> {
 impl<'source> IntimacyType<'source> {
     pub(crate) fn as_memo(&self) -> IntimacyTypeMemo {
         match self {
-            IntimacyType::Tie(target, description) => IntimacyTypeMemo::Tie((*target).to_owned(), (*description).to_owned()),
-            IntimacyType::Principle(description) => IntimacyTypeMemo::Principle((*description).to_owned()),
+            IntimacyType::Tie(target, description) => {
+                IntimacyTypeMemo::Tie((*target).to_owned(), (*description).to_owned())
+            }
+            IntimacyType::Principle(description) => {
+                IntimacyTypeMemo::Principle((*description).to_owned())
+            }
         }
     }
 }

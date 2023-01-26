@@ -14,7 +14,7 @@ pub(crate) use ability_rating_memo::AbilityRatingMemo;
 pub(crate) use error::AbilityError;
 pub(crate) use memo::AbilitiesMemo;
 
-use crate::{martial_arts::MartialArtsStyleId, Character};
+use crate::Character;
 
 /// An interface for read-only accessing all character abilities, including
 /// Craft and Martial Arts.
@@ -41,19 +41,21 @@ impl<'view, 'source> Abilities<'view, 'source> {
     /// Get a Martial Arts ability. Returns None if the character does not have
     /// the Martial Artist merit for this style; returns 0 if the character has
     /// the Martial Artis merit, but does not have any dots.
-    pub fn martial_arts(
-        &'view self,
-        style_id: MartialArtsStyleId,
-    ) -> Option<Ability<'view, 'source>> {
-        let rating_ptr = match &self.0.exaltation {
+    pub fn martial_arts(&'view self, style_name: &str) -> Option<Ability<'view, 'source>> {
+        let (style_name, rating_ptr) = match &self.0.exaltation {
             crate::exaltation::Exaltation::Mortal(mortal) => {
-                mortal.martial_arts_styles.get(&style_id)?.ability()
+                let (style_name, mortal_martial_artist) =
+                    mortal.martial_arts_styles.get_key_value(style_name)?;
+                (*style_name, mortal_martial_artist.ability())
             }
             crate::exaltation::Exaltation::Exalt(exalt) => {
-                exalt.martial_arts_styles().get(&style_id)?.ability()
+                let (style_name, exalt_martial_artist) =
+                    exalt.martial_arts_styles.get_key_value(style_name)?;
+                (*style_name, exalt_martial_artist.ability())
             }
         };
-        Some(Ability(AbilityType::MartialArts(style_id, rating_ptr)))
+
+        Some(Ability(AbilityType::MartialArts(style_name, rating_ptr)))
     }
 
     /// Iterates over all abilities, in alphabetical order. Craft and Martial
@@ -134,10 +136,10 @@ impl<'view, 'source> Ability<'view, 'source> {
         self.0.craft_focus()
     }
 
-    /// If the ability is a Martial Arts ability, the Id of the Martial Arts
-    /// style (which can be used to look up the name or other parameters).
+    /// If the ability is a Martial Arts ability, the name of the Martial Arts
+    /// style (which can be used to look up other parameters).
     /// None for vanilla and Craft.
-    pub fn martial_arts_style(&self) -> Option<MartialArtsStyleId> {
+    pub fn martial_arts_style(&self) -> Option<&'source str> {
         self.0.martial_arts_style()
     }
 
@@ -156,7 +158,7 @@ impl<'view, 'source> Ability<'view, 'source> {
 pub(crate) enum AbilityType<'view, 'source> {
     Vanilla(AbilityNameVanilla, &'view AbilityRating<'source>),
     Craft(&'source str, &'view AbilityRating<'source>),
-    MartialArts(MartialArtsStyleId, &'view AbilityRating<'source>),
+    MartialArts(&'source str, &'view AbilityRating<'source>),
 }
 
 impl<'view, 'source> AbilityType<'view, 'source> {
@@ -175,9 +177,9 @@ impl<'view, 'source> AbilityType<'view, 'source> {
         }
     }
 
-    fn martial_arts_style(&self) -> Option<MartialArtsStyleId> {
+    fn martial_arts_style(&self) -> Option<&'source str> {
         match self {
-            AbilityType::MartialArts(id, _) => Some(*id),
+            AbilityType::MartialArts(name, _) => Some(*name),
             _ => None,
         }
     }

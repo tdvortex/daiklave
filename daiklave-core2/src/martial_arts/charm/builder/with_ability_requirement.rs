@@ -6,10 +6,7 @@ use std::{
 use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
-    martial_arts::{
-        charm::{MartialArtsCharmId, MartialArtsCharmKeyword},
-        MartialArtsStyleId,
-    },
+    martial_arts::charm::{MartialArtsCharmId, MartialArtsCharmKeyword},
 };
 
 use super::MartialArtsCharmBuilderWithActionType;
@@ -18,7 +15,7 @@ use super::MartialArtsCharmBuilderWithActionType;
 /// has been specified.
 pub struct MartialArtsCharmBuilderWithAbilityRequirement {
     pub(crate) name: String,
-    pub(crate) style: MartialArtsStyleId,
+    pub(crate) style: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) charms_required: HashSet<MartialArtsCharmId>,
     pub(crate) mastery: Option<String>,

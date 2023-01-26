@@ -20,12 +20,10 @@ use crate::{
 
 use self::builder::MartialArtsCharmBuilder;
 
-use super::MartialArtsStyleId;
-
 /// A Martial Arts charm.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MartialArtsCharm {
-    style: MartialArtsStyleId,
+    style: String,
     book_reference: Option<BookReference>,
     name: String,
     summary: Option<String>,
@@ -44,10 +42,10 @@ pub struct MartialArtsCharm {
 
 impl MartialArtsCharm {
     /// Starts a builder to create a new Martial Arts Charm.
-    pub fn builder(name: String, style: MartialArtsStyleId) -> MartialArtsCharmBuilder {
+    pub fn builder(charm_name: String, style_name: String) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {
-            name,
-            style,
+            name: charm_name,
+            style: style_name,
             book_reference: None,
             charms_required: HashSet::new(),
             mastery: None,
@@ -60,8 +58,8 @@ impl MartialArtsCharm {
     }
 
     /// The Martial Arts style associated with the Charm.
-    pub fn style(&self) -> MartialArtsStyleId {
-        self.style
+    pub fn style(&self) -> &str {
+        self.style.as_str()
     }
 
     /// The book reference for the Charm, if any.

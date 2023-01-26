@@ -7,8 +7,8 @@ use super::MortalMartialArtistMemo;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MortalMartialArtist<'source> {
-    style: &'source MartialArtsStyle,
-    ability: AbilityRating<'source>,
+    pub style: &'source MartialArtsStyle,
+    pub ability: AbilityRating<'source>,
 }
 
 impl<'view, 'source> MortalMartialArtist<'source> {

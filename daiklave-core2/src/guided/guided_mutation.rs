@@ -1,6 +1,6 @@
 use crate::{
     abilities::AbilityName,
-    martial_arts::{MartialArtsStyle, MartialArtsStyleId},
+    martial_arts::MartialArtsStyle,
     sorcery::{
         spell::SpellId, ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
         TerrestrialSpell,
@@ -33,9 +33,9 @@ pub enum GuidedMutation {
     /// Remove a Solar Favored ability from the guided builder.
     RemoveSolarFavoredAbility(AbilityName),
     /// Add a Martial Arts style.
-    AddMartialArtsStyle(MartialArtsStyleId, MartialArtsStyle),
+    AddMartialArtsStyle(String, MartialArtsStyle),
     /// Removes a Martial Arts style.
-    RemoveMartialArtsStyle(MartialArtsStyleId),
+    RemoveMartialArtsStyle(String),
     /// Sets the sorcery archetype for the character. Clears any
     /// previous sorcery archetype and/or shaping ritual.
     SetSorceryArchetype(SorceryArchetypeId, SorceryArchetype),

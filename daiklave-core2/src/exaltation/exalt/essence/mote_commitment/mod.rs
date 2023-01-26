@@ -1,10 +1,9 @@
 mod id;
 mod name;
 
-pub use id::{MoteCommitmentId};
+pub use id::MoteCommitmentId;
 pub use name::UncommitMotes;
-use serde::{Serialize, Deserialize};
-
+use serde::{Deserialize, Serialize};
 
 /// A single committed mote effect.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

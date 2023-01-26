@@ -27,7 +27,7 @@ use daiklave_core2::{
     },
     martial_arts::{
         charm::{MartialArtsCharm, MartialArtsCharmId, MartialArtsCharmKeyword},
-        MartialArtsStyle, MartialArtsStyleId,
+        MartialArtsStyle,
     },
     sorcery::{
         spell::{Spell, SpellId, SpellKeyword},
@@ -1046,7 +1046,6 @@ fn test_spells() {
 fn test_martial_arts_charms() {
     let mut event_source = CharacterEventSource::default();
     // Mortals cannot add MA charms, even if they have the right style
-    let single_point_id = MartialArtsStyleId(UniqueId::Placeholder(1));
     let single_point = MartialArtsStyle::new(
         Some(BookReference::new(Book::CoreRulebook, 434)),
         "Single Point Shining Into the Void Style".to_owned(),
@@ -1065,40 +1064,45 @@ fn test_martial_arts_charms() {
         .unwrap();
     event_source
         .apply_mutation(CharacterMutation::AddMartialArtsStyle(
-            single_point_id,
+            "Single Point Shining Into the Void Style".to_owned(),
             single_point,
         ))
         .unwrap();
     event_source
-        .apply_mutation(CharacterMutation::SetMartialArtsDots(single_point_id, 2))
+        .apply_mutation(CharacterMutation::SetMartialArtsDots(
+            "Single Point Shining Into the Void Style".to_owned(),
+            2,
+        ))
         .unwrap();
 
     let gathering_light_concentration_id = MartialArtsCharmId(UniqueId::Placeholder(1));
-    let gathering_light_concentration =
-        MartialArtsCharm::builder("Gathering Light Concentration".to_owned(), single_point_id)
-            .book_reference(BookReference::new(Book::CoreRulebook, 434))
-            .cost(CharmCostType::Motes, NonZeroU8::new(3).unwrap())
-            .essence_required(NonZeroU8::new(1).unwrap())
-            .ability_required(NonZeroU8::new(2).unwrap())
-            .action_type(CharmActionType::Reflexive)
-            .keyword(MartialArtsCharmKeyword::Uniform)
-            .duration("Instant".to_owned())
-            .summary("Reflect onslaught penalties after parry".to_owned())
-            .description(
-                "The clashing steel and ferocious blows of the swordsman's \
+    let gathering_light_concentration = MartialArtsCharm::builder(
+        "Gathering Light Concentration".to_owned(),
+        "Single Point Shining Into the Void Style".to_owned(),
+    )
+    .book_reference(BookReference::new(Book::CoreRulebook, 434))
+    .cost(CharmCostType::Motes, NonZeroU8::new(3).unwrap())
+    .essence_required(NonZeroU8::new(1).unwrap())
+    .ability_required(NonZeroU8::new(2).unwrap())
+    .action_type(CharmActionType::Reflexive)
+    .keyword(MartialArtsCharmKeyword::Uniform)
+    .duration("Instant".to_owned())
+    .summary("Reflect onslaught penalties after parry".to_owned())
+    .description(
+        "The clashing steel and ferocious blows of the swordsman's \
     enemies do not disrupt her focus—rather, she welcomes \
     them, gleaning the weaknesses of each foe's fighting style \
     from their offense."
-                    .to_owned(),
-            )
-            .mastery(
-                "At Essence 3+, the Solar may spend an extra 3i \
+            .to_owned(),
+    )
+    .mastery(
+        "At Essence 3+, the Solar may spend an extra 3i \
     when activating Gathering Light Concentration to cancel \
     all onslaught penalties she's suffering from, and inflict \
     them on her attacker."
-                    .to_owned(),
-            )
-            .build();
+            .to_owned(),
+    )
+    .build();
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
@@ -1153,27 +1157,29 @@ fn test_martial_arts_charms() {
 
     // Exalts must meet the MA ability requirements of charms
     let shining_starfall_execution_id = MartialArtsCharmId(UniqueId::Placeholder(2));
-    let shining_starfall_execution =
-        MartialArtsCharm::builder("Shining Starfall Execution".to_owned(), single_point_id)
-            .book_reference(BookReference::new(Book::CoreRulebook, 434))
-            .cost(CharmCostType::Motes, NonZeroU8::new(6).unwrap())
-            .essence_required(NonZeroU8::new(1).unwrap())
-            .ability_required(NonZeroU8::new(3).unwrap())
-            .action_type(CharmActionType::Supplemental)
-            .keyword(MartialArtsCharmKeyword::DecisiveOnly)
-            .duration("Instant".to_owned())
-            .summary("Extra Decisive damage".to_owned())
-            .description(
-                "Committing fully to a lethal blow, the swordsman cleaves \
+    let shining_starfall_execution = MartialArtsCharm::builder(
+        "Shining Starfall Execution".to_owned(),
+        "Single Point Shining Into the Void Style".to_owned(),
+    )
+    .book_reference(BookReference::new(Book::CoreRulebook, 434))
+    .cost(CharmCostType::Motes, NonZeroU8::new(6).unwrap())
+    .essence_required(NonZeroU8::new(1).unwrap())
+    .ability_required(NonZeroU8::new(3).unwrap())
+    .action_type(CharmActionType::Supplemental)
+    .keyword(MartialArtsCharmKeyword::DecisiveOnly)
+    .duration("Instant".to_owned())
+    .summary("Extra Decisive damage".to_owned())
+    .description(
+        "Committing fully to a lethal blow, the swordsman cleaves \
     through her enemies with killing speed."
-                    .to_owned(),
-            )
-            .mastery(
-                "Shining Starfall Execution also doubles 10s on \
+            .to_owned(),
+    )
+    .mastery(
+        "Shining Starfall Execution also doubles 10s on \
     the damage roll at Initiative 15+."
-                    .to_owned(),
-            )
-            .build();
+            .to_owned(),
+    )
+    .build();
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
@@ -1182,7 +1188,10 @@ fn test_martial_arts_charms() {
         )))
         .is_err());
     event_source
-        .apply_mutation(CharacterMutation::SetMartialArtsDots(single_point_id, 5))
+        .apply_mutation(CharacterMutation::SetMartialArtsDots(
+            "Single Point Shining Into the Void Style".to_owned(),
+            5,
+        ))
         .unwrap();
     let character = event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
@@ -1196,7 +1205,10 @@ fn test_martial_arts_charms() {
         .is_some());
 
     let character = event_source
-        .apply_mutation(CharacterMutation::SetMartialArtsDots(single_point_id, 2))
+        .apply_mutation(CharacterMutation::SetMartialArtsDots(
+            "Single Point Shining Into the Void Style".to_owned(),
+            2,
+        ))
         .unwrap();
     assert!(character
         .charms()
@@ -1212,7 +1224,7 @@ fn test_martial_arts_charms() {
     let form_id = MartialArtsCharmId(UniqueId::Placeholder(3));
     let form = MartialArtsCharm::builder(
         "Single Point Shining Into the Void Form".to_owned(),
-        single_point_id,
+        "Single Point Shining Into the Void Style".to_owned(),
     )
     .book_reference(BookReference::new(Book::CoreRulebook, 434))
     .cost(CharmCostType::Motes, NonZeroU8::new(10).unwrap())

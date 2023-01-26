@@ -2,10 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    charms::charm::evocation::{Evocation, EvocationId},
-    martial_arts::MartialArtsStyleId,
-};
+use crate::charms::charm::evocation::{Evocation, EvocationId};
 
 use super::{
     armor::ExaltArmorMemo, essence::EssenceStateMemo, exalt_type::ExaltTypeMemo,
@@ -18,7 +15,7 @@ pub(crate) struct ExaltMemo {
     pub(crate) armor: ExaltArmorMemo,
     pub(crate) essence: EssenceStateMemo,
     pub(crate) evocations: Vec<(EvocationId, Evocation)>,
-    pub(crate) martial_arts_styles: HashMap<MartialArtsStyleId, ExaltMartialArtistMemo>,
+    pub(crate) martial_arts_styles: HashMap<String, ExaltMartialArtistMemo>,
     pub(crate) exalt_type: ExaltTypeMemo,
     pub(crate) weapons: ExaltWeaponsMemo,
     pub(crate) wonders: ExaltWondersMemo,
@@ -37,7 +34,7 @@ impl<'source> ExaltMemo {
             martial_arts_styles: self
                 .martial_arts_styles
                 .iter()
-                .map(|(k, v)| (*k, v.as_ref()))
+                .map(|(k, v)| (k.as_str(), v.as_ref()))
                 .collect(),
             exalt_type: self.exalt_type.as_ref(),
             weapons: self.weapons.as_ref(),

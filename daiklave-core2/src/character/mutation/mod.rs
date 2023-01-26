@@ -19,9 +19,9 @@ use crate::{
         hearthstone::{GeomancyLevel, HearthstoneTemplate},
         HearthstoneId,
     },
-    intimacies::intimacy::{IntimacyMutation},
+    intimacies::intimacy::IntimacyMutation,
     languages::language::LanguageMutation,
-    martial_arts::{MartialArtsStyle, MartialArtsStyleId},
+    martial_arts::MartialArtsStyle,
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
     sorcery::{
         circles::{
@@ -85,12 +85,12 @@ pub enum CharacterMutation {
     /// Adds a Martial Arts style to a character. This purchases the
     /// MartialArtist merit for the style, but does not grant any Martial Arts
     /// dots or Martial Arts charms.
-    AddMartialArtsStyle(MartialArtsStyleId, MartialArtsStyle),
+    AddMartialArtsStyle(String, MartialArtsStyle),
     /// Removes a Martial Arts style from a character, including the merit,
     /// associated ability dots, specialties, and Charms.
-    RemoveMartialArtsStyle(MartialArtsStyleId),
+    RemoveMartialArtsStyle(String),
     /// Sets the Ability dots for a specific Martial Arts style.
-    SetMartialArtsDots(MartialArtsStyleId, u8),
+    SetMartialArtsDots(String, u8),
     /// Sets the Craft dots for a particular focus area.
     SetCraftDots(String, u8),
     /// Adds a mundane weapon to the character.

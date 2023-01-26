@@ -1,6 +1,6 @@
 use crate::{
     artifact::ArtifactId, hearthstones::HearthstoneId, languages::language::MajorLanguage,
-    martial_arts::MartialArtsStyleId, sorcery::SorceryArchetypeMeritId,
+    sorcery::SorceryArchetypeMeritId,
 };
 
 use super::{nonstackable::NonStackableMeritId, stackable::StackableMeritId};
@@ -35,7 +35,7 @@ pub enum MeritId<'a> {
     Manse(HearthstoneId),
     /// The merit associated with the acquisition of a specific Martial Arts
     /// style.
-    MartialArtist(MartialArtsStyleId),
+    MartialArtist(&'a str),
     /// For mortals, the merit associated with the acquisition of Terrestrial
     /// circle sorcery.
     MortalSorcerer,

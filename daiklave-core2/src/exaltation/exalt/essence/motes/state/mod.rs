@@ -2,9 +2,7 @@ mod memo;
 
 use std::collections::HashMap;
 
-use crate::exaltation::exalt::essence::{
-    mote_commitment::MoteCommitment, mote_pool::MotePool,
-};
+use crate::exaltation::exalt::essence::{mote_commitment::MoteCommitment, mote_pool::MotePool};
 
 pub(crate) use self::memo::MotesStateMemo;
 
@@ -20,7 +18,11 @@ impl<'source> MotesState<'source> {
         MotesStateMemo {
             peripheral: self.peripheral,
             personal: self.personal,
-            commitments: self.commitments.iter().map(|(k, v)| ((*k).to_owned(), *v)).collect()
+            commitments: self
+                .commitments
+                .iter()
+                .map(|(k, v)| ((*k).to_owned(), *v))
+                .collect(),
         }
     }
 

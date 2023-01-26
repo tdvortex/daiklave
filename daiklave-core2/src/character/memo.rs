@@ -11,7 +11,7 @@ use crate::{
     experience::ExperiencePool,
     health::Health,
     hearthstones::{hearthstone::GeomancyLevel, HearthstoneId, UnslottedHearthstoneMemo},
-    intimacies::intimacy::{IntimacyTypeMemo, IntimacyLevel},
+    intimacies::intimacy::{IntimacyLevel, IntimacyTypeMemo},
     languages::LanguagesMemo,
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
     willpower::Willpower,
