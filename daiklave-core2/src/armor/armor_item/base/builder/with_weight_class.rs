@@ -2,8 +2,10 @@ use std::collections::HashSet;
 
 use crate::{
     armor::armor_item::{
-        artifact::BaseArtifactArmor, base::BaseArmor, mundane::MundaneArmor, ArmorTag,
-        ArmorWeightClass,
+        artifact::BaseArtifactArmor,
+        base::BaseArmor,
+        mundane::{AddMundaneArmor, MundaneArmor},
+        ArmorTag, ArmorWeightClass,
     },
     book_reference::BookReference,
 };
@@ -30,24 +32,28 @@ impl BaseArmorItemBuilderWithWeightClass {
     }
 
     /// Completes the build process as a mundane armor item.
-    pub fn build_mundane(self) -> MundaneArmor {
-        MundaneArmor(BaseArmor {
-            name: self.name,
-            book_reference: self.book_reference,
-            tags: self.tags,
-            weight_class: self.weight_class,
-        })
+    pub fn build_mundane(self) -> AddMundaneArmor {
+        (
+            self.name,
+            MundaneArmor(BaseArmor {
+                book_reference: self.book_reference,
+                tags: self.tags,
+                weight_class: self.weight_class,
+            }),
+        )
     }
 
     /// Completes the build process as a base artifact armor item.
     /// This is **not** usable directly but is added to an artifact armor item
     /// build.
-    pub fn build_artifact(self) -> BaseArtifactArmor {
-        BaseArtifactArmor(BaseArmor {
-            name: self.name,
-            book_reference: self.book_reference,
-            tags: self.tags,
-            weight_class: self.weight_class,
-        })
+    pub fn build_artifact(self) -> (String, BaseArtifactArmor) {
+        (
+            self.name,
+            BaseArtifactArmor(BaseArmor {
+                book_reference: self.book_reference,
+                tags: self.tags,
+                weight_class: self.weight_class,
+            }),
+        )
     }
 }

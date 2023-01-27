@@ -2,7 +2,7 @@ use std::num::NonZeroU8;
 
 use daiklave_core2::{
     abilities::{AbilityName, AbilityNameVanilla},
-    armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, ArmorWeightClass, BaseArmorId},
+    armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, ArmorWeightClass},
     artifact::{wonders::WonderId, Artifact, ArtifactId, ArtifactName, MagicMaterial},
     attributes::AttributeName,
     book_reference::{Book, BookReference},
@@ -75,7 +75,6 @@ fn test_merits() {
         ArtifactArmorId(UniqueId::Placeholder(1)),
         ArmorItem::artifact("Brilliant Sentinel")
             .base_artifact(
-                BaseArmorId(UniqueId::Placeholder(2)),
                 ArmorItem::base("Articulated Plate (Artifact)")
                     .book_reference(BookReference::new(Book::CoreRulebook, 600))
                     .weight_class(ArmorWeightClass::Heavy)

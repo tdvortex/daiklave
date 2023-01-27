@@ -10,7 +10,7 @@ use crate::{
                 ArtifactArmorId, ArtifactArmorNoAttunement, ArtifactArmorView, ArtifactError,
             },
             mundane::{MundaneArmor, MundaneArmorView},
-            ArmorId, ArmorItem, ArmorType, BaseArmorId, EquippedArmor, EquippedArmorNoAttunement,
+            ArmorId, ArmorItem, ArmorType, EquippedArmor, EquippedArmorNoAttunement,
         },
         ArmorError,
     },
@@ -22,7 +22,7 @@ use crate::{
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct MortalArmor<'source> {
     pub equipped: Option<EquippedArmorNoAttunement<'source>>,
-    pub unequipped_mundane: HashMap<BaseArmorId, MundaneArmorView<'source>>,
+    pub unequipped_mundane: HashMap<&'source str, MundaneArmorView<'source>>,
     pub unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmorNoAttunement<'source>>,
 }
 
@@ -33,7 +33,7 @@ impl<'source> MortalArmor<'source> {
             unequipped_mundane: self
                 .unequipped_mundane
                 .iter()
-                .map(|(k, v)| (*k, v.as_memo()))
+                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
                 .collect(),
             unequipped_artifact: self
                 .unequipped_artifact
@@ -75,11 +75,11 @@ impl<'source> MortalArmor<'source> {
 
     pub fn get(&self, armor_id: ArmorId) -> Option<ArmorItem<'source>> {
         let unequipped = match armor_id {
-            ArmorId::Mundane(base_armor_id) => {
+            ArmorId::Mundane(name) => {
                 self.unequipped_mundane
-                    .get(&base_armor_id)
-                    .map(|mundane_armor| {
-                        ArmorItem(ArmorType::Mundane(base_armor_id, *mundane_armor), false)
+                    .get_key_value(name)
+                    .map(|(name, mundane_armor)| {
+                        ArmorItem(ArmorType::Mundane(*name, *mundane_armor), false)
                     })
             }
             ArmorId::Artifact(artifact_armor_id) => self
@@ -108,17 +108,17 @@ impl<'source> MortalArmor<'source> {
 
     pub fn add_mundane(
         &mut self,
-        armor_id: BaseArmorId,
+        name: &'source str,
         armor: &'source MundaneArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self
             .worn_armor()
-            .map_or(false, |item| item.id() == ArmorId::Mundane(armor_id))
+            .map_or(false, |item| item.id() == ArmorId::Mundane(name))
         {
             Err(CharacterMutationError::ArmorError(
                 ArmorError::DuplicateArmor,
             ))
-        } else if let Entry::Vacant(e) = self.unequipped_mundane.entry(armor_id) {
+        } else if let Entry::Vacant(e) = self.unequipped_mundane.entry(name) {
             e.insert(armor.as_ref());
             Ok(self)
         } else {
@@ -128,15 +128,12 @@ impl<'source> MortalArmor<'source> {
         }
     }
 
-    pub fn remove_mundane(
-        &mut self,
-        armor_id: BaseArmorId,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        if self.unequipped_mundane.remove(&armor_id).is_some() {
+    pub fn remove_mundane(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
+        if self.unequipped_mundane.remove(name).is_some() {
             Ok(self)
         } else if self
             .worn_armor()
-            .map_or(false, |item| item.id() == ArmorId::Mundane(armor_id))
+            .map_or(false, |item| item.id() == ArmorId::Mundane(name))
         {
             Err(CharacterMutationError::ArmorError(
                 ArmorError::RemoveEquipped,
@@ -166,12 +163,13 @@ impl<'source> MortalArmor<'source> {
 
     pub fn equip(&mut self, armor_id: ArmorId) -> Result<&mut Self, CharacterMutationError> {
         let unstowed = match armor_id {
-            ArmorId::Mundane(base_armor_id) => EquippedArmorNoAttunement::Mundane(
-                base_armor_id,
-                self.unequipped_mundane
-                    .remove(&base_armor_id)
-                    .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?,
-            ),
+            ArmorId::Mundane(name) => {
+                let (name, mundane) = self
+                    .unequipped_mundane
+                    .remove_entry(name)
+                    .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?;
+                EquippedArmorNoAttunement::Mundane(name, mundane)
+            }
             ArmorId::Artifact(artifact_armor_id) => EquippedArmorNoAttunement::Artifact(
                 artifact_armor_id,
                 self.unequipped_artifact

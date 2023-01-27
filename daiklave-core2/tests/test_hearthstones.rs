@@ -1,7 +1,5 @@
 use daiklave_core2::{
-    armor::armor_item::{
-        artifact::ArtifactArmorId, ArmorItem, ArmorTag, ArmorWeightClass, BaseArmorId,
-    },
+    armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, ArmorTag, ArmorWeightClass},
     artifact::{wonders::WonderId, Artifact, ArtifactName, MagicMaterial},
     book_reference::{Book, BookReference},
     hearthstones::{
@@ -136,7 +134,6 @@ fn test_hearthstones() {
     let freedoms_cadence = ArmorItem::artifact("Freedom's Cadence")
         .book_reference(BookReference::new(Book::CoreRulebook, 621))
         .base_artifact(
-            BaseArmorId(UniqueId::Placeholder(1)),
             ArmorItem::base("Chain Shirt (Artifact)")
                 .book_reference(BookReference::new(Book::CoreRulebook, 599))
                 .weight_class(ArmorWeightClass::Light)

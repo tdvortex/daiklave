@@ -8,7 +8,7 @@ use crate::{
         armor_item::{
             artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
             mundane::{MundaneArmor, MundaneArmorView},
-            ArmorId, ArmorItem, ArmorType, ArmorWeightClass, BaseArmorId, EquippedArmor,
+            ArmorId, ArmorItem, ArmorType, ArmorWeightClass, EquippedArmor,
             EquippedArmorNoAttunement,
         },
         ArmorError,
@@ -23,7 +23,7 @@ use super::essence::EssenceError;
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct ExaltArmor<'source> {
     pub equipped: Option<EquippedArmor<'source>>,
-    pub unequipped_mundane: HashMap<BaseArmorId, MundaneArmorView<'source>>,
+    pub unequipped_mundane: HashMap<&'source str, MundaneArmorView<'source>>,
     pub unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmorView<'source>>,
 }
 
@@ -34,7 +34,7 @@ impl<'source> ExaltArmor<'source> {
             unequipped_mundane: self
                 .unequipped_mundane
                 .iter()
-                .map(|(k, v)| (*k, v.as_memo()))
+                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
                 .collect(),
             unequipped_artifact: self
                 .unequipped_artifact
@@ -47,8 +47,8 @@ impl<'source> ExaltArmor<'source> {
     pub fn worn_armor(&self) -> Option<ArmorItem<'source>> {
         if let Some(equipped) = &self.equipped {
             match equipped {
-                EquippedArmor::Mundane(id, mundane) => {
-                    Some(ArmorItem(ArmorType::Mundane(*id, *mundane), true))
+                EquippedArmor::Mundane(name, mundane) => {
+                    Some(ArmorItem(ArmorType::Mundane(*name, *mundane), true))
                 }
                 EquippedArmor::Artifact(id, artifact) => {
                     let (no_attunement, attunement) = (&artifact.0, artifact.1);
@@ -79,11 +79,11 @@ impl<'source> ExaltArmor<'source> {
 
     pub fn get(&self, armor_id: ArmorId) -> Option<ArmorItem<'source>> {
         let unequipped = match armor_id {
-            ArmorId::Mundane(base_armor_id) => {
+            ArmorId::Mundane(name) => {
                 self.unequipped_mundane
-                    .get(&base_armor_id)
-                    .map(|mundane_armor| {
-                        ArmorItem(ArmorType::Mundane(base_armor_id, *mundane_armor), false)
+                    .get_key_value(name)
+                    .map(|(name, mundane_armor)| {
+                        ArmorItem(ArmorType::Mundane(*name, *mundane_armor), false)
                     })
             }
             ArmorId::Artifact(artifact_armor_id) => self
@@ -113,17 +113,17 @@ impl<'source> ExaltArmor<'source> {
 
     pub fn add_mundane(
         &mut self,
-        armor_id: BaseArmorId,
+        name: &'source str,
         armor: &'source MundaneArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self
             .worn_armor()
-            .map_or(false, |item| item.id() == ArmorId::Mundane(armor_id))
+            .map_or(false, |item| item.id() == ArmorId::Mundane(name))
         {
             Err(CharacterMutationError::ArmorError(
                 ArmorError::DuplicateArmor,
             ))
-        } else if let Entry::Vacant(e) = self.unequipped_mundane.entry(armor_id) {
+        } else if let Entry::Vacant(e) = self.unequipped_mundane.entry(name) {
             e.insert(armor.as_ref());
             Ok(self)
         } else {
@@ -133,15 +133,12 @@ impl<'source> ExaltArmor<'source> {
         }
     }
 
-    pub fn remove_mundane(
-        &mut self,
-        armor_id: BaseArmorId,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        if self.unequipped_mundane.remove(&armor_id).is_some() {
+    pub fn remove_mundane(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
+        if self.unequipped_mundane.remove(name).is_some() {
             Ok(self)
         } else if self
             .worn_armor()
-            .map_or(false, |item| item.id() == ArmorId::Mundane(armor_id))
+            .map_or(false, |item| item.id() == ArmorId::Mundane(name))
         {
             Err(CharacterMutationError::ArmorError(
                 ArmorError::RemoveEquipped,
@@ -171,12 +168,13 @@ impl<'source> ExaltArmor<'source> {
 
     pub fn equip(&mut self, armor_id: ArmorId) -> Result<&mut Self, CharacterMutationError> {
         let unstowed = match armor_id {
-            ArmorId::Mundane(base_armor_id) => EquippedArmor::Mundane(
-                base_armor_id,
-                self.unequipped_mundane
-                    .remove(&base_armor_id)
-                    .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?,
-            ),
+            ArmorId::Mundane(name) => {
+                let (name, mundane_armor) = self
+                    .unequipped_mundane
+                    .remove_entry(name)
+                    .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?;
+                EquippedArmor::Mundane(name, mundane_armor)
+            }
             ArmorId::Artifact(artifact_armor_id) => EquippedArmor::Artifact(
                 artifact_armor_id,
                 self.unequipped_artifact

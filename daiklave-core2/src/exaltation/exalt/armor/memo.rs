@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::armor::armor_item::{
     artifact::{ArtifactArmor, ArtifactArmorId},
     mundane::MundaneArmor,
-    BaseArmorId, EquippedArmorMemo,
+    EquippedArmorMemo,
 };
 
 use super::ExaltArmor;
@@ -13,7 +13,7 @@ use super::ExaltArmor;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct ExaltArmorMemo {
     pub equipped: Option<EquippedArmorMemo>,
-    pub unequipped_mundane: HashMap<BaseArmorId, MundaneArmor>,
+    pub unequipped_mundane: HashMap<String, MundaneArmor>,
     pub unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmor>,
 }
 
@@ -24,7 +24,7 @@ impl<'source> ExaltArmorMemo {
             unequipped_mundane: self
                 .unequipped_mundane
                 .iter()
-                .map(|(k, v)| (*k, v.as_ref()))
+                .map(|(k, v)| (k.as_str(), v.as_ref()))
                 .collect(),
             unequipped_artifact: self
                 .unequipped_artifact

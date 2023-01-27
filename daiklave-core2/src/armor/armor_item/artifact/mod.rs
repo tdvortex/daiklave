@@ -1,3 +1,4 @@
+mod add;
 mod base;
 /// A builder path for constructing a new Artifact armor item.
 pub(crate) mod builder;
@@ -6,6 +7,7 @@ mod id;
 mod memo;
 mod no_attunement;
 
+pub use add::AddBaseArtifactArmor;
 pub use base::BaseArtifactArmor;
 pub use error::ArtifactError;
 pub use id::ArtifactArmorId;

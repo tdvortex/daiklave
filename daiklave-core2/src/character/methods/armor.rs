@@ -1,6 +1,6 @@
 use crate::{
     armor::{
-        armor_item::{mundane::MundaneArmor, ArmorId, BaseArmorId},
+        armor_item::{mundane::MundaneArmor, ArmorId},
         Armor,
     },
     Character, CharacterMutationError,
@@ -15,19 +15,19 @@ impl<'view, 'source> Character<'source> {
     /// Adds a piece of mundane armor to a character.
     pub fn add_mundane_armor(
         &mut self,
-        armor_id: BaseArmorId,
+        name: &'source str,
         armor: &'source MundaneArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.add_mundane_armor(armor_id, armor)?;
+        self.exaltation.add_mundane_armor(name, armor)?;
         Ok(self)
     }
 
     /// Removes a piece of mundane armor from a character.
     pub fn remove_mundane_armor(
         &mut self,
-        armor_id: BaseArmorId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.remove_mundane_armor(armor_id)?;
+        self.exaltation.remove_mundane_armor(name)?;
         Ok(self)
     }
 

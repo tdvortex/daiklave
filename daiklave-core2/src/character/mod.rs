@@ -15,6 +15,7 @@ use std::collections::HashMap;
 
 use crate::{
     abilities::AbilitiesVanilla,
+    armor::armor_item::{ArmorId, ArmorName},
     artifact::{ArtifactId, ArtifactName},
     attributes::Attributes,
     book_reference::BookReference,
@@ -171,11 +172,18 @@ impl<'source> Character<'source> {
                 self.remove_mundane_weapon(name.as_str())
             }
             CharacterMutation::RemoveArtifact(artifact_name) => self.remove_artifact(artifact_name),
-            CharacterMutation::AddMundaneArmor(armor_id, armor_item) => {
-                self.add_mundane_armor(*armor_id, armor_item)
+            CharacterMutation::AddMundaneArmor((name, armor_item)) => {
+                self.add_mundane_armor(name.as_str(), armor_item)
             }
-            CharacterMutation::EquipArmor(armor_id) => self.equip_armor(*armor_id),
-            CharacterMutation::RemoveMundaneArmor(armor_id) => self.remove_mundane_armor(*armor_id),
+            CharacterMutation::EquipArmor(name) => {
+                let armor_id = match name {
+                    ArmorName::Mundane(name) => ArmorId::Mundane(name.as_str()),
+                    ArmorName::Artifact(id) => ArmorId::Artifact(*id),
+                };
+
+                self.equip_armor(armor_id)
+            }
+            CharacterMutation::RemoveMundaneArmor(name) => self.remove_mundane_armor(name.as_str()),
             CharacterMutation::UnequipArmor => self.unequip_armor(),
             CharacterMutation::AddManse(manse_name, demense_name, hearthstone_id, template) => {
                 self.add_manse(manse_name, demense_name, *hearthstone_id, template)

@@ -1,6 +1,6 @@
 use daiklave_core2::{
     abilities::AbilityName,
-    armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, ArmorWeightClass, BaseArmorId},
+    armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, ArmorWeightClass},
     artifact::{wonders::WonderId, Artifact, ArtifactName, MagicMaterial},
     book_reference::{Book, BookReference},
     exaltation::exalt::{
@@ -79,7 +79,6 @@ fn test_attunement() {
             such attempts.",
         )
         .base_artifact(
-            BaseArmorId(UniqueId::Placeholder(1)),
             ArmorItem::base("Lamellar (Artifact)")
                 .book_reference(BookReference::new(Book::CoreRulebook, 600))
                 .weight_class(ArmorWeightClass::Medium)

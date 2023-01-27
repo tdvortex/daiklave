@@ -19,7 +19,7 @@ use crate::{
     armor::armor_item::{
         artifact::{ArtifactArmorId, ArtifactArmorView},
         mundane::MundaneArmor,
-        ArmorId, ArmorItem, BaseArmorId,
+        ArmorId, ArmorItem,
     },
     artifact::{
         wonders::{OwnedWonder, Wonder, WonderId},
@@ -707,15 +707,15 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn add_mundane_armor(
         &mut self,
-        armor_id: BaseArmorId,
+        name: &'source str,
         armor: &'source MundaneArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.add_mundane_armor(armor_id, armor)?;
+                mortal.add_mundane_armor(name, armor)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.add_mundane_armor(armor_id, armor)?;
+                exalt.add_mundane_armor(name, armor)?;
             }
         }
         Ok(self)
@@ -723,14 +723,14 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn remove_mundane_armor(
         &mut self,
-        armor_id: BaseArmorId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.remove_mundane_armor(armor_id)?;
+                mortal.remove_mundane_armor(name)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.remove_mundane_armor(armor_id)?;
+                exalt.remove_mundane_armor(name)?;
             }
         }
         Ok(self)

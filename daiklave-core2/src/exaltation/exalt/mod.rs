@@ -35,7 +35,7 @@ use crate::{
         armor_item::{
             artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
             mundane::MundaneArmor,
-            ArmorId, ArmorItem, BaseArmorId,
+            ArmorId, ArmorItem,
         },
         ArmorError,
     },
@@ -668,18 +668,18 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn add_mundane_armor(
         &mut self,
-        armor_id: BaseArmorId,
+        name: &'source str,
         armor: &'source MundaneArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.armor.add_mundane(armor_id, armor)?;
+        self.armor.add_mundane(name, armor)?;
         Ok(self)
     }
 
     pub fn remove_mundane_armor(
         &mut self,
-        armor_id: BaseArmorId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.armor.remove_mundane(armor_id)?;
+        self.armor.remove_mundane(name)?;
         Ok(self)
     }
 

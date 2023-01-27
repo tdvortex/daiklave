@@ -8,9 +8,9 @@ pub use with_hearthstone_slots::ArtifactArmorItemBuilderWithHearthstoneSlots;
 pub use with_magic_material::ArtifactArmorItemBuilderWithMagicMaterial;
 pub use with_merit_dots::ArtifactArmorItemBuilderWithMeritDots;
 
-use crate::{armor::armor_item::BaseArmorId, book_reference::BookReference};
+use crate::book_reference::BookReference;
 
-use super::BaseArtifactArmor;
+use super::AddBaseArtifactArmor;
 
 /// A builder to construct a new artifact armor. Enforces that required fields
 /// are specified in order: name, base artifact, magic material, merit dots,
@@ -46,16 +46,15 @@ impl ArtifactArmorItemBuilder {
     /// is an example of.
     pub fn base_artifact(
         self,
-        base_artifact_id: BaseArmorId,
-        base_artifact: BaseArtifactArmor,
+        add_base_artifact: AddBaseArtifactArmor,
     ) -> ArtifactArmorItemBuilderWithBaseArmor {
         ArtifactArmorItemBuilderWithBaseArmor {
             name: self.name,
             book_reference: self.book_reference,
             lore: self.lore,
             powers: self.powers,
-            base_armor: base_artifact,
-            base_armor_id: base_artifact_id,
+            base_armor: add_base_artifact.1,
+            base_armor_name: add_base_artifact.0,
         }
     }
 }

@@ -11,17 +11,18 @@ mod id;
 mod memo;
 /// Properties of mundane armor
 pub mod mundane;
+mod name;
 mod tag;
 mod weight_class;
 
 use std::collections::HashSet;
 
 pub(crate) use armor_type::ArmorType;
-pub use base::BaseArmorId;
 pub(crate) use equipped::{
     EquippedArmor, EquippedArmorMemo, EquippedArmorNoAttunement, EquippedArmorNoAttunementMemo,
 };
 pub use id::ArmorId;
+pub use name::ArmorName;
 pub use tag::ArmorTag;
 pub use weight_class::ArmorWeightClass;
 
@@ -54,7 +55,7 @@ impl<'source> ArmorItem<'source> {
     }
 
     /// The Id of the armor item
-    pub fn id(&self) -> ArmorId {
+    pub fn id(&self) -> ArmorId<'source> {
         self.0.id()
     }
 

@@ -6,19 +6,20 @@ pub(crate) use no_attunement::{EquippedArmorNoAttunement, EquippedArmorNoAttunem
 use super::{
     artifact::{ArtifactArmorId, ArtifactArmorView},
     mundane::MundaneArmorView,
-    BaseArmorId,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum EquippedArmor<'source> {
-    Mundane(BaseArmorId, MundaneArmorView<'source>),
+    Mundane(&'source str, MundaneArmorView<'source>),
     Artifact(ArtifactArmorId, ArtifactArmorView<'source>),
 }
 
 impl<'source> EquippedArmor<'source> {
     pub fn as_memo(&self) -> EquippedArmorMemo {
         match self {
-            EquippedArmor::Mundane(id, view) => EquippedArmorMemo::Mundane(*id, view.as_memo()),
+            EquippedArmor::Mundane(name, view) => {
+                EquippedArmorMemo::Mundane((*name).to_owned(), view.as_memo())
+            }
             EquippedArmor::Artifact(id, view) => EquippedArmorMemo::Artifact(*id, view.as_memo()),
         }
     }

@@ -1,9 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    armor::armor_item::{base::BaseArmor, BaseArmorId},
-    artifact::MagicMaterial,
-    book_reference::BookReference,
+    armor::armor_item::base::BaseArmor, artifact::MagicMaterial, book_reference::BookReference,
     hearthstones::SlottedHearthstoneMemo,
 };
 
@@ -15,7 +13,7 @@ pub struct ArtifactArmorNoAttunementMemo {
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
-    pub(crate) base_armor_id: BaseArmorId,
+    pub(crate) base_armor_name: String,
     pub(crate) base_armor: BaseArmor,
     pub(crate) magic_material: MagicMaterial,
     pub(crate) merit_dots: u8,
@@ -29,7 +27,7 @@ impl<'source> ArtifactArmorNoAttunementMemo {
             book_reference: self.book_reference,
             lore: self.lore.as_deref(),
             powers: self.powers.as_deref(),
-            base_armor_id: self.base_armor_id,
+            base_armor_name: self.base_armor_name.as_str(),
             base_armor: &self.base_armor,
             magic_material: self.magic_material,
             merit_dots: self.merit_dots,

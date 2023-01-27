@@ -7,7 +7,7 @@ use crate::{
 use super::{
     artifact::{ArtifactArmorId, ArtifactArmorNoAttunement},
     mundane::MundaneArmorView,
-    ArmorId, ArmorTag, ArmorWeightClass, BaseArmorId,
+    ArmorId, ArmorTag, ArmorWeightClass,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -17,11 +17,11 @@ pub(crate) enum ArmorType<'source> {
         ArtifactArmorNoAttunement<'source>,
         Option<u8>,
     ),
-    Mundane(BaseArmorId, MundaneArmorView<'source>),
+    Mundane(&'source str, MundaneArmorView<'source>),
 }
 
 impl<'source> ArmorType<'source> {
-    pub fn id(&self) -> ArmorId {
+    pub fn id(&self) -> ArmorId<'source> {
         match self {
             ArmorType::Artifact(artifact_id, _, _) => ArmorId::Artifact(*artifact_id),
             ArmorType::Mundane(base_id, _) => ArmorId::Mundane(*base_id),
@@ -31,7 +31,7 @@ impl<'source> ArmorType<'source> {
     pub fn name(&self) -> &'source str {
         match self {
             ArmorType::Artifact(_, artifact, _) => artifact.name(),
-            ArmorType::Mundane(_, mundane) => mundane.name(),
+            ArmorType::Mundane(name, _) => *name,
         }
     }
 

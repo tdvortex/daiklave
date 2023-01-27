@@ -1,7 +1,9 @@
+mod add;
 mod memo;
 
 use std::ops::Deref;
 
+pub use add::AddMundaneArmor;
 pub use memo::MundaneArmor;
 
 use super::base::BaseArmor;
@@ -20,9 +22,5 @@ impl<'source> Deref for MundaneArmorView<'source> {
 impl<'source> MundaneArmorView<'source> {
     pub fn as_memo(&self) -> MundaneArmor {
         MundaneArmor(self.0.to_owned())
-    }
-
-    pub fn name(&self) -> &'source str {
-        self.0.name.as_str()
     }
 }
