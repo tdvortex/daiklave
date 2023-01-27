@@ -58,9 +58,12 @@ impl<'view, 'source> ArtifactWeaponTraits<'source> {
         self.hearthstone_slots
             .iter()
             .filter_map(move |maybe_hearthstone| {
-                maybe_hearthstone
-                    .as_ref()
-                    .map(|slotted| Hearthstone(HearthstonePosition::Slotted(ArtifactId::Weapon(name), *slotted)))
+                maybe_hearthstone.as_ref().map(|slotted| {
+                    Hearthstone(HearthstonePosition::Slotted(
+                        ArtifactId::Weapon(name),
+                        *slotted,
+                    ))
+                })
             })
     }
 }

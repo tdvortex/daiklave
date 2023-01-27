@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 
 use crate::{
-    armor::armor_item::ArmorWeightClass, book_reference::BookReference,
+    armor::armor_item::ArmorWeightClass,
+    book_reference::BookReference,
     martial_arts::style::{MartialArtsStyle, MartialArtsStyleWeapon},
 };
 

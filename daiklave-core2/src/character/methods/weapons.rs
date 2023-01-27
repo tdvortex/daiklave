@@ -2,8 +2,7 @@ use crate::{
     attributes::AttributeName,
     weapons::{
         weapon::{
-            mundane::MundaneWeapon, AttackRange, EquipHand, Equipped,
-            WeaponWeightClass, WeaponName,
+            mundane::MundaneWeapon, AttackRange, EquipHand, Equipped, WeaponName, WeaponWeightClass,
         },
         WeaponError, Weapons,
     },
@@ -56,12 +55,7 @@ impl<'view, 'source> Character<'source> {
                 Err(CharacterMutationError::WeaponError(
                     WeaponError::EquipNatural,
                 ))
-            } else if weapon.is_worn()
-                && self
-                    .weapons()
-                    .get(name, Some(Equipped::Worn))
-                    .is_some()
-            {
+            } else if weapon.is_worn() && self.weapons().get(name, Some(Equipped::Worn)).is_some() {
                 Err(CharacterMutationError::WeaponError(
                     WeaponError::DuplicateEquippedWorn,
                 ))

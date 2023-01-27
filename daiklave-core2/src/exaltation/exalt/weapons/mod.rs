@@ -104,9 +104,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 WeaponError::EquipNatural,
             )),
             WeaponName::Mundane(name) => self.equip_mundane_weapon(name, hand),
-            WeaponName::Artifact(name) => {
-                self.equip_artifact_weapon(name, hand)
-            }
+            WeaponName::Artifact(name) => self.equip_artifact_weapon(name, hand),
         }
     }
 
@@ -520,9 +518,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 WeaponError::UnequipNatural,
             )),
             WeaponName::Mundane(name) => self.unequip_mundane_weapon(name, equipped),
-            WeaponName::Artifact(name) => {
-                self.unequip_artifact_weapon(name, equipped)
-            }
+            WeaponName::Artifact(name) => self.unequip_artifact_weapon(name, equipped),
         }
     }
 
@@ -609,10 +605,13 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 .remove_worn_artifact(name)
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .map(|(name, worn_artifact, attunement)| {
-                    (name, NonnaturalArtifactWeapon(
-                        NonnaturalArtifactWeaponNoAttunement::Worn(worn_artifact),
-                        attunement,
-                    ))
+                    (
+                        name,
+                        NonnaturalArtifactWeapon(
+                            NonnaturalArtifactWeaponNoAttunement::Worn(worn_artifact),
+                            attunement,
+                        ),
+                    )
                 }),
             Equipped::MainHand => self
                 .equipped
@@ -621,10 +620,15 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|one_handed_equipped| match one_handed_equipped {
                     EquippedOneHandedWeapon::Artifact(name, one_handed_artifact, attunement) => {
-                        Ok((name, NonnaturalArtifactWeapon(
-                            NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed_artifact),
-                            attunement,
-                        )))
+                        Ok((
+                            name,
+                            NonnaturalArtifactWeapon(
+                                NonnaturalArtifactWeaponNoAttunement::OneHanded(
+                                    one_handed_artifact,
+                                ),
+                                attunement,
+                            ),
+                        ))
                     }
                     EquippedOneHandedWeapon::Mundane(_, _) => {
                         // This shouldn't happen but if it does put it back and say not found instead
@@ -641,10 +645,15 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|one_handed_equipped| match one_handed_equipped {
                     EquippedOneHandedWeapon::Artifact(name, one_handed_artifact, attunement) => {
-                        Ok((name, NonnaturalArtifactWeapon(
-                            NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed_artifact),
-                            attunement,
-                        )))
+                        Ok((
+                            name,
+                            NonnaturalArtifactWeapon(
+                                NonnaturalArtifactWeaponNoAttunement::OneHanded(
+                                    one_handed_artifact,
+                                ),
+                                attunement,
+                            ),
+                        ))
                     }
                     EquippedOneHandedWeapon::Mundane(_, _) => {
                         // This shouldn't happen but if it does put it back and say not found instead
@@ -661,10 +670,15 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|two_handed_equipped| match two_handed_equipped {
                     EquippedTwoHandedWeapon::Artifact(name, two_handed_artifact, attunement) => {
-                        Ok((name, NonnaturalArtifactWeapon(
-                            NonnaturalArtifactWeaponNoAttunement::TwoHanded(two_handed_artifact),
-                            attunement,
-                        )))
+                        Ok((
+                            name,
+                            NonnaturalArtifactWeapon(
+                                NonnaturalArtifactWeaponNoAttunement::TwoHanded(
+                                    two_handed_artifact,
+                                ),
+                                attunement,
+                            ),
+                        ))
                     }
                     EquippedTwoHandedWeapon::Mundane(_, _) => {
                         // This shouldn't happen but if it does put it back and say not found instead
@@ -674,8 +688,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 }),
         }?;
 
-        self.unequipped
-            .stow_artifact(name, nonnatural_artifact)?;
+        self.unequipped.stow_artifact(name, nonnatural_artifact)?;
         Ok(self)
     }
 
@@ -829,7 +842,10 @@ impl<'view, 'source> ExaltWeapons<'source> {
         &mut self,
         artifact_weapon_name: &str,
     ) -> Result<(u8, u8), CharacterMutationError> {
-        match self.unequipped.unattune_artifact_weapon(artifact_weapon_name) {
+        match self
+            .unequipped
+            .unattune_artifact_weapon(artifact_weapon_name)
+        {
             Ok((peripheral, personal)) => Ok((peripheral, personal)),
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound)) => {
                 self.equipped.unattune_artifact_weapon(artifact_weapon_name)

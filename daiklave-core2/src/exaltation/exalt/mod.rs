@@ -166,7 +166,9 @@ impl<'view, 'source> Exalt<'source> {
         }
     }
 
-    pub fn iter_weapons(&self) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> + '_ {
+    pub fn iter_weapons(
+        &self,
+    ) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> + '_ {
         self.weapons.iter()
     }
 
@@ -615,11 +617,7 @@ impl<'view, 'source> Exalt<'source> {
         } else if let Some(HandlessArtifactWeapon(
             HandlessArtifactWeaponNoAttunement::Natural(_),
             attunement,
-        )) = self
-            .weapons
-            .equipped
-            .handless_artifact
-            .get(name)
+        )) = self.weapons.equipped.handless_artifact.get(name)
         {
             if let Some(personal) = attunement {
                 let peripheral = 5 - (*personal).min(5);
@@ -627,10 +625,7 @@ impl<'view, 'source> Exalt<'source> {
                 self.essence.motes.personal_mut().uncommit(*personal)?;
             }
 
-            self.weapons
-                .equipped
-                .handless_artifact
-                .remove(name);
+            self.weapons.equipped.handless_artifact.remove(name);
             Ok(self)
         } else {
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
@@ -870,11 +865,11 @@ impl<'view, 'source> Exalt<'source> {
                 .weapons_mut()
                 .attune_artifact_weapon(artifact_weapon_name, personal_committed)
                 .err(),
-                ArtifactId::Armor(artifact_armor_id) => self
+            ArtifactId::Armor(artifact_armor_id) => self
                 .armor_mut()
                 .attune_artifact_armor(artifact_armor_id, personal_committed)
                 .err(),
-                ArtifactId::Wonder(wonder_id) => self
+            ArtifactId::Wonder(wonder_id) => self
                 .wonders_mut()
                 .attune_wonder(wonder_id, personal_committed)
                 .err(),
@@ -895,14 +890,15 @@ impl<'view, 'source> Exalt<'source> {
         }
     }
 
-    pub fn attunement_cost(&self, artifact_name: ArtifactId<'_>) -> Result<u8, CharacterMutationError> {
+    pub fn attunement_cost(
+        &self,
+        artifact_name: ArtifactId<'_>,
+    ) -> Result<u8, CharacterMutationError> {
         match artifact_name {
             ArtifactId::Weapon(artifact_weapon_name) => {
-                if self
-                    .weapons
-                    .iter()
-                    .any(|(weapon_name, _)| weapon_name == WeaponName::Artifact(artifact_weapon_name))
-                {
+                if self.weapons.iter().any(|(weapon_name, _)| {
+                    weapon_name == WeaponName::Artifact(artifact_weapon_name)
+                }) {
                     Ok(5)
                 } else {
                     Err(CharacterMutationError::WeaponError(WeaponError::NotFound))

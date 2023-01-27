@@ -56,11 +56,7 @@ impl<'view, 'source> ExaltHands<'source> {
         }
     }
 
-    pub fn get_weapon(
-        &self,
-        name: WeaponName<'_>,
-        equipped: Equipped,
-    ) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&self, name: WeaponName<'_>, equipped: Equipped) -> Option<Weapon<'source>> {
         match (self, equipped) {
             (ExaltHands::Empty, _) | (_, Equipped::Natural) | (_, Equipped::Worn) => None,
             (ExaltHands::MainHand(one), Equipped::MainHand) => {
@@ -280,7 +276,10 @@ impl<'view, 'source> ExaltHands<'source> {
     ) -> Option<EquippedTwoHandedWeapon<'source>> {
         if let ExaltHands::TwoHanded(two_handed_equipped) = self {
             match (&two_handed_equipped, weapon_id) {
-                (EquippedTwoHandedWeapon::Mundane(actual_name, _), WeaponName::Mundane(wanted_name)) => {
+                (
+                    EquippedTwoHandedWeapon::Mundane(actual_name, _),
+                    WeaponName::Mundane(wanted_name),
+                ) => {
                     if *actual_name == wanted_name {
                         let two_handed_equipped = two_handed_equipped.clone();
                         *self = ExaltHands::Empty;

@@ -3,7 +3,7 @@ use std::num::NonZeroU8;
 use daiklave_core2::{
     abilities::{AbilityName, AbilityNameVanilla},
     armor::armor_item::ArmorWeightClass,
-    artifact::{wonders::WonderId, Artifact, MagicMaterial, ArtifactName},
+    artifact::{wonders::WonderId, Artifact, ArtifactName, MagicMaterial},
     book_reference::{Book, BookReference},
     charms::{
         charm::{
@@ -590,9 +590,7 @@ fn test_evocations() {
     .build();
 
     event_source
-        .apply_mutation(CharacterMutation::AddArtifact(Artifact::Weapon(
-            rainwalker,
-        )))
+        .apply_mutation(CharacterMutation::AddArtifact(Artifact::Weapon(rainwalker)))
         .unwrap();
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(

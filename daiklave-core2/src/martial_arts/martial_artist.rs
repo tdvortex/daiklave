@@ -3,7 +3,10 @@ use crate::{
     exaltation::ExaltationMartialArtist,
 };
 
-use super::{charm::{MartialArtsCharm, MartialArtsCharmId}, style::MartialArtsStyleWeapon};
+use super::{
+    charm::{MartialArtsCharm, MartialArtsCharmId},
+    style::MartialArtsStyleWeapon,
+};
 
 use crate::abilities::AbilityType;
 
@@ -29,8 +32,8 @@ impl<'view, 'source> MartialArtist<'view, 'source> {
         self.maybe_exalt.description()
     }
 
-    /// All of the base weapons usable by the style. This is either Unarmed or 
-    /// a base weapon (e.g. "sword" or "daiklave"), not any specific unique 
+    /// All of the base weapons usable by the style. This is either Unarmed or
+    /// a base weapon (e.g. "sword" or "daiklave"), not any specific unique
     /// artifact weapon.
     pub fn usable_weapons(&self) -> impl Iterator<Item = &'source MartialArtsStyleWeapon> + '_ {
         self.maybe_exalt.usable_weapons()

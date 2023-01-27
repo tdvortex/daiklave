@@ -3,7 +3,7 @@ pub mod merit;
 
 use crate::{
     armor::armor_item::ArmorId, artifact::ArtifactId, exaltation::Exaltation,
-    languages::language::Language, Character, weapons::weapon::WeaponName,
+    languages::language::Language, weapons::weapon::WeaponName, Character,
 };
 
 use self::merit::{Merit, MeritId, MeritSource};
@@ -23,7 +23,10 @@ impl<'view, 'source> Merits<'view, 'source> {
                     .find_map(|(source_name, equipped)| {
                         if let WeaponName::Artifact(source_artifact_name) = source_name {
                             if source_artifact_name == search_name {
-                                self.0.weapons().get(source_name, equipped).map(|weapon| (source_artifact_name, weapon))
+                                self.0
+                                    .weapons()
+                                    .get(source_name, equipped)
+                                    .map(|weapon| (source_artifact_name, weapon))
                             } else {
                                 None
                             }
@@ -33,11 +36,7 @@ impl<'view, 'source> Merits<'view, 'source> {
                     })
                     .and_then(|(name, weapon)| {
                         weapon.merit_dots().map(|dots| {
-                            Merit(MeritSource::Artifact(
-                                ArtifactId::Weapon(name),
-                                name,
-                                dots,
-                            ))
+                            Merit(MeritSource::Artifact(ArtifactId::Weapon(name), name, dots))
                         })
                     }),
                 ArtifactId::Armor(artifact_armor_id) => self

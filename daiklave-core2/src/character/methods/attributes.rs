@@ -31,21 +31,24 @@ impl<'source> Character<'source> {
             };
 
             if attribute_name == AttributeName::Strength && dots < 3 {
-                let maybe_weapon_name = self.weapons().iter().find_map(|(weapon_name, equipped)| {
-                    if let Some(Equipped::TwoHanded) = equipped {
-                        self.weapons().get(weapon_name, equipped).and_then(|weapon| {
-                            if weapon.weight_class() == WeaponWeightClass::Heavy
-                                && weapon.damage(AttackRange::Melee).is_some()
-                            {
-                                Some(weapon.name())
-                            } else {
-                                None
-                            }
-                        })
-                    } else {
-                        None
-                    }
-                });
+                let maybe_weapon_name =
+                    self.weapons().iter().find_map(|(weapon_name, equipped)| {
+                        if let Some(Equipped::TwoHanded) = equipped {
+                            self.weapons()
+                                .get(weapon_name, equipped)
+                                .and_then(|weapon| {
+                                    if weapon.weight_class() == WeaponWeightClass::Heavy
+                                        && weapon.damage(AttackRange::Melee).is_some()
+                                    {
+                                        Some(weapon.name())
+                                    } else {
+                                        None
+                                    }
+                                })
+                        } else {
+                            None
+                        }
+                    });
 
                 if let Some(weapon_name) = maybe_weapon_name {
                     self.unequip_weapon(weapon_name, Equipped::TwoHanded)?;

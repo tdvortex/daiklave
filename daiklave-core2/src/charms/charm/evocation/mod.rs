@@ -6,20 +6,21 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    artifact::{ArtifactId, ArtifactName},
     book_reference::BookReference,
-    charms::{CharmActionType, CharmCost, CharmCostType}, artifact::{ArtifactName, ArtifactId},
+    charms::{CharmActionType, CharmCost, CharmCostType},
 };
 
 /// A builder path to construct an Evocation.
 pub mod builder;
 mod evokable_id;
+mod evokable_name;
 mod id;
 mod keyword;
-mod evokable_name;
 pub use evokable_id::EvokableId;
+pub use evokable_name::EvokableName;
 pub use id::EvocationId;
 pub use keyword::EvocationKeyword;
-pub use evokable_name::EvokableName;
 
 use self::builder::EvocationBuilder;
 
@@ -68,10 +69,16 @@ impl<'source> Evocation {
     pub fn evokable_id(&'source self) -> EvokableId<'source> {
         match &self.evokable_name {
             EvokableName::Hearthstone(hearthstone_id) => EvokableId::Hearthstone(*hearthstone_id),
-            EvokableName::Artifact(ArtifactName::Weapon(weapon_name)) => EvokableId::Artifact(ArtifactId::Weapon(weapon_name.as_str())),
-            EvokableName::Artifact(ArtifactName::Armor(armor_id)) => EvokableId::Artifact(ArtifactId::Armor(*armor_id)),
-            EvokableName::Artifact(ArtifactName::Wonder(wonder_id)) => EvokableId::Artifact(ArtifactId::Wonder(*wonder_id)),
-        }        
+            EvokableName::Artifact(ArtifactName::Weapon(weapon_name)) => {
+                EvokableId::Artifact(ArtifactId::Weapon(weapon_name.as_str()))
+            }
+            EvokableName::Artifact(ArtifactName::Armor(armor_id)) => {
+                EvokableId::Artifact(ArtifactId::Armor(*armor_id))
+            }
+            EvokableName::Artifact(ArtifactName::Wonder(wonder_id)) => {
+                EvokableId::Artifact(ArtifactId::Wonder(*wonder_id))
+            }
+        }
     }
 
     /// The book reference for this Evocation.

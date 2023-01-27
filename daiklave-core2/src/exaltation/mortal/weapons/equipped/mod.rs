@@ -18,7 +18,7 @@ use crate::{
             },
             equipped::{EquippedOneHandedWeaponNoAttunement, EquippedTwoHandedWeaponNoAttunement},
             mundane::{HandlessMundaneWeapon, MundaneWeaponView, WornMundaneWeaponView},
-            Equipped, Weapon, WeaponType, WeaponName,
+            Equipped, Weapon, WeaponName, WeaponType,
         },
         WeaponError,
     },
@@ -49,11 +49,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
         }
     }
 
-    pub fn get_weapon(
-        &self,
-        name: WeaponName<'_>,
-        equipped: Equipped,
-    ) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&self, name: WeaponName<'_>, equipped: Equipped) -> Option<Weapon<'source>> {
         match (name, equipped) {
             (WeaponName::Unarmed, Equipped::Natural) => {
                 Some(crate::weapons::weapon::mundane::unarmed())
@@ -225,7 +221,8 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                     }
                 }
                 MortalHands::Both(arr) => arr.iter_mut().find_map(|one| {
-                    if let EquippedOneHandedWeaponNoAttunement::Artifact(held_name, held_weapon) = one
+                    if let EquippedOneHandedWeaponNoAttunement::Artifact(held_name, held_weapon) =
+                        one
                     {
                         if held_name != &artifact_weapon_name {
                             None

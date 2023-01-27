@@ -15,7 +15,7 @@ use crate::{
     },
     exaltation::Exaltation,
     hearthstones::HearthstoneError,
-    weapons::{WeaponError, weapon::{WeaponName}},
+    weapons::{weapon::WeaponName, WeaponError},
     Character, CharacterMutationError,
 };
 
@@ -44,15 +44,13 @@ impl<'source> Character<'source> {
                 }
             }
             EvokableId::Artifact(ArtifactId::Weapon(name)) => {
-                if !self
-                    .weapons()
-                    .iter()
-                    .any(|(weapon_name, _)| if let WeaponName::Artifact(actual_name) = weapon_name {
+                if !self.weapons().iter().any(|(weapon_name, _)| {
+                    if let WeaponName::Artifact(actual_name) = weapon_name {
                         actual_name == name
                     } else {
                         false
-                    })
-                {
+                    }
+                }) {
                     return Err(CharacterMutationError::WeaponError(WeaponError::NotFound));
                 }
             }

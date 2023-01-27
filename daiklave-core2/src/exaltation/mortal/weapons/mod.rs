@@ -112,9 +112,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                 WeaponError::EquipNatural,
             )),
             WeaponName::Mundane(name) => self.equip_mundane_weapon(name, hand),
-            WeaponName::Artifact(name) => {
-                self.equip_artifact_weapon(name, hand)
-            }
+            WeaponName::Artifact(name) => self.equip_artifact_weapon(name, hand),
         }
     }
 
@@ -303,10 +301,8 @@ impl<'view, 'source> MortalWeapons<'source> {
                     Ok(self)
                 } else {
                     // Don't lose the weapon we unstowed above
-                    self.unequipped.stow_artifact(
-                        name,
-                        NonnaturalArtifactWeaponNoAttunement::Worn(worn),
-                    )?;
+                    self.unequipped
+                        .stow_artifact(name, NonnaturalArtifactWeaponNoAttunement::Worn(worn))?;
                     Err(CharacterMutationError::WeaponError(
                         WeaponError::DuplicateEquippedWorn,
                     ))
@@ -467,12 +463,8 @@ impl<'view, 'source> MortalWeapons<'source> {
             WeaponName::Unarmed => Err(CharacterMutationError::WeaponError(
                 WeaponError::UnequipNatural,
             )),
-            WeaponName::Mundane(name) => {
-                self.unequip_mundane_weapon(name, equipped)
-            }
-            WeaponName::Artifact(name) => {
-                self.unequip_artifact_weapon(name, equipped)
-            }
+            WeaponName::Mundane(name) => self.unequip_mundane_weapon(name, equipped),
+            WeaponName::Artifact(name) => self.unequip_artifact_weapon(name, equipped),
         }
     }
 
@@ -558,16 +550,24 @@ impl<'view, 'source> MortalWeapons<'source> {
                 .equipped
                 .remove_worn_artifact(name)
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
-                .map(|(name, worn_artifact)| (name, NonnaturalArtifactWeaponNoAttunement::Worn(worn_artifact))),
+                .map(|(name, worn_artifact)| {
+                    (
+                        name,
+                        NonnaturalArtifactWeaponNoAttunement::Worn(worn_artifact),
+                    )
+                }),
             Equipped::MainHand => self
                 .equipped
                 .hands
                 .free_hand(WeaponName::Artifact(name), EquipHand::MainHand)
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|one_handed_equipped| match one_handed_equipped {
-                    EquippedOneHandedWeaponNoAttunement::Artifact(name, one_handed_artifact) => Ok(
-                        (name, NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed_artifact)),
-                    ),
+                    EquippedOneHandedWeaponNoAttunement::Artifact(name, one_handed_artifact) => {
+                        Ok((
+                            name,
+                            NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed_artifact),
+                        ))
+                    }
                     EquippedOneHandedWeaponNoAttunement::Mundane(_, _) => {
                         // This shouldn't happen but if it does put it back and say not found instead
                         self.equipped
@@ -582,9 +582,12 @@ impl<'view, 'source> MortalWeapons<'source> {
                 .free_hand(WeaponName::Artifact(name), EquipHand::OffHand)
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|one_handed_equipped| match one_handed_equipped {
-                    EquippedOneHandedWeaponNoAttunement::Artifact(name, one_handed_artifact) => Ok(
-                        (name, NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed_artifact)),
-                    ),
+                    EquippedOneHandedWeaponNoAttunement::Artifact(name, one_handed_artifact) => {
+                        Ok((
+                            name,
+                            NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed_artifact),
+                        ))
+                    }
                     EquippedOneHandedWeaponNoAttunement::Mundane(_, _) => {
                         // This shouldn't happen but if it does put it back and say not found instead
                         self.equipped
@@ -599,9 +602,12 @@ impl<'view, 'source> MortalWeapons<'source> {
                 .free_two_handed(WeaponName::Artifact(name))
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|two_handed_equipped| match two_handed_equipped {
-                    EquippedTwoHandedWeaponNoAttunement::Artifact(name, two_handed_artifact) => Ok(
-                        (name, NonnaturalArtifactWeaponNoAttunement::TwoHanded(two_handed_artifact)),
-                    ),
+                    EquippedTwoHandedWeaponNoAttunement::Artifact(name, two_handed_artifact) => {
+                        Ok((
+                            name,
+                            NonnaturalArtifactWeaponNoAttunement::TwoHanded(two_handed_artifact),
+                        ))
+                    }
                     EquippedTwoHandedWeaponNoAttunement::Mundane(_, _) => {
                         // This shouldn't happen but if it does put it back and say not found instead
                         self.equipped.hands.set_two_handed(two_handed_equipped);
@@ -610,8 +616,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                 }),
         }?;
 
-        self.unequipped
-            .stow_artifact(name, nonnatural_artifact)?;
+        self.unequipped.stow_artifact(name, nonnatural_artifact)?;
         Ok(self)
     }
 
@@ -641,10 +646,8 @@ impl<'view, 'source> MortalWeapons<'source> {
                         WeaponError::DuplicateArtifact,
                     ))
                 } else {
-                    self.unequipped.stow_artifact(
-                        name,
-                        NonnaturalArtifactWeaponNoAttunement::Worn(worn),
-                    )?;
+                    self.unequipped
+                        .stow_artifact(name, NonnaturalArtifactWeaponNoAttunement::Worn(worn))?;
                     Ok(self)
                 }
             }

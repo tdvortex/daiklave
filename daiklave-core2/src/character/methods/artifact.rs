@@ -1,5 +1,5 @@
 use crate::{
-    artifact::{wonders::Wonders, Artifact, MagicMaterial, Sonance, ArtifactName, ArtifactId},
+    artifact::{wonders::Wonders, Artifact, ArtifactId, ArtifactName, MagicMaterial, Sonance},
     exaltation::{exalt::essence::MotePoolName, Exaltation},
     Character, CharacterMutationError,
 };
@@ -38,7 +38,8 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         match artifact_name {
             ArtifactName::Weapon(artifact_weapon_name) => {
-                self.exaltation.remove_artifact_weapon(artifact_weapon_name.as_str())?;
+                self.exaltation
+                    .remove_artifact_weapon(artifact_weapon_name.as_str())?;
             }
             ArtifactName::Armor(artifact_armor_id) => {
                 self.exaltation.remove_artifact_armor(*artifact_armor_id)?;

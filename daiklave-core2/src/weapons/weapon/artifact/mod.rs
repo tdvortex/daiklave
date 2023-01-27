@@ -3,8 +3,8 @@ mod base;
 pub(crate) mod builder;
 mod grouped;
 mod memo;
-mod traits;
 mod newtype;
+mod traits;
 
 use std::ops::Deref;
 

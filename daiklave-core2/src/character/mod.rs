@@ -15,6 +15,7 @@ use std::collections::HashMap;
 
 use crate::{
     abilities::AbilitiesVanilla,
+    artifact::{ArtifactId, ArtifactName},
     attributes::Attributes,
     book_reference::BookReference,
     charms::charm::{CharmId, CharmMutation},
@@ -28,7 +29,7 @@ use crate::{
     merits::merit::{
         NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
     },
-    willpower::Willpower, artifact::{ArtifactName, ArtifactId},
+    willpower::Willpower,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource

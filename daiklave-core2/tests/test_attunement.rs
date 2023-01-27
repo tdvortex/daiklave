@@ -1,7 +1,7 @@
 use daiklave_core2::{
     abilities::AbilityName,
     armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, ArmorWeightClass, BaseArmorId},
-    artifact::{wonders::WonderId, Artifact, MagicMaterial, ArtifactName},
+    artifact::{wonders::WonderId, Artifact, ArtifactName, MagicMaterial},
     book_reference::{Book, BookReference},
     exaltation::exalt::{
         essence::{MotePoolName, UncommitMotes},
@@ -205,7 +205,9 @@ fn test_attunement() {
     // Exalts can unattune from everything they've attuned to
     event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            UncommitMotes::UnattuneArtifact(ArtifactName::Wonder(WonderId(UniqueId::Placeholder(1)))),
+            UncommitMotes::UnattuneArtifact(ArtifactName::Wonder(WonderId(UniqueId::Placeholder(
+                1,
+            )))),
         ))
         .unwrap();
     event_source
@@ -254,7 +256,9 @@ fn test_attunement() {
     // Can't unattune from an artifact that is already unattuned
     assert!(event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            UncommitMotes::UnattuneArtifact(ArtifactName::Wonder(WonderId(UniqueId::Placeholder(1))))
+            UncommitMotes::UnattuneArtifact(ArtifactName::Wonder(WonderId(UniqueId::Placeholder(
+                1
+            ))))
         ))
         .is_err());
 }

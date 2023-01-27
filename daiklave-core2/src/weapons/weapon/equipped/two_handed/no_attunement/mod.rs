@@ -23,7 +23,10 @@ impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
                 EquippedTwoHandedWeaponNoAttunementMemo::Mundane((*name).to_owned(), view.as_memo())
             }
             EquippedTwoHandedWeaponNoAttunement::Artifact(name, view) => {
-                EquippedTwoHandedWeaponNoAttunementMemo::Artifact((*name).to_owned(), view.as_memo())
+                EquippedTwoHandedWeaponNoAttunementMemo::Artifact(
+                    (*name).to_owned(),
+                    view.as_memo(),
+                )
             }
         }
     }

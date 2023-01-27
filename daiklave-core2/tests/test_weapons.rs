@@ -1,10 +1,10 @@
 use daiklave_core2::{
-    artifact::{Artifact, MagicMaterial, ArtifactName},
+    artifact::{Artifact, ArtifactName, MagicMaterial},
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     weapons::weapon::{
-        AttackRange, EquipHand, Equipped, OptionalWeaponTag, RangeBand, Weapon,
-        WeaponNameMutation, WeaponTag, WeaponWeightClass, WeaponName,
+        AttackRange, EquipHand, Equipped, OptionalWeaponTag, RangeBand, Weapon, WeaponName,
+        WeaponNameMutation, WeaponTag, WeaponWeightClass,
     },
     CharacterEventSource, CharacterMutation,
 };
@@ -282,6 +282,7 @@ fn test_weapons_event_source() {
     assert!(event_source.apply_mutation(mutation).is_err());
 
     // Check you can remove an unequipped artifact weapon
-    let mutation = CharacterMutation::RemoveArtifact(ArtifactName::Weapon("Volcano Cutter".to_owned()));
+    let mutation =
+        CharacterMutation::RemoveArtifact(ArtifactName::Weapon("Volcano Cutter".to_owned()));
     event_source.apply_mutation(mutation).unwrap();
 }

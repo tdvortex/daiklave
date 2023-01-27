@@ -13,7 +13,7 @@ use crate::{
         weapon::{
             artifact::{ArtifactWeaponView, NonnaturalArtifactWeaponNoAttunement},
             mundane::{MundaneWeaponView, NonnaturalMundaneWeapon},
-            Equipped, Weapon, WeaponType, WeaponName,
+            Equipped, Weapon, WeaponName, WeaponType,
         },
         WeaponError,
     },
@@ -125,13 +125,20 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
         }
     }
 
-    pub fn unstow_mundane(&mut self, name: &str) -> Option<(&'source str, NonnaturalMundaneWeapon<'source>)> {
+    pub fn unstow_mundane(
+        &mut self,
+        name: &str,
+    ) -> Option<(&'source str, NonnaturalMundaneWeapon<'source>)> {
         let (_, count) = self.mundane.get_mut(name)?;
         if let Some(new_nonzero) = NonZeroU8::new(count.get() - 1) {
             *count = new_nonzero;
-            self.mundane.get_key_value(name).map(|(name, (weapon, _))| (*name, weapon.clone()))
+            self.mundane
+                .get_key_value(name)
+                .map(|(name, (weapon, _))| (*name, weapon.clone()))
         } else {
-            self.mundane.remove_entry(name).map(|(name, (weapon, _))| (name, weapon))
+            self.mundane
+                .remove_entry(name)
+                .map(|(name, (weapon, _))| (name, weapon))
         }
     }
 

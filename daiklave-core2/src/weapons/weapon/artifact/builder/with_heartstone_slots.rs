@@ -68,25 +68,28 @@ impl ArtifactWeaponBuilderWithHearthstoneSlots {
         };
 
         match handedness {
-            WeaponHandedness::Natural => ArtifactWeapon(self.name,
-                ArtifactWeaponHandedness::Natural(
-                NaturalArtifactWeapon(named_artifact_weapon),
-            )),
-            WeaponHandedness::Worn => ArtifactWeapon(self.name, 
-                ArtifactWeaponHandedness::Worn(
-                WornArtifactWeapon(named_artifact_weapon),
-                false,
-            )),
-            WeaponHandedness::OneHanded => ArtifactWeapon(self.name, 
+            WeaponHandedness::Natural => ArtifactWeapon(
+                self.name,
+                ArtifactWeaponHandedness::Natural(NaturalArtifactWeapon(named_artifact_weapon)),
+            ),
+            WeaponHandedness::Worn => ArtifactWeapon(
+                self.name,
+                ArtifactWeaponHandedness::Worn(WornArtifactWeapon(named_artifact_weapon), false),
+            ),
+            WeaponHandedness::OneHanded => ArtifactWeapon(
+                self.name,
                 ArtifactWeaponHandedness::OneHanded(
-                OneHandedArtifactWeapon(named_artifact_weapon),
-                None,
-            )),
-            WeaponHandedness::TwoHanded => ArtifactWeapon(self.name, 
+                    OneHandedArtifactWeapon(named_artifact_weapon),
+                    None,
+                ),
+            ),
+            WeaponHandedness::TwoHanded => ArtifactWeapon(
+                self.name,
                 ArtifactWeaponHandedness::TwoHanded(
-                TwoHandedArtifactWeapon(named_artifact_weapon),
-                false,
-            )),
+                    TwoHandedArtifactWeapon(named_artifact_weapon),
+                    false,
+                ),
+            ),
         }
     }
 }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::artifact::{ArtifactName};
+use crate::artifact::ArtifactName;
 
 /// An instruction to uncommit a specific mote commitment.
 #[derive(Debug, Clone, Hash, PartialEq, Eq, Serialize, Deserialize)]

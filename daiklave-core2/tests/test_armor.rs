@@ -2,7 +2,7 @@ use daiklave_core2::{
     armor::armor_item::{
         artifact::ArtifactArmorId, ArmorId, ArmorItem, ArmorTag, ArmorWeightClass, BaseArmorId,
     },
-    artifact::{Artifact, MagicMaterial, ArtifactName},
+    artifact::{Artifact, ArtifactName, MagicMaterial},
     book_reference::{Book, BookReference},
     unique_id::UniqueId,
     CharacterEventSource, CharacterMutation,

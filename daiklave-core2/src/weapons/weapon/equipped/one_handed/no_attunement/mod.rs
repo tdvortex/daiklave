@@ -3,7 +3,8 @@ use std::num::NonZeroU8;
 use crate::weapons::weapon::{
     artifact::{ArtifactWeaponView, OneHandedArtifactWeaponView},
     mundane::{MundaneWeaponView, OneHandedMundaneWeaponView},
-    Weapon, WeaponType, name::WeaponName,
+    name::WeaponName,
+    Weapon, WeaponType,
 };
 
 pub use memo::EquippedOneHandedWeaponNoAttunementMemo;
@@ -25,7 +26,10 @@ impl<'view, 'source> EquippedOneHandedWeaponNoAttunement<'source> {
                 EquippedOneHandedWeaponNoAttunementMemo::Mundane((*name).to_owned(), view.as_memo())
             }
             EquippedOneHandedWeaponNoAttunement::Artifact(name, view) => {
-                EquippedOneHandedWeaponNoAttunementMemo::Artifact((*name).to_owned(), view.as_memo())
+                EquippedOneHandedWeaponNoAttunementMemo::Artifact(
+                    (*name).to_owned(),
+                    view.as_memo(),
+                )
             }
         }
     }

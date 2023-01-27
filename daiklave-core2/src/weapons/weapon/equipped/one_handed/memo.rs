@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::weapons::weapon::{
-    artifact::OneHandedArtifactWeapon, mundane::OneHandedMundaneWeapon,
-};
+use crate::weapons::weapon::{artifact::OneHandedArtifactWeapon, mundane::OneHandedMundaneWeapon};
 
 use super::EquippedOneHandedWeapon;
 

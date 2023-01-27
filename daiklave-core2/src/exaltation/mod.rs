@@ -23,7 +23,7 @@ use crate::{
     },
     artifact::{
         wonders::{OwnedWonder, Wonder, WonderId},
-        ArtifactName, ArtifactId,
+        ArtifactId, ArtifactName,
     },
     charms::{
         charm::{
@@ -47,8 +47,8 @@ use crate::{
         Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     weapons::weapon::{
-        artifact::ArtifactWeaponView, mundane::MundaneWeapon, EquipHand,
-        Equipped, Weapon, WeaponName,
+        artifact::ArtifactWeaponView, mundane::MundaneWeapon, EquipHand, Equipped, Weapon,
+        WeaponName,
     },
     CharacterMutationError,
 };
@@ -111,7 +111,9 @@ impl<'source> Exaltation<'source> {
                 Exaltation::Mortal(box_mortal) => {
                     box_mortal.as_ref().get_weapon(weapon_name, equipped)
                 }
-                Exaltation::Exalt(box_exalt) => box_exalt.as_ref().get_weapon(weapon_name, equipped),
+                Exaltation::Exalt(box_exalt) => {
+                    box_exalt.as_ref().get_weapon(weapon_name, equipped)
+                }
             }
         }
     }

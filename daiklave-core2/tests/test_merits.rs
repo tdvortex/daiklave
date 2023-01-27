@@ -3,7 +3,7 @@ use std::num::NonZeroU8;
 use daiklave_core2::{
     abilities::{AbilityName, AbilityNameVanilla},
     armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, ArmorWeightClass, BaseArmorId},
-    artifact::{wonders::WonderId, Artifact, ArtifactId, MagicMaterial, ArtifactName},
+    artifact::{wonders::WonderId, Artifact, ArtifactId, ArtifactName, MagicMaterial},
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     exaltation::exalt::exalt_type::solar::{

@@ -2,14 +2,14 @@ use daiklave_core2::{
     armor::armor_item::{
         artifact::ArtifactArmorId, ArmorItem, ArmorTag, ArmorWeightClass, BaseArmorId,
     },
-    artifact::{wonders::WonderId, Artifact, MagicMaterial, ArtifactName},
+    artifact::{wonders::WonderId, Artifact, ArtifactName, MagicMaterial},
     book_reference::{Book, BookReference},
     hearthstones::{
         hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory, HearthstoneKeyword},
         HearthstoneId,
     },
     unique_id::UniqueId,
-    weapons::weapon::{OptionalWeaponTag, Weapon, WeaponWeightClass, WeaponName},
+    weapons::weapon::{OptionalWeaponTag, Weapon, WeaponName, WeaponWeightClass},
     CharacterEventSource, CharacterMutation,
 };
 
@@ -130,9 +130,7 @@ fn test_hearthstones() {
         .hearthstone_slots(3)
         .build();
 
-    let mutation = CharacterMutation::AddArtifact(Artifact::Weapon(
-        adorei,
-    ));
+    let mutation = CharacterMutation::AddArtifact(Artifact::Weapon(adorei));
     event_source.apply_mutation(mutation).unwrap();
 
     let freedoms_cadence = ArmorItem::artifact("Freedom's Cadence")
@@ -224,10 +222,7 @@ fn test_hearthstones() {
     assert_eq!(
         character
             .weapons()
-            .get(
-                WeaponName::Artifact("Beloved Adorei"),
-                None
-            )
+            .get(WeaponName::Artifact("Beloved Adorei"), None)
             .unwrap()
             .slotted_hearthstones()
             .next()

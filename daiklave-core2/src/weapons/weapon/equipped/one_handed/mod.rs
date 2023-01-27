@@ -46,16 +46,16 @@ impl<'view, 'source> EquippedOneHandedWeapon<'source> {
                 EquippedOneHandedWeaponMemo::Mundane((*name).to_owned(), view.as_memo())
             }
             EquippedOneHandedWeapon::Artifact(name, view, attunement) => {
-                EquippedOneHandedWeaponMemo::Artifact((*name).to_owned(), view.as_memo(), *attunement)
+                EquippedOneHandedWeaponMemo::Artifact(
+                    (*name).to_owned(),
+                    view.as_memo(),
+                    *attunement,
+                )
             }
         }
     }
 
-    pub fn get_weapon(
-        &self,
-        name: WeaponName<'_>,
-        hand: EquipHand,
-    ) -> Option<Weapon<'source>> {
+    pub fn get_weapon(&self, name: WeaponName<'_>, hand: EquipHand) -> Option<Weapon<'source>> {
         match (self, name) {
             (EquippedOneHandedWeapon::Mundane(name, one), WeaponName::Mundane(target_name)) => {
                 if &target_name != name {

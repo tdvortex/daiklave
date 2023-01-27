@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{armor::armor_item::artifact::ArtifactArmorId};
+use crate::armor::armor_item::artifact::ArtifactArmorId;
 
 use super::wonders::WonderId;
 

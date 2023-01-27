@@ -3,8 +3,8 @@ use std::ops::Deref;
 use crate::{
     hearthstones::SlottedHearthstone,
     weapons::weapon::artifact::{
-        traits::ArtifactWeaponTraits,
         newtype::{NaturalArtifactWeaponView, WornArtifactWeaponView},
+        traits::ArtifactWeaponTraits,
     },
 };
 

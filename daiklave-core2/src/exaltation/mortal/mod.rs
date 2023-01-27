@@ -166,7 +166,9 @@ impl<'view, 'source> Mortal<'source> {
         }
     }
 
-    pub fn iter_weapons(&self) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> + '_ {
+    pub fn iter_weapons(
+        &self,
+    ) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> + '_ {
         self.weapons.iter()
     }
 

@@ -99,12 +99,9 @@ impl<'view, 'source> Character<'source> {
             ArtifactName::Wonder(id) => ArtifactId::Wonder(*id),
         };
 
-        let hearthstone = self
-        .hearthstones()
-        .get(hearthstone_id)
-        .ok_or(CharacterMutationError::HearthstoneError(
-            HearthstoneError::NotFound,
-        ))?;
+        let hearthstone = self.hearthstones().get(hearthstone_id).ok_or(
+            CharacterMutationError::HearthstoneError(HearthstoneError::NotFound),
+        )?;
 
         let maybe_slotted_into_id = hearthstone.slotted_into();
         if maybe_slotted_into_id == Some(artifact_id) {

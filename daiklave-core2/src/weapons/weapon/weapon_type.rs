@@ -8,7 +8,7 @@ use crate::{
 
 use super::{
     artifact::ArtifactWeaponView, base::BaseWeapon, equipped::Equipped, mundane::MundaneWeaponView,
-    AttackRange, WeaponTag, WeaponWeightClass, WeaponName,
+    AttackRange, WeaponName, WeaponTag, WeaponWeightClass,
 };
 
 pub(crate) enum WeaponType<'source> {

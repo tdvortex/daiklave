@@ -116,7 +116,8 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
                 }
             }
             (WeaponName::Artifact(name), Equipped::Worn) => {
-                let (&name, handless_artifact_weapon) = self.handless_artifact.get_key_value(name)?;
+                let (&name, handless_artifact_weapon) =
+                    self.handless_artifact.get_key_value(name)?;
                 let (no_attunement, attunement) =
                     (&handless_artifact_weapon.0, handless_artifact_weapon.1);
 
@@ -377,7 +378,8 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
                 ExaltHands::Both(arr) => {
                     arr.iter_mut()
                         .find_map(|one| {
-                            if let EquippedOneHandedWeapon::Artifact(held_name, _, attunement) = one {
+                            if let EquippedOneHandedWeapon::Artifact(held_name, _, attunement) = one
+                            {
                                 if held_name == &artifact_weapon_name {
                                     Some(attunement)
                                 } else {

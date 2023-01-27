@@ -1,6 +1,6 @@
 use crate::{
     armor::armor_item::artifact::{ArtifactArmor, ArtifactArmorId},
-    weapons::weapon::{artifact::{ArtifactWeapon}},
+    weapons::weapon::artifact::ArtifactWeapon,
 };
 
 /// Builders for Wonders and Warstriders.

@@ -6,10 +6,10 @@ pub(crate) use memo::NonnaturalArtifactWeaponNoAttunementMemo;
 use crate::{
     hearthstones::SlottedHearthstone,
     weapons::weapon::artifact::{
-        traits::ArtifactWeaponTraits,
         newtype::{
             OneHandedArtifactWeaponView, TwoHandedArtifactWeaponView, WornArtifactWeaponView,
         },
+        traits::ArtifactWeaponTraits,
     },
 };
 
