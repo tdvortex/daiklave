@@ -4,10 +4,12 @@ use super::equipped::EquipHand;
 use super::WeaponTag;
 use super::{base::BaseWeapon, equipped::Equipped};
 
+mod add;
 mod grouped;
 mod memo;
 mod newtype;
 
+pub use add::AddMundaneWeapon;
 pub(crate) use grouped::{
     HandlessMundaneWeapon, HandlessMundaneWeaponMemo, NonnaturalMundaneWeapon,
     NonnaturalMundaneWeaponMemo,

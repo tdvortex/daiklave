@@ -156,7 +156,7 @@ impl<'source> Character<'source> {
             CharacterMutation::SetCraftDots(focus, dots) => {
                 self.set_craft_dots(focus.as_str(), *dots)
             }
-            CharacterMutation::AddMundaneWeapon(name, mundane_weapon) => {
+            CharacterMutation::AddMundaneWeapon((name, mundane_weapon)) => {
                 self.add_mundane_weapon(name.as_str(), mundane_weapon)
             }
             CharacterMutation::EquipWeapon(name, equip_hand) => {

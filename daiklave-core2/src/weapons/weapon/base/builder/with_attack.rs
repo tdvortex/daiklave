@@ -4,7 +4,7 @@ use crate::{
     book_reference::BookReference,
     weapons::weapon::{
         ability::WeaponAbility,
-        artifact::BaseArtifactWeapon,
+        artifact::{BaseArtifactWeapon, AddBaseArtifactWeapon},
         base::BaseWeapon,
         damage_type::WeaponDamageType,
         handedness::WeaponHandedness,
@@ -119,7 +119,7 @@ impl BaseWeaponBuilderWithAttack {
 
     /// Completes the builder process, returning a new
     /// BaseArtifactWeapon.
-    pub fn build_artifact(self) -> BaseArtifactWeapon {
+    pub fn build_artifact(self) -> AddBaseArtifactWeapon {
         let base_weapon = BaseWeapon {
             book_reference: self.book_reference,
             weight_class: self.weight_class,
@@ -129,9 +129,9 @@ impl BaseWeaponBuilderWithAttack {
             tags: self.tags,
         };
 
-        BaseArtifactWeapon {
+        (self.name, BaseArtifactWeapon {
             handedness: self.handedness,
             base_weapon,
-        }
+        })
     }
 }

@@ -30,7 +30,7 @@ use crate::{
         },
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
-    weapons::weapon::{mundane::MundaneWeapon, EquipHand, Equipped, WeaponName},
+    weapons::weapon::{mundane::{AddMundaneWeapon}, EquipHand, Equipped, WeaponName},
 };
 
 /// The API for the character, expressed as an owned struct. Each mutation has
@@ -94,7 +94,7 @@ pub enum CharacterMutation {
     /// Sets the Craft dots for a particular focus area.
     SetCraftDots(String, u8),
     /// Adds a mundane weapon to the character.
-    AddMundaneWeapon(String, MundaneWeapon),
+    AddMundaneWeapon(AddMundaneWeapon),
     /// Removes a mundane weapon from the character.
     RemoveMundaneWeapon(String),
     /// Equips the specific weapon. For a OneHanded weapon, will equip into

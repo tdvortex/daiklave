@@ -71,7 +71,7 @@ fn test_weapons_event_source() {
     // Add some additional mundane weapons
     [
         CharacterMutation::AddMundaneWeapon(
-            let (name, weapon) = Weapon::base("Tiger Claws".to_owned())
+            Weapon::base("Tiger Claws".to_owned())
             .book_reference(BookReference::new(Book::CoreRulebook, 581))
             .weight_class(WeaponWeightClass::Light)
             .worn()
@@ -80,7 +80,6 @@ fn test_weapons_event_source() {
             .build_mundane()
         ),
         CharacterMutation::AddMundaneWeapon(
-            BaseWeaponId(UniqueId::Placeholder(2)),
             Weapon::base("Axe".to_owned())
                 .weight_class(WeaponWeightClass::Medium)
                 .one_handed()
@@ -92,7 +91,6 @@ fn test_weapons_event_source() {
                 .build_mundane(),
         ),
         CharacterMutation::AddMundaneWeapon(
-            BaseWeaponId(UniqueId::Placeholder(3)),
             Weapon::base("Shield".to_owned())
                 .weight_class(WeaponWeightClass::Medium)
                 .one_handed()
@@ -103,7 +101,6 @@ fn test_weapons_event_source() {
                 .build_mundane(),
         ),
         CharacterMutation::AddMundaneWeapon(
-            BaseWeaponId(UniqueId::Placeholder(4)),
             Weapon::base("Hook Sword".to_owned())
                 .weight_class(WeaponWeightClass::Medium)
                 .one_handed()
@@ -114,7 +111,6 @@ fn test_weapons_event_source() {
                 .build_mundane(),
         ),
         CharacterMutation::AddMundaneWeapon(
-            BaseWeaponId(UniqueId::Placeholder(4)),
             Weapon::base("Hook Sword".to_owned())
                 .weight_class(WeaponWeightClass::Medium)
                 .one_handed()
@@ -125,7 +121,6 @@ fn test_weapons_event_source() {
                 .build_mundane(),
         ),
         CharacterMutation::AddMundaneWeapon(
-            BaseWeaponId(UniqueId::Placeholder(5)),
             Weapon::base("Great Sword".to_owned())
                 .weight_class(WeaponWeightClass::Heavy)
                 .two_handed()
@@ -137,7 +132,6 @@ fn test_weapons_event_source() {
                 .build_mundane(),
         ),
         CharacterMutation::AddMundaneWeapon(
-            BaseWeaponId(UniqueId::Placeholder(6)),
             Weapon::base("Chakram".to_owned())
                 .weight_class(WeaponWeightClass::Light)
                 .one_handed()
@@ -150,7 +144,6 @@ fn test_weapons_event_source() {
                 .build_mundane(),
         ),
         CharacterMutation::AddMundaneWeapon(
-            BaseWeaponId(UniqueId::Placeholder(7)),
             Weapon::base("Crossbow".to_owned())
                 .weight_class(WeaponWeightClass::Light)
                 .two_handed()
@@ -175,7 +168,7 @@ fn test_weapons_event_source() {
         character_view
             .weapons()
             .get(
-                WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(4))),
+                WeaponId::Mundane("Hook Sword"),
                 None
             )
             .unwrap()
@@ -185,12 +178,12 @@ fn test_weapons_event_source() {
 
     // Worn weapons can be equipped and unequipped without needing hands
     let mutation = CharacterMutation::EquipWeapon(
-        WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(1))),
+        WeaponName::Mundane("Tiger Claws".to_owned()),
         None,
     );
     event_source.apply_mutation(mutation).unwrap();
     let mutation = CharacterMutation::UnequipWeapon(
-        WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(1))),
+        WeaponName::Mundane("Tiger Claws".to_owned()),
         Equipped::Worn,
     );
     event_source.apply_mutation(mutation).unwrap();
@@ -198,15 +191,15 @@ fn test_weapons_event_source() {
     // Can wield one handed weapons as main only, two different, off hand only, or paired
     [
         CharacterMutation::EquipWeapon(
-            WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(4))),
+            WeaponName::Mundane("Hook Sword".to_owned()),
             Some(EquipHand::OffHand),
         ),
         CharacterMutation::EquipWeapon(
-            WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(4))),
+            WeaponName::Mundane("Hook Sword".to_owned()),
             Some(EquipHand::MainHand),
         ),
         CharacterMutation::EquipWeapon(
-            WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(3))),
+            WeaponName::Mundane("Shield".to_owned()),
             Some(EquipHand::OffHand),
         ),
     ]
@@ -221,7 +214,7 @@ fn test_weapons_event_source() {
         character_view
             .weapons()
             .get(
-                WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(4))),
+                WeaponId::Mundane("Hook Sword"),
                 Some(Equipped::MainHand)
             )
             .unwrap()
@@ -232,7 +225,7 @@ fn test_weapons_event_source() {
         character_view
             .weapons()
             .get(
-                WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(3))),
+                WeaponId::Mundane("Shield"),
                 Some(Equipped::OffHand)
             )
             .unwrap()
@@ -242,7 +235,7 @@ fn test_weapons_event_source() {
 
     // Can't equip a two-handed melee weapon if Strength is less than 3
     let mutation = CharacterMutation::EquipWeapon(
-        WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(5))),
+        WeaponName::Mundane("Great Sword".to_owned()),
         None,
     );
     assert!(event_source.apply_mutation(mutation).is_err());
@@ -252,7 +245,7 @@ fn test_weapons_event_source() {
 
     // Equipping a two handed weapon unequips all one-handed weapons
     let mutation = CharacterMutation::EquipWeapon(
-        WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(5))),
+        WeaponName::Mundane("Great Sword".to_owned()),
         None,
     );
     event_source.apply_mutation(mutation).unwrap();
@@ -262,7 +255,6 @@ fn test_weapons_event_source() {
         ArtifactWeaponId(UniqueId::Placeholder(1)),
         Weapon::artifact("Volcano Cutter".to_owned())
             .base_artifact(
-                BaseWeaponId(UniqueId::Placeholder(8)),
                 Weapon::base("Grand Daiklave".to_owned())
                     .book_reference(BookReference::new(Book::CoreRulebook, 597))
                     .weight_class(WeaponWeightClass::Heavy)
@@ -271,7 +263,7 @@ fn test_weapons_event_source() {
                     .melee()
                     .tag(OptionalWeaponTag::Balanced)
                     .tag(OptionalWeaponTag::Reaching)
-                    .build_artifact(),
+                    .build_artifact()
             )
             .material(MagicMaterial::RedJade)
             .merit_dots(5)
@@ -298,22 +290,22 @@ fn test_weapons_event_source() {
     assert!(character
         .weapons()
         .get(
-            WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(5))),
+            WeaponId::Mundane("Great Sword"),
             None
         )
         .is_some());
     event_source.undo().unwrap();
 
     // Check you can remove an unequipped mundane weapon
-    let mutation = CharacterMutation::RemoveMundaneWeapon(BaseWeaponId(UniqueId::Placeholder(7)));
+    let mutation = CharacterMutation::RemoveMundaneWeapon("Crossbow".to_owned());
     event_source.apply_mutation(mutation).unwrap();
 
     // Check you cannot remove a missing mundane weapon
-    let mutation = CharacterMutation::RemoveMundaneWeapon(BaseWeaponId(UniqueId::Placeholder(7)));
+    let mutation = CharacterMutation::RemoveMundaneWeapon("Crossbow".to_owned());
     assert!(event_source.apply_mutation(mutation).is_err());
 
     // Check you cannot remove an equipped mundane weapon without unequipped copies
-    let mutation = CharacterMutation::RemoveMundaneWeapon(BaseWeaponId(UniqueId::Placeholder(5)));
+    let mutation = CharacterMutation::RemoveMundaneWeapon("Great Sword".to_owned());
     assert!(event_source.apply_mutation(mutation).is_err());
 
     // Check you can remove an unequipped artifact weapon

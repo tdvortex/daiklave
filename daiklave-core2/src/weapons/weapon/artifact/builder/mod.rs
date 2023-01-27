@@ -10,7 +10,7 @@ pub use with_merit_dots::ArtifactWeaponBuilderWithMeritDots;
 
 use crate::{book_reference::BookReference};
 
-use super::base::BaseArtifactWeapon;
+use super::{AddBaseArtifactWeapon};
 
 /// A builder to construct a new artifact weapon. Enforces that required fields
 /// are specified in order: name, base artifact, magic material, merit dots,
@@ -48,13 +48,12 @@ impl ArtifactWeaponBuilder {
     /// Specifies the base artifact weapon for the artifact.
     pub fn base_artifact(
         self,
-        base_weapon_name: String,
-        base_weapon: BaseArtifactWeapon,
+        add_base_artifact_weapon: AddBaseArtifactWeapon
     ) -> ArtifactWeaponBuilderWithBaseWeapon {
         ArtifactWeaponBuilderWithBaseWeapon {
             name: self.name,
-            base_weapon_name,
-            base_weapon,
+            base_weapon_name: add_base_artifact_weapon.0,
+            base_weapon: add_base_artifact_weapon.1,
             lore: self.lore,
             powers: self.powers,
             book_reference: self.book_reference,

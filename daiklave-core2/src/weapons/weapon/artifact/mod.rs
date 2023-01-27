@@ -1,3 +1,4 @@
+mod add;
 mod base;
 pub(crate) mod builder;
 mod grouped;
@@ -8,6 +9,7 @@ mod newtype;
 
 use std::ops::Deref;
 
+pub use add::AddBaseArtifactWeapon;
 pub use base::BaseArtifactWeapon;
 pub(crate) use grouped::{
     HandlessArtifactWeapon, HandlessArtifactWeaponMemo, HandlessArtifactWeaponNoAttunement,

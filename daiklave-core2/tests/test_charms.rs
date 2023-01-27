@@ -246,7 +246,6 @@ fn test_evocations() {
                 .to_owned(),
         )
         .base_artifact(
-            "Daiklave".to_owned(),
             Weapon::base("Daiklave".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 595))
                 .weight_class(WeaponWeightClass::Medium)
@@ -558,7 +557,6 @@ fn test_evocations() {
     let rainwalker_id = ArtifactWeaponId(UniqueId::Placeholder(2));
     let rainwalker = Weapon::artifact("Rainwalker".to_owned())
         .base_artifact(
-            "Razor Parasol".to_owned(),
             Weapon::base("Razor Parasol".to_owned())
                 .book_reference(BookReference::new(Book::ArmsOfTheChosen, 39))
                 .weight_class(WeaponWeightClass::Medium)
@@ -568,7 +566,7 @@ fn test_evocations() {
                 .tag(OptionalWeaponTag::Concealable)
                 .tag(OptionalWeaponTag::Disarming)
                 .tag(OptionalWeaponTag::Shield)
-                .build_artifact(),
+                .build_artifact()
         )
         .book_reference(BookReference::new(Book::ArmsOfTheChosen, 39))
         .lore("The Amethyst Lord was a wicked prince of the Fair Folk[...]".to_owned())

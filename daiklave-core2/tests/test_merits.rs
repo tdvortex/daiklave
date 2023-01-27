@@ -46,7 +46,6 @@ fn test_merits() {
         ArtifactWeaponId(UniqueId::Placeholder(1)),
         Weapon::artifact("Volcano Cutter".to_owned())
             .base_artifact(
-                "Grand Daiklave".to_owned(),
                 Weapon::base("Grand Daiklave".to_owned())
                     .book_reference(BookReference::new(Book::CoreRulebook, 597))
                     .weight_class(WeaponWeightClass::Heavy)
@@ -55,7 +54,7 @@ fn test_merits() {
                     .melee()
                     .tag(OptionalWeaponTag::Balanced)
                     .tag(OptionalWeaponTag::Reaching)
-                    .build_artifact(),
+                    .build_artifact()
             )
             .material(MagicMaterial::RedJade)
             .merit_dots(5)

@@ -103,7 +103,6 @@ fn test_hearthstones() {
     // Add artifacts to slot them into
     let adorei = Weapon::artifact("Beloved Adorei".to_owned())
         .base_artifact(
-            "Daiklave".to_owned(),
             Weapon::base("Daiklave".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 614))
                 .weight_class(WeaponWeightClass::Medium)
@@ -111,7 +110,7 @@ fn test_hearthstones() {
                 .lethal()
                 .melee()
                 .tag(OptionalWeaponTag::Balanced)
-                .build_artifact(),
+                .build_artifact()
         )
         .lore(
             "Auravash the Twilight craftsman saw a need for the\

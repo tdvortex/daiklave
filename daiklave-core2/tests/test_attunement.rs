@@ -53,7 +53,6 @@ fn test_attunement() {
                 .to_owned(),
         )
         .base_artifact(
-            "Daiklave".to_owned(),
             Weapon::base("Daiklave".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 595))
                 .weight_class(WeaponWeightClass::Medium)
@@ -61,7 +60,7 @@ fn test_attunement() {
                 .lethal()
                 .tag(OptionalWeaponTag::Balanced)
                 .melee()
-                .build_artifact(),
+                .build_artifact()
         )
         .material(MagicMaterial::GreenJade)
         .merit_dots(3)
