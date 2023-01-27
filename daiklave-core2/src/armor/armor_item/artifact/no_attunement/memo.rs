@@ -9,7 +9,6 @@ use super::ArtifactArmorNoAttunement;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ArtifactArmorNoAttunementMemo {
-    pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
@@ -23,7 +22,6 @@ pub struct ArtifactArmorNoAttunementMemo {
 impl<'source> ArtifactArmorNoAttunementMemo {
     pub fn as_ref(&'source self) -> ArtifactArmorNoAttunement<'source> {
         ArtifactArmorNoAttunement {
-            name: self.name.as_str(),
             book_reference: self.book_reference,
             lore: self.lore.as_deref(),
             powers: self.powers.as_deref(),

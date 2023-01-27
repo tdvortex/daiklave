@@ -1,6 +1,7 @@
 use crate::{
     armor::armor_item::artifact::{
-        no_attunement::ArtifactArmorNoAttunementMemo, ArtifactArmor, BaseArtifactArmor,
+        no_attunement::ArtifactArmorNoAttunementMemo, AddArtifactArmor, ArtifactArmor,
+        BaseArtifactArmor,
     },
     artifact::MagicMaterial,
     book_reference::BookReference,
@@ -39,23 +40,28 @@ impl ArtifactArmorItemBuilderWithHearthstoneSlots {
     }
 
     /// Finalizes the construction of a piece of artifact armor.
-    pub fn build(self) -> ArtifactArmor {
-        ArtifactArmor(
-            ArtifactArmorNoAttunementMemo {
-                name: self.name,
-                book_reference: self.book_reference,
-                lore: self.lore,
-                powers: self.powers,
-                base_armor_name: self.base_armor_name,
-                base_armor: self.base_armor.0,
-                magic_material: self.magic_material,
-                merit_dots: self.merit_dots,
-                hearthstone_slots: (0..self.hearthstone_slots).fold(Vec::new(), |mut acc, _| {
-                    acc.push(None);
-                    acc
-                }),
-            },
-            None,
+    pub fn build(self) -> AddArtifactArmor {
+        (
+            self.name,
+            ArtifactArmor(
+                ArtifactArmorNoAttunementMemo {
+                    book_reference: self.book_reference,
+                    lore: self.lore,
+                    powers: self.powers,
+                    base_armor_name: self.base_armor_name,
+                    base_armor: self.base_armor.0,
+                    magic_material: self.magic_material,
+                    merit_dots: self.merit_dots,
+                    hearthstone_slots: (0..self.hearthstone_slots).fold(
+                        Vec::new(),
+                        |mut acc, _| {
+                            acc.push(None);
+                            acc
+                        },
+                    ),
+                },
+                None,
+            ),
         )
     }
 }

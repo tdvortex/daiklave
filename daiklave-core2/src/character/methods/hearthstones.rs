@@ -95,7 +95,7 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         let artifact_id = match artifact_name {
             ArtifactName::Weapon(name) => ArtifactId::Weapon(name.as_str()),
-            ArtifactName::Armor(id) => ArtifactId::Armor(*id),
+            ArtifactName::Armor(name) => ArtifactId::Armor(name.as_str()),
             ArtifactName::Wonder(id) => ArtifactId::Wonder(*id),
         };
 

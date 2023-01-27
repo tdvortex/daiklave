@@ -1,6 +1,5 @@
 use crate::{
-    armor::armor_item::artifact::{ArtifactArmor, ArtifactArmorId},
-    weapons::weapon::artifact::ArtifactWeapon,
+    armor::armor_item::artifact::AddArtifactArmor, weapons::weapon::artifact::ArtifactWeapon,
 };
 
 /// Builders for Wonders and Warstriders.
@@ -23,18 +22,18 @@ use self::{
     wonders::{Wonder, WonderId},
 };
 
-/// A magical, Essence-infused object.
+/// A magical, Essence-infused object to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum Artifact {
+pub enum AddArtifact {
     /// An artifact weapon.
     Weapon(ArtifactWeapon),
     /// An artifact armor item.
-    Armor(ArtifactArmorId, ArtifactArmor),
+    Armor(AddArtifactArmor),
     /// A catch-all for other artifacts.
     Wonder(WonderId, Wonder),
 }
 
-impl Artifact {
+impl AddArtifact {
     /// Starts constructing a Wonder artifact.
     pub fn wonder_builder(name: &str) -> WonderBuilder {
         WonderBuilder {

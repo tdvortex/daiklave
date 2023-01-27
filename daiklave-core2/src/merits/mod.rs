@@ -2,7 +2,7 @@
 pub mod merit;
 
 use crate::{
-    armor::armor_item::ArmorId, artifact::ArtifactId, exaltation::Exaltation,
+    armor::armor_item::ArmorName, artifact::ArtifactId, exaltation::Exaltation,
     languages::language::Language, weapons::weapon::WeaponName, Character,
 };
 
@@ -39,19 +39,24 @@ impl<'view, 'source> Merits<'view, 'source> {
                             Merit(MeritSource::Artifact(ArtifactId::Weapon(name), name, dots))
                         })
                     }),
-                ArtifactId::Armor(artifact_armor_id) => self
-                    .0
-                    .armor()
-                    .get(ArmorId::Artifact(artifact_armor_id))
-                    .and_then(|armor| {
-                        armor.merit_dots().map(|dots| {
-                            Merit(MeritSource::Artifact(
-                                ArtifactId::Armor(artifact_armor_id),
-                                armor.name(),
-                                dots,
-                            ))
+                ArtifactId::Armor(name) => {
+                    self.0
+                        .armor()
+                        .get(ArmorName::Artifact(name))
+                        .and_then(|armor| {
+                            if let ArmorName::Artifact(name) = armor.name() {
+                                armor.merit_dots().map(|dots| {
+                                    Merit(MeritSource::Artifact(
+                                        ArtifactId::Armor(name),
+                                        name,
+                                        dots,
+                                    ))
+                                })
+                            } else {
+                                None
+                            }
                         })
-                    }),
+                }
                 ArtifactId::Wonder(wonder_id) => self.0.wonders().get(wonder_id).map(|wonder| {
                     Merit(MeritSource::Artifact(
                         ArtifactId::Wonder(wonder_id),
@@ -217,17 +222,14 @@ impl<'view, 'source> Merits<'view, 'source> {
         self.0
             .weapons()
             .iter()
-            .filter_map(|(weapon_id, equipped)| {
-                self.0
-                    .weapons()
-                    .get(weapon_id, equipped)
-                    .and_then(|weapon| {
-                        if let WeaponName::Artifact(artifact_weapon_name) = weapon.name() {
-                            Some(MeritId::Artifact(ArtifactId::Weapon(artifact_weapon_name)))
-                        } else {
-                            None
-                        }
-                    })
+            .filter_map(|(name, equipped)| {
+                self.0.weapons().get(name, equipped).and_then(|weapon| {
+                    if let WeaponName::Artifact(artifact_weapon_name) = weapon.name() {
+                        Some(MeritId::Artifact(ArtifactId::Weapon(artifact_weapon_name)))
+                    } else {
+                        None
+                    }
+                })
             })
             .for_each(|merit_id| output.push(merit_id));
 
@@ -235,9 +237,9 @@ impl<'view, 'source> Merits<'view, 'source> {
         self.0
             .armor()
             .iter()
-            .filter_map(|armor_id| {
-                if let ArmorId::Artifact(artifact_armor_id) = armor_id {
-                    Some(MeritId::Artifact(ArtifactId::Armor(artifact_armor_id)))
+            .filter_map(|name| {
+                if let ArmorName::Artifact(name) = name {
+                    Some(MeritId::Artifact(ArtifactId::Armor(name)))
                 } else {
                     None
                 }

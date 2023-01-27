@@ -1,7 +1,7 @@
 use daiklave_core2::{
     abilities::AbilityName,
-    armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, ArmorWeightClass},
-    artifact::{wonders::WonderId, Artifact, ArtifactName, MagicMaterial},
+    armor::armor_item::{ArmorItem, ArmorWeightClass},
+    artifact::{wonders::WonderId, AddArtifact, ArtifactName, MagicMaterial},
     book_reference::{Book, BookReference},
     exaltation::exalt::{
         essence::{MotePoolName, UncommitMotes},
@@ -19,7 +19,7 @@ use daiklave_core2::{
 fn test_attunement() {
     let mut event_source = CharacterEventSource::default();
     // Add some stuff to attune to
-    let glider = Artifact::wonder_builder("Essence Glider")
+    let glider = AddArtifact::wonder_builder("Essence Glider")
         .attunement_cost(2)
         .book_reference(BookReference::new(Book::CoreRulebook, 603))
         .merit_dots(3)
@@ -29,7 +29,7 @@ fn test_attunement() {
         )
         .build();
 
-    let yasal = Artifact::wonder_builder("Yasal Crystal")
+    let yasal = AddArtifact::wonder_builder("Yasal Crystal")
         .book_reference(BookReference::new(Book::CoreRulebook, 601))
         .merit_dots(2)
         .powers(
@@ -65,7 +65,7 @@ fn test_attunement() {
         .hearthstone_slots(2)
         .build();
 
-    let dauntless = ArmorItem::artifact("Dauntless")
+    let dauntless = ArmorItem::artifact("Dauntless".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 624))
         .lore(
             "When Zan the Invincible, Sword of Heaven, stood alone \
@@ -79,7 +79,7 @@ fn test_attunement() {
             such attempts.",
         )
         .base_artifact(
-            ArmorItem::base("Lamellar (Artifact)")
+            ArmorItem::base("Lamellar (Artifact)".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 600))
                 .weight_class(ArmorWeightClass::Medium)
                 .build_artifact(),
@@ -90,25 +90,24 @@ fn test_attunement() {
         .build();
 
     event_source
-        .apply_mutation(CharacterMutation::AddArtifact(Artifact::Wonder(
+        .apply_mutation(CharacterMutation::AddArtifact(AddArtifact::Wonder(
             WonderId(UniqueId::Placeholder(1)),
             glider,
         )))
         .unwrap();
     event_source
-        .apply_mutation(CharacterMutation::AddArtifact(Artifact::Wonder(
+        .apply_mutation(CharacterMutation::AddArtifact(AddArtifact::Wonder(
             WonderId(UniqueId::Placeholder(2)),
             yasal,
         )))
         .unwrap();
     event_source
-        .apply_mutation(CharacterMutation::AddArtifact(Artifact::Weapon(
+        .apply_mutation(CharacterMutation::AddArtifact(AddArtifact::Weapon(
             spring_razor,
         )))
         .unwrap();
     event_source
-        .apply_mutation(CharacterMutation::AddArtifact(Artifact::Armor(
-            ArtifactArmorId(UniqueId::Placeholder(1)),
+        .apply_mutation(CharacterMutation::AddArtifact(AddArtifact::Armor(
             dauntless,
         )))
         .unwrap();
@@ -162,7 +161,7 @@ fn test_attunement() {
         .unwrap();
     let character = event_source
         .apply_mutation(CharacterMutation::AttuneArtifact(
-            ArtifactName::Armor(ArtifactArmorId(UniqueId::Placeholder(1))),
+            ArtifactName::Armor("Dauntless".to_owned()),
             MotePoolName::Peripheral,
         ))
         .unwrap();
@@ -211,9 +210,7 @@ fn test_attunement() {
         .unwrap();
     event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            UncommitMotes::UnattuneArtifact(ArtifactName::Armor(ArtifactArmorId(
-                UniqueId::Placeholder(1),
-            ))),
+            UncommitMotes::UnattuneArtifact(ArtifactName::Armor("Dauntless".to_owned())),
         ))
         .unwrap();
     let character = event_source

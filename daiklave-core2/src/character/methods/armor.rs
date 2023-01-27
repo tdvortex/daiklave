@@ -1,6 +1,6 @@
 use crate::{
     armor::{
-        armor_item::{mundane::MundaneArmor, ArmorId},
+        armor_item::{mundane::MundaneArmor, ArmorName},
         Armor,
     },
     Character, CharacterMutationError,
@@ -32,8 +32,11 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Equips a specific piece of armor to a character.
-    pub fn equip_armor(&mut self, armor_id: ArmorId) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.equip_armor(armor_id)?;
+    pub fn equip_armor(
+        &mut self,
+        armor_name: ArmorName<'_>,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.exaltation.equip_armor(armor_name)?;
         Ok(self)
     }
 

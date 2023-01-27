@@ -7,7 +7,6 @@ pub mod builder;
 mod armor_type;
 mod base;
 mod equipped;
-mod id;
 mod memo;
 /// Properties of mundane armor
 pub mod mundane;
@@ -21,8 +20,7 @@ pub(crate) use armor_type::ArmorType;
 pub(crate) use equipped::{
     EquippedArmor, EquippedArmorMemo, EquippedArmorNoAttunement, EquippedArmorNoAttunementMemo,
 };
-pub use id::ArmorId;
-pub use name::ArmorName;
+pub use name::{ArmorName, ArmorNameMutation};
 pub use tag::ArmorTag;
 pub use weight_class::ArmorWeightClass;
 
@@ -36,33 +34,28 @@ pub struct ArmorItem<'source>(pub(crate) ArmorType<'source>, pub(crate) bool);
 
 impl<'source> ArmorItem<'source> {
     /// Starts constructing a base armor item.
-    pub fn base(name: &str) -> BaseArmorItemBuilder {
+    pub fn base(name: String) -> BaseArmorItemBuilder {
         BaseArmorItemBuilder {
-            name: name.to_owned(),
+            name,
             book_reference: None,
             tags: HashSet::new(),
         }
     }
 
     /// Starts construct an artifact armor item.
-    pub fn artifact(name: &str) -> ArtifactArmorItemBuilder {
+    pub fn artifact(name: String) -> ArtifactArmorItemBuilder {
         ArtifactArmorItemBuilder {
-            name: name.to_owned(),
+            name,
             book_reference: None,
             lore: None,
             powers: None,
         }
     }
 
-    /// The Id of the armor item
-    pub fn id(&self) -> ArmorId<'source> {
-        self.0.id()
-    }
-
     /// The name of the armor item. For artifacts, this will return the name of
     /// the unique armor item (like "Brilliant Sentinel") not the name of the
     /// base armor item (like "Articulated Plate").
-    pub fn name(&self) -> &'source str {
+    pub fn name(&self) -> ArmorName<'source> {
         self.0.name()
     }
 

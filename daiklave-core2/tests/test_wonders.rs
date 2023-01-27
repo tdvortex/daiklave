@@ -1,5 +1,5 @@
 use daiklave_core2::{
-    artifact::{wonders::WonderId, Artifact, ArtifactName},
+    artifact::{wonders::WonderId, AddArtifact, ArtifactName},
     book_reference::{Book, BookReference},
     unique_id::UniqueId,
     CharacterEventSource, CharacterMutation,
@@ -14,9 +14,9 @@ fn test_wonders() {
     assert!(character.wonders().iter().next().is_none());
 
     // Add a wonder
-    let wonder = Artifact::Wonder(
+    let wonder = AddArtifact::Wonder(
         WonderId(UniqueId::Placeholder(1)),
-        Artifact::wonder_builder("Belt of Shadow Walking")
+        AddArtifact::wonder_builder("Belt of Shadow Walking")
             .book_reference(BookReference::new(Book::CoreRulebook, 602))
             .merit_dots(3)
             .powers("Night-black belts made from leathe from the wings of giant bats[...]")

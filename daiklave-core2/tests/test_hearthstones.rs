@@ -1,6 +1,6 @@
 use daiklave_core2::{
-    armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, ArmorTag, ArmorWeightClass},
-    artifact::{wonders::WonderId, Artifact, ArtifactName, MagicMaterial},
+    armor::armor_item::{ArmorItem, ArmorTag, ArmorWeightClass},
+    artifact::{wonders::WonderId, AddArtifact, ArtifactName, MagicMaterial},
     book_reference::{Book, BookReference},
     hearthstones::{
         hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory, HearthstoneKeyword},
@@ -128,13 +128,13 @@ fn test_hearthstones() {
         .hearthstone_slots(3)
         .build();
 
-    let mutation = CharacterMutation::AddArtifact(Artifact::Weapon(adorei));
+    let mutation = CharacterMutation::AddArtifact(AddArtifact::Weapon(adorei));
     event_source.apply_mutation(mutation).unwrap();
 
-    let freedoms_cadence = ArmorItem::artifact("Freedom's Cadence")
+    let freedoms_cadence = ArmorItem::artifact("Freedom's Cadence".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 621))
         .base_artifact(
-            ArmorItem::base("Chain Shirt (Artifact)")
+            ArmorItem::base("Chain Shirt (Artifact)".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 599))
                 .weight_class(ArmorWeightClass::Light)
                 .tag(ArmorTag::Concealable)
@@ -161,13 +161,10 @@ fn test_hearthstones() {
         .hearthstone_slots(1)
         .build();
 
-    let mutation = CharacterMutation::AddArtifact(Artifact::Armor(
-        ArtifactArmorId(UniqueId::Placeholder(1)),
-        freedoms_cadence,
-    ));
+    let mutation = CharacterMutation::AddArtifact(AddArtifact::Armor(freedoms_cadence));
     event_source.apply_mutation(mutation).unwrap();
 
-    let hearthstone_amulet = Artifact::wonder_builder("Hearthstone Amulet")
+    let hearthstone_amulet = AddArtifact::wonder_builder("Hearthstone Amulet")
         .attunement_cost(1)
         .book_reference(BookReference::new(Book::CoreRulebook, 601))
         .hearthstone_slots(1)
@@ -190,7 +187,7 @@ fn test_hearthstones() {
         .magic_material(MagicMaterial::Starmetal)
         .build();
 
-    let mutation = CharacterMutation::AddArtifact(Artifact::Wonder(
+    let mutation = CharacterMutation::AddArtifact(AddArtifact::Wonder(
         WonderId(UniqueId::Placeholder(1)),
         hearthstone_amulet,
     ));
@@ -204,7 +201,7 @@ fn test_hearthstones() {
     event_source.apply_mutation(mutation).unwrap();
 
     let mutation = CharacterMutation::SlotHearthstone(
-        ArtifactName::Armor(ArtifactArmorId(UniqueId::Placeholder(1))),
+        ArtifactName::Armor("Freedom's Cadence".to_owned()),
         HearthstoneId(UniqueId::Placeholder(1)),
     );
     event_source.apply_mutation(mutation).unwrap();

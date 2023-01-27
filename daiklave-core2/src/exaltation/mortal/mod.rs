@@ -18,9 +18,9 @@ pub(crate) use wonders::MortalWonders;
 use crate::{
     abilities::AbilityRating,
     armor::armor_item::{
-        artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
+        artifact::{ArtifactArmorView, ArtifactError},
         mundane::MundaneArmor,
-        ArmorId, ArmorItem,
+        ArmorItem, ArmorName,
     },
     artifact::wonders::{OwnedWonder, Wonder, WonderId},
     charms::CharmError,
@@ -246,12 +246,12 @@ impl<'view, 'source> Mortal<'source> {
         self.armor.worn_armor()
     }
 
-    pub fn armor_iter(&self) -> std::vec::IntoIter<ArmorId> {
+    pub fn armor_iter(&self) -> std::vec::IntoIter<ArmorName<'source>> {
         self.armor.iter()
     }
 
-    pub fn get_armor(&self, armor_id: ArmorId) -> Option<ArmorItem<'source>> {
-        self.armor.get(armor_id)
+    pub fn get_armor(&self, name: ArmorName<'_>) -> Option<ArmorItem<'source>> {
+        self.armor.get(name)
     }
 
     pub fn add_mundane_armor(
@@ -271,8 +271,11 @@ impl<'view, 'source> Mortal<'source> {
         Ok(self)
     }
 
-    pub fn equip_armor(&mut self, armor_id: ArmorId) -> Result<&mut Self, CharacterMutationError> {
-        self.armor.equip(armor_id)?;
+    pub fn equip_armor(
+        &mut self,
+        name: ArmorName<'_>,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.armor.equip(name)?;
         Ok(self)
     }
 
@@ -283,18 +286,18 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn add_artifact_armor(
         &mut self,
-        armor_id: ArtifactArmorId,
+        name: &'source str,
         armor: ArtifactArmorView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.armor.add_artifact(armor_id, armor)?;
+        self.armor.add_artifact(name, armor)?;
         Ok(self)
     }
 
     pub fn remove_artifact_armor(
         &mut self,
-        armor_id: ArtifactArmorId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.armor.remove_artifact(armor_id)?;
+        self.armor.remove_artifact(name)?;
         Ok(self)
     }
 
@@ -347,12 +350,12 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn slot_hearthstone_into_armor(
         &mut self,
-        artifact_armor_id: ArtifactArmorId,
+        artifact_armor_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.armor
-            .slot_hearthstone(artifact_armor_id, hearthstone_id, unslotted)?;
+            .slot_hearthstone(artifact_armor_name, hearthstone_id, unslotted)?;
         Ok(self)
     }
 
@@ -378,11 +381,11 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn unslot_hearthstone_from_armor(
         &mut self,
-        artifact_armor_id: ArtifactArmorId,
+        artifact_armor_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         self.armor
-            .unslot_hearthstone(artifact_armor_id, hearthstone_id)
+            .unslot_hearthstone(artifact_armor_name, hearthstone_id)
     }
 
     pub fn unslot_hearthstone_from_wonder(

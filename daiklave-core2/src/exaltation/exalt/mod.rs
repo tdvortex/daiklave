@@ -33,9 +33,9 @@ use crate::{
     abilities::{AbilityError, AbilityName, AbilityRating},
     armor::{
         armor_item::{
-            artifact::{ArtifactArmorId, ArtifactArmorView, ArtifactError},
+            artifact::{ArtifactArmorView, ArtifactError},
             mundane::MundaneArmor,
-            ArmorId, ArmorItem,
+            ArmorItem, ArmorName,
         },
         ArmorError,
     },
@@ -658,12 +658,12 @@ impl<'view, 'source> Exalt<'source> {
         self.armor.worn_armor()
     }
 
-    pub fn armor_iter(&self) -> std::vec::IntoIter<ArmorId> {
+    pub fn armor_iter(&self) -> std::vec::IntoIter<ArmorName<'source>> {
         self.armor.iter()
     }
 
-    pub fn get_armor(&self, armor_id: ArmorId) -> Option<ArmorItem<'source>> {
-        self.armor.get(armor_id)
+    pub fn get_armor(&self, name: ArmorName<'_>) -> Option<ArmorItem<'source>> {
+        self.armor.get(name)
     }
 
     pub fn add_mundane_armor(
@@ -683,8 +683,11 @@ impl<'view, 'source> Exalt<'source> {
         Ok(self)
     }
 
-    pub fn equip_armor(&mut self, armor_id: ArmorId) -> Result<&mut Self, CharacterMutationError> {
-        self.armor.equip(armor_id)?;
+    pub fn equip_armor(
+        &mut self,
+        name: ArmorName<'_>,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.armor.equip(name)?;
         Ok(self)
     }
 
@@ -695,18 +698,18 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn add_artifact_armor(
         &mut self,
-        armor_id: ArtifactArmorId,
+        name: &'source str,
         armor: ArtifactArmorView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.armor.add_artifact(armor_id, armor)?;
+        self.armor.add_artifact(name, armor)?;
         Ok(self)
     }
 
     pub fn remove_artifact_armor(
         &mut self,
-        armor_id: ArtifactArmorId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.armor.remove_artifact(armor_id)?;
+        self.armor.remove_artifact(name)?;
         Ok(self)
     }
 
@@ -767,12 +770,12 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn slot_hearthstone_into_armor(
         &mut self,
-        artifact_armor_id: ArtifactArmorId,
+        artifact_armor_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.armor
-            .slot_hearthstone(artifact_armor_id, hearthstone_id, unslotted)?;
+            .slot_hearthstone(artifact_armor_name, hearthstone_id, unslotted)?;
         Ok(self)
     }
 
@@ -798,11 +801,11 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn unslot_hearthstone_from_armor(
         &mut self,
-        artifact_armor_id: ArtifactArmorId,
+        artifact_armor_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         self.armor
-            .unslot_hearthstone(artifact_armor_id, hearthstone_id)
+            .unslot_hearthstone(artifact_armor_name, hearthstone_id)
     }
 
     pub fn unslot_hearthstone_from_wonder(
@@ -904,9 +907,9 @@ impl<'view, 'source> Exalt<'source> {
                     Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 }
             }
-            ArtifactId::Armor(artifact_armor_id) => self
+            ArtifactId::Armor(artifact_armor_name) => self
                 .armor
-                .get(ArmorId::Artifact(artifact_armor_id))
+                .get(ArmorName::Artifact(artifact_armor_name))
                 .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?
                 .attunement_cost()
                 .ok_or(CharacterMutationError::EssenceError(

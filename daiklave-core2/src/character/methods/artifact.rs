@@ -1,5 +1,5 @@
 use crate::{
-    artifact::{wonders::Wonders, Artifact, ArtifactId, ArtifactName, MagicMaterial, Sonance},
+    artifact::{wonders::Wonders, AddArtifact, ArtifactId, ArtifactName, MagicMaterial, Sonance},
     exaltation::{exalt::essence::MotePoolName, Exaltation},
     Character, CharacterMutationError,
 };
@@ -13,18 +13,18 @@ impl<'view, 'source> Character<'source> {
     /// Adds an artifact to the character.
     pub fn add_artifact(
         &mut self,
-        artifact: &'source Artifact,
+        add_artifact: &'source AddArtifact,
     ) -> Result<&mut Self, CharacterMutationError> {
-        match artifact {
-            Artifact::Weapon(artifact_memo) => {
+        match add_artifact {
+            AddArtifact::Weapon(artifact_weapon) => {
                 self.exaltation
-                    .add_artifact_weapon(artifact_memo.0.as_str(), artifact_memo.1.as_ref())?;
+                    .add_artifact_weapon(artifact_weapon.0.as_str(), artifact_weapon.1.as_ref())?;
             }
-            Artifact::Armor(artifact_armor_id, artifact_memo) => {
+            AddArtifact::Armor((name, artifact_armor)) => {
                 self.exaltation
-                    .add_artifact_armor(*artifact_armor_id, artifact_memo.as_ref())?;
+                    .add_artifact_armor(name.as_str(), artifact_armor.as_ref())?;
             }
-            Artifact::Wonder(wonder_id, wonder) => {
+            AddArtifact::Wonder(wonder_id, wonder) => {
                 self.exaltation.add_wonder(*wonder_id, wonder)?;
             }
         }
@@ -41,8 +41,9 @@ impl<'view, 'source> Character<'source> {
                 self.exaltation
                     .remove_artifact_weapon(artifact_weapon_name.as_str())?;
             }
-            ArtifactName::Armor(artifact_armor_id) => {
-                self.exaltation.remove_artifact_armor(*artifact_armor_id)?;
+            ArtifactName::Armor(artifact_armor_name) => {
+                self.exaltation
+                    .remove_artifact_armor(artifact_armor_name.as_str())?;
             }
             ArtifactName::Wonder(wonder_id) => {
                 self.exaltation.remove_wonder(*wonder_id)?;

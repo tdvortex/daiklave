@@ -8,7 +8,6 @@ use crate::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ArtifactArmorNoAttunement<'source> {
-    pub(crate) name: &'source str,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) lore: Option<&'source str>,
     pub(crate) powers: Option<&'source str>,
@@ -22,7 +21,6 @@ pub struct ArtifactArmorNoAttunement<'source> {
 impl<'source> ArtifactArmorNoAttunement<'source> {
     pub fn as_memo(&self) -> ArtifactArmorNoAttunementMemo {
         ArtifactArmorNoAttunementMemo {
-            name: self.name.to_owned(),
             book_reference: self.book_reference,
             lore: self.lore.map(|s| s.to_owned()),
             powers: self.powers.map(|s| s.to_owned()),
@@ -36,10 +34,6 @@ impl<'source> ArtifactArmorNoAttunement<'source> {
                 .map(|option| option.map(|hearthstone| hearthstone.as_memo()))
                 .collect(),
         }
-    }
-
-    pub fn name(&self) -> &'source str {
-        self.name
     }
 
     pub fn book_reference(&self) -> Option<BookReference> {

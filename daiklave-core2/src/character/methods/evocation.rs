@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::{
     armor::{
-        armor_item::{artifact::ArtifactError, ArmorId},
+        armor_item::{artifact::ArtifactError, ArmorName},
         ArmorError,
     },
     artifact::ArtifactId,
@@ -34,12 +34,8 @@ impl<'source> Character<'source> {
                     ));
                 }
             }
-            EvokableId::Artifact(ArtifactId::Armor(artifact_armor_id)) => {
-                if self
-                    .armor()
-                    .get(ArmorId::Artifact(artifact_armor_id))
-                    .is_none()
-                {
+            EvokableId::Artifact(ArtifactId::Armor(name)) => {
+                if self.armor().get(ArmorName::Artifact(name)).is_none() {
                     return Err(CharacterMutationError::ArmorError(ArmorError::NotFound));
                 }
             }
@@ -99,12 +95,8 @@ impl<'source> Character<'source> {
                                 ids_to_remove.insert(evocation_id);
                             }
                         }
-                        EvokableId::Artifact(ArtifactId::Armor(artifact_armor_id)) => {
-                            if self
-                                .armor()
-                                .get(ArmorId::Artifact(artifact_armor_id))
-                                .is_none()
-                            {
+                        EvokableId::Artifact(ArtifactId::Armor(name)) => {
+                            if self.armor().get(ArmorName::Artifact(name)).is_none() {
                                 ids_to_remove.insert(evocation_id);
                             }
                         }

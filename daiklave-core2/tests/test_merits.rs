@@ -2,8 +2,8 @@ use std::num::NonZeroU8;
 
 use daiklave_core2::{
     abilities::{AbilityName, AbilityNameVanilla},
-    armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, ArmorWeightClass},
-    artifact::{wonders::WonderId, Artifact, ArtifactId, ArtifactName, MagicMaterial},
+    armor::armor_item::{ArmorItem, ArmorWeightClass},
+    artifact::{wonders::WonderId, AddArtifact, ArtifactId, ArtifactName, MagicMaterial},
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     exaltation::exalt::exalt_type::solar::{
@@ -40,7 +40,7 @@ fn test_merits() {
     // Add a bunch of merits (and things which read as merits)
     // Artifact weapon
     // Create and add a unique artifact weapon
-    let mutation = CharacterMutation::AddArtifact(Artifact::Weapon(
+    let mutation = CharacterMutation::AddArtifact(AddArtifact::Weapon(
         Weapon::artifact("Volcano Cutter".to_owned())
             .base_artifact(
                 Weapon::base("Grand Daiklave".to_owned())
@@ -71,11 +71,10 @@ fn test_merits() {
     event_source.apply_mutation(mutation).unwrap();
 
     // Artifact armor
-    let mutation = CharacterMutation::AddArtifact(Artifact::Armor(
-        ArtifactArmorId(UniqueId::Placeholder(1)),
-        ArmorItem::artifact("Brilliant Sentinel")
+    let mutation = CharacterMutation::AddArtifact(AddArtifact::Armor(
+        ArmorItem::artifact("Brilliant Sentinel".to_owned())
             .base_artifact(
-                ArmorItem::base("Articulated Plate (Artifact)")
+                ArmorItem::base("Articulated Plate (Artifact)".to_owned())
                     .book_reference(BookReference::new(Book::CoreRulebook, 600))
                     .weight_class(ArmorWeightClass::Heavy)
                     .build_artifact(),
@@ -97,9 +96,9 @@ fn test_merits() {
     event_source.apply_mutation(mutation).unwrap();
 
     // Artifact wonder
-    let mutation = CharacterMutation::AddArtifact(Artifact::Wonder(
+    let mutation = CharacterMutation::AddArtifact(AddArtifact::Wonder(
         WonderId(UniqueId::Placeholder(1)),
-        Artifact::wonder_builder("Belt of Shadow Walking")
+        AddArtifact::wonder_builder("Belt of Shadow Walking")
             .book_reference(BookReference::new(Book::CoreRulebook, 602))
             .merit_dots(3)
             .powers("Night-black belts made from leathe from the wings of giant bats[...]")
@@ -353,13 +352,11 @@ fn test_merits() {
     assert!(volcano_cutter.description().1.is_some());
 
     let brilliant_sentinel = merits
-        .get(MeritId::Artifact(ArtifactId::Armor(ArtifactArmorId(
-            UniqueId::Placeholder(1),
-        ))))
+        .get(MeritId::Artifact(ArtifactId::Armor("Brilliant Sentinel")))
         .unwrap();
     assert_eq!(
         brilliant_sentinel.id(),
-        MeritId::Artifact(ArtifactId::Armor(ArtifactArmorId(UniqueId::Placeholder(1))))
+        MeritId::Artifact(ArtifactId::Armor("Brilliant Sentinel"))
     );
     assert_eq!(brilliant_sentinel.template_name(), "Artifact");
     assert_eq!(
@@ -718,7 +715,7 @@ fn test_merits() {
     // Remove the artifacts
     [
         ArtifactName::Weapon("Volcano Cutter".to_owned()),
-        ArtifactName::Armor(ArtifactArmorId(UniqueId::Placeholder(1))),
+        ArtifactName::Armor("Brilliant Sentinel".to_owned()),
         ArtifactName::Wonder(WonderId(UniqueId::Placeholder(1))),
     ]
     .into_iter()

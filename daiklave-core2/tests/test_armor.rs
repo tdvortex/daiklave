@@ -1,10 +1,7 @@
 use daiklave_core2::{
-    armor::armor_item::{
-        artifact::ArtifactArmorId, ArmorId, ArmorItem, ArmorName, ArmorTag, ArmorWeightClass,
-    },
-    artifact::{Artifact, ArtifactName, MagicMaterial},
+    armor::armor_item::{ArmorItem, ArmorName, ArmorNameMutation, ArmorTag, ArmorWeightClass},
+    artifact::{AddArtifact, ArtifactName, MagicMaterial},
     book_reference::{Book, BookReference},
-    unique_id::UniqueId,
     CharacterEventSource, CharacterMutation,
 };
 
@@ -18,7 +15,7 @@ fn test_armor() {
     assert!(character.armor().worn().is_none());
 
     // Add some armor
-    let chain_shirt = ArmorItem::base("Chain Shirt")
+    let chain_shirt = ArmorItem::base("Chain Shirt".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 592))
         .weight_class(ArmorWeightClass::Light)
         .tag(ArmorTag::Concealable)
@@ -32,28 +29,28 @@ fn test_armor() {
     assert_eq!(
         character
             .armor()
-            .get(ArmorId::Mundane("Chain Shirt"))
+            .get(ArmorName::Mundane("Chain Shirt"))
             .unwrap()
-            .id(),
-        ArmorId::Mundane("Chain Shirt")
+            .name(),
+        ArmorName::Mundane("Chain Shirt")
     );
     assert_eq!(
         character.armor().iter().next().unwrap(),
-        ArmorId::Mundane("Chain Shirt")
+        ArmorName::Mundane("Chain Shirt")
     );
 
     // Equip the armor
-    let mutation = CharacterMutation::EquipArmor(ArmorName::Mundane("Chain Shirt".to_owned()));
+    let mutation =
+        CharacterMutation::EquipArmor(ArmorNameMutation::Mundane("Chain Shirt".to_owned()));
     let character = event_source.apply_mutation(mutation).unwrap();
 
     // Check the properties of the armor
     assert_eq!(
         character.armor().iter().next().unwrap(),
-        (ArmorId::Mundane("Chain Shirt"))
+        (ArmorName::Mundane("Chain Shirt"))
     );
     let chain_shirt = character.armor().worn().unwrap();
-    assert_eq!(chain_shirt.id(), ArmorId::Mundane("Chain Shirt"));
-    assert_eq!(chain_shirt.name(), "Chain Shirt");
+    assert_eq!(chain_shirt.name(), ArmorName::Mundane("Chain Shirt"));
     assert_eq!(
         chain_shirt.book_reference().unwrap(),
         BookReference::new(Book::CoreRulebook, 592)
@@ -74,11 +71,10 @@ fn test_armor() {
     event_source.apply_mutation(mutation).unwrap();
 
     // Add some artifact armor
-    let mutation = CharacterMutation::AddArtifact(Artifact::Armor(
-        ArtifactArmorId(UniqueId::Placeholder(1)),
-        ArmorItem::artifact("Brilliant Sentinel")
+    let mutation = CharacterMutation::AddArtifact(AddArtifact::Armor(
+        ArmorItem::artifact("Brilliant Sentinel".to_owned())
             .base_artifact(
-                ArmorItem::base("Articulated Plate (Artifact)")
+                ArmorItem::base("Articulated Plate (Artifact)".to_owned())
                     .book_reference(BookReference::new(Book::CoreRulebook, 600))
                     .weight_class(ArmorWeightClass::Heavy)
                     .build_artifact(),
@@ -100,28 +96,27 @@ fn test_armor() {
     event_source.apply_mutation(mutation).unwrap();
 
     // Equip the artifact armor
-    let mutation = CharacterMutation::EquipArmor(ArmorName::Artifact(ArtifactArmorId(
-        UniqueId::Placeholder(1),
-    )));
+    let mutation =
+        CharacterMutation::EquipArmor(ArmorNameMutation::Artifact("Brilliant Sentinel".to_owned()));
     let character = event_source.apply_mutation(mutation).unwrap();
 
     assert_eq!(
-        character.armor().worn().unwrap().id(),
-        ArmorId::Artifact(ArtifactArmorId(UniqueId::Placeholder(1)))
+        character.armor().worn().unwrap().name(),
+        ArmorName::Artifact("Brilliant Sentinel")
     );
 
     // Equipping another piece of armor should swap the two
-    let mutation = CharacterMutation::EquipArmor(ArmorName::Mundane("Chain Shirt".to_owned()));
+    let mutation =
+        CharacterMutation::EquipArmor(ArmorNameMutation::Mundane("Chain Shirt".to_owned()));
     let character = event_source.apply_mutation(mutation).unwrap();
     assert_eq!(
-        character.armor().worn().unwrap().id(),
-        ArmorId::Mundane("Chain Shirt")
+        character.armor().worn().unwrap().name(),
+        ArmorName::Mundane("Chain Shirt")
     );
 
     // Remove the artifact armor
-    let mutation = CharacterMutation::RemoveArtifact(ArtifactName::Armor(ArtifactArmorId(
-        UniqueId::Placeholder(1),
-    )));
+    let mutation =
+        CharacterMutation::RemoveArtifact(ArtifactName::Armor("Brilliant Sentinel".to_owned()));
     event_source.apply_mutation(mutation).unwrap();
 
     // Check you can't remove equipped armor

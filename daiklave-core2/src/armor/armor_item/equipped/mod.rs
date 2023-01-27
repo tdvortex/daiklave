@@ -3,15 +3,12 @@ mod no_attunement;
 pub(crate) use memo::EquippedArmorMemo;
 pub(crate) use no_attunement::{EquippedArmorNoAttunement, EquippedArmorNoAttunementMemo};
 
-use super::{
-    artifact::{ArtifactArmorId, ArtifactArmorView},
-    mundane::MundaneArmorView,
-};
+use super::{artifact::ArtifactArmorView, mundane::MundaneArmorView};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum EquippedArmor<'source> {
     Mundane(&'source str, MundaneArmorView<'source>),
-    Artifact(ArtifactArmorId, ArtifactArmorView<'source>),
+    Artifact(&'source str, ArtifactArmorView<'source>),
 }
 
 impl<'source> EquippedArmor<'source> {
@@ -20,7 +17,9 @@ impl<'source> EquippedArmor<'source> {
             EquippedArmor::Mundane(name, view) => {
                 EquippedArmorMemo::Mundane((*name).to_owned(), view.as_memo())
             }
-            EquippedArmor::Artifact(id, view) => EquippedArmorMemo::Artifact(*id, view.as_memo()),
+            EquippedArmor::Artifact(name, view) => {
+                EquippedArmorMemo::Artifact((*name).to_owned(), view.as_memo())
+            }
         }
     }
 }

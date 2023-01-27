@@ -15,7 +15,6 @@ use std::collections::HashMap;
 
 use crate::{
     abilities::AbilitiesVanilla,
-    armor::armor_item::{ArmorId, ArmorName},
     artifact::{ArtifactId, ArtifactName},
     attributes::Attributes,
     book_reference::BookReference,
@@ -175,14 +174,7 @@ impl<'source> Character<'source> {
             CharacterMutation::AddMundaneArmor((name, armor_item)) => {
                 self.add_mundane_armor(name.as_str(), armor_item)
             }
-            CharacterMutation::EquipArmor(name) => {
-                let armor_id = match name {
-                    ArmorName::Mundane(name) => ArmorId::Mundane(name.as_str()),
-                    ArmorName::Artifact(id) => ArmorId::Artifact(*id),
-                };
-
-                self.equip_armor(armor_id)
-            }
+            CharacterMutation::EquipArmor(name) => self.equip_armor(name.as_ref()),
             CharacterMutation::RemoveMundaneArmor(name) => self.remove_mundane_armor(name.as_str()),
             CharacterMutation::UnequipArmor => self.unequip_armor(),
             CharacterMutation::AddManse(manse_name, demense_name, hearthstone_id, template) => {
@@ -203,7 +195,7 @@ impl<'source> Character<'source> {
             CharacterMutation::AttuneArtifact(artifact_name, first) => {
                 let artifact_id = match artifact_name {
                     ArtifactName::Weapon(weapon_name) => ArtifactId::Weapon(weapon_name.as_str()),
-                    ArtifactName::Armor(armor_id) => ArtifactId::Armor(*armor_id),
+                    ArtifactName::Armor(armor_name) => ArtifactId::Armor(armor_name.as_str()),
                     ArtifactName::Wonder(wonder_id) => ArtifactId::Wonder(*wonder_id),
                 };
 

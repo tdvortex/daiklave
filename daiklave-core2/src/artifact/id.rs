@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use crate::armor::armor_item::artifact::ArtifactArmorId;
-
 use super::wonders::WonderId;
 
 /// The Id for a magical creation (weapon, armor, warstrider, or wonder).
@@ -9,8 +7,8 @@ use super::wonders::WonderId;
 pub enum ArtifactId<'source> {
     /// An artifact weapon's name.
     Weapon(&'source str),
-    /// An artifact armor item's Id.
-    Armor(ArtifactArmorId),
+    /// An artifact armor item's name.
+    Armor(&'source str),
     /// A wonder's Id.
     Wonder(WonderId),
 }

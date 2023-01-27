@@ -72,8 +72,8 @@ impl<'source> Evocation {
             EvokableName::Artifact(ArtifactName::Weapon(weapon_name)) => {
                 EvokableId::Artifact(ArtifactId::Weapon(weapon_name.as_str()))
             }
-            EvokableName::Artifact(ArtifactName::Armor(armor_id)) => {
-                EvokableId::Artifact(ArtifactId::Armor(*armor_id))
+            EvokableName::Artifact(ArtifactName::Armor(armor_name)) => {
+                EvokableId::Artifact(ArtifactId::Armor(armor_name.as_str()))
             }
             EvokableName::Artifact(ArtifactName::Wonder(wonder_id)) => {
                 EvokableId::Artifact(ArtifactId::Wonder(*wonder_id))

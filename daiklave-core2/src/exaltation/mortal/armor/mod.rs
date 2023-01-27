@@ -6,11 +6,9 @@ use std::collections::{hash_map::Entry, HashMap};
 use crate::{
     armor::{
         armor_item::{
-            artifact::{
-                ArtifactArmorId, ArtifactArmorNoAttunement, ArtifactArmorView, ArtifactError,
-            },
+            artifact::{ArtifactArmorNoAttunement, ArtifactArmorView, ArtifactError},
             mundane::{MundaneArmor, MundaneArmorView},
-            ArmorId, ArmorItem, ArmorType, EquippedArmor, EquippedArmorNoAttunement,
+            ArmorItem, ArmorName, ArmorType, EquippedArmor, EquippedArmorNoAttunement,
         },
         ArmorError,
     },
@@ -23,7 +21,7 @@ use crate::{
 pub(crate) struct MortalArmor<'source> {
     pub equipped: Option<EquippedArmorNoAttunement<'source>>,
     pub unequipped_mundane: HashMap<&'source str, MundaneArmorView<'source>>,
-    pub unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmorNoAttunement<'source>>,
+    pub unequipped_artifact: HashMap<&'source str, ArtifactArmorNoAttunement<'source>>,
 }
 
 impl<'source> MortalArmor<'source> {
@@ -38,7 +36,7 @@ impl<'source> MortalArmor<'source> {
             unequipped_artifact: self
                 .unequipped_artifact
                 .iter()
-                .map(|(k, v)| (*k, v.as_memo()))
+                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
                 .collect(),
         }
     }
@@ -59,44 +57,49 @@ impl<'source> MortalArmor<'source> {
         }
     }
 
-    pub fn iter(&self) -> std::vec::IntoIter<ArmorId> {
+    pub fn iter(&self) -> std::vec::IntoIter<ArmorName<'source>> {
         self.worn_armor()
             .iter()
-            .map(|item| item.id())
-            .chain(self.unequipped_mundane.keys().map(|k| ArmorId::Mundane(*k)))
+            .map(|item| item.name())
+            .chain(
+                self.unequipped_mundane
+                    .keys()
+                    .map(|k| ArmorName::Mundane(*k)),
+            )
             .chain(
                 self.unequipped_artifact
                     .keys()
-                    .map(|k| ArmorId::Artifact(*k)),
+                    .map(|k| ArmorName::Artifact(*k)),
             )
-            .collect::<Vec<ArmorId>>()
+            .collect::<Vec<ArmorName>>()
             .into_iter()
     }
 
-    pub fn get(&self, armor_id: ArmorId) -> Option<ArmorItem<'source>> {
-        let unequipped = match armor_id {
-            ArmorId::Mundane(name) => {
+    pub fn get(&self, name: ArmorName<'_>) -> Option<ArmorItem<'source>> {
+        let unequipped = match name {
+            ArmorName::Mundane(name) => {
                 self.unequipped_mundane
                     .get_key_value(name)
                     .map(|(name, mundane_armor)| {
                         ArmorItem(ArmorType::Mundane(*name, *mundane_armor), false)
                     })
             }
-            ArmorId::Artifact(artifact_armor_id) => self
-                .unequipped_artifact
-                .get(&artifact_armor_id)
-                .map(|no_attunement| {
-                    ArmorItem(
-                        ArmorType::Artifact(artifact_armor_id, no_attunement.clone(), None),
-                        false,
-                    )
-                }),
+            ArmorName::Artifact(name) => {
+                self.unequipped_artifact
+                    .get_key_value(name)
+                    .map(|(name, no_attunement)| {
+                        ArmorItem(
+                            ArmorType::Artifact(*name, no_attunement.clone(), None),
+                            false,
+                        )
+                    })
+            }
         };
 
         if unequipped.is_some() {
             unequipped
         } else if let Some(equipped) = self.worn_armor() {
-            if equipped.id() == armor_id {
+            if equipped.name() == name {
                 Some(equipped)
             } else {
                 None
@@ -113,7 +116,7 @@ impl<'source> MortalArmor<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         if self
             .worn_armor()
-            .map_or(false, |item| item.id() == ArmorId::Mundane(name))
+            .map_or(false, |item| item.name() == ArmorName::Mundane(name))
         {
             Err(CharacterMutationError::ArmorError(
                 ArmorError::DuplicateArmor,
@@ -133,7 +136,7 @@ impl<'source> MortalArmor<'source> {
             Ok(self)
         } else if self
             .worn_armor()
-            .map_or(false, |item| item.id() == ArmorId::Mundane(name))
+            .map_or(false, |item| item.name() == ArmorName::Mundane(name))
         {
             Err(CharacterMutationError::ArmorError(
                 ArmorError::RemoveEquipped,
@@ -161,21 +164,22 @@ impl<'source> MortalArmor<'source> {
         }
     }
 
-    pub fn equip(&mut self, armor_id: ArmorId) -> Result<&mut Self, CharacterMutationError> {
-        let unstowed = match armor_id {
-            ArmorId::Mundane(name) => {
+    pub fn equip(&mut self, name: ArmorName<'_>) -> Result<&mut Self, CharacterMutationError> {
+        let unstowed = match name {
+            ArmorName::Mundane(name) => {
                 let (name, mundane) = self
                     .unequipped_mundane
                     .remove_entry(name)
                     .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?;
                 EquippedArmorNoAttunement::Mundane(name, mundane)
             }
-            ArmorId::Artifact(artifact_armor_id) => EquippedArmorNoAttunement::Artifact(
-                artifact_armor_id,
-                self.unequipped_artifact
-                    .remove(&artifact_armor_id)
-                    .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?,
-            ),
+            ArmorName::Artifact(name) => {
+                let (name, artifact) = self
+                    .unequipped_artifact
+                    .remove_entry(name)
+                    .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?;
+                EquippedArmorNoAttunement::Artifact(name, artifact)
+            }
         };
 
         if let Some(old_equipped) = self.equipped.take() {
@@ -196,17 +200,17 @@ impl<'source> MortalArmor<'source> {
 
     pub fn add_artifact(
         &mut self,
-        armor_id: ArtifactArmorId,
+        name: &'source str,
         armor: ArtifactArmorView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self
             .worn_armor()
-            .map_or(false, |item| item.id() == ArmorId::Artifact(armor_id))
+            .map_or(false, |item| item.name() == ArmorName::Artifact(name))
         {
             Err(CharacterMutationError::ArtifactError(
                 ArtifactError::NamedArtifactsUnique,
             ))
-        } else if let Entry::Vacant(e) = self.unequipped_artifact.entry(armor_id) {
+        } else if let Entry::Vacant(e) = self.unequipped_artifact.entry(name) {
             e.insert(armor.0);
             Ok(self)
         } else {
@@ -216,15 +220,12 @@ impl<'source> MortalArmor<'source> {
         }
     }
 
-    pub fn remove_artifact(
-        &mut self,
-        armor_id: ArtifactArmorId,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        if self.unequipped_artifact.remove(&armor_id).is_some() {
+    pub fn remove_artifact(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
+        if self.unequipped_artifact.remove(name).is_some() {
             Ok(self)
         } else if self
             .worn_armor()
-            .map_or(false, |item| item.id() == ArmorId::Artifact(armor_id))
+            .map_or(false, |item| item.name() == ArmorName::Artifact(name))
         {
             Err(CharacterMutationError::ArmorError(
                 ArmorError::RemoveEquipped,
@@ -236,7 +237,7 @@ impl<'source> MortalArmor<'source> {
 
     pub fn slot_hearthstone(
         &mut self,
-        artifact_armor_id: ArtifactArmorId,
+        artifact_armor_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -246,14 +247,14 @@ impl<'source> MortalArmor<'source> {
             .and_then(|equipped| match equipped {
                 EquippedArmorNoAttunement::Mundane(_, _) => None,
                 EquippedArmorNoAttunement::Artifact(worn_id, worn_armor) => {
-                    if worn_id == &artifact_armor_id {
+                    if worn_id == &artifact_armor_name {
                         Some(worn_armor)
                     } else {
                         None
                     }
                 }
             })
-            .or_else(|| self.unequipped_artifact.get_mut(&artifact_armor_id))
+            .or_else(|| self.unequipped_artifact.get_mut(artifact_armor_name))
             .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?
             .hearthstone_slots
             .iter_mut()
@@ -270,7 +271,7 @@ impl<'source> MortalArmor<'source> {
 
     pub fn unslot_hearthstone(
         &mut self,
-        artifact_armor_id: ArtifactArmorId,
+        artifact_armor_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         let SlottedHearthstone {
@@ -283,14 +284,14 @@ impl<'source> MortalArmor<'source> {
             .and_then(|equipped| match equipped {
                 EquippedArmorNoAttunement::Mundane(_, _) => None,
                 EquippedArmorNoAttunement::Artifact(worn_id, worn_armor) => {
-                    if worn_id == &artifact_armor_id {
+                    if worn_id == &artifact_armor_name {
                         Some(worn_armor)
                     } else {
                         None
                     }
                 }
             })
-            .or_else(|| self.unequipped_artifact.get_mut(&artifact_armor_id))
+            .or_else(|| self.unequipped_artifact.get_mut(artifact_armor_name))
             .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?
             .hearthstone_slots
             .iter_mut()

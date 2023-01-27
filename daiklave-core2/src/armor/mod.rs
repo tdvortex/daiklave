@@ -6,7 +6,7 @@ pub use error::ArmorError;
 
 use crate::exaltation::Exaltation;
 
-use self::armor_item::{ArmorId, ArmorItem};
+use self::armor_item::{ArmorItem, ArmorName};
 
 /// An interface for all of a character's armor. For an individual piece of
 /// armor, see ArmorItem.
@@ -14,7 +14,7 @@ pub struct Armor<'view, 'source>(pub(crate) &'view Exaltation<'source>);
 
 impl<'view, 'source> Armor<'view, 'source> {
     /// Iterates over all owned pieces of armor by their Id.
-    pub fn iter(&self) -> impl Iterator<Item = ArmorId> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = ArmorName<'source>> + '_ {
         self.0.armor_iter()
     }
 
@@ -23,8 +23,8 @@ impl<'view, 'source> Armor<'view, 'source> {
         self.0.worn_armor()
     }
 
-    /// Gets a piece of armor by its Id.
-    pub fn get(&self, armor_id: ArmorId) -> Option<ArmorItem<'source>> {
-        self.0.get_armor(armor_id)
+    /// Gets a piece of armor by its name.
+    pub fn get(&self, name: ArmorName<'_>) -> Option<ArmorItem<'source>> {
+        self.0.get_armor(name)
     }
 }

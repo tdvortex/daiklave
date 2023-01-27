@@ -1,16 +1,13 @@
 use serde::{Deserialize, Serialize};
 
-use crate::armor::armor_item::{
-    artifact::{ArtifactArmor, ArtifactArmorId},
-    mundane::MundaneArmor,
-};
+use crate::armor::armor_item::{artifact::ArtifactArmor, mundane::MundaneArmor};
 
 use super::EquippedArmor;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum EquippedArmorMemo {
     Mundane(String, MundaneArmor),
-    Artifact(ArtifactArmorId, ArtifactArmor),
+    Artifact(String, ArtifactArmor),
 }
 
 impl<'source> EquippedArmorMemo {
@@ -19,7 +16,9 @@ impl<'source> EquippedArmorMemo {
             EquippedArmorMemo::Mundane(name, memo) => {
                 EquippedArmor::Mundane(name.as_str(), memo.as_ref())
             }
-            EquippedArmorMemo::Artifact(id, memo) => EquippedArmor::Artifact(*id, memo.as_ref()),
+            EquippedArmorMemo::Artifact(name, memo) => {
+                EquippedArmor::Artifact(name.as_str(), memo.as_ref())
+            }
         }
     }
 }

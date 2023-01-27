@@ -5,8 +5,8 @@ pub use error::CharacterMutationError;
 
 use crate::{
     abilities::AbilityNameVanilla,
-    armor::armor_item::{mundane::AddMundaneArmor, ArmorName},
-    artifact::{Artifact, ArtifactName},
+    armor::armor_item::{mundane::AddMundaneArmor, ArmorNameMutation},
+    artifact::{AddArtifact, ArtifactName},
     attributes::AttributeName,
     charms::charm::{CharmId, CharmMutation},
     exaltation::exalt::{
@@ -104,7 +104,7 @@ pub enum CharacterMutation {
     UnequipWeapon(WeaponNameMutation, Equipped),
     /// Add an artifact to the character, which may be a weapon, armor item,
     /// warstrider, or wonder.
-    AddArtifact(Artifact),
+    AddArtifact(AddArtifact),
     /// Removes an artifact from the character.
     RemoveArtifact(ArtifactName),
     /// Adds a piece of mundane armor.
@@ -112,7 +112,7 @@ pub enum CharacterMutation {
     /// Removes a piece of mundane armor from the character.
     RemoveMundaneArmor(String),
     /// Equip a specific piece of armor.
-    EquipArmor(ArmorName),
+    EquipArmor(ArmorNameMutation),
     /// Unequip any armor currently worn.
     UnequipArmor,
     /// Add a manse, its associated demense, and its associated hearthstone

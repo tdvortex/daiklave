@@ -2,11 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::armor::armor_item::{
-    artifact::{ArtifactArmor, ArtifactArmorId},
-    mundane::MundaneArmor,
-    EquippedArmorMemo,
-};
+use crate::armor::armor_item::{artifact::ArtifactArmor, mundane::MundaneArmor, EquippedArmorMemo};
 
 use super::ExaltArmor;
 
@@ -14,7 +10,7 @@ use super::ExaltArmor;
 pub(crate) struct ExaltArmorMemo {
     pub equipped: Option<EquippedArmorMemo>,
     pub unequipped_mundane: HashMap<String, MundaneArmor>,
-    pub unequipped_artifact: HashMap<ArtifactArmorId, ArtifactArmor>,
+    pub unequipped_artifact: HashMap<String, ArtifactArmor>,
 }
 
 impl<'source> ExaltArmorMemo {
@@ -29,7 +25,7 @@ impl<'source> ExaltArmorMemo {
             unequipped_artifact: self
                 .unequipped_artifact
                 .iter()
-                .map(|(k, v)| (*k, v.as_ref()))
+                .map(|(k, v)| (k.as_str(), v.as_ref()))
                 .collect(),
         }
     }
