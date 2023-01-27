@@ -4,14 +4,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::weapons::weapon::{
     artifact::HandlessArtifactWeaponNoAttunementMemo, mundane::HandlessMundaneWeaponMemo,
-    ArtifactWeaponId, BaseWeaponId,
+    ArtifactWeaponId,
 };
 
 use super::{hands::MortalHandsMemo, MortalEquippedWeapons};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MortalEquippedWeaponsMemo {
-    pub handless_mundane: HashMap<BaseWeaponId, HandlessMundaneWeaponMemo>,
+    pub handless_mundane: HashMap<String, HandlessMundaneWeaponMemo>,
     pub handless_artifact: HashMap<ArtifactWeaponId, HandlessArtifactWeaponNoAttunementMemo>,
     pub hands: MortalHandsMemo,
 }
@@ -22,7 +22,7 @@ impl<'source> MortalEquippedWeaponsMemo {
             handless_mundane: self
                 .handless_mundane
                 .iter()
-                .map(|(k, v)| (*k, v.as_ref()))
+                .map(|(k, v)| (k.as_str(), v.as_ref()))
                 .collect(),
             handless_artifact: self
                 .handless_artifact

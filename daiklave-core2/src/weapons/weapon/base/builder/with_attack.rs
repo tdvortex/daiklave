@@ -69,22 +69,20 @@ impl BaseWeaponBuilderWithAttack {
     /// Completes the builder process, returning a new MundaneWeapon. This is
     /// a borrowed copy but can be immediately memoized with .as_memo() if
     /// needed.
-    pub fn build_mundane(self) -> MundaneWeapon {
+    pub fn build_mundane(self) -> (String, MundaneWeapon) {
         match self.handedness {
-            WeaponHandedness::Natural => MundaneWeapon(MundaneWeaponHandedness::Natural(
+            WeaponHandedness::Natural => (self.name, MundaneWeapon(MundaneWeaponHandedness::Natural(
                 NaturalMundaneWeapon(BaseWeapon {
-                    name: self.name,
                     book_reference: self.book_reference,
                     weight_class: self.weight_class,
                     range_bands: self.attack_range,
                     primary_ability: self.primary_attack,
                     damage_type: self.damage_type,
                     tags: self.tags,
-                }),
+                })),
             )),
-            WeaponHandedness::Worn => MundaneWeapon(MundaneWeaponHandedness::Worn(
+            WeaponHandedness::Worn => (self.name, MundaneWeapon(MundaneWeaponHandedness::Worn(
                 WornMundaneWeapon(BaseWeapon {
-                    name: self.name,
                     book_reference: self.book_reference,
                     weight_class: self.weight_class,
                     range_bands: self.attack_range,
@@ -92,11 +90,10 @@ impl BaseWeaponBuilderWithAttack {
                     damage_type: self.damage_type,
                     tags: self.tags,
                 }),
-                false,
+                false),
             )),
-            WeaponHandedness::OneHanded => MundaneWeapon(MundaneWeaponHandedness::OneHanded(
+            WeaponHandedness::OneHanded => (self.name, MundaneWeapon(MundaneWeaponHandedness::OneHanded(
                 OneHandedMundaneWeapon(BaseWeapon {
-                    name: self.name,
                     book_reference: self.book_reference,
                     weight_class: self.weight_class,
                     range_bands: self.attack_range,
@@ -104,11 +101,10 @@ impl BaseWeaponBuilderWithAttack {
                     damage_type: self.damage_type,
                     tags: self.tags,
                 }),
-                None,
+                None),
             )),
-            WeaponHandedness::TwoHanded => MundaneWeapon(MundaneWeaponHandedness::TwoHanded(
+            WeaponHandedness::TwoHanded => (self.name, MundaneWeapon(MundaneWeaponHandedness::TwoHanded(
                 TwoHandedMundaneWeapon(BaseWeapon {
-                    name: self.name,
                     book_reference: self.book_reference,
                     weight_class: self.weight_class,
                     range_bands: self.attack_range,
@@ -116,7 +112,7 @@ impl BaseWeaponBuilderWithAttack {
                     damage_type: self.damage_type,
                     tags: self.tags,
                 }),
-                false,
+                false),
             )),
         }
     }
@@ -125,7 +121,6 @@ impl BaseWeaponBuilderWithAttack {
     /// BaseArtifactWeapon.
     pub fn build_artifact(self) -> BaseArtifactWeapon {
         let base_weapon = BaseWeapon {
-            name: self.name,
             book_reference: self.book_reference,
             weight_class: self.weight_class,
             range_bands: self.attack_range,

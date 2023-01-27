@@ -4,8 +4,8 @@ use daiklave_core2::{
     book_reference::{Book, BookReference},
     unique_id::UniqueId,
     weapons::weapon::{
-        ArtifactWeaponId, AttackRange, BaseWeaponId, EquipHand, Equipped, OptionalWeaponTag,
-        RangeBand, Weapon, WeaponId, WeaponTag, WeaponWeightClass,
+        ArtifactWeaponId, AttackRange, EquipHand, Equipped, OptionalWeaponTag,
+        RangeBand, Weapon, WeaponId, WeaponTag, WeaponWeightClass, WeaponName,
     },
     CharacterEventSource, CharacterMutation,
 };
@@ -51,19 +51,19 @@ fn test_weapons_event_source() {
         .unequip_weapon(WeaponId::Unarmed, Equipped::Natural)
         .is_err());
     assert!(character_view
-        .equip_weapon(WeaponId::Unarmed, None)
+        .equip_weapon(&WeaponName::Unarmed, None)
         .is_err());
 
     // Cannot equip or unequip missing weapons
     assert!(character_view
         .unequip_weapon(
-            WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(1))),
+            WeaponId::Mundane("Missing weapon"),
             Equipped::MainHand
         )
         .is_err());
     assert!(character_view
         .equip_weapon(
-            WeaponId::Mundane(BaseWeaponId(UniqueId::Placeholder(1))),
+            &WeaponName::Mundane("Missing weapon".to_owned()),
             None
         )
         .is_err());
@@ -71,14 +71,13 @@ fn test_weapons_event_source() {
     // Add some additional mundane weapons
     [
         CharacterMutation::AddMundaneWeapon(
-            BaseWeaponId(UniqueId::Placeholder(1)),
-            Weapon::base("Tiger Claws".to_owned())
-                .book_reference(BookReference::new(Book::CoreRulebook, 581))
-                .weight_class(WeaponWeightClass::Light)
-                .worn()
-                .lethal()
-                .brawl()
-                .build_mundane(),
+            let (name, weapon) = Weapon::base("Tiger Claws".to_owned())
+            .book_reference(BookReference::new(Book::CoreRulebook, 581))
+            .weight_class(WeaponWeightClass::Light)
+            .worn()
+            .lethal()
+            .brawl()
+            .build_mundane()
         ),
         CharacterMutation::AddMundaneWeapon(
             BaseWeaponId(UniqueId::Placeholder(2)),

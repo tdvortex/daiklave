@@ -47,8 +47,8 @@ use crate::{
         Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     weapons::weapon::{
-        artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, BaseWeaponId,
-        EquipHand, Equipped, Weapon, WeaponId,
+        artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId,
+        EquipHand, Equipped, Weapon, WeaponId, WeaponName,
     },
     CharacterMutationError,
 };
@@ -584,15 +584,15 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn add_mundane_weapon(
         &mut self,
-        weapon_id: BaseWeaponId,
+        name: &'source str,
         weapon: &'source MundaneWeapon,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.as_mut().add_mundane_weapon(weapon_id, weapon)?;
+                mortal.as_mut().add_mundane_weapon(name, weapon)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.as_mut().add_mundane_weapon(weapon_id, weapon)?;
+                exalt.as_mut().add_mundane_weapon(name, weapon)?;
             }
         }
         Ok(self)
@@ -600,15 +600,15 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn equip_weapon(
         &mut self,
-        weapon_id: WeaponId,
+        name: &'source WeaponName,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.as_mut().equip_weapon(weapon_id, hand)?;
+                mortal.as_mut().equip_weapon(name, hand)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.as_mut().equip_weapon(weapon_id, hand)?;
+                exalt.as_mut().equip_weapon(name, hand)?;
             }
         }
         Ok(self)
@@ -616,7 +616,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn unequip_weapon(
         &mut self,
-        weapon_id: WeaponId,
+        weapon_id: WeaponId<'view>,
         equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
@@ -663,14 +663,14 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn remove_mundane_weapon(
         &mut self,
-        weapon_id: BaseWeaponId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.remove_mundane_weapon(weapon_id)?;
+                mortal.remove_mundane_weapon(name)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.remove_mundane_weapon(weapon_id)?;
+                exalt.remove_mundane_weapon(name)?;
             }
         }
         Ok(self)

@@ -10,7 +10,7 @@ use daiklave_core2::{
     },
     unique_id::UniqueId,
     weapons::weapon::{
-        ArtifactWeaponId, BaseWeaponId, OptionalWeaponTag, Weapon, WeaponId, WeaponWeightClass,
+        ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponId, WeaponWeightClass,
     },
     CharacterEventSource, CharacterMutation,
 };
@@ -103,7 +103,7 @@ fn test_hearthstones() {
     // Add artifacts to slot them into
     let adorei = Weapon::artifact("Beloved Adorei".to_owned())
         .base_artifact(
-            BaseWeaponId(UniqueId::Placeholder(1)),
+            "Daiklave".to_owned(),
             Weapon::base("Daiklave".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 614))
                 .weight_class(WeaponWeightClass::Medium)

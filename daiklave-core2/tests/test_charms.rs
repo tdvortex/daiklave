@@ -36,7 +36,7 @@ use daiklave_core2::{
     },
     unique_id::UniqueId,
     weapons::weapon::{
-        ArtifactWeaponId, BaseWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass,
+        ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass,
     },
     CharacterEventSource, CharacterMutation,
 };
@@ -246,7 +246,7 @@ fn test_evocations() {
                 .to_owned(),
         )
         .base_artifact(
-            BaseWeaponId(UniqueId::Placeholder(1)),
+            "Daiklave".to_owned(),
             Weapon::base("Daiklave".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 595))
                 .weight_class(WeaponWeightClass::Medium)
@@ -558,7 +558,7 @@ fn test_evocations() {
     let rainwalker_id = ArtifactWeaponId(UniqueId::Placeholder(2));
     let rainwalker = Weapon::artifact("Rainwalker".to_owned())
         .base_artifact(
-            BaseWeaponId(UniqueId::Placeholder(2)),
+            "Razor Parasol".to_owned(),
             Weapon::base("Razor Parasol".to_owned())
                 .book_reference(BookReference::new(Book::ArmsOfTheChosen, 39))
                 .weight_class(WeaponWeightClass::Medium)
@@ -1055,7 +1055,8 @@ fn test_martial_arts_charms() {
     moves."
                     .to_owned(),
             )
-            .weapon(BaseWeaponId(UniqueId::Placeholder(1)))
+            .weapon("Slashing Sword".to_owned())
+            .weapon("Reaper Daiklave".to_owned())
             .max_armor_weight(ArmorWeightClass::Medium)
             .build();
 

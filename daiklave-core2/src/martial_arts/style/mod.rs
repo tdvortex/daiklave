@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     armor::armor_item::ArmorWeightClass, book_reference::BookReference,
-    weapons::weapon::BaseWeaponId,
 };
 
 use self::builder::MartialArtsStyleBuilder;
@@ -17,12 +16,12 @@ use self::builder::MartialArtsStyleBuilder;
 pub struct MartialArtsStyle {
     book_reference: Option<BookReference>,
     description: String,
-    first_weapon: BaseWeaponId,
-    usable_weapons: HashSet<BaseWeaponId>,
+    first_weapon: String,
+    usable_weapons: HashSet<String>,
     max_armor_weight: Option<ArmorWeightClass>,
 }
 
-impl MartialArtsStyle {
+impl<'source> MartialArtsStyle {
     /// Starts a builder to construct a new Martial Arts style.
     pub fn builder(name: String) -> MartialArtsStyleBuilder {
         MartialArtsStyleBuilder {
@@ -42,10 +41,10 @@ impl MartialArtsStyle {
         self.description.as_str()
     }
 
-    /// A list of weapon ids, which may be either mortal weapons (e.g. sword)
+    /// A list of weapon names, which may be either mortal weapons (e.g. sword)
     /// or base artifact weapons (e.g. daiklave), usable by the style.
-    pub fn usable_weapon_ids(&self) -> impl Iterator<Item = BaseWeaponId> + '_ {
-        std::iter::once(self.first_weapon).chain(self.usable_weapons.iter().copied())
+    pub fn usable_weapon_names(&'source self) -> impl Iterator<Item = &'source str> + '_ {
+        std::iter::once(self.first_weapon.as_str()).chain(self.usable_weapons.iter().map(|s| s.as_str()))
     }
 
     /// The maximum weight of armor which may be worn with the style, or None

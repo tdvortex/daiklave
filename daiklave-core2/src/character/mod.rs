@@ -28,7 +28,7 @@ use crate::{
     merits::merit::{
         NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
     },
-    willpower::Willpower,
+    willpower::Willpower, weapons::weapon::{WeaponName, WeaponId},
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -156,18 +156,24 @@ impl<'source> Character<'source> {
             CharacterMutation::SetCraftDots(focus, dots) => {
                 self.set_craft_dots(focus.as_str(), *dots)
             }
-            CharacterMutation::AddMundaneWeapon(weapon_id, mundane_weapon) => {
-                self.add_mundane_weapon(*weapon_id, mundane_weapon)
+            CharacterMutation::AddMundaneWeapon(name, mundane_weapon) => {
+                self.add_mundane_weapon(name.as_str(), mundane_weapon)
             }
-            CharacterMutation::EquipWeapon(weapon_id, equip_hand) => {
-                self.equip_weapon(*weapon_id, *equip_hand)
+            CharacterMutation::EquipWeapon(name, equip_hand) => {
+                self.equip_weapon(name, *equip_hand)
             }
-            CharacterMutation::UnequipWeapon(weapon_id, equipped) => {
-                self.unequip_weapon(*weapon_id, *equipped)
+            CharacterMutation::UnequipWeapon(name, equipped) => {               
+                let weapon_id = match name {
+                    WeaponName::Unarmed => todo!(),
+                    WeaponName::Mundane(name) => WeaponId::Mundane(name.as_str()),
+                    WeaponName::Artifact(artifact_weapon_id) => WeaponId::Artifact(*artifact_weapon_id),
+                };
+                
+                self.unequip_weapon(weapon_id, *equipped)
             }
             CharacterMutation::AddArtifact(artifact) => self.add_artifact(artifact),
-            CharacterMutation::RemoveMundaneWeapon(weapon_id) => {
-                self.remove_mundane_weapon(*weapon_id)
+            CharacterMutation::RemoveMundaneWeapon(name) => {
+                self.remove_mundane_weapon(name.as_str())
             }
             CharacterMutation::RemoveArtifact(artifact_id) => self.remove_artifact(*artifact_id),
             CharacterMutation::AddMundaneArmor(armor_id, armor_item) => {

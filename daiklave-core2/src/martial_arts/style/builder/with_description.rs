@@ -2,7 +2,6 @@ use std::collections::HashSet;
 
 use crate::{
     armor::armor_item::ArmorWeightClass, book_reference::BookReference,
-    weapons::weapon::BaseWeaponId,
 };
 
 use super::MartialArtsStyleBuilderWithWeapons;
@@ -31,7 +30,7 @@ impl MartialArtsStyleBuilderWithDescription {
     /// Enables the style to be used with a specific type of weapon. This may
     /// be a mundane weapon (like "sword"), a category of artifact weapon (like
     /// "dailklave"), but not a specific artifact weapon (like "Spring Razor").
-    pub fn weapon(self, weapon: BaseWeaponId) -> MartialArtsStyleBuilderWithWeapons {
+    pub fn weapon(self, weapon: String) -> MartialArtsStyleBuilderWithWeapons {
         MartialArtsStyleBuilderWithWeapons {
             name: self.name,
             description: self.description,

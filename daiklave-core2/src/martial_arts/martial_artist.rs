@@ -1,6 +1,6 @@
 use crate::{
     abilities::Ability, armor::armor_item::ArmorWeightClass, book_reference::BookReference,
-    exaltation::ExaltationMartialArtist, weapons::weapon::BaseWeaponId,
+    exaltation::ExaltationMartialArtist,
 };
 
 use super::charm::{MartialArtsCharm, MartialArtsCharmId};
@@ -29,10 +29,10 @@ impl<'view, 'source> MartialArtist<'view, 'source> {
         self.maybe_exalt.description()
     }
 
-    /// All of the base weapon Ids usable by the style. This is the base weapon
+    /// All of the base weapons usable by the style. This is the base weapon
     /// (e.g. "sword" or "daiklave"), not any specific unique artifact weapon.
-    pub fn usable_weapon_ids(&self) -> impl Iterator<Item = BaseWeaponId> + '_ {
-        self.maybe_exalt.usable_weapon_ids()
+    pub fn usable_weapon_names(&self) -> impl Iterator<Item = &'source str> + '_ {
+        self.maybe_exalt.usable_weapon_names()
     }
 
     /// If the style is usable with armor, gives the heaviest weight category

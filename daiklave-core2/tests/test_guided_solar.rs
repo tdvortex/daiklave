@@ -11,7 +11,6 @@ use daiklave_core2::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
     },
     unique_id::UniqueId,
-    weapons::weapon::BaseWeaponId,
     CharacterMutation,
 };
 #[test]
@@ -322,9 +321,8 @@ fn test_guided_solar() {
     attempt to bring the fight to an end without violence."
                 .to_owned(),
         )
-        .weapon(BaseWeaponId(UniqueId::Placeholder(1)))
-        .weapon(BaseWeaponId(UniqueId::Placeholder(2)))
-        .weapon(BaseWeaponId(UniqueId::Placeholder(3)))
+        .weapon("War Fan".to_owned())
+        .weapon("Hook Sword".to_owned())
         .build();
 
     let mutation = GuidedMutation::AddMartialArtsStyle(crane_style_name, crane_style.clone());

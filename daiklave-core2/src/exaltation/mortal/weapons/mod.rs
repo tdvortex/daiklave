@@ -15,7 +15,7 @@ use crate::{
                 NaturalMundaneWeaponView, NonnaturalMundaneWeapon, OneHandedMundaneWeaponView,
                 TwoHandedMundaneWeaponView, WornMundaneWeaponView,
             },
-            ArtifactWeaponId, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId,
+            ArtifactWeaponId, EquipHand, Equipped, Weapon, WeaponId, WeaponName,
         },
         WeaponError,
     },
@@ -76,7 +76,7 @@ impl<'view, 'source> MortalWeapons<'source> {
 
     pub fn add_mundane_weapon(
         &mut self,
-        weapon_id: BaseWeaponId,
+        name: &'source str,
         weapon: &'source MundaneWeapon,
     ) -> Result<&mut Self, CharacterMutationError> {
         let nonnatural_mundane = match &weapon.0 {
@@ -84,7 +84,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                 let handless_mundane =
                     HandlessMundaneWeapon::Natural(NaturalMundaneWeaponView(&weapon.0));
                 self.equipped
-                    .add_natural_mundane_weapon(weapon_id, handless_mundane)?;
+                    .add_natural_mundane_weapon(name, handless_mundane)?;
                 return Ok(self);
             }
             MundaneWeaponHandedness::Worn(weapon, _) => {
@@ -98,41 +98,41 @@ impl<'view, 'source> MortalWeapons<'source> {
             }
         };
 
-        self.unequipped.stow_mundane(weapon_id, nonnatural_mundane);
+        self.unequipped.stow_mundane(name, nonnatural_mundane);
         Ok(self)
     }
 
     pub fn equip_weapon(
         &mut self,
-        weapon_id: WeaponId,
+        name: &'source WeaponName,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        match weapon_id {
-            WeaponId::Unarmed => Err(CharacterMutationError::WeaponError(
+        match name {
+            WeaponName::Unarmed => Err(CharacterMutationError::WeaponError(
                 WeaponError::EquipNatural,
             )),
-            WeaponId::Mundane(base_weapon_id) => self.equip_mundane_weapon(base_weapon_id, hand),
-            WeaponId::Artifact(artifact_weapon_id) => {
-                self.equip_artifact_weapon(artifact_weapon_id, hand)
+            WeaponName::Mundane(name) => self.equip_mundane_weapon(name.as_str(), hand),
+            WeaponName::Artifact(artifact_weapon_id) => {
+                self.equip_artifact_weapon(*artifact_weapon_id, hand)
             }
         }
     }
 
     fn equip_mundane_weapon(
         &mut self,
-        weapon_id: BaseWeaponId,
+        name: &'source str,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
         // Try to unstow weapon, error if not found
         let nonnatural_mundane = self
             .unequipped
-            .unstow_mundane(weapon_id)
+            .unstow_mundane(name)
             .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?;
         match (nonnatural_mundane, hand) {
             (NonnaturalMundaneWeapon::OneHanded(one_handed_mundane), None) => {
                 // Don't lose the weapon we unstowed above
                 self.unequipped.stow_mundane(
-                    weapon_id,
+                    name,
                     NonnaturalMundaneWeapon::OneHanded(one_handed_mundane),
                 );
                 Err(CharacterMutationError::WeaponError(
@@ -140,13 +140,13 @@ impl<'view, 'source> MortalWeapons<'source> {
                 ))
             }
             (NonnaturalMundaneWeapon::Worn(worn), _) => {
-                if let Entry::Vacant(e) = self.equipped.handless_mundane.entry(weapon_id) {
+                if let Entry::Vacant(e) = self.equipped.handless_mundane.entry(name) {
                     e.insert(HandlessMundaneWeapon::Worn(worn));
                     Ok(self)
                 } else {
                     // Don't lose the weapon we unstowed above
                     self.unequipped
-                        .stow_mundane(weapon_id, NonnaturalMundaneWeapon::Worn(worn));
+                        .stow_mundane(name, NonnaturalMundaneWeapon::Worn(worn));
                     Err(CharacterMutationError::WeaponError(
                         WeaponError::DuplicateEquippedWorn,
                     ))
@@ -164,7 +164,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                             {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_mundane(
-                                    weapon_id,
+                                    name,
                                     NonnaturalMundaneWeapon::OneHanded(one_handed_mundane),
                                 );
                                 return Err(e);
@@ -175,7 +175,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                             {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_mundane(
-                                    weapon_id,
+                                    name,
                                     NonnaturalMundaneWeapon::OneHanded(one_handed_mundane),
                                 );
                                 return Err(e);
@@ -185,7 +185,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                 }
 
                 self.equipped.hands.set_hand(
-                    EquippedOneHandedWeaponNoAttunement::Mundane(weapon_id, one_handed_mundane),
+                    EquippedOneHandedWeaponNoAttunement::Mundane(name, one_handed_mundane),
                     EquipHand::MainHand,
                 );
                 Ok(self)
@@ -201,7 +201,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                             if let Err(e) = self.unequip_weapon(hand_weapon_id, Equipped::OffHand) {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_mundane(
-                                    weapon_id,
+                                    name,
                                     NonnaturalMundaneWeapon::OneHanded(one_handed_mundane),
                                 );
                                 return Err(e);
@@ -212,7 +212,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                             {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_mundane(
-                                    weapon_id,
+                                    name,
                                     NonnaturalMundaneWeapon::OneHanded(one_handed_mundane),
                                 );
                                 return Err(e);
@@ -222,7 +222,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                 }
 
                 self.equipped.hands.set_hand(
-                    EquippedOneHandedWeaponNoAttunement::Mundane(weapon_id, one_handed_mundane),
+                    EquippedOneHandedWeaponNoAttunement::Mundane(name, one_handed_mundane),
                     EquipHand::OffHand,
                 );
                 Ok(self)
@@ -237,7 +237,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                             {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_mundane(
-                                    weapon_id,
+                                    name,
                                     NonnaturalMundaneWeapon::TwoHanded(two_handed_mundane),
                                 );
                                 return Err(e);
@@ -247,7 +247,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                             if let Err(e) = self.unequip_weapon(hand_weapon_id, Equipped::OffHand) {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_mundane(
-                                    weapon_id,
+                                    name,
                                     NonnaturalMundaneWeapon::TwoHanded(two_handed_mundane),
                                 );
                                 return Err(e);
@@ -258,7 +258,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                             {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_mundane(
-                                    weapon_id,
+                                    name,
                                     NonnaturalMundaneWeapon::TwoHanded(two_handed_mundane),
                                 );
                                 return Err(e);
@@ -270,7 +270,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                 self.equipped
                     .hands
                     .set_two_handed(EquippedTwoHandedWeaponNoAttunement::Mundane(
-                        weapon_id,
+                        name,
                         two_handed_mundane,
                     ));
                 Ok(self)
@@ -461,8 +461,8 @@ impl<'view, 'source> MortalWeapons<'source> {
     }
 
     pub fn unequip_weapon(
-        &mut self,
-        weapon_id: WeaponId,
+        &'view mut self,
+        weapon_id: WeaponId<'view>,
         equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
         match weapon_id {
@@ -479,27 +479,27 @@ impl<'view, 'source> MortalWeapons<'source> {
     }
 
     fn unequip_mundane_weapon(
-        &mut self,
-        weapon_id: BaseWeaponId,
+        &'view mut self,
+        name: &'view str,
         equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let nonnatural_mundane = match equipped {
+        let (name, nonnatural_mundane) = match equipped {
             Equipped::Natural => Err(CharacterMutationError::WeaponError(
                 WeaponError::UnequipNatural,
             )),
             Equipped::Worn => self
                 .equipped
-                .remove_worn_mundane(weapon_id)
+                .remove_worn_mundane(name)
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
-                .map(NonnaturalMundaneWeapon::Worn),
+                .map(|(name, worn_mundane)| (name, NonnaturalMundaneWeapon::Worn(worn_mundane))),
             Equipped::MainHand => self
                 .equipped
                 .hands
-                .free_hand(WeaponId::Mundane(weapon_id), EquipHand::MainHand)
+                .free_hand(WeaponId::Mundane(name), EquipHand::MainHand)
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|one_handed_equipped| match one_handed_equipped {
-                    EquippedOneHandedWeaponNoAttunement::Mundane(_, one_handed_mundane) => {
-                        Ok(NonnaturalMundaneWeapon::OneHanded(one_handed_mundane))
+                    EquippedOneHandedWeaponNoAttunement::Mundane(name, one_handed_mundane) => {
+                        Ok((name, NonnaturalMundaneWeapon::OneHanded(one_handed_mundane)))
                     }
                     EquippedOneHandedWeaponNoAttunement::Artifact(_, _) => {
                         // This shouldn't happen but if it does put it back and say not found instead
@@ -512,11 +512,11 @@ impl<'view, 'source> MortalWeapons<'source> {
             Equipped::OffHand => self
                 .equipped
                 .hands
-                .free_hand(WeaponId::Mundane(weapon_id), EquipHand::OffHand)
+                .free_hand(WeaponId::Mundane(name), EquipHand::OffHand)
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|one_handed_equipped| match one_handed_equipped {
-                    EquippedOneHandedWeaponNoAttunement::Mundane(_, one_handed_mundane) => {
-                        Ok(NonnaturalMundaneWeapon::OneHanded(one_handed_mundane))
+                    EquippedOneHandedWeaponNoAttunement::Mundane(name, one_handed_mundane) => {
+                        Ok((name, NonnaturalMundaneWeapon::OneHanded(one_handed_mundane)))
                     }
                     EquippedOneHandedWeaponNoAttunement::Artifact(_, _) => {
                         // This shouldn't happen but if it does put it back and say not found instead
@@ -529,11 +529,11 @@ impl<'view, 'source> MortalWeapons<'source> {
             Equipped::TwoHanded => self
                 .equipped
                 .hands
-                .free_two_handed(WeaponId::Mundane(weapon_id))
+                .free_two_handed(WeaponId::Mundane(name))
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|two_handed_equipped| match two_handed_equipped {
-                    EquippedTwoHandedWeaponNoAttunement::Mundane(_, two_handed_mundane) => {
-                        Ok(NonnaturalMundaneWeapon::TwoHanded(two_handed_mundane))
+                    EquippedTwoHandedWeaponNoAttunement::Mundane(name, two_handed_mundane) => {
+                        Ok((name, NonnaturalMundaneWeapon::TwoHanded(two_handed_mundane)))
                     }
                     EquippedTwoHandedWeaponNoAttunement::Artifact(_, _) => {
                         // This shouldn't happen but if it does put it back and say not found instead
@@ -543,7 +543,7 @@ impl<'view, 'source> MortalWeapons<'source> {
                 }),
         }?;
 
-        self.unequipped.stow_mundane(weapon_id, nonnatural_mundane);
+        self.unequipped.stow_mundane(name, nonnatural_mundane);
         Ok(self)
     }
 

@@ -2,8 +2,8 @@ use crate::{
     attributes::AttributeName,
     weapons::{
         weapon::{
-            mundane::MundaneWeapon, AttackRange, BaseWeaponId, EquipHand, Equipped, WeaponId,
-            WeaponWeightClass,
+            mundane::MundaneWeapon, AttackRange, EquipHand, Equipped, WeaponId,
+            WeaponWeightClass, WeaponName,
         },
         WeaponError, Weapons,
     },
@@ -21,10 +21,10 @@ impl<'view, 'source> Character<'source> {
     /// immediately readied and available.
     pub fn add_mundane_weapon(
         &mut self,
-        weapon_id: BaseWeaponId,
+        weapon_name: &'source str,
         weapon: &'source MundaneWeapon,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.add_mundane_weapon(weapon_id, weapon)?;
+        self.exaltation.add_mundane_weapon(weapon_name, weapon)?;
         Ok(self)
     }
 
@@ -38,19 +38,25 @@ impl<'view, 'source> Character<'source> {
     /// For Natural weapons, will return an Err.
     pub fn equip_weapon(
         &mut self,
-        weapon_id: WeaponId,
+        name: &'source WeaponName,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.check_equip_weapon(weapon_id, hand)?;
-        self.exaltation.equip_weapon(weapon_id, hand)?;
+        self.check_equip_weapon(name, hand)?;
+        self.exaltation.equip_weapon(name, hand)?;
         Ok(self)
     }
 
     fn check_equip_weapon(
         &self,
-        weapon_id: WeaponId,
+        name: &WeaponName,
         hand: Option<EquipHand>,
     ) -> Result<(), CharacterMutationError> {
+        let weapon_id = match name {
+            WeaponName::Unarmed => {return Err(CharacterMutationError::WeaponError(WeaponError::EquipNatural));}
+            WeaponName::Mundane(name) => WeaponId::Mundane(name.as_str()),
+            WeaponName::Artifact(id) => WeaponId::Artifact(*id),
+        };
+
         if let Some(weapon) = self.weapons().get(weapon_id, None) {
             if weapon.is_natural() {
                 Err(CharacterMutationError::WeaponError(
@@ -90,7 +96,7 @@ impl<'view, 'source> Character<'source> {
     /// requested weapon is not equipped at that location.
     pub fn unequip_weapon(
         &mut self,
-        weapon_id: WeaponId,
+        weapon_id: WeaponId<'source>,
         equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.unequip_weapon(weapon_id, equipped)?;
@@ -100,9 +106,9 @@ impl<'view, 'source> Character<'source> {
     /// Removes a mundane weapon from the character.
     pub fn remove_mundane_weapon(
         &mut self,
-        weapon_id: BaseWeaponId,
+        weapon_name: &'view str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.remove_mundane_weapon(weapon_id)?;
+        self.exaltation.remove_mundane_weapon(weapon_name)?;
         Ok(self)
     }
 }

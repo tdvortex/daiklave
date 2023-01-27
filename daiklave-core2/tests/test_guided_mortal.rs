@@ -11,7 +11,6 @@ use daiklave_core2::{
         ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle,
     },
     unique_id::UniqueId,
-    weapons::weapon::BaseWeaponId,
     CharacterMutation,
 };
 
@@ -167,9 +166,8 @@ fn test_guided_mortal() {
     attempt to bring the fight to an end without violence."
                 .to_owned(),
         )
-        .weapon(BaseWeaponId(UniqueId::Placeholder(1)))
-        .weapon(BaseWeaponId(UniqueId::Placeholder(2)))
-        .weapon(BaseWeaponId(UniqueId::Placeholder(3)))
+        .weapon("War Fan".to_owned())
+        .weapon("Hook Sword".to_owned())
         .build();
 
     let mutation = GuidedMutation::AddMartialArtsStyle(crane_style_name, crane_style.clone());
@@ -204,7 +202,7 @@ fn test_guided_mortal() {
 
     let (dummy_style_name, dummy_style) = MartialArtsStyle::builder("Dummy style".to_owned())
         .description("Dummy description".to_owned())
-        .weapon(BaseWeaponId(UniqueId::Placeholder(1)))
+        .weapon("Dummy weapon".to_owned())
         .build();
 
     let mutation = GuidedMutation::AddMartialArtsStyle(dummy_style_name, dummy_style);

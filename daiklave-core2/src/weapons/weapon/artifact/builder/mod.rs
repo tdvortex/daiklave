@@ -8,7 +8,7 @@ pub use with_heartstone_slots::ArtifactWeaponBuilderWithHearthstoneSlots;
 pub use with_magic_material::ArtifactWeaponBuilderWithMagicMaterial;
 pub use with_merit_dots::ArtifactWeaponBuilderWithMeritDots;
 
-use crate::{book_reference::BookReference, weapons::weapon::base::BaseWeaponId};
+use crate::{book_reference::BookReference};
 
 use super::base::BaseArtifactWeapon;
 
@@ -48,12 +48,12 @@ impl ArtifactWeaponBuilder {
     /// Specifies the base artifact weapon for the artifact.
     pub fn base_artifact(
         self,
-        base_weapon_id: BaseWeaponId,
+        base_weapon_name: String,
         base_weapon: BaseArtifactWeapon,
     ) -> ArtifactWeaponBuilderWithBaseWeapon {
         ArtifactWeaponBuilderWithBaseWeapon {
             name: self.name,
-            base_weapon_id,
+            base_weapon_name,
             base_weapon,
             lore: self.lore,
             powers: self.powers,

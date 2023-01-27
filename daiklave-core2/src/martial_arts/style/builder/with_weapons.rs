@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::{
     armor::armor_item::ArmorWeightClass, book_reference::BookReference,
-    martial_arts::style::MartialArtsStyle, weapons::weapon::BaseWeaponId,
+    martial_arts::style::MartialArtsStyle,
 };
 
 /// A Martial Arts style builder after at least one weapon has been specified.
@@ -10,8 +10,8 @@ use crate::{
 pub struct MartialArtsStyleBuilderWithWeapons {
     pub(crate) name: String,
     pub(crate) description: String,
-    pub(crate) first_weapon: BaseWeaponId,
-    pub(crate) usable_weapons: HashSet<BaseWeaponId>,
+    pub(crate) first_weapon: String,
+    pub(crate) usable_weapons: HashSet<String>,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) max_armor_weight: Option<ArmorWeightClass>,
 }
@@ -32,7 +32,7 @@ impl MartialArtsStyleBuilderWithWeapons {
     /// Enables the style to be used with a specific type of weapon. This may
     /// be a mundane weapon (like "sword"), a category of artifact weapon (like
     /// "dailklave"), but not a specific artifact weapon (like "Spring Razor").
-    pub fn weapon(mut self, weapon: BaseWeaponId) -> Self {
+    pub fn weapon(mut self, weapon: String) -> Self {
         self.usable_weapons.insert(weapon);
         self
     }

@@ -1,5 +1,5 @@
 mod memo;
-use std::collections::{hash_map::Entry, HashMap};
+use std::{collections::{hash_map::Entry, HashMap}, num::NonZeroU8};
 
 pub(crate) use memo::MortalUnequippedWeaponsMemo;
 
@@ -10,7 +10,7 @@ use crate::{
         weapon::{
             artifact::{ArtifactWeaponView, NonnaturalArtifactWeaponNoAttunement},
             mundane::{MundaneWeaponView, NonnaturalMundaneWeapon},
-            ArtifactWeaponId, BaseWeaponId, Equipped, Weapon, WeaponId, WeaponType,
+            ArtifactWeaponId, Equipped, Weapon, WeaponId, WeaponType,
         },
         WeaponError,
     },
@@ -19,7 +19,7 @@ use crate::{
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct MortalUnequippedWeapons<'source> {
-    pub mundane: HashMap<BaseWeaponId, (NonnaturalMundaneWeapon<'source>, u8)>,
+    pub mundane: HashMap<&'source str, (NonnaturalMundaneWeapon<'source>, NonZeroU8)>,
     pub artifact: HashMap<ArtifactWeaponId, NonnaturalArtifactWeaponNoAttunement<'source>>,
 }
 
@@ -38,7 +38,7 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
             mundane: self
                 .mundane
                 .iter()
-                .map(|(k, (v, count))| (*k, (v.as_memo(), *count)))
+                .map(|(k, (v, count))| ((*k).to_owned(), (v.as_memo(), *count)))
                 .collect(),
             artifact: self
                 .artifact
@@ -51,24 +51,24 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
     pub fn get_weapon(&'view self, weapon_id: WeaponId) -> Option<Weapon<'source>> {
         match weapon_id {
             WeaponId::Unarmed => Some(crate::weapons::weapon::mundane::unarmed()),
-            WeaponId::Mundane(target_id) => match self.mundane.get(&target_id)? {
-                (NonnaturalMundaneWeapon::Worn(worn_weapon), count) => {
+            WeaponId::Mundane(name) => match self.mundane.get_key_value(name)? {
+                (name, (NonnaturalMundaneWeapon::Worn(worn_weapon), count)) => {
                     Some(Weapon(WeaponType::Mundane(
-                        target_id,
+                        *name,
                         MundaneWeaponView::Worn(worn_weapon.clone(), false),
                         *count,
                     )))
                 }
-                (NonnaturalMundaneWeapon::OneHanded(one), count) => {
+                (name, (NonnaturalMundaneWeapon::OneHanded(one), count)) => {
                     Some(Weapon(WeaponType::Mundane(
-                        target_id,
+                        *name,
                         MundaneWeaponView::OneHanded(one.clone(), None),
                         *count,
                     )))
                 }
-                (NonnaturalMundaneWeapon::TwoHanded(two), count) => {
+                (name, (NonnaturalMundaneWeapon::TwoHanded(two), count)) => {
                     Some(Weapon(WeaponType::Mundane(
-                        target_id,
+                        *name,
                         MundaneWeaponView::TwoHanded(two.clone(), false),
                         *count,
                     )))
@@ -113,31 +113,36 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
 
     pub fn stow_mundane(
         &mut self,
-        weapon_id: BaseWeaponId,
+        name: &'source str,
         weapon: NonnaturalMundaneWeapon<'source>,
     ) {
-        let count_ptr = &mut self.mundane.entry(weapon_id).or_insert((weapon, 0)).1;
-        if *count_ptr < u8::MAX {
-            *count_ptr += 1;
+        match self.mundane.entry(name) {
+            Entry::Occupied(mut e) => {
+                e.get_mut().1 = NonZeroU8::new(e.get().1.get().saturating_add(1)).unwrap()
+            }
+            Entry::Vacant(e) => {
+                e.insert((weapon, NonZeroU8::new(1).unwrap()));
+            }
         }
     }
 
     pub fn unstow_mundane(
         &mut self,
-        weapon_id: BaseWeaponId,
+        name: &str,
     ) -> Option<NonnaturalMundaneWeapon<'source>> {
-        let current_count = self.mundane.get(&weapon_id)?.1;
+        let current_count = self.mundane.get(name)?.1;
 
-        match current_count {
+        match current_count.get() {
             0 => {
                 // This shouldn't happen, but if it does handle it by
                 // removing the problem entry
-                self.mundane.remove(&weapon_id);
+                self.mundane.remove(name);
                 None
             }
-            1 => self.mundane.remove(&weapon_id).map(|(weapon, _)| weapon),
-            _ => self.mundane.get_mut(&weapon_id).map(|(weapon, count)| {
-                *count -= 1;
+            1 => self.mundane.remove(name).map(|(weapon, _)| weapon),
+            _ => self.mundane.get_mut(name).map(|(weapon, count)| {
+                
+                *count = NonZeroU8::new(count.get() - 1).unwrap();
                 weapon.clone()
             }),
         }

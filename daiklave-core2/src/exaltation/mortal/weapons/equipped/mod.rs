@@ -3,7 +3,7 @@ mod memo;
 pub(crate) use hands::MortalHands;
 pub(crate) use memo::MortalEquippedWeaponsMemo;
 
-use std::collections::{hash_map::Entry, HashMap};
+use std::{collections::{hash_map::Entry, HashMap}, num::NonZeroU8};
 
 use crate::{
     exaltation::exalt::ExaltEquippedWeapons,
@@ -15,7 +15,7 @@ use crate::{
             },
             equipped::{EquippedOneHandedWeaponNoAttunement, EquippedTwoHandedWeaponNoAttunement},
             mundane::{HandlessMundaneWeapon, MundaneWeaponView, WornMundaneWeaponView},
-            ArtifactWeaponId, BaseWeaponId, Equipped, Weapon, WeaponId, WeaponType,
+            ArtifactWeaponId, Equipped, Weapon, WeaponId, WeaponType,
         },
         WeaponError,
     },
@@ -24,7 +24,7 @@ use crate::{
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct MortalEquippedWeapons<'source> {
-    pub handless_mundane: HashMap<BaseWeaponId, HandlessMundaneWeapon<'source>>,
+    pub handless_mundane: HashMap<&'source str, HandlessMundaneWeapon<'source>>,
     pub handless_artifact: HashMap<ArtifactWeaponId, HandlessArtifactWeaponNoAttunement<'source>>,
     pub hands: MortalHands<'source>,
 }
@@ -35,7 +35,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
             handless_mundane: self
                 .handless_mundane
                 .iter()
-                .map(|(k, v)| (*k, v.as_memo()))
+                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
                 .collect(),
             handless_artifact: self
                 .handless_artifact
@@ -56,24 +56,24 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                 Some(crate::weapons::weapon::mundane::unarmed())
             }
             (WeaponId::Unarmed, _) => None,
-            (WeaponId::Mundane(base_weapon_id), Equipped::Natural) => {
-                match self.handless_mundane.get(&base_weapon_id)? {
-                    HandlessMundaneWeapon::Natural(weapon) => Some(Weapon(WeaponType::Mundane(
-                        base_weapon_id,
+            (WeaponId::Mundane(name), Equipped::Natural) => {
+                match self.handless_mundane.get_key_value(name)? {
+                    (name, HandlessMundaneWeapon::Natural(weapon)) => Some(Weapon(WeaponType::Mundane(
+                        *name,
                         MundaneWeaponView::Natural(weapon.clone()),
-                        1,
+                        NonZeroU8::new(1).unwrap(),
                     ))),
-                    HandlessMundaneWeapon::Worn(_) => None,
+                    (_, HandlessMundaneWeapon::Worn(_)) => None,
                 }
             }
-            (WeaponId::Mundane(base_weapon_id), Equipped::Worn) => {
-                match self.handless_mundane.get(&base_weapon_id)? {
-                    HandlessMundaneWeapon::Worn(weapon) => Some(Weapon(WeaponType::Mundane(
-                        base_weapon_id,
+            (WeaponId::Mundane(name), Equipped::Worn) => {
+                match self.handless_mundane.get_key_value(name)? {
+                    (name, HandlessMundaneWeapon::Worn(weapon)) => Some(Weapon(WeaponType::Mundane(
+                        *name,
                         MundaneWeaponView::Worn(weapon.clone(), true),
-                        1,
+                        NonZeroU8::new(1).unwrap(),
                     ))),
-                    HandlessMundaneWeapon::Natural(_) => None,
+                    (_, HandlessMundaneWeapon::Natural(_)) => None,
                 }
             }
             (WeaponId::Artifact(artifact_weapon_id), Equipped::Natural) => {
@@ -134,10 +134,10 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
 
     pub fn add_natural_mundane_weapon(
         &mut self,
-        weapon_id: BaseWeaponId,
+        name: &'source str,
         weapon: HandlessMundaneWeapon<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if let Entry::Vacant(e) = self.handless_mundane.entry(weapon_id) {
+        if let Entry::Vacant(e) = self.handless_mundane.entry(name) {
             e.insert(weapon);
             Ok(self)
         } else {
@@ -149,17 +149,17 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
 
     pub fn remove_worn_mundane(
         &mut self,
-        weapon_id: BaseWeaponId,
-    ) -> Option<WornMundaneWeaponView<'source>> {
+        name: &str,
+    ) -> Option<(&'source str, WornMundaneWeaponView<'source>)> {
         if matches!(
-            self.handless_mundane.get(&weapon_id),
+            self.handless_mundane.get(name),
             Some(HandlessMundaneWeapon::Worn(_))
         ) {
             self.handless_mundane
-                .remove(&weapon_id)
-                .and_then(|handless_mundane| {
+                .remove_entry(name)
+                .and_then(|(name, handless_mundane)| {
                     if let HandlessMundaneWeapon::Worn(worn_mundane) = handless_mundane {
-                        Some(worn_mundane)
+                        Some((name, worn_mundane))
                     } else {
                         None
                     }

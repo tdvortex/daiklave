@@ -12,7 +12,7 @@ use daiklave_core2::{
     },
     unique_id::UniqueId,
     weapons::weapon::{
-        ArtifactWeaponId, BaseWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass,
+        ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass,
     },
     CharacterEventSource, CharacterMutation,
 };
@@ -53,7 +53,7 @@ fn test_attunement() {
                 .to_owned(),
         )
         .base_artifact(
-            BaseWeaponId(UniqueId::Placeholder(1)),
+            "Daiklave".to_owned(),
             Weapon::base("Daiklave".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 595))
                 .weight_class(WeaponWeightClass::Medium)

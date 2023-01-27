@@ -1,9 +1,6 @@
 pub mod builder;
-mod id;
 
 use std::collections::HashSet;
-
-pub use id::BaseWeaponId;
 
 use serde::{Deserialize, Serialize};
 
@@ -16,7 +13,6 @@ use super::{
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BaseWeapon {
-    pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) weight_class: WeaponWeightClass,
     pub(crate) range_bands: WeaponRange,

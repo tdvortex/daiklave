@@ -112,7 +112,7 @@ impl<'view, 'source> MortalHands<'source> {
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> {
+    pub fn iter(&self) -> impl Iterator<Item = (WeaponId<'source>, Option<Equipped>)> {
         match self {
             MortalHands::Empty => vec![],
             MortalHands::MainHand(one) => one

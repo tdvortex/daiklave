@@ -68,16 +68,7 @@ impl<'source> MundaneWeaponView<'source> {
             }
         }
     }
-
-    pub fn name(&self) -> &'source str {
-        match self {
-            MundaneWeaponView::Natural(weapon) => weapon.name(),
-            MundaneWeaponView::Worn(weapon, _) => weapon.name(),
-            MundaneWeaponView::OneHanded(weapon, _) => weapon.name(),
-            MundaneWeaponView::TwoHanded(weapon, _) => weapon.name(),
-        }
-    }
-
+    
     pub fn tags(&self) -> std::vec::IntoIter<WeaponTag> {
         match self {
             MundaneWeaponView::Natural(base) => base.tags(WeaponTag::Natural),

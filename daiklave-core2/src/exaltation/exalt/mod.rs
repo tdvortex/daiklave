@@ -72,7 +72,7 @@ use crate::{
                 NonnaturalArtifactWeapon,
             },
             mundane::{HandlessMundaneWeapon, MundaneWeapon},
-            ArtifactWeaponId, BaseWeaponId, EquipHand, Equipped, Weapon, WeaponId,
+            ArtifactWeaponId, EquipHand, Equipped, Weapon, WeaponId, WeaponName,
         },
         WeaponError,
     },
@@ -563,25 +563,25 @@ impl<'view, 'source> Exalt<'source> {
 
     pub(crate) fn add_mundane_weapon(
         &mut self,
-        weapon_id: BaseWeaponId,
+        name: &'source str,
         weapon: &'source MundaneWeapon,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.weapons.add_mundane_weapon(weapon_id, weapon)?;
+        self.weapons.add_mundane_weapon(name, weapon)?;
         Ok(self)
     }
 
     pub fn equip_weapon(
         &mut self,
-        weapon_id: WeaponId,
+        name: &'source WeaponName,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.weapons.equip_weapon(weapon_id, hand)?;
+        self.weapons.equip_weapon(name, hand)?;
         Ok(self)
     }
 
     pub fn unequip_weapon(
         &mut self,
-        weapon_id: WeaponId,
+        weapon_id: WeaponId<'view>,
         equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.unequip_weapon(weapon_id, equipped)?;
@@ -639,23 +639,24 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn remove_mundane_weapon(
         &mut self,
-        weapon_id: BaseWeaponId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if let Some((_, count)) = self.weapons.unequipped.mundane.get(&weapon_id) {
-            if *count <= 1 {
-                self.weapons.unequipped.mundane.remove(&weapon_id);
-            } else {
+        if let Some((_, count)) = self.weapons.unequipped.mundane.get(name) {
+            let new_count = count.get() - 1;
+            if let Some(new_nonzero) = NonZeroU8::new(new_count) {
                 self.weapons
                     .unequipped
                     .mundane
-                    .get_mut(&weapon_id)
+                    .get_mut(name)
                     .unwrap()
-                    .1 -= 1;
+                    .1 = new_nonzero
+            } else {
+                self.weapons.unequipped.mundane.remove(name);
             }
             Ok(self)
-        } else if let Some(weapon) = self.weapons.equipped.handless_mundane.get(&weapon_id) {
+        } else if let Some(weapon) = self.weapons.equipped.handless_mundane.get(name) {
             if matches!(weapon, HandlessMundaneWeapon::Natural(_)) {
-                self.weapons.equipped.handless_mundane.remove(&weapon_id);
+                self.weapons.equipped.handless_mundane.remove(name);
             }
             Ok(self)
         } else {

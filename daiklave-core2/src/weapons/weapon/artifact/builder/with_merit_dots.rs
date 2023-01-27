@@ -1,7 +1,7 @@
 use crate::{
     artifact::MagicMaterial,
     book_reference::BookReference,
-    weapons::weapon::{artifact::base::BaseArtifactWeapon, BaseWeaponId},
+    weapons::weapon::{artifact::base::BaseArtifactWeapon},
 };
 
 use super::with_heartstone_slots::ArtifactWeaponBuilderWithHearthstoneSlots;
@@ -13,7 +13,7 @@ pub struct ArtifactWeaponBuilderWithMeritDots {
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
     pub(crate) book_reference: Option<BookReference>,
-    pub(crate) base_weapon_id: BaseWeaponId,
+    pub(crate) base_weapon_name: String,
     pub(crate) base_weapon: BaseArtifactWeapon,
     pub(crate) magic_material: MagicMaterial,
     pub(crate) merit_dots: u8,
@@ -45,7 +45,7 @@ impl ArtifactWeaponBuilderWithMeritDots {
     pub fn hearthstone_slots(self, slots: usize) -> ArtifactWeaponBuilderWithHearthstoneSlots {
         ArtifactWeaponBuilderWithHearthstoneSlots {
             name: self.name,
-            base_weapon_id: self.base_weapon_id,
+            base_weapon_name: self.base_weapon_name,
             base_weapon: self.base_weapon,
             magic_material: self.magic_material,
             merit_dots: self.merit_dots,

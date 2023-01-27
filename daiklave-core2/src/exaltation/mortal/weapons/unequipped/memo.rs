@@ -1,17 +1,17 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, num::NonZeroU8};
 
 use serde::{Deserialize, Serialize};
 
 use crate::weapons::weapon::{
     artifact::NonnaturalArtifactWeaponNoAttunementMemo, mundane::NonnaturalMundaneWeaponMemo,
-    ArtifactWeaponId, BaseWeaponId,
+    ArtifactWeaponId,
 };
 
 use super::MortalUnequippedWeapons;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MortalUnequippedWeaponsMemo {
-    pub mundane: HashMap<BaseWeaponId, (NonnaturalMundaneWeaponMemo, u8)>,
+    pub mundane: HashMap<String, (NonnaturalMundaneWeaponMemo, NonZeroU8)>,
     pub artifact: HashMap<ArtifactWeaponId, NonnaturalArtifactWeaponNoAttunementMemo>,
 }
 
@@ -21,7 +21,7 @@ impl<'source> MortalUnequippedWeaponsMemo {
             mundane: self
                 .mundane
                 .iter()
-                .map(|(k, (v, count))| (*k, (v.as_ref(), *count)))
+                .map(|(k, (v, count))| (k.as_str(), (v.as_ref(), *count)))
                 .collect(),
             artifact: self
                 .artifact

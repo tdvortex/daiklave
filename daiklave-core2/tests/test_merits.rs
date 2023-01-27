@@ -27,7 +27,7 @@ use daiklave_core2::{
     },
     unique_id::UniqueId,
     weapons::weapon::{
-        ArtifactWeaponId, BaseWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass,
+        ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass,
     },
     CharacterEventSource, CharacterMutation,
 };
@@ -46,7 +46,7 @@ fn test_merits() {
         ArtifactWeaponId(UniqueId::Placeholder(1)),
         Weapon::artifact("Volcano Cutter".to_owned())
             .base_artifact(
-                BaseWeaponId(UniqueId::Placeholder(8)),
+                "Grand Daiklave".to_owned(),
                 Weapon::base("Grand Daiklave".to_owned())
                     .book_reference(BookReference::new(Book::CoreRulebook, 597))
                     .weight_class(WeaponWeightClass::Heavy)
@@ -178,9 +178,8 @@ fn test_merits() {
     attempt to bring the fight to an end without violence."
                 .to_owned(),
         )
-        .weapon(BaseWeaponId(UniqueId::Placeholder(1)))
-        .weapon(BaseWeaponId(UniqueId::Placeholder(2)))
-        .weapon(BaseWeaponId(UniqueId::Placeholder(3)))
+        .weapon("War Fan".to_owned())
+        .weapon("Hook Sword".to_owned())
         .build();
 
     let mutation = CharacterMutation::AddMartialArtsStyle(crane_style_name, crane_style);

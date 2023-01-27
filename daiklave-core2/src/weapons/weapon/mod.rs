@@ -23,6 +23,7 @@ mod damage_type;
 pub(crate) mod equipped;
 mod handedness;
 mod id;
+mod name;
 
 /// Traits that are specific to mundane (non-Artifact) weapons.
 pub mod mundane;
@@ -32,9 +33,9 @@ mod weapon_type;
 mod weight_class;
 
 pub use artifact::ArtifactWeaponId;
-pub use base::BaseWeaponId;
 pub use equipped::{EquipHand, Equipped};
 pub use id::WeaponId;
+pub use name::WeaponName;
 pub use range::{AttackRange, RangeBand};
 pub use tag::{OptionalWeaponTag, WeaponTag};
 pub(crate) use weapon_type::WeaponType;
@@ -67,7 +68,7 @@ impl<'view, 'source> Weapon<'source> {
     }
 
     /// The weapon's Id
-    pub fn id(&self) -> WeaponId {
+    pub fn id(&self) -> WeaponId<'source> {
         self.0.id()
     }
 
@@ -142,7 +143,7 @@ impl<'view, 'source> Weapon<'source> {
 
     /// If the weapon is an artifact weapon, returns the base weapon and its Id.
     /// For example, the base weapon for "Volcano Cutter" would be "daiklave".
-    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &'source BaseWeapon)> {
+    pub fn base_artifact_weapon(&self) -> Option<(&'source str, &'source BaseWeapon)> {
         self.0.base_artifact_weapon()
     }
 

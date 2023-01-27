@@ -22,8 +22,4 @@ impl<'source> OneHandedMundaneWeaponView<'source> {
     pub(crate) fn as_memo(&'source self) -> OneHandedMundaneWeapon {
         OneHandedMundaneWeapon(self.0.clone())
     }
-
-    pub(crate) fn name(&self) -> &'source str {
-        self.0.name.as_str()
-    }
 }

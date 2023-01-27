@@ -1,3 +1,5 @@
+use std::num::NonZeroU8;
+
 use crate::{
     artifact::ArtifactId,
     book_reference::{Book, BookReference},
@@ -7,17 +9,17 @@ use crate::{
 
 use super::{
     artifact::ArtifactWeaponView, base::BaseWeapon, equipped::Equipped, mundane::MundaneWeaponView,
-    ArtifactWeaponId, AttackRange, BaseWeaponId, WeaponId, WeaponTag, WeaponWeightClass,
+    ArtifactWeaponId, AttackRange, WeaponId, WeaponTag, WeaponWeightClass,
 };
 
 pub(crate) enum WeaponType<'source> {
     Unarmed,
-    Mundane(BaseWeaponId, MundaneWeaponView<'source>, u8),
+    Mundane(&'source str, MundaneWeaponView<'source>, NonZeroU8),
     Artifact(ArtifactWeaponId, ArtifactWeaponView<'source>, Option<u8>),
 }
 
 impl<'view, 'source> WeaponType<'source> {
-    pub fn id(&self) -> WeaponId {
+    pub fn id(&self) -> WeaponId<'source> {
         match self {
             WeaponType::Mundane(base_id, _, _) => WeaponId::Mundane(*base_id),
             WeaponType::Artifact(artifact_id, _, _) => WeaponId::Artifact(*artifact_id),
@@ -63,7 +65,7 @@ impl<'view, 'source> WeaponType<'source> {
 
     pub fn name(&'view self) -> &'source str {
         match self {
-            WeaponType::Mundane(_, mundane, _) => mundane.name(),
+            WeaponType::Mundane(name, _, _) => *name,
             WeaponType::Artifact(_, artifact, _) => artifact.name(),
             WeaponType::Unarmed => "Unarmed",
         }
@@ -131,11 +133,11 @@ impl<'view, 'source> WeaponType<'source> {
         }
     }
 
-    pub fn base_artifact_weapon(&self) -> Option<(BaseWeaponId, &'source BaseWeapon)> {
+    pub fn base_artifact_weapon(&self) -> Option<(&'source str, &'source BaseWeapon)> {
         match self {
             WeaponType::Mundane(_, _, _) | WeaponType::Unarmed => None,
             WeaponType::Artifact(_, artifact, _) => Some((
-                artifact.base_artifact_weapon_id(),
+                artifact.base_weapon_name,
                 artifact.base_artifact_weapon(),
             )),
         }
@@ -260,7 +262,7 @@ impl<'view, 'source> WeaponType<'source> {
     pub fn quantity(&self) -> u8 {
         match self {
             WeaponType::Unarmed => 1,
-            WeaponType::Mundane(_, _, count) => *count,
+            WeaponType::Mundane(_, _, count) => count.get(),
             WeaponType::Artifact(_, _, _) => 1,
         }
     }

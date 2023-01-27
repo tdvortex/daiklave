@@ -21,8 +21,4 @@ impl<'source> TwoHandedMundaneWeaponView<'source> {
     pub fn as_memo(&'source self) -> TwoHandedMundaneWeapon {
         TwoHandedMundaneWeapon(self.0.clone())
     }
-
-    pub fn name(&self) -> &'source str {
-        self.0.name.as_str()
-    }
 }
