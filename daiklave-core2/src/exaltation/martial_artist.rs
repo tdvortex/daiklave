@@ -5,7 +5,7 @@ use crate::{
     exaltation::{
         exalt::martial_arts::ExaltMartialArtist, mortal::martial_arts::MortalMartialArtist,
     },
-    martial_arts::charm::{MartialArtsCharm, MartialArtsCharmId},
+    martial_arts::{charm::{MartialArtsCharm, MartialArtsCharmId}, style::MartialArtsStyleWeapon},
 };
 
 pub(crate) enum ExaltationMartialArtist<'view, 'source> {
@@ -28,10 +28,10 @@ impl<'view, 'source> ExaltationMartialArtist<'view, 'source> {
         }
     }
 
-    pub fn usable_weapon_names(&self) -> impl Iterator<Item = &'source str> + '_ {
+    pub fn usable_weapons(&self) -> impl Iterator<Item = &'source MartialArtsStyleWeapon> + '_ {
         match self {
-            ExaltationMartialArtist::Mortal(view) => view.style().usable_weapon_names(),
-            ExaltationMartialArtist::Exalt(view) => view.style().usable_weapon_names(),
+            ExaltationMartialArtist::Mortal(view) => view.style().usable_weapons(),
+            ExaltationMartialArtist::Exalt(view) => view.style().usable_weapons(),
         }
     }
 

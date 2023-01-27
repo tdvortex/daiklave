@@ -321,6 +321,7 @@ fn test_guided_solar() {
     attempt to bring the fight to an end without violence."
                 .to_owned(),
         )
+        .unarmed()
         .weapon("War Fan".to_owned())
         .weapon("Hook Sword".to_owned())
         .build();

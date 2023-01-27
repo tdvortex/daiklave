@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{armor::armor_item::ArmorWeightClass, book_reference::BookReference};
+use crate::{armor::armor_item::ArmorWeightClass, book_reference::BookReference, martial_arts::style::MartialArtsStyleWeapon};
 
 use super::MartialArtsStyleBuilderWithWeapons;
 
@@ -25,6 +25,18 @@ impl MartialArtsStyleBuilderWithDescription {
         self
     }
 
+    /// Allows the style to be used unarmed.
+    pub fn unarmed(self) -> MartialArtsStyleBuilderWithWeapons {
+        MartialArtsStyleBuilderWithWeapons {
+            name: self.name,
+            description: self.description,
+            first_weapon: MartialArtsStyleWeapon::Unarmed,
+            book_reference: self.book_reference,
+            usable_weapons: HashSet::new(),
+            max_armor_weight: self.max_armor_weight,
+        }
+    }
+
     /// Enables the style to be used with a specific type of weapon. This may
     /// be a mundane weapon (like "sword"), a category of artifact weapon (like
     /// "dailklave"), but not a specific artifact weapon (like "Spring Razor").
@@ -32,7 +44,7 @@ impl MartialArtsStyleBuilderWithDescription {
         MartialArtsStyleBuilderWithWeapons {
             name: self.name,
             description: self.description,
-            first_weapon: weapon,
+            first_weapon: MartialArtsStyleWeapon::BaseWeapon(weapon),
             book_reference: self.book_reference,
             usable_weapons: HashSet::new(),
             max_armor_weight: self.max_armor_weight,

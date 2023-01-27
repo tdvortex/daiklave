@@ -1,5 +1,7 @@
 /// Builder path for constructing a new Martial Arts style.
 pub mod builder;
+mod weapon;
+pub use weapon::{MartialArtsStyleWeapon};
 
 use std::collections::HashSet;
 
@@ -14,8 +16,8 @@ use self::builder::MartialArtsStyleBuilder;
 pub struct MartialArtsStyle {
     book_reference: Option<BookReference>,
     description: String,
-    first_weapon: String,
-    usable_weapons: HashSet<String>,
+    first_weapon: MartialArtsStyleWeapon,
+    usable_weapons: HashSet<MartialArtsStyleWeapon>,
     max_armor_weight: Option<ArmorWeightClass>,
 }
 
@@ -39,11 +41,11 @@ impl<'source> MartialArtsStyle {
         self.description.as_str()
     }
 
-    /// A list of weapon names, which may be either mortal weapons (e.g. sword)
+    /// A list of weapons, which may be either mortal weapons (e.g. sword)
     /// or base artifact weapons (e.g. daiklave), usable by the style.
-    pub fn usable_weapon_names(&'source self) -> impl Iterator<Item = &'source str> + '_ {
-        std::iter::once(self.first_weapon.as_str())
-            .chain(self.usable_weapons.iter().map(|s| s.as_str()))
+    pub fn usable_weapons(&'source self) -> impl Iterator<Item = &'source MartialArtsStyleWeapon> + '_ {
+        std::iter::once(&self.first_weapon)
+            .chain(self.usable_weapons.iter())
     }
 
     /// The maximum weight of armor which may be worn with the style, or None

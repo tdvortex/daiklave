@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::{
     armor::armor_item::ArmorWeightClass, book_reference::BookReference,
-    martial_arts::style::MartialArtsStyle,
+    martial_arts::style::{MartialArtsStyle, MartialArtsStyleWeapon},
 };
 
 /// A Martial Arts style builder after at least one weapon has been specified.
@@ -10,8 +10,8 @@ use crate::{
 pub struct MartialArtsStyleBuilderWithWeapons {
     pub(crate) name: String,
     pub(crate) description: String,
-    pub(crate) first_weapon: String,
-    pub(crate) usable_weapons: HashSet<String>,
+    pub(crate) first_weapon: MartialArtsStyleWeapon,
+    pub(crate) usable_weapons: HashSet<MartialArtsStyleWeapon>,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) max_armor_weight: Option<ArmorWeightClass>,
 }
@@ -29,11 +29,23 @@ impl MartialArtsStyleBuilderWithWeapons {
         self
     }
 
+    /// Allows the style to be used unarmed.
+    pub fn unarmed(mut self) -> Self {
+        if !matches!(self.first_weapon, MartialArtsStyleWeapon::Unarmed) {
+            self.usable_weapons.insert(MartialArtsStyleWeapon::Unarmed);
+        }
+        self
+    }
+
     /// Enables the style to be used with a specific type of weapon. This may
     /// be a mundane weapon (like "sword"), a category of artifact weapon (like
     /// "dailklave"), but not a specific artifact weapon (like "Spring Razor").
     pub fn weapon(mut self, weapon: String) -> Self {
-        self.usable_weapons.insert(weapon);
+        let style_weapon = MartialArtsStyleWeapon::BaseWeapon(weapon);
+
+        if self.first_weapon != style_weapon {
+            self.usable_weapons.insert(style_weapon);
+        }
         self
     }
 
