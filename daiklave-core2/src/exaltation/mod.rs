@@ -23,7 +23,7 @@ use crate::{
     },
     artifact::{
         wonders::{OwnedWonder, Wonder, WonderId},
-        ArtifactId,
+        ArtifactName, ArtifactId,
     },
     charms::{
         charm::{
@@ -47,8 +47,8 @@ use crate::{
         Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     weapons::weapon::{
-        artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, EquipHand,
-        Equipped, Weapon, WeaponId, WeaponName,
+        artifact::ArtifactWeaponView, mundane::MundaneWeapon, EquipHand,
+        Equipped, Weapon, WeaponName,
     },
     CharacterMutationError,
 };
@@ -97,10 +97,10 @@ impl<'source> Exaltation<'source> {
 
     pub fn get_weapon(
         &self,
-        weapon_id: WeaponId,
+        weapon_name: WeaponName<'_>,
         equipped: Option<Equipped>,
     ) -> Option<Weapon<'source>> {
-        if matches!(weapon_id, WeaponId::Unarmed) {
+        if matches!(weapon_name, WeaponName::Unarmed) {
             if matches!(equipped, Some(Equipped::Natural)) {
                 Some(crate::weapons::weapon::mundane::unarmed())
             } else {
@@ -109,23 +109,23 @@ impl<'source> Exaltation<'source> {
         } else {
             match self {
                 Exaltation::Mortal(box_mortal) => {
-                    box_mortal.as_ref().get_weapon(weapon_id, equipped)
+                    box_mortal.as_ref().get_weapon(weapon_name, equipped)
                 }
-                Exaltation::Exalt(box_exalt) => box_exalt.as_ref().get_weapon(weapon_id, equipped),
+                Exaltation::Exalt(box_exalt) => box_exalt.as_ref().get_weapon(weapon_name, equipped),
             }
         }
     }
 
-    pub fn iter_weapons(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> {
+    pub fn iter_weapons(&self) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> {
         match self {
             Exaltation::Mortal(box_mortal) => box_mortal
                 .as_ref()
                 .iter_weapons()
-                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+                .collect::<Vec<(WeaponName, Option<Equipped>)>>(),
             Exaltation::Exalt(box_exalt) => box_exalt
                 .as_ref()
                 .iter_weapons()
-                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+                .collect::<Vec<(WeaponName, Option<Equipped>)>>(),
         }
         .into_iter()
     }
@@ -538,15 +538,21 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn uncommit_motes(
         &mut self,
-        name: &'source UncommitMotes,
+        to_uncommit: &'source UncommitMotes,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => {
                 Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
             }
-            Exaltation::Exalt(exalt) => exalt.uncommit_motes(match name {
-                UncommitMotes::UnattuneArtifact(artifact_id) => {
-                    MoteCommitmentId::AttunedArtifact(*artifact_id)
+            Exaltation::Exalt(exalt) => exalt.uncommit_motes(match to_uncommit {
+                UncommitMotes::UnattuneArtifact(ArtifactName::Armor(armor_id)) => {
+                    MoteCommitmentId::AttunedArtifact(ArtifactId::Armor(*armor_id))
+                }
+                UncommitMotes::UnattuneArtifact(ArtifactName::Wonder(wonder_id)) => {
+                    MoteCommitmentId::AttunedArtifact(ArtifactId::Wonder(*wonder_id))
+                }
+                UncommitMotes::UnattuneArtifact(ArtifactName::Weapon(name)) => {
+                    MoteCommitmentId::AttunedArtifact(ArtifactId::Weapon(name.as_str()))
                 }
                 UncommitMotes::Other(name) => MoteCommitmentId::Other(name.as_str()),
             }),
@@ -600,7 +606,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn equip_weapon(
         &mut self,
-        name: &'source WeaponName,
+        name: WeaponName<'_>,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
@@ -616,15 +622,15 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn unequip_weapon(
         &mut self,
-        weapon_id: WeaponId<'view>,
+        weapon_name: WeaponName<'_>,
         equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.as_mut().unequip_weapon(weapon_id, equipped)?;
+                mortal.as_mut().unequip_weapon(weapon_name, equipped)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.as_mut().unequip_weapon(weapon_id, equipped)?;
+                exalt.as_mut().unequip_weapon(weapon_name, equipped)?;
             }
         }
         Ok(self)
@@ -632,15 +638,15 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn add_artifact_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        name: &'source str,
         weapon: ArtifactWeaponView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.add_artifact_weapon(artifact_weapon_id, weapon)?;
+                mortal.add_artifact_weapon(name, weapon)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.add_artifact_weapon(artifact_weapon_id, weapon)?;
+                exalt.add_artifact_weapon(name, weapon)?;
             }
         }
         Ok(self)
@@ -648,14 +654,14 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn remove_artifact_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.remove_artifact_weapon(artifact_weapon_id)?;
+                mortal.remove_artifact_weapon(name)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.remove_artifact_weapon(artifact_weapon_id)?;
+                exalt.remove_artifact_weapon(name)?;
             }
         }
         Ok(self)
@@ -832,21 +838,21 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn slot_hearthstone_into_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
                 mortal.slot_hearthstone_into_weapon(
-                    artifact_weapon_id,
+                    artifact_weapon_name,
                     hearthstone_id,
                     unslotted,
                 )?;
             }
             Exaltation::Exalt(exalt) => {
                 exalt.slot_hearthstone_into_weapon(
-                    artifact_weapon_id,
+                    artifact_weapon_name,
                     hearthstone_id,
                     unslotted,
                 )?;
@@ -891,15 +897,15 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn unslot_hearthstone_from_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         Ok(match self {
             Exaltation::Mortal(mortal) => {
-                mortal.unslot_hearthstone_from_weapon(artifact_weapon_id, hearthstone_id)?
+                mortal.unslot_hearthstone_from_weapon(artifact_weapon_name, hearthstone_id)?
             }
             Exaltation::Exalt(exalt) => {
-                exalt.unslot_hearthstone_from_weapon(artifact_weapon_id, hearthstone_id)?
+                exalt.unslot_hearthstone_from_weapon(artifact_weapon_name, hearthstone_id)?
             }
         })
     }
@@ -936,7 +942,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn attune_artifact(
         &mut self,
-        artifact_id: ArtifactId,
+        artifact_id: ArtifactId<'_>,
         first: MotePoolName,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {

@@ -7,7 +7,7 @@ use crate::{
     book_reference::BookReference,
     charms::{
         charm::{
-            evocation::{EvocationId, EvocationKeyword, EvokableId},
+            evocation::{EvocationId, EvocationKeyword, EvokableName},
             CharmId,
         },
         CharmActionType, CharmCostType,
@@ -18,7 +18,7 @@ use super::EvocationBuilderWithDescription;
 
 /// An Evocation builder after the Duration has been specified.
 pub struct EvocationBuilderWithDuration {
-    pub(crate) evokable_id: EvokableId,
+    pub(crate) evokable_name: EvokableName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) name: String,
     pub(crate) summary: Option<String>,
@@ -95,7 +95,7 @@ impl EvocationBuilderWithDuration {
     /// resonant or dissonant effects.
     pub fn description(self, description: String) -> EvocationBuilderWithDescription {
         EvocationBuilderWithDescription {
-            evokable_id: self.evokable_id,
+            evokable_name: self.evokable_name,
             book_reference: self.book_reference,
             name: self.name,
             summary: self.summary,

@@ -2,14 +2,14 @@ use daiklave_core2::{
     armor::armor_item::{
         artifact::ArtifactArmorId, ArmorItem, ArmorTag, ArmorWeightClass, BaseArmorId,
     },
-    artifact::{wonders::WonderId, Artifact, ArtifactId, MagicMaterial},
+    artifact::{wonders::WonderId, Artifact, MagicMaterial, ArtifactName},
     book_reference::{Book, BookReference},
     hearthstones::{
         hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory, HearthstoneKeyword},
         HearthstoneId,
     },
     unique_id::UniqueId,
-    weapons::weapon::{ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponId, WeaponWeightClass},
+    weapons::weapon::{OptionalWeaponTag, Weapon, WeaponWeightClass, WeaponName},
     CharacterEventSource, CharacterMutation,
 };
 
@@ -131,7 +131,6 @@ fn test_hearthstones() {
         .build();
 
     let mutation = CharacterMutation::AddArtifact(Artifact::Weapon(
-        ArtifactWeaponId(UniqueId::Placeholder(1)),
         adorei,
     ));
     event_source.apply_mutation(mutation).unwrap();
@@ -204,13 +203,13 @@ fn test_hearthstones() {
 
     // Check slotting into all three artifacts
     let mutation = CharacterMutation::SlotHearthstone(
-        ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))),
+        ArtifactName::Wonder(WonderId(UniqueId::Placeholder(1))),
         HearthstoneId(UniqueId::Placeholder(2)),
     );
     event_source.apply_mutation(mutation).unwrap();
 
     let mutation = CharacterMutation::SlotHearthstone(
-        ArtifactId::Armor(ArtifactArmorId(UniqueId::Placeholder(1))),
+        ArtifactName::Armor(ArtifactArmorId(UniqueId::Placeholder(1))),
         HearthstoneId(UniqueId::Placeholder(1)),
     );
     event_source.apply_mutation(mutation).unwrap();
@@ -218,7 +217,7 @@ fn test_hearthstones() {
     // If a hearthstone is already slotted, reslotting it will remove it from
     // the original position
     let mutation = CharacterMutation::SlotHearthstone(
-        ArtifactId::Weapon(ArtifactWeaponId(UniqueId::Placeholder(1))),
+        ArtifactName::Weapon("Beloved Adorei".to_owned()),
         HearthstoneId(UniqueId::Placeholder(2)),
     );
     let character = event_source.apply_mutation(mutation).unwrap();
@@ -226,7 +225,7 @@ fn test_hearthstones() {
         character
             .weapons()
             .get(
-                WeaponId::Artifact(ArtifactWeaponId(UniqueId::Placeholder(1))),
+                WeaponName::Artifact("Beloved Adorei"),
                 None
             )
             .unwrap()

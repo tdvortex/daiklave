@@ -2,9 +2,8 @@ mod add;
 mod base;
 pub(crate) mod builder;
 mod grouped;
-mod id;
 mod memo;
-mod named;
+mod traits;
 mod newtype;
 
 use std::ops::Deref;
@@ -16,7 +15,6 @@ pub(crate) use grouped::{
     HandlessArtifactWeaponNoAttunementMemo, NonnaturalArtifactWeapon, NonnaturalArtifactWeaponMemo,
     NonnaturalArtifactWeaponNoAttunement, NonnaturalArtifactWeaponNoAttunementMemo,
 };
-pub use id::ArtifactWeaponId;
 pub use memo::ArtifactWeapon;
 pub(crate) use newtype::{
     NaturalArtifactWeapon, NaturalArtifactWeaponView, OneHandedArtifactWeapon,
@@ -24,7 +22,7 @@ pub(crate) use newtype::{
     WornArtifactWeapon, WornArtifactWeaponView,
 };
 
-use self::named::NamedArtifactWeapon;
+use self::traits::ArtifactWeaponTraits;
 
 use super::{
     equipped::{EquipHand, Equipped},
@@ -39,7 +37,7 @@ pub(crate) enum ArtifactWeaponView<'source> {
 }
 
 impl<'source> Deref for ArtifactWeaponView<'source> {
-    type Target = NamedArtifactWeapon<'source>;
+    type Target = ArtifactWeaponTraits<'source>;
 
     fn deref(&self) -> &Self::Target {
         match self {
@@ -52,15 +50,6 @@ impl<'source> Deref for ArtifactWeaponView<'source> {
 }
 
 impl<'source> ArtifactWeaponView<'source> {
-    pub fn name(&self) -> &'source str {
-        match self {
-            ArtifactWeaponView::Natural(weapon) => weapon.name(),
-            ArtifactWeaponView::Worn(weapon, _) => weapon.name(),
-            ArtifactWeaponView::OneHanded(weapon, _) => weapon.name(),
-            ArtifactWeaponView::TwoHanded(weapon, _) => weapon.name(),
-        }
-    }
-
     pub fn lore(&self) -> Option<&'source str> {
         match self {
             ArtifactWeaponView::Natural(weapon) => weapon.lore(),

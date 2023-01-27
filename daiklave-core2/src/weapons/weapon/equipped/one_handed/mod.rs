@@ -13,14 +13,14 @@ use crate::weapons::weapon::{
     artifact::{ArtifactWeaponView, OneHandedArtifactWeaponView},
     mundane::{MundaneWeaponView, OneHandedMundaneWeaponView},
     weapon_type::WeaponType,
-    ArtifactWeaponId, Weapon, WeaponId,
+    Weapon, WeaponName,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum EquippedOneHandedWeapon<'source> {
     Mundane(&'source str, OneHandedMundaneWeaponView<'source>),
     Artifact(
-        ArtifactWeaponId,
+        &'source str,
         OneHandedArtifactWeaponView<'source>,
         Option<u8>,
     ),
@@ -45,19 +45,19 @@ impl<'view, 'source> EquippedOneHandedWeapon<'source> {
             EquippedOneHandedWeapon::Mundane(name, view) => {
                 EquippedOneHandedWeaponMemo::Mundane((*name).to_owned(), view.as_memo())
             }
-            EquippedOneHandedWeapon::Artifact(id, view, attunement) => {
-                EquippedOneHandedWeaponMemo::Artifact(*id, view.as_memo(), *attunement)
+            EquippedOneHandedWeapon::Artifact(name, view, attunement) => {
+                EquippedOneHandedWeaponMemo::Artifact((*name).to_owned(), view.as_memo(), *attunement)
             }
         }
     }
 
     pub fn get_weapon(
-        &'view self,
-        weapon_id: WeaponId,
+        &self,
+        name: WeaponName<'_>,
         hand: EquipHand,
     ) -> Option<Weapon<'source>> {
-        match (self, weapon_id) {
-            (EquippedOneHandedWeapon::Mundane(name, one), WeaponId::Mundane(target_name)) => {
+        match (self, name) {
+            (EquippedOneHandedWeapon::Mundane(name, one), WeaponName::Mundane(target_name)) => {
                 if &target_name != name {
                     None
                 } else {
@@ -69,14 +69,14 @@ impl<'view, 'source> EquippedOneHandedWeapon<'source> {
                 }
             }
             (
-                EquippedOneHandedWeapon::Artifact(actual_id, one, attunement),
-                WeaponId::Artifact(target_id),
+                EquippedOneHandedWeapon::Artifact(name, one, attunement),
+                WeaponName::Artifact(target_name),
             ) => {
-                if &target_id != actual_id {
+                if &target_name != name {
                     None
                 } else {
                     Some(Weapon(WeaponType::Artifact(
-                        target_id,
+                        *name,
                         ArtifactWeaponView::OneHanded(one.clone(), Some(hand)),
                         *attunement,
                     )))
@@ -86,13 +86,13 @@ impl<'view, 'source> EquippedOneHandedWeapon<'source> {
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = WeaponId<'source>> {
+    pub fn iter(&self) -> impl Iterator<Item = WeaponName<'source>> {
         match self {
-            EquippedOneHandedWeapon::Mundane(base_id, _) => {
-                std::iter::once(WeaponId::Mundane(*base_id))
+            EquippedOneHandedWeapon::Mundane(name, _) => {
+                std::iter::once(WeaponName::Mundane(*name))
             }
-            EquippedOneHandedWeapon::Artifact(artifact_id, _, _) => {
-                std::iter::once(WeaponId::Artifact(*artifact_id))
+            EquippedOneHandedWeapon::Artifact(name, _, _) => {
+                std::iter::once(WeaponName::Artifact(*name))
             }
         }
     }

@@ -37,7 +37,7 @@ use super::{
 };
 
 pub(crate) enum MeritSource<'source> {
-    Artifact(ArtifactId, &'source str, u8),
+    Artifact(ArtifactId<'source>, &'source str, u8),
     DemenseNoManse(&'source str, GeomancyLevel),
     DemenseWithManse(HearthstoneId, &'source str, GeomancyLevel),
     ExaltedHealing(bool), // is_exalt

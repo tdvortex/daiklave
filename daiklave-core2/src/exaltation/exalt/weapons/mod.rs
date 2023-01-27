@@ -15,7 +15,7 @@ use crate::{
                 NaturalMundaneWeaponView, NonnaturalMundaneWeapon, OneHandedMundaneWeaponView,
                 TwoHandedMundaneWeaponView, WornMundaneWeaponView,
             },
-            ArtifactWeaponId, EquipHand, Equipped, Weapon, WeaponId, WeaponName,
+            EquipHand, Equipped, Weapon, WeaponName,
         },
         WeaponError,
     },
@@ -46,23 +46,23 @@ impl<'view, 'source> ExaltWeapons<'source> {
 
     pub fn get_weapon(
         &'view self,
-        weapon_id: WeaponId,
+        name: WeaponName<'_>,
         equipped: Option<Equipped>,
     ) -> Option<Weapon<'source>> {
-        if matches!(weapon_id, WeaponId::Unarmed) {
+        if matches!(name, WeaponName::Unarmed) {
             if matches!(equipped, Some(Equipped::Natural)) {
                 Some(crate::weapons::weapon::mundane::unarmed())
             } else {
                 None
             }
         } else if let Some(equipped) = equipped {
-            self.equipped.get_weapon(weapon_id, equipped)
+            self.equipped.get_weapon(name, equipped)
         } else {
-            self.unequipped.get_weapon(weapon_id)
+            self.unequipped.get_weapon(name)
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> + '_ {
         self.equipped.iter().chain(self.unequipped.iter())
     }
 
@@ -96,27 +96,27 @@ impl<'view, 'source> ExaltWeapons<'source> {
 
     pub fn equip_weapon(
         &mut self,
-        name: &'source WeaponName,
+        name: WeaponName<'_>,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match name {
             WeaponName::Unarmed => Err(CharacterMutationError::WeaponError(
                 WeaponError::EquipNatural,
             )),
-            WeaponName::Mundane(name) => self.equip_mundane_weapon(name.as_str(), hand),
-            WeaponName::Artifact(artifact_weapon_id) => {
-                self.equip_artifact_weapon(*artifact_weapon_id, hand)
+            WeaponName::Mundane(name) => self.equip_mundane_weapon(name, hand),
+            WeaponName::Artifact(name) => {
+                self.equip_artifact_weapon(name, hand)
             }
         }
     }
 
     fn equip_mundane_weapon(
         &mut self,
-        name: &'source str,
+        name: &str,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
         // Try to unstow weapon, error if not found
-        let nonnatural_mundane = self
+        let (name, nonnatural_mundane) = self
             .unequipped
             .unstow_mundane(name)
             .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?;
@@ -147,7 +147,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     .equipped
                     .hands
                     .iter()
-                    .collect::<Vec<(WeaponId, Option<Equipped>)>>();
+                    .collect::<Vec<(WeaponName, Option<Equipped>)>>();
                 for (hand_weapon_id, maybe_equipped) in copied.into_iter() {
                     match maybe_equipped {
                         None
@@ -190,7 +190,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     .equipped
                     .hands
                     .iter()
-                    .collect::<Vec<(WeaponId, Option<Equipped>)>>();
+                    .collect::<Vec<(WeaponName, Option<Equipped>)>>();
                 for (hand_weapon_id, maybe_equipped) in copied.into_iter() {
                     match maybe_equipped {
                         None
@@ -232,7 +232,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     .equipped
                     .hands
                     .iter()
-                    .collect::<Vec<(WeaponId, Option<Equipped>)>>();
+                    .collect::<Vec<(WeaponName, Option<Equipped>)>>();
                 for (hand_weapon_id, maybe_equipped) in copied.into_iter() {
                     match maybe_equipped {
                         None | Some(Equipped::Natural) | Some(Equipped::Worn) => { /* Do nothing */
@@ -282,13 +282,13 @@ impl<'view, 'source> ExaltWeapons<'source> {
 
     fn equip_artifact_weapon(
         &mut self,
-        weapon_id: ArtifactWeaponId,
+        name: &str,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
         // Try to unstow weapon, error if not found
-        let nonnatural_artifact = self
+        let (name, nonnatural_artifact) = self
             .unequipped
-            .unstow_artifact(weapon_id)
+            .unstow_artifact(name)
             .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?;
         let (no_attunement, attunement) = (nonnatural_artifact.0, nonnatural_artifact.1);
 
@@ -296,7 +296,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
             (NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed), None) => {
                 // Don't lose the weapon we unstowed above
                 self.unequipped.stow_artifact(
-                    weapon_id,
+                    name,
                     NonnaturalArtifactWeapon(
                         NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed),
                         attunement,
@@ -307,7 +307,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 ))
             }
             (NonnaturalArtifactWeaponNoAttunement::Worn(worn), _) => {
-                if let Entry::Vacant(e) = self.equipped.handless_artifact.entry(weapon_id) {
+                if let Entry::Vacant(e) = self.equipped.handless_artifact.entry(name) {
                     e.insert(HandlessArtifactWeapon(
                         HandlessArtifactWeaponNoAttunement::Worn(worn),
                         attunement,
@@ -316,7 +316,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 } else {
                     // Don't lose the weapon we unstowed above
                     self.unequipped.stow_artifact(
-                        weapon_id,
+                        name,
                         NonnaturalArtifactWeapon(
                             NonnaturalArtifactWeaponNoAttunement::Worn(worn),
                             attunement,
@@ -335,7 +335,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     .equipped
                     .hands
                     .iter()
-                    .collect::<Vec<(WeaponId, Option<Equipped>)>>();
+                    .collect::<Vec<(WeaponName, Option<Equipped>)>>();
                 for (hand_weapon_id, maybe_equipped) in copied.into_iter() {
                     match maybe_equipped {
                         None
@@ -347,7 +347,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                             {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_artifact(
-                                    weapon_id,
+                                    name,
                                     NonnaturalArtifactWeapon(
                                         NonnaturalArtifactWeaponNoAttunement::OneHanded(
                                             one_handed_artifact,
@@ -363,7 +363,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                             {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_artifact(
-                                    weapon_id,
+                                    name,
                                     NonnaturalArtifactWeapon(
                                         NonnaturalArtifactWeaponNoAttunement::OneHanded(
                                             one_handed_artifact,
@@ -378,7 +378,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 }
 
                 self.equipped.hands.set_hand(
-                    EquippedOneHandedWeapon::Artifact(weapon_id, one_handed_artifact, attunement),
+                    EquippedOneHandedWeapon::Artifact(name, one_handed_artifact, attunement),
                     EquipHand::MainHand,
                 );
                 Ok(self)
@@ -391,7 +391,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     .equipped
                     .hands
                     .iter()
-                    .collect::<Vec<(WeaponId, Option<Equipped>)>>();
+                    .collect::<Vec<(WeaponName, Option<Equipped>)>>();
                 for (hand_weapon_id, maybe_equipped) in copied.into_iter() {
                     match maybe_equipped {
                         None
@@ -402,7 +402,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                             if let Err(e) = self.unequip_weapon(hand_weapon_id, Equipped::OffHand) {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_artifact(
-                                    weapon_id,
+                                    name,
                                     NonnaturalArtifactWeapon(
                                         NonnaturalArtifactWeaponNoAttunement::OneHanded(
                                             one_handed_artifact,
@@ -418,7 +418,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                             {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_artifact(
-                                    weapon_id,
+                                    name,
                                     NonnaturalArtifactWeapon(
                                         NonnaturalArtifactWeaponNoAttunement::OneHanded(
                                             one_handed_artifact,
@@ -433,7 +433,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 }
 
                 self.equipped.hands.set_hand(
-                    EquippedOneHandedWeapon::Artifact(weapon_id, one_handed_artifact, attunement),
+                    EquippedOneHandedWeapon::Artifact(name, one_handed_artifact, attunement),
                     EquipHand::OffHand,
                 );
                 Ok(self)
@@ -443,7 +443,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     .equipped
                     .hands
                     .iter()
-                    .collect::<Vec<(WeaponId, Option<Equipped>)>>();
+                    .collect::<Vec<(WeaponName, Option<Equipped>)>>();
                 for (hand_weapon_id, maybe_equipped) in copied.into_iter() {
                     match maybe_equipped {
                         None | Some(Equipped::Natural) | Some(Equipped::Worn) => { /* Do nothing */
@@ -453,7 +453,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                             {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_artifact(
-                                    weapon_id,
+                                    name,
                                     NonnaturalArtifactWeapon(
                                         NonnaturalArtifactWeaponNoAttunement::TwoHanded(
                                             two_handed_artifact,
@@ -468,7 +468,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                             if let Err(e) = self.unequip_weapon(hand_weapon_id, Equipped::OffHand) {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_artifact(
-                                    weapon_id,
+                                    name,
                                     NonnaturalArtifactWeapon(
                                         NonnaturalArtifactWeaponNoAttunement::TwoHanded(
                                             two_handed_artifact,
@@ -484,7 +484,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                             {
                                 // Don't lose the weapon we unstowed above
                                 self.unequipped.stow_artifact(
-                                    weapon_id,
+                                    name,
                                     NonnaturalArtifactWeapon(
                                         NonnaturalArtifactWeaponNoAttunement::TwoHanded(
                                             two_handed_artifact,
@@ -501,7 +501,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 self.equipped
                     .hands
                     .set_two_handed(EquippedTwoHandedWeapon::Artifact(
-                        weapon_id,
+                        name,
                         two_handed_artifact,
                         attunement,
                     ));
@@ -512,16 +512,16 @@ impl<'view, 'source> ExaltWeapons<'source> {
 
     pub fn unequip_weapon(
         &mut self,
-        weapon_id: WeaponId,
+        name: WeaponName<'_>,
         equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
-        match weapon_id {
-            WeaponId::Unarmed => Err(CharacterMutationError::WeaponError(
+        match name {
+            WeaponName::Unarmed => Err(CharacterMutationError::WeaponError(
                 WeaponError::UnequipNatural,
             )),
-            WeaponId::Mundane(name) => self.unequip_mundane_weapon(name, equipped),
-            WeaponId::Artifact(artifact_weapon_id) => {
-                self.unequip_artifact_weapon(artifact_weapon_id, equipped)
+            WeaponName::Mundane(name) => self.unequip_mundane_weapon(name, equipped),
+            WeaponName::Artifact(name) => {
+                self.unequip_artifact_weapon(name, equipped)
             }
         }
     }
@@ -543,7 +543,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
             Equipped::MainHand => self
                 .equipped
                 .hands
-                .free_hand(WeaponId::Mundane(name), EquipHand::MainHand)
+                .free_hand(WeaponName::Mundane(name), EquipHand::MainHand)
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|one_handed_equipped| match one_handed_equipped {
                     EquippedOneHandedWeapon::Mundane(name, one_handed_mundane) => {
@@ -560,7 +560,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
             Equipped::OffHand => self
                 .equipped
                 .hands
-                .free_hand(WeaponId::Mundane(name), EquipHand::OffHand)
+                .free_hand(WeaponName::Mundane(name), EquipHand::OffHand)
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|one_handed_equipped| match one_handed_equipped {
                     EquippedOneHandedWeapon::Mundane(name, one_handed_mundane) => {
@@ -577,7 +577,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
             Equipped::TwoHanded => self
                 .equipped
                 .hands
-                .free_two_handed(WeaponId::Mundane(name))
+                .free_two_handed(WeaponName::Mundane(name))
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|two_handed_equipped| match two_handed_equipped {
                     EquippedTwoHandedWeapon::Mundane(name, two_handed_mundane) => {
@@ -597,34 +597,34 @@ impl<'view, 'source> ExaltWeapons<'source> {
 
     fn unequip_artifact_weapon(
         &mut self,
-        weapon_id: ArtifactWeaponId,
+        name: &str,
         equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let nonnatural_artifact = match equipped {
+        let (name, nonnatural_artifact) = match equipped {
             Equipped::Natural => Err(CharacterMutationError::WeaponError(
                 WeaponError::UnequipNatural,
             )),
             Equipped::Worn => self
                 .equipped
-                .remove_worn_artifact(weapon_id)
+                .remove_worn_artifact(name)
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
-                .map(|(worn_artifact, attunement)| {
-                    NonnaturalArtifactWeapon(
+                .map(|(name, worn_artifact, attunement)| {
+                    (name, NonnaturalArtifactWeapon(
                         NonnaturalArtifactWeaponNoAttunement::Worn(worn_artifact),
                         attunement,
-                    )
+                    ))
                 }),
             Equipped::MainHand => self
                 .equipped
                 .hands
-                .free_hand(WeaponId::Artifact(weapon_id), EquipHand::MainHand)
+                .free_hand(WeaponName::Artifact(name), EquipHand::MainHand)
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|one_handed_equipped| match one_handed_equipped {
-                    EquippedOneHandedWeapon::Artifact(_, one_handed_artifact, attunement) => {
-                        Ok(NonnaturalArtifactWeapon(
+                    EquippedOneHandedWeapon::Artifact(name, one_handed_artifact, attunement) => {
+                        Ok((name, NonnaturalArtifactWeapon(
                             NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed_artifact),
                             attunement,
-                        ))
+                        )))
                     }
                     EquippedOneHandedWeapon::Mundane(_, _) => {
                         // This shouldn't happen but if it does put it back and say not found instead
@@ -637,14 +637,14 @@ impl<'view, 'source> ExaltWeapons<'source> {
             Equipped::OffHand => self
                 .equipped
                 .hands
-                .free_hand(WeaponId::Artifact(weapon_id), EquipHand::OffHand)
+                .free_hand(WeaponName::Artifact(name), EquipHand::OffHand)
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|one_handed_equipped| match one_handed_equipped {
-                    EquippedOneHandedWeapon::Artifact(_, one_handed_artifact, attunement) => {
-                        Ok(NonnaturalArtifactWeapon(
+                    EquippedOneHandedWeapon::Artifact(name, one_handed_artifact, attunement) => {
+                        Ok((name, NonnaturalArtifactWeapon(
                             NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed_artifact),
                             attunement,
-                        ))
+                        )))
                     }
                     EquippedOneHandedWeapon::Mundane(_, _) => {
                         // This shouldn't happen but if it does put it back and say not found instead
@@ -657,14 +657,14 @@ impl<'view, 'source> ExaltWeapons<'source> {
             Equipped::TwoHanded => self
                 .equipped
                 .hands
-                .free_two_handed(WeaponId::Artifact(weapon_id))
+                .free_two_handed(WeaponName::Artifact(name))
                 .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 .and_then(|two_handed_equipped| match two_handed_equipped {
-                    EquippedTwoHandedWeapon::Artifact(_, two_handed_artifact, attunement) => {
-                        Ok(NonnaturalArtifactWeapon(
+                    EquippedTwoHandedWeapon::Artifact(name, two_handed_artifact, attunement) => {
+                        Ok((name, NonnaturalArtifactWeapon(
                             NonnaturalArtifactWeaponNoAttunement::TwoHanded(two_handed_artifact),
                             attunement,
-                        ))
+                        )))
                     }
                     EquippedTwoHandedWeapon::Mundane(_, _) => {
                         // This shouldn't happen but if it does put it back and say not found instead
@@ -675,22 +675,22 @@ impl<'view, 'source> ExaltWeapons<'source> {
         }?;
 
         self.unequipped
-            .stow_artifact(weapon_id, nonnatural_artifact)?;
+            .stow_artifact(name, nonnatural_artifact)?;
         Ok(self)
     }
 
     pub fn add_artifact_weapon(
         &mut self,
-        weapon_id: ArtifactWeaponId,
+        name: &'source str,
         weapon: ArtifactWeaponView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match weapon {
             ArtifactWeaponView::Natural(natural) => {
-                if self.equipped.handless_artifact.contains_key(&weapon_id) {
+                if self.equipped.handless_artifact.contains_key(name) {
                     Err(CharacterMutationError::WeaponError(
-                        WeaponError::NamedArtifactsUnique,
+                        WeaponError::DuplicateArtifact,
                     ))
-                } else if let Entry::Vacant(e) = self.equipped.handless_artifact.entry(weapon_id) {
+                } else if let Entry::Vacant(e) = self.equipped.handless_artifact.entry(name) {
                     e.insert(HandlessArtifactWeapon(
                         HandlessArtifactWeaponNoAttunement::Natural(natural),
                         None,
@@ -698,18 +698,18 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     Ok(self)
                 } else {
                     Err(CharacterMutationError::WeaponError(
-                        WeaponError::NamedArtifactsUnique,
+                        WeaponError::DuplicateArtifact,
                     ))
                 }
             }
             ArtifactWeaponView::Worn(worn, _) => {
-                if self.equipped.handless_artifact.contains_key(&weapon_id) {
+                if self.equipped.handless_artifact.contains_key(name) {
                     Err(CharacterMutationError::WeaponError(
-                        WeaponError::NamedArtifactsUnique,
+                        WeaponError::DuplicateArtifact,
                     ))
                 } else {
                     self.unequipped.stow_artifact(
-                        weapon_id,
+                        name,
                         NonnaturalArtifactWeapon(
                             NonnaturalArtifactWeaponNoAttunement::Worn(worn),
                             None,
@@ -722,20 +722,20 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 if self
                     .equipped
                     .hands
-                    .get_weapon(WeaponId::Artifact(weapon_id), Equipped::MainHand)
+                    .get_weapon(WeaponName::Artifact(name), Equipped::MainHand)
                     .is_some()
                     || self
                         .equipped
                         .hands
-                        .get_weapon(WeaponId::Artifact(weapon_id), Equipped::OffHand)
+                        .get_weapon(WeaponName::Artifact(name), Equipped::OffHand)
                         .is_some()
                 {
                     Err(CharacterMutationError::WeaponError(
-                        WeaponError::NamedArtifactsUnique,
+                        WeaponError::DuplicateArtifact,
                     ))
                 } else {
                     self.unequipped.stow_artifact(
-                        weapon_id,
+                        name,
                         NonnaturalArtifactWeapon(
                             NonnaturalArtifactWeaponNoAttunement::OneHanded(one_handed),
                             None,
@@ -748,15 +748,15 @@ impl<'view, 'source> ExaltWeapons<'source> {
                 if self
                     .equipped
                     .hands
-                    .get_weapon(WeaponId::Artifact(weapon_id), Equipped::TwoHanded)
+                    .get_weapon(WeaponName::Artifact(name), Equipped::TwoHanded)
                     .is_some()
                 {
                     Err(CharacterMutationError::WeaponError(
-                        WeaponError::NamedArtifactsUnique,
+                        WeaponError::DuplicateArtifact,
                     ))
                 } else {
                     self.unequipped.stow_artifact(
-                        weapon_id,
+                        name,
                         NonnaturalArtifactWeapon(
                             NonnaturalArtifactWeaponNoAttunement::TwoHanded(two_handed),
                             None,
@@ -770,18 +770,18 @@ impl<'view, 'source> ExaltWeapons<'source> {
 
     pub fn slot_hearthstone(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         let try_slot =
             self.unequipped
-                .slot_hearthstone(artifact_weapon_id, hearthstone_id, unslotted);
+                .slot_hearthstone(artifact_weapon_name, hearthstone_id, unslotted);
         match try_slot {
             Ok(_) => Ok(self),
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound)) => {
                 self.equipped
-                    .slot_hearthstone(artifact_weapon_id, hearthstone_id, unslotted)?;
+                    .slot_hearthstone(artifact_weapon_name, hearthstone_id, unslotted)?;
                 Ok(self)
             }
             Err(e) => Err(e),
@@ -790,35 +790,35 @@ impl<'view, 'source> ExaltWeapons<'source> {
 
     pub fn unslot_hearthstone(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         let try_unslotted = self
             .unequipped
-            .unslot_hearthstone(artifact_weapon_id, hearthstone_id);
+            .unslot_hearthstone(artifact_weapon_name, hearthstone_id);
         match try_unslotted {
             Ok(unslotted) => Ok(unslotted),
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound)) => self
                 .equipped
-                .unslot_hearthstone(artifact_weapon_id, hearthstone_id),
+                .unslot_hearthstone(artifact_weapon_name, hearthstone_id),
             Err(e) => Err(e),
         }
     }
 
     pub fn attune_artifact_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         personal_committed: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         let try_attune = self
             .unequipped
-            .attune_artifact_weapon(artifact_weapon_id, personal_committed);
+            .attune_artifact_weapon(artifact_weapon_name, personal_committed);
 
         match try_attune {
             Ok(_) => Ok(self),
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound)) => {
                 self.equipped
-                    .attune_artifact_weapon(artifact_weapon_id, personal_committed)?;
+                    .attune_artifact_weapon(artifact_weapon_name, personal_committed)?;
                 Ok(self)
             }
             Err(e) => Err(e),
@@ -827,12 +827,12 @@ impl<'view, 'source> ExaltWeapons<'source> {
 
     pub fn unattune_artifact_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
     ) -> Result<(u8, u8), CharacterMutationError> {
-        match self.unequipped.unattune_artifact_weapon(artifact_weapon_id) {
+        match self.unequipped.unattune_artifact_weapon(artifact_weapon_name) {
             Ok((peripheral, personal)) => Ok((peripheral, personal)),
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound)) => {
-                self.equipped.unattune_artifact_weapon(artifact_weapon_id)
+                self.equipped.unattune_artifact_weapon(artifact_weapon_name)
             }
             Err(e) => Err(e),
         }

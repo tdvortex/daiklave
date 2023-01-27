@@ -15,7 +15,7 @@ use crate::{
                 ArtifactWeaponView, NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement,
             },
             mundane::{MundaneWeaponView, NonnaturalMundaneWeapon},
-            ArtifactWeaponId, Equipped, Weapon, WeaponId, WeaponType,
+            Equipped, Weapon, WeaponType, WeaponName,
         },
         WeaponError,
     },
@@ -25,7 +25,7 @@ use crate::{
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct ExaltUnequippedWeapons<'source> {
     pub mundane: HashMap<&'source str, (NonnaturalMundaneWeapon<'source>, NonZeroU8)>,
-    pub artifact: HashMap<ArtifactWeaponId, NonnaturalArtifactWeapon<'source>>,
+    pub artifact: HashMap<&'source str, NonnaturalArtifactWeapon<'source>>,
 }
 
 impl<'source> From<MortalUnequippedWeapons<'source>> for ExaltUnequippedWeapons<'source> {
@@ -52,15 +52,15 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
             artifact: self
                 .artifact
                 .iter()
-                .map(|(k, v)| (*k, v.as_memo()))
+                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
                 .collect(),
         }
     }
 
-    pub fn get_weapon(&'view self, weapon_id: WeaponId<'view>) -> Option<Weapon<'source>> {
-        match weapon_id {
-            WeaponId::Unarmed => Some(crate::weapons::weapon::mundane::unarmed()),
-            WeaponId::Mundane(name) => match self.mundane.get_key_value(name)? {
+    pub fn get_weapon(&'view self, weapon_name: WeaponName<'_>) -> Option<Weapon<'source>> {
+        match weapon_name {
+            WeaponName::Unarmed => Some(crate::weapons::weapon::mundane::unarmed()),
+            WeaponName::Mundane(name) => match self.mundane.get_key_value(name)? {
                 (name, (NonnaturalMundaneWeapon::Worn(worn_weapon), count)) => {
                     Some(Weapon(WeaponType::Mundane(
                         *name,
@@ -83,29 +83,29 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
                     )))
                 }
             },
-            WeaponId::Artifact(target_id) => {
-                let nonnatural_artifact_weapon = self.artifact.get(&target_id)?;
+            WeaponName::Artifact(name) => {
+                let (&name, nonnatural_artifact_weapon) = self.artifact.get_key_value(name)?;
                 let (without_attunement, attunement) =
                     (&nonnatural_artifact_weapon.0, nonnatural_artifact_weapon.1);
 
                 match without_attunement {
                     NonnaturalArtifactWeaponNoAttunement::Worn(worn) => {
                         Some(Weapon(WeaponType::Artifact(
-                            target_id,
+                            name,
                             ArtifactWeaponView::Worn(worn.clone(), false),
                             attunement,
                         )))
                     }
                     NonnaturalArtifactWeaponNoAttunement::OneHanded(one) => {
                         Some(Weapon(WeaponType::Artifact(
-                            target_id,
+                            name,
                             ArtifactWeaponView::OneHanded(one.clone(), None),
                             attunement,
                         )))
                     }
                     NonnaturalArtifactWeaponNoAttunement::TwoHanded(two) => {
                         Some(Weapon(WeaponType::Artifact(
-                            target_id,
+                            name,
                             ArtifactWeaponView::TwoHanded(two.clone(), false),
                             attunement,
                         )))
@@ -115,14 +115,14 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> + '_ {
         self.mundane
             .iter()
-            .map(|(base_id, _)| (WeaponId::Mundane(*base_id), None))
+            .map(|(name, _)| (WeaponName::Mundane(*name), None))
             .chain(
                 self.artifact
                     .iter()
-                    .map(|(artifact_id, _)| (WeaponId::Artifact(*artifact_id), None)),
+                    .map(|(name, _)| (WeaponName::Artifact(*name), None)),
             )
     }
 
@@ -137,55 +137,47 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
         }
     }
 
-    pub fn unstow_mundane(&mut self, name: &'view str) -> Option<NonnaturalMundaneWeapon<'source>> {
-        let current_count = self.mundane.get(name)?.1;
-
-        match current_count.get() {
-            0 => {
-                // This shouldn't happen, but if it does handle it by
-                // removing the problem entry
-                self.mundane.remove(name);
-                None
-            }
-            1 => self.mundane.remove(name).map(|(weapon, _)| weapon),
-            _ => self.mundane.get_mut(name).map(|(weapon, count)| {
-                *count = NonZeroU8::new(count.get() - 1).unwrap();
-                weapon.clone()
-            }),
+    pub fn unstow_mundane(&mut self, name: &str) -> Option<(&'source str, NonnaturalMundaneWeapon<'source>)> {
+        let (_, count) = self.mundane.get_mut(name)?;
+        if let Some(new_nonzero) = NonZeroU8::new(count.get() - 1) {
+            *count = new_nonzero;
+            self.mundane.get_key_value(name).map(|(name, (weapon, _))| (*name, weapon.clone()))
+        } else {
+            self.mundane.remove_entry(name).map(|(name, (weapon, _))| (name, weapon))
         }
     }
 
     pub fn stow_artifact(
         &mut self,
-        weapon_id: ArtifactWeaponId,
+        name: &'source str,
         weapon: NonnaturalArtifactWeapon<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if let Entry::Vacant(e) = self.artifact.entry(weapon_id) {
+        if let Entry::Vacant(e) = self.artifact.entry(name) {
             e.insert(weapon);
             Ok(self)
         } else {
             Err(CharacterMutationError::WeaponError(
-                WeaponError::NamedArtifactsUnique,
+                WeaponError::DuplicateArtifact,
             ))
         }
     }
 
     pub fn unstow_artifact(
         &mut self,
-        weapon_id: ArtifactWeaponId,
-    ) -> Option<NonnaturalArtifactWeapon<'source>> {
-        self.artifact.remove(&weapon_id)
+        name: &str,
+    ) -> Option<(&'source str, NonnaturalArtifactWeapon<'source>)> {
+        self.artifact.remove_entry(name)
     }
 
     pub fn slot_hearthstone(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         *self
             .artifact
-            .get_mut(&artifact_weapon_id)
+            .get_mut(artifact_weapon_name)
             .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
             .0
             .hearthstone_slots_mut()
@@ -203,7 +195,7 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
 
     pub fn unslot_hearthstone(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         let SlottedHearthstone {
@@ -212,7 +204,7 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
             origin,
         } = self
             .artifact
-            .get_mut(&artifact_weapon_id)
+            .get_mut(artifact_weapon_name)
             .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
             .0
             .hearthstone_slots_mut()
@@ -236,12 +228,12 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
 
     pub fn attune_artifact_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         personal_committed: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         let attunement = &mut self
             .artifact
-            .get_mut(&artifact_weapon_id)
+            .get_mut(artifact_weapon_name)
             .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
             .1;
 
@@ -257,11 +249,11 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
 
     pub fn unattune_artifact_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
     ) -> Result<(u8, u8), CharacterMutationError> {
         let attunement = self
             .artifact
-            .get_mut(&artifact_weapon_id)
+            .get_mut(artifact_weapon_name)
             .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?
             .1
             .take();

@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     book_reference::BookReference,
-    charms::{CharmActionType, CharmCost, CharmCostType},
+    charms::{CharmActionType, CharmCost, CharmCostType}, artifact::{ArtifactName, ArtifactId},
 };
 
 /// A builder path to construct an Evocation.
@@ -15,9 +15,11 @@ pub mod builder;
 mod evokable_id;
 mod id;
 mod keyword;
+mod evokable_name;
 pub use evokable_id::EvokableId;
 pub use id::EvocationId;
 pub use keyword::EvocationKeyword;
+pub use evokable_name::EvokableName;
 
 use self::builder::EvocationBuilder;
 
@@ -27,7 +29,7 @@ use super::CharmId;
 /// Artifact.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Evocation {
-    evokable_id: EvokableId,
+    evokable_name: EvokableName,
     book_reference: Option<BookReference>,
     name: String,
     summary: Option<String>,
@@ -45,12 +47,12 @@ pub struct Evocation {
 
 impl Evocation {
     /// Starts a builder for a new Evocation.
-    pub fn builder(evokable_id: EvokableId, name: String) -> EvocationBuilder {
+    pub fn builder(evokable_name: EvokableName, name: String) -> EvocationBuilder {
         EvocationBuilder {
             name,
             book_reference: None,
             summary: None,
-            evokable_id,
+            evokable_name,
             resonant: None,
             dissonant: None,
             evocation_tree: HashSet::new(),
@@ -61,10 +63,15 @@ impl Evocation {
     }
 }
 
-impl Evocation {
-    /// The Id of the Artifact or Hearthstone this Evocation is drawn from.
-    pub fn evokable_id(&self) -> EvokableId {
-        self.evokable_id
+impl<'source> Evocation {
+    /// The name of the Artifact or Hearthstone this Evocation is drawn from.
+    pub fn evokable_id(&'source self) -> EvokableId<'source> {
+        match &self.evokable_name {
+            EvokableName::Hearthstone(hearthstone_id) => EvokableId::Hearthstone(*hearthstone_id),
+            EvokableName::Artifact(ArtifactName::Weapon(weapon_name)) => EvokableId::Artifact(ArtifactId::Weapon(weapon_name.as_str())),
+            EvokableName::Artifact(ArtifactName::Armor(armor_id)) => EvokableId::Artifact(ArtifactId::Armor(*armor_id)),
+            EvokableName::Artifact(ArtifactName::Wonder(wonder_id)) => EvokableId::Artifact(ArtifactId::Wonder(*wonder_id)),
+        }        
     }
 
     /// The book reference for this Evocation.

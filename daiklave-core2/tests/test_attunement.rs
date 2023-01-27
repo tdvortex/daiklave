@@ -1,7 +1,7 @@
 use daiklave_core2::{
     abilities::AbilityName,
     armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, ArmorWeightClass, BaseArmorId},
-    artifact::{wonders::WonderId, Artifact, ArtifactId, MagicMaterial},
+    artifact::{wonders::WonderId, Artifact, MagicMaterial, ArtifactName},
     book_reference::{Book, BookReference},
     exaltation::exalt::{
         essence::{MotePoolName, UncommitMotes},
@@ -11,7 +11,7 @@ use daiklave_core2::{
         },
     },
     unique_id::UniqueId,
-    weapons::weapon::{ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass},
+    weapons::weapon::{OptionalWeaponTag, Weapon, WeaponWeightClass},
     CharacterEventSource, CharacterMutation,
 };
 
@@ -104,7 +104,6 @@ fn test_attunement() {
         .unwrap();
     event_source
         .apply_mutation(CharacterMutation::AddArtifact(Artifact::Weapon(
-            ArtifactWeaponId(UniqueId::Placeholder(1)),
             spring_razor,
         )))
         .unwrap();
@@ -118,7 +117,7 @@ fn test_attunement() {
     // Mortals can't attune to anything
     assert!(event_source
         .apply_mutation(CharacterMutation::AttuneArtifact(
-            ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))),
+            ArtifactName::Wonder(WonderId(UniqueId::Placeholder(1))),
             MotePoolName::Peripheral
         ))
         .is_err());
@@ -144,7 +143,7 @@ fn test_attunement() {
     // Can't attune to a missing artifact
     assert!(event_source
         .apply_mutation(CharacterMutation::AttuneArtifact(
-            ArtifactId::Wonder(WonderId(UniqueId::Placeholder(666))),
+            ArtifactName::Wonder(WonderId(UniqueId::Placeholder(666))),
             MotePoolName::Peripheral
         ))
         .is_err());
@@ -152,19 +151,19 @@ fn test_attunement() {
     // Exalts can attune to anything with an attunement cost
     event_source
         .apply_mutation(CharacterMutation::AttuneArtifact(
-            ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))),
+            ArtifactName::Wonder(WonderId(UniqueId::Placeholder(1))),
             MotePoolName::Peripheral,
         ))
         .unwrap();
     event_source
         .apply_mutation(CharacterMutation::AttuneArtifact(
-            ArtifactId::Weapon(ArtifactWeaponId(UniqueId::Placeholder(1))),
+            ArtifactName::Weapon("Spring Razor".to_owned()),
             MotePoolName::Peripheral,
         ))
         .unwrap();
     let character = event_source
         .apply_mutation(CharacterMutation::AttuneArtifact(
-            ArtifactId::Armor(ArtifactArmorId(UniqueId::Placeholder(1))),
+            ArtifactName::Armor(ArtifactArmorId(UniqueId::Placeholder(1))),
             MotePoolName::Peripheral,
         ))
         .unwrap();
@@ -198,7 +197,7 @@ fn test_attunement() {
     // Exalts cannot attune to no-attunement Wonders
     assert!(event_source
         .apply_mutation(CharacterMutation::AttuneArtifact(
-            ArtifactId::Wonder(WonderId(UniqueId::Placeholder(2))),
+            ArtifactName::Wonder(WonderId(UniqueId::Placeholder(2))),
             MotePoolName::Peripheral,
         ))
         .is_err());
@@ -206,21 +205,19 @@ fn test_attunement() {
     // Exalts can unattune from everything they've attuned to
     event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            UncommitMotes::UnattuneArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1)))),
+            UncommitMotes::UnattuneArtifact(ArtifactName::Wonder(WonderId(UniqueId::Placeholder(1)))),
         ))
         .unwrap();
     event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            UncommitMotes::UnattuneArtifact(ArtifactId::Armor(ArtifactArmorId(
+            UncommitMotes::UnattuneArtifact(ArtifactName::Armor(ArtifactArmorId(
                 UniqueId::Placeholder(1),
             ))),
         ))
         .unwrap();
     let character = event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            UncommitMotes::UnattuneArtifact(ArtifactId::Weapon(ArtifactWeaponId(
-                UniqueId::Placeholder(1),
-            ))),
+            UncommitMotes::UnattuneArtifact(ArtifactName::Weapon("Spring Razor".to_owned())),
         ))
         .unwrap();
 
@@ -257,7 +254,7 @@ fn test_attunement() {
     // Can't unattune from an artifact that is already unattuned
     assert!(event_source
         .apply_mutation(CharacterMutation::UncommitMotes(
-            UncommitMotes::UnattuneArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))))
+            UncommitMotes::UnattuneArtifact(ArtifactName::Wonder(WonderId(UniqueId::Placeholder(1))))
         ))
         .is_err());
 }

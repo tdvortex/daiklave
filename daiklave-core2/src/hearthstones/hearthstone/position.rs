@@ -7,7 +7,7 @@ use super::{
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum HearthstonePosition<'source> {
-    Slotted(ArtifactId, SlottedHearthstone<'source>),
+    Slotted(ArtifactId<'source>, SlottedHearthstone<'source>),
     Unslotted(HearthstoneId, UnslottedHearthstone<'source>),
 }
 
@@ -26,7 +26,7 @@ impl<'source> HearthstonePosition<'source> {
         }
     }
 
-    pub fn slotted_into(&self) -> Option<ArtifactId> {
+    pub fn slotted_into(&self) -> Option<ArtifactId<'source>> {
         match self {
             HearthstonePosition::Slotted(artifact_id, _) => Some(*artifact_id),
             HearthstonePosition::Unslotted(_, _) => None,

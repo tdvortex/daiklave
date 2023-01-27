@@ -1,7 +1,7 @@
 use std::ops::Deref;
 
 use crate::{
-    hearthstones::SlottedHearthstone, weapons::weapon::artifact::named::NamedArtifactWeapon,
+    hearthstones::SlottedHearthstone, weapons::weapon::artifact::traits::ArtifactWeaponTraits,
 };
 
 mod memo;
@@ -9,10 +9,10 @@ mod memo;
 pub use memo::NaturalArtifactWeapon;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct NaturalArtifactWeaponView<'source>(pub(crate) NamedArtifactWeapon<'source>);
+pub(crate) struct NaturalArtifactWeaponView<'source>(pub(crate) ArtifactWeaponTraits<'source>);
 
 impl<'source> Deref for NaturalArtifactWeaponView<'source> {
-    type Target = NamedArtifactWeapon<'source>;
+    type Target = ArtifactWeaponTraits<'source>;
 
     fn deref(&self) -> &Self::Target {
         &self.0

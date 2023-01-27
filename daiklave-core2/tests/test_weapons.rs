@@ -1,11 +1,10 @@
 use daiklave_core2::{
-    artifact::{Artifact, ArtifactId, MagicMaterial},
+    artifact::{Artifact, MagicMaterial, ArtifactName},
     attributes::AttributeName,
     book_reference::{Book, BookReference},
-    unique_id::UniqueId,
     weapons::weapon::{
-        ArtifactWeaponId, AttackRange, EquipHand, Equipped, OptionalWeaponTag, RangeBand, Weapon,
-        WeaponId, WeaponName, WeaponTag, WeaponWeightClass,
+        AttackRange, EquipHand, Equipped, OptionalWeaponTag, RangeBand, Weapon,
+        WeaponNameMutation, WeaponTag, WeaponWeightClass, WeaponName,
     },
     CharacterEventSource, CharacterMutation,
 };
@@ -17,10 +16,9 @@ fn test_weapons_event_source() {
     // Default characters have the Unarmed weapon
     let unarmed = character_view
         .weapons()
-        .get(WeaponId::Unarmed, Some(Equipped::Natural))
+        .get(WeaponName::Unarmed, Some(Equipped::Natural))
         .unwrap();
-    assert_eq!(unarmed.id(), WeaponId::Unarmed);
-    assert_eq!(unarmed.name(), "Unarmed");
+    assert_eq!(unarmed.name(), WeaponName::Unarmed);
     assert_eq!(
         unarmed.book_reference(),
         Some(BookReference::new(Book::CoreRulebook, 582))
@@ -48,18 +46,18 @@ fn test_weapons_event_source() {
     // Natural weapons are always equipped
     assert_eq!(unarmed.is_equipped(), Some(Equipped::Natural));
     assert!(character_view
-        .unequip_weapon(WeaponId::Unarmed, Equipped::Natural)
+        .unequip_weapon(WeaponName::Unarmed, Equipped::Natural)
         .is_err());
     assert!(character_view
-        .equip_weapon(&WeaponName::Unarmed, None)
+        .equip_weapon(WeaponName::Unarmed, None)
         .is_err());
 
     // Cannot equip or unequip missing weapons
     assert!(character_view
-        .unequip_weapon(WeaponId::Mundane("Missing weapon"), Equipped::MainHand)
+        .unequip_weapon(WeaponName::Mundane("Missing weapon"), Equipped::MainHand)
         .is_err());
     assert!(character_view
-        .equip_weapon(&WeaponName::Mundane("Missing weapon".to_owned()), None)
+        .equip_weapon(WeaponName::Mundane("Missing weapon"), None)
         .is_err());
 
     // Add some additional mundane weapons
@@ -161,7 +159,7 @@ fn test_weapons_event_source() {
     assert_eq!(
         character_view
             .weapons()
-            .get(WeaponId::Mundane("Hook Sword"), None)
+            .get(WeaponName::Mundane("Hook Sword"), None)
             .unwrap()
             .quantity(),
         2
@@ -169,10 +167,10 @@ fn test_weapons_event_source() {
 
     // Worn weapons can be equipped and unequipped without needing hands
     let mutation =
-        CharacterMutation::EquipWeapon(WeaponName::Mundane("Tiger Claws".to_owned()), None);
+        CharacterMutation::EquipWeapon(WeaponNameMutation::Mundane("Tiger Claws".to_owned()), None);
     event_source.apply_mutation(mutation).unwrap();
     let mutation = CharacterMutation::UnequipWeapon(
-        WeaponName::Mundane("Tiger Claws".to_owned()),
+        WeaponNameMutation::Mundane("Tiger Claws".to_owned()),
         Equipped::Worn,
     );
     event_source.apply_mutation(mutation).unwrap();
@@ -180,15 +178,15 @@ fn test_weapons_event_source() {
     // Can wield one handed weapons as main only, two different, off hand only, or paired
     [
         CharacterMutation::EquipWeapon(
-            WeaponName::Mundane("Hook Sword".to_owned()),
+            WeaponNameMutation::Mundane("Hook Sword".to_owned()),
             Some(EquipHand::OffHand),
         ),
         CharacterMutation::EquipWeapon(
-            WeaponName::Mundane("Hook Sword".to_owned()),
+            WeaponNameMutation::Mundane("Hook Sword".to_owned()),
             Some(EquipHand::MainHand),
         ),
         CharacterMutation::EquipWeapon(
-            WeaponName::Mundane("Shield".to_owned()),
+            WeaponNameMutation::Mundane("Shield".to_owned()),
             Some(EquipHand::OffHand),
         ),
     ]
@@ -202,7 +200,7 @@ fn test_weapons_event_source() {
     assert_eq!(
         character_view
             .weapons()
-            .get(WeaponId::Mundane("Hook Sword"), Some(Equipped::MainHand))
+            .get(WeaponName::Mundane("Hook Sword"), Some(Equipped::MainHand))
             .unwrap()
             .quantity(),
         1
@@ -210,7 +208,7 @@ fn test_weapons_event_source() {
     assert_eq!(
         character_view
             .weapons()
-            .get(WeaponId::Mundane("Shield"), Some(Equipped::OffHand))
+            .get(WeaponName::Mundane("Shield"), Some(Equipped::OffHand))
             .unwrap()
             .quantity(),
         1
@@ -218,7 +216,7 @@ fn test_weapons_event_source() {
 
     // Can't equip a two-handed melee weapon if Strength is less than 3
     let mutation =
-        CharacterMutation::EquipWeapon(WeaponName::Mundane("Great Sword".to_owned()), None);
+        CharacterMutation::EquipWeapon(WeaponNameMutation::Mundane("Great Sword".to_owned()), None);
     assert!(event_source.apply_mutation(mutation).is_err());
 
     let mutation = CharacterMutation::SetAttribute(AttributeName::Strength, 3);
@@ -226,12 +224,11 @@ fn test_weapons_event_source() {
 
     // Equipping a two handed weapon unequips all one-handed weapons
     let mutation =
-        CharacterMutation::EquipWeapon(WeaponName::Mundane("Great Sword".to_owned()), None);
+        CharacterMutation::EquipWeapon(WeaponNameMutation::Mundane("Great Sword".to_owned()), None);
     event_source.apply_mutation(mutation).unwrap();
 
     // Create and add a unique artifact weapon
     let mutation = CharacterMutation::AddArtifact(Artifact::Weapon(
-        ArtifactWeaponId(UniqueId::Placeholder(1)),
         Weapon::artifact("Volcano Cutter".to_owned())
             .base_artifact(
                 Weapon::base("Grand Daiklave".to_owned())
@@ -268,7 +265,7 @@ fn test_weapons_event_source() {
         .unwrap();
     assert!(character
         .weapons()
-        .get(WeaponId::Mundane("Great Sword"), None)
+        .get(WeaponName::Mundane("Great Sword"), None)
         .is_some());
     event_source.undo().unwrap();
 
@@ -285,8 +282,6 @@ fn test_weapons_event_source() {
     assert!(event_source.apply_mutation(mutation).is_err());
 
     // Check you can remove an unequipped artifact weapon
-    let mutation = CharacterMutation::RemoveArtifact(ArtifactId::Weapon(ArtifactWeaponId(
-        UniqueId::Placeholder(1),
-    )));
+    let mutation = CharacterMutation::RemoveArtifact(ArtifactName::Weapon("Volcano Cutter".to_owned()));
     event_source.apply_mutation(mutation).unwrap();
 }

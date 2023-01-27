@@ -9,7 +9,7 @@ use super::{
 
 /// A magical weapon, like a daiklave or a direlash.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ArtifactWeapon(pub(crate) ArtifactWeaponHandedness);
+pub struct ArtifactWeapon(pub(crate) String, pub(crate) ArtifactWeaponHandedness);
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ArtifactWeaponHandedness {

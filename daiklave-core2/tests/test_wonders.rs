@@ -1,5 +1,5 @@
 use daiklave_core2::{
-    artifact::{wonders::WonderId, Artifact, ArtifactId},
+    artifact::{wonders::WonderId, Artifact, ArtifactName},
     book_reference::{Book, BookReference},
     unique_id::UniqueId,
     CharacterEventSource, CharacterMutation,
@@ -48,7 +48,7 @@ fn test_wonders() {
 
     // Remove the wonder
     let mutation =
-        CharacterMutation::RemoveArtifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))));
+        CharacterMutation::RemoveArtifact(ArtifactName::Wonder(WonderId(UniqueId::Placeholder(1))));
     event_source.apply_mutation(mutation).unwrap();
     let character = event_source.as_character().unwrap();
 

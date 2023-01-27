@@ -6,7 +6,7 @@ pub use error::CharacterMutationError;
 use crate::{
     abilities::AbilityNameVanilla,
     armor::armor_item::{mundane::MundaneArmor, ArmorId, BaseArmorId},
-    artifact::{Artifact, ArtifactId},
+    artifact::{Artifact, ArtifactName},
     attributes::AttributeName,
     charms::charm::{CharmId, CharmMutation},
     exaltation::exalt::{
@@ -30,7 +30,7 @@ use crate::{
         },
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
-    weapons::weapon::{mundane::AddMundaneWeapon, EquipHand, Equipped, WeaponName},
+    weapons::weapon::{mundane::AddMundaneWeapon, EquipHand, Equipped, WeaponNameMutation},
 };
 
 /// The API for the character, expressed as an owned struct. Each mutation has
@@ -99,14 +99,14 @@ pub enum CharacterMutation {
     RemoveMundaneWeapon(String),
     /// Equips the specific weapon. For a OneHanded weapon, will equip into
     /// the specified hand, otherwise the parameter is ignored.
-    EquipWeapon(WeaponName, Option<EquipHand>),
+    EquipWeapon(WeaponNameMutation, Option<EquipHand>),
     /// Unequips the specific weapon at the specified equipped position.
-    UnequipWeapon(WeaponName, Equipped),
+    UnequipWeapon(WeaponNameMutation, Equipped),
     /// Add an artifact to the character, which may be a weapon, armor item,
     /// warstrider, or wonder.
     AddArtifact(Artifact),
     /// Removes an artifact from the character.
-    RemoveArtifact(ArtifactId),
+    RemoveArtifact(ArtifactName),
     /// Adds a piece of mundane armor.
     AddMundaneArmor(BaseArmorId, MundaneArmor),
     /// Removes a piece of mundane armor from the character.
@@ -125,14 +125,14 @@ pub enum CharacterMutation {
     /// Remove a demense (without a manse) from a character.
     RemoveDemense(String),
     /// Slot a hearthstone into an artifact.
-    SlotHearthstone(ArtifactId, HearthstoneId),
+    SlotHearthstone(ArtifactName, HearthstoneId),
     /// Unslot a hearthstone from its current position.
     UnslotHearthstone(HearthstoneId),
     /// Remove a hearthstone from the character, unslotting it in the process
     /// if needed.
     RemoveHearthstone(HearthstoneId),
     /// Attune to an artifact, committing motes to its ongoing use.
-    AttuneArtifact(ArtifactId, MotePoolName),
+    AttuneArtifact(ArtifactName, MotePoolName),
     /// Add a stackable merit with an id for this instance and detail
     AddStackableMerit(StackableMeritId, StackableMerit),
     /// Remove a stackable merit

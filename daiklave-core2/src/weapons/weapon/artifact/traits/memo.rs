@@ -5,11 +5,10 @@ use crate::{
     weapons::weapon::base::BaseWeapon,
 };
 
-use super::NamedArtifactWeapon;
+use super::ArtifactWeaponTraits;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct NamedArtifactWeaponMemo {
-    pub(crate) name: String,
+pub struct ArtifactWeaponTraitsMemo {
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) merit_dots: u8,
     pub(crate) magic_material: MagicMaterial,
@@ -20,10 +19,9 @@ pub struct NamedArtifactWeaponMemo {
     pub(crate) hearthstone_slots: Vec<Option<SlottedHearthstoneMemo>>,
 }
 
-impl<'source> NamedArtifactWeaponMemo {
-    pub fn as_ref(&'source self) -> NamedArtifactWeapon<'source> {
-        NamedArtifactWeapon {
-            name: self.name.as_str(),
+impl<'source> ArtifactWeaponTraitsMemo {
+    pub fn as_ref(&'source self) -> ArtifactWeaponTraits<'source> {
+        ArtifactWeaponTraits {
             book_reference: self.book_reference,
             merit_dots: self.merit_dots,
             base_weapon_name: self.base_weapon_name.as_str(),

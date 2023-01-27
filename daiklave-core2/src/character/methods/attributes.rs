@@ -31,13 +31,13 @@ impl<'source> Character<'source> {
             };
 
             if attribute_name == AttributeName::Strength && dots < 3 {
-                let maybe_weapon_id = self.weapons().iter().find_map(|(weapon_id, equipped)| {
+                let maybe_weapon_name = self.weapons().iter().find_map(|(weapon_name, equipped)| {
                     if let Some(Equipped::TwoHanded) = equipped {
-                        self.weapons().get(weapon_id, equipped).and_then(|weapon| {
+                        self.weapons().get(weapon_name, equipped).and_then(|weapon| {
                             if weapon.weight_class() == WeaponWeightClass::Heavy
                                 && weapon.damage(AttackRange::Melee).is_some()
                             {
-                                Some(weapon.id())
+                                Some(weapon.name())
                             } else {
                                 None
                             }
@@ -47,8 +47,8 @@ impl<'source> Character<'source> {
                     }
                 });
 
-                if let Some(weapon_id) = maybe_weapon_id {
-                    self.unequip_weapon(weapon_id, Equipped::TwoHanded)?;
+                if let Some(weapon_name) = maybe_weapon_name {
+                    self.unequip_weapon(weapon_name, Equipped::TwoHanded)?;
                 }
             }
 

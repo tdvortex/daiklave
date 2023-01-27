@@ -3,7 +3,7 @@ use std::num::NonZeroU8;
 use daiklave_core2::{
     abilities::{AbilityName, AbilityNameVanilla},
     armor::armor_item::{artifact::ArtifactArmorId, ArmorItem, ArmorWeightClass, BaseArmorId},
-    artifact::{wonders::WonderId, Artifact, ArtifactId, MagicMaterial},
+    artifact::{wonders::WonderId, Artifact, ArtifactId, MagicMaterial, ArtifactName},
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     exaltation::exalt::exalt_type::solar::{
@@ -26,7 +26,7 @@ use daiklave_core2::{
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
     unique_id::UniqueId,
-    weapons::weapon::{ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass},
+    weapons::weapon::{OptionalWeaponTag, Weapon, WeaponWeightClass},
     CharacterEventSource, CharacterMutation,
 };
 
@@ -41,7 +41,6 @@ fn test_merits() {
     // Artifact weapon
     // Create and add a unique artifact weapon
     let mutation = CharacterMutation::AddArtifact(Artifact::Weapon(
-        ArtifactWeaponId(UniqueId::Placeholder(1)),
         Weapon::artifact("Volcano Cutter".to_owned())
             .base_artifact(
                 Weapon::base("Grand Daiklave".to_owned())
@@ -337,15 +336,11 @@ fn test_merits() {
     let character = event_source.as_character().unwrap();
     let merits = character.merits();
     let volcano_cutter = merits
-        .get(MeritId::Artifact(ArtifactId::Weapon(ArtifactWeaponId(
-            UniqueId::Placeholder(1),
-        ))))
+        .get(MeritId::Artifact(ArtifactId::Weapon("Volcano Cutter")))
         .unwrap();
     assert_eq!(
         volcano_cutter.id(),
-        MeritId::Artifact(ArtifactId::Weapon(ArtifactWeaponId(UniqueId::Placeholder(
-            1
-        ))))
+        MeritId::Artifact(ArtifactId::Weapon("Volcano Cutter"))
     );
     assert_eq!(volcano_cutter.template_name(), "Artifact");
     assert_eq!(
@@ -723,9 +718,9 @@ fn test_merits() {
 
     // Remove the artifacts
     [
-        ArtifactId::Weapon(ArtifactWeaponId(UniqueId::Placeholder(1))),
-        ArtifactId::Armor(ArtifactArmorId(UniqueId::Placeholder(1))),
-        ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))),
+        ArtifactName::Weapon("Volcano Cutter".to_owned()),
+        ArtifactName::Armor(ArtifactArmorId(UniqueId::Placeholder(1))),
+        ArtifactName::Wonder(WonderId(UniqueId::Placeholder(1))),
     ]
     .into_iter()
     .map(|artifact_id| CharacterMutation::RemoveArtifact(artifact_id))

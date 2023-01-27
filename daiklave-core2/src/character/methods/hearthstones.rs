@@ -1,7 +1,7 @@
 use std::collections::hash_map::Entry;
 
 use crate::{
-    artifact::ArtifactId,
+    artifact::{ArtifactId, ArtifactName},
     hearthstones::{
         hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId, HearthstoneOrigin,
         HearthstoneStability, Hearthstones, UnslottedHearthstone,
@@ -90,25 +90,32 @@ impl<'view, 'source> Character<'source> {
     /// Slots a hearthstone into an artifact
     pub fn slot_hearthstone(
         &mut self,
-        artifact_id: ArtifactId,
+        artifact_name: &ArtifactName,
         hearthstone_id: HearthstoneId,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let maybe_slotted_into_id = self
-            .hearthstones()
-            .get(hearthstone_id)
-            .ok_or(CharacterMutationError::HearthstoneError(
-                HearthstoneError::NotFound,
-            ))?
-            .slotted_into();
+        let artifact_id = match artifact_name {
+            ArtifactName::Weapon(name) => ArtifactId::Weapon(name.as_str()),
+            ArtifactName::Armor(id) => ArtifactId::Armor(*id),
+            ArtifactName::Wonder(id) => ArtifactId::Wonder(*id),
+        };
+
+        let hearthstone = self
+        .hearthstones()
+        .get(hearthstone_id)
+        .ok_or(CharacterMutationError::HearthstoneError(
+            HearthstoneError::NotFound,
+        ))?;
+
+        let maybe_slotted_into_id = hearthstone.slotted_into();
         if maybe_slotted_into_id == Some(artifact_id) {
             return Ok(self);
         }
 
         let unslotted = if let Some(slotted_into_id) = maybe_slotted_into_id {
             match slotted_into_id {
-                ArtifactId::Weapon(artifact_weapon_id) => self
+                ArtifactId::Weapon(artifact_weapon_name) => self
                     .exaltation
-                    .unslot_hearthstone_from_weapon(artifact_weapon_id, hearthstone_id)?,
+                    .unslot_hearthstone_from_weapon(artifact_weapon_name, hearthstone_id)?,
                 ArtifactId::Armor(artifact_armor_id) => self
                     .exaltation
                     .unslot_hearthstone_from_armor(artifact_armor_id, hearthstone_id)?,

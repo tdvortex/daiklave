@@ -2,7 +2,7 @@ use daiklave_core2::{
     armor::armor_item::{
         artifact::ArtifactArmorId, ArmorId, ArmorItem, ArmorTag, ArmorWeightClass, BaseArmorId,
     },
-    artifact::{Artifact, ArtifactId, MagicMaterial},
+    artifact::{Artifact, MagicMaterial, ArtifactName},
     book_reference::{Book, BookReference},
     unique_id::UniqueId,
     CharacterEventSource, CharacterMutation,
@@ -125,7 +125,7 @@ fn test_armor() {
     );
 
     // Remove the artifact armor
-    let mutation = CharacterMutation::RemoveArtifact(ArtifactId::Armor(ArtifactArmorId(
+    let mutation = CharacterMutation::RemoveArtifact(ArtifactName::Armor(ArtifactArmorId(
         UniqueId::Placeholder(1),
     )));
     event_source.apply_mutation(mutation).unwrap();

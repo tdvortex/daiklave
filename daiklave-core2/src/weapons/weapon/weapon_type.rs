@@ -1,7 +1,6 @@
 use std::num::NonZeroU8;
 
 use crate::{
-    artifact::ArtifactId,
     book_reference::{Book, BookReference},
     exaltation::exalt::essence::MoteCommitment,
     hearthstones::hearthstone::Hearthstone,
@@ -9,24 +8,16 @@ use crate::{
 
 use super::{
     artifact::ArtifactWeaponView, base::BaseWeapon, equipped::Equipped, mundane::MundaneWeaponView,
-    ArtifactWeaponId, AttackRange, WeaponId, WeaponTag, WeaponWeightClass,
+    AttackRange, WeaponTag, WeaponWeightClass, WeaponName,
 };
 
 pub(crate) enum WeaponType<'source> {
     Unarmed,
     Mundane(&'source str, MundaneWeaponView<'source>, NonZeroU8),
-    Artifact(ArtifactWeaponId, ArtifactWeaponView<'source>, Option<u8>),
+    Artifact(&'source str, ArtifactWeaponView<'source>, Option<u8>),
 }
 
 impl<'view, 'source> WeaponType<'source> {
-    pub fn id(&self) -> WeaponId<'source> {
-        match self {
-            WeaponType::Mundane(base_id, _, _) => WeaponId::Mundane(*base_id),
-            WeaponType::Artifact(artifact_id, _, _) => WeaponId::Artifact(*artifact_id),
-            WeaponType::Unarmed => WeaponId::Unarmed,
-        }
-    }
-
     pub fn is_artifact(&self) -> bool {
         matches!(self, WeaponType::Artifact(_, _, _))
     }
@@ -46,14 +37,14 @@ impl<'view, 'source> WeaponType<'source> {
         }
     }
 
-    pub fn mote_commitment(&self) -> Option<(ArtifactWeaponId, MoteCommitment)> {
+    pub fn mote_commitment(&self) -> Option<(&'source str, MoteCommitment)> {
         match self {
             WeaponType::Mundane(_, _, _) | WeaponType::Unarmed => None,
-            WeaponType::Artifact(artifact_weapon_id, _artifact_weapon, maybe_personal) => {
+            WeaponType::Artifact(name, _artifact_weapon, maybe_personal) => {
                 let personal = *maybe_personal.as_ref()?;
                 let peripheral = 5 - 5.min(personal);
                 Some((
-                    *artifact_weapon_id,
+                    *name,
                     MoteCommitment {
                         peripheral,
                         personal,
@@ -63,11 +54,11 @@ impl<'view, 'source> WeaponType<'source> {
         }
     }
 
-    pub fn name(&'view self) -> &'source str {
+    pub fn name(&'view self) -> WeaponName<'source> {
         match self {
-            WeaponType::Mundane(name, _, _) => *name,
-            WeaponType::Artifact(_, artifact, _) => artifact.name(),
-            WeaponType::Unarmed => "Unarmed",
+            WeaponType::Mundane(name, _, _) => WeaponName::Mundane(*name),
+            WeaponType::Artifact(name, _, _) => WeaponName::Artifact(*name),
+            WeaponType::Unarmed => WeaponName::Unarmed,
         }
     }
 
@@ -113,8 +104,8 @@ impl<'view, 'source> WeaponType<'source> {
     pub fn slotted_hearthstones(&'view self) -> impl Iterator<Item = Hearthstone<'source>> {
         match self {
             WeaponType::Mundane(_, _, _) | WeaponType::Unarmed => Vec::new().into_iter(),
-            WeaponType::Artifact(artifact_weapon_id, artifact, _) => (**artifact)
-                .slotted_hearthstones(ArtifactId::Weapon(*artifact_weapon_id))
+            WeaponType::Artifact(name, artifact, _) => (**artifact)
+                .slotted_hearthstones(*name)
                 .collect::<Vec<Hearthstone<'source>>>()
                 .into_iter(),
         }
@@ -219,7 +210,7 @@ impl<'view, 'source> WeaponType<'source> {
             WeaponType::Unarmed => true,
             WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeaponView::Natural(_)),
             WeaponType::Artifact(_, artifact, _) => {
-                matches!(artifact, ArtifactWeaponView::Natural(_))
+                matches!(artifact, ArtifactWeaponView::Natural(..))
             }
         }
     }

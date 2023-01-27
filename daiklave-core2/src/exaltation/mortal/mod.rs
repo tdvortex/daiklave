@@ -36,7 +36,7 @@ use crate::{
         weapon::{
             artifact::ArtifactWeaponView,
             mundane::{HandlessMundaneWeapon, MundaneWeapon},
-            ArtifactWeaponId, EquipHand, Equipped, Weapon, WeaponId, WeaponName,
+            EquipHand, Equipped, Weapon, WeaponName,
         },
         WeaponError,
     },
@@ -152,21 +152,21 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn get_weapon(
         &self,
-        weapon_id: WeaponId,
+        name: WeaponName<'_>,
         equipped: Option<Equipped>,
     ) -> Option<Weapon<'source>> {
-        if matches!(weapon_id, WeaponId::Unarmed) {
+        if matches!(name, WeaponName::Unarmed) {
             if matches!(equipped, Some(Equipped::Natural)) {
                 Some(crate::weapons::weapon::mundane::unarmed())
             } else {
                 None
             }
         } else {
-            self.weapons.get_weapon(weapon_id, equipped)
+            self.weapons.get_weapon(name, equipped)
         }
     }
 
-    pub fn iter_weapons(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> + '_ {
+    pub fn iter_weapons(&self) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> + '_ {
         self.weapons.iter()
     }
 
@@ -181,7 +181,7 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn equip_weapon(
         &mut self,
-        name: &'source WeaponName,
+        name: WeaponName<'_>,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.equip_weapon(name, hand)?;
@@ -189,31 +189,31 @@ impl<'view, 'source> Mortal<'source> {
     }
 
     pub fn unequip_weapon(
-        &'view mut self,
-        weapon_id: WeaponId<'view>,
+        &mut self,
+        weapon_name: WeaponName<'_>,
         equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.weapons.unequip_weapon(weapon_id, equipped)?;
+        self.weapons.unequip_weapon(weapon_name, equipped)?;
         Ok(self)
     }
 
     pub fn add_artifact_weapon(
         &mut self,
-        weapon_id: ArtifactWeaponId,
+        name: &'source str,
         weapon: ArtifactWeaponView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.weapons.add_artifact_weapon(weapon_id, weapon)?;
+        self.weapons.add_artifact_weapon(name, weapon)?;
         Ok(self)
     }
 
     pub fn remove_artifact_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons
             .unequipped
             .artifact
-            .remove(&artifact_weapon_id)
+            .remove(name)
             .ok_or(CharacterMutationError::WeaponError(WeaponError::NotFound))?;
         Ok(self)
     }
@@ -334,12 +334,12 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn slot_hearthstone_into_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons
-            .slot_hearthstone(artifact_weapon_id, hearthstone_id, unslotted)?;
+            .slot_hearthstone(artifact_weapon_name, hearthstone_id, unslotted)?;
         Ok(self)
     }
 
@@ -367,11 +367,11 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn unslot_hearthstone_from_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         self.weapons
-            .unslot_hearthstone(artifact_weapon_id, hearthstone_id)
+            .unslot_hearthstone(artifact_weapon_name, hearthstone_id)
     }
 
     pub fn unslot_hearthstone_from_armor(

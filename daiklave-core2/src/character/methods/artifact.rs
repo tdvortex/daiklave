@@ -1,5 +1,5 @@
 use crate::{
-    artifact::{wonders::Wonders, Artifact, ArtifactId, MagicMaterial, Sonance},
+    artifact::{wonders::Wonders, Artifact, MagicMaterial, Sonance, ArtifactName, ArtifactId},
     exaltation::{exalt::essence::MotePoolName, Exaltation},
     Character, CharacterMutationError,
 };
@@ -16,9 +16,9 @@ impl<'view, 'source> Character<'source> {
         artifact: &'source Artifact,
     ) -> Result<&mut Self, CharacterMutationError> {
         match artifact {
-            Artifact::Weapon(artifact_weapon_id, artifact_memo) => {
+            Artifact::Weapon(artifact_memo) => {
                 self.exaltation
-                    .add_artifact_weapon(*artifact_weapon_id, artifact_memo.0.as_ref())?;
+                    .add_artifact_weapon(artifact_memo.0.as_str(), artifact_memo.1.as_ref())?;
             }
             Artifact::Armor(artifact_armor_id, artifact_memo) => {
                 self.exaltation
@@ -34,17 +34,17 @@ impl<'view, 'source> Character<'source> {
     /// Removes an artifact from the character.
     pub fn remove_artifact(
         &mut self,
-        artifact_id: ArtifactId,
+        artifact_name: &ArtifactName,
     ) -> Result<&mut Self, CharacterMutationError> {
-        match artifact_id {
-            ArtifactId::Weapon(artifact_weapon_id) => {
-                self.exaltation.remove_artifact_weapon(artifact_weapon_id)?;
+        match artifact_name {
+            ArtifactName::Weapon(artifact_weapon_name) => {
+                self.exaltation.remove_artifact_weapon(artifact_weapon_name.as_str())?;
             }
-            ArtifactId::Armor(artifact_armor_id) => {
-                self.exaltation.remove_artifact_armor(artifact_armor_id)?;
+            ArtifactName::Armor(artifact_armor_id) => {
+                self.exaltation.remove_artifact_armor(*artifact_armor_id)?;
             }
-            ArtifactId::Wonder(wonder_id) => {
-                self.exaltation.remove_wonder(wonder_id)?;
+            ArtifactName::Wonder(wonder_id) => {
+                self.exaltation.remove_wonder(*wonder_id)?;
             }
         }
         // May lose evocations along with the artifact
@@ -55,7 +55,7 @@ impl<'view, 'source> Character<'source> {
     /// Attunes to the specified artifact.
     pub fn attune_artifact(
         &mut self,
-        artifact_id: ArtifactId,
+        artifact_id: ArtifactId<'_>,
         first: MotePoolName,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.attune_artifact(artifact_id, first)?;

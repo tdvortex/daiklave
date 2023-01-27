@@ -6,7 +6,7 @@ use std::ops::Deref;
 pub(crate) use memo::HandlessArtifactWeaponMemo;
 
 use crate::{
-    hearthstones::SlottedHearthstone, weapons::weapon::artifact::named::NamedArtifactWeapon,
+    hearthstones::SlottedHearthstone, weapons::weapon::artifact::traits::ArtifactWeaponTraits,
 };
 
 pub(crate) use no_attunement::{
@@ -32,7 +32,7 @@ impl<'source> HandlessArtifactWeapon<'source> {
 }
 
 impl<'source> Deref for HandlessArtifactWeapon<'source> {
-    type Target = NamedArtifactWeapon<'source>;
+    type Target = ArtifactWeaponTraits<'source>;
 
     fn deref(&self) -> &Self::Target {
         &self.0

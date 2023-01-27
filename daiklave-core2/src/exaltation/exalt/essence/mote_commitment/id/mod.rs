@@ -6,7 +6,7 @@ use crate::artifact::ArtifactId;
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub enum MoteCommitmentId<'source> {
     /// Attuning to an artifact requires a mote commitment
-    AttunedArtifact(ArtifactId),
+    AttunedArtifact(ArtifactId<'source>),
     /// Other effects may also require mote commitments
     Other(&'source str),
 }

@@ -2,8 +2,8 @@ use crate::{
     attributes::AttributeName,
     weapons::{
         weapon::{
-            mundane::MundaneWeapon, AttackRange, EquipHand, Equipped, WeaponId, WeaponName,
-            WeaponWeightClass,
+            mundane::MundaneWeapon, AttackRange, EquipHand, Equipped,
+            WeaponWeightClass, WeaponName,
         },
         WeaponError, Weapons,
     },
@@ -38,7 +38,7 @@ impl<'view, 'source> Character<'source> {
     /// For Natural weapons, will return an Err.
     pub fn equip_weapon(
         &mut self,
-        name: &'source WeaponName,
+        name: WeaponName<'_>,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.check_equip_weapon(name, hand)?;
@@ -48,20 +48,10 @@ impl<'view, 'source> Character<'source> {
 
     fn check_equip_weapon(
         &self,
-        name: &WeaponName,
+        name: WeaponName<'_>,
         hand: Option<EquipHand>,
     ) -> Result<(), CharacterMutationError> {
-        let weapon_id = match name {
-            WeaponName::Unarmed => {
-                return Err(CharacterMutationError::WeaponError(
-                    WeaponError::EquipNatural,
-                ));
-            }
-            WeaponName::Mundane(name) => WeaponId::Mundane(name.as_str()),
-            WeaponName::Artifact(id) => WeaponId::Artifact(*id),
-        };
-
-        if let Some(weapon) = self.weapons().get(weapon_id, None) {
+        if let Some(weapon) = self.weapons().get(name, None) {
             if weapon.is_natural() {
                 Err(CharacterMutationError::WeaponError(
                     WeaponError::EquipNatural,
@@ -69,7 +59,7 @@ impl<'view, 'source> Character<'source> {
             } else if weapon.is_worn()
                 && self
                     .weapons()
-                    .get(weapon_id, Some(Equipped::Worn))
+                    .get(name, Some(Equipped::Worn))
                     .is_some()
             {
                 Err(CharacterMutationError::WeaponError(
@@ -100,10 +90,10 @@ impl<'view, 'source> Character<'source> {
     /// requested weapon is not equipped at that location.
     pub fn unequip_weapon(
         &mut self,
-        weapon_id: WeaponId<'source>,
+        weapon_name: WeaponName<'_>,
         equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.unequip_weapon(weapon_id, equipped)?;
+        self.exaltation.unequip_weapon(weapon_name, equipped)?;
         Ok(self)
     }
 

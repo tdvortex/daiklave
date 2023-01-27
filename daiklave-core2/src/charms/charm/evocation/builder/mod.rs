@@ -8,7 +8,7 @@ use crate::{
     charms::{charm::CharmId, CharmCostType},
 };
 
-use super::{EvocationId, EvocationKeyword, EvokableId};
+use super::{EvocationId, EvocationKeyword, EvokableName};
 
 mod with_action_type;
 mod with_description;
@@ -25,7 +25,7 @@ pub use with_essence_requirement::EvocationBuilderWithEssenceRequirement;
 /// other evocations as prerequisites, a charm which it upgrades, resonant
 /// effect, dissonant effect, charm keywords, charm costs, and a short summary.
 pub struct EvocationBuilder {
-    pub(crate) evokable_id: EvokableId,
+    pub(crate) evokable_name: EvokableName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) name: String,
     pub(crate) summary: Option<String>,
@@ -101,7 +101,7 @@ impl EvocationBuilder {
         essence_required: NonZeroU8,
     ) -> EvocationBuilderWithEssenceRequirement {
         EvocationBuilderWithEssenceRequirement {
-            evokable_id: self.evokable_id,
+            evokable_name: self.evokable_name,
             book_reference: self.book_reference,
             name: self.name,
             summary: self.summary,

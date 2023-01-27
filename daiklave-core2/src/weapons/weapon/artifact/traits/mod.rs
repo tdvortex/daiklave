@@ -1,6 +1,6 @@
 mod memo;
 
-pub use memo::NamedArtifactWeaponMemo;
+pub use memo::ArtifactWeaponTraitsMemo;
 
 use crate::{
     artifact::{ArtifactId, MagicMaterial},
@@ -10,8 +10,7 @@ use crate::{
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct NamedArtifactWeapon<'source> {
-    pub(crate) name: &'source str,
+pub struct ArtifactWeaponTraits<'source> {
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) merit_dots: u8,
     pub(crate) magic_material: MagicMaterial,
@@ -22,10 +21,9 @@ pub struct NamedArtifactWeapon<'source> {
     pub(crate) hearthstone_slots: Vec<Option<SlottedHearthstone<'source>>>,
 }
 
-impl<'view, 'source> NamedArtifactWeapon<'source> {
-    pub fn as_memo(&self) -> NamedArtifactWeaponMemo {
-        NamedArtifactWeaponMemo {
-            name: self.name.to_string(),
+impl<'view, 'source> ArtifactWeaponTraits<'source> {
+    pub fn as_memo(&self) -> ArtifactWeaponTraitsMemo {
+        ArtifactWeaponTraitsMemo {
             book_reference: self.book_reference,
             merit_dots: self.merit_dots,
             base_weapon_name: self.base_weapon_name.to_owned(),
@@ -41,10 +39,6 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
         }
     }
 
-    pub fn name(&self) -> &'source str {
-        self.name
-    }
-
     pub fn base_artifact_weapon(&self) -> &'source BaseWeapon {
         self.base_weapon
     }
@@ -58,15 +52,15 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
     }
 
     pub fn slotted_hearthstones(
-        &'view self,
-        artifact_id: ArtifactId,
+        &self,
+        name: &'source str,
     ) -> impl Iterator<Item = Hearthstone<'source>> + '_ {
         self.hearthstone_slots
             .iter()
             .filter_map(move |maybe_hearthstone| {
                 maybe_hearthstone
                     .as_ref()
-                    .map(|slotted| Hearthstone(HearthstonePosition::Slotted(artifact_id, *slotted)))
+                    .map(|slotted| Hearthstone(HearthstonePosition::Slotted(ArtifactId::Weapon(name), *slotted)))
             })
     }
 }

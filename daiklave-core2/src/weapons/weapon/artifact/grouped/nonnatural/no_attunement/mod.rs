@@ -6,7 +6,7 @@ pub(crate) use memo::NonnaturalArtifactWeaponNoAttunementMemo;
 use crate::{
     hearthstones::SlottedHearthstone,
     weapons::weapon::artifact::{
-        named::NamedArtifactWeapon,
+        traits::ArtifactWeaponTraits,
         newtype::{
             OneHandedArtifactWeaponView, TwoHandedArtifactWeaponView, WornArtifactWeaponView,
         },
@@ -21,7 +21,7 @@ pub(crate) enum NonnaturalArtifactWeaponNoAttunement<'source> {
 }
 
 impl<'source> Deref for NonnaturalArtifactWeaponNoAttunement<'source> {
-    type Target = NamedArtifactWeapon<'source>;
+    type Target = ArtifactWeaponTraits<'source>;
 
     fn deref(&self) -> &Self::Target {
         match self {
@@ -50,8 +50,7 @@ impl<'source> NonnaturalArtifactWeaponNoAttunement<'source> {
     pub fn hearthstone_slots_mut(&mut self) -> &mut Vec<Option<SlottedHearthstone<'source>>> {
         match self {
             NonnaturalArtifactWeaponNoAttunement::Worn(WornArtifactWeaponView(
-                NamedArtifactWeapon {
-                    name: _,
+                ArtifactWeaponTraits {
                     book_reference: _,
                     merit_dots: _,
                     magic_material: _,
@@ -63,8 +62,7 @@ impl<'source> NonnaturalArtifactWeaponNoAttunement<'source> {
                 },
             )) => hearthstone_slots,
             NonnaturalArtifactWeaponNoAttunement::OneHanded(OneHandedArtifactWeaponView(
-                NamedArtifactWeapon {
-                    name: _,
+                ArtifactWeaponTraits {
                     book_reference: _,
                     merit_dots: _,
                     magic_material: _,
@@ -76,8 +74,7 @@ impl<'source> NonnaturalArtifactWeaponNoAttunement<'source> {
                 },
             )) => hearthstone_slots,
             NonnaturalArtifactWeaponNoAttunement::TwoHanded(TwoHandedArtifactWeaponView(
-                NamedArtifactWeapon {
-                    name: _,
+                ArtifactWeaponTraits {
                     book_reference: _,
                     merit_dots: _,
                     magic_material: _,

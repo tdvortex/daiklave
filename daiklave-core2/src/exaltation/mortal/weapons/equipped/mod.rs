@@ -18,7 +18,7 @@ use crate::{
             },
             equipped::{EquippedOneHandedWeaponNoAttunement, EquippedTwoHandedWeaponNoAttunement},
             mundane::{HandlessMundaneWeapon, MundaneWeaponView, WornMundaneWeaponView},
-            ArtifactWeaponId, Equipped, Weapon, WeaponId, WeaponType,
+            Equipped, Weapon, WeaponType, WeaponName,
         },
         WeaponError,
     },
@@ -28,7 +28,7 @@ use crate::{
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct MortalEquippedWeapons<'source> {
     pub handless_mundane: HashMap<&'source str, HandlessMundaneWeapon<'source>>,
-    pub handless_artifact: HashMap<ArtifactWeaponId, HandlessArtifactWeaponNoAttunement<'source>>,
+    pub handless_artifact: HashMap<&'source str, HandlessArtifactWeaponNoAttunement<'source>>,
     pub hands: MortalHands<'source>,
 }
 
@@ -43,23 +43,23 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
             handless_artifact: self
                 .handless_artifact
                 .iter()
-                .map(|(k, v)| (*k, v.as_memo()))
+                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
                 .collect(),
             hands: self.hands.as_memo(),
         }
     }
 
     pub fn get_weapon(
-        &'view self,
-        weapon_id: WeaponId,
+        &self,
+        name: WeaponName<'_>,
         equipped: Equipped,
     ) -> Option<Weapon<'source>> {
-        match (weapon_id, equipped) {
-            (WeaponId::Unarmed, Equipped::Natural) => {
+        match (name, equipped) {
+            (WeaponName::Unarmed, Equipped::Natural) => {
                 Some(crate::weapons::weapon::mundane::unarmed())
             }
-            (WeaponId::Unarmed, _) => None,
-            (WeaponId::Mundane(name), Equipped::Natural) => {
+            (WeaponName::Unarmed, _) => None,
+            (WeaponName::Mundane(name), Equipped::Natural) => {
                 match self.handless_mundane.get_key_value(name)? {
                     (name, HandlessMundaneWeapon::Natural(weapon)) => {
                         Some(Weapon(WeaponType::Mundane(
@@ -71,7 +71,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                     (_, HandlessMundaneWeapon::Worn(_)) => None,
                 }
             }
-            (WeaponId::Mundane(name), Equipped::Worn) => {
+            (WeaponName::Mundane(name), Equipped::Worn) => {
                 match self.handless_mundane.get_key_value(name)? {
                     (name, HandlessMundaneWeapon::Worn(weapon)) => {
                         Some(Weapon(WeaponType::Mundane(
@@ -83,48 +83,48 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                     (_, HandlessMundaneWeapon::Natural(_)) => None,
                 }
             }
-            (WeaponId::Artifact(artifact_weapon_id), Equipped::Natural) => {
-                match self.handless_artifact.get(&artifact_weapon_id)? {
-                    HandlessArtifactWeaponNoAttunement::Natural(weapon) => {
+            (WeaponName::Artifact(name), Equipped::Natural) => {
+                match self.handless_artifact.get_key_value(name)? {
+                    (name, HandlessArtifactWeaponNoAttunement::Natural(weapon)) => {
                         Some(Weapon(WeaponType::Artifact(
-                            artifact_weapon_id,
+                            *name,
                             ArtifactWeaponView::Natural(weapon.clone()),
                             None,
                         )))
                     }
-                    HandlessArtifactWeaponNoAttunement::Worn(_) => None,
+                    (_, HandlessArtifactWeaponNoAttunement::Worn(_)) => None,
                 }
             }
-            (WeaponId::Artifact(artifact_weapon_id), Equipped::Worn) => {
-                match self.handless_artifact.get(&artifact_weapon_id)? {
-                    HandlessArtifactWeaponNoAttunement::Worn(weapon) => {
+            (WeaponName::Artifact(name), Equipped::Worn) => {
+                match self.handless_artifact.get_key_value(name)? {
+                    (&name, HandlessArtifactWeaponNoAttunement::Worn(weapon)) => {
                         Some(Weapon(WeaponType::Artifact(
-                            artifact_weapon_id,
+                            name,
                             ArtifactWeaponView::Worn(weapon.clone(), true),
                             None,
                         )))
                     }
-                    HandlessArtifactWeaponNoAttunement::Natural(_) => None,
+                    (_, HandlessArtifactWeaponNoAttunement::Natural(_)) => None,
                 }
             }
-            (_, equipped) => self.hands.get_weapon(weapon_id, equipped),
+            (_, equipped) => self.hands.get_weapon(name, equipped),
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> + '_ {
-        let unarmed_iter = std::iter::once((WeaponId::Unarmed, Some(Equipped::Worn)));
-        let handless_mundane_iter = self.handless_mundane.iter().map(|(base_id, weapon)| {
+    pub fn iter(&self) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> + '_ {
+        let unarmed_iter = std::iter::once((WeaponName::Unarmed, Some(Equipped::Natural)));
+        let handless_mundane_iter = self.handless_mundane.iter().map(|(name, weapon)| {
             (
-                WeaponId::Mundane(*base_id),
+                WeaponName::Mundane(*name),
                 match weapon {
                     HandlessMundaneWeapon::Natural(_) => Some(Equipped::Natural),
                     HandlessMundaneWeapon::Worn(_) => Some(Equipped::Worn),
                 },
             )
         });
-        let handless_artifact_iter = self.handless_artifact.iter().map(|(artifact_id, weapon)| {
+        let handless_artifact_iter = self.handless_artifact.iter().map(|(name, weapon)| {
             (
-                WeaponId::Artifact(*artifact_id),
+                WeaponName::Artifact(*name),
                 match weapon {
                     HandlessArtifactWeaponNoAttunement::Natural(_) => Some(Equipped::Natural),
                     HandlessArtifactWeaponNoAttunement::Worn(_) => Some(Equipped::Worn),
@@ -178,19 +178,19 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
 
     pub fn remove_worn_artifact(
         &mut self,
-        weapon_id: ArtifactWeaponId,
-    ) -> Option<WornArtifactWeaponView<'source>> {
+        name: &str,
+    ) -> Option<(&'source str, WornArtifactWeaponView<'source>)> {
         if matches!(
-            self.handless_artifact.get(&weapon_id),
+            self.handless_artifact.get(name),
             Some(HandlessArtifactWeaponNoAttunement::Worn(_))
         ) {
             self.handless_artifact
-                .remove(&weapon_id)
-                .and_then(|handless_artifact| {
+                .remove_entry(name)
+                .and_then(|(name, handless_artifact)| {
                     if let HandlessArtifactWeaponNoAttunement::Worn(worn_artifact) =
                         handless_artifact
                     {
-                        Some(worn_artifact)
+                        Some((name, worn_artifact))
                     } else {
                         None
                     }
@@ -202,21 +202,21 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
 
     pub fn slot_hearthstone(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         *self
             .handless_artifact
-            .get_mut(&artifact_weapon_id)
+            .get_mut(artifact_weapon_name)
             .map(|weapon| weapon.hearthstone_slots_mut())
             .or_else(|| match &mut self.hands {
                 MortalHands::Empty => None,
                 MortalHands::MainHand(one_handed) | MortalHands::OffHand(one_handed) => {
                     match one_handed {
                         EquippedOneHandedWeaponNoAttunement::Mundane(_, _) => None,
-                        EquippedOneHandedWeaponNoAttunement::Artifact(held_id, held_weapon) => {
-                            if held_id != &artifact_weapon_id {
+                        EquippedOneHandedWeaponNoAttunement::Artifact(held_name, held_weapon) => {
+                            if held_name != &artifact_weapon_name {
                                 None
                             } else {
                                 Some(held_weapon.hearthstone_slots_mut())
@@ -225,9 +225,9 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                     }
                 }
                 MortalHands::Both(arr) => arr.iter_mut().find_map(|one| {
-                    if let EquippedOneHandedWeaponNoAttunement::Artifact(held_id, held_weapon) = one
+                    if let EquippedOneHandedWeaponNoAttunement::Artifact(held_name, held_weapon) = one
                     {
-                        if held_id != &artifact_weapon_id {
+                        if held_name != &artifact_weapon_name {
                             None
                         } else {
                             Some(held_weapon.hearthstone_slots_mut())
@@ -238,8 +238,8 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                 }),
                 MortalHands::TwoHanded(two_handed) => match two_handed {
                     EquippedTwoHandedWeaponNoAttunement::Mundane(_, _) => None,
-                    EquippedTwoHandedWeaponNoAttunement::Artifact(held_id, held_weapon) => {
-                        if held_id != &artifact_weapon_id {
+                    EquippedTwoHandedWeaponNoAttunement::Artifact(held_name, held_weapon) => {
+                        if held_name != &artifact_weapon_name {
                             None
                         } else {
                             Some(held_weapon.hearthstone_slots_mut())
@@ -262,7 +262,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
 
     pub fn unslot_hearthstone(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         let SlottedHearthstone {
@@ -271,14 +271,14 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
             origin,
         } = self
             .handless_artifact
-            .get_mut(&artifact_weapon_id)
+            .get_mut(artifact_weapon_name)
             .map(|weapon| weapon.hearthstone_slots_mut())
             .or_else(|| match &mut self.hands {
                 MortalHands::Empty => None,
                 MortalHands::MainHand(one) | MortalHands::OffHand(one) => match one {
                     EquippedOneHandedWeaponNoAttunement::Mundane(_, _) => None,
-                    EquippedOneHandedWeaponNoAttunement::Artifact(held_id, held_weapon) => {
-                        if held_id == &artifact_weapon_id {
+                    EquippedOneHandedWeaponNoAttunement::Artifact(held_name, held_weapon) => {
+                        if held_name == &artifact_weapon_name {
                             Some(held_weapon.hearthstone_slots_mut())
                         } else {
                             None
@@ -287,8 +287,8 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                 },
                 MortalHands::Both(arr) => arr.iter_mut().find_map(|one| match one {
                     EquippedOneHandedWeaponNoAttunement::Mundane(_, _) => None,
-                    EquippedOneHandedWeaponNoAttunement::Artifact(held_id, held_weapon) => {
-                        if held_id == &artifact_weapon_id {
+                    EquippedOneHandedWeaponNoAttunement::Artifact(held_name, held_weapon) => {
+                        if held_name == &artifact_weapon_name {
                             Some(held_weapon.hearthstone_slots_mut())
                         } else {
                             None
@@ -297,8 +297,8 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                 }),
                 MortalHands::TwoHanded(two) => match two {
                     EquippedTwoHandedWeaponNoAttunement::Mundane(_, _) => None,
-                    EquippedTwoHandedWeaponNoAttunement::Artifact(held_id, held_weapon) => {
-                        if held_id == &artifact_weapon_id {
+                    EquippedTwoHandedWeaponNoAttunement::Artifact(held_name, held_weapon) => {
+                        if held_name == &artifact_weapon_name {
                             Some(held_weapon.hearthstone_slots_mut())
                         } else {
                             None

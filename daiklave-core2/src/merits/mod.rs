@@ -3,7 +3,7 @@ pub mod merit;
 
 use crate::{
     armor::armor_item::ArmorId, artifact::ArtifactId, exaltation::Exaltation,
-    languages::language::Language, weapons::weapon::WeaponId, Character,
+    languages::language::Language, Character, weapons::weapon::WeaponName,
 };
 
 use self::merit::{Merit, MeritId, MeritSource};
@@ -16,22 +16,26 @@ impl<'view, 'source> Merits<'view, 'source> {
     pub fn get(&self, merit_id: MeritId<'view>) -> Option<Merit<'source>> {
         match merit_id {
             MeritId::Artifact(artifact_id) => match artifact_id {
-                ArtifactId::Weapon(artifact_weapon_id) => self
+                ArtifactId::Weapon(search_name) => self
                     .0
                     .weapons()
                     .iter()
-                    .find_map(|(weapon_id, equipped)| {
-                        if weapon_id == WeaponId::Artifact(artifact_weapon_id) {
-                            self.0.weapons().get(weapon_id, equipped)
+                    .find_map(|(source_name, equipped)| {
+                        if let WeaponName::Artifact(source_artifact_name) = source_name {
+                            if source_artifact_name == search_name {
+                                self.0.weapons().get(source_name, equipped).map(|weapon| (source_artifact_name, weapon))
+                            } else {
+                                None
+                            }
                         } else {
                             None
                         }
                     })
-                    .and_then(|weapon| {
+                    .and_then(|(name, weapon)| {
                         weapon.merit_dots().map(|dots| {
                             Merit(MeritSource::Artifact(
-                                ArtifactId::Weapon(artifact_weapon_id),
-                                weapon.name(),
+                                ArtifactId::Weapon(name),
+                                name,
                                 dots,
                             ))
                         })
@@ -219,8 +223,8 @@ impl<'view, 'source> Merits<'view, 'source> {
                     .weapons()
                     .get(weapon_id, equipped)
                     .and_then(|weapon| {
-                        if let WeaponId::Artifact(artifact_weapon_id) = weapon.id() {
-                            Some(MeritId::Artifact(ArtifactId::Weapon(artifact_weapon_id)))
+                        if let WeaponName::Artifact(artifact_weapon_name) = weapon.name() {
+                            Some(MeritId::Artifact(ArtifactId::Weapon(artifact_weapon_name)))
                         } else {
                             None
                         }

@@ -20,9 +20,9 @@ pub enum WeaponError {
     /// wield
     #[error("Strength must be at least 3 to wield Heavy melee weapons")]
     HeavyMeleeStrengthRequirement,
-    /// Can't add multiple copies of the same named artifact
-    #[error("Named artifacts are unique; only one can be owned at a time")]
-    NamedArtifactsUnique,
+    /// Can't add multiple copies of the same artifact
+    #[error("Artifacts are unique; cannot own multiple with the same name")]
+    DuplicateArtifact,
     /// Trying to equip or remove a missing weapon
     #[error("Weapon not found (or not found at the specified position)")]
     NotFound,

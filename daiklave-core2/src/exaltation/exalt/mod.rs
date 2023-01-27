@@ -72,7 +72,7 @@ use crate::{
                 NonnaturalArtifactWeapon,
             },
             mundane::{HandlessMundaneWeapon, MundaneWeapon},
-            ArtifactWeaponId, EquipHand, Equipped, Weapon, WeaponId, WeaponName,
+            EquipHand, Equipped, Weapon, WeaponName,
         },
         WeaponError,
     },
@@ -152,21 +152,21 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn get_weapon(
         &self,
-        weapon_id: WeaponId,
+        name: WeaponName<'_>,
         equipped: Option<Equipped>,
     ) -> Option<Weapon<'source>> {
-        if matches!(weapon_id, WeaponId::Unarmed) {
+        if matches!(name, WeaponName::Unarmed) {
             if matches!(equipped, Some(Equipped::Natural)) {
                 Some(crate::weapons::weapon::mundane::unarmed())
             } else {
                 None
             }
         } else {
-            self.weapons.get_weapon(weapon_id, equipped)
+            self.weapons.get_weapon(name, equipped)
         }
     }
 
-    pub fn iter_weapons(&self) -> impl Iterator<Item = (WeaponId, Option<Equipped>)> + '_ {
+    pub fn iter_weapons(&self) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> + '_ {
         self.weapons.iter()
     }
 
@@ -572,7 +572,7 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn equip_weapon(
         &mut self,
-        name: &'source WeaponName,
+        name: WeaponName<'_>,
         hand: Option<EquipHand>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.equip_weapon(name, hand)?;
@@ -581,28 +581,28 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn unequip_weapon(
         &mut self,
-        weapon_id: WeaponId<'view>,
+        name: WeaponName<'_>,
         equipped: Equipped,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.weapons.unequip_weapon(weapon_id, equipped)?;
+        self.weapons.unequip_weapon(name, equipped)?;
         Ok(self)
     }
 
     pub fn add_artifact_weapon(
         &mut self,
-        weapon_id: ArtifactWeaponId,
+        name: &'source str,
         weapon: ArtifactWeaponView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.weapons.add_artifact_weapon(weapon_id, weapon)?;
+        self.weapons.add_artifact_weapon(name, weapon)?;
         Ok(self)
     }
 
     pub fn remove_artifact_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(NonnaturalArtifactWeapon(_, attunement)) =
-            self.weapons.unequipped.artifact.get(&artifact_weapon_id)
+            self.weapons.unequipped.artifact.get(name)
         {
             if let Some(personal) = attunement {
                 let peripheral = 5 - (*personal).min(5);
@@ -610,7 +610,7 @@ impl<'view, 'source> Exalt<'source> {
                 self.essence.motes.personal_mut().uncommit(*personal)?;
             }
 
-            self.weapons.unequipped.artifact.remove(&artifact_weapon_id);
+            self.weapons.unequipped.artifact.remove(name);
             Ok(self)
         } else if let Some(HandlessArtifactWeapon(
             HandlessArtifactWeaponNoAttunement::Natural(_),
@@ -619,7 +619,7 @@ impl<'view, 'source> Exalt<'source> {
             .weapons
             .equipped
             .handless_artifact
-            .get(&artifact_weapon_id)
+            .get(name)
         {
             if let Some(personal) = attunement {
                 let peripheral = 5 - (*personal).min(5);
@@ -630,7 +630,7 @@ impl<'view, 'source> Exalt<'source> {
             self.weapons
                 .equipped
                 .handless_artifact
-                .remove(&artifact_weapon_id);
+                .remove(name);
             Ok(self)
         } else {
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
@@ -761,12 +761,12 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn slot_hearthstone_into_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons
-            .slot_hearthstone(artifact_weapon_id, hearthstone_id, unslotted)?;
+            .slot_hearthstone(artifact_weapon_name, hearthstone_id, unslotted)?;
         Ok(self)
     }
 
@@ -794,11 +794,11 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn unslot_hearthstone_from_weapon(
         &mut self,
-        artifact_weapon_id: ArtifactWeaponId,
+        artifact_weapon_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         self.weapons
-            .unslot_hearthstone(artifact_weapon_id, hearthstone_id)
+            .unslot_hearthstone(artifact_weapon_name, hearthstone_id)
     }
 
     pub fn unslot_hearthstone_from_armor(
@@ -820,7 +820,7 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn attune_artifact(
         &mut self,
-        artifact_id: ArtifactId,
+        artifact_id: ArtifactId<'_>,
         first: MotePoolName,
     ) -> Result<&mut Self, CharacterMutationError> {
         let amount = self.attunement_cost(artifact_id)?;
@@ -866,15 +866,15 @@ impl<'view, 'source> Exalt<'source> {
         }
 
         let outcome = match artifact_id {
-            ArtifactId::Weapon(artifact_weapon_id) => self
+            ArtifactId::Weapon(artifact_weapon_name) => self
                 .weapons_mut()
-                .attune_artifact_weapon(artifact_weapon_id, personal_committed)
+                .attune_artifact_weapon(artifact_weapon_name, personal_committed)
                 .err(),
-            ArtifactId::Armor(artifact_armor_id) => self
+                ArtifactId::Armor(artifact_armor_id) => self
                 .armor_mut()
                 .attune_artifact_armor(artifact_armor_id, personal_committed)
                 .err(),
-            ArtifactId::Wonder(wonder_id) => self
+                ArtifactId::Wonder(wonder_id) => self
                 .wonders_mut()
                 .attune_wonder(wonder_id, personal_committed)
                 .err(),
@@ -895,13 +895,13 @@ impl<'view, 'source> Exalt<'source> {
         }
     }
 
-    pub fn attunement_cost(&self, artifact_id: ArtifactId) -> Result<u8, CharacterMutationError> {
-        match artifact_id {
-            ArtifactId::Weapon(artifact_weapon_id) => {
+    pub fn attunement_cost(&self, artifact_name: ArtifactId<'_>) -> Result<u8, CharacterMutationError> {
+        match artifact_name {
+            ArtifactId::Weapon(artifact_weapon_name) => {
                 if self
                     .weapons
                     .iter()
-                    .any(|(weapon_id, _)| weapon_id == WeaponId::Artifact(artifact_weapon_id))
+                    .any(|(weapon_name, _)| weapon_name == WeaponName::Artifact(artifact_weapon_name))
                 {
                     Ok(5)
                 } else {

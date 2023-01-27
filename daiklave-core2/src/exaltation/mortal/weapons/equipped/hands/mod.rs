@@ -9,7 +9,7 @@ use crate::{
             EquipHand, EquippedOneHandedWeapon, EquippedOneHandedWeaponNoAttunement,
             EquippedTwoHandedWeapon, EquippedTwoHandedWeaponNoAttunement,
         },
-        Equipped, Weapon, WeaponId,
+        Equipped, Weapon, WeaponName,
     },
 };
 
@@ -90,48 +90,48 @@ impl<'view, 'source> MortalHands<'source> {
 
     pub fn get_weapon(
         &'view self,
-        weapon_id: WeaponId,
+        name: WeaponName<'_>,
         equipped: Equipped,
     ) -> Option<Weapon<'source>> {
         match (self, equipped) {
             (MortalHands::Empty, _) | (_, Equipped::Natural) | (_, Equipped::Worn) => None,
             (MortalHands::MainHand(one), Equipped::MainHand) => {
-                one.get_weapon(weapon_id, EquipHand::MainHand)
+                one.get_weapon(name, EquipHand::MainHand)
             }
             (MortalHands::OffHand(one), Equipped::OffHand) => {
-                one.get_weapon(weapon_id, EquipHand::OffHand)
+                one.get_weapon(name, EquipHand::OffHand)
             }
-            (MortalHands::TwoHanded(two), Equipped::TwoHanded) => two.get_weapon(weapon_id),
+            (MortalHands::TwoHanded(two), Equipped::TwoHanded) => two.get_weapon(name),
             (MortalHands::Both(arr), Equipped::MainHand) => {
-                arr[0].get_weapon(weapon_id, EquipHand::MainHand)
+                arr[0].get_weapon(name, EquipHand::MainHand)
             }
             (MortalHands::Both(arr), Equipped::OffHand) => {
-                arr[1].get_weapon(weapon_id, EquipHand::MainHand)
+                arr[1].get_weapon(name, EquipHand::MainHand)
             }
             _ => None,
         }
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = (WeaponId<'source>, Option<Equipped>)> {
+    pub fn iter(&self) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> {
         match self {
             MortalHands::Empty => vec![],
             MortalHands::MainHand(one) => one
                 .iter()
-                .map(|id| (id, Some(Equipped::MainHand)))
-                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+                .map(|name| (name, Some(Equipped::MainHand)))
+                .collect::<Vec<(WeaponName, Option<Equipped>)>>(),
             MortalHands::OffHand(one) => one
                 .iter()
-                .map(|id| (id, Some(Equipped::OffHand)))
-                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+                .map(|name| (name, Some(Equipped::OffHand)))
+                .collect::<Vec<(WeaponName, Option<Equipped>)>>(),
             MortalHands::Both(arr) => arr[0]
                 .iter()
-                .map(|id| (id, Some(Equipped::MainHand)))
+                .map(|name| (name, Some(Equipped::MainHand)))
                 .chain(arr[1].iter().map(|id| (id, Some(Equipped::OffHand))))
-                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+                .collect::<Vec<(WeaponName, Option<Equipped>)>>(),
             MortalHands::TwoHanded(two) => two
                 .iter()
-                .map(|id| (id, Some(Equipped::TwoHanded)))
-                .collect::<Vec<(WeaponId, Option<Equipped>)>>(),
+                .map(|name| (name, Some(Equipped::TwoHanded)))
+                .collect::<Vec<(WeaponName, Option<Equipped>)>>(),
         }
         .into_iter()
     }
@@ -180,7 +180,7 @@ impl<'view, 'source> MortalHands<'source> {
 
     pub fn free_hand(
         &mut self,
-        weapon_id: WeaponId,
+        name: WeaponName<'_>,
         hand: EquipHand,
     ) -> Option<EquippedOneHandedWeaponNoAttunement<'source>> {
         match (&self, hand) {
@@ -189,12 +189,12 @@ impl<'view, 'source> MortalHands<'source> {
             | (MortalHands::MainHand(_), EquipHand::OffHand)
             | (MortalHands::OffHand(_), EquipHand::MainHand) => None,
             (MortalHands::MainHand(one_handed_equipped), EquipHand::MainHand) => {
-                match (one_handed_equipped, weapon_id) {
+                match (one_handed_equipped, name) {
                     (
-                        EquippedOneHandedWeaponNoAttunement::Mundane(actual_id, _),
-                        WeaponId::Mundane(wanted_id),
+                        EquippedOneHandedWeaponNoAttunement::Mundane(actual_name, _),
+                        WeaponName::Mundane(wanted_name),
                     ) => {
-                        if *actual_id == wanted_id {
+                        if *actual_name == wanted_name {
                             let output = one_handed_equipped.clone();
                             *self = MortalHands::Empty;
                             Some(output)
@@ -203,10 +203,10 @@ impl<'view, 'source> MortalHands<'source> {
                         }
                     }
                     (
-                        EquippedOneHandedWeaponNoAttunement::Artifact(actual_id, _),
-                        WeaponId::Artifact(wanted_id),
+                        EquippedOneHandedWeaponNoAttunement::Artifact(actual_name, _),
+                        WeaponName::Artifact(wanted_name),
                     ) => {
-                        if *actual_id == wanted_id {
+                        if *actual_name == wanted_name {
                             let output = one_handed_equipped.clone();
                             *self = MortalHands::Empty;
                             Some(output)
@@ -218,12 +218,12 @@ impl<'view, 'source> MortalHands<'source> {
                 }
             }
             (MortalHands::OffHand(one_handed_equipped), EquipHand::OffHand) => {
-                match (one_handed_equipped, weapon_id) {
+                match (one_handed_equipped, name) {
                     (
-                        EquippedOneHandedWeaponNoAttunement::Mundane(actual_id, _),
-                        WeaponId::Mundane(wanted_id),
+                        EquippedOneHandedWeaponNoAttunement::Mundane(actual_name, _),
+                        WeaponName::Mundane(wanted_name),
                     ) => {
-                        if *actual_id == wanted_id {
+                        if *actual_name == wanted_name {
                             let output = one_handed_equipped.clone();
                             *self = MortalHands::Empty;
                             Some(output)
@@ -232,10 +232,10 @@ impl<'view, 'source> MortalHands<'source> {
                         }
                     }
                     (
-                        EquippedOneHandedWeaponNoAttunement::Artifact(actual_id, _),
-                        WeaponId::Artifact(wanted_id),
+                        EquippedOneHandedWeaponNoAttunement::Artifact(actual_name, _),
+                        WeaponName::Artifact(wanted_name),
                     ) => {
-                        if *actual_id == wanted_id {
+                        if *actual_name == wanted_name {
                             let output = one_handed_equipped.clone();
                             *self = MortalHands::Empty;
                             Some(output)
@@ -248,12 +248,12 @@ impl<'view, 'source> MortalHands<'source> {
             }
             (MortalHands::Both(arr), EquipHand::MainHand) => {
                 let one_handed_equipped = &arr[0];
-                match (one_handed_equipped, weapon_id) {
+                match (one_handed_equipped, name) {
                     (
-                        EquippedOneHandedWeaponNoAttunement::Mundane(actual_id, _),
-                        WeaponId::Mundane(wanted_id),
+                        EquippedOneHandedWeaponNoAttunement::Mundane(actual_name, _),
+                        WeaponName::Mundane(wanted_name),
                     ) => {
-                        if *actual_id == wanted_id {
+                        if *actual_name == wanted_name {
                             let output = one_handed_equipped.clone();
                             *self = MortalHands::OffHand(arr[1].clone());
                             Some(output)
@@ -262,10 +262,10 @@ impl<'view, 'source> MortalHands<'source> {
                         }
                     }
                     (
-                        EquippedOneHandedWeaponNoAttunement::Artifact(actual_id, _),
-                        WeaponId::Artifact(wanted_id),
+                        EquippedOneHandedWeaponNoAttunement::Artifact(actual_name, _),
+                        WeaponName::Artifact(wanted_name),
                     ) => {
-                        if *actual_id == wanted_id {
+                        if *actual_name == wanted_name {
                             let output = one_handed_equipped.clone();
                             *self = MortalHands::OffHand(arr[1].clone());
                             Some(output)
@@ -278,12 +278,12 @@ impl<'view, 'source> MortalHands<'source> {
             }
             (MortalHands::Both(arr), EquipHand::OffHand) => {
                 let one_handed_equipped = &arr[1];
-                match (one_handed_equipped, weapon_id) {
+                match (one_handed_equipped, name) {
                     (
-                        EquippedOneHandedWeaponNoAttunement::Mundane(actual_id, _),
-                        WeaponId::Mundane(wanted_id),
+                        EquippedOneHandedWeaponNoAttunement::Mundane(actual_name, _),
+                        WeaponName::Mundane(wanted_name),
                     ) => {
-                        if *actual_id == wanted_id {
+                        if *actual_name == wanted_name {
                             let output = one_handed_equipped.clone();
                             *self = MortalHands::MainHand(arr[0].clone());
                             Some(output)
@@ -292,10 +292,10 @@ impl<'view, 'source> MortalHands<'source> {
                         }
                     }
                     (
-                        EquippedOneHandedWeaponNoAttunement::Artifact(actual_id, _),
-                        WeaponId::Artifact(wanted_id),
+                        EquippedOneHandedWeaponNoAttunement::Artifact(actual_name, _),
+                        WeaponName::Artifact(wanted_name),
                     ) => {
-                        if *actual_id == wanted_id {
+                        if *actual_name == wanted_name {
                             let output = one_handed_equipped.clone();
                             *self = MortalHands::MainHand(arr[0].clone());
                             Some(output)
@@ -311,15 +311,15 @@ impl<'view, 'source> MortalHands<'source> {
 
     pub fn free_two_handed(
         &mut self,
-        weapon_id: WeaponId,
+        name: WeaponName<'_>,
     ) -> Option<EquippedTwoHandedWeaponNoAttunement<'source>> {
         if let MortalHands::TwoHanded(two_handed_equipped) = self {
-            match (&two_handed_equipped, weapon_id) {
+            match (&two_handed_equipped, name) {
                 (
-                    EquippedTwoHandedWeaponNoAttunement::Mundane(actual_id, _),
-                    WeaponId::Mundane(wanted_id),
+                    EquippedTwoHandedWeaponNoAttunement::Mundane(actual_name, _),
+                    WeaponName::Mundane(wanted_name),
                 ) => {
-                    if *actual_id == wanted_id {
+                    if *actual_name == wanted_name {
                         let output = two_handed_equipped.clone();
                         *self = MortalHands::Empty;
                         Some(output)
@@ -328,10 +328,10 @@ impl<'view, 'source> MortalHands<'source> {
                     }
                 }
                 (
-                    EquippedTwoHandedWeaponNoAttunement::Artifact(actual_id, _),
-                    WeaponId::Artifact(wanted_id),
+                    EquippedTwoHandedWeaponNoAttunement::Artifact(actual_name, _),
+                    WeaponName::Artifact(wanted_name),
                 ) => {
-                    if *actual_id == wanted_id {
+                    if *actual_name == wanted_name {
                         let output = two_handed_equipped.clone();
                         *self = MortalHands::Empty;
                         Some(output)

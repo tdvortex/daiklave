@@ -22,7 +22,6 @@ pub mod builder;
 mod damage_type;
 pub(crate) mod equipped;
 mod handedness;
-mod id;
 mod name;
 
 /// Traits that are specific to mundane (non-Artifact) weapons.
@@ -32,10 +31,8 @@ mod tag;
 mod weapon_type;
 mod weight_class;
 
-pub use artifact::ArtifactWeaponId;
 pub use equipped::{EquipHand, Equipped};
-pub use id::WeaponId;
-pub use name::WeaponName;
+pub use name::{WeaponName, WeaponNameMutation};
 pub use range::{AttackRange, RangeBand};
 pub use tag::{OptionalWeaponTag, WeaponTag};
 pub(crate) use weapon_type::WeaponType;
@@ -67,11 +64,6 @@ impl<'view, 'source> Weapon<'source> {
         }
     }
 
-    /// The weapon's Id
-    pub fn id(&self) -> WeaponId<'source> {
-        self.0.id()
-    }
-
     /// Returns true if the weapon is an artifact weapon
     pub fn is_artifact(&self) -> bool {
         self.0.is_artifact()
@@ -89,15 +81,15 @@ impl<'view, 'source> Weapon<'source> {
     }
 
     /// If the weapon is currently attuned, returns the commitment. Also
-    /// returns the artifact weapon Id for later unattunement.
-    pub fn mote_commitment(&self) -> Option<(ArtifactWeaponId, MoteCommitment)> {
+    /// returns the artifact weapon name for later unattunement.
+    pub fn mote_commitment(&self) -> Option<(&'source str, MoteCommitment)> {
         self.0.mote_commitment()
     }
 
     /// The name of the weapon, which is either the name of a generic mundane
     /// weapon like "sword" or the specific name of a unique artifact weapon,
     /// like "Volcano Cutter"
-    pub fn name(&self) -> &'source str {
+    pub fn name(&self) -> WeaponName<'source> {
         self.0.name()
     }
 

@@ -28,8 +28,7 @@ use crate::{
     merits::merit::{
         NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
     },
-    weapons::weapon::{WeaponId, WeaponName},
-    willpower::Willpower,
+    willpower::Willpower, artifact::{ArtifactName, ArtifactId},
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -161,24 +160,16 @@ impl<'source> Character<'source> {
                 self.add_mundane_weapon(name.as_str(), mundane_weapon)
             }
             CharacterMutation::EquipWeapon(name, equip_hand) => {
-                self.equip_weapon(name, *equip_hand)
+                self.equip_weapon(name.as_ref(), *equip_hand)
             }
             CharacterMutation::UnequipWeapon(name, equipped) => {
-                let weapon_id = match name {
-                    WeaponName::Unarmed => todo!(),
-                    WeaponName::Mundane(name) => WeaponId::Mundane(name.as_str()),
-                    WeaponName::Artifact(artifact_weapon_id) => {
-                        WeaponId::Artifact(*artifact_weapon_id)
-                    }
-                };
-
-                self.unequip_weapon(weapon_id, *equipped)
+                self.unequip_weapon(name.as_ref(), *equipped)
             }
             CharacterMutation::AddArtifact(artifact) => self.add_artifact(artifact),
             CharacterMutation::RemoveMundaneWeapon(name) => {
                 self.remove_mundane_weapon(name.as_str())
             }
-            CharacterMutation::RemoveArtifact(artifact_id) => self.remove_artifact(*artifact_id),
+            CharacterMutation::RemoveArtifact(artifact_name) => self.remove_artifact(artifact_name),
             CharacterMutation::AddMundaneArmor(armor_id, armor_item) => {
                 self.add_mundane_armor(*armor_id, armor_item)
             }
@@ -191,8 +182,8 @@ impl<'source> Character<'source> {
             CharacterMutation::AddHearthstone(hearthstone_id, template) => {
                 self.add_hearthstone(*hearthstone_id, template)
             }
-            CharacterMutation::SlotHearthstone(artifact_id, hearthstone_id) => {
-                self.slot_hearthstone(*artifact_id, *hearthstone_id)
+            CharacterMutation::SlotHearthstone(artifact_name, hearthstone_id) => {
+                self.slot_hearthstone(artifact_name, *hearthstone_id)
             }
             CharacterMutation::UnslotHearthstone(hearthstone_id) => {
                 self.unslot_hearthstone(*hearthstone_id)
@@ -200,8 +191,14 @@ impl<'source> Character<'source> {
             CharacterMutation::RemoveHearthstone(hearthstone_id) => {
                 self.remove_hearthstone(*hearthstone_id)
             }
-            CharacterMutation::AttuneArtifact(artifact_id, first) => {
-                self.attune_artifact(*artifact_id, *first)
+            CharacterMutation::AttuneArtifact(artifact_name, first) => {
+                let artifact_id = match artifact_name {
+                    ArtifactName::Weapon(weapon_name) => ArtifactId::Weapon(weapon_name.as_str()),
+                    ArtifactName::Armor(armor_id) => ArtifactId::Armor(*armor_id),
+                    ArtifactName::Wonder(wonder_id) => ArtifactId::Wonder(*wonder_id),
+                };
+
+                self.attune_artifact(artifact_id, *first)
             }
             CharacterMutation::AddStackableMerit(stackable_merit_id, stackable_merit) => {
                 self.add_stackable_merit(*stackable_merit_id, stackable_merit)

@@ -15,7 +15,7 @@ use crate::{
     },
     exaltation::Exaltation,
     hearthstones::HearthstoneError,
-    weapons::{weapon::WeaponId, WeaponError},
+    weapons::{WeaponError, weapon::{WeaponName}},
     Character, CharacterMutationError,
 };
 
@@ -43,11 +43,15 @@ impl<'source> Character<'source> {
                     return Err(CharacterMutationError::ArmorError(ArmorError::NotFound));
                 }
             }
-            EvokableId::Artifact(ArtifactId::Weapon(artifact_weapon_id)) => {
+            EvokableId::Artifact(ArtifactId::Weapon(name)) => {
                 if !self
                     .weapons()
                     .iter()
-                    .any(|(weapon_id, _)| weapon_id == WeaponId::Artifact(artifact_weapon_id))
+                    .any(|(weapon_name, _)| if let WeaponName::Artifact(actual_name) = weapon_name {
+                        actual_name == name
+                    } else {
+                        false
+                    })
                 {
                     return Err(CharacterMutationError::WeaponError(WeaponError::NotFound));
                 }
@@ -106,9 +110,13 @@ impl<'source> Character<'source> {
                                 ids_to_remove.insert(evocation_id);
                             }
                         }
-                        EvokableId::Artifact(ArtifactId::Weapon(artifact_weapon_id)) => {
-                            if !self.weapons().iter().any(|(weapon_id, _)| {
-                                weapon_id == WeaponId::Artifact(artifact_weapon_id)
+                        EvokableId::Artifact(ArtifactId::Weapon(name)) => {
+                            if !self.weapons().iter().any(|(weapon_name, _)| {
+                                if let WeaponName::Artifact(artifact_name) = weapon_name {
+                                    artifact_name == name
+                                } else {
+                                    false
+                                }
                             }) {
                                 ids_to_remove.insert(evocation_id);
                             }

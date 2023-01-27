@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::weapons::weapon::{
-    artifact::TwoHandedArtifactWeapon, mundane::TwoHandedMundaneWeapon, ArtifactWeaponId,
+    artifact::TwoHandedArtifactWeapon, mundane::TwoHandedMundaneWeapon,
 };
 
 use super::EquippedTwoHandedWeaponNoAttunement;
@@ -9,7 +9,7 @@ use super::EquippedTwoHandedWeaponNoAttunement;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum EquippedTwoHandedWeaponNoAttunementMemo {
     Mundane(String, TwoHandedMundaneWeapon),
-    Artifact(ArtifactWeaponId, TwoHandedArtifactWeapon),
+    Artifact(String, TwoHandedArtifactWeapon),
 }
 
 impl<'source> EquippedTwoHandedWeaponNoAttunementMemo {
@@ -18,8 +18,8 @@ impl<'source> EquippedTwoHandedWeaponNoAttunementMemo {
             EquippedTwoHandedWeaponNoAttunementMemo::Mundane(name, memo) => {
                 EquippedTwoHandedWeaponNoAttunement::Mundane(name.as_str(), memo.as_ref())
             }
-            EquippedTwoHandedWeaponNoAttunementMemo::Artifact(id, memo) => {
-                EquippedTwoHandedWeaponNoAttunement::Artifact(*id, memo.as_ref())
+            EquippedTwoHandedWeaponNoAttunementMemo::Artifact(name, memo) => {
+                EquippedTwoHandedWeaponNoAttunement::Artifact(name.as_str(), memo.as_ref())
             }
         }
     }
