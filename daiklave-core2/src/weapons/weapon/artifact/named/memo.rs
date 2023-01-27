@@ -1,10 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    artifact::MagicMaterial,
-    book_reference::BookReference,
-    hearthstones::SlottedHearthstoneMemo,
-    weapons::weapon::{base::BaseWeapon},
+    artifact::MagicMaterial, book_reference::BookReference, hearthstones::SlottedHearthstoneMemo,
+    weapons::weapon::base::BaseWeapon,
 };
 
 use super::NamedArtifactWeapon;

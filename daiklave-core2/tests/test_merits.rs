@@ -26,9 +26,7 @@ use daiklave_core2::{
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
     unique_id::UniqueId,
-    weapons::weapon::{
-        ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass,
-    },
+    weapons::weapon::{ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass},
     CharacterEventSource, CharacterMutation,
 };
 
@@ -54,7 +52,7 @@ fn test_merits() {
                     .melee()
                     .tag(OptionalWeaponTag::Balanced)
                     .tag(OptionalWeaponTag::Reaching)
-                    .build_artifact()
+                    .build_artifact(),
             )
             .material(MagicMaterial::RedJade)
             .merit_dots(5)

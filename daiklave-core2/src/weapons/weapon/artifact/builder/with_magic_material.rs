@@ -1,7 +1,6 @@
 use crate::{
-    artifact::MagicMaterial,
-    book_reference::BookReference,
-    weapons::weapon::{artifact::base::BaseArtifactWeapon},
+    artifact::MagicMaterial, book_reference::BookReference,
+    weapons::weapon::artifact::base::BaseArtifactWeapon,
 };
 
 use super::with_merit_dots::ArtifactWeaponBuilderWithMeritDots;

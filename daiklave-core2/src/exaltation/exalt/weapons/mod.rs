@@ -274,10 +274,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
 
                 self.equipped
                     .hands
-                    .set_two_handed(EquippedTwoHandedWeapon::Mundane(
-                        name,
-                        two_handed_mundane,
-                    ));
+                    .set_two_handed(EquippedTwoHandedWeapon::Mundane(name, two_handed_mundane));
                 Ok(self)
             }
         }
@@ -522,9 +519,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
             WeaponId::Unarmed => Err(CharacterMutationError::WeaponError(
                 WeaponError::UnequipNatural,
             )),
-            WeaponId::Mundane(name) => {
-                self.unequip_mundane_weapon(name, equipped)
-            }
+            WeaponId::Mundane(name) => self.unequip_mundane_weapon(name, equipped),
             WeaponId::Artifact(artifact_weapon_id) => {
                 self.unequip_artifact_weapon(artifact_weapon_id, equipped)
             }

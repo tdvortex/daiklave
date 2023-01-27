@@ -35,9 +35,7 @@ use daiklave_core2::{
         ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle,
     },
     unique_id::UniqueId,
-    weapons::weapon::{
-        ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass,
-    },
+    weapons::weapon::{ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass},
     CharacterEventSource, CharacterMutation,
 };
 
@@ -566,7 +564,7 @@ fn test_evocations() {
                 .tag(OptionalWeaponTag::Concealable)
                 .tag(OptionalWeaponTag::Disarming)
                 .tag(OptionalWeaponTag::Shield)
-                .build_artifact()
+                .build_artifact(),
         )
         .book_reference(BookReference::new(Book::ArmsOfTheChosen, 39))
         .lore("The Amethyst Lord was a wicked prince of the Fair Folk[...]".to_owned())

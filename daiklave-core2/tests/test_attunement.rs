@@ -11,9 +11,7 @@ use daiklave_core2::{
         },
     },
     unique_id::UniqueId,
-    weapons::weapon::{
-        ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass,
-    },
+    weapons::weapon::{ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponWeightClass},
     CharacterEventSource, CharacterMutation,
 };
 
@@ -60,7 +58,7 @@ fn test_attunement() {
                 .lethal()
                 .tag(OptionalWeaponTag::Balanced)
                 .melee()
-                .build_artifact()
+                .build_artifact(),
         )
         .material(MagicMaterial::GreenJade)
         .merit_dots(3)

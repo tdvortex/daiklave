@@ -8,9 +8,9 @@ pub use with_heartstone_slots::ArtifactWeaponBuilderWithHearthstoneSlots;
 pub use with_magic_material::ArtifactWeaponBuilderWithMagicMaterial;
 pub use with_merit_dots::ArtifactWeaponBuilderWithMeritDots;
 
-use crate::{book_reference::BookReference};
+use crate::book_reference::BookReference;
 
-use super::{AddBaseArtifactWeapon};
+use super::AddBaseArtifactWeapon;
 
 /// A builder to construct a new artifact weapon. Enforces that required fields
 /// are specified in order: name, base artifact, magic material, merit dots,
@@ -48,7 +48,7 @@ impl ArtifactWeaponBuilder {
     /// Specifies the base artifact weapon for the artifact.
     pub fn base_artifact(
         self,
-        add_base_artifact_weapon: AddBaseArtifactWeapon
+        add_base_artifact_weapon: AddBaseArtifactWeapon,
     ) -> ArtifactWeaponBuilderWithBaseWeapon {
         ArtifactWeaponBuilderWithBaseWeapon {
             name: self.name,

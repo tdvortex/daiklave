@@ -30,7 +30,7 @@ use crate::{
         },
         SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
-    weapons::weapon::{mundane::{AddMundaneWeapon}, EquipHand, Equipped, WeaponName},
+    weapons::weapon::{mundane::AddMundaneWeapon, EquipHand, Equipped, WeaponName},
 };
 
 /// The API for the character, expressed as an owned struct. Each mutation has

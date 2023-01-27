@@ -3,7 +3,10 @@ pub(crate) mod martial_arts;
 mod mortal_memo;
 mod weapons;
 mod wonders;
-use std::{collections::{hash_map::Entry, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    num::NonZeroU8,
+};
 pub(crate) use weapons::{
     MortalEquippedWeapons, MortalHands, MortalUnequippedWeapons, MortalWeapons,
 };
@@ -222,12 +225,7 @@ impl<'view, 'source> Mortal<'source> {
         if let Some((_, count)) = self.weapons.unequipped.mundane.get(name) {
             let new_count = count.get() - 1;
             if let Some(new_nonzero) = NonZeroU8::new(new_count) {
-                self.weapons
-                    .unequipped
-                    .mundane
-                    .get_mut(name)
-                    .unwrap()
-                    .1 = new_nonzero
+                self.weapons.unequipped.mundane.get_mut(name).unwrap().1 = new_nonzero
             } else {
                 self.weapons.unequipped.mundane.remove(name);
             }

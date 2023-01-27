@@ -9,9 +9,7 @@ use daiklave_core2::{
         HearthstoneId,
     },
     unique_id::UniqueId,
-    weapons::weapon::{
-        ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponId, WeaponWeightClass,
-    },
+    weapons::weapon::{ArtifactWeaponId, OptionalWeaponTag, Weapon, WeaponId, WeaponWeightClass},
     CharacterEventSource, CharacterMutation,
 };
 
@@ -110,7 +108,7 @@ fn test_hearthstones() {
                 .lethal()
                 .melee()
                 .tag(OptionalWeaponTag::Balanced)
-                .build_artifact()
+                .build_artifact(),
         )
         .lore(
             "Auravash the Twilight craftsman saw a need for the\

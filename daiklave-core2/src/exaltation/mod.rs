@@ -47,8 +47,8 @@ use crate::{
         Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     weapons::weapon::{
-        artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId,
-        EquipHand, Equipped, Weapon, WeaponId, WeaponName,
+        artifact::ArtifactWeaponView, mundane::MundaneWeapon, ArtifactWeaponId, EquipHand,
+        Equipped, Weapon, WeaponId, WeaponName,
     },
     CharacterMutationError,
 };

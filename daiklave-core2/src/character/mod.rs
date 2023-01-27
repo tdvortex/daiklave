@@ -28,7 +28,8 @@ use crate::{
     merits::merit::{
         NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
     },
-    willpower::Willpower, weapons::weapon::{WeaponName, WeaponId},
+    weapons::weapon::{WeaponId, WeaponName},
+    willpower::Willpower,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -162,13 +163,15 @@ impl<'source> Character<'source> {
             CharacterMutation::EquipWeapon(name, equip_hand) => {
                 self.equip_weapon(name, *equip_hand)
             }
-            CharacterMutation::UnequipWeapon(name, equipped) => {               
+            CharacterMutation::UnequipWeapon(name, equipped) => {
                 let weapon_id = match name {
                     WeaponName::Unarmed => todo!(),
                     WeaponName::Mundane(name) => WeaponId::Mundane(name.as_str()),
-                    WeaponName::Artifact(artifact_weapon_id) => WeaponId::Artifact(*artifact_weapon_id),
+                    WeaponName::Artifact(artifact_weapon_id) => {
+                        WeaponId::Artifact(*artifact_weapon_id)
+                    }
                 };
-                
+
                 self.unequip_weapon(weapon_id, *equipped)
             }
             CharacterMutation::AddArtifact(artifact) => self.add_artifact(artifact),

@@ -1,4 +1,7 @@
-use std::{collections::{hash_map::Entry, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    num::NonZeroU8,
+};
 
 use crate::{
     exaltation::{exalt::essence::EssenceError, mortal::MortalEquippedWeapons},
@@ -73,21 +76,25 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
             (WeaponId::Unarmed, _) => None,
             (WeaponId::Mundane(name), Equipped::Natural) => {
                 match self.handless_mundane.get_key_value(name)? {
-                    (name, HandlessMundaneWeapon::Natural(weapon)) => Some(Weapon(WeaponType::Mundane(
-                        *name,
-                        MundaneWeaponView::Natural(weapon.clone()),
-                        NonZeroU8::new(1).unwrap(),
-                    ))),
+                    (name, HandlessMundaneWeapon::Natural(weapon)) => {
+                        Some(Weapon(WeaponType::Mundane(
+                            *name,
+                            MundaneWeaponView::Natural(weapon.clone()),
+                            NonZeroU8::new(1).unwrap(),
+                        )))
+                    }
                     (_, HandlessMundaneWeapon::Worn(_)) => None,
                 }
             }
             (WeaponId::Mundane(name), Equipped::Worn) => {
                 match self.handless_mundane.get_key_value(name)? {
-                    (name, HandlessMundaneWeapon::Worn(weapon)) => Some(Weapon(WeaponType::Mundane(
-                        *name,
-                        MundaneWeaponView::Worn(weapon.clone(), true),
-                        NonZeroU8::new(1).unwrap(),
-                    ))),
+                    (name, HandlessMundaneWeapon::Worn(weapon)) => {
+                        Some(Weapon(WeaponType::Mundane(
+                            *name,
+                            MundaneWeaponView::Worn(weapon.clone(), true),
+                            NonZeroU8::new(1).unwrap(),
+                        )))
+                    }
                     (_, HandlessMundaneWeapon::Natural(_)) => None,
                 }
             }
@@ -177,12 +184,11 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
         match self.handless_mundane.remove_entry(name) {
             Some((name, HandlessMundaneWeapon::Natural(natural_weapon))) => {
                 // Not worn, put it back
-                self.handless_mundane.insert(name, HandlessMundaneWeapon::Natural(natural_weapon));
+                self.handless_mundane
+                    .insert(name, HandlessMundaneWeapon::Natural(natural_weapon));
                 None
             }
-            Some((name, HandlessMundaneWeapon::Worn(worn_weapon))) => {
-                Some((name, worn_weapon))
-            }
+            Some((name, HandlessMundaneWeapon::Worn(worn_weapon))) => Some((name, worn_weapon)),
             None => None,
         }
     }

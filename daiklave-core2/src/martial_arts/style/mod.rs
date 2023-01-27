@@ -5,9 +5,7 @@ use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    armor::armor_item::ArmorWeightClass, book_reference::BookReference,
-};
+use crate::{armor::armor_item::ArmorWeightClass, book_reference::BookReference};
 
 use self::builder::MartialArtsStyleBuilder;
 
@@ -44,7 +42,8 @@ impl<'source> MartialArtsStyle {
     /// A list of weapon names, which may be either mortal weapons (e.g. sword)
     /// or base artifact weapons (e.g. daiklave), usable by the style.
     pub fn usable_weapon_names(&'source self) -> impl Iterator<Item = &'source str> + '_ {
-        std::iter::once(self.first_weapon.as_str()).chain(self.usable_weapons.iter().map(|s| s.as_str()))
+        std::iter::once(self.first_weapon.as_str())
+            .chain(self.usable_weapons.iter().map(|s| s.as_str()))
     }
 
     /// The maximum weight of armor which may be worn with the style, or None

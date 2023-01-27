@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{ArtifactWeaponId};
+use super::ArtifactWeaponId;
 
 /// The Id for a weapon.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, Serialize, Deserialize)]

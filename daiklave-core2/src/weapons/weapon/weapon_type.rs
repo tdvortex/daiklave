@@ -136,10 +136,9 @@ impl<'view, 'source> WeaponType<'source> {
     pub fn base_artifact_weapon(&self) -> Option<(&'source str, &'source BaseWeapon)> {
         match self {
             WeaponType::Mundane(_, _, _) | WeaponType::Unarmed => None,
-            WeaponType::Artifact(_, artifact, _) => Some((
-                artifact.base_weapon_name,
-                artifact.base_artifact_weapon(),
-            )),
+            WeaponType::Artifact(_, artifact, _) => {
+                Some((artifact.base_weapon_name, artifact.base_artifact_weapon()))
+            }
         }
     }
 

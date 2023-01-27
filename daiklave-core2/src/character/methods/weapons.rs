@@ -2,8 +2,8 @@ use crate::{
     attributes::AttributeName,
     weapons::{
         weapon::{
-            mundane::MundaneWeapon, AttackRange, EquipHand, Equipped, WeaponId,
-            WeaponWeightClass, WeaponName,
+            mundane::MundaneWeapon, AttackRange, EquipHand, Equipped, WeaponId, WeaponName,
+            WeaponWeightClass,
         },
         WeaponError, Weapons,
     },
@@ -52,7 +52,11 @@ impl<'view, 'source> Character<'source> {
         hand: Option<EquipHand>,
     ) -> Result<(), CharacterMutationError> {
         let weapon_id = match name {
-            WeaponName::Unarmed => {return Err(CharacterMutationError::WeaponError(WeaponError::EquipNatural));}
+            WeaponName::Unarmed => {
+                return Err(CharacterMutationError::WeaponError(
+                    WeaponError::EquipNatural,
+                ));
+            }
             WeaponName::Mundane(name) => WeaponId::Mundane(name.as_str()),
             WeaponName::Artifact(id) => WeaponId::Artifact(*id),
         };

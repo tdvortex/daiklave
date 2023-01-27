@@ -70,7 +70,7 @@ impl<'source> MundaneWeaponView<'source> {
             }
         }
     }
-    
+
     pub fn tags(&self) -> std::vec::IntoIter<WeaponTag> {
         match self {
             MundaneWeaponView::Natural(base) => base.tags(WeaponTag::Natural),

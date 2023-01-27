@@ -131,10 +131,8 @@ impl<'view, 'source> MortalWeapons<'source> {
         match (nonnatural_mundane, hand) {
             (NonnaturalMundaneWeapon::OneHanded(one_handed_mundane), None) => {
                 // Don't lose the weapon we unstowed above
-                self.unequipped.stow_mundane(
-                    name,
-                    NonnaturalMundaneWeapon::OneHanded(one_handed_mundane),
-                );
+                self.unequipped
+                    .stow_mundane(name, NonnaturalMundaneWeapon::OneHanded(one_handed_mundane));
                 Err(CharacterMutationError::WeaponError(
                     WeaponError::HandRequired,
                 ))

@@ -6,7 +6,7 @@ use crate::{
     artifact::{ArtifactId, MagicMaterial},
     book_reference::BookReference,
     hearthstones::{hearthstone::Hearthstone, HearthstonePosition, SlottedHearthstone},
-    weapons::weapon::{base::BaseWeapon},
+    weapons::weapon::base::BaseWeapon,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -44,7 +44,7 @@ impl<'view, 'source> NamedArtifactWeapon<'source> {
     pub fn name(&self) -> &'source str {
         self.name
     }
-    
+
     pub fn base_artifact_weapon(&self) -> &'source BaseWeapon {
         self.base_weapon
     }

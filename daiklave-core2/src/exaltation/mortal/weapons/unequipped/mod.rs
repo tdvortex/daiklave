@@ -1,5 +1,8 @@
 mod memo;
-use std::{collections::{hash_map::Entry, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    num::NonZeroU8,
+};
 
 pub(crate) use memo::MortalUnequippedWeaponsMemo;
 
@@ -111,11 +114,7 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
             )
     }
 
-    pub fn stow_mundane(
-        &mut self,
-        name: &'source str,
-        weapon: NonnaturalMundaneWeapon<'source>,
-    ) {
+    pub fn stow_mundane(&mut self, name: &'source str, weapon: NonnaturalMundaneWeapon<'source>) {
         match self.mundane.entry(name) {
             Entry::Occupied(mut e) => {
                 e.get_mut().1 = NonZeroU8::new(e.get().1.get().saturating_add(1)).unwrap()
@@ -126,10 +125,7 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
         }
     }
 
-    pub fn unstow_mundane(
-        &mut self,
-        name: &str,
-    ) -> Option<NonnaturalMundaneWeapon<'source>> {
+    pub fn unstow_mundane(&mut self, name: &str) -> Option<NonnaturalMundaneWeapon<'source>> {
         let current_count = self.mundane.get(name)?.1;
 
         match current_count.get() {
@@ -141,7 +137,6 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
             }
             1 => self.mundane.remove(name).map(|(weapon, _)| weapon),
             _ => self.mundane.get_mut(name).map(|(weapon, count)| {
-                
                 *count = NonZeroU8::new(count.get() - 1).unwrap();
                 weapon.clone()
             }),
