@@ -22,7 +22,7 @@ pub use keyword::EvocationKeyword;
 
 use self::builder::EvocationBuilder;
 
-use super::{CharmName, CharmNameMutation};
+use super::name::{CharmName, CharmNameMutation};
 
 /// A Charm which is drawn from the unique power of a Hearthstone or named
 /// Artifact.

@@ -1,7 +1,8 @@
-use serde::{Deserialize, Serialize};
+mod mutation;
+pub use mutation::CharmNameMutation;
 
 /// The name of a Charm.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum CharmName<'source> {
     /// A Spirit charm.
     Spirit(&'source str),

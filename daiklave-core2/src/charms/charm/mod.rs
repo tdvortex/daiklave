@@ -3,9 +3,10 @@ pub use builder::CharmBuilder;
 
 /// Evocations of artifacts and hearthstones.
 pub mod evocation;
-mod id;
 mod mutation;
 mod name;
+pub use name::{CharmName, CharmNameMutation};
+
 /// Evocations of spirits (and other supernatural beings), as well as Eclipse
 /// Charms.
 pub mod spirit;
@@ -14,11 +15,9 @@ use crate::{
     sorcery::spell::Spell,
 };
 pub use mutation::AddCharm;
-pub use name::CharmNameMutation;
 
 use self::evocation::Evocation;
 
-pub use id::CharmName;
 pub use spirit::{EclipseCharm, SpiritCharmKeyword};
 
 /// A Charm possessed by a character.
