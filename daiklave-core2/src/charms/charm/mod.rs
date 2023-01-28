@@ -14,12 +14,12 @@ use crate::{
     sorcery::spell::Spell,
 };
 pub use mutation::AddCharm;
-pub use name::CharmName;
+pub use name::CharmNameMutation;
 
 use self::evocation::Evocation;
 
-pub use id::CharmId;
-pub use spirit::{EclipseCharm, SpiritCharmId, SpiritCharmKeyword};
+pub use id::CharmName;
+pub use spirit::{EclipseCharm, SpiritCharmKeyword};
 
 /// A Charm possessed by a character.
 pub enum Charm<'source> {

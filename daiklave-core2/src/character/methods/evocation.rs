@@ -9,7 +9,7 @@ use crate::{
     charms::{
         charm::{
             evocation::{Evocation, EvokableName},
-            Charm, CharmId,
+            Charm, CharmName,
         },
         CharmError,
     },
@@ -75,7 +75,7 @@ impl<'source> Character<'source> {
         let remove_ids: HashSet<String> = charms
             .iter()
             .filter_map(|charm_id| {
-                if let CharmId::Evocation(known_evocation_name) = charm_id {
+                if let CharmName::Evocation(known_evocation_name) = charm_id {
                     charms.get(charm_id).and_then(|charm| {
                         if let Charm::Evocation(evocation) = charm {
                             Some((known_evocation_name, evocation))
@@ -131,7 +131,7 @@ impl<'source> Character<'source> {
                     }
 
                     if let Some(charm_id) = evocation.upgrade() {
-                        if let CharmId::Evocation(upgrade_evocation_id) = charm_id {
+                        if let CharmName::Evocation(upgrade_evocation_id) = charm_id {
                             if ids_to_remove.contains(upgrade_evocation_id) {
                                 ids_to_remove.insert(evocation_name.to_owned());
                             }
@@ -160,10 +160,7 @@ impl<'source> Character<'source> {
     }
 
     /// Removes an evocation from the character.
-    pub fn remove_evocation(
-        &mut self,
-        name: &str,
-    ) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_evocation(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
         if self.correct_evocations(&[name]) {
             Ok(self)
         } else {

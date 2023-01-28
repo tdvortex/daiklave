@@ -2,11 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{abilities::AbilityName, exaltation::exalt::LimitMemo, experience::ExperiencePool};
 
-use super::{
-    caste::SolarCasteMemo,
-    charm::{SolarCharm},
-    Solar, SolarSorcererMemo,
-};
+use super::{caste::SolarCasteMemo, charm::SolarCharm, Solar, SolarSorcererMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SolarMemo {

@@ -8,10 +8,10 @@ use crate::{
     armor::armor_item::{mundane::AddMundaneArmor, ArmorNameMutation},
     artifact::{AddArtifact, ArtifactNameMutation},
     attributes::AttributeName,
-    charms::charm::{AddCharm, CharmName},
+    charms::charm::{AddCharm, CharmNameMutation},
     exaltation::exalt::{
         essence::{MotePoolName, UncommitMotes},
-        exalt_type::solar::NewSolar,
+        exalt_type::solar::SetSolar,
     },
     flaws::flaw::FlawMutation,
     health::{DamageLevel, WoundPenalty},
@@ -39,7 +39,7 @@ pub enum CharacterMutation {
     /// Set character to be mortal
     SetMortal,
     /// Set character to be Solar
-    SetSolar(NewSolar),
+    SetSolar(SetSolar),
     /// Spend motes, starting with one pool
     SpendMotes(MotePoolName, u8),
     /// Commit motes into a persistent effect, starting with one pool
@@ -163,7 +163,7 @@ pub enum CharacterMutation {
     AddCharm(AddCharm),
     /// Removes a Charm from the character. Note that this may cause cascading
     /// drops due to Charm tree dependencies.
-    RemoveCharm(CharmName),
+    RemoveCharm(CharmNameMutation),
     /// Adds a Flaw to the character.
     AddFlaw(FlawMutation),
     /// Removes a Flaw from the character.

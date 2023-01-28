@@ -3,10 +3,7 @@ use crate::{
     exaltation::ExaltationMartialArtist,
 };
 
-use super::{
-    charm::{MartialArtsCharm},
-    style::MartialArtsStyleWeapon,
-};
+use super::{charm::MartialArtsCharm, style::MartialArtsStyleWeapon};
 
 use crate::abilities::AbilityType;
 
@@ -55,9 +52,7 @@ impl<'view, 'source> MartialArtist<'view, 'source> {
     }
 
     /// All of the Charms the character has for this style.
-    pub fn charms(
-        &self,
-    ) -> impl Iterator<Item = (&'source str, &'source MartialArtsCharm)> + '_ {
+    pub fn charms(&self) -> impl Iterator<Item = (&'source str, &'source MartialArtsCharm)> + '_ {
         self.maybe_exalt.charms()
     }
 }

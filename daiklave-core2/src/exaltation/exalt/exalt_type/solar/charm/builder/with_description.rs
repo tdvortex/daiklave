@@ -7,7 +7,7 @@ use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
     exaltation::exalt::exalt_type::solar::charm::{
-        ability::SolarCharmAbility, SolarCharm, SolarCharmKeyword, AddSolarCharm,
+        ability::SolarCharmAbility, AddSolarCharm, SolarCharm, SolarCharmKeyword,
     },
 };
 
@@ -67,18 +67,21 @@ impl SolarCharmBuilderWithDescription {
 
     /// Completes the builder, returning a new Solar Charm.
     pub fn build(self) -> AddSolarCharm {
-        (self.name, SolarCharm {
-            book_reference: self.book_reference,
-            summary: self.summary,
-            description: self.description,
-            essence_required: self.essence_required,
-            ability: self.ability,
-            ability_requirement: self.ability_required,
-            charms_required: self.charms_required,
-            keywords: self.keywords,
-            costs: self.costs,
-            action_type: self.action_type,
-            duration: self.duration,
-        })
+        (
+            self.name,
+            SolarCharm {
+                book_reference: self.book_reference,
+                summary: self.summary,
+                description: self.description,
+                essence_required: self.essence_required,
+                ability: self.ability,
+                ability_requirement: self.ability_required,
+                charms_required: self.charms_required,
+                keywords: self.keywords,
+                costs: self.costs,
+                action_type: self.action_type,
+                duration: self.duration,
+            },
+        )
     }
 }

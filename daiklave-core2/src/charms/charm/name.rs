@@ -1,16 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    sorcery::spell::SpellName,
-};
+use crate::sorcery::spell::SpellName;
 
-use super::{SpiritCharmId};
-
-/// The name of a Charm.
+/// The name of a Charm, to be used in adding or removing Charms.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum CharmName {
+pub enum CharmNameMutation {
     /// A Spirit charm.
-    Spirit(SpiritCharmId),
+    Spirit(String),
     /// An Evocation of an artifact or hearthstone.
     Evocation(String),
     /// A Martial Arts charm for a specific style.

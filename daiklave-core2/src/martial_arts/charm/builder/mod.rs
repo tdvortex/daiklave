@@ -16,7 +16,7 @@ use std::{
 
 use crate::{book_reference::BookReference, charms::CharmCostType};
 
-use super::{MartialArtsCharmKeyword};
+use super::MartialArtsCharmKeyword;
 
 /// A builder path to construct a Martial Arts charm. Required fields, in
 /// order, are: name(already specified), style name (already specified), Essence

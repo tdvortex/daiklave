@@ -1,9 +1,5 @@
 use crate::{
-    martial_arts::{
-        charm::{MartialArtsCharm},
-        style::MartialArtsStyle,
-        MartialArts,
-    },
+    martial_arts::{charm::MartialArtsCharm, style::MartialArtsStyle, MartialArts},
     Character, CharacterMutationError,
 };
 
@@ -54,10 +50,7 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 
-    pub(crate) fn correct_martial_arts_charms(
-        &mut self,
-        force_remove: &[&str],
-    ) -> bool {
+    pub(crate) fn correct_martial_arts_charms(&mut self, force_remove: &[&str]) -> bool {
         self.exaltation.correct_martial_arts_charms(force_remove)
     }
 

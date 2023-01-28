@@ -6,7 +6,7 @@ use crate::{
                 twilight::{TwilightAbility, TwilightMemo},
                 SolarCasteMemo,
             },
-            NewSolar, SolarError, SolarMemo,
+            SetSolar, SolarError, SolarMemo,
         },
         LimitMemo,
     },
@@ -49,7 +49,7 @@ impl TwilightBuilder {
 
     /// Finishes the builder, returning a NewSolar object if successful or an
     /// error if some validation failed.
-    pub fn build(mut self) -> Result<NewSolar, SolarError> {
+    pub fn build(mut self) -> Result<SetSolar, SolarError> {
         let supernal = self.supernal_ability.ok_or(SolarError::SupernalRequired)?;
 
         self.caste_abilities.sort();
@@ -91,7 +91,7 @@ impl TwilightBuilder {
 
         let limit_trigger = self.limit_trigger.ok_or(SolarError::LimitTriggerRequired)?;
 
-        Ok(NewSolar(Box::new(SolarMemo {
+        Ok(SetSolar(Box::new(SolarMemo {
             caste: SolarCasteMemo::Twilight(TwilightMemo {
                 caste_not_supernal,
                 supernal,

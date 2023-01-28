@@ -22,18 +22,11 @@ use crate::{
         ArtifactName, ArtifactNameMutation,
     },
     charms::{
-        charm::{
-            evocation::{Evocation},
-            Charm, SpiritCharmId,
-        },
+        charm::{evocation::Evocation, Charm},
         CharmError,
     },
     hearthstones::UnslottedHearthstone,
-    martial_arts::{
-        charm::{MartialArtsCharm},
-        style::MartialArtsStyle,
-        MartialArtist,
-    },
+    martial_arts::{charm::MartialArtsCharm, style::MartialArtsStyle, MartialArtist},
     sorcery::{
         circles::{
             celestial::{sorcerer::CelestialCircleSorcerer, AddCelestialSorcery},
@@ -57,10 +50,7 @@ use self::{
             MotesState, UncommitMotes,
         },
         exalt_type::{
-            solar::{
-                charm::{SolarCharm},
-                Solar, SolarMemo, SolarSorcererView,
-            },
+            solar::{charm::SolarCharm, Solar, SolarMemo, SolarSorcererView},
             ExaltType,
         },
         Exalt,
@@ -1055,10 +1045,9 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn solar_charms_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         match self {
             Exaltation::Mortal(_) => vec![].into_iter(),
-            Exaltation::Exalt(exalt) => exalt
-                .solar_charms_iter()
-                .collect::<Vec<&str>>()
-                .into_iter(),
+            Exaltation::Exalt(exalt) => {
+                exalt.solar_charms_iter().collect::<Vec<&str>>().into_iter()
+            }
         }
     }
 
@@ -1120,10 +1109,7 @@ impl<'view, 'source> Exaltation<'source> {
         }
     }
 
-    pub fn get_martial_arts_charm(
-        &self,
-        name: &str,
-    ) -> Option<Charm<'source>> {
+    pub fn get_martial_arts_charm(&self, name: &str) -> Option<Charm<'source>> {
         match self {
             Exaltation::Mortal(_) => None,
             Exaltation::Exalt(exalt) => exalt
@@ -1147,17 +1133,17 @@ impl<'view, 'source> Exaltation<'source> {
                 .martial_arts_styles()
                 .iter()
                 .flat_map(|(_, martial_artist)| {
-                    martial_artist.charms.iter().map(|(charm_name, _)| *charm_name)
+                    martial_artist
+                        .charms
+                        .iter()
+                        .map(|(charm_name, _)| *charm_name)
                 })
                 .collect::<Vec<&str>>(),
         }
         .into_iter()
     }
 
-    pub(crate) fn correct_martial_arts_charms(
-        &mut self,
-        force_remove: &[&str],
-    ) -> bool {
+    pub(crate) fn correct_martial_arts_charms(&mut self, force_remove: &[&str]) -> bool {
         match self {
             Exaltation::Mortal(_) => false,
             Exaltation::Exalt(exalt) => exalt.correct_martial_arts_charms(force_remove),
@@ -1180,17 +1166,17 @@ impl<'view, 'source> Exaltation<'source> {
         }
     }
 
-    pub fn get_eclipse_charm(&self, spirit_charm_id: SpiritCharmId) -> Option<Charm<'source>> {
+    pub fn get_eclipse_charm(&self, name: &str) -> Option<Charm<'source>> {
         match self {
             Exaltation::Mortal(_) => None,
-            Exaltation::Exalt(exalt) => exalt.get_eclipse_charm(spirit_charm_id),
+            Exaltation::Exalt(exalt) => exalt.get_eclipse_charm(name),
         }
     }
 
-    pub fn eclipse_charms_iter(&self) -> impl Iterator<Item = SpiritCharmId> + '_ {
+    pub fn eclipse_charms_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         match self {
             Exaltation::Mortal(_) => vec![],
-            Exaltation::Exalt(exalt) => exalt.eclipse_charms_iter().collect::<Vec<SpiritCharmId>>(),
+            Exaltation::Exalt(exalt) => exalt.eclipse_charms_iter().collect::<Vec<&str>>(),
         }
         .into_iter()
     }

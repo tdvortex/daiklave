@@ -6,7 +6,7 @@ use std::{
 use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
-    martial_arts::charm::{MartialArtsCharm, MartialArtsCharmKeyword, AddMartialArtsCharm},
+    martial_arts::charm::{AddMartialArtsCharm, MartialArtsCharm, MartialArtsCharmKeyword},
 };
 
 /// A Martial Arts Charm builder after the description has been provided. To
@@ -85,21 +85,24 @@ impl MartialArtsCharmBuilderWithDescription {
 
     /// Completes the builder, returning a Martial Arts Charm.
     pub fn build(self) -> AddMartialArtsCharm {
-        (self.name, MartialArtsCharm {
-            style: self.style,
-            book_reference: self.book_reference,
-            summary: self.summary,
-            description: self.description,
-            mastery: self.mastery,
-            terrestrial: self.terrestrial,
-            enlightenment: self.enlightenment,
-            essence_required: self.essence_required,
-            ability_required: self.ability_required,
-            charms_required: self.charms_required,
-            keywords: self.keywords,
-            costs: self.costs,
-            action_type: self.action_type,
-            duration: self.duration,
-        })
+        (
+            self.name,
+            MartialArtsCharm {
+                style: self.style,
+                book_reference: self.book_reference,
+                summary: self.summary,
+                description: self.description,
+                mastery: self.mastery,
+                terrestrial: self.terrestrial,
+                enlightenment: self.enlightenment,
+                essence_required: self.essence_required,
+                ability_required: self.ability_required,
+                charms_required: self.charms_required,
+                keywords: self.keywords,
+                costs: self.costs,
+                action_type: self.action_type,
+                duration: self.duration,
+            },
+        )
     }
 }

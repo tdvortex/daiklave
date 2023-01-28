@@ -5,7 +5,7 @@ use std::{
 
 use crate::{
     book_reference::BookReference,
-    charms::{charm::CharmName, CharmCostType},
+    charms::{charm::CharmNameMutation, CharmCostType},
 };
 
 use super::{EvocationKeyword, EvokableNameMutation};
@@ -32,7 +32,7 @@ pub struct EvocationBuilder {
     pub(crate) resonant: Option<String>,
     pub(crate) dissonant: Option<String>,
     pub(crate) evocation_tree: HashSet<String>,
-    pub(crate) upgrade_charm: Option<CharmName>,
+    pub(crate) upgrade_charm: Option<CharmNameMutation>,
     pub(crate) keywords: HashSet<EvocationKeyword>,
     pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
 }
@@ -72,7 +72,7 @@ impl EvocationBuilder {
 
     /// Sets this Evocation as an upgrade of another Charm, usually a
     /// Solar Charm (or other Exalt-specific type).
-    pub fn upgrades(mut self, charm_name: CharmName) -> Self {
+    pub fn upgrades(mut self, charm_name: CharmNameMutation) -> Self {
         self.upgrade_charm = Some(charm_name);
         self
     }

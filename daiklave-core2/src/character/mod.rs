@@ -17,7 +17,7 @@ use crate::{
     abilities::AbilitiesVanilla,
     attributes::Attributes,
     book_reference::BookReference,
-    charms::charm::{AddCharm, CharmName},
+    charms::charm::{AddCharm, CharmNameMutation},
     craft::Craft,
     exaltation::Exaltation,
     experience::ExperiencePool,
@@ -239,8 +239,8 @@ impl<'source> Character<'source> {
             CharacterMutation::RemoveExaltedHealing => self.remove_exalted_healing(),
             CharacterMutation::RemoveDemense(name) => self.remove_demense(name.as_str()),
             CharacterMutation::AddCharm(charm) => match charm {
-                AddCharm::Eclipse(spirit_charm_id, eclipse_charm) => {
-                    self.add_eclipse_charm(*spirit_charm_id, eclipse_charm)
+                AddCharm::Eclipse((spirit_charm_name, eclipse_charm)) => {
+                    self.add_eclipse_charm(spirit_charm_name.as_str(), eclipse_charm)
                 }
                 AddCharm::Evocation((evocation_name, evocation)) => {
                     self.add_evocation(evocation_name.as_str(), evocation)
@@ -251,16 +251,22 @@ impl<'source> Character<'source> {
                 AddCharm::Solar((solar_charm_name, solar_charm)) => {
                     self.add_solar_charm(solar_charm_name.as_str(), solar_charm)
                 }
-                AddCharm::Spell((spell_name, spell)) => {
-                    self.add_spell(spell_name.as_str(), spell)
-                }
+                AddCharm::Spell((spell_name, spell)) => self.add_spell(spell_name.as_str(), spell),
             },
             CharacterMutation::RemoveCharm(charm_name) => match charm_name {
-                CharmName::Spirit(spirit_charm_id) => self.remove_eclipse_charm(*spirit_charm_id),
-                CharmName::Evocation(evocation_name) => self.remove_evocation(evocation_name.as_str()),
-                CharmName::MartialArts(ma_charm_name) => self.remove_martial_arts_charm(ma_charm_name.as_str()),
-                CharmName::Solar(solar_charm_name) => self.remove_solar_charm(solar_charm_name.as_str()),
-                CharmName::Spell(spell_name) => self.remove_spell(spell_name.as_str()),
+                CharmNameMutation::Spirit(spirit_charm_id) => {
+                    self.remove_eclipse_charm(spirit_charm_id.as_str())
+                }
+                CharmNameMutation::Evocation(evocation_name) => {
+                    self.remove_evocation(evocation_name.as_str())
+                }
+                CharmNameMutation::MartialArts(ma_charm_name) => {
+                    self.remove_martial_arts_charm(ma_charm_name.as_str())
+                }
+                CharmNameMutation::Solar(solar_charm_name) => {
+                    self.remove_solar_charm(solar_charm_name.as_str())
+                }
+                CharmNameMutation::Spell(spell_name) => self.remove_spell(spell_name.as_str()),
             },
             CharacterMutation::AddFlaw(flaw_mutation) => self.add_flaw(flaw_mutation),
             CharacterMutation::RemoveFlaw(name) => self.remove_flaw(name.as_str()),

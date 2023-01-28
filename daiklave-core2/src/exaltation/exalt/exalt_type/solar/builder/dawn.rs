@@ -9,7 +9,7 @@ use crate::{
                 },
                 SolarCasteMemo,
             },
-            NewSolar, SolarError, SolarMemo,
+            SetSolar, SolarError, SolarMemo,
         },
         LimitMemo,
     },
@@ -65,7 +65,7 @@ impl DawnBuilder {
 
     /// Finishes the builder, returning a NewSolar object if successful or an
     /// error if some validation failed.
-    pub fn build(mut self) -> Result<NewSolar, SolarError> {
+    pub fn build(mut self) -> Result<SetSolar, SolarError> {
         let limit_trigger = self.limit_trigger.ok_or(SolarError::LimitTriggerRequired)?;
         let supernal = self.supernal_ability.ok_or(SolarError::SupernalRequired)?;
 
@@ -289,7 +289,7 @@ impl DawnBuilder {
             }
         };
 
-        Ok(NewSolar(Box::new(SolarMemo {
+        Ok(SetSolar(Box::new(SolarMemo {
             caste: SolarCasteMemo::Dawn(DawnMemo { layout }),
             favored_abilities,
             sorcery: None,

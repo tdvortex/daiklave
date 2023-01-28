@@ -44,19 +44,12 @@ use crate::{
         ArtifactName,
     },
     charms::{
-        charm::{
-            evocation::{Evocation},
-            Charm, CharmId, SpiritCharmId,
-        },
+        charm::{evocation::Evocation, Charm, CharmName},
         CharmError,
     },
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::UnslottedHearthstone,
-    martial_arts::{
-        charm::{MartialArtsCharm},
-        style::MartialArtsStyle,
-        MartialArtsError,
-    },
+    martial_arts::{charm::MartialArtsCharm, style::MartialArtsStyle, MartialArtsError},
     sorcery::{
         circles::{
             celestial::AddCelestialSorcery, solar::AddSolarSorcery,
@@ -83,10 +76,7 @@ use self::{
     essence::{
         Essence, EssenceError, EssenceState, MoteCommitment, MoteCommitmentId, MotePoolName,
     },
-    exalt_type::{
-        solar::charm::{SolarCharm},
-        ExaltType,
-    },
+    exalt_type::{solar::charm::SolarCharm, ExaltType},
     martial_arts::ExaltMartialArtist,
 };
 
@@ -1014,20 +1004,20 @@ impl<'view, 'source> Exalt<'source> {
 
         if let Some(charm_id) = evocation.upgrade() {
             let charm_exists = match charm_id {
-                CharmId::Spirit(spirit_charm_id) => {
+                CharmName::Spirit(spirit_charm_id) => {
                     self.get_eclipse_charm(spirit_charm_id).is_some()
                 }
-                CharmId::Evocation(evocation_id) => self
+                CharmName::Evocation(evocation_id) => self
                     .evocations
                     .iter()
                     .any(|(known_evocation_id, _)| known_evocation_id == &evocation_id),
-                CharmId::MartialArts(martial_arts_charm_id) => self
+                CharmName::MartialArts(martial_arts_charm_id) => self
                     .martial_arts_styles
                     .iter()
                     .flat_map(|(_, martial_artist)| martial_artist.charms.iter())
                     .any(|(charm_id, _)| charm_id == &martial_arts_charm_id),
-                CharmId::Solar(solar_charm_id) => self.get_solar_charm(solar_charm_id).is_some(),
-                CharmId::Spell(spell_id) => self
+                CharmName::Solar(solar_charm_id) => self.get_solar_charm(solar_charm_id).is_some(),
+                CharmName::Spell(spell_id) => self
                     .sorcery()
                     .and_then(|sorcery| sorcery.spells().get(spell_id))
                     .is_some(),
@@ -1158,10 +1148,7 @@ impl<'view, 'source> Exalt<'source> {
         }
     }
 
-    pub(crate) fn correct_martial_arts_charms(
-        &mut self,
-        force_remove: &[&str],
-    ) -> bool {
+    pub(crate) fn correct_martial_arts_charms(&mut self, force_remove: &[&str]) -> bool {
         let actual_essence = self.essence.rating;
         let is_martial_arts_supernal = {
             let ExaltType::Solar(solar) = &self.exalt_type;
@@ -1208,13 +1195,13 @@ impl<'view, 'source> Exalt<'source> {
         any_removed
     }
 
-    pub fn get_eclipse_charm(&self, spirit_charm_id: SpiritCharmId) -> Option<Charm<'source>> {
+    pub fn get_eclipse_charm(&self, name: &str) -> Option<Charm<'source>> {
         match &self.exalt_type {
-            ExaltType::Solar(solar) => solar.get_eclipse_charm(spirit_charm_id),
+            ExaltType::Solar(solar) => solar.get_eclipse_charm(name),
         }
     }
 
-    pub fn eclipse_charms_iter(&self) -> impl Iterator<Item = SpiritCharmId> + '_ {
+    pub fn eclipse_charms_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         match &self.exalt_type {
             ExaltType::Solar(solar) => solar.eclipse_charms_iter(),
         }

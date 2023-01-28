@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::charms::charm::evocation::{Evocation};
+use crate::charms::charm::evocation::Evocation;
 
 use super::{
     armor::ExaltArmorMemo, essence::EssenceStateMemo, exalt_type::ExaltTypeMemo,

@@ -22,7 +22,7 @@ pub use keyword::EvocationKeyword;
 
 use self::builder::EvocationBuilder;
 
-use super::{CharmId, CharmName};
+use super::{CharmName, CharmNameMutation};
 
 /// A Charm which is drawn from the unique power of a Hearthstone or named
 /// Artifact.
@@ -36,7 +36,7 @@ pub struct Evocation {
     dissonant: Option<String>,
     essence_required: NonZeroU8,
     evocation_tree: HashSet<String>,
-    upgrade_charm: Option<CharmName>,
+    upgrade_charm: Option<CharmNameMutation>,
     keywords: HashSet<EvocationKeyword>,
     costs: HashMap<CharmCostType, NonZeroU8>,
     action_type: CharmActionType,
@@ -84,7 +84,7 @@ impl<'source> Evocation {
     pub fn book_reference(&self) -> Option<BookReference> {
         self.book_reference
     }
-    
+
     /// A short summary of this Evocation's effects.
     pub fn summary(&self) -> Option<&str> {
         self.summary.as_deref()
@@ -121,16 +121,20 @@ impl<'source> Evocation {
 
     /// If the Evocation is an upgrade to a non-Evocation Charm, the Id of that
     /// Charm.
-    pub fn upgrade(&'source self) -> Option<CharmId<'source>> {
+    pub fn upgrade(&'source self) -> Option<CharmName<'source>> {
         match &self.upgrade_charm {
             Some(charm_name) => Some(match charm_name {
-                CharmName::Spirit(spirit_id) => CharmId::Spirit(*spirit_id),
-                CharmName::Evocation(evocation_name) => CharmId::Evocation(evocation_name.as_str()),
-                CharmName::MartialArts(martial_arts_charm_name) => {
-                    CharmId::MartialArts(martial_arts_charm_name.as_str())
+                CharmNameMutation::Spirit(spirit_charm_name) => {
+                    CharmName::Spirit(spirit_charm_name.as_str())
                 }
-                CharmName::Solar(solar_id) => CharmId::Solar(solar_id.as_str()),
-                CharmName::Spell(spell_name) => CharmId::Spell(spell_name.as_str()),
+                CharmNameMutation::Evocation(evocation_name) => {
+                    CharmName::Evocation(evocation_name.as_str())
+                }
+                CharmNameMutation::MartialArts(martial_arts_charm_name) => {
+                    CharmName::MartialArts(martial_arts_charm_name.as_str())
+                }
+                CharmNameMutation::Solar(solar_id) => CharmName::Solar(solar_id.as_str()),
+                CharmNameMutation::Spell(spell_name) => CharmName::Spell(spell_name.as_str()),
             }),
             None => None,
         }

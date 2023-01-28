@@ -1,5 +1,6 @@
 use super::SolarMemo;
 
-/// A new Solar's traits.
+/// Solar traits to be added to a character, overriding any previous Exaltation
+/// (even if it was Solar).
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct NewSolar(pub(crate) Box<SolarMemo>);
+pub struct SetSolar(pub(crate) Box<SolarMemo>);

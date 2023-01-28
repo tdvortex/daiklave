@@ -1,17 +1,17 @@
+mod add;
 /// A builder path to construct a Spirit Charm.
 pub mod builder;
 mod eclipse;
-mod id;
 mod inner;
 mod keyword;
 mod noneclipse;
 
 use std::collections::{HashMap, HashSet};
 
-pub use id::SpiritCharmId;
+pub use add::AddSpiritCharm;
 pub use keyword::SpiritCharmKeyword;
 
-pub use eclipse::EclipseCharm;
+pub use eclipse::{AddEclipseCharm, EclipseCharm};
 pub use noneclipse::NonEclipseCharm;
 
 use self::builder::SpiritCharmBuilder;

@@ -3,7 +3,7 @@ use std::collections::{hash_map::Entry, HashSet};
 use crate::{
     abilities::AbilityName,
     charms::{
-        charm::{Charm, CharmId, EclipseCharm, SpiritCharmId},
+        charm::{Charm, CharmName, EclipseCharm},
         CharmError,
     },
     exaltation::{
@@ -11,7 +11,7 @@ use crate::{
             solar::{
                 caste::SolarCaste,
                 charm::{SolarCharm, SolarCharmAbility},
-                NewSolar,
+                SetSolar,
             },
             ExaltType,
         },
@@ -27,7 +27,7 @@ impl<'source> Character<'source> {
     /// Exalt default).
     pub fn set_solar(
         &mut self,
-        solar: &'source NewSolar,
+        solar: &'source SetSolar,
     ) -> Result<&mut Self, CharacterMutationError> {
         let new_willpower_rating = self
             .willpower()
@@ -57,16 +57,12 @@ impl<'source> Character<'source> {
                 .dots(),
         };
 
-        self.exaltation
-            .add_solar_charm(name, charm, ability_dots)?;
+        self.exaltation.add_solar_charm(name, charm, ability_dots)?;
         Ok(self)
     }
 
     /// Removes a Solar Charm from the character.
-    pub fn remove_solar_charm(
-        &mut self,
-        name: &str,
-    ) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_solar_charm(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
         if self.correct_solar_charms(&[name]) {
             // May lose evocations which upgrade the solar charm
             self.correct_evocations(&[]);
@@ -79,7 +75,7 @@ impl<'source> Character<'source> {
     /// Adds an Eclipse Charm to the character.
     pub fn add_eclipse_charm(
         &mut self,
-        charm_id: SpiritCharmId,
+        name: &'source str,
         charm: &'source EclipseCharm,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Exaltation::Exalt(exalt) = &mut self.exaltation {
@@ -91,7 +87,7 @@ impl<'source> Character<'source> {
                     Err(CharacterMutationError::CharmError(
                         CharmError::PrerequisitesNotMet,
                     ))
-                } else if let Entry::Vacant(e) = eclipse.eclipse_charms.entry(charm_id) {
+                } else if let Entry::Vacant(e) = eclipse.eclipse_charms.entry(name) {
                     e.insert(charm);
                     Ok(self)
                 } else {
@@ -109,24 +105,24 @@ impl<'source> Character<'source> {
         }
     }
 
-    pub(crate) fn correct_eclipse_charms(&mut self, force_remove: &[SpiritCharmId]) -> bool {
+    pub(crate) fn correct_eclipse_charms(&mut self, force_remove: &[&str]) -> bool {
         if let Exaltation::Exalt(exalt) = &mut self.exaltation {
             let actual_essence = exalt.essence.rating;
 
             let ExaltType::Solar(solar) = &mut exalt.exalt_type;
             if let SolarCaste::Eclipse(eclipse) = &mut solar.caste {
-                let mut ids_to_remove: HashSet<SpiritCharmId> =
-                    HashSet::from_iter(force_remove.iter().copied());
-                for (id, charm) in eclipse.eclipse_charms.iter() {
+                let mut charms_to_remove: HashSet<String> =
+                    HashSet::from_iter(force_remove.iter().map(|s| (*s).to_owned()));
+                for (name, charm) in eclipse.eclipse_charms.iter() {
                     if charm.essence_required() > actual_essence.get() {
-                        ids_to_remove.insert(*id);
+                        charms_to_remove.insert((*name).to_owned());
                     }
                 }
 
-                if !ids_to_remove.is_empty() {
+                if !charms_to_remove.is_empty() {
                     let old_len = eclipse.eclipse_charms.len();
-                    for id in ids_to_remove.into_iter() {
-                        eclipse.eclipse_charms.remove(&id);
+                    for name in charms_to_remove.into_iter() {
+                        eclipse.eclipse_charms.remove(name.as_str());
                     }
                     return old_len > eclipse.eclipse_charms.len();
                 }
@@ -139,10 +135,10 @@ impl<'source> Character<'source> {
     /// Removes an Eclipse Charm from the character.
     pub fn remove_eclipse_charm(
         &mut self,
-        charm_id: SpiritCharmId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self.correct_eclipse_charms(&[charm_id]) {
-            // May lose evocations which upgrade the solar charm
+        if self.correct_eclipse_charms(&[name]) {
+            // May lose evocations which upgrade the eclipse charm
             self.correct_evocations(&[]);
             Ok(self)
         } else {
@@ -164,12 +160,12 @@ impl<'source> Character<'source> {
         let ids_to_remove = self
             .charms()
             .iter()
-            .filter(|charm_id| matches!(charm_id, CharmId::Solar(_)))
+            .filter(|charm_id| matches!(charm_id, CharmName::Solar(_)))
             .flat_map(|charm_id| {
                 self.charms()
                     .get(charm_id)
                     .and_then(|charm| match (charm_id, charm) {
-                        (CharmId::Solar(solar_charm_id), Charm::Solar(solar_charm)) => {
+                        (CharmName::Solar(solar_charm_id), Charm::Solar(solar_charm)) => {
                             Some((solar_charm_id, solar_charm))
                         }
                         _ => None,

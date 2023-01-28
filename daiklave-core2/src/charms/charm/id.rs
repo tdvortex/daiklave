@@ -1,12 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-use super::{spirit::SpiritCharmId};
-
-/// The Id of a Charm.
+/// The name of a Charm.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum CharmId<'source> {
+pub enum CharmName<'source> {
     /// A Spirit charm.
-    Spirit(SpiritCharmId),
+    Spirit(&'source str),
     /// An Evocation of an artifact or hearthstone.
     Evocation(&'source str),
     /// A Martial Arts charm for a specific style.

@@ -9,7 +9,7 @@ use daiklave_core2::{
         charm::{
             evocation::{Evocation, EvocationKeyword, EvokableNameMutation},
             spirit::SpiritCharm,
-            Charm, CharmId, AddCharm, CharmName, SpiritCharmId, SpiritCharmKeyword,
+            AddCharm, Charm, CharmName, CharmNameMutation, SpiritCharmKeyword,
         },
         CharmActionType, CharmCostType,
     },
@@ -30,7 +30,6 @@ use daiklave_core2::{
         spell::{Spell, SpellKeyword},
         ShapingRitual, Sorcery, SorceryArchetype, SorceryCircle,
     },
-    unique_id::UniqueId,
     weapons::weapon::{OptionalWeaponTag, Weapon, WeaponWeightClass},
     CharacterEventSource, CharacterMutation,
 };
@@ -118,7 +117,7 @@ fn test_solar_charms() {
             wise_arrow.clone(),
         )))
         .unwrap();
-    let Charm::Solar(owned_wise_arrow) = character.charms().get(CharmId::Solar("Wise Arrow")).unwrap() else {panic!("Wrong charm type");};
+    let Charm::Solar(owned_wise_arrow) = character.charms().get(CharmName::Solar("Wise Arrow")).unwrap() else {panic!("Wrong charm type");};
     assert_eq!(owned_wise_arrow, &wise_arrow.1);
 
     let character = event_source
@@ -129,7 +128,7 @@ fn test_solar_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Solar("Wise Arrow"))
+        .get(CharmName::Solar("Wise Arrow"))
         .is_none());
 
     event_source.undo().unwrap();
@@ -175,7 +174,7 @@ fn test_solar_charms() {
 
     // Solars must meet Charm tree requirements
     event_source
-        .apply_mutation(CharacterMutation::RemoveCharm(CharmName::Solar(
+        .apply_mutation(CharacterMutation::RemoveCharm(CharmNameMutation::Solar(
             "Wise Arrow".to_owned(),
         )))
         .unwrap();
@@ -205,13 +204,13 @@ fn test_solar_charms() {
         )))
         .unwrap();
     let character = event_source
-        .apply_mutation(CharacterMutation::RemoveCharm(CharmName::Solar(
+        .apply_mutation(CharacterMutation::RemoveCharm(CharmNameMutation::Solar(
             "Wise Arrow".to_owned(),
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Solar("Sight Without Eyes"))
+        .get(CharmName::Solar("Sight Without Eyes"))
         .is_none());
 }
 
@@ -342,11 +341,11 @@ fn test_evocations() {
 
     assert!(character
         .charms()
-        .get(CharmId::Evocation("Burning Coal Fist"))
+        .get(CharmName::Evocation("Burning Coal Fist"))
         .is_some());
     assert!(character
         .charms()
-        .get(CharmId::Evocation("Howling Lotus Strike"))
+        .get(CharmName::Evocation("Howling Lotus Strike"))
         .is_some());
 
     let incandescent_lance = Evocation::builder(
@@ -386,7 +385,7 @@ fn test_evocations() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Evocation("Incandescent Lance"))
+        .get(CharmName::Evocation("Incandescent Lance"))
         .is_some());
 
     let character = event_source
@@ -394,7 +393,7 @@ fn test_evocations() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Evocation("Incandescent Lance"))
+        .get(CharmName::Evocation("Incandescent Lance"))
         .is_none());
 
     // Exalts must have the right artifact or hearthstone
@@ -421,7 +420,7 @@ fn test_evocations() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Evocation("Burning Coal Fist"))
+        .get(CharmName::Evocation("Burning Coal Fist"))
         .is_none());
 
     // Exalts must meet tree requirements
@@ -482,25 +481,25 @@ fn test_evocations() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Evocation("Seven Widows Venom"))
+        .get(CharmName::Evocation("Seven Widows Venom"))
         .is_some());
 
     let character = event_source
-        .apply_mutation(CharacterMutation::RemoveCharm(CharmName::Evocation(
-            "Howling Lotus Strike".to_owned(),
-        )))
+        .apply_mutation(CharacterMutation::RemoveCharm(
+            CharmNameMutation::Evocation("Howling Lotus Strike".to_owned()),
+        ))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Evocation("Howling Lotus Strike"))
+        .get(CharmName::Evocation("Howling Lotus Strike"))
         .is_none());
     assert!(character
         .charms()
-        .get(CharmId::Evocation("Venom Intensifying Strike"))
+        .get(CharmName::Evocation("Venom Intensifying Strike"))
         .is_none());
     assert!(character
         .charms()
-        .get(CharmId::Evocation("Seven Widows Venom"))
+        .get(CharmName::Evocation("Seven Widows Venom"))
         .is_none());
 
     // Upgrade-type Evocations require the upgraded Charm
@@ -557,7 +556,9 @@ fn test_evocations() {
             .to_owned(),
     )
     .summary("Discount for Integrity-Protecting Prana".to_owned())
-    .upgrades(CharmName::Solar("Integrity-Protecting Prana".to_owned())) // Simplifying test, ignoring Breeze-Catching Descent
+    .upgrades(CharmNameMutation::Solar(
+        "Integrity-Protecting Prana".to_owned(),
+    )) // Simplifying test, ignoring Breeze-Catching Descent
     .build();
 
     event_source
@@ -588,7 +589,7 @@ fn test_evocations() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Evocation("Glamour-Sloughing Parasol"))
+        .get(CharmName::Evocation("Glamour-Sloughing Parasol"))
         .is_some());
 
     let character = event_source
@@ -599,11 +600,11 @@ fn test_evocations() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Solar("Integrity-Protecting Prana"))
+        .get(CharmName::Solar("Integrity-Protecting Prana"))
         .is_none());
     assert!(character
         .charms()
-        .get(CharmId::Evocation("Glamour-Sloughing Parasol"))
+        .get(CharmName::Evocation("Glamour-Sloughing Parasol"))
         .is_none());
 }
 
@@ -706,7 +707,7 @@ fn test_spells() {
     let character = event_source.apply_mutation(mutation).unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Spell("Corrupted Words"))
+        .get(CharmName::Spell("Corrupted Words"))
         .is_some());
     assert_eq!(
         character
@@ -720,13 +721,11 @@ fn test_spells() {
     );
 
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(
-            cirrus_skiff,
-        )))
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(cirrus_skiff)))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Spell("Cirrus Skiff"))
+        .get(CharmName::Spell("Cirrus Skiff"))
         .is_some());
     assert_eq!(
         character
@@ -785,9 +784,7 @@ fn test_spells() {
         .summary("AOE attack that makes difficult terrain".to_owned())
         .build(SorceryCircle::Terrestrial);
     event_source
-        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(
-            butterflies,
-        )))
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(butterflies)))
         .unwrap();
 
     // ...but not Celestial Spells or Solar circle spells
@@ -835,9 +832,7 @@ fn test_spells() {
         .build(SorceryCircle::Solar);
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(
-            demon.clone()
-        )))
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(demon.clone())))
         .is_err());
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(
@@ -1071,7 +1066,7 @@ fn test_martial_arts_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts("Gathering Light Concentration"))
+        .get(CharmName::MartialArts("Gathering Light Concentration"))
         .is_some());
 
     // Exalts must meet the MA ability requirements of charms
@@ -1117,7 +1112,7 @@ fn test_martial_arts_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts("Shining Starfall Execution"))
+        .get(CharmName::MartialArts("Shining Starfall Execution"))
         .is_some());
 
     let character = event_source
@@ -1128,12 +1123,12 @@ fn test_martial_arts_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts("Shining Starfall Execution"))
+        .get(CharmName::MartialArts("Shining Starfall Execution"))
         .is_none());
     let character = event_source.undo().unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts("Shining Starfall Execution"))
+        .get(CharmName::MartialArts("Shining Starfall Execution"))
         .is_some());
 
     // Exalts must meet the Essence requirements of charms
@@ -1182,7 +1177,9 @@ fn test_martial_arts_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts("Single Point Shining Into the Void Form"))
+        .get(CharmName::MartialArts(
+            "Single Point Shining Into the Void Form"
+        ))
         .is_some());
 
     let character = event_source
@@ -1190,7 +1187,9 @@ fn test_martial_arts_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts("Single Point Shining Into the Void Form"))
+        .get(CharmName::MartialArts(
+            "Single Point Shining Into the Void Form"
+        ))
         .is_none());
 
     // ...unless they are Dawn Solars with Martial Arts Supernal
@@ -1222,15 +1221,17 @@ fn test_martial_arts_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts("Gathering Light Concentration"))
+        .get(CharmName::MartialArts("Gathering Light Concentration"))
         .is_some());
     assert!(character
         .charms()
-        .get(CharmId::MartialArts("Shining Starfall Execution"))
+        .get(CharmName::MartialArts("Shining Starfall Execution"))
         .is_some());
     assert!(character
         .charms()
-        .get(CharmId::MartialArts("Single Point Shining Into the Void Form"))
+        .get(CharmName::MartialArts(
+            "Single Point Shining Into the Void Form"
+        ))
         .is_none());
 
     let character = event_source
@@ -1240,28 +1241,30 @@ fn test_martial_arts_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts("Single Point Shining Into the Void Form"))
+        .get(CharmName::MartialArts(
+            "Single Point Shining Into the Void Form"
+        ))
         .is_some());
 
     // Exalts must satisfy the Charm tree prerequisites of their Styles
     let character = event_source
-        .apply_mutation(CharacterMutation::RemoveCharm(CharmName::MartialArts(
-            "Shining Starfall Execution".to_owned()
-        )))
+        .apply_mutation(CharacterMutation::RemoveCharm(
+            CharmNameMutation::MartialArts("Shining Starfall Execution".to_owned()),
+        ))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts("Shining Starfall Execution"))
+        .get(CharmName::MartialArts("Shining Starfall Execution"))
         .is_none());
     assert!(character
         .charms()
-        .get(CharmId::MartialArts("Single Point Shining Into the Void Form"))
+        .get(CharmName::MartialArts(
+            "Single Point Shining Into the Void Form"
+        ))
         .is_none());
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(AddCharm::MartialArts(
-            form
-        )))
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::MartialArts(form)))
         .is_err());
 }
 
@@ -1269,7 +1272,6 @@ fn test_martial_arts_charms() {
 fn test_eclipse_charms() {
     let mut event_source = CharacterEventSource::default();
     // Mortals cannot add Eclipse charms
-    let towering_wheat_blessing_id = SpiritCharmId(UniqueId::Placeholder(1));
     let towering_wheat_blessing = Charm::builder("Towering Wheat Blessing".to_owned())
         .spirit()
         .book_reference(BookReference::new(Book::CoreRulebook, 513))
@@ -1288,7 +1290,6 @@ fn test_eclipse_charms() {
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Eclipse(
-            towering_wheat_blessing_id,
             towering_wheat_blessing.clone()
         )))
         .is_err());
@@ -1329,7 +1330,6 @@ fn test_eclipse_charms() {
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Eclipse(
-            towering_wheat_blessing_id,
             towering_wheat_blessing.clone()
         )))
         .is_err());
@@ -1355,17 +1355,15 @@ fn test_eclipse_charms() {
         .unwrap();
     let character = event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Eclipse(
-            towering_wheat_blessing_id,
             towering_wheat_blessing,
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Spirit(towering_wheat_blessing_id))
+        .get(CharmName::Spirit("Towering Wheat Blessing"))
         .is_some());
 
     // Eclipse Solars must meet the Essence requirement of Eclipse Charms
-    let night_black_carapace_id = SpiritCharmId(UniqueId::Placeholder(2));
     let night_black_carapace = SpiritCharm::builder("Night-Black Carapace".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 528))
         .cost(CharmCostType::Motes, NonZeroU8::new(5).unwrap())
@@ -1385,7 +1383,6 @@ fn test_eclipse_charms() {
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Eclipse(
-            night_black_carapace_id,
             night_black_carapace.clone()
         )))
         .is_err());
@@ -1395,13 +1392,12 @@ fn test_eclipse_charms() {
         .unwrap();
     let character = event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Eclipse(
-            night_black_carapace_id,
             night_black_carapace.clone(),
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Spirit(night_black_carapace_id))
+        .get(CharmName::Spirit("Night-Black Carapace"))
         .is_some());
 
     let character = event_source
@@ -1409,6 +1405,6 @@ fn test_eclipse_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Spirit(night_black_carapace_id))
+        .get(CharmName::Spirit("Night-Black Carapace"))
         .is_none());
 }

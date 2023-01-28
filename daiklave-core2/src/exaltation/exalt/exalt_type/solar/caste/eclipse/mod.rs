@@ -7,11 +7,7 @@ use std::collections::HashMap;
 pub use ability::EclipseAbility;
 pub(crate) use memo::EclipseMemo;
 
-use crate::{
-    abilities::AbilityName,
-    charms::charm::{EclipseCharm, SpiritCharmId},
-    exaltation::exalt::AnimaEffect,
-};
+use crate::{abilities::AbilityName, charms::charm::EclipseCharm, exaltation::exalt::AnimaEffect};
 
 use self::anima_effect::{ECLIPSE_ONE, ECLIPSE_THREE, ECLIPSE_TWO};
 
@@ -19,7 +15,7 @@ use self::anima_effect::{ECLIPSE_ONE, ECLIPSE_THREE, ECLIPSE_TWO};
 pub(crate) struct Eclipse<'source> {
     pub caste_not_supernal: [EclipseAbility; 4],
     pub supernal: EclipseAbility,
-    pub eclipse_charms: HashMap<SpiritCharmId, &'source EclipseCharm>,
+    pub eclipse_charms: HashMap<&'source str, &'source EclipseCharm>,
 }
 
 impl<'source> Eclipse<'source> {

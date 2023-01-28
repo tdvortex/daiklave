@@ -12,7 +12,7 @@ use std::{
 
 use crate::{book_reference::BookReference, charms::CharmCostType};
 
-use super::{SolarCharmKeyword};
+use super::SolarCharmKeyword;
 
 /// A builder to construct a new Solar Charm. Required fields are name (already
 /// specified), Essence requirement, ability category and required dots,

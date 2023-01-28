@@ -1,10 +1,7 @@
 use crate::{
     abilities::AbilityRating,
     exaltation::mortal::martial_arts::MortalMartialArtist,
-    martial_arts::{
-        charm::{MartialArtsCharm},
-        style::MartialArtsStyle,
-    },
+    martial_arts::{charm::MartialArtsCharm, style::MartialArtsStyle},
 };
 
 use super::ExaltMartialArtistMemo;

@@ -1,6 +1,6 @@
+mod add;
 /// A builder path for constructing a Martial Arts charm.
 pub mod builder;
-mod add;
 mod keyword;
 
 use std::{

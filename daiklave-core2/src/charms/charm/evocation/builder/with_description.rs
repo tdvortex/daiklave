@@ -7,8 +7,8 @@ use crate::{
     book_reference::BookReference,
     charms::{
         charm::{
-            evocation::{EvocationKeyword, EvokableNameMutation, AddEvocation},
-            CharmName, Evocation,
+            evocation::{AddEvocation, EvocationKeyword, EvokableNameMutation},
+            CharmNameMutation, Evocation,
         },
         CharmActionType, CharmCostType,
     },
@@ -25,7 +25,7 @@ pub struct EvocationBuilderWithDescription {
     pub(crate) resonant: Option<String>,
     pub(crate) dissonant: Option<String>,
     pub(crate) evocation_tree: HashSet<String>,
-    pub(crate) upgrade_charm: Option<CharmName>,
+    pub(crate) upgrade_charm: Option<CharmNameMutation>,
     pub(crate) keywords: HashSet<EvocationKeyword>,
     pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
     pub(crate) action_type: CharmActionType,
@@ -68,7 +68,7 @@ impl EvocationBuilderWithDescription {
 
     /// Sets this Evocation as an upgrade of another Charm, usually a
     /// Solar Charm (or other Exalt-specific type).
-    pub fn upgrades(mut self, charm_name: CharmName) -> Self {
+    pub fn upgrades(mut self, charm_name: CharmNameMutation) -> Self {
         self.upgrade_charm = Some(charm_name);
         self
     }
@@ -93,20 +93,23 @@ impl EvocationBuilderWithDescription {
 
     /// Completes the builder and returns a CharmMutation of the Evocation.
     pub fn build(self) -> AddEvocation {
-        (self.name, Evocation {
-            evokable_name: self.evokable_name,
-            book_reference: self.book_reference,
-            summary: self.summary,
-            description: self.description,
-            resonant: self.resonant,
-            dissonant: self.dissonant,
-            essence_required: self.essence_required,
-            evocation_tree: self.evocation_tree,
-            upgrade_charm: self.upgrade_charm,
-            keywords: self.keywords,
-            costs: self.costs,
-            action_type: self.action_type,
-            duration: self.duration,
-        })
+        (
+            self.name,
+            Evocation {
+                evokable_name: self.evokable_name,
+                book_reference: self.book_reference,
+                summary: self.summary,
+                description: self.description,
+                resonant: self.resonant,
+                dissonant: self.dissonant,
+                essence_required: self.essence_required,
+                evocation_tree: self.evocation_tree,
+                upgrade_charm: self.upgrade_charm,
+                keywords: self.keywords,
+                costs: self.costs,
+                action_type: self.action_type,
+                duration: self.duration,
+            },
+        )
     }
 }

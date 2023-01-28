@@ -4,9 +4,8 @@ use std::{
 };
 
 use crate::{
-    book_reference::BookReference,
-    charms::CharmCostType,
-    martial_arts::charm::{MartialArtsCharmKeyword},
+    book_reference::BookReference, charms::CharmCostType,
+    martial_arts::charm::MartialArtsCharmKeyword,
 };
 
 use super::MartialArtsCharmBuilderWithAbilityRequirement;

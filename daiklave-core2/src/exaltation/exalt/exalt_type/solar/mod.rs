@@ -17,15 +17,12 @@ use std::collections::{hash_map::Entry, HashMap, HashSet};
 
 pub use error::SolarError;
 pub(crate) use memo::SolarMemo;
-pub use new::NewSolar;
+pub use new::SetSolar;
 pub(crate) use sorcery::{SolarSorcererMemo, SolarSorcererView};
 
 use crate::{
     abilities::AbilityName,
-    charms::{
-        charm::{Charm, SpiritCharmId},
-        CharmError,
-    },
+    charms::{charm::Charm, CharmError},
     exaltation::exalt::{AnimaEffect, Limit},
     experience::ExperiencePool,
     merits::merit::MeritError,
@@ -45,7 +42,7 @@ use self::{
     anima_effect::{SOLAR_ONE, SOLAR_TWO},
     builder::SolarBuilder,
     caste::SolarCaste,
-    charm::{SolarCharm},
+    charm::SolarCharm,
 };
 
 /// Traits which are unique to being a Solar Exalted.
@@ -359,9 +356,7 @@ impl<'source> Solar<'source> {
                 CharmError::PrerequisitesNotMet,
             ));
         }
-        let mut unmet_tree_requirements = charm
-            .charm_prerequisites()
-            .collect::<HashSet<&str>>();
+        let mut unmet_tree_requirements = charm.charm_prerequisites().collect::<HashSet<&str>>();
 
         for known_charm_name in self
             .solar_charms
@@ -460,26 +455,23 @@ impl<'source> Solar<'source> {
         Ok(self)
     }
 
-    pub(crate) fn get_eclipse_charm(
-        &self,
-        spirit_charm_id: SpiritCharmId,
-    ) -> Option<Charm<'source>> {
+    pub(crate) fn get_eclipse_charm(&self, name: &str) -> Option<Charm<'source>> {
         match &self.caste {
             SolarCaste::Eclipse(eclipse) => eclipse
                 .eclipse_charms
-                .get(&spirit_charm_id)
+                .get(&name)
                 .map(|eclipse_charm| Charm::Eclipse(eclipse_charm)),
             _ => None,
         }
     }
 
-    pub(crate) fn eclipse_charms_iter(&self) -> impl Iterator<Item = SpiritCharmId> + '_ {
+    pub(crate) fn eclipse_charms_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         match &self.caste {
             SolarCaste::Eclipse(eclipse) => eclipse
                 .eclipse_charms
                 .keys()
                 .copied()
-                .collect::<Vec<SpiritCharmId>>(),
+                .collect::<Vec<&str>>(),
             _ => vec![],
         }
         .into_iter()
