@@ -12,9 +12,8 @@ use crate::{
     languages::LanguageError,
     martial_arts::MartialArtsError,
     merits::merit::MeritError,
-    name_and_concept::ConceptError,
     sorcery::SorceryError,
-    weapons::WeaponError,
+    weapons::WeaponError, concept::ConceptError,
 };
 
 /// An error representing something that could go wrong with a

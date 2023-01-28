@@ -5,14 +5,17 @@ mod ability_rating;
 mod ability_rating_memo;
 mod error;
 mod memo;
+mod name;
+mod set;
 
 pub(crate) use abilities_vanilla::AbilitiesVanilla;
 pub use ability_name::AbilityName;
-pub use ability_name_vanilla::AbilityNameVanilla;
+pub use name::AbilityNameVanilla;
 pub(crate) use ability_rating::AbilityRating;
 pub(crate) use ability_rating_memo::AbilityRatingMemo;
 pub(crate) use error::AbilityError;
 pub(crate) use memo::AbilitiesMemo;
+pub use set::SetAbility;
 
 use crate::Character;
 

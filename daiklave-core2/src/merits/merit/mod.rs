@@ -1,3 +1,5 @@
+mod add;
+
 /// Builder path for making new merits.
 pub mod builder;
 
@@ -6,8 +8,8 @@ pub(crate) mod constants;
 mod error;
 pub use error::MeritError;
 
-mod id;
-pub use id::MeritId;
+mod name;
+pub use name::MeritInstanceName;
 
 mod merit_type;
 pub use merit_type::MeritType;
@@ -50,7 +52,7 @@ impl<'source> Merit<'source> {
     }
 
     /// The Id of this instance of the merit as owned by the character.
-    pub fn id(&self) -> MeritId {
+    pub fn id(&self) -> MeritInstanceName {
         self.0.id()
     }
 

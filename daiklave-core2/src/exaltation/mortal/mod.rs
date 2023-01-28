@@ -3,6 +3,8 @@ pub(crate) mod martial_arts;
 mod mortal_memo;
 mod weapons;
 mod wonders;
+mod set;
+pub use set::SetMortal;
 use std::{
     collections::{hash_map::Entry, HashMap},
     num::NonZeroU8,
@@ -30,7 +32,7 @@ use crate::{
     sorcery::{
         circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
         spell::SpellMutation,
-        SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
+        SorceryArchetypeMerit, SorceryError,
     },
     weapons::{
         weapon::{
@@ -399,7 +401,7 @@ impl<'view, 'source> Mortal<'source> {
     pub fn add_sorcery_archetype_merit(
         &mut self,
         sorcery_archetype_name: &str,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit_name: &'source str,
         sorcery_archetype_merit: &'source SorceryArchetypeMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(terrestrial) = &mut self.sorcery {
@@ -409,7 +411,7 @@ impl<'view, 'source> Mortal<'source> {
                 ))
             } else if let Entry::Vacant(e) = terrestrial
                 .archetype_merits
-                .entry(sorcery_archetype_merit_id)
+                .entry(sorcery_archetype_merit_name)
             {
                 e.insert(sorcery_archetype_merit);
                 Ok(self)
@@ -427,12 +429,12 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn remove_sorcery_archetype_merit(
         &mut self,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit_name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(terrestrial) = &mut self.sorcery {
             if terrestrial
                 .archetype_merits
-                .remove(&sorcery_archetype_merit_id)
+                .remove(&sorcery_archetype_merit_name)
                 .is_none()
             {
                 Err(CharacterMutationError::MeritError(MeritError::NotFound))

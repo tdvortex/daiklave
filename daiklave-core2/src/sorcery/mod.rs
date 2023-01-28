@@ -13,7 +13,7 @@ pub mod spell;
 
 pub use archetype::{
     AddShapingRitual, ShapingRitual, ShapingRitualSummary, SorceryArchetype, SorceryArchetypeMerit,
-    SorceryArchetypeMeritId, SorceryArchetypeName, SorceryArchetypeWithMerits,
+    SorceryArchetypeName, SorceryArchetypeWithMerits,
 };
 pub use circles::{
     AddCelestialSorcery, AddSolarSorcery, AddTerrestrialSorcery, CelestialSpell, SolarSpell,

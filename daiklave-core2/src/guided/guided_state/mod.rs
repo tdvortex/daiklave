@@ -53,7 +53,7 @@ impl<'source> GuidedState<'source> {
 
         match guided_mutation {
             GuidedMutation::CharacterMutation(character_mutation) => {
-                if let CharacterMutation::SetAbilityDots(ability_name_vanilla, dots) =
+                if let CharacterMutation::SetAbility(ability_name_vanilla, dots) =
                     character_mutation
                 {
                     self.check_abilities_floor(*ability_name_vanilla, *dots)?;
@@ -567,7 +567,7 @@ impl<'source> GuidedState<'source> {
                 | CharacterMutation::SetConcept(_)
                 | CharacterMutation::RemoveConcept => self.stage == GuidedStage::NameAndConcept,
                 CharacterMutation::SetAttribute(_, _) => self.stage == GuidedStage::Attributes,
-                CharacterMutation::SetAbilityDots(_, _)
+                CharacterMutation::SetAbility(_, _)
                 | CharacterMutation::SetMartialArtsDots(_, _)
                 | CharacterMutation::SetCraftDots(_, _) => self.stage == GuidedStage::Abilities,
                 _ => false,

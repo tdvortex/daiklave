@@ -6,7 +6,7 @@ use crate::sorcery::{
     archetype::ShapingRitualSummary,
     circles::{celestial::CelestialSpell, terrestrial::TerrestrialSpell},
     spell::SpellName,
-    ShapingRitual, SorceryArchetype, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+    ShapingRitual, SorceryArchetype, SorceryArchetypeMerit,
     SorceryArchetypeName,
 };
 
@@ -18,7 +18,7 @@ pub(crate) struct SolarCircleSorcererMemo {
         SorceryArchetypeName,
         (
             SorceryArchetype,
-            HashMap<SorceryArchetypeMeritId, SorceryArchetypeMerit>,
+            HashMap<String, SorceryArchetypeMerit>,
         ),
     >,
     pub(in crate::sorcery::circles) circle_archetypes: [SorceryArchetypeName; 3],
@@ -44,7 +44,7 @@ impl<'source> SolarCircleSorcererMemo {
                 .map(|(k, (archetype, merits))| {
                     (
                         k.as_str(),
-                        (archetype, merits.iter().map(|(k, v)| (*k, v)).collect()),
+                        (archetype, merits.iter().map(|(k, v)| (k.as_str(), v)).collect()),
                     )
                 })
                 .collect(),

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::sorcery::{
     archetype::{ShapingRitualSummary, SorceryArchetypeName},
     spell::SpellName,
-    ShapingRitual, SorceryArchetype, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+    ShapingRitual, SorceryArchetype, SorceryArchetypeMerit,
 };
 
 use super::{sorcerer::TerrestrialCircleSorcerer, TerrestrialSpell};
@@ -14,7 +14,7 @@ use super::{sorcerer::TerrestrialCircleSorcerer, TerrestrialSpell};
 pub(crate) struct TerrestrialCircleSorcererMemo {
     pub archetype_name: SorceryArchetypeName,
     pub archetype: SorceryArchetype,
-    pub archetype_merits: HashMap<SorceryArchetypeMeritId, SorceryArchetypeMerit>,
+    pub archetype_merits: HashMap<String, SorceryArchetypeMerit>,
     pub shaping_ritual_name: ShapingRitualSummary,
     pub shaping_ritual: ShapingRitual,
     pub control_spell_name: SpellName,
@@ -27,7 +27,7 @@ impl<'source> TerrestrialCircleSorcererMemo {
         TerrestrialCircleSorcerer {
             archetype_name: self.archetype_name.as_str(),
             archetype: &self.archetype,
-            archetype_merits: self.archetype_merits.iter().map(|(k, v)| (*k, v)).collect(),
+            archetype_merits: self.archetype_merits.iter().map(|(k, v)| (k.as_str(), v)).collect(),
             shaping_ritual_name: self.shaping_ritual_name.as_str(),
             shaping_ritual: &self.shaping_ritual,
             control_spell_name: self.control_spell_name.as_str(),

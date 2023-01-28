@@ -1,8 +1,6 @@
-mod id;
 mod name;
+pub use name::{MoteCommitmentName, MoteCommitmentNameMutation, OtherMoteCommitmentName};
 
-pub use id::MoteCommitmentId;
-pub use name::UncommitMotes;
 use serde::{Deserialize, Serialize};
 
 /// A single committed mote effect.

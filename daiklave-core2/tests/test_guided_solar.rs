@@ -486,32 +486,32 @@ fn test_guided_solar() {
     // Check you can't reduce any of these values to below the minimum threshold
     assert!(guided_builder
         .check_mutation(&GuidedMutation::CharacterMutation(
-            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Brawl, 0)
+            CharacterMutation::SetAbility(AbilityNameVanilla::Brawl, 0)
         ))
         .is_err());
     assert!(guided_builder
         .check_mutation(&GuidedMutation::CharacterMutation(
-            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 2)
+            CharacterMutation::SetAbility(AbilityNameVanilla::Occult, 2)
         ))
         .is_err());
     assert!(guided_builder
         .check_mutation(&GuidedMutation::CharacterMutation(
-            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Linguistics, 0)
+            CharacterMutation::SetAbility(AbilityNameVanilla::Linguistics, 0)
         ))
         .is_err());
     assert!(guided_builder
         .check_mutation(&GuidedMutation::CharacterMutation(
-            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Socialize, 0)
+            CharacterMutation::SetAbility(AbilityNameVanilla::Socialize, 0)
         ))
         .is_err());
     assert!(guided_builder
         .check_mutation(&GuidedMutation::CharacterMutation(
-            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Survival, 0)
+            CharacterMutation::SetAbility(AbilityNameVanilla::Survival, 0)
         ))
         .is_err());
     assert!(guided_builder
         .check_mutation(&GuidedMutation::CharacterMutation(
-            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Thrown, 0)
+            CharacterMutation::SetAbility(AbilityNameVanilla::Thrown, 0)
         ))
         .is_err());
 
@@ -524,7 +524,7 @@ fn test_guided_solar() {
 
     // Check purchasing dots above 3 costs bonus points even if free dots remain
     // Cost should be 2 BP per dot for non-Caste, non-Favored abilities and 1 BP per dot for Caste or Favored
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Thrown,
         4,
     ));
@@ -538,7 +538,7 @@ fn test_guided_solar() {
         14
     );
 
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Presence,
         4,
     ));
@@ -607,7 +607,7 @@ fn test_guided_solar() {
     ]
     .into_iter()
     .map(|(ability_name, dots)| {
-        GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(ability_name, dots))
+        GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(ability_name, dots))
     })
     .fold(&mut guided_builder, |builder, mutation| {
         builder.apply_mutation(mutation).unwrap()
@@ -623,7 +623,7 @@ fn test_guided_solar() {
 
     // Check purchasing more than 28 dots of abilities costs bonus points even at 3 or below
     // Get the caste/solar discount on only as many dots as you actually have in caste/favored
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Medicine,
         3,
     ));
@@ -636,7 +636,7 @@ fn test_guided_solar() {
         12
     );
 
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Bureaucracy,
         3,
     ));
@@ -649,7 +649,7 @@ fn test_guided_solar() {
         8
     );
 
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Dodge,
         3,
     ));
@@ -663,27 +663,27 @@ fn test_guided_solar() {
     );
 
     // Check can't advance with less than 28 free dots (even if 28 dots total)
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Medicine,
         0,
     ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Bureaucracy,
         0,
     ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Sail,
         0,
     ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::War,
         0,
     ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Dodge,
         4,
     ));
@@ -693,12 +693,12 @@ fn test_guided_solar() {
         .is_err());
 
     // Check can't advance if Craft is a Favored ability and you don't have a Craft ability
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Dodge,
         3,
     ));
     guided_builder.apply_mutation(mutation).unwrap();
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Thrown,
         3,
     ));
@@ -713,7 +713,7 @@ fn test_guided_solar() {
         .is_err());
 
     // Move on to the next stage
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Thrown,
         2,
     ));

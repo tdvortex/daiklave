@@ -5,10 +5,18 @@ use crate::{
     weapons::weapon::WeaponType,
 };
 
+mod commit;
 mod state;
+mod uncommit;
+mod recover;
+mod spend;
+pub use commit::CommitMotes;
+pub use recover::RecoverMotes;
+pub use spend::SpendMotes;
+pub use uncommit::UncommitMotes;
 pub(crate) use state::{MotesState, MotesStateMemo};
 
-use super::{MoteCommitment, MoteCommitmentId, MotePool};
+use super::{MoteCommitment, MotePool, mote_commitment::MoteCommitmentName};
 
 /// The current status of an Exalt's motes of Essence.
 pub struct Motes<'view, 'source> {
@@ -31,13 +39,13 @@ impl<'view, 'source> Motes<'view, 'source> {
 
     /// All effects the Exalt has currently committed motes to (including
     /// artifact attunement)
-    pub fn committed(&self) -> impl Iterator<Item = (MoteCommitmentId, MoteCommitment)> + '_ {
+    pub fn committed(&self) -> impl Iterator<Item = (MoteCommitmentName<'source>, MoteCommitment)> + '_ {
         let other_commitments = self
             .state
             .commitments
             .iter()
-            .map(|(k, v)| (MoteCommitmentId::Other(*k), *v));
-
+            .map(|(k, v)| (MoteCommitmentName::Other(*k), *v));
+ 
         let weapon_commitments =
             self.weapons.iter().filter_map(|(weapon_id, equipped)| {
                 match self
@@ -51,7 +59,7 @@ impl<'view, 'source> Motes<'view, 'source> {
                     Some(WeaponType::Artifact(artifact_weapon_name, _weapon, attunement)) => {
                         attunement.map(|personal| {
                             (
-                                MoteCommitmentId::AttunedArtifact(ArtifactName::Weapon(
+                                MoteCommitmentName::AttunedArtifact(ArtifactName::Weapon(
                                     artifact_weapon_name,
                                 )),
                                 MoteCommitment {
@@ -77,7 +85,7 @@ impl<'view, 'source> Motes<'view, 'source> {
                             };
 
                             Some((
-                                MoteCommitmentId::AttunedArtifact(ArtifactName::Armor(
+                                MoteCommitmentName::AttunedArtifact(ArtifactName::Armor(
                                     artifact_armor_name,
                                 )),
                                 MoteCommitment {
@@ -98,7 +106,7 @@ impl<'view, 'source> Motes<'view, 'source> {
                 if let Some(personal) = wonder.2 {
                     if let Some(amount) = wonder.1.attunement_cost {
                         Some((
-                            MoteCommitmentId::AttunedArtifact(ArtifactName::Wonder(wonder.0)),
+                            MoteCommitmentName::AttunedArtifact(ArtifactName::Wonder(wonder.0)),
                             MoteCommitment {
                                 peripheral: amount - personal.min(amount),
                                 personal: personal.min(amount),

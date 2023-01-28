@@ -8,7 +8,7 @@ use crate::{
             terrestrial::{AddTerrestrialSorcery, AddTerrestrialSorceryView},
         },
         spell::SpellMutation,
-        Sorcery, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+        Sorcery, SorceryArchetypeMerit,
     },
     Character, CharacterMutationError,
 };
@@ -89,12 +89,12 @@ impl<'view, 'source> Character<'source> {
     pub fn add_sorcery_archetype_merit(
         &mut self,
         sorcery_archetype_name: &'source str,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit_name: &'source str,
         sorcery_archetype_merit: &'source SorceryArchetypeMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_sorcery_archetype_merit(
             sorcery_archetype_name,
-            sorcery_archetype_merit_id,
+            sorcery_archetype_merit_name,
             sorcery_archetype_merit,
         )?;
         Ok(self)
@@ -103,10 +103,10 @@ impl<'view, 'source> Character<'source> {
     /// Removes a merit from a Sorcery Archetype owned by a character
     pub fn remove_sorcery_archetype_merit(
         &mut self,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation
-            .remove_sorcery_archetype_merit(sorcery_archetype_merit_id)?;
+            .remove_sorcery_archetype_merit(name)?;
         Ok(self)
     }
 

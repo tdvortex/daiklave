@@ -9,7 +9,7 @@ use crate::{
         prerequisite::MeritPrerequisite,
         stackable::StackableMeritTemplateId,
         template::{MeritTemplate, MeritTemplateDotOptions},
-        MeritError, MeritType, NonStackableMeritId, StackableMeritTemplate,
+        MeritError, MeritType, StackableMeritTemplate,
     },
 };
 
@@ -84,9 +84,8 @@ impl FixedMeritTemplateBuilder {
             Err(MeritError::InvalidDotRating)
         } else {
             Ok(StackableMeritTemplate(
-                id,
+                self.name,
                 MeritTemplate {
-                    name: self.name,
                     book_reference: self.book_reference,
                     merit_type: self.merit_type,
                     shared_description: self.description,
@@ -100,16 +99,14 @@ impl FixedMeritTemplateBuilder {
     /// Completes the builder, returning a nonstackable merit template. Errors if
     /// the dot value is not in the range [0, 5] inclusive.
     pub fn nonstackable(
-        self,
-        id: NonStackableMeritId,
+        self
     ) -> Result<NonStackableMeritTemplate, MeritError> {
         if !(0..=5).contains(&self.dot_requirement) {
             Err(MeritError::InvalidDotRating)
         } else {
             Ok(NonStackableMeritTemplate(
-                id,
+                self.name,
                 MeritTemplate {
-                    name: self.name,
                     book_reference: self.book_reference,
                     merit_type: self.merit_type,
                     shared_description: self.description,

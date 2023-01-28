@@ -34,7 +34,7 @@ use crate::{
             terrestrial::AddTerrestrialSorceryView,
         },
         spell::SpellMutation,
-        Sorcery, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
+        Sorcery, SorceryArchetypeMerit, SorceryError,
     },
     weapons::weapon::{
         artifact::ArtifactWeaponView, mundane::MundaneWeapon, EquipHand, Equipped, Weapon,
@@ -960,21 +960,21 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn add_sorcery_archetype_merit(
         &mut self,
         sorcery_archetype_name: &str,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit_name: &'source str,
         sorcery_archetype_merit: &'source SorceryArchetypeMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
                 mortal.add_sorcery_archetype_merit(
                     sorcery_archetype_name,
-                    sorcery_archetype_merit_id,
+                    sorcery_archetype_merit_name,
                     sorcery_archetype_merit,
                 )?;
             }
             Exaltation::Exalt(exalt) => {
                 exalt.add_sorcery_archetype_merit(
                     sorcery_archetype_name,
-                    sorcery_archetype_merit_id,
+                    sorcery_archetype_merit_name,
                     sorcery_archetype_merit,
                 )?;
             }
@@ -984,14 +984,14 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn remove_sorcery_archetype_merit(
         &mut self,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.remove_sorcery_archetype_merit(sorcery_archetype_merit_id)?;
+                mortal.remove_sorcery_archetype_merit(name)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.remove_sorcery_archetype_merit(sorcery_archetype_merit_id)?;
+                exalt.remove_sorcery_archetype_merit(name)?;
             }
         }
         Ok(self)

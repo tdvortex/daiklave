@@ -9,7 +9,7 @@ use crate::{
         prerequisite::MeritPrerequisite,
         stackable::StackableMeritTemplateId,
         template::{MeritTemplate, MeritTemplateDotOptions},
-        MeritError, MeritType, NonStackableMeritId, StackableMeritTemplate,
+        MeritError, MeritType, StackableMeritTemplate,
     },
 };
 
@@ -87,7 +87,6 @@ impl VariableMeritTemplateBuilder {
     /// no dot options have been specified or if any rating is above 5.
     pub fn stackable(
         self,
-        id: StackableMeritTemplateId,
     ) -> Result<StackableMeritTemplate, MeritError> {
         if self.dot_descriptions.is_empty() {
             return Err(MeritError::MissingDotRating);
@@ -104,9 +103,8 @@ impl VariableMeritTemplateBuilder {
         }
 
         Ok(StackableMeritTemplate(
-            id,
+            self.name,
             MeritTemplate {
-                name: self.name,
                 book_reference: self.book_reference,
                 merit_type: self.merit_type,
                 shared_description: self.shared_description,
@@ -119,8 +117,7 @@ impl VariableMeritTemplateBuilder {
     /// Completes the builder, returning a nonstackable merit template. Errors if
     /// no dot options have been specified or if any rating is above 5.
     pub fn nonstackable(
-        self,
-        id: NonStackableMeritId,
+        self
     ) -> Result<NonStackableMeritTemplate, MeritError> {
         if self.dot_descriptions.is_empty() {
             return Err(MeritError::MissingDotRating);
@@ -137,9 +134,8 @@ impl VariableMeritTemplateBuilder {
         }
 
         Ok(NonStackableMeritTemplate(
-            id,
+            self.name,
             MeritTemplate {
-                name: self.name,
                 book_reference: self.book_reference,
                 merit_type: self.merit_type,
                 shared_description: self.shared_description,

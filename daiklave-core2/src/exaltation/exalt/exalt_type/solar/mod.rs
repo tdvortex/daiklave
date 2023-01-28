@@ -10,14 +10,14 @@ pub mod charm;
 mod anima_effect;
 mod error;
 mod memo;
-mod new;
+mod set;
 mod sorcery;
 
 use std::collections::{hash_map::Entry, HashMap, HashSet};
 
 pub use error::SolarError;
 pub(crate) use memo::SolarMemo;
-pub use new::SetSolar;
+pub use set::SetSolar;
 pub(crate) use sorcery::{SolarSorcererMemo, SolarSorcererView};
 
 use crate::{
@@ -33,7 +33,7 @@ use crate::{
             terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
         },
         spell::SpellMutation,
-        SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
+        SorceryArchetypeMerit, SorceryError,
     },
     CharacterMutationError,
 };
@@ -215,7 +215,7 @@ impl<'source> Solar<'source> {
     pub(crate) fn add_sorcery_archetype_merit(
         &mut self,
         sorcery_archetype_name: &str,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit_name: &'source str,
         sorcery_archetype_merit: &'source SorceryArchetypeMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.sorcery {
@@ -226,7 +226,7 @@ impl<'source> Solar<'source> {
                     ))
                 } else if let Entry::Vacant(e) = terrestrial
                     .archetype_merits
-                    .entry(sorcery_archetype_merit_id)
+                    .entry(sorcery_archetype_merit_name)
                 {
                     e.insert(sorcery_archetype_merit);
                     Ok(self)
@@ -238,7 +238,7 @@ impl<'source> Solar<'source> {
             }
             Some(SolarSorcererView::Celestial(celestial)) => {
                 if let Some((_, merits)) = celestial.archetypes.get_mut(sorcery_archetype_name) {
-                    if let Entry::Vacant(e) = merits.entry(sorcery_archetype_merit_id) {
+                    if let Entry::Vacant(e) = merits.entry(sorcery_archetype_merit_name) {
                         e.insert(sorcery_archetype_merit);
                         Ok(self)
                     } else {
@@ -254,7 +254,7 @@ impl<'source> Solar<'source> {
             }
             Some(SolarSorcererView::Solar(solar)) => {
                 if let Some((_, merits)) = solar.archetypes.get_mut(sorcery_archetype_name) {
-                    if let Entry::Vacant(e) = merits.entry(sorcery_archetype_merit_id) {
+                    if let Entry::Vacant(e) = merits.entry(sorcery_archetype_merit_name) {
                         e.insert(sorcery_archetype_merit);
                         Ok(self)
                     } else {
@@ -276,13 +276,13 @@ impl<'source> Solar<'source> {
 
     pub(crate) fn remove_sorcery_archetype_merit(
         &mut self,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.sorcery {
             Some(SolarSorcererView::Terrestrial(terrestrial)) => {
                 if terrestrial
                     .archetype_merits
-                    .remove(&sorcery_archetype_merit_id)
+                    .remove(name)
                     .is_none()
                 {
                     Err(CharacterMutationError::MeritError(MeritError::NotFound))
@@ -294,7 +294,7 @@ impl<'source> Solar<'source> {
                 if !celestial
                     .archetypes
                     .iter_mut()
-                    .any(|(_, (_, merits))| merits.remove(&sorcery_archetype_merit_id).is_some())
+                    .any(|(_, (_, merits))| merits.remove(name).is_some())
                 {
                     Err(CharacterMutationError::MeritError(MeritError::NotFound))
                 } else {
@@ -305,7 +305,7 @@ impl<'source> Solar<'source> {
                 if !solar
                     .archetypes
                     .iter_mut()
-                    .any(|(_, (_, merits))| merits.remove(&sorcery_archetype_merit_id).is_some())
+                    .any(|(_, (_, merits))| merits.remove(name).is_some())
                 {
                     Err(CharacterMutationError::MeritError(MeritError::NotFound))
                 } else {

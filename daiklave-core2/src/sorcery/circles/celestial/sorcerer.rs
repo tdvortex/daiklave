@@ -3,7 +3,6 @@ use std::collections::{hash_map::Entry, HashMap};
 use crate::{
     charms::CharmError,
     sorcery::{
-        archetype::SorceryArchetypeMeritId,
         circles::{
             solar::{sorcerer::SolarCircleSorcerer, AddSolarSorcery},
             sorcery_circle::SorceryCircle,
@@ -24,7 +23,7 @@ pub(crate) struct CelestialCircleSorcerer<'source> {
         &'source str,
         (
             &'source SorceryArchetype,
-            HashMap<SorceryArchetypeMeritId, &'source SorceryArchetypeMerit>,
+            HashMap<&'source str, &'source SorceryArchetypeMerit>,
         ),
     >,
     pub(crate) circle_archetypes: [&'source str; 2],
@@ -49,7 +48,7 @@ impl<'view, 'source> CelestialCircleSorcerer<'source> {
                         (*k).to_owned(),
                         (
                             (*archetype).to_owned(),
-                            merits.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
+                            merits.iter().map(|(k, v)| ((*k).to_owned(), (*v).to_owned())).collect(),
                         ),
                     )
                 })

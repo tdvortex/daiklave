@@ -5,6 +5,8 @@ mod grouped;
 mod inner;
 mod memo;
 mod newtype;
+mod name;
+pub use name::ArtifactWeaponName;
 
 use std::ops::Deref;
 

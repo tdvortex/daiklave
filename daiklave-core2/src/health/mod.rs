@@ -1,8 +1,14 @@
 mod damage_level;
 mod health_iter;
 mod wound_penalty;
+mod set;
+mod take_damage;
+mod heal_damage;
 
 pub use damage_level::DamageLevel;
+pub use heal_damage::HealDamage;
+pub use set::SetHealthTrack;
+pub use take_damage::TakeDamage;
 pub use wound_penalty::WoundPenalty;
 
 use serde::{Deserialize, Serialize};

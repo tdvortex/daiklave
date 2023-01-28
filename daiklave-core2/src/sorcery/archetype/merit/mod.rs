@@ -1,5 +1,6 @@
-mod id;
-pub use id::SorceryArchetypeMeritId;
+mod add;
+pub use add::AddSorceryArchetypeMerit;
+
 use serde::{Deserialize, Serialize};
 
 use crate::book_reference::BookReference;
@@ -9,7 +10,6 @@ use crate::book_reference::BookReference;
 /// prerequisites apart from the archetype itself.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SorceryArchetypeMerit {
-    name: String,
     book_reference: Option<BookReference>,
     dots: u8,
     description: String,
@@ -18,17 +18,19 @@ pub struct SorceryArchetypeMerit {
 impl<'source> SorceryArchetypeMerit {
     /// Creates a new Sorcery Archetype merit.
     pub fn new(
-        name: String,
+        sorcery_archetype_name: String,
+        merit_name: String,
         book_reference: Option<BookReference>,
         dots: u8,
         description: String,
-    ) -> Self {
+    ) -> AddSorceryArchetypeMerit {
+        (sorcery_archetype_name,
+            merit_name, 
         SorceryArchetypeMerit {
-            name,
             book_reference,
             dots,
             description,
-        }
+        })
     }
 
     /// The name of the merit.

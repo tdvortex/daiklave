@@ -1,5 +1,3 @@
 use crate::merits::merit::template::MeritTemplate;
 
-use super::NonStackableMeritId;
-
-pub struct NonStackableMeritTemplate(pub(crate) NonStackableMeritId, pub(crate) MeritTemplate);
+pub struct NonStackableMeritTemplate(pub(crate) String, pub(crate) MeritTemplate);

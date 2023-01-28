@@ -56,7 +56,7 @@ use crate::{
             terrestrial::AddTerrestrialSorceryView,
         },
         spell::SpellMutation,
-        Sorcery, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
+        Sorcery, SorceryArchetypeMerit, SorceryError,
     },
     weapons::{
         weapon::{
@@ -74,7 +74,7 @@ use crate::{
 
 use self::{
     essence::{
-        Essence, EssenceError, EssenceState, MoteCommitment, MoteCommitmentId, MotePoolName,
+        Essence, EssenceError, EssenceState, MoteCommitment, MotePoolName, MoteCommitmentName,
     },
     exalt_type::{solar::charm::SolarCharm, ExaltType},
     martial_arts::ExaltMartialArtist,
@@ -296,10 +296,10 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn uncommit_motes(
         &mut self,
-        name: MoteCommitmentId<'_>,
+        name: MoteCommitmentName<'_>,
     ) -> Result<&mut Self, CharacterMutationError> {
         let (peripheral, personal) = match name {
-            MoteCommitmentId::AttunedArtifact(artifact_id) => match artifact_id {
+            MoteCommitmentName::AttunedArtifact(artifact_name) => match artifact_name {
                 ArtifactName::Weapon(artifact_weapon_name) => self
                     .weapons
                     .unattune_artifact_weapon(artifact_weapon_name)?,
@@ -308,7 +308,7 @@ impl<'view, 'source> Exalt<'source> {
                 }
                 ArtifactName::Wonder(wonder_name) => self.wonders.unattune_wonder(wonder_name)?,
             },
-            MoteCommitmentId::Other(other_name) => {
+            MoteCommitmentName::Other(other_name) => {
                 let commitment = self
                     .essence
                     .motes
@@ -347,8 +347,8 @@ impl<'view, 'source> Exalt<'source> {
             .motes
             .commitments
             .iter()
-            .map(|x| MoteCommitmentId::Other(*x.0))
-            .collect::<Vec<MoteCommitmentId>>();
+            .map(|x| MoteCommitmentName::Other(*x.0))
+            .collect::<Vec<MoteCommitmentName>>();
         for id in committed_ids {
             self.uncommit_motes(id).unwrap();
         }
@@ -920,14 +920,14 @@ impl<'view, 'source> Exalt<'source> {
     pub fn add_sorcery_archetype_merit(
         &mut self,
         sorcery_archetype_name: &str,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        sorcery_archetype_merit_name: &'source str,
         sorcery_archetype_merit: &'source SorceryArchetypeMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => {
                 solar.add_sorcery_archetype_merit(
                     sorcery_archetype_name,
-                    sorcery_archetype_merit_id,
+                    sorcery_archetype_merit_name,
                     sorcery_archetype_merit,
                 )?;
             }
@@ -937,11 +937,11 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn remove_sorcery_archetype_merit(
         &mut self,
-        sorcery_archetype_merit_id: SorceryArchetypeMeritId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => {
-                solar.remove_sorcery_archetype_merit(sorcery_archetype_merit_id)?;
+                solar.remove_sorcery_archetype_merit(name)?;
             }
         }
         Ok(self)

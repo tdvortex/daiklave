@@ -2,7 +2,7 @@ mod alias;
 mod merit;
 mod name;
 pub use alias::AddSorceryArchetype;
-pub use merit::{SorceryArchetypeMerit, SorceryArchetypeMeritId};
+pub use merit::{SorceryArchetypeMerit};
 pub use name::SorceryArchetypeName;
 
 mod shaping_ritual;

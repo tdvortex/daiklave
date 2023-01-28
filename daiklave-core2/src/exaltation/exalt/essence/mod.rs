@@ -2,17 +2,19 @@ mod error;
 mod mote_commitment;
 mod mote_pool;
 mod motes;
+mod set_rating;
 mod state;
 pub(crate) use state::{EssenceState, EssenceStateMemo};
 
 pub(crate) use error::EssenceError;
-pub use motes::Motes;
-pub(crate) use motes::MotesState;
+pub use motes::{Motes, CommitMotes, RecoverMotes, SpendMotes, UncommitMotes};
+pub(crate) use motes::{MotesState};
 
 use super::{AnimaEffect, Exalt};
-pub use mote_commitment::{MoteCommitment, MoteCommitmentId, UncommitMotes};
+pub use mote_commitment::{MoteCommitment, MoteCommitmentName, MoteCommitmentNameMutation};
 pub(crate) use mote_pool::MotePool;
 pub use mote_pool::MotePoolName;
+pub use set_rating::SetEssenceRating;
 
 /// An Exalt's Essence rating and mote pools.
 #[derive(Debug, Clone, PartialEq, Eq)]

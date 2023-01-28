@@ -46,8 +46,8 @@ pub struct Character<'source> {
     pub(crate) craft: Craft<'source>,
     pub(crate) hearthstone_inventory: HashMap<&'source str, UnslottedHearthstone<'source>>,
     pub(crate) demenses_no_manse: HashMap<&'source str, GeomancyLevel>,
-    pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMeritView<'source>>,
-    pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMeritView<'source>>,
+    pub(crate) stackable_merits: HashMap<(&'source str, &'source str), StackableMeritView<'source>>, // Keyed by the 
+    pub(crate) nonstackable_merits: HashMap<&'source str, NonStackableMeritView<'source>>, // Keyed by the template name
     pub(crate) flaws: HashMap<&'source str, (Option<BookReference>, &'source str)>,
     pub(crate) languages: Languages<'source>,
     pub(crate) intimacies: HashMap<IntimacyType<'source>, IntimacyLevel>,
@@ -136,7 +136,7 @@ impl<'source> Character<'source> {
             CharacterMutation::SetAttribute(attribute_name, dots) => {
                 self.set_attribute(*attribute_name, *dots)
             }
-            CharacterMutation::SetAbilityDots(ability_name, dots) => {
+            CharacterMutation::SetAbility(ability_name, dots) => {
                 self.set_ability_dots(*ability_name, *dots)
             }
             CharacterMutation::AddSpecialty(ability_name, specialty) => {
@@ -216,15 +216,15 @@ impl<'source> Character<'source> {
             }
             CharacterMutation::AddSorceryArchetypeMerit(
                 sorcery_archetype_name,
-                sorcery_archetype_merit_id,
+                sorcery_archetype_merit_name,
                 sorcery_archetype_merit,
             ) => self.add_sorcery_archetype_merit(
                 sorcery_archetype_name.as_str(),
-                *sorcery_archetype_merit_id,
+                sorcery_archetype_merit_name.as_str(),
                 sorcery_archetype_merit,
             ),
-            CharacterMutation::RemoveSorceryArchetypeMerit(sorcery_archetype_merit_id) => {
-                self.remove_sorcery_archetype_merit(*sorcery_archetype_merit_id)
+            CharacterMutation::RemoveSorceryArchetypeMerit(sorcery_archetype_merit_name) => {
+                self.remove_sorcery_archetype_merit(sorcery_archetype_merit_name.as_str())
             }
             CharacterMutation::AddDemense(name, geomancy_level) => {
                 self.add_demense(name.as_str(), *geomancy_level)

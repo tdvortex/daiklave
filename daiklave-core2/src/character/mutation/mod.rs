@@ -1,4 +1,13 @@
 mod error;
+use crate::abilities::SetAbility;
+pub use crate::attributes::SetAttribute;
+pub use crate::exaltation::exalt::essence::{SetEssenceRating, SpendMotes, CommitMotes, RecoverMotes, UncommitMotes};
+pub use crate::health::{HealDamage, SetHealthTrack, TakeDamage};
+pub use crate::name::SetName;
+pub use crate::concept::{RemoveConcept, SetConcept};
+pub use crate::exaltation::mortal::SetMortal;
+pub use crate::exaltation::exalt::exalt_type::solar::SetSolar;
+pub use crate::willpower::{GainWillpower, SpendWillpower, SetWillpowerRating};
 use std::num::{NonZeroU16, NonZeroU8};
 
 pub use error::CharacterMutationError;
@@ -7,20 +16,17 @@ use crate::{
     abilities::AbilityNameVanilla,
     armor::armor_item::{mundane::AddMundaneArmor, ArmorNameMutation},
     artifact::{AddArtifact, ArtifactNameMutation},
-    attributes::AttributeName,
     charms::charm::{AddCharm, CharmNameMutation},
     exaltation::exalt::{
-        essence::{MotePoolName, UncommitMotes},
-        exalt_type::solar::SetSolar,
+        essence::{MotePoolName},
     },
     flaws::flaw::FlawMutation,
-    health::{DamageLevel, WoundPenalty},
     hearthstones::hearthstone::{AddHearthstone, AddManse, GeomancyLevel},
     intimacies::intimacy::IntimacyMutation,
     languages::language::LanguageMutation,
     martial_arts::style::MartialArtsStyle,
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
-    sorcery::{AddSorcery, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryArchetypeName},
+    sorcery::{AddSorcery, SorceryArchetypeMerit, SorceryArchetypeName},
     weapons::weapon::{mundane::AddMundaneWeapon, EquipHand, Equipped, WeaponNameMutation},
 };
 
@@ -31,9 +37,9 @@ use crate::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CharacterMutation {
     /// Set the Character's name
-    SetName(String),
+    SetName(SetName),
     /// Set the Character's concept
-    SetConcept(String),
+    SetConcept(SetConcept),
     /// Remove the Character's concept
     RemoveConcept,
     /// Set character to be mortal
@@ -41,34 +47,34 @@ pub enum CharacterMutation {
     /// Set character to be Solar
     SetSolar(SetSolar),
     /// Spend motes, starting with one pool
-    SpendMotes(MotePoolName, u8),
+    SpendMotes(SpendMotes),
     /// Commit motes into a persistent effect, starting with one pool
-    CommitMotes(String, MotePoolName, u8),
+    CommitMotes(CommitMotes),
     /// Recover motes, always starting from peripheral
-    RecoverMotes(u8),
+    RecoverMotes(RecoverMotes),
     /// Uncommit motes from a peristent effect
     UncommitMotes(UncommitMotes),
     /// Set the Essence rating of the character. Note: also ends all mote
     /// commitments and recovers all motes.
-    SetEssenceRating(u8),
-    /// Sets the current willpower value of the character.
-    SetCurrentWillpower(u8),
+    SetEssenceRating(SetEssenceRating),
+    GainWillpower(GainWillpower),
+    SpendWillpower(SpendWillpower),
     /// Sets the permanent willpower rating of the character. Also resets
     /// current willpower to permanent rating.
-    SetWillpowerRating(u8),
+    SetWillpowerRating(SetWillpowerRating),
     /// Changes the character's health track to have the specified wound
     /// penalties.
-    SetWoundPenalties(Vec<WoundPenalty>),
+    SetHealthTrack(SetHealthTrack),
     /// Adds the specified amount and type of damage to the character's
     /// health track, accounting for overflows.
-    TakeDamage(DamageLevel, u8),
+    TakeDamage(TakeDamage),
     /// Heals the specified amount of damage, always bashing then lethal then
     /// aggravated.
-    HealDamage(u8),
+    HealDamage(HealDamage),
     /// Sets an attribute to a specific rating.
-    SetAttribute(AttributeName, u8),
+    SetAttribute(SetAttribute),
     /// Sets an ability (other than Craft or Martial Arts) to a dot rating.
-    SetAbilityDots(AbilityNameVanilla, u8),
+    SetAbility(SetAbility),
     /// Adds a specialty to a non-zero, non-Craft, non-Martial Arts ability.
     AddSpecialty(AbilityNameVanilla, String),
     /// Removes a specialty from a non-Craft, non-Martial Arts ability.
@@ -154,11 +160,11 @@ pub enum CharacterMutation {
     /// Adds a merit tied to a Sorcery Archetype owned by the character.
     AddSorceryArchetypeMerit(
         SorceryArchetypeName,
-        SorceryArchetypeMeritId,
+        String,
         SorceryArchetypeMerit,
     ),
     /// Removes a sorcery archetype merit.
-    RemoveSorceryArchetypeMerit(SorceryArchetypeMeritId),
+    RemoveSorceryArchetypeMerit(String),
     /// Adds a Charm to the character.
     AddCharm(AddCharm),
     /// Removes a Charm from the character. Note that this may cause cascading

@@ -5,7 +5,7 @@ use crate::{
     sorcery::{
         circles::celestial::{sorcerer::CelestialCircleSorcerer, AddCelestialSorcery},
         spell::Spell,
-        ShapingRitual, SorceryArchetype, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+        ShapingRitual, SorceryArchetype, SorceryArchetypeMerit,
         SorceryArchetypeWithMerits, SorceryError,
     },
     CharacterMutationError,
@@ -17,7 +17,7 @@ use super::{sorcerer_memo::TerrestrialCircleSorcererMemo, TerrestrialSpell};
 pub(crate) struct TerrestrialCircleSorcerer<'source> {
     pub archetype_name: &'source str,
     pub archetype: &'source SorceryArchetype,
-    pub archetype_merits: HashMap<SorceryArchetypeMeritId, &'source SorceryArchetypeMerit>,
+    pub archetype_merits: HashMap<&'source str, &'source SorceryArchetypeMerit>,
     pub shaping_ritual_name: &'source str,
     pub shaping_ritual: &'source ShapingRitual,
     pub control_spell_name: &'source str,
@@ -33,7 +33,7 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
             archetype_merits: self
                 .archetype_merits
                 .iter()
-                .map(|(k, v)| (*k, (*v).to_owned()))
+                .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
                 .collect(),
             shaping_ritual_name: self.shaping_ritual_name.to_owned(),
             shaping_ritual: self.shaping_ritual.to_owned(),

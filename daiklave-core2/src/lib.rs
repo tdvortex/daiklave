@@ -53,9 +53,6 @@ pub mod martial_arts;
 
 /// Merits logic
 pub mod merits;
-/// Contains the Id enum and a variety of specific Id subtypes, to be used as
-/// unique keys.
-pub mod unique_id;
 
 /// Sorcery logic
 pub mod sorcery;
@@ -64,8 +61,10 @@ pub mod sorcery;
 pub mod weapons;
 
 mod character;
+pub(crate) mod concept;
+pub use concept::ConceptError;
 pub(crate) mod craft;
-mod name_and_concept;
+pub(crate) mod name;
 mod willpower;
 
 pub use character::{

@@ -48,7 +48,7 @@ fn test_abilities() {
     }
 
     // Check set ability dots
-    let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Archery, 1);
+    let mutation = CharacterMutation::SetAbility(AbilityNameVanilla::Archery, 1);
     let character = event_source.apply_mutation(mutation).unwrap();
     assert_eq!(
         character
@@ -103,7 +103,7 @@ fn test_abilities() {
     assert!(event_source.apply_mutation(mutation).is_err());
 
     // Check setting an ability to zero removes all specialties
-    let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Archery, 0);
+    let mutation = CharacterMutation::SetAbility(AbilityNameVanilla::Archery, 0);
     let character = event_source.apply_mutation(mutation).unwrap();
     assert_eq!(
         character

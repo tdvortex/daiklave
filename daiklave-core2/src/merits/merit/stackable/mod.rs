@@ -1,6 +1,3 @@
-mod id;
-pub use id::{StackableMeritId, StackableMeritTemplateId};
-
 mod template;
 pub use template::StackableMeritTemplate;
 

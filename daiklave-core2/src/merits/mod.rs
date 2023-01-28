@@ -6,16 +6,16 @@ use crate::{
     languages::language::Language, weapons::weapon::WeaponName, Character,
 };
 
-use self::merit::{Merit, MeritId, MeritSource};
+use self::merit::{Merit, MeritInstanceName, MeritSource};
 
 /// The merits possessed by a character.
 pub struct Merits<'view, 'source>(pub(crate) &'view Character<'source>);
 
 impl<'view, 'source> Merits<'view, 'source> {
     /// Gets a specific Merit belonging to the character (if it exists).
-    pub fn get(&self, merit_id: MeritId<'_>) -> Option<Merit<'source>> {
+    pub fn get(&self, merit_id: MeritInstanceName<'_>) -> Option<Merit<'source>> {
         match merit_id {
-            MeritId::Artifact(artifact_id) => match artifact_id {
+            MeritInstanceName::Artifact(artifact_id) => match artifact_id {
                 ArtifactName::Weapon(search_name) => self
                     .0
                     .weapons()
@@ -61,12 +61,12 @@ impl<'view, 'source> Merits<'view, 'source> {
                     })
                 }
             },
-            MeritId::DemenseNoManse(name) => self
+            MeritInstanceName::DemenseNoManse(name) => self
                 .0
                 .demenses_no_manse
                 .get_key_value(name)
                 .map(|(name, geomancy)| Merit(MeritSource::DemenseNoManse(name, *geomancy))),
-            MeritId::DemenseWithManse(hearthstone_name) => self
+            MeritInstanceName::DemenseWithManse(hearthstone_name) => self
                 .0
                 .hearthstones()
                 .get(hearthstone_name)
@@ -79,7 +79,7 @@ impl<'view, 'source> Merits<'view, 'source> {
                         ))
                     })
                 }),
-            MeritId::ExaltedHealing => match &self.0.exaltation {
+            MeritInstanceName::ExaltedHealing => match &self.0.exaltation {
                 Exaltation::Mortal(mortal) => {
                     if mortal.exalted_healing {
                         Some(Merit(MeritSource::ExaltedHealing(false)))
@@ -89,7 +89,7 @@ impl<'view, 'source> Merits<'view, 'source> {
                 }
                 Exaltation::Exalt(_) => Some(Merit(MeritSource::ExaltedHealing(true))),
             },
-            MeritId::HearthstoneNoManse(hearthstone_id) => self
+            MeritInstanceName::HearthstoneNoManse(hearthstone_id) => self
                 .0
                 .hearthstones()
                 .get(hearthstone_id)
@@ -103,7 +103,7 @@ impl<'view, 'source> Merits<'view, 'source> {
                         )))
                     }
                 }),
-            MeritId::HearthstoneWithManse(hearthstone_id) => self
+            MeritInstanceName::HearthstoneWithManse(hearthstone_id) => self
                 .0
                 .hearthstones()
                 .get(hearthstone_id)
@@ -115,7 +115,7 @@ impl<'view, 'source> Merits<'view, 'source> {
                         ))
                     })
                 }),
-            MeritId::Manse(hearthstone_name) => self
+            MeritInstanceName::Manse(hearthstone_name) => self
                 .0
                 .hearthstones()
                 .get(hearthstone_name)
@@ -128,7 +128,7 @@ impl<'view, 'source> Merits<'view, 'source> {
                         ))
                     })
                 }),
-            MeritId::MartialArtist(style_name) => match &self.0.exaltation {
+            MeritInstanceName::MartialArtist(style_name) => match &self.0.exaltation {
                 Exaltation::Mortal(mortal) => mortal
                     .martial_arts_styles
                     .get_key_value(style_name)
@@ -138,7 +138,7 @@ impl<'view, 'source> Merits<'view, 'source> {
                     .get_key_value(style_name)
                     .map(|(k, _)| Merit(MeritSource::MartialArtist(*k))),
             },
-            MeritId::MortalSorcerer => {
+            MeritInstanceName::MortalSorcerer => {
                 if let Exaltation::Mortal(mortal) = &self.0.exaltation {
                     if mortal.sorcery.is_some() {
                         Some(Merit(MeritSource::MortalSorcerer))
@@ -149,17 +149,17 @@ impl<'view, 'source> Merits<'view, 'source> {
                     None
                 }
             }
-            MeritId::NonStackable(nonstackable_id) => self
+            MeritInstanceName::NonStackable(nonstackable_id) => self
                 .0
                 .nonstackable_merits
                 .get(&nonstackable_id)
                 .map(|merit| Merit(MeritSource::NonStackable(nonstackable_id, merit.clone()))),
-            MeritId::Stackable(stackable_id) => self
+            MeritInstanceName::Stackable(stackable_id) => self
                 .0
                 .stackable_merits
                 .get(&stackable_id)
                 .map(|merit| Merit(MeritSource::Stackable(stackable_id, *merit))),
-            MeritId::LocalTongues => {
+            MeritInstanceName::LocalTongues => {
                 let purchased = self
                     .0
                     .languages
@@ -175,7 +175,7 @@ impl<'view, 'source> Merits<'view, 'source> {
                     None
                 }
             }
-            MeritId::MajorLanguage(major) => {
+            MeritInstanceName::MajorLanguage(major) => {
                 if self
                     .0
                     .languages
@@ -187,7 +187,7 @@ impl<'view, 'source> Merits<'view, 'source> {
                     None
                 }
             }
-            MeritId::SorceryArchetype(sorcery_archetype_merit_id) => {
+            MeritInstanceName::SorceryArchetype(sorcery_archetype_merit_id) => {
                 self.0.sorcery().and_then(|sorcery| {
                     sorcery.archetypes().find_map(|archetype_id| {
                         sorcery.archetype(archetype_id).and_then(|(_, _, merits)| {
@@ -207,9 +207,9 @@ impl<'view, 'source> Merits<'view, 'source> {
     }
 
     /// Iterates over all Merits owned by the character by their Id.
-    pub fn iter(&self) -> impl Iterator<Item = MeritId> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = MeritInstanceName> + '_ {
         // Collect merits Ids into a single vec to minimize heap allocations
-        let mut output: Vec<MeritId> = Vec::new();
+        let mut output: Vec<MeritInstanceName> = Vec::new();
 
         // Artifact weapons
         self.0
@@ -218,7 +218,7 @@ impl<'view, 'source> Merits<'view, 'source> {
             .filter_map(|(name, equipped)| {
                 self.0.weapons().get(name, equipped).and_then(|weapon| {
                     if let WeaponName::Artifact(artifact_weapon_name) = weapon.name() {
-                        Some(MeritId::Artifact(ArtifactName::Weapon(
+                        Some(MeritInstanceName::Artifact(ArtifactName::Weapon(
                             artifact_weapon_name,
                         )))
                     } else {
@@ -234,7 +234,7 @@ impl<'view, 'source> Merits<'view, 'source> {
             .iter()
             .filter_map(|name| {
                 if let ArmorName::Artifact(name) = name {
-                    Some(MeritId::Artifact(ArtifactName::Armor(name)))
+                    Some(MeritInstanceName::Artifact(ArtifactName::Armor(name)))
                 } else {
                     None
                 }
@@ -245,14 +245,14 @@ impl<'view, 'source> Merits<'view, 'source> {
         self.0
             .wonders()
             .iter()
-            .map(|name| MeritId::Artifact(ArtifactName::Wonder(name)))
+            .map(|name| MeritInstanceName::Artifact(ArtifactName::Wonder(name)))
             .for_each(|merit_id| output.push(merit_id));
 
         // Demenses without manses
         self.0
             .demenses_no_manse
             .keys()
-            .map(|unique_id| MeritId::DemenseNoManse(*unique_id))
+            .map(|unique_id| MeritInstanceName::DemenseNoManse(*unique_id))
             .for_each(|merit_id| output.push(merit_id));
 
         // Hearthstones and manses
@@ -263,11 +263,11 @@ impl<'view, 'source> Merits<'view, 'source> {
             .for_each(|hearthstone| {
                 let hearthstone_name = hearthstone.name();
                 if hearthstone.manse_and_demense().is_some() {
-                    output.push(MeritId::Manse(hearthstone_name));
-                    output.push(MeritId::DemenseWithManse(hearthstone_name));
-                    output.push(MeritId::HearthstoneWithManse(hearthstone_name));
+                    output.push(MeritInstanceName::Manse(hearthstone_name));
+                    output.push(MeritInstanceName::DemenseWithManse(hearthstone_name));
+                    output.push(MeritInstanceName::HearthstoneWithManse(hearthstone_name));
                 } else {
-                    output.push(MeritId::HearthstoneNoManse(hearthstone_name));
+                    output.push(MeritInstanceName::HearthstoneNoManse(hearthstone_name));
                 }
             });
 
@@ -275,10 +275,10 @@ impl<'view, 'source> Merits<'view, 'source> {
         match &self.0.exaltation {
             Exaltation::Mortal(mortal) => {
                 if mortal.exalted_healing {
-                    output.push(MeritId::ExaltedHealing);
+                    output.push(MeritInstanceName::ExaltedHealing);
                 }
             }
-            Exaltation::Exalt(_) => output.push(MeritId::ExaltedHealing),
+            Exaltation::Exalt(_) => output.push(MeritInstanceName::ExaltedHealing),
         }
 
         // Non-native languages
@@ -286,10 +286,10 @@ impl<'view, 'source> Merits<'view, 'source> {
         self.0.languages().iter().for_each(|(language, is_native)| {
             if !is_native {
                 match language {
-                    Language::MajorLanguage(major) => output.push(MeritId::MajorLanguage(major)),
+                    Language::MajorLanguage(major) => output.push(MeritInstanceName::MajorLanguage(major)),
                     Language::LocalTongue(_) => {
                         if !local_added {
-                            output.push(MeritId::LocalTongues);
+                            output.push(MeritInstanceName::LocalTongues);
                             local_added = true;
                         }
                     }
@@ -301,14 +301,14 @@ impl<'view, 'source> Merits<'view, 'source> {
         self.0
             .martial_arts()
             .iter()
-            .map(MeritId::MartialArtist)
+            .map(MeritInstanceName::MartialArtist)
             .for_each(|merit_id| output.push(merit_id));
 
         // Mortal sorcerer
         match &self.0.exaltation {
             Exaltation::Mortal(mortal) => {
                 if mortal.sorcery.is_some() {
-                    output.push(MeritId::MortalSorcerer);
+                    output.push(MeritInstanceName::MortalSorcerer);
                 }
             }
             Exaltation::Exalt(_) => {}
@@ -318,14 +318,14 @@ impl<'view, 'source> Merits<'view, 'source> {
         self.0
             .nonstackable_merits
             .keys()
-            .map(|nonstackable_merit_id| MeritId::NonStackable(*nonstackable_merit_id))
+            .map(|nonstackable_merit_id| MeritInstanceName::NonStackable(*nonstackable_merit_id))
             .for_each(|merit_id| output.push(merit_id));
 
         // Stackable merits
         self.0
             .stackable_merits
             .keys()
-            .map(|stackable_merit_id| MeritId::Stackable(*stackable_merit_id))
+            .map(|stackable_merit_id| MeritInstanceName::Stackable(*stackable_merit_id))
             .for_each(|merit_id| output.push(merit_id));
 
         // Sorcery merits
@@ -335,7 +335,7 @@ impl<'view, 'source> Merits<'view, 'source> {
                 .filter_map(|archetype_id| sorcery.archetype(archetype_id))
                 .for_each(|(_, _, merits)| {
                     merits.keys().for_each(|sorcery_archetype_merit_id| {
-                        output.push(MeritId::SorceryArchetype(*sorcery_archetype_merit_id));
+                        output.push(MeritInstanceName::SorceryArchetype(*sorcery_archetype_merit_id));
                     })
                 })
         }

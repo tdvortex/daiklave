@@ -2,6 +2,7 @@ mod attribute;
 mod category;
 mod error;
 mod name;
+mod set;
 
 use std::num::NonZeroU8;
 
@@ -9,6 +10,7 @@ pub use attribute::Attribute;
 pub use category::AttributeCategory;
 pub use error::AttributeError;
 pub use name::AttributeName;
+pub use set::SetAttribute;
 use serde::{Deserialize, Serialize};
 
 use crate::CharacterMutationError;

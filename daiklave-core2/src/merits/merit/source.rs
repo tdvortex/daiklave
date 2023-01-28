@@ -30,10 +30,10 @@ use super::{
         martial_arts::MARTIAL_ARTIST,
         mortal_sorcerer::MORTAL_SORCERY,
     },
-    nonstackable::{NonStackableMeritId, NonStackableMeritView},
+    nonstackable::{NonStackableMeritView},
     stackable::StackableMeritView,
     template::MeritTemplateId,
-    MeritId, MeritType, StackableMeritId,
+    MeritInstanceName, MeritType,
 };
 
 pub(crate) enum MeritSource<'source> {
@@ -54,32 +54,32 @@ pub(crate) enum MeritSource<'source> {
 }
 
 impl<'source> MeritSource<'source> {
-    pub fn id(&self) -> MeritId {
+    pub fn id(&self) -> MeritInstanceName {
         match self {
-            MeritSource::Artifact(artifact_name, _) => MeritId::Artifact(*artifact_name),
-            MeritSource::DemenseNoManse(name, _) => MeritId::DemenseNoManse(name),
+            MeritSource::Artifact(artifact_name, _) => MeritInstanceName::Artifact(*artifact_name),
+            MeritSource::DemenseNoManse(name, _) => MeritInstanceName::DemenseNoManse(name),
             MeritSource::DemenseWithManse(hearthstone_id, _, _) => {
-                MeritId::DemenseWithManse(*hearthstone_id)
+                MeritInstanceName::DemenseWithManse(*hearthstone_id)
             }
-            MeritSource::ExaltedHealing(_) => MeritId::ExaltedHealing,
+            MeritSource::ExaltedHealing(_) => MeritInstanceName::ExaltedHealing,
             MeritSource::HearthstoneNoManse(hearthstone_name, _) => {
-                MeritId::HearthstoneNoManse(*hearthstone_name)
+                MeritInstanceName::HearthstoneNoManse(*hearthstone_name)
             }
             MeritSource::HearthstoneWithManse(hearthstone_name, _) => {
-                MeritId::HearthstoneWithManse(*hearthstone_name)
+                MeritInstanceName::HearthstoneWithManse(*hearthstone_name)
             }
-            MeritSource::LocalTongues(_) => MeritId::LocalTongues,
-            MeritSource::MajorLanguage(major) => MeritId::MajorLanguage(*major),
-            MeritSource::Manse(hearthstone_id, _, _) => MeritId::Manse(*hearthstone_id),
-            MeritSource::MartialArtist(style_name) => MeritId::MartialArtist(*style_name),
-            MeritSource::MortalSorcerer => MeritId::MortalSorcerer,
+            MeritSource::LocalTongues(_) => MeritInstanceName::LocalTongues,
+            MeritSource::MajorLanguage(major) => MeritInstanceName::MajorLanguage(*major),
+            MeritSource::Manse(hearthstone_id, _, _) => MeritInstanceName::Manse(*hearthstone_id),
+            MeritSource::MartialArtist(style_name) => MeritInstanceName::MartialArtist(*style_name),
+            MeritSource::MortalSorcerer => MeritInstanceName::MortalSorcerer,
             MeritSource::NonStackable(nonstackable_id, _) => {
-                MeritId::NonStackable(*nonstackable_id)
+                MeritInstanceName::NonStackable(*nonstackable_id)
             }
             MeritSource::Stackable(stackable_merit_id, _) => {
-                MeritId::Stackable(*stackable_merit_id)
+                MeritInstanceName::Stackable(*stackable_merit_id)
             }
-            MeritSource::SorceryArchetype(merit_id, _) => MeritId::SorceryArchetype(*merit_id),
+            MeritSource::SorceryArchetype(merit_id, _) => MeritInstanceName::SorceryArchetype(*merit_id),
         }
     }
 

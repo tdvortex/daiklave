@@ -7,7 +7,7 @@ use crate::{
             celestial::CelestialSpell, sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell,
         },
         spell::{Spell, SpellMutation},
-        ShapingRitual, SorceryArchetype, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+        ShapingRitual, SorceryArchetype, SorceryArchetypeMerit,
         SorceryArchetypeWithMerits, SorceryError,
     },
     CharacterMutationError,
@@ -21,7 +21,7 @@ pub(crate) struct SolarCircleSorcerer<'source> {
         &'source str,
         (
             &'source SorceryArchetype,
-            HashMap<SorceryArchetypeMeritId, &'source SorceryArchetypeMerit>,
+            HashMap<&'source str, &'source SorceryArchetypeMerit>,
         ),
     >,
     pub(crate) circle_archetypes: [&'source str; 3],
@@ -49,7 +49,7 @@ impl<'view, 'source> SolarCircleSorcerer<'source> {
                         (*k).to_owned(),
                         (
                             (*archetype).to_owned(),
-                            merits.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
+                            merits.iter().map(|(k, v)| ((*k).to_owned(), (*v).to_owned())).collect(),
                         ),
                     )
                 })

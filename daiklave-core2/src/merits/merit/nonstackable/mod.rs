@@ -1,5 +1,3 @@
-mod id;
-pub use id::NonStackableMeritId;
 use serde::{Deserialize, Serialize};
 
 pub(crate) use with_dots::{
@@ -28,8 +26,8 @@ impl<'source> NonStackableMerit {
     pub fn new(
         template: NonStackableMeritTemplate,
         dots: u8,
-    ) -> Result<(NonStackableMeritId, NonStackableMerit), MeritError> {
-        let template_id = template.0;
+    ) -> Result<AddNonStackableMerit, MeritError> {
+        let template_name = template.0;
         let with_dots = template.1.set_dots(dots)?;
         let dotted = match dots {
             0 => NonStackableMeritWithDotsMemo::Zero(ZeroDotsNonStackableMeritMemo(with_dots)),
@@ -43,7 +41,7 @@ impl<'source> NonStackableMerit {
             }
         };
 
-        Ok((template_id, Self(dotted)))
+        Ok((template_name, Self(dotted)))
     }
 
     pub(crate) fn as_ref(&'source self) -> NonStackableMeritView<'source> {

@@ -14,7 +14,7 @@ use daiklave_core2::{
     languages::language::{LanguageMutation, MajorLanguage},
     martial_arts::style::MartialArtsStyle,
     merits::merit::{
-        Merit, MeritId, MeritTemplateId, MeritType, NonStackableMerit, NonStackableMeritId,
+        Merit, MeritInstanceName, MeritTemplateId, MeritType, NonStackableMerit, NonStackableMeritId,
         StackableMerit, StackableMeritId, StackableMeritTemplateId,
     },
     sorcery::{
@@ -152,7 +152,7 @@ fn test_merits() {
     event_source.apply_mutation(mutation).unwrap();
 
     // Martial arts style
-    let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Brawl, 1);
+    let mutation = CharacterMutation::SetAbility(AbilityNameVanilla::Brawl, 1);
     event_source.apply_mutation(mutation).unwrap();
 
     let (crane_style_name, crane_style) = MartialArtsStyle::builder("Crane Style".to_owned())
@@ -178,7 +178,7 @@ fn test_merits() {
     event_source.apply_mutation(mutation).unwrap();
 
     // Sorcery
-    let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 3);
+    let mutation = CharacterMutation::SetAbility(AbilityNameVanilla::Occult, 3);
     event_source.apply_mutation(mutation).unwrap();
 
     let add_sorcery = Sorcery::builder().terrestrial().archetype(SorceryArchetype::new("The Talisman of Ten Thousand Eyes".to_owned(), Some(BookReference::new(Book::CoreRulebook, 470)), "A phylactery of great sorcerous puissance[...]".to_owned()))
@@ -314,11 +314,11 @@ fn test_merits() {
     let character = event_source.as_character().unwrap();
     let merits = character.merits();
     let volcano_cutter = merits
-        .get(MeritId::Artifact(ArtifactName::Weapon("Volcano Cutter")))
+        .get(MeritInstanceName::Artifact(ArtifactName::Weapon("Volcano Cutter")))
         .unwrap();
     assert_eq!(
         volcano_cutter.id(),
-        MeritId::Artifact(ArtifactName::Weapon("Volcano Cutter"))
+        MeritInstanceName::Artifact(ArtifactName::Weapon("Volcano Cutter"))
     );
     assert_eq!(volcano_cutter.template_name(), "Artifact");
     assert_eq!(
@@ -332,11 +332,11 @@ fn test_merits() {
     assert!(volcano_cutter.description().1.is_some());
 
     let brilliant_sentinel = merits
-        .get(MeritId::Artifact(ArtifactName::Armor("Brilliant Sentinel")))
+        .get(MeritInstanceName::Artifact(ArtifactName::Armor("Brilliant Sentinel")))
         .unwrap();
     assert_eq!(
         brilliant_sentinel.id(),
-        MeritId::Artifact(ArtifactName::Armor("Brilliant Sentinel"))
+        MeritInstanceName::Artifact(ArtifactName::Armor("Brilliant Sentinel"))
     );
     assert_eq!(brilliant_sentinel.template_name(), "Artifact");
     assert_eq!(
@@ -350,13 +350,13 @@ fn test_merits() {
     assert!(brilliant_sentinel.description().1.is_some());
 
     let belt = merits
-        .get(MeritId::Artifact(ArtifactName::Wonder(
+        .get(MeritInstanceName::Artifact(ArtifactName::Wonder(
             "Belt of Shadow Walking",
         )))
         .unwrap();
     assert_eq!(
         belt.id(),
-        MeritId::Artifact(ArtifactName::Wonder("Belt of Shadow Walking"))
+        MeritInstanceName::Artifact(ArtifactName::Wonder("Belt of Shadow Walking"))
     );
     assert_eq!(belt.template_name(), "Artifact");
     assert_eq!(
@@ -370,13 +370,13 @@ fn test_merits() {
     assert!(belt.description().1.is_some());
 
     let jewel = merits
-        .get(MeritId::HearthstoneNoManse(
+        .get(MeritInstanceName::HearthstoneNoManse(
             "Jewel of the Celestial Mandarin",
         ))
         .unwrap();
     assert_eq!(
         jewel.id(),
-        MeritId::HearthstoneNoManse("Jewel of the Celestial Mandarin")
+        MeritInstanceName::HearthstoneNoManse("Jewel of the Celestial Mandarin")
     );
     assert_eq!(jewel.template_name(), "Hearthstone");
     assert_eq!(
@@ -390,9 +390,9 @@ fn test_merits() {
     assert!(jewel.description().1.is_some());
 
     let nowhere = merits
-        .get(MeritId::DemenseNoManse("Nowhere special"))
+        .get(MeritInstanceName::DemenseNoManse("Nowhere special"))
         .unwrap();
-    assert_eq!(nowhere.id(), MeritId::DemenseNoManse("Nowhere special"));
+    assert_eq!(nowhere.id(), MeritInstanceName::DemenseNoManse("Nowhere special"));
     assert_eq!(nowhere.template_name(), "Demense");
     assert_eq!(
         nowhere.book_reference(),
@@ -405,9 +405,9 @@ fn test_merits() {
     assert!(nowhere.description().1.is_some());
 
     let eye = merits
-        .get(MeritId::HearthstoneWithManse("Hierophant's Eye"))
+        .get(MeritInstanceName::HearthstoneWithManse("Hierophant's Eye"))
         .unwrap();
-    assert_eq!(eye.id(), MeritId::HearthstoneWithManse("Hierophant's Eye"));
+    assert_eq!(eye.id(), MeritInstanceName::HearthstoneWithManse("Hierophant's Eye"));
     assert_eq!(eye.template_name(), "Hearthstone");
     assert_eq!(
         eye.book_reference(),
@@ -419,8 +419,8 @@ fn test_merits() {
     assert_eq!(eye.template_id(), MeritTemplateId::Hearthstone);
     assert!(eye.description().1.is_some());
 
-    let manse = merits.get(MeritId::Manse("Hierophant's Eye")).unwrap();
-    assert_eq!(manse.id(), MeritId::Manse("Hierophant's Eye"));
+    let manse = merits.get(MeritInstanceName::Manse("Hierophant's Eye")).unwrap();
+    assert_eq!(manse.id(), MeritInstanceName::Manse("Hierophant's Eye"));
     assert_eq!(manse.template_name(), "Manse");
     assert_eq!(
         manse.book_reference(),
@@ -432,8 +432,8 @@ fn test_merits() {
     assert_eq!(manse.template_id(), MeritTemplateId::Manse);
     assert!(manse.description().1.is_some());
 
-    let ma_crane = merits.get(MeritId::MartialArtist("Crane Style")).unwrap();
-    assert_eq!(ma_crane.id(), MeritId::MartialArtist("Crane Style"));
+    let ma_crane = merits.get(MeritInstanceName::MartialArtist("Crane Style")).unwrap();
+    assert_eq!(ma_crane.id(), MeritInstanceName::MartialArtist("Crane Style"));
     assert_eq!(ma_crane.template_name(), "Martial Artist");
     assert_eq!(
         ma_crane.book_reference(),
@@ -445,8 +445,8 @@ fn test_merits() {
     assert_eq!(ma_crane.template_id(), MeritTemplateId::MartialArtist);
     assert!(ma_crane.description().1.is_none());
 
-    let exalted_healing = merits.get(MeritId::ExaltedHealing).unwrap();
-    assert_eq!(exalted_healing.id(), MeritId::ExaltedHealing);
+    let exalted_healing = merits.get(MeritInstanceName::ExaltedHealing).unwrap();
+    assert_eq!(exalted_healing.id(), MeritInstanceName::ExaltedHealing);
     assert_eq!(exalted_healing.template_name(), "Exalted Healing");
     assert_eq!(
         exalted_healing.book_reference(),
@@ -461,8 +461,8 @@ fn test_merits() {
     );
     assert!(exalted_healing.description().1.is_none());
 
-    let mortal_sorcerer = merits.get(MeritId::MortalSorcerer).unwrap();
-    assert_eq!(mortal_sorcerer.id(), MeritId::MortalSorcerer);
+    let mortal_sorcerer = merits.get(MeritInstanceName::MortalSorcerer).unwrap();
+    assert_eq!(mortal_sorcerer.id(), MeritInstanceName::MortalSorcerer);
     assert_eq!(
         mortal_sorcerer.template_name(),
         "Terrestrial Circle Sorcerer (Mortal)"
@@ -481,13 +481,13 @@ fn test_merits() {
     assert!(mortal_sorcerer.description().1.is_none());
 
     let astral_meditation = merits
-        .get(MeritId::SorceryArchetype(SorceryArchetypeMeritId(
+        .get(MeritInstanceName::SorceryArchetype(SorceryArchetypeMeritId(
             UniqueId::Placeholder(1),
         )))
         .unwrap();
     assert_eq!(
         astral_meditation.id(),
-        MeritId::SorceryArchetype(SorceryArchetypeMeritId(UniqueId::Placeholder(1)))
+        MeritInstanceName::SorceryArchetype(SorceryArchetypeMeritId(UniqueId::Placeholder(1)))
     );
     assert_eq!(astral_meditation.template_name(), "Astral Meditation");
     assert_eq!(
@@ -504,11 +504,11 @@ fn test_merits() {
     assert!(astral_meditation.description().1.is_none());
 
     let high_realm = merits
-        .get(MeritId::MajorLanguage(MajorLanguage::HighRealm))
+        .get(MeritInstanceName::MajorLanguage(MajorLanguage::HighRealm))
         .unwrap();
     assert_eq!(
         high_realm.id(),
-        MeritId::MajorLanguage(MajorLanguage::HighRealm)
+        MeritInstanceName::MajorLanguage(MajorLanguage::HighRealm)
     );
     assert_eq!(high_realm.template_name(), "Language");
     assert_eq!(
@@ -521,8 +521,8 @@ fn test_merits() {
     assert_eq!(high_realm.template_id(), MeritTemplateId::Language);
     assert!(high_realm.description().1.is_some());
 
-    let other_languages = merits.get(MeritId::LocalTongues).unwrap();
-    assert_eq!(other_languages.id(), MeritId::LocalTongues);
+    let other_languages = merits.get(MeritInstanceName::LocalTongues).unwrap();
+    assert_eq!(other_languages.id(), MeritInstanceName::LocalTongues);
     assert_eq!(other_languages.template_name(), "Language");
     assert_eq!(
         other_languages.book_reference(),
@@ -535,13 +535,13 @@ fn test_merits() {
     assert!(other_languages.description().1.is_some());
 
     let retainers = merits
-        .get(MeritId::Stackable(StackableMeritId(UniqueId::Placeholder(
+        .get(MeritInstanceName::Stackable(StackableMeritId(UniqueId::Placeholder(
             1,
         ))))
         .unwrap();
     assert_eq!(
         retainers.id(),
-        MeritId::Stackable(StackableMeritId(UniqueId::Placeholder(1)))
+        MeritInstanceName::Stackable(StackableMeritId(UniqueId::Placeholder(1)))
     );
     assert_eq!(retainers.template_name(), "Retainers");
     assert_eq!(
@@ -558,13 +558,13 @@ fn test_merits() {
     assert!(retainers.description().1.is_some());
 
     let eidetic_memory = merits
-        .get(MeritId::NonStackable(NonStackableMeritId(
+        .get(MeritInstanceName::NonStackable(NonStackableMeritId(
             UniqueId::Placeholder(1),
         )))
         .unwrap();
     assert_eq!(
         eidetic_memory.id(),
-        MeritId::NonStackable(NonStackableMeritId(UniqueId::Placeholder(1)))
+        MeritInstanceName::NonStackable(NonStackableMeritId(UniqueId::Placeholder(1)))
     );
     assert_eq!(eidetic_memory.template_name(), "Eidetic Memory");
     assert_eq!(
@@ -581,13 +581,13 @@ fn test_merits() {
     assert!(eidetic_memory.description().1.is_none());
 
     let iron_stomach = merits
-        .get(MeritId::NonStackable(NonStackableMeritId(
+        .get(MeritInstanceName::NonStackable(NonStackableMeritId(
             UniqueId::Placeholder(2),
         )))
         .unwrap();
     assert_eq!(
         iron_stomach.id(),
-        MeritId::NonStackable(NonStackableMeritId(UniqueId::Placeholder(2)))
+        MeritInstanceName::NonStackable(NonStackableMeritId(UniqueId::Placeholder(2)))
     );
     assert_eq!(iron_stomach.template_name(), "Iron Stomach");
     assert_eq!(
@@ -625,8 +625,8 @@ fn test_merits() {
     let merits = character.merits();
 
     // Exalted Healing should be free
-    let exalted_healing = merits.get(MeritId::ExaltedHealing).unwrap();
-    assert_eq!(exalted_healing.id(), MeritId::ExaltedHealing);
+    let exalted_healing = merits.get(MeritInstanceName::ExaltedHealing).unwrap();
+    assert_eq!(exalted_healing.id(), MeritInstanceName::ExaltedHealing);
     assert_eq!(exalted_healing.template_name(), "Exalted Healing");
     assert_eq!(
         exalted_healing.book_reference(),
@@ -642,34 +642,34 @@ fn test_merits() {
     assert!(exalted_healing.description().1.is_none());
 
     // Sorcery should not be a merit, but should exist
-    assert!(merits.get(MeritId::MortalSorcerer).is_none());
+    assert!(merits.get(MeritInstanceName::MortalSorcerer).is_none());
     assert!(character.sorcery().is_some());
 
     // Sorcery archetype merit should still exist
     assert!(merits
-        .get(MeritId::SorceryArchetype(SorceryArchetypeMeritId(
+        .get(MeritInstanceName::SorceryArchetype(SorceryArchetypeMeritId(
             UniqueId::Placeholder(1)
         )))
         .is_some());
 
     // Dropping Occult below 3 removes sorcery and sorcery merits
-    let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 2);
+    let mutation = CharacterMutation::SetAbility(AbilityNameVanilla::Occult, 2);
     event_source.apply_mutation(mutation).unwrap();
     let character = event_source.as_character().unwrap();
     assert!(character.sorcery().is_none());
     let merits = character.merits();
     assert!(merits
-        .get(MeritId::SorceryArchetype(SorceryArchetypeMeritId(
+        .get(MeritInstanceName::SorceryArchetype(SorceryArchetypeMeritId(
             UniqueId::Placeholder(1)
         )))
         .is_none());
 
     // Dropping Brawl to 0 removes Martial Arts and Martial Artist merit
-    let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Brawl, 0);
+    let mutation = CharacterMutation::SetAbility(AbilityNameVanilla::Brawl, 0);
     event_source.apply_mutation(mutation).unwrap();
     let character = event_source.as_character().unwrap();
     let merits = character.merits();
-    assert!(merits.get(MeritId::MartialArtist("Crane Style")).is_none());
+    assert!(merits.get(MeritInstanceName::MartialArtist("Crane Style")).is_none());
 
     // Dropping an ability or attribute removes dependent merits
     let mutation = CharacterMutation::SetAttribute(AttributeName::Stamina, 2);
@@ -677,7 +677,7 @@ fn test_merits() {
     let character = event_source.as_character().unwrap();
     let merits = character.merits();
     assert!(merits
-        .get(MeritId::NonStackable(NonStackableMeritId(
+        .get(MeritInstanceName::NonStackable(NonStackableMeritId(
             UniqueId::Placeholder(2)
         )))
         .is_none());
@@ -739,18 +739,18 @@ fn test_merits() {
     let character = event_source.as_character().unwrap();
     let merits = character.merits();
     assert!(merits
-        .get(MeritId::NonStackable(NonStackableMeritId(
+        .get(MeritInstanceName::NonStackable(NonStackableMeritId(
             UniqueId::Placeholder(1)
         )))
         .is_none());
     assert!(merits
-        .get(MeritId::Stackable(StackableMeritId(UniqueId::Placeholder(
+        .get(MeritInstanceName::Stackable(StackableMeritId(UniqueId::Placeholder(
             1
         ))))
         .is_none());
 
     // Only merit left should be Exalted Healing
-    assert!(merits.get(MeritId::ExaltedHealing).is_some());
+    assert!(merits.get(MeritInstanceName::ExaltedHealing).is_some());
 
     // Change character back to be mortal
     event_source

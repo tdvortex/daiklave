@@ -7,7 +7,6 @@ use super::{with_dots::StackableMeritWithDots, StackableMerit};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct StackableMeritView<'source> {
-    pub detail: &'source str,
     pub dotted: StackableMeritWithDots<'source>,
 }
 

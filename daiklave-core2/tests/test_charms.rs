@@ -42,7 +42,7 @@ fn test_solar_charms() {
 
     // Mortals cannot add Solar Charms, even if they meet the ability prerequisites
     event_source
-        .apply_mutation(CharacterMutation::SetAbilityDots(
+        .apply_mutation(CharacterMutation::SetAbility(
             AbilityNameVanilla::Archery,
             5,
         ))
@@ -76,7 +76,7 @@ fn test_solar_charms() {
     .into_iter()
     .for_each(|ability_name| {
         event_source
-            .apply_mutation(CharacterMutation::SetAbilityDots(ability_name, 1))
+            .apply_mutation(CharacterMutation::SetAbility(ability_name, 1))
             .unwrap();
     });
 
@@ -107,7 +107,7 @@ fn test_solar_charms() {
         .is_err());
 
     event_source
-        .apply_mutation(CharacterMutation::SetAbilityDots(
+        .apply_mutation(CharacterMutation::SetAbility(
             AbilityNameVanilla::Archery,
             3,
         ))
@@ -121,7 +121,7 @@ fn test_solar_charms() {
     assert_eq!(owned_wise_arrow, &wise_arrow.1);
 
     let character = event_source
-        .apply_mutation(CharacterMutation::SetAbilityDots(
+        .apply_mutation(CharacterMutation::SetAbility(
             AbilityNameVanilla::Archery,
             1,
         ))
@@ -149,7 +149,7 @@ fn test_solar_charms() {
 
     // ...unless they have the ability as a Supernal ability
     event_source
-        .apply_mutation(CharacterMutation::SetAbilityDots(
+        .apply_mutation(CharacterMutation::SetAbility(
             AbilityNameVanilla::Lore,
             5,
         ))
@@ -572,7 +572,7 @@ fn test_evocations() {
         )))
         .is_err());
     event_source
-        .apply_mutation(CharacterMutation::SetAbilityDots(
+        .apply_mutation(CharacterMutation::SetAbility(
             AbilityNameVanilla::Integrity,
             3,
         ))
@@ -593,7 +593,7 @@ fn test_evocations() {
         .is_some());
 
     let character = event_source
-        .apply_mutation(CharacterMutation::SetAbilityDots(
+        .apply_mutation(CharacterMutation::SetAbility(
             AbilityNameVanilla::Integrity,
             1,
         ))
@@ -646,7 +646,7 @@ fn test_spells() {
 
     // Mortal sorcerers can add Terrestrial Spells
     event_source
-        .apply_mutation(CharacterMutation::SetAbilityDots(
+        .apply_mutation(CharacterMutation::SetAbility(
             AbilityNameVanilla::Occult,
             5,
         ))
@@ -749,7 +749,7 @@ fn test_spells() {
     .into_iter()
     .for_each(|vanilla| {
         event_source
-            .apply_mutation(CharacterMutation::SetAbilityDots(vanilla, 1))
+            .apply_mutation(CharacterMutation::SetAbility(vanilla, 1))
             .unwrap();
     });
 
@@ -974,7 +974,7 @@ fn test_martial_arts_charms() {
             .build();
 
     event_source
-        .apply_mutation(CharacterMutation::SetAbilityDots(
+        .apply_mutation(CharacterMutation::SetAbility(
             AbilityNameVanilla::Brawl,
             1,
         ))
@@ -1036,7 +1036,7 @@ fn test_martial_arts_charms() {
     .into_iter()
     .for_each(|vanilla| {
         event_source
-            .apply_mutation(CharacterMutation::SetAbilityDots(vanilla, 1))
+            .apply_mutation(CharacterMutation::SetAbility(vanilla, 1))
             .unwrap();
     });
 
@@ -1194,7 +1194,7 @@ fn test_martial_arts_charms() {
 
     // ...unless they are Dawn Solars with Martial Arts Supernal
     event_source
-        .apply_mutation(CharacterMutation::SetAbilityDots(
+        .apply_mutation(CharacterMutation::SetAbility(
             AbilityNameVanilla::Linguistics,
             1,
         ))
@@ -1305,7 +1305,7 @@ fn test_eclipse_charms() {
     .into_iter()
     .for_each(|ability_name| {
         event_source
-            .apply_mutation(CharacterMutation::SetAbilityDots(ability_name, 1))
+            .apply_mutation(CharacterMutation::SetAbility(ability_name, 1))
             .unwrap();
     });
 

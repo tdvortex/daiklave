@@ -332,12 +332,12 @@ fn test_guided_mortal() {
     // Arts styles or Sorcery
     assert!(guided_builder
         .check_mutation(&GuidedMutation::CharacterMutation(
-            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Brawl, 0)
+            CharacterMutation::SetAbility(AbilityNameVanilla::Brawl, 0)
         ))
         .is_err());
     assert!(guided_builder
         .check_mutation(&GuidedMutation::CharacterMutation(
-            CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 2)
+            CharacterMutation::SetAbility(AbilityNameVanilla::Occult, 2)
         ))
         .is_err());
 
@@ -349,7 +349,7 @@ fn test_guided_mortal() {
         .is_err());
 
     // Check purchasing dots above 3 costs bonus points even if free dots remain
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Awareness,
         4,
     ));
@@ -426,7 +426,7 @@ fn test_guided_mortal() {
     ]
     .into_iter()
     .map(|(ability_name, dots)| {
-        GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(ability_name, dots))
+        GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(ability_name, dots))
     })
     .fold(&mut guided_builder, |builder, mutation| {
         builder.apply_mutation(mutation).unwrap()
@@ -440,7 +440,7 @@ fn test_guided_mortal() {
     );
 
     // Check purchasing more than 28 dots of abilities costs bonus points even at 3 or below
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Integrity,
         2,
     ));
@@ -454,7 +454,7 @@ fn test_guided_mortal() {
     );
 
     // Check can't advance with less than 28 free dots (even with 28 total dots)
-    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbilityDots(
+    let mutation = GuidedMutation::CharacterMutation(CharacterMutation::SetAbility(
         AbilityNameVanilla::Archery,
         1,
     ));

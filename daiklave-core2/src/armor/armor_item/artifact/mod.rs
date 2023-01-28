@@ -5,6 +5,7 @@ mod base;
 pub(crate) mod builder;
 mod error;
 mod memo;
+mod name;
 mod no_attunement;
 
 pub use add::AddArtifactArmor;
@@ -12,6 +13,7 @@ pub use add_base::AddBaseArtifactArmor;
 pub use base::BaseArtifactArmor;
 pub use error::ArtifactError;
 pub use memo::ArtifactArmor;
+pub use name::ArtifactArmorName;
 pub(crate) use no_attunement::{ArtifactArmorNoAttunement, ArtifactArmorNoAttunementMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
