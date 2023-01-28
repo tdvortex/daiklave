@@ -6,7 +6,6 @@ pub mod hearthstone;
 use crate::Character;
 
 pub use error::HearthstoneError;
-pub use hearthstone::HearthstoneId;
 pub(crate) use hearthstone::{
     HearthstoneOrigin, HearthstonePosition, HearthstoneStability, SlottedHearthstone,
     SlottedHearthstoneMemo, UnslottedHearthstone, UnslottedHearthstoneMemo,
@@ -19,16 +18,14 @@ use self::hearthstone::Hearthstone;
 pub struct Hearthstones<'view, 'source>(pub(crate) &'view Character<'source>);
 
 impl<'view, 'source> Hearthstones<'view, 'source> {
-    fn get_unslotted(&self, hearthstone_id: HearthstoneId) -> Option<Hearthstone<'source>> {
+    fn get_unslotted(&self, name: &str) -> Option<Hearthstone<'source>> {
         self.0
             .hearthstone_inventory
-            .get(&hearthstone_id)
-            .map(|unslotted| {
-                Hearthstone(HearthstonePosition::Unslotted(hearthstone_id, *unslotted))
-            })
+            .get_key_value(name)
+            .map(|(name, unslotted)| Hearthstone(HearthstonePosition::Unslotted(*name, *unslotted)))
     }
 
-    fn get_weapon_slotted(&self, hearthstone_id: HearthstoneId) -> Option<Hearthstone<'source>> {
+    fn get_weapon_slotted(&self, name: &str) -> Option<Hearthstone<'source>> {
         self.0.weapons().iter().find_map(|(weapon_id, equipped)| {
             self.0
                 .weapons()
@@ -36,41 +33,41 @@ impl<'view, 'source> Hearthstones<'view, 'source> {
                 .and_then(|weapon| {
                     weapon
                         .slotted_hearthstones()
-                        .find(|hearthstone| hearthstone.id() == hearthstone_id)
+                        .find(|hearthstone| hearthstone.name() == name)
                 })
         })
     }
 
-    fn get_armor_slotted(&self, hearthstone_id: HearthstoneId) -> Option<Hearthstone<'source>> {
+    fn get_armor_slotted(&self, name: &str) -> Option<Hearthstone<'source>> {
         self.0.armor().iter().find_map(|armor_id| {
             self.0.armor().get(armor_id).and_then(|armor_item| {
                 armor_item
                     .slotted_hearthstones()
-                    .find(|hearthstone| hearthstone.id() == hearthstone_id)
+                    .find(|hearthstone| hearthstone.name() == name)
             })
         })
     }
 
-    fn get_wonder_slotted(&self, hearthstone_id: HearthstoneId) -> Option<Hearthstone<'source>> {
+    fn get_wonder_slotted(&self, name: &str) -> Option<Hearthstone<'source>> {
         self.0.wonders().iter().find_map(|wonder_id| {
             self.0.wonders().get(wonder_id).and_then(|owned_wonder| {
                 owned_wonder
                     .slotted_hearthstones()
-                    .find(|hearthstone| hearthstone.id() == hearthstone_id)
+                    .find(|hearthstone| hearthstone.name() == name)
             })
         })
     }
 
     /// Gets the details of a specific hearthstone by its Id.
-    pub fn get(&self, hearthstone_id: HearthstoneId) -> Option<Hearthstone<'source>> {
-        self.get_unslotted(hearthstone_id)
-            .or_else(|| self.get_weapon_slotted(hearthstone_id))
-            .or_else(|| self.get_armor_slotted(hearthstone_id))
-            .or_else(|| self.get_wonder_slotted(hearthstone_id))
+    pub fn get(&self, name: &str) -> Option<Hearthstone<'source>> {
+        self.get_unslotted(name)
+            .or_else(|| self.get_weapon_slotted(name))
+            .or_else(|| self.get_armor_slotted(name))
+            .or_else(|| self.get_wonder_slotted(name))
     }
 
-    /// Iterates over all hearthstones owned by the character by their Ids.
-    pub fn iter(&self) -> impl Iterator<Item = HearthstoneId> + '_ {
+    /// Iterates over all hearthstones owned by the character by their names.
+    pub fn iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         self.0
             .hearthstone_inventory
             .keys()
@@ -83,9 +80,9 @@ impl<'view, 'source> Hearthstones<'view, 'source> {
                     .flat_map(|weapon| {
                         weapon
                             .slotted_hearthstones()
-                            .map(|hearthstone| hearthstone.id())
+                            .map(|hearthstone| hearthstone.name())
                     })
-                    .collect::<Vec<HearthstoneId>>()
+                    .collect::<Vec<&str>>()
                     .into_iter()
             }))
             .chain(self.0.armor().iter().flat_map(|armor_id| {
@@ -96,9 +93,9 @@ impl<'view, 'source> Hearthstones<'view, 'source> {
                     .flat_map(|armor| {
                         armor
                             .slotted_hearthstones()
-                            .map(|hearthstone| hearthstone.id())
+                            .map(|hearthstone| hearthstone.name())
                     })
-                    .collect::<Vec<HearthstoneId>>()
+                    .collect::<Vec<&str>>()
                     .into_iter()
             }))
             .chain(self.0.wonders().iter().flat_map(|wonder_id| {
@@ -109,12 +106,12 @@ impl<'view, 'source> Hearthstones<'view, 'source> {
                     .flat_map(|armor| {
                         armor
                             .slotted_hearthstones()
-                            .map(|hearthstone| hearthstone.id())
+                            .map(|hearthstone| hearthstone.name())
                     })
-                    .collect::<Vec<HearthstoneId>>()
+                    .collect::<Vec<&str>>()
                     .into_iter()
             }))
-            .collect::<Vec<HearthstoneId>>()
+            .collect::<Vec<&str>>()
             .into_iter()
     }
 }

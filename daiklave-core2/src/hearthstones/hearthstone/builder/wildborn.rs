@@ -2,7 +2,7 @@ use crate::{
     book_reference::BookReference,
     hearthstones::hearthstone::{
         details::HearthstoneDetailsMemo, stability::HearthstoneStability,
-        template::HearthstoneTemplate, GeomancyLevel, HearthstoneCategory,
+        template::HearthstoneTemplate, AddHearthstone, GeomancyLevel, HearthstoneCategory,
     },
 };
 
@@ -31,17 +31,19 @@ impl WildBornHearthstoneBuilder {
     }
 
     /// Completes the builder, returning a HearthstoneTemplate.
-    pub fn build(self) -> HearthstoneTemplate {
-        HearthstoneTemplate {
-            details: HearthstoneDetailsMemo {
-                name: self.name,
-                book_reference: self.book_reference,
-                category: self.category,
-                geomancy_level: self.geomancy_level,
-                powers: self.powers,
-                is_dependent: self.is_dependent,
+    pub fn build(self) -> AddHearthstone {
+        (
+            self.name,
+            HearthstoneTemplate {
+                details: HearthstoneDetailsMemo {
+                    book_reference: self.book_reference,
+                    category: self.category,
+                    geomancy_level: self.geomancy_level,
+                    powers: self.powers,
+                    is_dependent: self.is_dependent,
+                },
+                stability: HearthstoneStability::WildBorn,
             },
-            stability: HearthstoneStability::WildBorn,
-        }
+        )
     }
 }

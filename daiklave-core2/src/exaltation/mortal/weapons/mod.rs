@@ -2,7 +2,7 @@ use std::collections::hash_map::Entry;
 
 use crate::{
     exaltation::exalt::ExaltWeapons,
-    hearthstones::{HearthstoneId, UnslottedHearthstone},
+    hearthstones::UnslottedHearthstone,
     weapons::{
         weapon::{
             artifact::{
@@ -698,17 +698,20 @@ impl<'view, 'source> MortalWeapons<'source> {
     pub fn slot_hearthstone(
         &mut self,
         artifact_weapon_name: &str,
-        hearthstone_id: HearthstoneId,
+        hearthstone_name: &'source str,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         let try_slot =
             self.unequipped
-                .slot_hearthstone(artifact_weapon_name, hearthstone_id, unslotted);
+                .slot_hearthstone(artifact_weapon_name, hearthstone_name, unslotted);
         match try_slot {
             Ok(_) => Ok(self),
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound)) => {
-                self.equipped
-                    .slot_hearthstone(artifact_weapon_name, hearthstone_id, unslotted)?;
+                self.equipped.slot_hearthstone(
+                    artifact_weapon_name,
+                    hearthstone_name,
+                    unslotted,
+                )?;
                 Ok(self)
             }
             Err(e) => Err(e),
@@ -718,16 +721,16 @@ impl<'view, 'source> MortalWeapons<'source> {
     pub fn unslot_hearthstone(
         &mut self,
         artifact_weapon_name: &str,
-        hearthstone_id: HearthstoneId,
-    ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        hearthstone_name: &str,
+    ) -> Result<(&'source str, UnslottedHearthstone<'source>), CharacterMutationError> {
         let try_unslotted = self
             .unequipped
-            .unslot_hearthstone(artifact_weapon_name, hearthstone_id);
+            .unslot_hearthstone(artifact_weapon_name, hearthstone_name);
         match try_unslotted {
             Ok(unslotted) => Ok(unslotted),
             Err(CharacterMutationError::WeaponError(WeaponError::NotFound)) => self
                 .equipped
-                .unslot_hearthstone(artifact_weapon_name, hearthstone_id),
+                .unslot_hearthstone(artifact_weapon_name, hearthstone_name),
             Err(e) => Err(e),
         }
     }

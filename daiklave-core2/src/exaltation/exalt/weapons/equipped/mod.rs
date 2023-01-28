@@ -5,7 +5,7 @@ use std::{
 
 use crate::{
     exaltation::{exalt::essence::EssenceError, mortal::MortalEquippedWeapons},
-    hearthstones::{HearthstoneError, HearthstoneId, SlottedHearthstone, UnslottedHearthstone},
+    hearthstones::{HearthstoneError, SlottedHearthstone, UnslottedHearthstone},
     weapons::{
         weapon::{
             artifact::{
@@ -218,7 +218,7 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
     pub fn slot_hearthstone(
         &mut self,
         artifact_weapon_name: &str,
-        hearthstone_id: HearthstoneId,
+        hearthstone_name: &'source str,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         *self
@@ -267,7 +267,7 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
             .ok_or(CharacterMutationError::HearthstoneError(
                 HearthstoneError::AllSlotsFilled,
             ))? = Some(SlottedHearthstone {
-            hearthstone_id,
+            name: hearthstone_name,
             details: unslotted.details,
             origin: unslotted.origin,
         });
@@ -277,10 +277,10 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
     pub fn unslot_hearthstone(
         &mut self,
         artifact_weapon_name: &str,
-        hearthstone_id: HearthstoneId,
-    ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        hearthstone_name: &str,
+    ) -> Result<(&'source str, UnslottedHearthstone<'source>), CharacterMutationError> {
         let SlottedHearthstone {
-            hearthstone_id: _,
+            name,
             details,
             origin,
         } = self
@@ -325,7 +325,7 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
             .find_map(|maybe_hearthstone| {
                 if maybe_hearthstone
                     .as_ref()
-                    .map_or(false, |hearthstone| hearthstone.id() == hearthstone_id)
+                    .map_or(false, |hearthstone| hearthstone.name == hearthstone_name)
                 {
                     maybe_hearthstone.take()
                 } else {
@@ -336,7 +336,7 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
                 HearthstoneError::NotFound,
             ))?;
 
-        Ok(UnslottedHearthstone { details, origin })
+        Ok((name, UnslottedHearthstone { details, origin }))
     }
 
     pub fn attune_artifact_weapon(

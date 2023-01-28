@@ -28,7 +28,7 @@ use crate::{
         },
         CharmError,
     },
-    hearthstones::{HearthstoneId, UnslottedHearthstone},
+    hearthstones::UnslottedHearthstone,
     martial_arts::{
         charm::{MartialArtsCharm, MartialArtsCharmId},
         style::MartialArtsStyle,
@@ -835,21 +835,21 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn slot_hearthstone_into_weapon(
         &mut self,
         artifact_weapon_name: &str,
-        hearthstone_id: HearthstoneId,
+        hearthstone_name: &'source str,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
                 mortal.slot_hearthstone_into_weapon(
                     artifact_weapon_name,
-                    hearthstone_id,
+                    hearthstone_name,
                     unslotted,
                 )?;
             }
             Exaltation::Exalt(exalt) => {
                 exalt.slot_hearthstone_into_weapon(
                     artifact_weapon_name,
-                    hearthstone_id,
+                    hearthstone_name,
                     unslotted,
                 )?;
             }
@@ -860,21 +860,21 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn slot_hearthstone_into_armor(
         &mut self,
         artifact_armor_name: &str,
-        hearthstone_id: HearthstoneId,
+        hearthstone_name: &'source str,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
                 mortal.slot_hearthstone_into_armor(
                     artifact_armor_name,
-                    hearthstone_id,
+                    hearthstone_name,
                     unslotted,
                 )?;
             }
             Exaltation::Exalt(exalt) => {
                 exalt.slot_hearthstone_into_armor(
                     artifact_armor_name,
-                    hearthstone_id,
+                    hearthstone_name,
                     unslotted,
                 )?;
             }
@@ -885,15 +885,15 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn slot_hearthstone_into_wonder(
         &mut self,
         wonder_name: &str,
-        hearthstone_id: HearthstoneId,
+        hearthstone_name: &'source str,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.slot_hearthstone_into_wonder(wonder_name, hearthstone_id, unslotted)?;
+                mortal.slot_hearthstone_into_wonder(wonder_name, hearthstone_name, unslotted)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.slot_hearthstone_into_wonder(wonder_name, hearthstone_id, unslotted)?;
+                exalt.slot_hearthstone_into_wonder(wonder_name, hearthstone_name, unslotted)?;
             }
         }
         Ok(self)
@@ -902,14 +902,14 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn unslot_hearthstone_from_weapon(
         &mut self,
         artifact_weapon_name: &str,
-        hearthstone_id: HearthstoneId,
-    ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        hearthstone_name: &str,
+    ) -> Result<(&'source str, UnslottedHearthstone<'source>), CharacterMutationError> {
         Ok(match self {
             Exaltation::Mortal(mortal) => {
-                mortal.unslot_hearthstone_from_weapon(artifact_weapon_name, hearthstone_id)?
+                mortal.unslot_hearthstone_from_weapon(artifact_weapon_name, hearthstone_name)?
             }
             Exaltation::Exalt(exalt) => {
-                exalt.unslot_hearthstone_from_weapon(artifact_weapon_name, hearthstone_id)?
+                exalt.unslot_hearthstone_from_weapon(artifact_weapon_name, hearthstone_name)?
             }
         })
     }
@@ -917,14 +917,14 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn unslot_hearthstone_from_armor(
         &mut self,
         artifact_armor_name: &str,
-        hearthstone_id: HearthstoneId,
-    ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        hearthstone_name: &str,
+    ) -> Result<(&'source str, UnslottedHearthstone<'source>), CharacterMutationError> {
         Ok(match self {
             Exaltation::Mortal(mortal) => {
-                mortal.unslot_hearthstone_from_armor(artifact_armor_name, hearthstone_id)?
+                mortal.unslot_hearthstone_from_armor(artifact_armor_name, hearthstone_name)?
             }
             Exaltation::Exalt(exalt) => {
-                exalt.unslot_hearthstone_from_armor(artifact_armor_name, hearthstone_id)?
+                exalt.unslot_hearthstone_from_armor(artifact_armor_name, hearthstone_name)?
             }
         })
     }
@@ -932,14 +932,14 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn unslot_hearthstone_from_wonder(
         &mut self,
         wonder_name: &str,
-        hearthstone_id: HearthstoneId,
-    ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        hearthstone_name: &str,
+    ) -> Result<(&'source str, UnslottedHearthstone<'source>), CharacterMutationError> {
         Ok(match self {
             Exaltation::Mortal(mortal) => {
-                mortal.unslot_hearthstone_from_wonder(wonder_name, hearthstone_id)?
+                mortal.unslot_hearthstone_from_wonder(wonder_name, hearthstone_name)?
             }
             Exaltation::Exalt(exalt) => {
-                exalt.unslot_hearthstone_from_wonder(wonder_name, hearthstone_id)?
+                exalt.unslot_hearthstone_from_wonder(wonder_name, hearthstone_name)?
             }
         })
     }

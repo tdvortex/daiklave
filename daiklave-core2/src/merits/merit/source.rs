@@ -3,7 +3,7 @@ use std::ops::Div;
 use crate::{
     artifact::ArtifactName,
     book_reference::{Book, BookReference},
-    hearthstones::{hearthstone::GeomancyLevel, HearthstoneId},
+    hearthstones::hearthstone::GeomancyLevel,
     languages::language::MajorLanguage,
     sorcery::{SorceryArchetypeMerit, SorceryArchetypeMeritId},
 };
@@ -39,13 +39,13 @@ use super::{
 pub(crate) enum MeritSource<'source> {
     Artifact(ArtifactName<'source>, u8),
     DemenseNoManse(&'source str, GeomancyLevel),
-    DemenseWithManse(HearthstoneId, &'source str, GeomancyLevel),
-    ExaltedHealing(bool), // is_exalt
-    HearthstoneNoManse(HearthstoneId, &'source str, GeomancyLevel),
-    HearthstoneWithManse(HearthstoneId, &'source str, GeomancyLevel),
+    DemenseWithManse(&'source str, &'source str, GeomancyLevel), // Hearthstone name, demense name, geomancy level
+    ExaltedHealing(bool),                                        // is_exalt
+    HearthstoneNoManse(&'source str, GeomancyLevel),
+    HearthstoneWithManse(&'source str, GeomancyLevel),
     LocalTongues(usize),
     MajorLanguage(MajorLanguage),
-    Manse(HearthstoneId, &'source str, GeomancyLevel),
+    Manse(&'source str, &'source str, GeomancyLevel), // Hearthstone name, demense name, geomancy level
     MartialArtist(&'source str),
     MortalSorcerer,
     NonStackable(NonStackableMeritId, NonStackableMeritView<'source>),
@@ -62,11 +62,11 @@ impl<'source> MeritSource<'source> {
                 MeritId::DemenseWithManse(*hearthstone_id)
             }
             MeritSource::ExaltedHealing(_) => MeritId::ExaltedHealing,
-            MeritSource::HearthstoneNoManse(hearthstone_id, _, _) => {
-                MeritId::HearthstoneNoManse(*hearthstone_id)
+            MeritSource::HearthstoneNoManse(hearthstone_name, _) => {
+                MeritId::HearthstoneNoManse(*hearthstone_name)
             }
-            MeritSource::HearthstoneWithManse(hearthstone_id, _, _) => {
-                MeritId::HearthstoneWithManse(*hearthstone_id)
+            MeritSource::HearthstoneWithManse(hearthstone_name, _) => {
+                MeritId::HearthstoneWithManse(*hearthstone_name)
             }
             MeritSource::LocalTongues(_) => MeritId::LocalTongues,
             MeritSource::MajorLanguage(major) => MeritId::MajorLanguage(*major),
@@ -89,8 +89,8 @@ impl<'source> MeritSource<'source> {
             MeritSource::DemenseNoManse(_, _) => MeritTemplateId::Demense,
             MeritSource::DemenseWithManse(_, _, _) => MeritTemplateId::Demense,
             MeritSource::ExaltedHealing(_) => MeritTemplateId::ExaltedHealing,
-            MeritSource::HearthstoneNoManse(_, _, _) => MeritTemplateId::Hearthstone,
-            MeritSource::HearthstoneWithManse(_, _, _) => MeritTemplateId::Hearthstone,
+            MeritSource::HearthstoneNoManse(_, _) => MeritTemplateId::Hearthstone,
+            MeritSource::HearthstoneWithManse(_, _) => MeritTemplateId::Hearthstone,
             MeritSource::LocalTongues(_) => MeritTemplateId::Language,
             MeritSource::MajorLanguage(_) => MeritTemplateId::Language,
             MeritSource::Manse(_, _, _) => MeritTemplateId::Manse,
@@ -112,8 +112,8 @@ impl<'source> MeritSource<'source> {
             MeritSource::DemenseNoManse(_, _) => "Demense",
             MeritSource::DemenseWithManse(_, _, _) => "Demense",
             MeritSource::ExaltedHealing(_) => "Exalted Healing",
-            MeritSource::HearthstoneNoManse(_, _, _) => "Hearthstone",
-            MeritSource::HearthstoneWithManse(_, _, _) => "Hearthstone",
+            MeritSource::HearthstoneNoManse(_, _) => "Hearthstone",
+            MeritSource::HearthstoneWithManse(_, _) => "Hearthstone",
             MeritSource::LocalTongues(_) => "Language",
             MeritSource::MajorLanguage(_) => "Language",
             MeritSource::Manse(_, _, _) => "Manse",
@@ -133,10 +133,10 @@ impl<'source> MeritSource<'source> {
                 Some(BookReference::new(Book::CoreRulebook, 160))
             }
             MeritSource::ExaltedHealing(_) => Some(BookReference::new(Book::CoreRulebook, 165)),
-            MeritSource::HearthstoneNoManse(_, _, _) => {
+            MeritSource::HearthstoneNoManse(_, _) => {
                 Some(BookReference::new(Book::CoreRulebook, 161))
             }
-            MeritSource::HearthstoneWithManse(_, _, _) => {
+            MeritSource::HearthstoneWithManse(_, _) => {
                 Some(BookReference::new(Book::CoreRulebook, 161))
             }
             MeritSource::LocalTongues(_) => Some(BookReference::new(Book::CoreRulebook, 162)),
@@ -160,8 +160,8 @@ impl<'source> MeritSource<'source> {
             MeritSource::DemenseNoManse(name, _) => Some(*name),
             MeritSource::DemenseWithManse(_, name, _) => Some(*name),
             MeritSource::ExaltedHealing(_) => None,
-            MeritSource::HearthstoneNoManse(_, name, _) => Some(*name),
-            MeritSource::HearthstoneWithManse(_, name, _) => Some(*name),
+            MeritSource::HearthstoneNoManse(name, _) => Some(*name),
+            MeritSource::HearthstoneWithManse(name, _) => Some(*name),
             MeritSource::Manse(_, detail, _) => Some(*detail),
             MeritSource::MartialArtist(style_name) => Some(*style_name),
             MeritSource::MortalSorcerer => None,
@@ -193,11 +193,11 @@ impl<'source> MeritSource<'source> {
             },
             MeritSource::DemenseWithManse(_, _, _) => 0,
             MeritSource::ExaltedHealing(is_exalt) => 5 * (1 - u8::from(*is_exalt)),
-            MeritSource::HearthstoneNoManse(_, _, geomancy_level) => match geomancy_level {
+            MeritSource::HearthstoneNoManse(_, geomancy_level) => match geomancy_level {
                 GeomancyLevel::Standard => 2,
                 GeomancyLevel::Greater => 4,
             },
-            MeritSource::HearthstoneWithManse(_, _, _) => 0,
+            MeritSource::HearthstoneWithManse(_, _) => 0,
             MeritSource::LocalTongues(count) => ((*count).min(u8::MAX as usize) + 3).div(4) as u8,
             MeritSource::MajorLanguage(_) => 1,
             MeritSource::Manse(_, _, geomancy_level) => match geomancy_level {
@@ -218,8 +218,8 @@ impl<'source> MeritSource<'source> {
             MeritSource::DemenseNoManse(_, _) => MeritType::Story,
             MeritSource::DemenseWithManse(_, _, _) => MeritType::Story,
             MeritSource::ExaltedHealing(_) => MeritType::Supernatural,
-            MeritSource::HearthstoneNoManse(_, _, _) => MeritType::Story,
-            MeritSource::HearthstoneWithManse(_, _, _) => MeritType::Story,
+            MeritSource::HearthstoneNoManse(_, _) => MeritType::Story,
+            MeritSource::HearthstoneWithManse(_, _) => MeritType::Story,
             MeritSource::Manse(_, _, _) => MeritType::Story,
             MeritSource::LocalTongues(_) => MeritType::Purchased,
             MeritSource::MajorLanguage(_) => MeritType::Purchased,
@@ -249,11 +249,11 @@ impl<'source> MeritSource<'source> {
                 GeomancyLevel::Greater => (DEMENSE_SHARED, Some(DEMENSE_GREATER)),
             },
             MeritSource::ExaltedHealing(_) => (EXALTED_HEALING, None),
-            MeritSource::HearthstoneNoManse(_, _, geomancy_level) => match geomancy_level {
+            MeritSource::HearthstoneNoManse(_, geomancy_level) => match geomancy_level {
                 GeomancyLevel::Standard => (HEARTHSTONE_SHARED, Some(HEARTHSTONE_STANDARD)),
                 GeomancyLevel::Greater => (HEARTHSTONE_SHARED, Some(HEARTHSTONE_GREATER)),
             },
-            MeritSource::HearthstoneWithManse(_, _, geomancy_level) => match geomancy_level {
+            MeritSource::HearthstoneWithManse(_, geomancy_level) => match geomancy_level {
                 GeomancyLevel::Standard => (HEARTHSTONE_SHARED, Some(HEARTHSTONE_MANSE_STANDARD)),
                 GeomancyLevel::Greater => (HEARTHSTONE_SHARED, Some(HEARTHSTONE_MANSE_GREATER)),
             },

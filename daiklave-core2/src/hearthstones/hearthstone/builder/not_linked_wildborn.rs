@@ -2,7 +2,7 @@ use crate::{
     book_reference::BookReference,
     hearthstones::hearthstone::{
         details::HearthstoneDetailsMemo, stability::HearthstoneStability,
-        template::HearthstoneTemplate, GeomancyLevel, HearthstoneCategory,
+        template::HearthstoneTemplate, AddHearthstone, GeomancyLevel, HearthstoneCategory,
     },
 };
 
@@ -44,8 +44,8 @@ impl NotLinkedOrWildbornHearthstoneBuilder {
         self
     }
 
-    /// Completes the builder, returning a HearthstoneTemplate.
-    pub fn build(self) -> HearthstoneTemplate {
+    /// Completes the builder, returning a hearthstone template and its name.
+    pub fn build(self) -> AddHearthstone {
         let stability = match (self.is_manseborn, self.is_steady) {
             (true, true) => HearthstoneStability::ManseBornSteady,
             (true, false) => HearthstoneStability::ManseBorn,
@@ -53,16 +53,18 @@ impl NotLinkedOrWildbornHearthstoneBuilder {
             (false, false) => HearthstoneStability::Unspecified,
         };
 
-        HearthstoneTemplate {
-            details: HearthstoneDetailsMemo {
-                name: self.name,
-                book_reference: self.book_reference,
-                category: self.category,
-                geomancy_level: self.geomancy_level,
-                powers: self.powers,
-                is_dependent: self.is_dependent,
+        (
+            self.name,
+            HearthstoneTemplate {
+                details: HearthstoneDetailsMemo {
+                    book_reference: self.book_reference,
+                    category: self.category,
+                    geomancy_level: self.geomancy_level,
+                    powers: self.powers,
+                    is_dependent: self.is_dependent,
+                },
+                stability,
             },
-            stability,
-        }
+        )
     }
 }

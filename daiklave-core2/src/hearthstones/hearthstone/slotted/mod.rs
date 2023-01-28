@@ -2,7 +2,7 @@ use crate::book_reference::BookReference;
 
 use super::{
     category::HearthstoneCategory, details::HearthstoneDetails, geomancy_level::GeomancyLevel,
-    id::HearthstoneId, keyword::HearthstoneKeyword, origin::HearthstoneOrigin,
+    keyword::HearthstoneKeyword, origin::HearthstoneOrigin,
 };
 
 mod memo;
@@ -10,7 +10,7 @@ pub(crate) use memo::SlottedHearthstoneMemo;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct SlottedHearthstone<'source> {
-    pub hearthstone_id: HearthstoneId,
+    pub name: &'source str,
     pub details: HearthstoneDetails<'source>,
     pub origin: HearthstoneOrigin<'source>,
 }
@@ -18,18 +18,10 @@ pub(crate) struct SlottedHearthstone<'source> {
 impl<'source> SlottedHearthstone<'source> {
     pub fn as_memo(&self) -> SlottedHearthstoneMemo {
         SlottedHearthstoneMemo {
-            hearthstone_id: self.hearthstone_id,
+            name: self.name.to_owned(),
             details: self.details.as_memo(),
             origin: self.origin.as_memo(),
         }
-    }
-
-    pub fn id(&self) -> HearthstoneId {
-        self.hearthstone_id
-    }
-
-    pub fn name(&self) -> &'source str {
-        self.details.name()
     }
 
     pub fn book_reference(&self) -> Option<BookReference> {

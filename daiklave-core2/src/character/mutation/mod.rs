@@ -15,10 +15,7 @@ use crate::{
     },
     flaws::flaw::FlawMutation,
     health::{DamageLevel, WoundPenalty},
-    hearthstones::{
-        hearthstone::{GeomancyLevel, HearthstoneTemplate},
-        HearthstoneId,
-    },
+    hearthstones::hearthstone::{AddHearthstone, AddManse, GeomancyLevel},
     intimacies::intimacy::IntimacyMutation,
     languages::language::LanguageMutation,
     martial_arts::style::MartialArtsStyle,
@@ -117,20 +114,20 @@ pub enum CharacterMutation {
     UnequipArmor,
     /// Add a manse, its associated demense, and its associated hearthstone
     /// to the character.
-    AddManse(String, String, HearthstoneId, HearthstoneTemplate),
+    AddManse(AddManse), // Manse, demense, hearthstone
     /// Add a hearthstone to a character without a manse.
-    AddHearthstone(HearthstoneId, HearthstoneTemplate),
+    AddHearthstone(AddHearthstone),
     /// Add a demense to a character without a manse.
     AddDemense(String, GeomancyLevel),
     /// Remove a demense (without a manse) from a character.
     RemoveDemense(String),
     /// Slot a hearthstone into an artifact.
-    SlotHearthstone(ArtifactNameMutation, HearthstoneId),
+    SlotHearthstone(ArtifactNameMutation, String),
     /// Unslot a hearthstone from its current position.
-    UnslotHearthstone(HearthstoneId),
+    UnslotHearthstone(String),
     /// Remove a hearthstone from the character, unslotting it in the process
     /// if needed.
-    RemoveHearthstone(HearthstoneId),
+    RemoveHearthstone(String),
     /// Attune to an artifact, committing motes to its ongoing use.
     AttuneArtifact(ArtifactNameMutation, MotePoolName),
     /// Add a stackable merit with an id for this instance and detail

@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use crate::{book_reference::BookReference, sorcery::spell::builder::SpellBuilder};
 
 use super::{
-    evocation::{builder::EvocationBuilder, EvokableName},
+    evocation::{builder::EvocationBuilder, EvokableNameMutation},
     spirit::builder::SpiritCharmBuilder,
 };
 
@@ -41,7 +41,7 @@ impl CharmBuilder {
 
     /// Constructs the Charm as an Evocation. Requires specifying what it is an
     /// evocation of (artifact or hearthstone).
-    pub fn evocation(self, evokable_name: EvokableName) -> EvocationBuilder {
+    pub fn evocation(self, evokable_name: EvokableNameMutation) -> EvocationBuilder {
         EvocationBuilder {
             name: self.name,
             book_reference: self.book_reference,

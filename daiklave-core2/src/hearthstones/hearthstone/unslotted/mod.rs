@@ -22,10 +22,6 @@ impl<'source> UnslottedHearthstone<'source> {
         }
     }
 
-    pub fn name(&self) -> &'source str {
-        self.details.name()
-    }
-
     pub fn book_reference(&self) -> Option<BookReference> {
         self.details.book_reference()
     }

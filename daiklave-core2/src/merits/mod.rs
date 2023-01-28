@@ -13,7 +13,7 @@ pub struct Merits<'view, 'source>(pub(crate) &'view Character<'source>);
 
 impl<'view, 'source> Merits<'view, 'source> {
     /// Gets a specific Merit belonging to the character (if it exists).
-    pub fn get(&self, merit_id: MeritId<'view>) -> Option<Merit<'source>> {
+    pub fn get(&self, merit_id: MeritId<'_>) -> Option<Merit<'source>> {
         match merit_id {
             MeritId::Artifact(artifact_id) => match artifact_id {
                 ArtifactName::Weapon(search_name) => self
@@ -66,14 +66,14 @@ impl<'view, 'source> Merits<'view, 'source> {
                 .demenses_no_manse
                 .get_key_value(name)
                 .map(|(name, geomancy)| Merit(MeritSource::DemenseNoManse(name, *geomancy))),
-            MeritId::DemenseWithManse(hearthstone_id) => self
+            MeritId::DemenseWithManse(hearthstone_name) => self
                 .0
                 .hearthstones()
-                .get(hearthstone_id)
+                .get(hearthstone_name)
                 .and_then(|hearthstone| {
                     hearthstone.manse_and_demense().map(|(_, demense)| {
                         Merit(MeritSource::DemenseWithManse(
-                            hearthstone_id,
+                            hearthstone.name(),
                             demense,
                             hearthstone.geomancy_level(),
                         ))
@@ -98,7 +98,6 @@ impl<'view, 'source> Merits<'view, 'source> {
                         None
                     } else {
                         Some(Merit(MeritSource::HearthstoneNoManse(
-                            hearthstone_id,
                             hearthstone.name(),
                             hearthstone.geomancy_level(),
                         )))
@@ -111,26 +110,24 @@ impl<'view, 'source> Merits<'view, 'source> {
                 .and_then(|hearthstone| {
                     hearthstone.manse_and_demense().map(|_| {
                         Merit(MeritSource::HearthstoneWithManse(
-                            hearthstone_id,
                             hearthstone.name(),
                             hearthstone.geomancy_level(),
                         ))
                     })
                 }),
-            MeritId::Manse(hearthstone_id) => {
-                self.0
-                    .hearthstones()
-                    .get(hearthstone_id)
-                    .and_then(|hearthstone| {
-                        hearthstone.manse_and_demense().map(|(manse, _)| {
-                            Merit(MeritSource::Manse(
-                                hearthstone_id,
-                                manse,
-                                hearthstone.geomancy_level(),
-                            ))
-                        })
+            MeritId::Manse(hearthstone_name) => self
+                .0
+                .hearthstones()
+                .get(hearthstone_name)
+                .and_then(|hearthstone| {
+                    hearthstone.manse_and_demense().map(|(manse, _)| {
+                        Merit(MeritSource::Manse(
+                            hearthstone.name(),
+                            manse,
+                            hearthstone.geomancy_level(),
+                        ))
                     })
-            }
+                }),
             MeritId::MartialArtist(style_name) => match &self.0.exaltation {
                 Exaltation::Mortal(mortal) => mortal
                     .martial_arts_styles
@@ -264,13 +261,13 @@ impl<'view, 'source> Merits<'view, 'source> {
             .iter()
             .filter_map(|hearthstone_id| self.0.hearthstones().get(hearthstone_id))
             .for_each(|hearthstone| {
+                let hearthstone_name = hearthstone.name();
                 if hearthstone.manse_and_demense().is_some() {
-                    let hearthstone_id = hearthstone.id();
-                    output.push(MeritId::Manse(hearthstone_id));
-                    output.push(MeritId::DemenseWithManse(hearthstone_id));
-                    output.push(MeritId::HearthstoneWithManse(hearthstone_id));
+                    output.push(MeritId::Manse(hearthstone_name));
+                    output.push(MeritId::DemenseWithManse(hearthstone_name));
+                    output.push(MeritId::HearthstoneWithManse(hearthstone_name));
                 } else {
-                    output.push(MeritId::HearthstoneNoManse(hearthstone.id()));
+                    output.push(MeritId::HearthstoneNoManse(hearthstone_name));
                 }
             });
 

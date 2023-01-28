@@ -10,7 +10,7 @@ use crate::{
     exaltation::ExaltationMemo,
     experience::ExperiencePool,
     health::Health,
-    hearthstones::{hearthstone::GeomancyLevel, HearthstoneId, UnslottedHearthstoneMemo},
+    hearthstones::{hearthstone::GeomancyLevel, UnslottedHearthstoneMemo},
     intimacies::intimacy::{IntimacyLevel, IntimacyTypeMemo},
     languages::LanguagesMemo,
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
@@ -30,7 +30,7 @@ pub struct CharacterMemo {
     pub(crate) attributes: Attributes,
     pub(crate) abilities: AbilitiesMemo,
     pub(crate) craft: CraftMemo,
-    pub(crate) hearthstone_inventory: HashMap<HearthstoneId, UnslottedHearthstoneMemo>,
+    pub(crate) hearthstone_inventory: HashMap<String, UnslottedHearthstoneMemo>,
     pub(crate) demenses_no_manse: HashMap<String, GeomancyLevel>,
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMerit>,
     pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMerit>,
@@ -55,7 +55,7 @@ impl<'source> CharacterMemo {
             hearthstone_inventory: self
                 .hearthstone_inventory
                 .iter()
-                .map(|(k, v)| (*k, v.as_ref()))
+                .map(|(k, v)| (k.as_str(), v.as_ref()))
                 .collect(),
             demenses_no_manse: self
                 .demenses_no_manse

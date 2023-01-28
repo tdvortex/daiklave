@@ -24,7 +24,7 @@ use crate::{
     },
     artifact::wonders::{OwnedWonder, Wonder},
     charms::CharmError,
-    hearthstones::{HearthstoneId, UnslottedHearthstone},
+    hearthstones::UnslottedHearthstone,
     martial_arts::{style::MartialArtsStyle, MartialArtsError},
     merits::merit::MeritError,
     sorcery::{
@@ -337,60 +337,61 @@ impl<'view, 'source> Mortal<'source> {
     pub fn slot_hearthstone_into_weapon(
         &mut self,
         artifact_weapon_name: &str,
-        hearthstone_id: HearthstoneId,
+        hearthstone_name: &'source str,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons
-            .slot_hearthstone(artifact_weapon_name, hearthstone_id, unslotted)?;
+            .slot_hearthstone(artifact_weapon_name, hearthstone_name, unslotted)?;
         Ok(self)
     }
 
     pub fn slot_hearthstone_into_armor(
         &mut self,
         artifact_armor_name: &str,
-        hearthstone_id: HearthstoneId,
+        hearthstone_name: &'source str,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.armor
-            .slot_hearthstone(artifact_armor_name, hearthstone_id, unslotted)?;
+            .slot_hearthstone(artifact_armor_name, hearthstone_name, unslotted)?;
         Ok(self)
     }
 
     pub fn slot_hearthstone_into_wonder(
         &mut self,
         wonder_name: &str,
-        hearthstone_id: HearthstoneId,
+        hearthstone_name: &'source str,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.wonders
-            .slot_hearthstone(wonder_name, hearthstone_id, unslotted)?;
+            .slot_hearthstone(wonder_name, hearthstone_name, unslotted)?;
         Ok(self)
     }
 
     pub fn unslot_hearthstone_from_weapon(
         &mut self,
         artifact_weapon_name: &str,
-        hearthstone_id: HearthstoneId,
-    ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        hearthstone_name: &str,
+    ) -> Result<(&'source str, UnslottedHearthstone<'source>), CharacterMutationError> {
         self.weapons
-            .unslot_hearthstone(artifact_weapon_name, hearthstone_id)
+            .unslot_hearthstone(artifact_weapon_name, hearthstone_name)
     }
 
     pub fn unslot_hearthstone_from_armor(
         &mut self,
         artifact_armor_name: &str,
-        hearthstone_id: HearthstoneId,
-    ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        hearthstone_name: &str,
+    ) -> Result<(&'source str, UnslottedHearthstone<'source>), CharacterMutationError> {
         self.armor
-            .unslot_hearthstone(artifact_armor_name, hearthstone_id)
+            .unslot_hearthstone(artifact_armor_name, hearthstone_name)
     }
 
     pub fn unslot_hearthstone_from_wonder(
         &mut self,
         wonder_name: &str,
-        hearthstone_id: HearthstoneId,
-    ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
-        self.wonders.unslot_hearthstone(wonder_name, hearthstone_id)
+        hearthstone_name: &str,
+    ) -> Result<(&'source str, UnslottedHearthstone<'source>), CharacterMutationError> {
+        self.wonders
+            .unslot_hearthstone(wonder_name, hearthstone_name)
     }
 
     pub fn add_sorcery_archetype_merit(

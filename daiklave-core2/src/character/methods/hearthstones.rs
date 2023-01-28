@@ -3,7 +3,7 @@ use std::collections::hash_map::Entry;
 use crate::{
     artifact::ArtifactName,
     hearthstones::{
-        hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneId, HearthstoneOrigin,
+        hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneOrigin,
         HearthstoneStability, Hearthstones, UnslottedHearthstone,
     },
     Character, CharacterMutationError,
@@ -20,7 +20,7 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         manse_name: &'source str,
         demense_name: &'source str,
-        hearthstone_id: HearthstoneId,
+        hearthstone_name: &'source str,
         template: &'source HearthstoneTemplate,
     ) -> Result<&mut Self, CharacterMutationError> {
         let unslotted = UnslottedHearthstone {
@@ -48,14 +48,15 @@ impl<'view, 'source> Character<'source> {
                 }
             },
         };
-        self.hearthstone_inventory.insert(hearthstone_id, unslotted);
+        self.hearthstone_inventory
+            .insert(hearthstone_name, unslotted);
         Ok(self)
     }
 
     /// Adds a standalone hearthstone (without a manse) to the character.
     pub fn add_hearthstone(
         &mut self,
-        hearthstone_id: HearthstoneId,
+        hearthstone_name: &'source str,
         template: &'source HearthstoneTemplate,
     ) -> Result<&mut Self, CharacterMutationError> {
         let unslotted = UnslottedHearthstone {
@@ -77,7 +78,7 @@ impl<'view, 'source> Character<'source> {
                 HearthstoneStability::Unspecified => HearthstoneOrigin::Unspecified(None),
             },
         };
-        if let Entry::Vacant(e) = self.hearthstone_inventory.entry(hearthstone_id) {
+        if let Entry::Vacant(e) = self.hearthstone_inventory.entry(hearthstone_name) {
             e.insert(unslotted);
             Ok(self)
         } else {
@@ -91,9 +92,9 @@ impl<'view, 'source> Character<'source> {
     pub fn slot_hearthstone(
         &mut self,
         artifact_name: ArtifactName<'_>,
-        hearthstone_id: HearthstoneId,
+        hearthstone_name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let hearthstone = self.hearthstones().get(hearthstone_id).ok_or(
+        let hearthstone = self.hearthstones().get(hearthstone_name).ok_or(
             CharacterMutationError::HearthstoneError(HearthstoneError::NotFound),
         )?;
 
@@ -102,29 +103,31 @@ impl<'view, 'source> Character<'source> {
             return Ok(self);
         }
 
-        let unslotted = if let Some(slotted_into_id) = maybe_slotted_into_name {
+        let (hearthstone_name, unslotted) = if let Some(slotted_into_id) = maybe_slotted_into_name {
             match slotted_into_id {
                 ArtifactName::Weapon(artifact_weapon_name) => self
                     .exaltation
-                    .unslot_hearthstone_from_weapon(artifact_weapon_name, hearthstone_id)?,
+                    .unslot_hearthstone_from_weapon(artifact_weapon_name, hearthstone_name)?,
                 ArtifactName::Armor(artifact_armor_name) => self
                     .exaltation
-                    .unslot_hearthstone_from_armor(artifact_armor_name, hearthstone_id)?,
+                    .unslot_hearthstone_from_armor(artifact_armor_name, hearthstone_name)?,
                 ArtifactName::Wonder(wonder_name) => self
                     .exaltation
-                    .unslot_hearthstone_from_wonder(wonder_name, hearthstone_id)?,
+                    .unslot_hearthstone_from_wonder(wonder_name, hearthstone_name)?,
             }
         } else {
-            self.hearthstone_inventory.remove(&hearthstone_id).ok_or(
-                CharacterMutationError::HearthstoneError(HearthstoneError::NotFound),
-            )?
+            self.hearthstone_inventory
+                .remove_entry(hearthstone_name)
+                .ok_or(CharacterMutationError::HearthstoneError(
+                    HearthstoneError::NotFound,
+                ))?
         };
 
         match artifact_name {
-            ArtifactName::Weapon(artifact_weapon_id) => {
+            ArtifactName::Weapon(artifact_weapon_name) => {
                 if let Err(e) = self.exaltation.slot_hearthstone_into_weapon(
-                    artifact_weapon_id,
-                    hearthstone_id,
+                    artifact_weapon_name,
+                    hearthstone_name,
                     unslotted,
                 ) {
                     // Something went wrong, put it back where it came from
@@ -133,27 +136,28 @@ impl<'view, 'source> Character<'source> {
                             ArtifactName::Weapon(artifact_weapon_name) => {
                                 self.exaltation.slot_hearthstone_into_weapon(
                                     artifact_weapon_name,
-                                    hearthstone_id,
+                                    hearthstone_name,
                                     unslotted,
                                 )?
                             }
                             ArtifactName::Armor(artifact_armor_name) => {
                                 self.exaltation.slot_hearthstone_into_armor(
                                     artifact_armor_name,
-                                    hearthstone_id,
+                                    hearthstone_name,
                                     unslotted,
                                 )?
                             }
                             ArtifactName::Wonder(wonder_name) => {
                                 self.exaltation.slot_hearthstone_into_wonder(
                                     wonder_name,
-                                    hearthstone_id,
+                                    hearthstone_name,
                                     unslotted,
                                 )?
                             }
                         };
                     } else {
-                        self.hearthstone_inventory.insert(hearthstone_id, unslotted);
+                        self.hearthstone_inventory
+                            .insert(hearthstone_name, unslotted);
                     }
                     Err(e)
                 } else {
@@ -163,7 +167,7 @@ impl<'view, 'source> Character<'source> {
             ArtifactName::Armor(artifact_armor_id) => {
                 if let Err(e) = self.exaltation.slot_hearthstone_into_armor(
                     artifact_armor_id,
-                    hearthstone_id,
+                    hearthstone_name,
                     unslotted,
                 ) {
                     // Something went wrong, put it back where it came from
@@ -172,27 +176,28 @@ impl<'view, 'source> Character<'source> {
                             ArtifactName::Weapon(artifact_weapon_name) => {
                                 self.exaltation.slot_hearthstone_into_weapon(
                                     artifact_weapon_name,
-                                    hearthstone_id,
+                                    hearthstone_name,
                                     unslotted,
                                 )?
                             }
                             ArtifactName::Armor(artifact_armor_id) => {
                                 self.exaltation.slot_hearthstone_into_armor(
                                     artifact_armor_id,
-                                    hearthstone_id,
+                                    hearthstone_name,
                                     unslotted,
                                 )?
                             }
                             ArtifactName::Wonder(wonder_id) => {
                                 self.exaltation.slot_hearthstone_into_wonder(
                                     wonder_id,
-                                    hearthstone_id,
+                                    hearthstone_name,
                                     unslotted,
                                 )?
                             }
                         };
                     } else {
-                        self.hearthstone_inventory.insert(hearthstone_id, unslotted);
+                        self.hearthstone_inventory
+                            .insert(hearthstone_name, unslotted);
                     }
                     Err(e)
                 } else {
@@ -202,7 +207,7 @@ impl<'view, 'source> Character<'source> {
             ArtifactName::Wonder(wonder_id) => {
                 if let Err(e) = self.exaltation.slot_hearthstone_into_wonder(
                     wonder_id,
-                    hearthstone_id,
+                    hearthstone_name,
                     unslotted,
                 ) {
                     // Something went wrong, put it back where it came from
@@ -211,27 +216,28 @@ impl<'view, 'source> Character<'source> {
                             ArtifactName::Weapon(artifact_weapon_name) => {
                                 self.exaltation.slot_hearthstone_into_weapon(
                                     artifact_weapon_name,
-                                    hearthstone_id,
+                                    hearthstone_name,
                                     unslotted,
                                 )?
                             }
                             ArtifactName::Armor(artifact_armor_name) => {
                                 self.exaltation.slot_hearthstone_into_armor(
                                     artifact_armor_name,
-                                    hearthstone_id,
+                                    hearthstone_name,
                                     unslotted,
                                 )?
                             }
                             ArtifactName::Wonder(wonder_name) => {
                                 self.exaltation.slot_hearthstone_into_wonder(
                                     wonder_name,
-                                    hearthstone_id,
+                                    hearthstone_name,
                                     unslotted,
                                 )?
                             }
                         };
                     } else {
-                        self.hearthstone_inventory.insert(hearthstone_id, unslotted);
+                        self.hearthstone_inventory
+                            .insert(hearthstone_name, unslotted);
                     }
                     Err(e)
                 } else {
@@ -242,13 +248,10 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Unslots a hearthstone from wherever it currently is
-    pub fn unslot_hearthstone(
-        &mut self,
-        hearthstone_id: HearthstoneId,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        let unslotted = match self
+    pub fn unslot_hearthstone(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
+        let (unslotted_name, unslotted) = match self
             .hearthstones()
-            .get(hearthstone_id)
+            .get(name)
             .ok_or(CharacterMutationError::HearthstoneError(
                 HearthstoneError::NotFound,
             ))?
@@ -258,39 +261,38 @@ impl<'view, 'source> Character<'source> {
             ))? {
             ArtifactName::Weapon(artifact_weapon_name) => self
                 .exaltation
-                .unslot_hearthstone_from_weapon(artifact_weapon_name, hearthstone_id)?,
+                .unslot_hearthstone_from_weapon(artifact_weapon_name, name)?,
             ArtifactName::Armor(artifact_armor_name) => self
                 .exaltation
-                .unslot_hearthstone_from_armor(artifact_armor_name, hearthstone_id)?,
+                .unslot_hearthstone_from_armor(artifact_armor_name, name)?,
             ArtifactName::Wonder(wonder_name) => self
                 .exaltation
-                .unslot_hearthstone_from_wonder(wonder_name, hearthstone_id)?,
+                .unslot_hearthstone_from_wonder(wonder_name, name)?,
         };
 
-        self.hearthstone_inventory.insert(hearthstone_id, unslotted);
+        self.hearthstone_inventory.insert(unslotted_name, unslotted);
         Ok(self)
     }
 
     /// Removes a hearthstone from a character.
-    pub fn remove_hearthstone(
-        &mut self,
-        hearthstone_id: HearthstoneId,
-    ) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_hearthstone(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
         if self
             .hearthstones()
-            .get(hearthstone_id)
+            .get(name)
             .ok_or(CharacterMutationError::HearthstoneError(
                 HearthstoneError::NotFound,
             ))?
             .slotted_into()
             .is_some()
         {
-            self.unslot_hearthstone(hearthstone_id)?;
+            self.unslot_hearthstone(name)?;
         }
 
-        self.hearthstone_inventory.remove(&hearthstone_id).ok_or(
-            CharacterMutationError::HearthstoneError(HearthstoneError::NotFound),
-        )?;
+        self.hearthstone_inventory
+            .remove(name)
+            .ok_or(CharacterMutationError::HearthstoneError(
+                HearthstoneError::NotFound,
+            ))?;
         // May lose evocations along with the hearthstone
         self.correct_evocations(&[]);
         Ok(self)

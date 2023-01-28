@@ -10,10 +10,7 @@ use daiklave_core2::{
         caste::{DawnCasteAbility, DawnSupernalAbility},
         Solar,
     },
-    hearthstones::{
-        hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory},
-        HearthstoneId,
-    },
+    hearthstones::hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory},
     languages::language::{LanguageMutation, MajorLanguage},
     martial_arts::style::MartialArtsStyle,
     merits::merit::{
@@ -108,7 +105,6 @@ fn test_merits() {
 
     // Standalone hearthstone
     let mutation = CharacterMutation::AddHearthstone(
-        HearthstoneId(UniqueId::Placeholder(1)),
         Hearthstone::builder("Jewel of the Celestial Mandarin".to_string())
             .book_reference(BookReference::new(Book::CoreRulebook, 611))
             .category(HearthstoneCategory::Sidereal)
@@ -153,8 +149,7 @@ fn test_merits() {
 
     let manse = "A shiny mansion".to_owned();
     let demense = "A cool place".to_owned();
-    let mutation =
-        CharacterMutation::AddManse(manse, demense, HearthstoneId(UniqueId::Placeholder(2)), eye);
+    let mutation = CharacterMutation::AddManse((manse, demense, eye));
     event_source.apply_mutation(mutation).unwrap();
 
     // Martial arts style
@@ -389,13 +384,13 @@ fn test_merits() {
     assert!(belt.description().1.is_some());
 
     let jewel = merits
-        .get(MeritId::HearthstoneNoManse(HearthstoneId(
-            UniqueId::Placeholder(1),
-        )))
+        .get(MeritId::HearthstoneNoManse(
+            "Jewel of the Celestial Mandarin",
+        ))
         .unwrap();
     assert_eq!(
         jewel.id(),
-        MeritId::HearthstoneNoManse(HearthstoneId(UniqueId::Placeholder(1)))
+        MeritId::HearthstoneNoManse("Jewel of the Celestial Mandarin")
     );
     assert_eq!(jewel.template_name(), "Hearthstone");
     assert_eq!(
@@ -424,14 +419,9 @@ fn test_merits() {
     assert!(nowhere.description().1.is_some());
 
     let eye = merits
-        .get(MeritId::HearthstoneWithManse(HearthstoneId(
-            UniqueId::Placeholder(2),
-        )))
+        .get(MeritId::HearthstoneWithManse("Hierophant's Eye"))
         .unwrap();
-    assert_eq!(
-        eye.id(),
-        MeritId::HearthstoneWithManse(HearthstoneId(UniqueId::Placeholder(2),))
-    );
+    assert_eq!(eye.id(), MeritId::HearthstoneWithManse("Hierophant's Eye"));
     assert_eq!(eye.template_name(), "Hearthstone");
     assert_eq!(
         eye.book_reference(),
@@ -443,13 +433,8 @@ fn test_merits() {
     assert_eq!(eye.template_id(), MeritTemplateId::Hearthstone);
     assert!(eye.description().1.is_some());
 
-    let manse = merits
-        .get(MeritId::Manse(HearthstoneId(UniqueId::Placeholder(2))))
-        .unwrap();
-    assert_eq!(
-        manse.id(),
-        MeritId::Manse(HearthstoneId(UniqueId::Placeholder(2)))
-    );
+    let manse = merits.get(MeritId::Manse("Hierophant's Eye")).unwrap();
+    assert_eq!(manse.id(), MeritId::Manse("Hierophant's Eye"));
     assert_eq!(manse.template_name(), "Manse");
     assert_eq!(
         manse.book_reference(),
@@ -724,15 +709,12 @@ fn test_merits() {
     });
 
     // Remove the hearthstone and the manse
-    [
-        HearthstoneId(UniqueId::Placeholder(1)),
-        HearthstoneId(UniqueId::Placeholder(2)),
-    ]
-    .into_iter()
-    .map(|hearthstone_id| CharacterMutation::RemoveHearthstone(hearthstone_id))
-    .for_each(|mutation| {
-        event_source.apply_mutation(mutation).unwrap();
-    });
+    ["Jewel of the Celestial Mandarin", "Hierophant's Eye"]
+        .into_iter()
+        .map(|hearthstone_name| CharacterMutation::RemoveHearthstone(hearthstone_name.to_owned()))
+        .for_each(|mutation| {
+            event_source.apply_mutation(mutation).unwrap();
+        });
 
     // Remove the demense
     event_source

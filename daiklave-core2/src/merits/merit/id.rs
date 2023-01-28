@@ -1,6 +1,5 @@
 use crate::{
-    artifact::ArtifactName, hearthstones::HearthstoneId, languages::language::MajorLanguage,
-    sorcery::SorceryArchetypeMeritId,
+    artifact::ArtifactName, languages::language::MajorLanguage, sorcery::SorceryArchetypeMeritId,
 };
 
 use super::{nonstackable::NonStackableMeritId, stackable::StackableMeritId};
@@ -16,23 +15,23 @@ pub enum MeritId<'a> {
     DemenseNoManse(&'a str),
     /// The merit associated with a Demense acquired through the Manse merit.
     /// Keys off the hearthstone associated with the manse and demense.
-    DemenseWithManse(HearthstoneId),
+    DemenseWithManse(&'a str),
     /// The Exalted Healing merit, which all Exalts get for free but mortals
     /// must purchase as a Supernatural merit.
     ExaltedHealing,
     /// The merit associated with a specific Hearthstone which was acquired
     /// without the Manse merit.
-    HearthstoneNoManse(HearthstoneId),
+    HearthstoneNoManse(&'a str),
     /// The merit associated with a Hearthstone acquired for free with the
     /// Manse merit.
-    HearthstoneWithManse(HearthstoneId),
+    HearthstoneWithManse(&'a str),
     /// The Local Tongues variant of the Languages merit.
     LocalTongues,
     /// The Language Merit, except for its Local Tongues variant.
     MajorLanguage(MajorLanguage),
     /// The merit associated with the Manse merit. Keys off the hearthstone
     /// acquired with it.
-    Manse(HearthstoneId),
+    Manse(&'a str),
     /// The merit associated with the acquisition of a specific Martial Arts
     /// style.
     MartialArtist(&'a str),

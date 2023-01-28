@@ -8,7 +8,7 @@ use crate::{
     artifact::ArtifactName,
     charms::{
         charm::{
-            evocation::{Evocation, EvocationId, EvokableId},
+            evocation::{Evocation, EvocationId, EvokableName},
             Charm, CharmId,
         },
         CharmError,
@@ -26,20 +26,20 @@ impl<'source> Character<'source> {
         evocation_id: EvocationId,
         evocation: &'source Evocation,
     ) -> Result<&mut Self, CharacterMutationError> {
-        match evocation.evokable_id() {
-            EvokableId::Hearthstone(hearthstone_id) => {
+        match evocation.evokable_name() {
+            EvokableName::Hearthstone(hearthstone_id) => {
                 if self.hearthstones().get(hearthstone_id).is_none() {
                     return Err(CharacterMutationError::HearthstoneError(
                         HearthstoneError::NotFound,
                     ));
                 }
             }
-            EvokableId::Artifact(ArtifactName::Armor(name)) => {
+            EvokableName::Artifact(ArtifactName::Armor(name)) => {
                 if self.armor().get(ArmorName::Artifact(name)).is_none() {
                     return Err(CharacterMutationError::ArmorError(ArmorError::NotFound));
                 }
             }
-            EvokableId::Artifact(ArtifactName::Weapon(name)) => {
+            EvokableName::Artifact(ArtifactName::Weapon(name)) => {
                 if !self.weapons().iter().any(|(weapon_name, _)| {
                     if let WeaponName::Artifact(actual_name) = weapon_name {
                         actual_name == name
@@ -50,7 +50,7 @@ impl<'source> Character<'source> {
                     return Err(CharacterMutationError::WeaponError(WeaponError::NotFound));
                 }
             }
-            EvokableId::Artifact(ArtifactName::Wonder(name)) => {
+            EvokableName::Artifact(ArtifactName::Wonder(name)) => {
                 if self.wonders().get(name).is_none() {
                     return Err(CharacterMutationError::ArtifactError(
                         ArtifactError::NotFound,
@@ -89,18 +89,18 @@ impl<'source> Character<'source> {
             .fold(
                 HashSet::from_iter(force_remove.iter().copied()),
                 |mut ids_to_remove, (evocation_id, evocation)| {
-                    match evocation.evokable_id() {
-                        EvokableId::Hearthstone(hearthstone_id) => {
+                    match evocation.evokable_name() {
+                        EvokableName::Hearthstone(hearthstone_id) => {
                             if self.hearthstones().get(hearthstone_id).is_none() {
                                 ids_to_remove.insert(evocation_id);
                             }
                         }
-                        EvokableId::Artifact(ArtifactName::Armor(name)) => {
+                        EvokableName::Artifact(ArtifactName::Armor(name)) => {
                             if self.armor().get(ArmorName::Artifact(name)).is_none() {
                                 ids_to_remove.insert(evocation_id);
                             }
                         }
-                        EvokableId::Artifact(ArtifactName::Weapon(name)) => {
+                        EvokableName::Artifact(ArtifactName::Weapon(name)) => {
                             if !self.weapons().iter().any(|(weapon_name, _)| {
                                 if let WeaponName::Artifact(artifact_name) = weapon_name {
                                     artifact_name == name
@@ -111,7 +111,7 @@ impl<'source> Character<'source> {
                                 ids_to_remove.insert(evocation_id);
                             }
                         }
-                        EvokableId::Artifact(ArtifactName::Wonder(name)) => {
+                        EvokableName::Artifact(ArtifactName::Wonder(name)) => {
                             if self.wonders().get(name).is_none() {
                                 ids_to_remove.insert(evocation_id);
                             }

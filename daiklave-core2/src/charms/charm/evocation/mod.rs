@@ -13,12 +13,10 @@ use crate::{
 
 /// A builder path to construct an Evocation.
 pub mod builder;
-mod evokable_id;
 mod evokable_name;
 mod id;
 mod keyword;
-pub use evokable_id::EvokableId;
-pub use evokable_name::EvokableName;
+pub use evokable_name::{EvokableName, EvokableNameMutation};
 pub use id::EvocationId;
 pub use keyword::EvocationKeyword;
 
@@ -30,7 +28,7 @@ use super::CharmId;
 /// Artifact.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Evocation {
-    evokable_name: EvokableName,
+    evokable_name: EvokableNameMutation,
     book_reference: Option<BookReference>,
     name: String,
     summary: Option<String>,
@@ -48,7 +46,7 @@ pub struct Evocation {
 
 impl Evocation {
     /// Starts a builder for a new Evocation.
-    pub fn builder(evokable_name: EvokableName, name: String) -> EvocationBuilder {
+    pub fn builder(evokable_name: EvokableNameMutation, name: String) -> EvocationBuilder {
         EvocationBuilder {
             name,
             book_reference: None,
@@ -66,17 +64,19 @@ impl Evocation {
 
 impl<'source> Evocation {
     /// The name of the Artifact or Hearthstone this Evocation is drawn from.
-    pub fn evokable_id(&'source self) -> EvokableId<'source> {
+    pub fn evokable_name(&'source self) -> EvokableName<'source> {
         match &self.evokable_name {
-            EvokableName::Hearthstone(hearthstone_id) => EvokableId::Hearthstone(*hearthstone_id),
-            EvokableName::Artifact(ArtifactNameMutation::Weapon(weapon_name)) => {
-                EvokableId::Artifact(ArtifactName::Weapon(weapon_name.as_str()))
+            EvokableNameMutation::Hearthstone(hearthstone_name) => {
+                EvokableName::Hearthstone(hearthstone_name.as_str())
             }
-            EvokableName::Artifact(ArtifactNameMutation::Armor(armor_name)) => {
-                EvokableId::Artifact(ArtifactName::Armor(armor_name.as_str()))
+            EvokableNameMutation::Artifact(ArtifactNameMutation::Weapon(weapon_name)) => {
+                EvokableName::Artifact(ArtifactName::Weapon(weapon_name.as_str()))
             }
-            EvokableName::Artifact(ArtifactNameMutation::Wonder(wonder_name)) => {
-                EvokableId::Artifact(ArtifactName::Wonder(wonder_name.as_str()))
+            EvokableNameMutation::Artifact(ArtifactNameMutation::Armor(armor_name)) => {
+                EvokableName::Artifact(ArtifactName::Armor(armor_name.as_str()))
+            }
+            EvokableNameMutation::Artifact(ArtifactNameMutation::Wonder(wonder_name)) => {
+                EvokableName::Artifact(ArtifactName::Wonder(wonder_name.as_str()))
             }
         }
     }

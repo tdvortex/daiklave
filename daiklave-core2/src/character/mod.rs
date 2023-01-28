@@ -22,7 +22,7 @@ use crate::{
     exaltation::Exaltation,
     experience::ExperiencePool,
     health::Health,
-    hearthstones::{hearthstone::GeomancyLevel, HearthstoneId, UnslottedHearthstone},
+    hearthstones::{hearthstone::GeomancyLevel, UnslottedHearthstone},
     intimacies::intimacy::{IntimacyLevel, IntimacyType},
     languages::Languages,
     merits::merit::{
@@ -43,7 +43,7 @@ pub struct Character<'source> {
     pub(crate) attributes: Attributes,
     pub(crate) abilities: AbilitiesVanilla<'source>,
     pub(crate) craft: Craft<'source>,
-    pub(crate) hearthstone_inventory: HashMap<HearthstoneId, UnslottedHearthstone<'source>>,
+    pub(crate) hearthstone_inventory: HashMap<&'source str, UnslottedHearthstone<'source>>,
     pub(crate) demenses_no_manse: HashMap<&'source str, GeomancyLevel>,
     pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMeritView<'source>>,
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMeritView<'source>>,
@@ -68,7 +68,7 @@ impl<'source> Character<'source> {
             hearthstone_inventory: self
                 .hearthstone_inventory
                 .iter()
-                .map(|(k, v)| (*k, v.as_memo()))
+                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
                 .collect(),
             demenses_no_manse: self
                 .demenses_no_manse
@@ -176,20 +176,24 @@ impl<'source> Character<'source> {
             CharacterMutation::EquipArmor(name) => self.equip_armor(name.as_ref()),
             CharacterMutation::RemoveMundaneArmor(name) => self.remove_mundane_armor(name.as_str()),
             CharacterMutation::UnequipArmor => self.unequip_armor(),
-            CharacterMutation::AddManse(manse_name, demense_name, hearthstone_id, template) => {
-                self.add_manse(manse_name, demense_name, *hearthstone_id, template)
+            CharacterMutation::AddManse((manse, demense, (hearthstone_name, template))) => self
+                .add_manse(
+                    manse.as_str(),
+                    demense.as_str(),
+                    hearthstone_name.as_str(),
+                    template,
+                ),
+            CharacterMutation::AddHearthstone((hearthstone_name, template)) => {
+                self.add_hearthstone(hearthstone_name.as_str(), template)
             }
-            CharacterMutation::AddHearthstone(hearthstone_id, template) => {
-                self.add_hearthstone(*hearthstone_id, template)
+            CharacterMutation::SlotHearthstone(artifact_name, hearthstone_name) => {
+                self.slot_hearthstone(artifact_name.as_ref(), hearthstone_name.as_str())
             }
-            CharacterMutation::SlotHearthstone(artifact_name, hearthstone_id) => {
-                self.slot_hearthstone(artifact_name.as_ref(), *hearthstone_id)
+            CharacterMutation::UnslotHearthstone(hearthstone_name) => {
+                self.unslot_hearthstone(hearthstone_name.as_str())
             }
-            CharacterMutation::UnslotHearthstone(hearthstone_id) => {
-                self.unslot_hearthstone(*hearthstone_id)
-            }
-            CharacterMutation::RemoveHearthstone(hearthstone_id) => {
-                self.remove_hearthstone(*hearthstone_id)
+            CharacterMutation::RemoveHearthstone(hearthstone_name) => {
+                self.remove_hearthstone(hearthstone_name.as_str())
             }
             CharacterMutation::AttuneArtifact(artifact_name, first) => {
                 self.attune_artifact(artifact_name.as_ref(), *first)

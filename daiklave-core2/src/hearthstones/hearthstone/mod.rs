@@ -1,11 +1,11 @@
 use crate::{artifact::ArtifactName, book_reference::BookReference};
 
+mod add;
 /// A builder path for creating new Hearthstones.
 pub mod builder;
 mod category;
 mod details;
 mod geomancy_level;
-mod id;
 mod keyword;
 mod origin;
 mod position;
@@ -14,6 +14,7 @@ mod stability;
 mod template;
 mod unslotted;
 
+pub use add::{AddHearthstone, AddManse, Demense, Manse};
 pub(crate) use origin::HearthstoneOrigin;
 pub(crate) use position::HearthstonePosition;
 pub(crate) use slotted::{SlottedHearthstone, SlottedHearthstoneMemo};
@@ -22,8 +23,8 @@ pub(crate) use unslotted::{UnslottedHearthstone, UnslottedHearthstoneMemo};
 
 use self::builder::HearthstoneBuilder;
 pub use {
-    category::HearthstoneCategory, geomancy_level::GeomancyLevel, id::HearthstoneId,
-    keyword::HearthstoneKeyword, template::HearthstoneTemplate,
+    category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword,
+    template::HearthstoneTemplate,
 };
 
 /// A Hearthstone owned by a character.
@@ -37,11 +38,6 @@ impl<'source> Hearthstone<'source> {
             name,
             book_reference: None,
         }
-    }
-
-    /// The hearthstone's Id.
-    pub fn id(&self) -> HearthstoneId {
-        self.0.id()
     }
 
     /// The name of the hearthstone.

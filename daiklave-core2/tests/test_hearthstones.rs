@@ -2,11 +2,9 @@ use daiklave_core2::{
     armor::armor_item::{ArmorItem, ArmorTag, ArmorWeightClass},
     artifact::{AddArtifact, ArtifactNameMutation, MagicMaterial},
     book_reference::{Book, BookReference},
-    hearthstones::{
-        hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory, HearthstoneKeyword},
-        HearthstoneId,
+    hearthstones::hearthstone::{
+        GeomancyLevel, Hearthstone, HearthstoneCategory, HearthstoneKeyword,
     },
-    unique_id::UniqueId,
     weapons::weapon::{OptionalWeaponTag, Weapon, WeaponName, WeaponWeightClass},
     CharacterEventSource, CharacterMutation,
 };
@@ -41,8 +39,7 @@ fn test_hearthstones() {
 
     let jewel_clone = jewel.clone();
 
-    let mutation =
-        CharacterMutation::AddHearthstone(HearthstoneId(UniqueId::Placeholder(1)), jewel);
+    let mutation = CharacterMutation::AddHearthstone(jewel);
     event_source.apply_mutation(mutation).unwrap();
 
     let eye = Hearthstone::builder("Hierophant's Eye".to_string())
@@ -62,17 +59,12 @@ fn test_hearthstones() {
 
     let manse = "A shiny mansion".to_owned();
     let demense = "A cool place".to_owned();
-    let mutation =
-        CharacterMutation::AddManse(manse, demense, HearthstoneId(UniqueId::Placeholder(2)), eye);
+    let mutation = CharacterMutation::AddManse((manse, demense, eye));
     let character = event_source.apply_mutation(mutation).unwrap();
 
     // Check the properties
-    let eye_get = character
-        .hearthstones()
-        .get(HearthstoneId(UniqueId::Placeholder(2)))
-        .unwrap();
+    let eye_get = character.hearthstones().get("Hierophant's Eye").unwrap();
     assert_eq!(eye_get.name(), "Hierophant's Eye");
-    assert_eq!(eye_get.id(), HearthstoneId(UniqueId::Placeholder(2)));
     assert_eq!(
         eye_get.book_reference(),
         Some(BookReference::new(Book::CoreRulebook, 610))
@@ -90,10 +82,7 @@ fn test_hearthstones() {
 
     // Check you can't add a duplicate hearthstone
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddHearthstone(
-            HearthstoneId(UniqueId::Placeholder(1)),
-            jewel_clone
-        ))
+        .apply_mutation(CharacterMutation::AddHearthstone(jewel_clone))
         .is_err());
 
     // Add artifacts to slot them into
@@ -193,13 +182,13 @@ fn test_hearthstones() {
     // Check slotting into all three artifacts
     let mutation = CharacterMutation::SlotHearthstone(
         ArtifactNameMutation::Wonder("Hearthstone Amulet".to_owned()),
-        HearthstoneId(UniqueId::Placeholder(2)),
+        "Hierophant's Eye".to_owned(),
     );
     event_source.apply_mutation(mutation).unwrap();
 
     let mutation = CharacterMutation::SlotHearthstone(
         ArtifactNameMutation::Armor("Freedom's Cadence".to_owned()),
-        HearthstoneId(UniqueId::Placeholder(1)),
+        "Jewel of the Celestial Mandarin".to_owned(),
     );
     event_source.apply_mutation(mutation).unwrap();
 
@@ -207,7 +196,7 @@ fn test_hearthstones() {
     // the original position
     let mutation = CharacterMutation::SlotHearthstone(
         ArtifactNameMutation::Weapon("Beloved Adorei".to_owned()),
-        HearthstoneId(UniqueId::Placeholder(2)),
+        "Hierophant's Eye".to_owned(),
     );
     let character = event_source.apply_mutation(mutation).unwrap();
     assert_eq!(
@@ -218,8 +207,8 @@ fn test_hearthstones() {
             .slotted_hearthstones()
             .next()
             .unwrap()
-            .id(),
-        HearthstoneId(UniqueId::Placeholder(2))
+            .name(),
+        "Hierophant's Eye"
     );
     assert!(character
         .wonders()
@@ -230,14 +219,16 @@ fn test_hearthstones() {
         .is_none());
 
     // Check you can unslot a hearthstone
-    let mutation = CharacterMutation::UnslotHearthstone(HearthstoneId(UniqueId::Placeholder(1)));
+    let mutation =
+        CharacterMutation::UnslotHearthstone("Jewel of the Celestial Mandarin".to_owned());
     event_source.apply_mutation(mutation).unwrap();
 
     // Check you can remove an unslotted hearthstone
-    let mutation = CharacterMutation::RemoveHearthstone(HearthstoneId(UniqueId::Placeholder(1)));
+    let mutation =
+        CharacterMutation::RemoveHearthstone("Jewel of the Celestial Mandarin".to_owned());
     let character = event_source.apply_mutation(mutation).unwrap();
     assert!(character
         .hearthstones()
-        .get(HearthstoneId(UniqueId::Placeholder(1)))
+        .get("Jewel of the Celestial Mandarin")
         .is_none());
 }

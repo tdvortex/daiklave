@@ -13,7 +13,7 @@ use crate::{
         ArmorError,
     },
     exaltation::exalt::ExaltArmor,
-    hearthstones::{HearthstoneError, HearthstoneId, SlottedHearthstone, UnslottedHearthstone},
+    hearthstones::{HearthstoneError, SlottedHearthstone, UnslottedHearthstone},
     CharacterMutationError,
 };
 
@@ -238,7 +238,7 @@ impl<'source> MortalArmor<'source> {
     pub fn slot_hearthstone(
         &mut self,
         artifact_armor_name: &str,
-        hearthstone_id: HearthstoneId,
+        hearthstone_name: &'source str,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         *self
@@ -262,7 +262,7 @@ impl<'source> MortalArmor<'source> {
             .ok_or(CharacterMutationError::HearthstoneError(
                 HearthstoneError::AllSlotsFilled,
             ))? = Some(SlottedHearthstone {
-            hearthstone_id,
+            name: hearthstone_name,
             details: unslotted.details,
             origin: unslotted.origin,
         });
@@ -272,10 +272,10 @@ impl<'source> MortalArmor<'source> {
     pub fn unslot_hearthstone(
         &mut self,
         artifact_armor_name: &str,
-        hearthstone_id: HearthstoneId,
-    ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
+        hearthstone_name: &str,
+    ) -> Result<(&'source str, UnslottedHearthstone<'source>), CharacterMutationError> {
         let SlottedHearthstone {
-            hearthstone_id: _,
+            name,
             details,
             origin,
         } = self
@@ -296,7 +296,8 @@ impl<'source> MortalArmor<'source> {
             .hearthstone_slots
             .iter_mut()
             .find_map(|maybe_hearthstone| {
-                if maybe_hearthstone.map_or(false, |hearthstone| hearthstone.id() == hearthstone_id)
+                if maybe_hearthstone
+                    .map_or(false, |hearthstone| hearthstone.name == hearthstone_name)
                 {
                     maybe_hearthstone.take()
                 } else {
@@ -307,7 +308,7 @@ impl<'source> MortalArmor<'source> {
                 HearthstoneError::NotFound,
             ))?;
 
-        Ok(UnslottedHearthstone { details, origin })
+        Ok((name, UnslottedHearthstone { details, origin }))
     }
 }
 

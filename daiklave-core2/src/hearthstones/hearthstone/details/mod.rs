@@ -9,7 +9,6 @@ use super::{
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct HearthstoneDetails<'source> {
-    name: &'source str,
     book_reference: Option<BookReference>,
     category: HearthstoneCategory,
     geomancy_level: GeomancyLevel,
@@ -20,17 +19,12 @@ pub(crate) struct HearthstoneDetails<'source> {
 impl<'source> HearthstoneDetails<'source> {
     pub fn as_memo(&self) -> HearthstoneDetailsMemo {
         HearthstoneDetailsMemo {
-            name: self.name.to_owned(),
             book_reference: self.book_reference,
             category: self.category,
             geomancy_level: self.geomancy_level,
             powers: self.powers.to_owned(),
             is_dependent: self.is_dependent,
         }
-    }
-
-    pub fn name(&self) -> &'source str {
-        self.name
     }
 
     pub fn book_reference(&self) -> Option<BookReference> {
