@@ -84,7 +84,7 @@ use self::{
         Essence, EssenceError, EssenceState, MoteCommitment, MoteCommitmentId, MotePoolName,
     },
     exalt_type::{
-        solar::charm::{SolarCharm, SolarCharmId},
+        solar::charm::{SolarCharm},
         ExaltType,
     },
     martial_arts::ExaltMartialArtist,
@@ -970,32 +970,32 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn add_solar_charm(
         &mut self,
-        solar_charm_id: SolarCharmId,
+        name: &'source str,
         charm: &'source SolarCharm,
         ability_dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         let essence_rating = self.essence.rating;
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => {
-                solar.add_solar_charm(solar_charm_id, charm, ability_dots, essence_rating.get())?;
+                solar.add_solar_charm(name, charm, ability_dots, essence_rating.get())?;
             }
         }
         Ok(self)
     }
 
-    pub fn get_solar_charm(&self, solar_charm_id: SolarCharmId) -> Option<Charm<'source>> {
+    pub fn get_solar_charm(&self, name: &str) -> Option<Charm<'source>> {
         match &self.exalt_type {
-            ExaltType::Solar(solar) => solar.get_solar_charm(solar_charm_id),
+            ExaltType::Solar(solar) => solar.get_solar_charm(name),
         }
     }
 
-    pub fn solar_charms_iter(&self) -> impl Iterator<Item = SolarCharmId> + '_ {
+    pub fn solar_charms_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         match &self.exalt_type {
             ExaltType::Solar(solar) => solar
                 .solar_charms
                 .iter()
                 .map(|(id, _)| *id)
-                .collect::<Vec<SolarCharmId>>()
+                .collect::<Vec<&str>>()
                 .into_iter(),
         }
     }

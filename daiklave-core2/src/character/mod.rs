@@ -248,8 +248,8 @@ impl<'source> Character<'source> {
                 AddCharm::MartialArts((ma_charm_name, ma_charm)) => {
                     self.add_martial_arts_charm(ma_charm_name.as_str(), ma_charm)
                 }
-                AddCharm::Solar(solar_charm_id, solar_charm) => {
-                    self.add_solar_charm(*solar_charm_id, solar_charm)
+                AddCharm::Solar((solar_charm_name, solar_charm)) => {
+                    self.add_solar_charm(solar_charm_name.as_str(), solar_charm)
                 }
                 AddCharm::Spell((spell_name, spell)) => {
                     self.add_spell(spell_name.as_str(), spell)
@@ -259,7 +259,7 @@ impl<'source> Character<'source> {
                 CharmName::Spirit(spirit_charm_id) => self.remove_eclipse_charm(*spirit_charm_id),
                 CharmName::Evocation(evocation_name) => self.remove_evocation(evocation_name.as_str()),
                 CharmName::MartialArts(ma_charm_name) => self.remove_martial_arts_charm(ma_charm_name.as_str()),
-                CharmName::Solar(solar_charm_id) => self.remove_solar_charm(*solar_charm_id),
+                CharmName::Solar(solar_charm_name) => self.remove_solar_charm(solar_charm_name.as_str()),
                 CharmName::Spell(spell_name) => self.remove_spell(spell_name.as_str()),
             },
             CharacterMutation::AddFlaw(flaw_mutation) => self.add_flaw(flaw_mutation),

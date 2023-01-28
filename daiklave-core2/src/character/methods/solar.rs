@@ -10,7 +10,7 @@ use crate::{
         exalt::exalt_type::{
             solar::{
                 caste::SolarCaste,
-                charm::{SolarCharm, SolarCharmAbility, SolarCharmId},
+                charm::{SolarCharm, SolarCharmAbility},
                 NewSolar,
             },
             ExaltType,
@@ -46,7 +46,7 @@ impl<'source> Character<'source> {
     /// Adds a Solar Charm to the character.
     pub fn add_solar_charm(
         &mut self,
-        solar_charm_id: SolarCharmId,
+        name: &'source str,
         charm: &'source SolarCharm,
     ) -> Result<&mut Self, CharacterMutationError> {
         let ability_dots = match charm.ability_requirement() {
@@ -58,16 +58,16 @@ impl<'source> Character<'source> {
         };
 
         self.exaltation
-            .add_solar_charm(solar_charm_id, charm, ability_dots)?;
+            .add_solar_charm(name, charm, ability_dots)?;
         Ok(self)
     }
 
     /// Removes a Solar Charm from the character.
     pub fn remove_solar_charm(
         &mut self,
-        solar_charm_id: SolarCharmId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self.correct_solar_charms(&[solar_charm_id]) {
+        if self.correct_solar_charms(&[name]) {
             // May lose evocations which upgrade the solar charm
             self.correct_evocations(&[]);
             Ok(self)
@@ -150,11 +150,11 @@ impl<'source> Character<'source> {
         }
     }
 
-    pub(crate) fn solar_charms_iter(&self) -> impl Iterator<Item = SolarCharmId> + '_ {
+    pub(crate) fn solar_charms_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         self.exaltation.solar_charms_iter()
     }
 
-    pub(crate) fn correct_solar_charms(&mut self, force_remove: &[SolarCharmId]) -> bool {
+    pub(crate) fn correct_solar_charms(&mut self, force_remove: &[&str]) -> bool {
         let actual_essence = if let Some(essence) = self.essence() {
             essence.rating()
         } else {
@@ -177,13 +177,13 @@ impl<'source> Character<'source> {
                     .into_iter()
             })
             .fold(
-                HashSet::<SolarCharmId>::from_iter(force_remove.iter().copied()),
-                |mut ids_to_remove, (charm_id, charm)| {
+                HashSet::<String>::from_iter(force_remove.iter().map(|&s| s.to_owned())),
+                |mut ids_to_remove, (charm_name, charm)| {
                     if charm
                         .charm_prerequisites()
-                        .any(|prereq_id| ids_to_remove.contains(&prereq_id))
+                        .any(|prereq_name| ids_to_remove.contains(prereq_name))
                     {
-                        ids_to_remove.insert(charm_id);
+                        ids_to_remove.insert(charm_name.to_owned());
                     }
 
                     let (ability_name, dots_required) = charm.ability_requirement();
@@ -195,7 +195,7 @@ impl<'source> Character<'source> {
                             .dots(),
                     };
                     if dots_required > actual_dots {
-                        ids_to_remove.insert(charm_id);
+                        ids_to_remove.insert(charm_name.to_owned());
                     }
 
                     let essence_required = charm.essence_required().get();
@@ -208,7 +208,7 @@ impl<'source> Character<'source> {
                             }
                         }
                         if !is_supernal {
-                            ids_to_remove.insert(charm_id);
+                            ids_to_remove.insert(charm_name.to_owned());
                         }
                     }
 
@@ -221,7 +221,7 @@ impl<'source> Character<'source> {
             let old_size = solar.solar_charms.len();
             solar
                 .solar_charms
-                .retain(|(charm_id, _charm)| !ids_to_remove.contains(charm_id));
+                .retain(|(charm_name, _charm)| !ids_to_remove.contains(*charm_name));
             solar.solar_charms.len() < old_size
         } else {
             false

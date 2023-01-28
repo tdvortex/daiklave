@@ -2,7 +2,7 @@
 pub mod builder;
 
 mod ability;
-mod id;
+mod add;
 mod keyword;
 use std::{
     collections::{HashMap, HashSet},
@@ -10,7 +10,7 @@ use std::{
 };
 
 pub use ability::SolarCharmAbility;
-pub use id::SolarCharmId;
+pub use add::AddSolarCharm;
 pub use keyword::SolarCharmKeyword;
 
 use serde::{Deserialize, Serialize};
@@ -26,20 +26,19 @@ use self::builder::SolarCharmBuilder;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SolarCharm {
     book_reference: Option<BookReference>,
-    name: String,
     summary: Option<String>,
     description: String,
     essence_required: NonZeroU8,
     ability: SolarCharmAbility,
     ability_requirement: u8,
-    charms_required: HashSet<SolarCharmId>,
+    charms_required: HashSet<String>,
     keywords: HashSet<SolarCharmKeyword>,
     costs: HashMap<CharmCostType, NonZeroU8>,
     action_type: CharmActionType,
     duration: String,
 }
 
-impl SolarCharm {
+impl<'source> SolarCharm {
     /// Starts building a new Solar Charm.
     pub fn builder(name: String) -> SolarCharmBuilder {
         SolarCharmBuilder {
@@ -50,11 +49,6 @@ impl SolarCharm {
             keywords: HashSet::new(),
             costs: HashMap::new(),
         }
-    }
-
-    /// The name of the Charm.
-    pub fn name(&self) -> &str {
-        self.name.as_str()
     }
 
     /// The book reference of the Charm, if any
@@ -83,8 +77,8 @@ impl SolarCharm {
     }
 
     /// The Ids of Charms which are prerequisites for this Charm
-    pub fn charm_prerequisites(&self) -> impl Iterator<Item = SolarCharmId> + '_ {
-        self.charms_required.iter().copied()
+    pub fn charm_prerequisites(&'source self) -> impl Iterator<Item = &'source str> + '_ {
+        self.charms_required.iter().map(|s| s.as_str())
     }
 
     /// Any keywords that the Charm has.

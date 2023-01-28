@@ -58,7 +58,7 @@ use self::{
         },
         exalt_type::{
             solar::{
-                charm::{SolarCharm, SolarCharmId},
+                charm::{SolarCharm},
                 Solar, SolarMemo, SolarSorcererView,
             },
             ExaltType,
@@ -1030,7 +1030,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn add_solar_charm(
         &mut self,
-        solar_charm_id: SolarCharmId,
+        name: &'source str,
         charm: &'source SolarCharm,
         ability_dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -1039,25 +1039,25 @@ impl<'view, 'source> Exaltation<'source> {
                 return Err(CharacterMutationError::CharmError(CharmError::Mortal));
             }
             Exaltation::Exalt(exalt) => {
-                exalt.add_solar_charm(solar_charm_id, charm, ability_dots)?;
+                exalt.add_solar_charm(name, charm, ability_dots)?;
             }
         }
         Ok(self)
     }
 
-    pub fn get_solar_charm(&self, solar_charm_id: SolarCharmId) -> Option<Charm<'source>> {
+    pub fn get_solar_charm(&self, name: &str) -> Option<Charm<'source>> {
         match self {
             Exaltation::Mortal(_) => None,
-            Exaltation::Exalt(exalt) => exalt.get_solar_charm(solar_charm_id),
+            Exaltation::Exalt(exalt) => exalt.get_solar_charm(name),
         }
     }
 
-    pub fn solar_charms_iter(&self) -> impl Iterator<Item = SolarCharmId> + '_ {
+    pub fn solar_charms_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         match self {
             Exaltation::Mortal(_) => vec![].into_iter(),
             Exaltation::Exalt(exalt) => exalt
                 .solar_charms_iter()
-                .collect::<Vec<SolarCharmId>>()
+                .collect::<Vec<&str>>()
                 .into_iter(),
         }
     }

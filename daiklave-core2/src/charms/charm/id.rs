@@ -1,9 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    exaltation::exalt::exalt_type::solar::charm::SolarCharmId,
-};
-
 use super::{spirit::SpiritCharmId};
 
 /// The Id of a Charm.
@@ -16,7 +12,7 @@ pub enum CharmId<'source> {
     /// A Martial Arts charm for a specific style.
     MartialArts(&'source str),
     /// A Solar charm.
-    Solar(SolarCharmId),
+    Solar(&'source str),
     /// A Spell.
     Spell(&'source str),
 }

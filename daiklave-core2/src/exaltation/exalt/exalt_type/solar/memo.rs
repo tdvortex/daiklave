@@ -4,7 +4,7 @@ use crate::{abilities::AbilityName, exaltation::exalt::LimitMemo, experience::Ex
 
 use super::{
     caste::SolarCasteMemo,
-    charm::{SolarCharm, SolarCharmId},
+    charm::{SolarCharm},
     Solar, SolarSorcererMemo,
 };
 
@@ -14,7 +14,7 @@ pub(crate) struct SolarMemo {
     pub favored_abilities: [AbilityName; 5],
     pub sorcery: Option<SolarSorcererMemo>,
     pub limit: LimitMemo,
-    pub solar_charms: Vec<(SolarCharmId, SolarCharm)>,
+    pub solar_charms: Vec<(String, SolarCharm)>,
     pub experience: ExperiencePool,
 }
 
@@ -28,7 +28,7 @@ impl<'source> SolarMemo {
             solar_charms: self
                 .solar_charms
                 .iter()
-                .map(|(charm_id, charm)| (*charm_id, charm))
+                .map(|(charm_id, charm)| (charm_id.as_str(), charm))
                 .collect(),
             experience: self.experience,
         }

@@ -7,7 +7,7 @@ use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
     exaltation::exalt::exalt_type::solar::charm::{
-        ability::SolarCharmAbility, SolarCharm, SolarCharmId, SolarCharmKeyword,
+        ability::SolarCharmAbility, SolarCharm, SolarCharmKeyword, AddSolarCharm,
     },
 };
 
@@ -17,7 +17,7 @@ pub struct SolarCharmBuilderWithDescription {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
-    pub(crate) charms_required: HashSet<SolarCharmId>,
+    pub(crate) charms_required: HashSet<String>,
     pub(crate) keywords: HashSet<SolarCharmKeyword>,
     pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
     pub(crate) essence_required: NonZeroU8,
@@ -42,8 +42,8 @@ impl SolarCharmBuilderWithDescription {
     }
 
     /// Adds a charm tree prerequisite on other Solar Charms.
-    pub fn charm_prerequisite(mut self, charm_id: SolarCharmId) -> Self {
-        self.charms_required.insert(charm_id);
+    pub fn charm_prerequisite(mut self, prerequisite_name: String) -> Self {
+        self.charms_required.insert(prerequisite_name);
         self
     }
 
@@ -66,10 +66,9 @@ impl SolarCharmBuilderWithDescription {
     }
 
     /// Completes the builder, returning a new Solar Charm.
-    pub fn build(self) -> SolarCharm {
-        SolarCharm {
+    pub fn build(self) -> AddSolarCharm {
+        (self.name, SolarCharm {
             book_reference: self.book_reference,
-            name: self.name,
             summary: self.summary,
             description: self.description,
             essence_required: self.essence_required,
@@ -80,6 +79,6 @@ impl SolarCharmBuilderWithDescription {
             costs: self.costs,
             action_type: self.action_type,
             duration: self.duration,
-        }
+        })
     }
 }

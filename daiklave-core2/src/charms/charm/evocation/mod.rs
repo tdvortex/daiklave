@@ -129,7 +129,7 @@ impl<'source> Evocation {
                 CharmName::MartialArts(martial_arts_charm_name) => {
                     CharmId::MartialArts(martial_arts_charm_name.as_str())
                 }
-                CharmName::Solar(solar_id) => CharmId::Solar(*solar_id),
+                CharmName::Solar(solar_id) => CharmId::Solar(solar_id.as_str()),
                 CharmName::Spell(spell_name) => CharmId::Spell(spell_name.as_str()),
             }),
             None => None,

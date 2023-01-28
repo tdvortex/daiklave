@@ -12,7 +12,7 @@ use std::{
 
 use crate::{book_reference::BookReference, charms::CharmCostType};
 
-use super::{SolarCharmId, SolarCharmKeyword};
+use super::{SolarCharmKeyword};
 
 /// A builder to construct a new Solar Charm. Required fields are name (already
 /// specified), Essence requirement, ability category and required dots,
@@ -20,7 +20,7 @@ pub struct SolarCharmBuilder {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
-    pub(crate) charms_required: HashSet<SolarCharmId>,
+    pub(crate) charms_required: HashSet<String>,
     pub(crate) keywords: HashSet<SolarCharmKeyword>,
     pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
 }
@@ -39,8 +39,8 @@ impl SolarCharmBuilder {
     }
 
     /// Adds a charm tree prerequisite on other Solar Charms.
-    pub fn charm_prerequisite(mut self, charm_id: SolarCharmId) -> Self {
-        self.charms_required.insert(charm_id);
+    pub fn charm_prerequisite(mut self, prerequisite_name: String) -> Self {
+        self.charms_required.insert(prerequisite_name);
         self
     }
 

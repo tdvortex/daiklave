@@ -7,7 +7,7 @@ use crate::{
     book_reference::BookReference,
     charms::CharmCostType,
     exaltation::exalt::exalt_type::solar::charm::{
-        ability::SolarCharmAbility, SolarCharmId, SolarCharmKeyword,
+        ability::SolarCharmAbility, SolarCharmKeyword,
     },
 };
 
@@ -18,7 +18,7 @@ pub struct SolarCharmBuilderWithEssenceRequirement {
     pub(crate) name: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
-    pub(crate) charms_required: HashSet<SolarCharmId>,
+    pub(crate) charms_required: HashSet<String>,
     pub(crate) keywords: HashSet<SolarCharmKeyword>,
     pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
     pub(crate) essence_required: NonZeroU8,
@@ -38,8 +38,8 @@ impl SolarCharmBuilderWithEssenceRequirement {
     }
 
     /// Adds a charm tree prerequisite on other Solar Charms.
-    pub fn charm_prerequisite(mut self, charm_id: SolarCharmId) -> Self {
-        self.charms_required.insert(charm_id);
+    pub fn charm_prerequisite(mut self, prerequisite_name: String) -> Self {
+        self.charms_required.insert(prerequisite_name);
         self
     }
 

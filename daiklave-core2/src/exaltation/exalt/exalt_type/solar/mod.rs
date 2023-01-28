@@ -45,7 +45,7 @@ use self::{
     anima_effect::{SOLAR_ONE, SOLAR_TWO},
     builder::SolarBuilder,
     caste::SolarCaste,
-    charm::{SolarCharm, SolarCharmId},
+    charm::{SolarCharm},
 };
 
 /// Traits which are unique to being a Solar Exalted.
@@ -56,7 +56,7 @@ pub struct Solar<'source> {
     pub(crate) experience: ExperiencePool,
     pub(crate) sorcery: Option<SolarSorcererView<'source>>,
     pub(crate) limit: Limit<'source>,
-    pub(crate) solar_charms: Vec<(SolarCharmId, &'source SolarCharm)>,
+    pub(crate) solar_charms: Vec<(&'source str, &'source SolarCharm)>,
 }
 
 impl<'source> Solar<'source> {
@@ -76,7 +76,7 @@ impl<'source> Solar<'source> {
             solar_charms: self
                 .solar_charms
                 .iter()
-                .map(|(charm_id, charm)| (*charm_id, (*charm).to_owned()))
+                .map(|(charm_id, charm)| ((*charm_id).to_owned(), (*charm).to_owned()))
                 .collect(),
             experience: self.experience,
         }
@@ -346,7 +346,7 @@ impl<'source> Solar<'source> {
 
     pub(crate) fn add_solar_charm(
         &mut self,
-        charm_id: SolarCharmId,
+        name: &'source str,
         charm: &'source SolarCharm,
         ability_dots: u8,
         essence_rating: u8,
@@ -361,19 +361,19 @@ impl<'source> Solar<'source> {
         }
         let mut unmet_tree_requirements = charm
             .charm_prerequisites()
-            .collect::<HashSet<SolarCharmId>>();
+            .collect::<HashSet<&str>>();
 
-        for known_charm_id in self
+        for known_charm_name in self
             .solar_charms
             .iter()
-            .map(|(known_charm_id, _)| known_charm_id)
+            .map(|(known_charm_name, _)| known_charm_name)
         {
-            if known_charm_id == &charm_id {
+            if known_charm_name == &name {
                 return Err(CharacterMutationError::CharmError(
                     CharmError::DuplicateCharm,
                 ));
             } else {
-                unmet_tree_requirements.remove(known_charm_id);
+                unmet_tree_requirements.remove(known_charm_name);
             }
         }
 
@@ -383,15 +383,15 @@ impl<'source> Solar<'source> {
             ));
         }
 
-        self.solar_charms.push((charm_id, charm));
+        self.solar_charms.push((name, charm));
         Ok(self)
     }
 
-    pub(crate) fn get_solar_charm(&self, charm_id: SolarCharmId) -> Option<Charm<'source>> {
+    pub(crate) fn get_solar_charm(&self, name: &str) -> Option<Charm<'source>> {
         self.solar_charms
             .iter()
-            .find_map(|(solar_charm_id, charm)| {
-                if solar_charm_id == &charm_id {
+            .find_map(|(solar_charm_name, charm)| {
+                if solar_charm_name == &name {
                     Some(Charm::Solar(charm))
                 } else {
                     None

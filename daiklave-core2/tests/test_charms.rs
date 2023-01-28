@@ -18,7 +18,7 @@ use daiklave_core2::{
             DawnCasteAbility, DawnSupernalAbility, EclipseAbility, NightAbility, TwilightAbility,
             ZenithAbility,
         },
-        charm::{SolarCharm, SolarCharmAbility, SolarCharmId, SolarCharmKeyword},
+        charm::{SolarCharm, SolarCharmAbility, SolarCharmKeyword},
         Solar,
     },
     hearthstones::hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory},
@@ -62,7 +62,6 @@ fn test_solar_charms() {
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
-            SolarCharmId(UniqueId::Placeholder(1)),
             wise_arrow.clone()
         )))
         .is_err());
@@ -104,7 +103,6 @@ fn test_solar_charms() {
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
-            SolarCharmId(UniqueId::Placeholder(1)),
             wise_arrow.clone()
         )))
         .is_err());
@@ -117,12 +115,11 @@ fn test_solar_charms() {
         .unwrap();
     let character = event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
-            SolarCharmId(UniqueId::Placeholder(1)),
             wise_arrow.clone(),
         )))
         .unwrap();
-    let Charm::Solar(owned_wise_arrow) = character.charms().get(CharmId::Solar(SolarCharmId(UniqueId::Placeholder(1)))).unwrap() else {panic!("Wrong charm type");};
-    assert_eq!(owned_wise_arrow, &wise_arrow);
+    let Charm::Solar(owned_wise_arrow) = character.charms().get(CharmId::Solar("Wise Arrow")).unwrap() else {panic!("Wrong charm type");};
+    assert_eq!(owned_wise_arrow, &wise_arrow.1);
 
     let character = event_source
         .apply_mutation(CharacterMutation::SetAbilityDots(
@@ -132,7 +129,7 @@ fn test_solar_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Solar(SolarCharmId(UniqueId::Placeholder(1))))
+        .get(CharmId::Solar("Wise Arrow"))
         .is_none());
 
     event_source.undo().unwrap();
@@ -147,7 +144,6 @@ fn test_solar_charms() {
         .build();
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
-            SolarCharmId(UniqueId::Placeholder(2)),
             some_expensive_charm
         )))
         .is_err());
@@ -173,7 +169,6 @@ fn test_solar_charms() {
 
     event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
-            SolarCharmId(UniqueId::Placeholder(3)),
             order_affirming_blow,
         )))
         .unwrap();
@@ -181,13 +176,13 @@ fn test_solar_charms() {
     // Solars must meet Charm tree requirements
     event_source
         .apply_mutation(CharacterMutation::RemoveCharm(CharmName::Solar(
-            SolarCharmId(UniqueId::Placeholder(1)),
+            "Wise Arrow".to_owned(),
         )))
         .unwrap();
 
     let sight_without_eyes = SolarCharm::builder("Sight Without Eyes".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 255))
-        .charm_prerequisite(SolarCharmId(UniqueId::Placeholder(1)))
+        .charm_prerequisite("Wise Arrow".to_owned())
         .essence_required(NonZeroU8::new(1).unwrap())
         .ability_required(SolarCharmAbility::Archery, 3)
         .cost(CharmCostType::Motes, NonZeroU8::new(1).unwrap())
@@ -199,7 +194,6 @@ fn test_solar_charms() {
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
-            SolarCharmId(UniqueId::Placeholder(4)),
             sight_without_eyes.clone()
         )))
         .is_err());
@@ -207,18 +201,17 @@ fn test_solar_charms() {
     event_source.undo().unwrap();
     event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
-            SolarCharmId(UniqueId::Placeholder(4)),
             sight_without_eyes,
         )))
         .unwrap();
     let character = event_source
         .apply_mutation(CharacterMutation::RemoveCharm(CharmName::Solar(
-            SolarCharmId(UniqueId::Placeholder(1)),
+            "Wise Arrow".to_owned(),
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Solar(SolarCharmId(UniqueId::Placeholder(4))))
+        .get(CharmId::Solar("Sight Without Eyes"))
         .is_none());
 }
 
@@ -511,7 +504,6 @@ fn test_evocations() {
         .is_none());
 
     // Upgrade-type Evocations require the upgraded Charm
-    let integrity_protecting_prana_id = SolarCharmId(UniqueId::Placeholder(1));
     let integrity_protecting_prana = SolarCharm::builder("Integrity-Protecting Prana".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 303))
         .essence_required(NonZeroU8::new(1).unwrap())
@@ -565,7 +557,7 @@ fn test_evocations() {
             .to_owned(),
     )
     .summary("Discount for Integrity-Protecting Prana".to_owned())
-    .upgrades(CharmName::Solar(integrity_protecting_prana_id)) // Simplifying test, ignoring Breeze-Catching Descent
+    .upgrades(CharmName::Solar("Integrity-Protecting Prana".to_owned())) // Simplifying test, ignoring Breeze-Catching Descent
     .build();
 
     event_source
@@ -586,7 +578,6 @@ fn test_evocations() {
         .unwrap();
     event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
-            integrity_protecting_prana_id,
             integrity_protecting_prana,
         )))
         .unwrap();
@@ -608,7 +599,7 @@ fn test_evocations() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Solar(integrity_protecting_prana_id))
+        .get(CharmId::Solar("Integrity-Protecting Prana"))
         .is_none());
     assert!(character
         .charms()
