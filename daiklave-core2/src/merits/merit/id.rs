@@ -1,5 +1,5 @@
 use crate::{
-    artifact::ArtifactId, hearthstones::HearthstoneId, languages::language::MajorLanguage,
+    artifact::ArtifactName, hearthstones::HearthstoneId, languages::language::MajorLanguage,
     sorcery::SorceryArchetypeMeritId,
 };
 
@@ -11,7 +11,7 @@ use super::{nonstackable::NonStackableMeritId, stackable::StackableMeritId};
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum MeritId<'a> {
     /// The merit associated with a specific owned Artifact.
-    Artifact(ArtifactId<'a>),
+    Artifact(ArtifactName<'a>),
     /// The merit associated with a standalone Demense, without a manse.
     DemenseNoManse(&'a str),
     /// The merit associated with a Demense acquired through the Manse merit.

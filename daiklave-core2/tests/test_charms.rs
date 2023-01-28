@@ -3,7 +3,7 @@ use std::num::NonZeroU8;
 use daiklave_core2::{
     abilities::{AbilityName, AbilityNameVanilla},
     armor::armor_item::ArmorWeightClass,
-    artifact::{wonders::WonderId, AddArtifact, ArtifactName, MagicMaterial},
+    artifact::{AddArtifact, ArtifactNameMutation, MagicMaterial},
     book_reference::{Book, BookReference},
     charms::{
         charm::{
@@ -282,7 +282,7 @@ fn test_evocations() {
         .unwrap();
 
     let howling_lotus_strike_id = EvocationId(UniqueId::Placeholder(1));
-    let howling_lotus_strike = Evocation::builder(EvokableName::Artifact(ArtifactName::Weapon("Spring Razor".to_owned())), "Howling Lotus Strike".to_owned())
+    let howling_lotus_strike = Evocation::builder(EvokableName::Artifact(ArtifactNameMutation::Weapon("Spring Razor".to_owned())), "Howling Lotus Strike".to_owned())
     .book_reference(BookReference::new(Book::CoreRulebook, 620))
     .cost(CharmCostType::Motes, NonZeroU8::new(3).unwrap())
     .essence_required(NonZeroU8::new(1).unwrap())
@@ -420,7 +420,7 @@ fn test_evocations() {
 
     // Exalts must have the right artifact or hearthstone
     let wrong_evocation = Evocation::builder(
-        EvokableName::Artifact(ArtifactName::Wonder(WonderId(UniqueId::Placeholder(666)))),
+        EvokableName::Artifact(ArtifactNameMutation::Wonder("A missing wonder".to_owned())),
         "Invalid Evocation".to_owned(),
     )
     .essence_required(NonZeroU8::new(1).unwrap())
@@ -449,7 +449,7 @@ fn test_evocations() {
     // Exalts must meet tree requirements
     let venom_intensifying_strike_id = EvocationId(UniqueId::Placeholder(4));
     let venom_intensifying_strike = Evocation::builder(
-        EvokableName::Artifact(ArtifactName::Weapon("Spring Razor".to_owned())),
+        EvokableName::Artifact(ArtifactNameMutation::Weapon("Spring Razor".to_owned())),
         "Seven Widows Venom".to_owned(),
     )
     .book_reference(BookReference::new(Book::CoreRulebook, 620))
@@ -471,7 +471,7 @@ fn test_evocations() {
 
     let seven_widows_venom_id = EvocationId(UniqueId::Placeholder(5));
     let seven_widows_venom = Evocation::builder(
-        EvokableName::Artifact(ArtifactName::Weapon("Spring Razor".to_owned())),
+        EvokableName::Artifact(ArtifactNameMutation::Weapon("Spring Razor".to_owned())),
         "Seven Widows Venom".to_owned(),
     )
     .book_reference(BookReference::new(Book::CoreRulebook, 620))
@@ -573,7 +573,7 @@ fn test_evocations() {
 
     let glamour_sloughing_parasol_id = EvocationId(UniqueId::Placeholder(6));
     let glamour_sloughing_parasol = Evocation::builder(
-        EvokableName::Artifact(ArtifactName::Weapon("Rainwalker".to_owned())),
+        EvokableName::Artifact(ArtifactNameMutation::Weapon("Rainwalker".to_owned())),
         "Glamour-Sloughing Parasol".to_owned(),
     )
     .book_reference(BookReference::new(Book::ArmsOfTheChosen, 40))

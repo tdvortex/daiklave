@@ -6,10 +6,10 @@ pub(crate) use memo::NonnaturalArtifactWeaponNoAttunementMemo;
 use crate::{
     hearthstones::SlottedHearthstone,
     weapons::weapon::artifact::{
+        inner::ArtifactWeaponInner,
         newtype::{
             OneHandedArtifactWeaponView, TwoHandedArtifactWeaponView, WornArtifactWeaponView,
         },
-        traits::ArtifactWeaponTraits,
     },
 };
 
@@ -21,7 +21,7 @@ pub(crate) enum NonnaturalArtifactWeaponNoAttunement<'source> {
 }
 
 impl<'source> Deref for NonnaturalArtifactWeaponNoAttunement<'source> {
-    type Target = ArtifactWeaponTraits<'source>;
+    type Target = ArtifactWeaponInner<'source>;
 
     fn deref(&self) -> &Self::Target {
         match self {
@@ -50,7 +50,7 @@ impl<'source> NonnaturalArtifactWeaponNoAttunement<'source> {
     pub fn hearthstone_slots_mut(&mut self) -> &mut Vec<Option<SlottedHearthstone<'source>>> {
         match self {
             NonnaturalArtifactWeaponNoAttunement::Worn(WornArtifactWeaponView(
-                ArtifactWeaponTraits {
+                ArtifactWeaponInner {
                     book_reference: _,
                     merit_dots: _,
                     magic_material: _,
@@ -62,7 +62,7 @@ impl<'source> NonnaturalArtifactWeaponNoAttunement<'source> {
                 },
             )) => hearthstone_slots,
             NonnaturalArtifactWeaponNoAttunement::OneHanded(OneHandedArtifactWeaponView(
-                ArtifactWeaponTraits {
+                ArtifactWeaponInner {
                     book_reference: _,
                     merit_dots: _,
                     magic_material: _,
@@ -74,7 +74,7 @@ impl<'source> NonnaturalArtifactWeaponNoAttunement<'source> {
                 },
             )) => hearthstone_slots,
             NonnaturalArtifactWeaponNoAttunement::TwoHanded(TwoHandedArtifactWeaponView(
-                ArtifactWeaponTraits {
+                ArtifactWeaponInner {
                     book_reference: _,
                     merit_dots: _,
                     magic_material: _,

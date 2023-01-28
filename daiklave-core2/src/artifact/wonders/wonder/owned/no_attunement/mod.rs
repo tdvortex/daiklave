@@ -2,14 +2,13 @@ mod memo;
 pub(crate) use memo::WonderNoAttunementMemo;
 
 use crate::{
-    artifact::{wonders::WonderId, ArtifactId, MagicMaterial},
+    artifact::{ArtifactName, MagicMaterial},
     book_reference::BookReference,
     hearthstones::{hearthstone::Hearthstone, HearthstonePosition, SlottedHearthstone},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct WonderNoAttunement<'source> {
-    name: &'source str,
     book_reference: Option<BookReference>,
     lore: Option<&'source str>,
     powers: &'source str,
@@ -22,7 +21,6 @@ pub(crate) struct WonderNoAttunement<'source> {
 impl<'source> WonderNoAttunement<'source> {
     pub fn as_memo(&self) -> WonderNoAttunementMemo {
         WonderNoAttunementMemo {
-            name: self.name.to_owned(),
             book_reference: self.book_reference,
             lore: self.lore.as_ref().map(|s| s.to_string()),
             powers: self.powers.to_string(),
@@ -35,10 +33,6 @@ impl<'source> WonderNoAttunement<'source> {
             magic_material: self.magic_material,
             attunement_cost: self.attunement_cost,
         }
-    }
-
-    pub fn name(&self) -> &'source str {
-        self.name
     }
 
     pub fn book_reference(&self) -> Option<BookReference> {
@@ -63,14 +57,14 @@ impl<'source> WonderNoAttunement<'source> {
 
     pub fn slotted_hearthstones(
         &self,
-        wonder_id: WonderId,
+        name: &'source str,
     ) -> impl Iterator<Item = Hearthstone<'source>> + '_ {
         self.hearthstone_slots
             .iter()
             .filter_map(move |maybe_slotted| {
                 (*maybe_slotted).map(|slotted| {
                     Hearthstone(HearthstonePosition::Slotted(
-                        ArtifactId::Wonder(wonder_id),
+                        ArtifactName::Wonder(name),
                         slotted,
                     ))
                 })

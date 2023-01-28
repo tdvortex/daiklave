@@ -2,7 +2,7 @@
 pub mod merit;
 
 use crate::{
-    armor::armor_item::ArmorName, artifact::ArtifactId, exaltation::Exaltation,
+    armor::armor_item::ArmorName, artifact::ArtifactName, exaltation::Exaltation,
     languages::language::Language, weapons::weapon::WeaponName, Character,
 };
 
@@ -16,7 +16,7 @@ impl<'view, 'source> Merits<'view, 'source> {
     pub fn get(&self, merit_id: MeritId<'view>) -> Option<Merit<'source>> {
         match merit_id {
             MeritId::Artifact(artifact_id) => match artifact_id {
-                ArtifactId::Weapon(search_name) => self
+                ArtifactName::Weapon(search_name) => self
                     .0
                     .weapons()
                     .iter()
@@ -36,34 +36,30 @@ impl<'view, 'source> Merits<'view, 'source> {
                     })
                     .and_then(|(name, weapon)| {
                         weapon.merit_dots().map(|dots| {
-                            Merit(MeritSource::Artifact(ArtifactId::Weapon(name), name, dots))
+                            Merit(MeritSource::Artifact(ArtifactName::Weapon(name), dots))
                         })
                     }),
-                ArtifactId::Armor(name) => {
-                    self.0
-                        .armor()
-                        .get(ArmorName::Artifact(name))
-                        .and_then(|armor| {
-                            if let ArmorName::Artifact(name) = armor.name() {
-                                armor.merit_dots().map(|dots| {
-                                    Merit(MeritSource::Artifact(
-                                        ArtifactId::Armor(name),
-                                        name,
-                                        dots,
-                                    ))
-                                })
-                            } else {
-                                None
-                            }
-                        })
+                ArtifactName::Armor(name) => self
+                    .0
+                    .armor()
+                    .get(ArmorName::Artifact(name))
+                    .and_then(|armor| {
+                        if let ArmorName::Artifact(name) = armor.name() {
+                            armor.merit_dots().map(|dots| {
+                                Merit(MeritSource::Artifact(ArtifactName::Armor(name), dots))
+                            })
+                        } else {
+                            None
+                        }
+                    }),
+                ArtifactName::Wonder(wonder_name) => {
+                    self.0.wonders().get(wonder_name).map(|wonder| {
+                        Merit(MeritSource::Artifact(
+                            ArtifactName::Wonder(wonder.name()),
+                            wonder.merit_dots(),
+                        ))
+                    })
                 }
-                ArtifactId::Wonder(wonder_id) => self.0.wonders().get(wonder_id).map(|wonder| {
-                    Merit(MeritSource::Artifact(
-                        ArtifactId::Wonder(wonder_id),
-                        wonder.name(),
-                        wonder.merit_dots(),
-                    ))
-                }),
             },
             MeritId::DemenseNoManse(name) => self
                 .0
@@ -225,7 +221,9 @@ impl<'view, 'source> Merits<'view, 'source> {
             .filter_map(|(name, equipped)| {
                 self.0.weapons().get(name, equipped).and_then(|weapon| {
                     if let WeaponName::Artifact(artifact_weapon_name) = weapon.name() {
-                        Some(MeritId::Artifact(ArtifactId::Weapon(artifact_weapon_name)))
+                        Some(MeritId::Artifact(ArtifactName::Weapon(
+                            artifact_weapon_name,
+                        )))
                     } else {
                         None
                     }
@@ -239,7 +237,7 @@ impl<'view, 'source> Merits<'view, 'source> {
             .iter()
             .filter_map(|name| {
                 if let ArmorName::Artifact(name) = name {
-                    Some(MeritId::Artifact(ArtifactId::Armor(name)))
+                    Some(MeritId::Artifact(ArtifactName::Armor(name)))
                 } else {
                     None
                 }
@@ -250,7 +248,7 @@ impl<'view, 'source> Merits<'view, 'source> {
         self.0
             .wonders()
             .iter()
-            .map(|wonder_id| MeritId::Artifact(ArtifactId::Wonder(wonder_id)))
+            .map(|name| MeritId::Artifact(ArtifactName::Wonder(name)))
             .for_each(|merit_id| output.push(merit_id));
 
         // Demenses without manses

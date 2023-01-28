@@ -1,7 +1,7 @@
 use std::ops::Div;
 
 use crate::{
-    artifact::ArtifactId,
+    artifact::ArtifactName,
     book_reference::{Book, BookReference},
     hearthstones::{hearthstone::GeomancyLevel, HearthstoneId},
     languages::language::MajorLanguage,
@@ -37,7 +37,7 @@ use super::{
 };
 
 pub(crate) enum MeritSource<'source> {
-    Artifact(ArtifactId<'source>, &'source str, u8),
+    Artifact(ArtifactName<'source>, u8),
     DemenseNoManse(&'source str, GeomancyLevel),
     DemenseWithManse(HearthstoneId, &'source str, GeomancyLevel),
     ExaltedHealing(bool), // is_exalt
@@ -56,7 +56,7 @@ pub(crate) enum MeritSource<'source> {
 impl<'source> MeritSource<'source> {
     pub fn id(&self) -> MeritId {
         match self {
-            MeritSource::Artifact(artifact_id, _, _) => MeritId::Artifact(*artifact_id),
+            MeritSource::Artifact(artifact_name, _) => MeritId::Artifact(*artifact_name),
             MeritSource::DemenseNoManse(name, _) => MeritId::DemenseNoManse(name),
             MeritSource::DemenseWithManse(hearthstone_id, _, _) => {
                 MeritId::DemenseWithManse(*hearthstone_id)
@@ -85,7 +85,7 @@ impl<'source> MeritSource<'source> {
 
     pub fn template_id(&self) -> MeritTemplateId {
         match self {
-            MeritSource::Artifact(_, _, _) => MeritTemplateId::Artifact,
+            MeritSource::Artifact(_, _) => MeritTemplateId::Artifact,
             MeritSource::DemenseNoManse(_, _) => MeritTemplateId::Demense,
             MeritSource::DemenseWithManse(_, _, _) => MeritTemplateId::Demense,
             MeritSource::ExaltedHealing(_) => MeritTemplateId::ExaltedHealing,
@@ -108,7 +108,7 @@ impl<'source> MeritSource<'source> {
 
     pub fn template_name(&self) -> &'source str {
         match self {
-            MeritSource::Artifact(_, _, _) => "Artifact",
+            MeritSource::Artifact(_, _) => "Artifact",
             MeritSource::DemenseNoManse(_, _) => "Demense",
             MeritSource::DemenseWithManse(_, _, _) => "Demense",
             MeritSource::ExaltedHealing(_) => "Exalted Healing",
@@ -127,7 +127,7 @@ impl<'source> MeritSource<'source> {
 
     pub fn book_reference(&self) -> Option<BookReference> {
         match self {
-            MeritSource::Artifact(_, _, _) => Some(BookReference::new(Book::CoreRulebook, 159)),
+            MeritSource::Artifact(_, _) => Some(BookReference::new(Book::CoreRulebook, 159)),
             MeritSource::DemenseNoManse(_, _) => Some(BookReference::new(Book::CoreRulebook, 160)),
             MeritSource::DemenseWithManse(_, _, _) => {
                 Some(BookReference::new(Book::CoreRulebook, 160))
@@ -152,7 +152,11 @@ impl<'source> MeritSource<'source> {
 
     pub fn detail(&self) -> Option<&'source str> {
         match self {
-            MeritSource::Artifact(_, name, _) => Some(*name),
+            MeritSource::Artifact(name, _) => match name {
+                ArtifactName::Weapon(name)
+                | ArtifactName::Armor(name)
+                | ArtifactName::Wonder(name) => Some(*name),
+            },
             MeritSource::DemenseNoManse(name, _) => Some(*name),
             MeritSource::DemenseWithManse(_, name, _) => Some(*name),
             MeritSource::ExaltedHealing(_) => None,
@@ -182,7 +186,7 @@ impl<'source> MeritSource<'source> {
 
     pub fn dots(&self) -> u8 {
         match self {
-            MeritSource::Artifact(_, _, dots) => *dots,
+            MeritSource::Artifact(_, dots) => *dots,
             MeritSource::DemenseNoManse(_, geomancy_level) => match geomancy_level {
                 GeomancyLevel::Standard => 2,
                 GeomancyLevel::Greater => 4,
@@ -210,7 +214,7 @@ impl<'source> MeritSource<'source> {
 
     pub fn merit_type(&self) -> MeritType {
         match self {
-            MeritSource::Artifact(_, _, _) => MeritType::Story,
+            MeritSource::Artifact(_, _) => MeritType::Story,
             MeritSource::DemenseNoManse(_, _) => MeritType::Story,
             MeritSource::DemenseWithManse(_, _, _) => MeritType::Story,
             MeritSource::ExaltedHealing(_) => MeritType::Supernatural,
@@ -229,7 +233,7 @@ impl<'source> MeritSource<'source> {
 
     pub fn description(&self) -> (&'source str, Option<&'source str>) {
         match self {
-            MeritSource::Artifact(_, _, dots) => match dots {
+            MeritSource::Artifact(_, dots) => match dots {
                 2 => (ARTIFACT_SHARED, Some(ARTIFACT_TWO)),
                 3 => (ARTIFACT_SHARED, Some(ARTIFACT_THREE)),
                 4 => (ARTIFACT_SHARED, Some(ARTIFACT_FOUR)),

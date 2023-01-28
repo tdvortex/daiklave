@@ -15,7 +15,6 @@ use std::collections::HashMap;
 
 use crate::{
     abilities::AbilitiesVanilla,
-    artifact::{ArtifactId, ArtifactName},
     attributes::Attributes,
     book_reference::BookReference,
     charms::charm::{CharmId, CharmMutation},
@@ -184,7 +183,7 @@ impl<'source> Character<'source> {
                 self.add_hearthstone(*hearthstone_id, template)
             }
             CharacterMutation::SlotHearthstone(artifact_name, hearthstone_id) => {
-                self.slot_hearthstone(artifact_name, *hearthstone_id)
+                self.slot_hearthstone(artifact_name.as_ref(), *hearthstone_id)
             }
             CharacterMutation::UnslotHearthstone(hearthstone_id) => {
                 self.unslot_hearthstone(*hearthstone_id)
@@ -193,13 +192,7 @@ impl<'source> Character<'source> {
                 self.remove_hearthstone(*hearthstone_id)
             }
             CharacterMutation::AttuneArtifact(artifact_name, first) => {
-                let artifact_id = match artifact_name {
-                    ArtifactName::Weapon(weapon_name) => ArtifactId::Weapon(weapon_name.as_str()),
-                    ArtifactName::Armor(armor_name) => ArtifactId::Armor(armor_name.as_str()),
-                    ArtifactName::Wonder(wonder_id) => ArtifactId::Wonder(*wonder_id),
-                };
-
-                self.attune_artifact(artifact_id, *first)
+                self.attune_artifact(artifact_name.as_ref(), *first)
             }
             CharacterMutation::AddStackableMerit(stackable_merit_id, stackable_merit) => {
                 self.add_stackable_merit(*stackable_merit_id, stackable_merit)

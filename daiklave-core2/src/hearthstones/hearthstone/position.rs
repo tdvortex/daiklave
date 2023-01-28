@@ -1,4 +1,4 @@
-use crate::{artifact::ArtifactId, book_reference::BookReference};
+use crate::{artifact::ArtifactName, book_reference::BookReference};
 
 use super::{
     category::HearthstoneCategory, geomancy_level::GeomancyLevel, id::HearthstoneId,
@@ -7,7 +7,7 @@ use super::{
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum HearthstonePosition<'source> {
-    Slotted(ArtifactId<'source>, SlottedHearthstone<'source>),
+    Slotted(ArtifactName<'source>, SlottedHearthstone<'source>),
     Unslotted(HearthstoneId, UnslottedHearthstone<'source>),
 }
 
@@ -26,9 +26,9 @@ impl<'source> HearthstonePosition<'source> {
         }
     }
 
-    pub fn slotted_into(&self) -> Option<ArtifactId<'source>> {
+    pub fn slotted_into(&self) -> Option<ArtifactName<'source>> {
         match self {
-            HearthstonePosition::Slotted(artifact_id, _) => Some(*artifact_id),
+            HearthstonePosition::Slotted(artifact_name, _) => Some(*artifact_name),
             HearthstonePosition::Unslotted(_, _) => None,
         }
     }

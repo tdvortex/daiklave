@@ -1,5 +1,7 @@
 use crate::{
-    artifact::{wonders::Wonders, AddArtifact, ArtifactId, ArtifactName, MagicMaterial, Sonance},
+    artifact::{
+        wonders::Wonders, AddArtifact, ArtifactName, ArtifactNameMutation, MagicMaterial, Sonance,
+    },
     exaltation::{exalt::essence::MotePoolName, Exaltation},
     Character, CharacterMutationError,
 };
@@ -24,8 +26,8 @@ impl<'view, 'source> Character<'source> {
                 self.exaltation
                     .add_artifact_armor(name.as_str(), artifact_armor.as_ref())?;
             }
-            AddArtifact::Wonder(wonder_id, wonder) => {
-                self.exaltation.add_wonder(*wonder_id, wonder)?;
+            AddArtifact::Wonder((name, wonder)) => {
+                self.exaltation.add_wonder(name.as_str(), wonder)?;
             }
         }
         Ok(self)
@@ -34,19 +36,19 @@ impl<'view, 'source> Character<'source> {
     /// Removes an artifact from the character.
     pub fn remove_artifact(
         &mut self,
-        artifact_name: &ArtifactName,
+        artifact_name: &ArtifactNameMutation,
     ) -> Result<&mut Self, CharacterMutationError> {
         match artifact_name {
-            ArtifactName::Weapon(artifact_weapon_name) => {
+            ArtifactNameMutation::Weapon(artifact_weapon_name) => {
                 self.exaltation
                     .remove_artifact_weapon(artifact_weapon_name.as_str())?;
             }
-            ArtifactName::Armor(artifact_armor_name) => {
+            ArtifactNameMutation::Armor(artifact_armor_name) => {
                 self.exaltation
                     .remove_artifact_armor(artifact_armor_name.as_str())?;
             }
-            ArtifactName::Wonder(wonder_id) => {
-                self.exaltation.remove_wonder(*wonder_id)?;
+            ArtifactNameMutation::Wonder(wonder_name) => {
+                self.exaltation.remove_wonder(wonder_name.as_str())?;
             }
         }
         // May lose evocations along with the artifact
@@ -57,10 +59,10 @@ impl<'view, 'source> Character<'source> {
     /// Attunes to the specified artifact.
     pub fn attune_artifact(
         &mut self,
-        artifact_id: ArtifactId<'_>,
+        name: ArtifactName<'_>,
         first: MotePoolName,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.attune_artifact(artifact_id, first)?;
+        self.exaltation.attune_artifact(name, first)?;
         Ok(self)
     }
 

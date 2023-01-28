@@ -5,24 +5,17 @@ use crate::{
     artifact::MagicMaterial, book_reference::BookReference, hearthstones::hearthstone::Hearthstone,
 };
 
-use super::WonderId;
-
 /// A Wonder that belongs to the character, and may be attuned or unattuned.
 pub struct OwnedWonder<'source>(
-    pub(crate) WonderId,
+    pub(crate) &'source str,
     pub(crate) WonderNoAttunement<'source>,
     pub(crate) Option<u8>,
 );
 
 impl<'source> OwnedWonder<'source> {
-    /// The wonder's Id.
-    pub fn id(&self) -> WonderId {
-        self.0
-    }
-
     /// The wonder's name.
     pub fn name(&self) -> &'source str {
-        self.1.name()
+        self.0
     }
 
     /// The book reference for the wonder.

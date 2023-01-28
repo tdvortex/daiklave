@@ -5,7 +5,7 @@ use crate::{
         armor_item::{artifact::ArtifactError, ArmorName},
         ArmorError,
     },
-    artifact::ArtifactId,
+    artifact::ArtifactName,
     charms::{
         charm::{
             evocation::{Evocation, EvocationId, EvokableId},
@@ -34,12 +34,12 @@ impl<'source> Character<'source> {
                     ));
                 }
             }
-            EvokableId::Artifact(ArtifactId::Armor(name)) => {
+            EvokableId::Artifact(ArtifactName::Armor(name)) => {
                 if self.armor().get(ArmorName::Artifact(name)).is_none() {
                     return Err(CharacterMutationError::ArmorError(ArmorError::NotFound));
                 }
             }
-            EvokableId::Artifact(ArtifactId::Weapon(name)) => {
+            EvokableId::Artifact(ArtifactName::Weapon(name)) => {
                 if !self.weapons().iter().any(|(weapon_name, _)| {
                     if let WeaponName::Artifact(actual_name) = weapon_name {
                         actual_name == name
@@ -50,8 +50,8 @@ impl<'source> Character<'source> {
                     return Err(CharacterMutationError::WeaponError(WeaponError::NotFound));
                 }
             }
-            EvokableId::Artifact(ArtifactId::Wonder(wonder_id)) => {
-                if self.wonders().get(wonder_id).is_none() {
+            EvokableId::Artifact(ArtifactName::Wonder(name)) => {
+                if self.wonders().get(name).is_none() {
                     return Err(CharacterMutationError::ArtifactError(
                         ArtifactError::NotFound,
                     ));
@@ -95,12 +95,12 @@ impl<'source> Character<'source> {
                                 ids_to_remove.insert(evocation_id);
                             }
                         }
-                        EvokableId::Artifact(ArtifactId::Armor(name)) => {
+                        EvokableId::Artifact(ArtifactName::Armor(name)) => {
                             if self.armor().get(ArmorName::Artifact(name)).is_none() {
                                 ids_to_remove.insert(evocation_id);
                             }
                         }
-                        EvokableId::Artifact(ArtifactId::Weapon(name)) => {
+                        EvokableId::Artifact(ArtifactName::Weapon(name)) => {
                             if !self.weapons().iter().any(|(weapon_name, _)| {
                                 if let WeaponName::Artifact(artifact_name) = weapon_name {
                                     artifact_name == name
@@ -111,8 +111,8 @@ impl<'source> Character<'source> {
                                 ids_to_remove.insert(evocation_id);
                             }
                         }
-                        EvokableId::Artifact(ArtifactId::Wonder(wonder_id)) => {
-                            if self.wonders().get(wonder_id).is_none() {
+                        EvokableId::Artifact(ArtifactName::Wonder(name)) => {
+                            if self.wonders().get(name).is_none() {
                                 ids_to_remove.insert(evocation_id);
                             }
                         }

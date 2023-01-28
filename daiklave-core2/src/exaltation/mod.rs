@@ -18,8 +18,8 @@ pub(crate) use sorcery::ExaltationSorcery;
 use crate::{
     armor::armor_item::{artifact::ArtifactArmorView, mundane::MundaneArmor, ArmorItem, ArmorName},
     artifact::{
-        wonders::{OwnedWonder, Wonder, WonderId},
-        ArtifactId, ArtifactName,
+        wonders::{OwnedWonder, Wonder},
+        ArtifactName, ArtifactNameMutation,
     },
     charms::{
         charm::{
@@ -543,14 +543,14 @@ impl<'view, 'source> Exaltation<'source> {
                 Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
             }
             Exaltation::Exalt(exalt) => exalt.uncommit_motes(match to_uncommit {
-                UncommitMotes::UnattuneArtifact(ArtifactName::Armor(name)) => {
-                    MoteCommitmentId::AttunedArtifact(ArtifactId::Armor(name.as_str()))
+                UncommitMotes::UnattuneArtifact(ArtifactNameMutation::Armor(name)) => {
+                    MoteCommitmentId::AttunedArtifact(ArtifactName::Armor(name.as_str()))
                 }
-                UncommitMotes::UnattuneArtifact(ArtifactName::Wonder(wonder_id)) => {
-                    MoteCommitmentId::AttunedArtifact(ArtifactId::Wonder(*wonder_id))
+                UncommitMotes::UnattuneArtifact(ArtifactNameMutation::Wonder(wonder_name)) => {
+                    MoteCommitmentId::AttunedArtifact(ArtifactName::Wonder(wonder_name.as_str()))
                 }
-                UncommitMotes::UnattuneArtifact(ArtifactName::Weapon(name)) => {
-                    MoteCommitmentId::AttunedArtifact(ArtifactId::Weapon(name.as_str()))
+                UncommitMotes::UnattuneArtifact(ArtifactNameMutation::Weapon(name)) => {
+                    MoteCommitmentId::AttunedArtifact(ArtifactName::Weapon(name.as_str()))
                 }
                 UncommitMotes::Other(name) => MoteCommitmentId::Other(name.as_str()),
             }),
@@ -790,48 +790,43 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub fn wonders_iter(&self) -> impl Iterator<Item = WonderId> + '_ {
+    pub fn wonders_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         match self {
-            Exaltation::Mortal(mortal) => {
-                mortal.wonders_iter().collect::<Vec<WonderId>>().into_iter()
-            }
-            Exaltation::Exalt(exalt) => exalt.wonders_iter().collect::<Vec<WonderId>>().into_iter(),
+            Exaltation::Mortal(mortal) => mortal.wonders_iter().collect::<Vec<&str>>().into_iter(),
+            Exaltation::Exalt(exalt) => exalt.wonders_iter().collect::<Vec<&str>>().into_iter(),
         }
     }
 
-    pub fn get_wonder(&self, wonder_id: WonderId) -> Option<OwnedWonder<'source>> {
+    pub fn get_wonder(&self, name: &str) -> Option<OwnedWonder<'source>> {
         match self {
-            Exaltation::Mortal(mortal) => mortal.get_wonder(wonder_id),
-            Exaltation::Exalt(exalt) => exalt.get_wonder(wonder_id),
+            Exaltation::Mortal(mortal) => mortal.get_wonder(name),
+            Exaltation::Exalt(exalt) => exalt.get_wonder(name),
         }
     }
 
     pub fn add_wonder(
         &mut self,
-        wonder_id: WonderId,
+        name: &'source str,
         wonder: &'source Wonder,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.add_wonder(wonder_id, wonder)?;
+                mortal.add_wonder(name, wonder)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.add_wonder(wonder_id, wonder)?;
+                exalt.add_wonder(name, wonder)?;
             }
         }
         Ok(self)
     }
 
-    pub fn remove_wonder(
-        &mut self,
-        wonder_id: WonderId,
-    ) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_wonder(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.remove_wonder(wonder_id)?;
+                mortal.remove_wonder(name)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.remove_wonder(wonder_id)?;
+                exalt.remove_wonder(name)?;
             }
         }
         Ok(self)
@@ -889,16 +884,16 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn slot_hearthstone_into_wonder(
         &mut self,
-        wonder_id: WonderId,
+        wonder_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.slot_hearthstone_into_wonder(wonder_id, hearthstone_id, unslotted)?;
+                mortal.slot_hearthstone_into_wonder(wonder_name, hearthstone_id, unslotted)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.slot_hearthstone_into_wonder(wonder_id, hearthstone_id, unslotted)?;
+                exalt.slot_hearthstone_into_wonder(wonder_name, hearthstone_id, unslotted)?;
             }
         }
         Ok(self)
@@ -936,29 +931,29 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn unslot_hearthstone_from_wonder(
         &mut self,
-        wonder_id: WonderId,
+        wonder_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         Ok(match self {
             Exaltation::Mortal(mortal) => {
-                mortal.unslot_hearthstone_from_wonder(wonder_id, hearthstone_id)?
+                mortal.unslot_hearthstone_from_wonder(wonder_name, hearthstone_id)?
             }
             Exaltation::Exalt(exalt) => {
-                exalt.unslot_hearthstone_from_wonder(wonder_id, hearthstone_id)?
+                exalt.unslot_hearthstone_from_wonder(wonder_name, hearthstone_id)?
             }
         })
     }
 
     pub fn attune_artifact(
         &mut self,
-        artifact_id: ArtifactId<'_>,
+        artifact_name: ArtifactName<'_>,
         first: MotePoolName,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => {
                 Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
             }
-            Exaltation::Exalt(exalt) => exalt.attune_artifact(artifact_id, first),
+            Exaltation::Exalt(exalt) => exalt.attune_artifact(artifact_name, first),
         }?;
         Ok(self)
     }

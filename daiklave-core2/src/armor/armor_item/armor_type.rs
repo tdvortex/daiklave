@@ -1,5 +1,5 @@
 use crate::{
-    artifact::ArtifactId,
+    artifact::ArtifactName,
     book_reference::BookReference,
     hearthstones::{hearthstone::Hearthstone, HearthstonePosition},
 };
@@ -104,11 +104,11 @@ impl<'source> ArmorType<'source> {
 
     pub fn slotted_hearthstones(&self) -> impl Iterator<Item = Hearthstone<'source>> {
         match self {
-            ArmorType::Artifact(artifact_id, no_attunement, _) => no_attunement
+            ArmorType::Artifact(name, no_attunement, _) => no_attunement
                 .slotted_hearthstones()
                 .map(|slotted| {
                     Hearthstone(HearthstonePosition::Slotted(
-                        ArtifactId::Armor(*artifact_id),
+                        ArtifactName::Armor(*name),
                         slotted,
                     ))
                 })

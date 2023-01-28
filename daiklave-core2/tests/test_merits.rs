@@ -3,7 +3,7 @@ use std::num::NonZeroU8;
 use daiklave_core2::{
     abilities::{AbilityName, AbilityNameVanilla},
     armor::armor_item::{ArmorItem, ArmorWeightClass},
-    artifact::{wonders::WonderId, AddArtifact, ArtifactId, ArtifactName, MagicMaterial},
+    artifact::{AddArtifact, ArtifactName, ArtifactNameMutation, MagicMaterial},
     attributes::AttributeName,
     book_reference::{Book, BookReference},
     exaltation::exalt::exalt_type::solar::{
@@ -97,7 +97,6 @@ fn test_merits() {
 
     // Artifact wonder
     let mutation = CharacterMutation::AddArtifact(AddArtifact::Wonder(
-        WonderId(UniqueId::Placeholder(1)),
         AddArtifact::wonder_builder("Belt of Shadow Walking")
             .book_reference(BookReference::new(Book::CoreRulebook, 602))
             .merit_dots(3)
@@ -334,11 +333,11 @@ fn test_merits() {
     let character = event_source.as_character().unwrap();
     let merits = character.merits();
     let volcano_cutter = merits
-        .get(MeritId::Artifact(ArtifactId::Weapon("Volcano Cutter")))
+        .get(MeritId::Artifact(ArtifactName::Weapon("Volcano Cutter")))
         .unwrap();
     assert_eq!(
         volcano_cutter.id(),
-        MeritId::Artifact(ArtifactId::Weapon("Volcano Cutter"))
+        MeritId::Artifact(ArtifactName::Weapon("Volcano Cutter"))
     );
     assert_eq!(volcano_cutter.template_name(), "Artifact");
     assert_eq!(
@@ -352,11 +351,11 @@ fn test_merits() {
     assert!(volcano_cutter.description().1.is_some());
 
     let brilliant_sentinel = merits
-        .get(MeritId::Artifact(ArtifactId::Armor("Brilliant Sentinel")))
+        .get(MeritId::Artifact(ArtifactName::Armor("Brilliant Sentinel")))
         .unwrap();
     assert_eq!(
         brilliant_sentinel.id(),
-        MeritId::Artifact(ArtifactId::Armor("Brilliant Sentinel"))
+        MeritId::Artifact(ArtifactName::Armor("Brilliant Sentinel"))
     );
     assert_eq!(brilliant_sentinel.template_name(), "Artifact");
     assert_eq!(
@@ -370,13 +369,13 @@ fn test_merits() {
     assert!(brilliant_sentinel.description().1.is_some());
 
     let belt = merits
-        .get(MeritId::Artifact(ArtifactId::Wonder(WonderId(
-            UniqueId::Placeholder(1),
-        ))))
+        .get(MeritId::Artifact(ArtifactName::Wonder(
+            "Belt of Shadow Walking",
+        )))
         .unwrap();
     assert_eq!(
         belt.id(),
-        MeritId::Artifact(ArtifactId::Wonder(WonderId(UniqueId::Placeholder(1))))
+        MeritId::Artifact(ArtifactName::Wonder("Belt of Shadow Walking"))
     );
     assert_eq!(belt.template_name(), "Artifact");
     assert_eq!(
@@ -714,9 +713,9 @@ fn test_merits() {
 
     // Remove the artifacts
     [
-        ArtifactName::Weapon("Volcano Cutter".to_owned()),
-        ArtifactName::Armor("Brilliant Sentinel".to_owned()),
-        ArtifactName::Wonder(WonderId(UniqueId::Placeholder(1))),
+        ArtifactNameMutation::Weapon("Volcano Cutter".to_owned()),
+        ArtifactNameMutation::Armor("Brilliant Sentinel".to_owned()),
+        ArtifactNameMutation::Wonder("Belt of Shadow Walking".to_owned()),
     ]
     .into_iter()
     .map(|artifact_id| CharacterMutation::RemoveArtifact(artifact_id))

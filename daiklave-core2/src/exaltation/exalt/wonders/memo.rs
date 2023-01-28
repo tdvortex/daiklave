@@ -2,13 +2,13 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::artifact::wonders::{WonderId, WonderNoAttunementMemo};
+use crate::artifact::wonders::WonderNoAttunementMemo;
 
 use super::ExaltWonders;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct ExaltWondersMemo(
-    pub(crate) HashMap<WonderId, (WonderNoAttunementMemo, Option<u8>)>,
+    pub(crate) HashMap<String, (WonderNoAttunementMemo, Option<u8>)>,
 );
 
 impl<'source> ExaltWondersMemo {
@@ -16,7 +16,9 @@ impl<'source> ExaltWondersMemo {
         ExaltWonders(
             self.0
                 .iter()
-                .map(|(k, (no_attunement, attunement))| (*k, (no_attunement.as_ref(), *attunement)))
+                .map(|(k, (no_attunement, attunement))| {
+                    (k.as_str(), (no_attunement.as_ref(), *attunement))
+                })
                 .collect(),
         )
     }

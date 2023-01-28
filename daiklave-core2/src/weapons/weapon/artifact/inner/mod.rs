@@ -3,14 +3,14 @@ mod memo;
 pub use memo::ArtifactWeaponTraitsMemo;
 
 use crate::{
-    artifact::{ArtifactId, MagicMaterial},
+    artifact::{ArtifactName, MagicMaterial},
     book_reference::BookReference,
     hearthstones::{hearthstone::Hearthstone, HearthstonePosition, SlottedHearthstone},
     weapons::weapon::base::BaseWeapon,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ArtifactWeaponTraits<'source> {
+pub struct ArtifactWeaponInner<'source> {
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) merit_dots: u8,
     pub(crate) magic_material: MagicMaterial,
@@ -21,7 +21,7 @@ pub struct ArtifactWeaponTraits<'source> {
     pub(crate) hearthstone_slots: Vec<Option<SlottedHearthstone<'source>>>,
 }
 
-impl<'view, 'source> ArtifactWeaponTraits<'source> {
+impl<'view, 'source> ArtifactWeaponInner<'source> {
     pub fn as_memo(&self) -> ArtifactWeaponTraitsMemo {
         ArtifactWeaponTraitsMemo {
             book_reference: self.book_reference,
@@ -60,7 +60,7 @@ impl<'view, 'source> ArtifactWeaponTraits<'source> {
             .filter_map(move |maybe_hearthstone| {
                 maybe_hearthstone.as_ref().map(|slotted| {
                     Hearthstone(HearthstonePosition::Slotted(
-                        ArtifactId::Weapon(name),
+                        ArtifactName::Weapon(name),
                         *slotted,
                     ))
                 })

@@ -4,7 +4,6 @@ use crate::{
 
 /// Builders for Wonders and Warstriders.
 pub mod builder;
-mod id;
 mod magic_material;
 mod name;
 mod sonance;
@@ -12,15 +11,11 @@ mod sonance;
 /// Artifacts which are not weapons, armor, or warstriders.
 pub mod wonders;
 
-pub use id::ArtifactId;
 pub use magic_material::MagicMaterial;
-pub use name::ArtifactName;
+pub use name::{ArtifactName, ArtifactNameMutation};
 pub use sonance::Sonance;
 
-use self::{
-    builder::wonder::WonderBuilder,
-    wonders::{Wonder, WonderId},
-};
+use self::{builder::wonder::WonderBuilder, wonders::AddWonder};
 
 /// A magical, Essence-infused object to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -30,7 +25,7 @@ pub enum AddArtifact {
     /// An artifact armor item.
     Armor(AddArtifactArmor),
     /// A catch-all for other artifacts.
-    Wonder(WonderId, Wonder),
+    Wonder(AddWonder),
 }
 
 impl AddArtifact {

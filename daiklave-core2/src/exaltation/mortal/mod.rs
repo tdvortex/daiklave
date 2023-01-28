@@ -22,7 +22,7 @@ use crate::{
         mundane::MundaneArmor,
         ArmorItem, ArmorName,
     },
-    artifact::wonders::{OwnedWonder, Wonder, WonderId},
+    artifact::wonders::{OwnedWonder, Wonder},
     charms::CharmError,
     hearthstones::{HearthstoneId, UnslottedHearthstone},
     martial_arts::{style::MartialArtsStyle, MartialArtsError},
@@ -301,20 +301,20 @@ impl<'view, 'source> Mortal<'source> {
         Ok(self)
     }
 
-    pub fn wonders_iter(&self) -> impl Iterator<Item = WonderId> + '_ {
+    pub fn wonders_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         self.wonders.iter()
     }
 
-    pub fn get_wonder(&self, wonder_id: WonderId) -> Option<OwnedWonder<'source>> {
-        self.wonders.get(wonder_id)
+    pub fn get_wonder(&self, name: &str) -> Option<OwnedWonder<'source>> {
+        self.wonders.get(name)
     }
 
     pub fn add_wonder(
         &mut self,
-        wonder_id: WonderId,
+        name: &'source str,
         wonder: &'source Wonder,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if let Entry::Vacant(e) = self.wonders.0.entry(wonder_id) {
+        if let Entry::Vacant(e) = self.wonders.0.entry(name) {
             e.insert(wonder.0.as_ref());
             Ok(self)
         } else {
@@ -324,13 +324,10 @@ impl<'view, 'source> Mortal<'source> {
         }
     }
 
-    pub fn remove_wonder(
-        &mut self,
-        wonder_id: WonderId,
-    ) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_wonder(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
         self.wonders
             .0
-            .remove(&wonder_id)
+            .remove(name)
             .ok_or(CharacterMutationError::ArtifactError(
                 ArtifactError::NotFound,
             ))?;
@@ -361,12 +358,12 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn slot_hearthstone_into_wonder(
         &mut self,
-        wonder_id: WonderId,
+        wonder_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.wonders
-            .slot_hearthstone(wonder_id, hearthstone_id, unslotted)?;
+            .slot_hearthstone(wonder_name, hearthstone_id, unslotted)?;
         Ok(self)
     }
 
@@ -390,10 +387,10 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn unslot_hearthstone_from_wonder(
         &mut self,
-        wonder_id: WonderId,
+        wonder_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
-        self.wonders.unslot_hearthstone(wonder_id, hearthstone_id)
+        self.wonders.unslot_hearthstone(wonder_name, hearthstone_id)
     }
 
     pub fn add_sorcery_archetype_merit(

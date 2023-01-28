@@ -5,39 +5,46 @@ use std::collections::HashMap;
 
 use crate::{
     armor::armor_item::artifact::ArtifactError,
-    artifact::wonders::{OwnedWonder, WonderId, WonderNoAttunement},
+    artifact::wonders::{OwnedWonder, WonderNoAttunement},
     exaltation::exalt::ExaltWonders,
     hearthstones::{HearthstoneError, HearthstoneId, SlottedHearthstone, UnslottedHearthstone},
     CharacterMutationError,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
-pub(crate) struct MortalWonders<'source>(pub(crate) HashMap<WonderId, WonderNoAttunement<'source>>);
+pub(crate) struct MortalWonders<'source>(
+    pub(crate) HashMap<&'source str, WonderNoAttunement<'source>>,
+);
 
 impl<'source> MortalWonders<'source> {
     pub fn as_memo(&self) -> MortalWondersMemo {
-        MortalWondersMemo(self.0.iter().map(|(k, v)| (*k, v.as_memo())).collect())
+        MortalWondersMemo(
+            self.0
+                .iter()
+                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
+                .collect(),
+        )
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = WonderId> + '_ {
+    pub fn iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         self.0.keys().copied()
     }
 
-    pub fn get(&self, wonder_id: WonderId) -> Option<OwnedWonder<'source>> {
+    pub fn get(&self, name: &str) -> Option<OwnedWonder<'source>> {
         self.0
-            .get(&wonder_id)
-            .map(|no_attunement| OwnedWonder(wonder_id, no_attunement.clone(), None))
+            .get_key_value(name)
+            .map(|(name, no_attunement)| OwnedWonder(*name, no_attunement.clone(), None))
     }
 
     pub fn slot_hearthstone(
         &mut self,
-        wonder_id: WonderId,
+        wonder_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         *self
             .0
-            .get_mut(&wonder_id)
+            .get_mut(wonder_name)
             .ok_or(CharacterMutationError::ArtifactError(
                 ArtifactError::NotFound,
             ))?
@@ -56,7 +63,7 @@ impl<'source> MortalWonders<'source> {
 
     pub fn unslot_hearthstone(
         &mut self,
-        wonder_id: WonderId,
+        wonder_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
         let SlottedHearthstone {
@@ -65,7 +72,7 @@ impl<'source> MortalWonders<'source> {
             origin,
         } = self
             .0
-            .get_mut(&wonder_id)
+            .get_mut(wonder_name)
             .ok_or(CharacterMutationError::ArtifactError(
                 ArtifactError::NotFound,
             ))?

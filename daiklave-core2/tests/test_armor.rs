@@ -1,6 +1,6 @@
 use daiklave_core2::{
     armor::armor_item::{ArmorItem, ArmorName, ArmorNameMutation, ArmorTag, ArmorWeightClass},
-    artifact::{AddArtifact, ArtifactName, MagicMaterial},
+    artifact::{AddArtifact, ArtifactNameMutation, MagicMaterial},
     book_reference::{Book, BookReference},
     CharacterEventSource, CharacterMutation,
 };
@@ -115,8 +115,9 @@ fn test_armor() {
     );
 
     // Remove the artifact armor
-    let mutation =
-        CharacterMutation::RemoveArtifact(ArtifactName::Armor("Brilliant Sentinel".to_owned()));
+    let mutation = CharacterMutation::RemoveArtifact(ArtifactNameMutation::Armor(
+        "Brilliant Sentinel".to_owned(),
+    ));
     event_source.apply_mutation(mutation).unwrap();
 
     // Check you can't remove equipped armor

@@ -6,7 +6,7 @@ pub use error::CharacterMutationError;
 use crate::{
     abilities::AbilityNameVanilla,
     armor::armor_item::{mundane::AddMundaneArmor, ArmorNameMutation},
-    artifact::{AddArtifact, ArtifactName},
+    artifact::{AddArtifact, ArtifactNameMutation},
     attributes::AttributeName,
     charms::charm::{CharmId, CharmMutation},
     exaltation::exalt::{
@@ -106,7 +106,7 @@ pub enum CharacterMutation {
     /// warstrider, or wonder.
     AddArtifact(AddArtifact),
     /// Removes an artifact from the character.
-    RemoveArtifact(ArtifactName),
+    RemoveArtifact(ArtifactNameMutation),
     /// Adds a piece of mundane armor.
     AddMundaneArmor(AddMundaneArmor),
     /// Removes a piece of mundane armor from the character.
@@ -125,14 +125,14 @@ pub enum CharacterMutation {
     /// Remove a demense (without a manse) from a character.
     RemoveDemense(String),
     /// Slot a hearthstone into an artifact.
-    SlotHearthstone(ArtifactName, HearthstoneId),
+    SlotHearthstone(ArtifactNameMutation, HearthstoneId),
     /// Unslot a hearthstone from its current position.
     UnslotHearthstone(HearthstoneId),
     /// Remove a hearthstone from the character, unslotting it in the process
     /// if needed.
     RemoveHearthstone(HearthstoneId),
     /// Attune to an artifact, committing motes to its ongoing use.
-    AttuneArtifact(ArtifactName, MotePoolName),
+    AttuneArtifact(ArtifactNameMutation, MotePoolName),
     /// Add a stackable merit with an id for this instance and detail
     AddStackableMerit(StackableMeritId, StackableMerit),
     /// Remove a stackable merit

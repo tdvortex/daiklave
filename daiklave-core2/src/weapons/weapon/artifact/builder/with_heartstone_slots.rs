@@ -3,8 +3,8 @@ use crate::{
     book_reference::BookReference,
     weapons::weapon::{
         artifact::{
-            base::BaseArtifactWeapon, memo::ArtifactWeaponHandedness,
-            traits::ArtifactWeaponTraitsMemo, ArtifactWeapon, NaturalArtifactWeapon,
+            base::BaseArtifactWeapon, inner::ArtifactWeaponTraitsMemo,
+            memo::ArtifactWeaponHandedness, ArtifactWeapon, NaturalArtifactWeapon,
             OneHandedArtifactWeapon, TwoHandedArtifactWeapon, WornArtifactWeapon,
         },
         handedness::WeaponHandedness,

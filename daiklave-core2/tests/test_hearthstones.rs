@@ -1,6 +1,6 @@
 use daiklave_core2::{
     armor::armor_item::{ArmorItem, ArmorTag, ArmorWeightClass},
-    artifact::{wonders::WonderId, AddArtifact, ArtifactName, MagicMaterial},
+    artifact::{AddArtifact, ArtifactNameMutation, MagicMaterial},
     book_reference::{Book, BookReference},
     hearthstones::{
         hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory, HearthstoneKeyword},
@@ -187,21 +187,18 @@ fn test_hearthstones() {
         .magic_material(MagicMaterial::Starmetal)
         .build();
 
-    let mutation = CharacterMutation::AddArtifact(AddArtifact::Wonder(
-        WonderId(UniqueId::Placeholder(1)),
-        hearthstone_amulet,
-    ));
+    let mutation = CharacterMutation::AddArtifact(AddArtifact::Wonder(hearthstone_amulet));
     event_source.apply_mutation(mutation).unwrap();
 
     // Check slotting into all three artifacts
     let mutation = CharacterMutation::SlotHearthstone(
-        ArtifactName::Wonder(WonderId(UniqueId::Placeholder(1))),
+        ArtifactNameMutation::Wonder("Hearthstone Amulet".to_owned()),
         HearthstoneId(UniqueId::Placeholder(2)),
     );
     event_source.apply_mutation(mutation).unwrap();
 
     let mutation = CharacterMutation::SlotHearthstone(
-        ArtifactName::Armor("Freedom's Cadence".to_owned()),
+        ArtifactNameMutation::Armor("Freedom's Cadence".to_owned()),
         HearthstoneId(UniqueId::Placeholder(1)),
     );
     event_source.apply_mutation(mutation).unwrap();
@@ -209,7 +206,7 @@ fn test_hearthstones() {
     // If a hearthstone is already slotted, reslotting it will remove it from
     // the original position
     let mutation = CharacterMutation::SlotHearthstone(
-        ArtifactName::Weapon("Beloved Adorei".to_owned()),
+        ArtifactNameMutation::Weapon("Beloved Adorei".to_owned()),
         HearthstoneId(UniqueId::Placeholder(2)),
     );
     let character = event_source.apply_mutation(mutation).unwrap();
@@ -226,7 +223,7 @@ fn test_hearthstones() {
     );
     assert!(character
         .wonders()
-        .get(WonderId(UniqueId::Placeholder(1)))
+        .get("Hearthstone Amulet")
         .unwrap()
         .slotted_hearthstones()
         .next()

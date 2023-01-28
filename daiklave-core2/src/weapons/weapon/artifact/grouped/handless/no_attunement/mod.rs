@@ -3,8 +3,8 @@ use std::ops::Deref;
 use crate::{
     hearthstones::SlottedHearthstone,
     weapons::weapon::artifact::{
+        inner::ArtifactWeaponInner,
         newtype::{NaturalArtifactWeaponView, WornArtifactWeaponView},
-        traits::ArtifactWeaponTraits,
     },
 };
 
@@ -40,7 +40,7 @@ impl<'source> HandlessArtifactWeaponNoAttunement<'source> {
 }
 
 impl<'source> Deref for HandlessArtifactWeaponNoAttunement<'source> {
-    type Target = ArtifactWeaponTraits<'source>;
+    type Target = ArtifactWeaponInner<'source>;
 
     fn deref(&self) -> &Self::Target {
         match self {

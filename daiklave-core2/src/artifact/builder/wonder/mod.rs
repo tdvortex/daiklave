@@ -1,6 +1,6 @@
 use crate::{
     artifact::{
-        wonders::{Wonder, WonderNoAttunementMemo},
+        wonders::{AddWonder, Wonder, WonderNoAttunementMemo},
         MagicMaterial,
     },
     book_reference::BookReference,
@@ -165,19 +165,21 @@ impl WonderBuilderWithPowers {
     }
 
     /// Completes the builder.
-    pub fn build(self) -> Wonder {
-        Wonder(WonderNoAttunementMemo {
-            name: self.name,
-            book_reference: self.book_reference,
-            lore: self.lore,
-            powers: self.powers,
-            hearthstone_slots: (0..self.hearthstone_slots).fold(Vec::new(), |mut acc, _| {
-                acc.push(None);
-                acc
+    pub fn build(self) -> AddWonder {
+        (
+            self.name,
+            Wonder(WonderNoAttunementMemo {
+                book_reference: self.book_reference,
+                lore: self.lore,
+                powers: self.powers,
+                hearthstone_slots: (0..self.hearthstone_slots).fold(Vec::new(), |mut acc, _| {
+                    acc.push(None);
+                    acc
+                }),
+                merit_dots: self.merit_dots,
+                magic_material: self.magic_material,
+                attunement_cost: self.attunement_cost,
             }),
-            merit_dots: self.merit_dots,
-            magic_material: self.magic_material,
-            attunement_cost: self.attunement_cost,
-        })
+        )
     }
 }

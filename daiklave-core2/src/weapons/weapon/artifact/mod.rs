@@ -2,9 +2,9 @@ mod add;
 mod base;
 pub(crate) mod builder;
 mod grouped;
+mod inner;
 mod memo;
 mod newtype;
-mod traits;
 
 use std::ops::Deref;
 
@@ -22,7 +22,7 @@ pub(crate) use newtype::{
     WornArtifactWeapon, WornArtifactWeaponView,
 };
 
-use self::traits::ArtifactWeaponTraits;
+use self::inner::ArtifactWeaponInner;
 
 use super::{
     equipped::{EquipHand, Equipped},
@@ -37,7 +37,7 @@ pub(crate) enum ArtifactWeaponView<'source> {
 }
 
 impl<'source> Deref for ArtifactWeaponView<'source> {
-    type Target = ArtifactWeaponTraits<'source>;
+    type Target = ArtifactWeaponInner<'source>;
 
     fn deref(&self) -> &Self::Target {
         match self {

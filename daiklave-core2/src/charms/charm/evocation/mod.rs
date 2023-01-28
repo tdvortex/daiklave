@@ -6,7 +6,7 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    artifact::{ArtifactId, ArtifactName},
+    artifact::{ArtifactName, ArtifactNameMutation},
     book_reference::BookReference,
     charms::{CharmActionType, CharmCost, CharmCostType},
 };
@@ -69,14 +69,14 @@ impl<'source> Evocation {
     pub fn evokable_id(&'source self) -> EvokableId<'source> {
         match &self.evokable_name {
             EvokableName::Hearthstone(hearthstone_id) => EvokableId::Hearthstone(*hearthstone_id),
-            EvokableName::Artifact(ArtifactName::Weapon(weapon_name)) => {
-                EvokableId::Artifact(ArtifactId::Weapon(weapon_name.as_str()))
+            EvokableName::Artifact(ArtifactNameMutation::Weapon(weapon_name)) => {
+                EvokableId::Artifact(ArtifactName::Weapon(weapon_name.as_str()))
             }
-            EvokableName::Artifact(ArtifactName::Armor(armor_name)) => {
-                EvokableId::Artifact(ArtifactId::Armor(armor_name.as_str()))
+            EvokableName::Artifact(ArtifactNameMutation::Armor(armor_name)) => {
+                EvokableId::Artifact(ArtifactName::Armor(armor_name.as_str()))
             }
-            EvokableName::Artifact(ArtifactName::Wonder(wonder_id)) => {
-                EvokableId::Artifact(ArtifactId::Wonder(*wonder_id))
+            EvokableName::Artifact(ArtifactNameMutation::Wonder(wonder_name)) => {
+                EvokableId::Artifact(ArtifactName::Wonder(wonder_name.as_str()))
             }
         }
     }

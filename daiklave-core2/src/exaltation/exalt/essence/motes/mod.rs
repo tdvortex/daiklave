@@ -1,6 +1,6 @@
 use crate::{
     armor::armor_item::{ArmorType, ArmorWeightClass},
-    artifact::ArtifactId,
+    artifact::ArtifactName,
     exaltation::exalt::{ExaltArmor, ExaltWeapons, ExaltWonders},
     weapons::weapon::WeaponType,
 };
@@ -48,11 +48,11 @@ impl<'view, 'source> Motes<'view, 'source> {
                     None => None,
                     Some(WeaponType::Unarmed) => None,
                     Some(WeaponType::Mundane(_, _, _)) => None,
-                    Some(WeaponType::Artifact(artifact_weapon_id, _weapon, attunement)) => {
+                    Some(WeaponType::Artifact(artifact_weapon_name, _weapon, attunement)) => {
                         attunement.map(|personal| {
                             (
-                                MoteCommitmentId::AttunedArtifact(ArtifactId::Weapon(
-                                    artifact_weapon_id,
+                                MoteCommitmentId::AttunedArtifact(ArtifactName::Weapon(
+                                    artifact_weapon_name,
                                 )),
                                 MoteCommitment {
                                     peripheral: 5 - personal.min(5),
@@ -68,7 +68,7 @@ impl<'view, 'source> Motes<'view, 'source> {
             self.armor
                 .get(armor_id)
                 .and_then(|armor_item| match armor_item.0 {
-                    ArmorType::Artifact(artifact_armor_id, armor, attunement) => {
+                    ArmorType::Artifact(artifact_armor_name, armor, attunement) => {
                         if let Some(personal) = attunement {
                             let amount = match armor.base_armor().weight_class() {
                                 ArmorWeightClass::Light => 4,
@@ -77,8 +77,8 @@ impl<'view, 'source> Motes<'view, 'source> {
                             };
 
                             Some((
-                                MoteCommitmentId::AttunedArtifact(ArtifactId::Armor(
-                                    artifact_armor_id,
+                                MoteCommitmentId::AttunedArtifact(ArtifactName::Armor(
+                                    artifact_armor_name,
                                 )),
                                 MoteCommitment {
                                     peripheral: amount - personal.min(amount),
@@ -93,12 +93,12 @@ impl<'view, 'source> Motes<'view, 'source> {
                 })
         });
 
-        let wonder_commitments = self.wonders.iter().filter_map(|wonder_id| {
-            self.wonders.get(wonder_id).and_then(|wonder| {
+        let wonder_commitments = self.wonders.iter().filter_map(|wonder_name| {
+            self.wonders.get(wonder_name).and_then(|wonder| {
                 if let Some(personal) = wonder.2 {
                     if let Some(amount) = wonder.1.attunement_cost {
                         Some((
-                            MoteCommitmentId::AttunedArtifact(ArtifactId::Wonder(wonder.0)),
+                            MoteCommitmentId::AttunedArtifact(ArtifactName::Wonder(wonder.0)),
                             MoteCommitment {
                                 peripheral: amount - personal.min(amount),
                                 personal: personal.min(amount),

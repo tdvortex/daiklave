@@ -1,4 +1,4 @@
-use crate::{artifact::ArtifactId, book_reference::BookReference};
+use crate::{artifact::ArtifactName, book_reference::BookReference};
 
 /// A builder path for creating new Hearthstones.
 pub mod builder;
@@ -51,7 +51,7 @@ impl<'source> Hearthstone<'source> {
 
     /// If the hearthstone is currently slotted into an artifact, the Id of
     /// that artifact.
-    pub fn slotted_into(&self) -> Option<ArtifactId> {
+    pub fn slotted_into(&self) -> Option<ArtifactName<'source>> {
         self.0.slotted_into()
     }
 

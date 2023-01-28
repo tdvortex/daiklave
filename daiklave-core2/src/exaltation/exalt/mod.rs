@@ -40,8 +40,8 @@ use crate::{
         ArmorError,
     },
     artifact::{
-        wonders::{OwnedWonder, Wonder, WonderId},
-        ArtifactId,
+        wonders::{OwnedWonder, Wonder},
+        ArtifactName,
     },
     charms::{
         charm::{
@@ -310,13 +310,13 @@ impl<'view, 'source> Exalt<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         let (peripheral, personal) = match name {
             MoteCommitmentId::AttunedArtifact(artifact_id) => match artifact_id {
-                ArtifactId::Weapon(artifact_weapon_id) => {
-                    self.weapons.unattune_artifact_weapon(artifact_weapon_id)?
+                ArtifactName::Weapon(artifact_weapon_name) => self
+                    .weapons
+                    .unattune_artifact_weapon(artifact_weapon_name)?,
+                ArtifactName::Armor(artifact_armor_name) => {
+                    self.armor.unattune_artifact_armor(artifact_armor_name)?
                 }
-                ArtifactId::Armor(artifact_armor_id) => {
-                    self.armor.unattune_artifact_armor(artifact_armor_id)?
-                }
-                ArtifactId::Wonder(wonder_id) => self.wonders.unattune_wonder(wonder_id)?,
+                ArtifactName::Wonder(wonder_name) => self.wonders.unattune_wonder(wonder_name)?,
             },
             MoteCommitmentId::Other(other_name) => {
                 let commitment = self
@@ -717,12 +717,12 @@ impl<'view, 'source> Exalt<'source> {
         &mut self.armor
     }
 
-    pub fn wonders_iter(&self) -> impl Iterator<Item = WonderId> + '_ {
+    pub fn wonders_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         self.wonders.iter()
     }
 
-    pub fn get_wonder(&self, wonder_id: WonderId) -> Option<OwnedWonder<'source>> {
-        self.wonders.get(wonder_id)
+    pub fn get_wonder(&self, name: &str) -> Option<OwnedWonder<'source>> {
+        self.wonders.get(name)
     }
 
     pub fn wonders_mut(&mut self) -> &mut ExaltWonders<'source> {
@@ -731,10 +731,10 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn add_wonder(
         &mut self,
-        wonder_id: WonderId,
+        name: &'source str,
         wonder: &'source Wonder,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if let Entry::Vacant(e) = self.wonders.0.entry(wonder_id) {
+        if let Entry::Vacant(e) = self.wonders.0.entry(name) {
             e.insert((wonder.0.as_ref(), None));
             Ok(self)
         } else {
@@ -744,13 +744,10 @@ impl<'view, 'source> Exalt<'source> {
         }
     }
 
-    pub fn remove_wonder(
-        &mut self,
-        wonder_id: WonderId,
-    ) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_wonder(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
         self.wonders
             .0
-            .remove(&wonder_id)
+            .remove(name)
             .ok_or(CharacterMutationError::ArtifactError(
                 ArtifactError::NotFound,
             ))?;
@@ -781,12 +778,12 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn slot_hearthstone_into_wonder(
         &mut self,
-        wonder_id: WonderId,
+        wonder_name: &str,
         hearthstone_id: HearthstoneId,
         unslotted: UnslottedHearthstone<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.wonders
-            .slot_hearthstone(wonder_id, hearthstone_id, unslotted)?;
+            .slot_hearthstone(wonder_name, hearthstone_id, unslotted)?;
         Ok(self)
     }
 
@@ -810,18 +807,18 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn unslot_hearthstone_from_wonder(
         &mut self,
-        wonder_id: WonderId,
+        wonder_name: &str,
         hearthstone_id: HearthstoneId,
     ) -> Result<UnslottedHearthstone<'source>, CharacterMutationError> {
-        self.wonders.unslot_hearthstone(wonder_id, hearthstone_id)
+        self.wonders.unslot_hearthstone(wonder_name, hearthstone_id)
     }
 
     pub fn attune_artifact(
         &mut self,
-        artifact_id: ArtifactId<'_>,
+        artifact_name: ArtifactName<'_>,
         first: MotePoolName,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let amount = self.attunement_cost(artifact_id)?;
+        let amount = self.attunement_cost(artifact_name)?;
         let (peripheral_committed, personal_committed) = if let MotePoolName::Peripheral = first {
             let peripheral_committed = self.essence().motes().peripheral().available().min(amount);
             (
@@ -863,16 +860,16 @@ impl<'view, 'source> Exalt<'source> {
             return Err(e);
         }
 
-        let outcome = match artifact_id {
-            ArtifactId::Weapon(artifact_weapon_name) => self
+        let outcome = match artifact_name {
+            ArtifactName::Weapon(artifact_weapon_name) => self
                 .weapons_mut()
                 .attune_artifact_weapon(artifact_weapon_name, personal_committed)
                 .err(),
-            ArtifactId::Armor(artifact_armor_id) => self
+            ArtifactName::Armor(artifact_armor_id) => self
                 .armor_mut()
                 .attune_artifact_armor(artifact_armor_id, personal_committed)
                 .err(),
-            ArtifactId::Wonder(wonder_id) => self
+            ArtifactName::Wonder(wonder_id) => self
                 .wonders_mut()
                 .attune_wonder(wonder_id, personal_committed)
                 .err(),
@@ -895,10 +892,10 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn attunement_cost(
         &self,
-        artifact_name: ArtifactId<'_>,
+        artifact_name: ArtifactName<'_>,
     ) -> Result<u8, CharacterMutationError> {
         match artifact_name {
-            ArtifactId::Weapon(artifact_weapon_name) => {
+            ArtifactName::Weapon(artifact_weapon_name) => {
                 if self.weapons.iter().any(|(weapon_name, _)| {
                     weapon_name == WeaponName::Artifact(artifact_weapon_name)
                 }) {
@@ -907,7 +904,7 @@ impl<'view, 'source> Exalt<'source> {
                     Err(CharacterMutationError::WeaponError(WeaponError::NotFound))
                 }
             }
-            ArtifactId::Armor(artifact_armor_name) => self
+            ArtifactName::Armor(artifact_armor_name) => self
                 .armor
                 .get(ArmorName::Artifact(artifact_armor_name))
                 .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?
@@ -915,9 +912,9 @@ impl<'view, 'source> Exalt<'source> {
                 .ok_or(CharacterMutationError::EssenceError(
                     EssenceError::NoAttunementCost,
                 )),
-            ArtifactId::Wonder(wonder_id) => self
+            ArtifactName::Wonder(wonder_name) => self
                 .wonders
-                .get(wonder_id)
+                .get(wonder_name)
                 .ok_or(CharacterMutationError::ArtifactError(
                     ArtifactError::NotFound,
                 ))?

@@ -5,7 +5,7 @@ use crate::{
     weapons::weapon::base::BaseWeapon,
 };
 
-use super::ArtifactWeaponTraits;
+use super::ArtifactWeaponInner;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ArtifactWeaponTraitsMemo {
@@ -20,8 +20,8 @@ pub struct ArtifactWeaponTraitsMemo {
 }
 
 impl<'source> ArtifactWeaponTraitsMemo {
-    pub fn as_ref(&'source self) -> ArtifactWeaponTraits<'source> {
-        ArtifactWeaponTraits {
+    pub fn as_ref(&'source self) -> ArtifactWeaponInner<'source> {
+        ArtifactWeaponInner {
             book_reference: self.book_reference,
             merit_dots: self.merit_dots,
             base_weapon_name: self.base_weapon_name.as_str(),
