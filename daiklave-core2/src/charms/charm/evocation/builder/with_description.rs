@@ -7,7 +7,7 @@ use crate::{
     book_reference::BookReference,
     charms::{
         charm::{
-            evocation::{EvocationId, EvocationKeyword, EvokableNameMutation},
+            evocation::{EvocationKeyword, EvokableNameMutation, AddEvocation},
             CharmName, Evocation,
         },
         CharmActionType, CharmCostType,
@@ -24,7 +24,7 @@ pub struct EvocationBuilderWithDescription {
     pub(crate) essence_required: NonZeroU8,
     pub(crate) resonant: Option<String>,
     pub(crate) dissonant: Option<String>,
-    pub(crate) evocation_tree: HashSet<EvocationId>,
+    pub(crate) evocation_tree: HashSet<String>,
     pub(crate) upgrade_charm: Option<CharmName>,
     pub(crate) keywords: HashSet<EvocationKeyword>,
     pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
@@ -61,8 +61,8 @@ impl EvocationBuilderWithDescription {
     }
 
     /// Adds a charm tree prerequisite on other Evocations.
-    pub fn evocation_prerequisite(mut self, evocation_id: EvocationId) -> Self {
-        self.evocation_tree.insert(evocation_id);
+    pub fn evocation_prerequisite(mut self, prerequisite_name: String) -> Self {
+        self.evocation_tree.insert(prerequisite_name);
         self
     }
 
@@ -92,11 +92,10 @@ impl EvocationBuilderWithDescription {
     }
 
     /// Completes the builder and returns a CharmMutation of the Evocation.
-    pub fn build(self) -> Evocation {
-        Evocation {
+    pub fn build(self) -> AddEvocation {
+        (self.name, Evocation {
             evokable_name: self.evokable_name,
             book_reference: self.book_reference,
-            name: self.name,
             summary: self.summary,
             description: self.description,
             resonant: self.resonant,
@@ -108,6 +107,6 @@ impl EvocationBuilderWithDescription {
             costs: self.costs,
             action_type: self.action_type,
             duration: self.duration,
-        }
+        })
     }
 }

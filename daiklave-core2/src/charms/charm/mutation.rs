@@ -5,19 +5,19 @@ use crate::{
 };
 
 use super::{
-    evocation::{Evocation, EvocationId},
+    evocation::{AddEvocation},
     spirit::EclipseCharm,
     SpiritCharmId,
 };
 
 /// A Charm to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum CharmMutation {
+pub enum AddCharm {
     /// A Spirit charm with the Eclipse keyword, purchasable by Eclipse caste
     /// Solars.
     Eclipse(SpiritCharmId, EclipseCharm),
     /// An Evocation of an artifact or hearthstone.
-    Evocation(EvocationId, Evocation),
+    Evocation(AddEvocation),
     /// A Martial Arts charm for a specific style.
     MartialArts(AddMartialArtsCharm),
     /// A Solar charm.

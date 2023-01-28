@@ -8,7 +8,7 @@ use crate::{
     charms::{charm::CharmName, CharmCostType},
 };
 
-use super::{EvocationId, EvocationKeyword, EvokableNameMutation};
+use super::{EvocationKeyword, EvokableNameMutation};
 
 mod with_action_type;
 mod with_description;
@@ -31,7 +31,7 @@ pub struct EvocationBuilder {
     pub(crate) summary: Option<String>,
     pub(crate) resonant: Option<String>,
     pub(crate) dissonant: Option<String>,
-    pub(crate) evocation_tree: HashSet<EvocationId>,
+    pub(crate) evocation_tree: HashSet<String>,
     pub(crate) upgrade_charm: Option<CharmName>,
     pub(crate) keywords: HashSet<EvocationKeyword>,
     pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
@@ -65,8 +65,8 @@ impl EvocationBuilder {
     }
 
     /// Adds a charm tree prerequisite on other Evocations.
-    pub fn evocation_prerequisite(mut self, evocation_id: EvocationId) -> Self {
-        self.evocation_tree.insert(evocation_id);
+    pub fn evocation_prerequisite(mut self, prerequisite_name: String) -> Self {
+        self.evocation_tree.insert(prerequisite_name);
         self
     }
 

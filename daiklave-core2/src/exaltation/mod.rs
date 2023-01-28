@@ -23,7 +23,7 @@ use crate::{
     },
     charms::{
         charm::{
-            evocation::{Evocation, EvocationId},
+            evocation::{Evocation},
             Charm, SpiritCharmId,
         },
         CharmError,
@@ -1064,7 +1064,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn add_evocation(
         &mut self,
-        evocation_id: EvocationId,
+        name: &'source str,
         evocation: &'source Evocation,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
@@ -1072,7 +1072,7 @@ impl<'view, 'source> Exaltation<'source> {
                 return Err(CharacterMutationError::CharmError(CharmError::Mortal));
             }
             Exaltation::Exalt(exalt) => {
-                exalt.add_evocation(evocation_id, evocation)?;
+                exalt.add_evocation(name, evocation)?;
             }
         }
         Ok(self)

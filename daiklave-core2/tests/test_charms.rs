@@ -7,9 +7,9 @@ use daiklave_core2::{
     book_reference::{Book, BookReference},
     charms::{
         charm::{
-            evocation::{Evocation, EvocationId, EvocationKeyword, EvokableNameMutation},
+            evocation::{Evocation, EvocationKeyword, EvokableNameMutation},
             spirit::SpiritCharm,
-            Charm, CharmId, CharmMutation, CharmName, SpiritCharmId, SpiritCharmKeyword,
+            Charm, CharmId, AddCharm, CharmName, SpiritCharmId, SpiritCharmKeyword,
         },
         CharmActionType, CharmCostType,
     },
@@ -61,7 +61,7 @@ fn test_solar_charms() {
         .build();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Solar(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
             SolarCharmId(UniqueId::Placeholder(1)),
             wise_arrow.clone()
         )))
@@ -103,7 +103,7 @@ fn test_solar_charms() {
         .unwrap();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Solar(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
             SolarCharmId(UniqueId::Placeholder(1)),
             wise_arrow.clone()
         )))
@@ -116,7 +116,7 @@ fn test_solar_charms() {
         ))
         .unwrap();
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Solar(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
             SolarCharmId(UniqueId::Placeholder(1)),
             wise_arrow.clone(),
         )))
@@ -146,7 +146,7 @@ fn test_solar_charms() {
         .description("Some description".to_owned())
         .build();
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Solar(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
             SolarCharmId(UniqueId::Placeholder(2)),
             some_expensive_charm
         )))
@@ -172,7 +172,7 @@ fn test_solar_charms() {
     .build();
 
     event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Solar(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
             SolarCharmId(UniqueId::Placeholder(3)),
             order_affirming_blow,
         )))
@@ -198,7 +198,7 @@ fn test_solar_charms() {
         .build();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Solar(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
             SolarCharmId(UniqueId::Placeholder(4)),
             sight_without_eyes.clone()
         )))
@@ -206,7 +206,7 @@ fn test_solar_charms() {
 
     event_source.undo().unwrap();
     event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Solar(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
             SolarCharmId(UniqueId::Placeholder(4)),
             sight_without_eyes,
         )))
@@ -274,7 +274,6 @@ fn test_evocations() {
         .apply_mutation(CharacterMutation::AddHearthstone(carbuncle))
         .unwrap();
 
-    let howling_lotus_strike_id = EvocationId(UniqueId::Placeholder(1));
     let howling_lotus_strike = Evocation::builder(EvokableNameMutation::Artifact(ArtifactNameMutation::Weapon("Spring Razor".to_owned())), "Howling Lotus Strike".to_owned())
     .book_reference(BookReference::new(Book::CoreRulebook, 620))
     .cost(CharmCostType::Motes, NonZeroU8::new(3).unwrap())
@@ -306,14 +305,12 @@ fn test_evocations() {
     .build();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(
-            howling_lotus_strike_id,
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Evocation(
             howling_lotus_strike.clone()
         )))
         .is_err());
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(
-            EvocationId(UniqueId::Placeholder(2)),
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Evocation(
             burning_coal_fist.clone()
         )))
         .is_err());
@@ -340,25 +337,23 @@ fn test_evocations() {
         .unwrap();
 
     event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(
-            howling_lotus_strike_id,
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Evocation(
             howling_lotus_strike.clone(),
         )))
         .unwrap();
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(
-            EvocationId(UniqueId::Placeholder(2)),
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Evocation(
             burning_coal_fist.clone(),
         )))
         .unwrap();
 
     assert!(character
         .charms()
-        .get(CharmId::Evocation(EvocationId(UniqueId::Placeholder(1))))
+        .get(CharmId::Evocation("Burning Coal Fist"))
         .is_some());
     assert!(character
         .charms()
-        .get(CharmId::Evocation(EvocationId(UniqueId::Placeholder(2))))
+        .get(CharmId::Evocation("Howling Lotus Strike"))
         .is_some());
 
     let incandescent_lance = Evocation::builder(
@@ -383,8 +378,7 @@ fn test_evocations() {
     .build();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(
-            EvocationId(UniqueId::Placeholder(3)),
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Evocation(
             incandescent_lance.clone()
         )))
         .is_err());
@@ -393,14 +387,13 @@ fn test_evocations() {
         .apply_mutation(CharacterMutation::SetEssenceRating(2))
         .unwrap();
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(
-            EvocationId(UniqueId::Placeholder(3)),
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Evocation(
             incandescent_lance,
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Evocation(EvocationId(UniqueId::Placeholder(3))))
+        .get(CharmId::Evocation("Incandescent Lance"))
         .is_some());
 
     let character = event_source
@@ -408,7 +401,7 @@ fn test_evocations() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Evocation(EvocationId(UniqueId::Placeholder(3))))
+        .get(CharmId::Evocation("Incandescent Lance"))
         .is_none());
 
     // Exalts must have the right artifact or hearthstone
@@ -423,8 +416,7 @@ fn test_evocations() {
     .build();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(
-            EvocationId(UniqueId::Placeholder(123)),
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Evocation(
             wrong_evocation
         )))
         .is_err());
@@ -436,14 +428,13 @@ fn test_evocations() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Evocation(EvocationId(UniqueId::Placeholder(2))))
+        .get(CharmId::Evocation("Burning Coal Fist"))
         .is_none());
 
     // Exalts must meet tree requirements
-    let venom_intensifying_strike_id = EvocationId(UniqueId::Placeholder(4));
     let venom_intensifying_strike = Evocation::builder(
         EvokableNameMutation::Artifact(ArtifactNameMutation::Weapon("Spring Razor".to_owned())),
-        "Seven Widows Venom".to_owned(),
+        "Venom Intensifying Strike".to_owned(),
     )
     .book_reference(BookReference::new(Book::CoreRulebook, 620))
     .cost(CharmCostType::Motes, NonZeroU8::new(3).unwrap())
@@ -452,7 +443,7 @@ fn test_evocations() {
     .keyword(EvocationKeyword::Stackable)
     .keyword(EvocationKeyword::Uniform)
     .duration("Instant".to_owned())
-    .evocation_prerequisite(EvocationId(UniqueId::Placeholder(1)))
+    .evocation_prerequisite("Howling Lotus Strike".to_owned())
     .description(
         "A rippling haze of emerald-and-scarlet Essence roils \
     around Spring Razor’s edge as the wielder slashes at her \
@@ -462,7 +453,6 @@ fn test_evocations() {
     .summary("Intensifies existing poisons on hit".to_owned())
     .build();
 
-    let seven_widows_venom_id = EvocationId(UniqueId::Placeholder(5));
     let seven_widows_venom = Evocation::builder(
         EvokableNameMutation::Artifact(ArtifactNameMutation::Weapon("Spring Razor".to_owned())),
         "Seven Widows Venom".to_owned(),
@@ -471,7 +461,7 @@ fn test_evocations() {
     .essence_required(NonZeroU8::new(1).unwrap()) // Simplifying test, is actually 2 in the book
     .action_type(CharmActionType::Permanent)
     .duration("Permanent".to_owned())
-    .evocation_prerequisite(venom_intensifying_strike_id)
+    .evocation_prerequisite("Venom Intensifying Strike".to_owned())
     .description(
         "This Evocation permanently intensifies the poison \
     produced by Howling Lotus Strike, ensuring that no matter \
@@ -483,44 +473,41 @@ fn test_evocations() {
     .build();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(
-            seven_widows_venom_id,
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Evocation(
             seven_widows_venom.clone()
         )))
         .is_err());
     event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(
-            venom_intensifying_strike_id,
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Evocation(
             venom_intensifying_strike,
         )))
         .unwrap();
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(
-            seven_widows_venom_id,
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Evocation(
             seven_widows_venom,
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Evocation(seven_widows_venom_id))
+        .get(CharmId::Evocation("Seven Widows Venom"))
         .is_some());
 
     let character = event_source
         .apply_mutation(CharacterMutation::RemoveCharm(CharmName::Evocation(
-            howling_lotus_strike_id,
+            "Howling Lotus Strike".to_owned(),
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Evocation(howling_lotus_strike_id))
+        .get(CharmId::Evocation("Howling Lotus Strike"))
         .is_none());
     assert!(character
         .charms()
-        .get(CharmId::Evocation(venom_intensifying_strike_id))
+        .get(CharmId::Evocation("Venom Intensifying Strike"))
         .is_none());
     assert!(character
         .charms()
-        .get(CharmId::Evocation(seven_widows_venom_id))
+        .get(CharmId::Evocation("Seven Widows Venom"))
         .is_none());
 
     // Upgrade-type Evocations require the upgraded Charm
@@ -564,7 +551,6 @@ fn test_evocations() {
         .hearthstone_slots(1)
         .build();
 
-    let glamour_sloughing_parasol_id = EvocationId(UniqueId::Placeholder(6));
     let glamour_sloughing_parasol = Evocation::builder(
         EvokableNameMutation::Artifact(ArtifactNameMutation::Weapon("Rainwalker".to_owned())),
         "Glamour-Sloughing Parasol".to_owned(),
@@ -588,8 +574,7 @@ fn test_evocations() {
         )))
         .unwrap();
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(
-            glamour_sloughing_parasol_id,
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Evocation(
             glamour_sloughing_parasol.clone()
         )))
         .is_err());
@@ -600,20 +585,19 @@ fn test_evocations() {
         ))
         .unwrap();
     event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Solar(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Solar(
             integrity_protecting_prana_id,
             integrity_protecting_prana,
         )))
         .unwrap();
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Evocation(
-            glamour_sloughing_parasol_id,
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Evocation(
             glamour_sloughing_parasol.clone(),
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Evocation(glamour_sloughing_parasol_id))
+        .get(CharmId::Evocation("Glamour-Sloughing Parasol"))
         .is_some());
 
     let character = event_source
@@ -628,7 +612,7 @@ fn test_evocations() {
         .is_none());
     assert!(character
         .charms()
-        .get(CharmId::Evocation(glamour_sloughing_parasol_id))
+        .get(CharmId::Evocation("Glamour-Sloughing Parasol"))
         .is_none());
 }
 
@@ -663,7 +647,7 @@ fn test_spells() {
         .build(SorceryCircle::Terrestrial);
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(
             cirrus_skiff.clone()
         )))
         .is_err());
@@ -745,7 +729,7 @@ fn test_spells() {
     );
 
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(
             cirrus_skiff,
         )))
         .unwrap();
@@ -810,7 +794,7 @@ fn test_spells() {
         .summary("AOE attack that makes difficult terrain".to_owned())
         .build(SorceryCircle::Terrestrial);
     event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(
             butterflies,
         )))
         .unwrap();
@@ -860,12 +844,12 @@ fn test_spells() {
         .build(SorceryCircle::Solar);
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(
             demon.clone()
         )))
         .is_err());
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(
             death_ray.clone()
         )))
         .is_err());
@@ -922,12 +906,12 @@ of her."
         .apply_mutation(CharacterMutation::AddSorcery(Box::new(add_sorcery)))
         .unwrap();
     event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(demon)))
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(demon)))
         .unwrap();
 
     // ...but not Solar circle spells
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(
             death_ray.clone()
         )))
         .is_err());
@@ -981,7 +965,7 @@ dead zone within the blessed land."
         .apply_mutation(CharacterMutation::AddSorcery(Box::new(add_sorcery)))
         .unwrap();
     event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(death_ray)))
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Spell(death_ray)))
         .unwrap();
 }
 
@@ -1051,7 +1035,7 @@ fn test_martial_arts_charms() {
     .build();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::MartialArts(
             gathering_light_concentration.clone()
         )))
         .is_err());
@@ -1090,7 +1074,7 @@ fn test_martial_arts_charms() {
         .apply_mutation(CharacterMutation::SetSolar(new_solar))
         .unwrap();
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::MartialArts(
             gathering_light_concentration,
         )))
         .unwrap();
@@ -1125,7 +1109,7 @@ fn test_martial_arts_charms() {
     .build();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::MartialArts(
             shining_starfall_execution.clone()
         )))
         .is_err());
@@ -1136,7 +1120,7 @@ fn test_martial_arts_charms() {
         ))
         .unwrap();
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::MartialArts(
             shining_starfall_execution,
         )))
         .unwrap();
@@ -1193,7 +1177,7 @@ fn test_martial_arts_charms() {
     .build();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::MartialArts(
             form.clone()
         )))
         .is_err());
@@ -1201,7 +1185,7 @@ fn test_martial_arts_charms() {
         .apply_mutation(CharacterMutation::SetEssenceRating(2))
         .unwrap();
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::MartialArts(
             form.clone(),
         )))
         .unwrap();
@@ -1259,7 +1243,7 @@ fn test_martial_arts_charms() {
         .is_none());
 
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::MartialArts(
             form.clone(),
         )))
         .unwrap();
@@ -1284,7 +1268,7 @@ fn test_martial_arts_charms() {
         .is_none());
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::MartialArts(
             form
         )))
         .is_err());
@@ -1312,7 +1296,7 @@ fn test_eclipse_charms() {
         .build_eclipse();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Eclipse(
             towering_wheat_blessing_id,
             towering_wheat_blessing.clone()
         )))
@@ -1353,7 +1337,7 @@ fn test_eclipse_charms() {
         .unwrap();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Eclipse(
             towering_wheat_blessing_id,
             towering_wheat_blessing.clone()
         )))
@@ -1379,7 +1363,7 @@ fn test_eclipse_charms() {
         .apply_mutation(CharacterMutation::SetSolar(new_solar))
         .unwrap();
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Eclipse(
             towering_wheat_blessing_id,
             towering_wheat_blessing,
         )))
@@ -1409,7 +1393,7 @@ fn test_eclipse_charms() {
         .build_eclipse();
 
     assert!(event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Eclipse(
             night_black_carapace_id,
             night_black_carapace.clone()
         )))
@@ -1419,7 +1403,7 @@ fn test_eclipse_charms() {
         .apply_mutation(CharacterMutation::SetEssenceRating(4))
         .unwrap();
     let character = event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Eclipse(
+        .apply_mutation(CharacterMutation::AddCharm(AddCharm::Eclipse(
             night_black_carapace_id,
             night_black_carapace.clone(),
         )))

@@ -8,7 +8,7 @@ use crate::{
     armor::armor_item::{mundane::AddMundaneArmor, ArmorNameMutation},
     artifact::{AddArtifact, ArtifactNameMutation},
     attributes::AttributeName,
-    charms::charm::{CharmMutation, CharmName},
+    charms::charm::{AddCharm, CharmName},
     exaltation::exalt::{
         essence::{MotePoolName, UncommitMotes},
         exalt_type::solar::NewSolar,
@@ -160,7 +160,7 @@ pub enum CharacterMutation {
     /// Removes a sorcery archetype merit.
     RemoveSorceryArchetypeMerit(SorceryArchetypeMeritId),
     /// Adds a Charm to the character.
-    AddCharm(CharmMutation),
+    AddCharm(AddCharm),
     /// Removes a Charm from the character. Note that this may cause cascading
     /// drops due to Charm tree dependencies.
     RemoveCharm(CharmName),

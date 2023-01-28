@@ -7,7 +7,7 @@ use crate::{
     book_reference::BookReference,
     charms::{
         charm::{
-            evocation::{EvocationId, EvocationKeyword, EvokableNameMutation},
+            evocation::{EvocationKeyword, EvokableNameMutation},
             CharmName,
         },
         CharmActionType, CharmCostType,
@@ -25,7 +25,7 @@ pub struct EvocationBuilderWithEssenceRequirement {
     pub(crate) essence_required: NonZeroU8,
     pub(crate) resonant: Option<String>,
     pub(crate) dissonant: Option<String>,
-    pub(crate) evocation_tree: HashSet<EvocationId>,
+    pub(crate) evocation_tree: HashSet<String>,
     pub(crate) upgrade_charm: Option<CharmName>,
     pub(crate) keywords: HashSet<EvocationKeyword>,
     pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
@@ -59,8 +59,8 @@ impl EvocationBuilderWithEssenceRequirement {
     }
 
     /// Adds a charm tree prerequisite on other Evocations.
-    pub fn evocation_prerequisite(mut self, evocation_id: EvocationId) -> Self {
-        self.evocation_tree.insert(evocation_id);
+    pub fn evocation_prerequisite(mut self, prerequisite_name: String) -> Self {
+        self.evocation_tree.insert(prerequisite_name);
         self
     }
 

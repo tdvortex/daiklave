@@ -11,13 +11,13 @@ use crate::{
     charms::{CharmActionType, CharmCost, CharmCostType},
 };
 
+mod add;
 /// A builder path to construct an Evocation.
 pub mod builder;
 mod evokable_name;
-mod id;
 mod keyword;
+pub use add::AddEvocation;
 pub use evokable_name::{EvokableName, EvokableNameMutation};
-pub use id::EvocationId;
 pub use keyword::EvocationKeyword;
 
 use self::builder::EvocationBuilder;
@@ -30,13 +30,12 @@ use super::{CharmId, CharmName};
 pub struct Evocation {
     evokable_name: EvokableNameMutation,
     book_reference: Option<BookReference>,
-    name: String,
     summary: Option<String>,
     description: String,
     resonant: Option<String>,
     dissonant: Option<String>,
     essence_required: NonZeroU8,
-    evocation_tree: HashSet<EvocationId>,
+    evocation_tree: HashSet<String>,
     upgrade_charm: Option<CharmName>,
     keywords: HashSet<EvocationKeyword>,
     costs: HashMap<CharmCostType, NonZeroU8>,
@@ -85,12 +84,7 @@ impl<'source> Evocation {
     pub fn book_reference(&self) -> Option<BookReference> {
         self.book_reference
     }
-
-    /// The name of this Evocation.
-    pub fn name(&self) -> &str {
-        self.name.as_str()
-    }
-
+    
     /// A short summary of this Evocation's effects.
     pub fn summary(&self) -> Option<&str> {
         self.summary.as_deref()
@@ -121,8 +115,8 @@ impl<'source> Evocation {
 
     /// The other Evocations (typically on the same Artifact/Hearthstone)
     /// which the Exalt must have to purchase this Charm.
-    pub fn evocation_prerequisites(&self) -> impl Iterator<Item = EvocationId> + '_ {
-        self.evocation_tree.iter().copied()
+    pub fn evocation_prerequisites(&'source self) -> impl Iterator<Item = &'source str> + '_ {
+        self.evocation_tree.iter().map(|s| s.as_str())
     }
 
     /// If the Evocation is an upgrade to a non-Evocation Charm, the Id of that
@@ -131,9 +125,9 @@ impl<'source> Evocation {
         match &self.upgrade_charm {
             Some(charm_name) => Some(match charm_name {
                 CharmName::Spirit(spirit_id) => CharmId::Spirit(*spirit_id),
-                CharmName::Evocation(evocation_id) => CharmId::Evocation(*evocation_id),
-                CharmName::MartialArts(martial_arts_charm_id) => {
-                    CharmId::MartialArts(martial_arts_charm_id.as_str())
+                CharmName::Evocation(evocation_name) => CharmId::Evocation(evocation_name.as_str()),
+                CharmName::MartialArts(martial_arts_charm_name) => {
+                    CharmId::MartialArts(martial_arts_charm_name.as_str())
                 }
                 CharmName::Solar(solar_id) => CharmId::Solar(*solar_id),
                 CharmName::Spell(spell_name) => CharmId::Spell(spell_name.as_str()),

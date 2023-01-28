@@ -45,7 +45,7 @@ use crate::{
     },
     charms::{
         charm::{
-            evocation::{Evocation, EvocationId},
+            evocation::{Evocation},
             Charm, CharmId, SpiritCharmId,
         },
         CharmError,
@@ -94,7 +94,7 @@ use self::{
 pub(crate) struct Exalt<'source> {
     pub(crate) armor: ExaltArmor<'source>,
     pub(crate) essence: EssenceState<'source>,
-    pub(crate) evocations: Vec<(EvocationId, &'source Evocation)>,
+    pub(crate) evocations: Vec<(&'source str, &'source Evocation)>,
     pub(crate) martial_arts_styles: HashMap<&'source str, ExaltMartialArtist<'source>>,
     pub(crate) exalt_type: ExaltType<'source>,
     pub(crate) weapons: ExaltWeapons<'source>,
@@ -109,7 +109,7 @@ impl<'view, 'source> Exalt<'source> {
             evocations: self
                 .evocations
                 .iter()
-                .map(|(id, charm)| (*id, (*charm).to_owned()))
+                .map(|(id, charm)| ((*id).to_owned(), (*charm).to_owned()))
                 .collect(),
             martial_arts_styles: self
                 .martial_arts_styles
@@ -1002,7 +1002,7 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn add_evocation(
         &mut self,
-        evocation_id: EvocationId,
+        name: &'source str,
         evocation: &'source Evocation,
     ) -> Result<&mut Self, CharacterMutationError> {
         let actual_essence = self.essence.rating;
@@ -1042,14 +1042,14 @@ impl<'view, 'source> Exalt<'source> {
 
         let mut unmet_evocation_prereqs = evocation
             .evocation_prerequisites()
-            .collect::<HashSet<EvocationId>>();
+            .collect::<HashSet<&str>>();
 
         for known_evocation_id in self
             .evocations
             .iter()
             .map(|(known_evocation_id, _)| *known_evocation_id)
         {
-            if evocation_id == known_evocation_id {
+            if name == known_evocation_id {
                 return Err(CharacterMutationError::CharmError(
                     CharmError::DuplicateCharm,
                 ));
@@ -1064,7 +1064,7 @@ impl<'view, 'source> Exalt<'source> {
             ));
         }
 
-        self.evocations.push((evocation_id, evocation));
+        self.evocations.push((name, evocation));
         Ok(self)
     }
 

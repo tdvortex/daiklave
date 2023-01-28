@@ -8,7 +8,7 @@ use crate::{
     artifact::ArtifactName,
     charms::{
         charm::{
-            evocation::{Evocation, EvocationId, EvokableName},
+            evocation::{Evocation, EvokableName},
             Charm, CharmId,
         },
         CharmError,
@@ -23,7 +23,7 @@ impl<'source> Character<'source> {
     /// Adds an evocation to the character.
     pub fn add_evocation(
         &mut self,
-        evocation_id: EvocationId,
+        name: &'source str,
         evocation: &'source Evocation,
     ) -> Result<&mut Self, CharacterMutationError> {
         match evocation.evokable_name() {
@@ -59,25 +59,26 @@ impl<'source> Character<'source> {
             }
         };
 
-        self.exaltation.add_evocation(evocation_id, evocation)?;
+        self.exaltation.add_evocation(name, evocation)?;
         Ok(self)
     }
 
-    pub(crate) fn correct_evocations(&mut self, force_remove: &[EvocationId]) -> bool {
+    pub(crate) fn correct_evocations(&mut self, force_remove: &[&str]) -> bool {
         let actual_essence = if let Some(essence) = self.essence() {
             essence.rating()
         } else {
             return false;
         };
 
-        let remove_ids: HashSet<EvocationId> = self
-            .charms()
+        let charms = self.charms();
+
+        let remove_ids: HashSet<String> = charms
             .iter()
             .filter_map(|charm_id| {
-                if let CharmId::Evocation(known_evocation_id) = charm_id {
-                    self.charms().get(charm_id).and_then(|charm| {
+                if let CharmId::Evocation(known_evocation_name) = charm_id {
+                    charms.get(charm_id).and_then(|charm| {
                         if let Charm::Evocation(evocation) = charm {
-                            Some((known_evocation_id, evocation))
+                            Some((known_evocation_name, evocation))
                         } else {
                             None
                         }
@@ -87,17 +88,17 @@ impl<'source> Character<'source> {
                 }
             })
             .fold(
-                HashSet::from_iter(force_remove.iter().copied()),
-                |mut ids_to_remove, (evocation_id, evocation)| {
+                HashSet::from_iter(force_remove.iter().map(|&s| s.to_owned())),
+                |mut ids_to_remove, (evocation_name, evocation)| {
                     match evocation.evokable_name() {
-                        EvokableName::Hearthstone(hearthstone_id) => {
-                            if self.hearthstones().get(hearthstone_id).is_none() {
-                                ids_to_remove.insert(evocation_id);
+                        EvokableName::Hearthstone(name) => {
+                            if self.hearthstones().get(name).is_none() {
+                                ids_to_remove.insert(evocation_name.to_owned());
                             }
                         }
                         EvokableName::Artifact(ArtifactName::Armor(name)) => {
                             if self.armor().get(ArmorName::Artifact(name)).is_none() {
-                                ids_to_remove.insert(evocation_id);
+                                ids_to_remove.insert(evocation_name.to_owned());
                             }
                         }
                         EvokableName::Artifact(ArtifactName::Weapon(name)) => {
@@ -108,36 +109,36 @@ impl<'source> Character<'source> {
                                     false
                                 }
                             }) {
-                                ids_to_remove.insert(evocation_id);
+                                ids_to_remove.insert(evocation_name.to_owned());
                             }
                         }
                         EvokableName::Artifact(ArtifactName::Wonder(name)) => {
                             if self.wonders().get(name).is_none() {
-                                ids_to_remove.insert(evocation_id);
+                                ids_to_remove.insert(evocation_name.to_owned());
                             }
                         }
                     };
 
                     if evocation.essence_required() > actual_essence {
-                        ids_to_remove.insert(evocation_id);
+                        ids_to_remove.insert(evocation_name.to_owned());
                     }
 
-                    for prerequisite_evocation_id in evocation.evocation_prerequisites() {
-                        if ids_to_remove.contains(&prerequisite_evocation_id) {
-                            ids_to_remove.insert(evocation_id);
+                    for prerequisite_evocation_name in evocation.evocation_prerequisites() {
+                        if ids_to_remove.contains(prerequisite_evocation_name) {
+                            ids_to_remove.insert(evocation_name.to_owned());
                             break;
                         }
                     }
 
                     if let Some(charm_id) = evocation.upgrade() {
                         if let CharmId::Evocation(upgrade_evocation_id) = charm_id {
-                            if ids_to_remove.contains(&upgrade_evocation_id) {
-                                ids_to_remove.insert(evocation_id);
+                            if ids_to_remove.contains(upgrade_evocation_id) {
+                                ids_to_remove.insert(evocation_name.to_owned());
                             }
                         }
 
                         if self.charms().get(charm_id).is_none() {
-                            ids_to_remove.insert(evocation_id);
+                            ids_to_remove.insert(evocation_name.to_owned());
                         }
                     }
 
@@ -151,7 +152,7 @@ impl<'source> Character<'source> {
 
         if let Exaltation::Exalt(exalt) = &mut self.exaltation {
             let old_len = exalt.evocations.len();
-            exalt.evocations.retain(|(id, _)| !remove_ids.contains(id));
+            exalt.evocations.retain(|(id, _)| !remove_ids.contains(*id));
             exalt.evocations.len() < old_len
         } else {
             false
@@ -161,9 +162,9 @@ impl<'source> Character<'source> {
     /// Removes an evocation from the character.
     pub fn remove_evocation(
         &mut self,
-        evocation_id: EvocationId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self.correct_evocations(&[evocation_id]) {
+        if self.correct_evocations(&[name]) {
             Ok(self)
         } else {
             Err(CharacterMutationError::CharmError(CharmError::NotFound))
