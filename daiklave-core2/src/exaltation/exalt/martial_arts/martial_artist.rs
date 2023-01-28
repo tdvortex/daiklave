@@ -2,7 +2,7 @@ use crate::{
     abilities::AbilityRating,
     exaltation::mortal::martial_arts::MortalMartialArtist,
     martial_arts::{
-        charm::{MartialArtsCharm, MartialArtsCharmId},
+        charm::{MartialArtsCharm},
         style::MartialArtsStyle,
     },
 };
@@ -13,7 +13,7 @@ use super::ExaltMartialArtistMemo;
 pub(crate) struct ExaltMartialArtist<'source> {
     pub(crate) style: &'source MartialArtsStyle,
     pub(crate) ability: AbilityRating<'source>,
-    pub(crate) charms: Vec<(MartialArtsCharmId, &'source MartialArtsCharm)>,
+    pub(crate) charms: Vec<(&'source str, &'source MartialArtsCharm)>,
 }
 
 impl<'view, 'source> ExaltMartialArtist<'source> {
@@ -24,7 +24,7 @@ impl<'view, 'source> ExaltMartialArtist<'source> {
             charms: self
                 .charms
                 .iter()
-                .map(|(charm_id, charm)| (*charm_id, (*charm).to_owned()))
+                .map(|(charm_name, charm)| ((*charm_name).to_owned(), (*charm).to_owned()))
                 .collect(),
         }
     }
@@ -43,7 +43,7 @@ impl<'view, 'source> ExaltMartialArtist<'source> {
 
     pub fn charms(
         &'view self,
-    ) -> impl Iterator<Item = (MartialArtsCharmId, &'source MartialArtsCharm)> + '_ {
+    ) -> impl Iterator<Item = (&'source str, &'source MartialArtsCharm)> + '_ {
         self.charms.iter().map(|(k, v)| (*k, *v))
     }
 }

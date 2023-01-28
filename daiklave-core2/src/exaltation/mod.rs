@@ -30,7 +30,7 @@ use crate::{
     },
     hearthstones::UnslottedHearthstone,
     martial_arts::{
-        charm::{MartialArtsCharm, MartialArtsCharmId},
+        charm::{MartialArtsCharm},
         style::MartialArtsStyle,
         MartialArtist,
     },
@@ -1108,13 +1108,13 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn add_martial_arts_charm(
         &mut self,
-        martial_arts_charm_id: MartialArtsCharmId,
+        name: &'source str,
         martial_arts_charm: &'source MartialArtsCharm,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => Err(CharacterMutationError::CharmError(CharmError::Mortal)),
             Exaltation::Exalt(exalt) => {
-                exalt.add_martial_arts_charm(martial_arts_charm_id, martial_arts_charm)?;
+                exalt.add_martial_arts_charm(name, martial_arts_charm)?;
                 Ok(self)
             }
         }
@@ -1122,7 +1122,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn get_martial_arts_charm(
         &self,
-        martial_arts_charm_id: MartialArtsCharmId,
+        name: &str,
     ) -> Option<Charm<'source>> {
         match self {
             Exaltation::Mortal(_) => None,
@@ -1130,8 +1130,8 @@ impl<'view, 'source> Exaltation<'source> {
                 .martial_arts_styles
                 .iter()
                 .flat_map(|(_, martial_artist)| martial_artist.charms.iter())
-                .find_map(|(known_charm_id, charm)| {
-                    if known_charm_id == &martial_arts_charm_id {
+                .find_map(|(known_charm_name, charm)| {
+                    if known_charm_name == &name {
                         Some(Charm::MartialArts(charm))
                     } else {
                         None
@@ -1140,23 +1140,23 @@ impl<'view, 'source> Exaltation<'source> {
         }
     }
 
-    pub fn martial_arts_charms_iter(&self) -> impl Iterator<Item = MartialArtsCharmId> + '_ {
+    pub fn martial_arts_charms_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         match self {
             Exaltation::Mortal(_) => vec![],
             Exaltation::Exalt(exalt) => exalt
                 .martial_arts_styles()
                 .iter()
                 .flat_map(|(_, martial_artist)| {
-                    martial_artist.charms.iter().map(|(charm_id, _)| *charm_id)
+                    martial_artist.charms.iter().map(|(charm_name, _)| *charm_name)
                 })
-                .collect::<Vec<MartialArtsCharmId>>(),
+                .collect::<Vec<&str>>(),
         }
         .into_iter()
     }
 
     pub(crate) fn correct_martial_arts_charms(
         &mut self,
-        force_remove: &[MartialArtsCharmId],
+        force_remove: &[&str],
     ) -> bool {
         match self {
             Exaltation::Mortal(_) => false,
@@ -1166,12 +1166,12 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn remove_martial_arts_charm(
         &mut self,
-        martial_arts_charm_id: MartialArtsCharmId,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => Err(CharacterMutationError::CharmError(CharmError::Mortal)),
             Exaltation::Exalt(exalt) => {
-                if exalt.correct_martial_arts_charms(&[martial_arts_charm_id]) {
+                if exalt.correct_martial_arts_charms(&[name]) {
                     Ok(self)
                 } else {
                     Err(CharacterMutationError::CharmError(CharmError::NotFound))

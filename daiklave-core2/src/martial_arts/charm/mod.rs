@@ -1,6 +1,6 @@
 /// A builder path for constructing a Martial Arts charm.
 pub mod builder;
-mod id;
+mod add;
 mod keyword;
 
 use std::{
@@ -8,7 +8,7 @@ use std::{
     num::NonZeroU8,
 };
 
-pub use id::MartialArtsCharmId;
+pub use add::AddMartialArtsCharm;
 pub use keyword::MartialArtsCharmKeyword;
 
 use serde::{Deserialize, Serialize};
@@ -25,7 +25,6 @@ use self::builder::MartialArtsCharmBuilder;
 pub struct MartialArtsCharm {
     style: String,
     book_reference: Option<BookReference>,
-    name: String,
     summary: Option<String>,
     description: String,
     mastery: Option<String>,
@@ -33,14 +32,14 @@ pub struct MartialArtsCharm {
     enlightenment: Option<String>,
     essence_required: NonZeroU8,
     ability_required: NonZeroU8,
-    charms_required: HashSet<MartialArtsCharmId>,
+    charms_required: HashSet<String>,
     keywords: HashSet<MartialArtsCharmKeyword>,
     costs: HashMap<CharmCostType, NonZeroU8>,
     action_type: CharmActionType,
     duration: String,
 }
 
-impl MartialArtsCharm {
+impl<'source> MartialArtsCharm {
     /// Starts a builder to create a new Martial Arts Charm.
     pub fn builder(charm_name: String, style_name: String) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {
@@ -65,11 +64,6 @@ impl MartialArtsCharm {
     /// The book reference for the Charm, if any.
     pub fn book_reference(&self) -> Option<BookReference> {
         self.book_reference
-    }
-
-    /// The name of the Charm.
-    pub fn name(&self) -> &str {
-        self.name.as_str()
     }
 
     /// A brief summary of the Charm.
@@ -108,9 +102,9 @@ impl MartialArtsCharm {
         self.ability_required.get()
     }
 
-    /// An iterator of the Martial Arts Charm Ids for any prerequisite Charms.
-    pub fn charms_required(&self) -> impl Iterator<Item = MartialArtsCharmId> + '_ {
-        self.charms_required.iter().copied()
+    /// An iterator of the Martial Arts Charm names for any prerequisite Charms.
+    pub fn charms_required(&'source self) -> impl Iterator<Item = &'source str> + '_ {
+        self.charms_required.iter().map(|s| s.as_str())
     }
 
     /// An iterator of the Charm keywords associated with

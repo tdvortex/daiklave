@@ -245,8 +245,8 @@ impl<'source> Character<'source> {
                 CharmMutation::Evocation(evocation_id, evocation) => {
                     self.add_evocation(*evocation_id, evocation)
                 }
-                CharmMutation::MartialArts(ma_charm_id, ma_charm) => {
-                    self.add_martial_arts_charm(*ma_charm_id, ma_charm)
+                CharmMutation::MartialArts((ma_charm_name, ma_charm)) => {
+                    self.add_martial_arts_charm(ma_charm_name.as_str(), ma_charm)
                 }
                 CharmMutation::Solar(solar_charm_id, solar_charm) => {
                     self.add_solar_charm(*solar_charm_id, solar_charm)
@@ -258,7 +258,7 @@ impl<'source> Character<'source> {
             CharacterMutation::RemoveCharm(charm_name) => match charm_name {
                 CharmName::Spirit(spirit_charm_id) => self.remove_eclipse_charm(*spirit_charm_id),
                 CharmName::Evocation(evocation_id) => self.remove_evocation(*evocation_id),
-                CharmName::MartialArts(ma_charm_id) => self.remove_martial_arts_charm(*ma_charm_id),
+                CharmName::MartialArts(ma_charm_name) => self.remove_martial_arts_charm(ma_charm_name.as_str()),
                 CharmName::Solar(solar_charm_id) => self.remove_solar_charm(*solar_charm_id),
                 CharmName::Spell(spell_name) => self.remove_spell(spell_name.as_str()),
             },

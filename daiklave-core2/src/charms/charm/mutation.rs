@@ -1,6 +1,6 @@
 use crate::{
     exaltation::exalt::exalt_type::solar::charm::{SolarCharm, SolarCharmId},
-    martial_arts::charm::{MartialArtsCharm, MartialArtsCharmId},
+    martial_arts::charm::{AddMartialArtsCharm},
     sorcery::spell::AddSpell,
 };
 
@@ -19,7 +19,7 @@ pub enum CharmMutation {
     /// An Evocation of an artifact or hearthstone.
     Evocation(EvocationId, Evocation),
     /// A Martial Arts charm for a specific style.
-    MartialArts(MartialArtsCharmId, MartialArtsCharm),
+    MartialArts(AddMartialArtsCharm),
     /// A Solar charm.
     Solar(SolarCharmId, SolarCharm),
     /// A Spell.

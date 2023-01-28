@@ -4,7 +4,7 @@ use crate::{
 };
 
 use super::{
-    charm::{MartialArtsCharm, MartialArtsCharmId},
+    charm::{MartialArtsCharm},
     style::MartialArtsStyleWeapon,
 };
 
@@ -57,7 +57,7 @@ impl<'view, 'source> MartialArtist<'view, 'source> {
     /// All of the Charms the character has for this style.
     pub fn charms(
         &self,
-    ) -> impl Iterator<Item = (MartialArtsCharmId, &'source MartialArtsCharm)> + '_ {
+    ) -> impl Iterator<Item = (&'source str, &'source MartialArtsCharm)> + '_ {
         self.maybe_exalt.charms()
     }
 }

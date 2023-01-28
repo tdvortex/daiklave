@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     exaltation::exalt::exalt_type::solar::charm::SolarCharmId,
-    martial_arts::charm::MartialArtsCharmId,
 };
 
 use super::{evocation::EvocationId, spirit::SpiritCharmId};
@@ -15,7 +14,7 @@ pub enum CharmId<'source> {
     /// An Evocation of an artifact or hearthstone.
     Evocation(EvocationId),
     /// A Martial Arts charm for a specific style.
-    MartialArts(MartialArtsCharmId),
+    MartialArts(&'source str),
     /// A Solar charm.
     Solar(SolarCharmId),
     /// A Spell.

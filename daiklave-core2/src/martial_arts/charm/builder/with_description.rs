@@ -6,7 +6,7 @@ use std::{
 use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
-    martial_arts::charm::{MartialArtsCharm, MartialArtsCharmId, MartialArtsCharmKeyword},
+    martial_arts::charm::{MartialArtsCharm, MartialArtsCharmKeyword, AddMartialArtsCharm},
 };
 
 /// A Martial Arts Charm builder after the description has been provided. To
@@ -15,7 +15,7 @@ pub struct MartialArtsCharmBuilderWithDescription {
     pub(crate) name: String,
     pub(crate) style: String,
     pub(crate) book_reference: Option<BookReference>,
-    pub(crate) charms_required: HashSet<MartialArtsCharmId>,
+    pub(crate) charms_required: HashSet<String>,
     pub(crate) mastery: Option<String>,
     pub(crate) terrestrial: Option<String>,
     pub(crate) enlightenment: Option<String>,
@@ -43,11 +43,10 @@ impl MartialArtsCharmBuilderWithDescription {
     }
 
     /// Adds another Martial Arts charm as a prerequisite.
-    pub fn charm_prerequisite(mut self, charm_id: MartialArtsCharmId) -> Self {
-        self.charms_required.insert(charm_id);
+    pub fn charm_prerequisite(mut self, charm_name: String) -> Self {
+        self.charms_required.insert(charm_name);
         self
     }
-
     /// Adds a description of the Mastery effect for this Charm.
     pub fn mastery(mut self, description: String) -> Self {
         self.mastery = Some(description);
@@ -85,11 +84,10 @@ impl MartialArtsCharmBuilderWithDescription {
     }
 
     /// Completes the builder, returning a Martial Arts Charm.
-    pub fn build(self) -> MartialArtsCharm {
-        MartialArtsCharm {
+    pub fn build(self) -> AddMartialArtsCharm {
+        (self.name, MartialArtsCharm {
             style: self.style,
             book_reference: self.book_reference,
-            name: self.name,
             summary: self.summary,
             description: self.description,
             mastery: self.mastery,
@@ -102,6 +100,6 @@ impl MartialArtsCharmBuilderWithDescription {
             costs: self.costs,
             action_type: self.action_type,
             duration: self.duration,
-        }
+        })
     }
 }

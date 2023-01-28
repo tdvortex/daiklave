@@ -6,7 +6,7 @@ use std::{
 use crate::{
     book_reference::BookReference,
     charms::CharmCostType,
-    martial_arts::charm::{MartialArtsCharmId, MartialArtsCharmKeyword},
+    martial_arts::charm::{MartialArtsCharmKeyword},
 };
 
 use super::MartialArtsCharmBuilderWithAbilityRequirement;
@@ -16,7 +16,7 @@ pub struct MartialArtsCharmBuilderWithEssenceRequirement {
     pub(crate) name: String,
     pub(crate) style: String,
     pub(crate) book_reference: Option<BookReference>,
-    pub(crate) charms_required: HashSet<MartialArtsCharmId>,
+    pub(crate) charms_required: HashSet<String>,
     pub(crate) mastery: Option<String>,
     pub(crate) terrestrial: Option<String>,
     pub(crate) enlightenment: Option<String>,
@@ -40,8 +40,8 @@ impl MartialArtsCharmBuilderWithEssenceRequirement {
     }
 
     /// Adds another Martial Arts charm as a prerequisite.
-    pub fn charm_prerequisite(mut self, charm_id: MartialArtsCharmId) -> Self {
-        self.charms_required.insert(charm_id);
+    pub fn charm_prerequisite(mut self, charm_name: String) -> Self {
+        self.charms_required.insert(charm_name);
         self
     }
 

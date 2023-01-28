@@ -16,7 +16,7 @@ use std::{
 
 use crate::{book_reference::BookReference, charms::CharmCostType};
 
-use super::{MartialArtsCharmId, MartialArtsCharmKeyword};
+use super::{MartialArtsCharmKeyword};
 
 /// A builder path to construct a Martial Arts charm. Required fields, in
 /// order, are: name(already specified), style name (already specified), Essence
@@ -28,7 +28,7 @@ pub struct MartialArtsCharmBuilder {
     pub(crate) name: String,
     pub(crate) style: String,
     pub(crate) book_reference: Option<BookReference>,
-    pub(crate) charms_required: HashSet<MartialArtsCharmId>,
+    pub(crate) charms_required: HashSet<String>,
     pub(crate) mastery: Option<String>,
     pub(crate) terrestrial: Option<String>,
     pub(crate) enlightenment: Option<String>,
@@ -51,8 +51,8 @@ impl MartialArtsCharmBuilder {
     }
 
     /// Adds another Martial Arts charm as a prerequisite.
-    pub fn charm_prerequisite(mut self, charm_id: MartialArtsCharmId) -> Self {
-        self.charms_required.insert(charm_id);
+    pub fn charm_prerequisite(mut self, charm_name: String) -> Self {
+        self.charms_required.insert(charm_name);
         self
     }
 

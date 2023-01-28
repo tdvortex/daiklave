@@ -53,7 +53,7 @@ use crate::{
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::UnslottedHearthstone,
     martial_arts::{
-        charm::{MartialArtsCharm, MartialArtsCharmId},
+        charm::{MartialArtsCharm},
         style::MartialArtsStyle,
         MartialArtsError,
     },
@@ -1092,7 +1092,7 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn add_martial_arts_charm(
         &mut self,
-        martial_arts_charm_id: MartialArtsCharmId,
+        name: &'source str,
         martial_arts_charm: &'source MartialArtsCharm,
     ) -> Result<&mut Self, CharacterMutationError> {
         let style = self
@@ -1130,16 +1130,16 @@ impl<'view, 'source> Exalt<'source> {
 
         let mut unmet_charm_prerequisites = martial_arts_charm
             .charms_required()
-            .collect::<HashSet<MartialArtsCharmId>>();
+            .collect::<HashSet<&str>>();
 
-        for known_charm_id in style.charms().map(|(known_charm_id, _)| known_charm_id) {
-            if known_charm_id == martial_arts_charm_id {
+        for known_charm_id in style.charms().map(|(known_charm_name, _)| known_charm_name) {
+            if known_charm_id == name {
                 return Err(CharacterMutationError::CharmError(
                     CharmError::DuplicateCharm,
                 ));
             }
 
-            unmet_charm_prerequisites.remove(&known_charm_id);
+            unmet_charm_prerequisites.remove(known_charm_id);
         }
 
         if !unmet_charm_prerequisites.is_empty() {
@@ -1153,14 +1153,14 @@ impl<'view, 'source> Exalt<'source> {
                     MartialArtsError::StyleNotFound,
                 ))?
                 .charms
-                .push((martial_arts_charm_id, martial_arts_charm));
+                .push((name, martial_arts_charm));
             Ok(self)
         }
     }
 
     pub(crate) fn correct_martial_arts_charms(
         &mut self,
-        force_remove: &[MartialArtsCharmId],
+        force_remove: &[&str],
     ) -> bool {
         let actual_essence = self.essence.rating;
         let is_martial_arts_supernal = {
@@ -1173,22 +1173,22 @@ impl<'view, 'source> Exalt<'source> {
         for (_, martial_artist) in self.martial_arts_styles.iter_mut() {
             let actual_ability = martial_artist.ability.dots();
 
-            let ids_to_remove: HashSet<MartialArtsCharmId> = martial_artist.charms.iter().fold(
+            let ids_to_remove: HashSet<&str> = martial_artist.charms.iter().fold(
                 HashSet::from_iter(force_remove.iter().copied()),
-                |mut ids_to_remove, (known_charm_id, known_charm)| {
+                |mut ids_to_remove, (known_charm_name, known_charm)| {
                     if known_charm.ability_required() > actual_ability {
-                        ids_to_remove.insert(*known_charm_id);
+                        ids_to_remove.insert(*known_charm_name);
                     }
 
                     if known_charm.essence_required() > actual_essence.get()
                         && !is_martial_arts_supernal
                     {
-                        ids_to_remove.insert(*known_charm_id);
+                        ids_to_remove.insert(*known_charm_name);
                     }
 
                     for prereq_charm_id in known_charm.charms_required() {
                         if ids_to_remove.contains(&prereq_charm_id) {
-                            ids_to_remove.insert(*known_charm_id);
+                            ids_to_remove.insert(*known_charm_name);
                         }
                     }
 

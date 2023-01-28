@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     abilities::AbilityRatingMemo,
     martial_arts::{
-        charm::{MartialArtsCharm, MartialArtsCharmId},
+        charm::{MartialArtsCharm},
         style::MartialArtsStyle,
     },
 };
@@ -14,7 +14,7 @@ use super::ExaltMartialArtist;
 pub(crate) struct ExaltMartialArtistMemo {
     pub style: MartialArtsStyle,
     pub ability: AbilityRatingMemo,
-    pub charms: Vec<(MartialArtsCharmId, MartialArtsCharm)>,
+    pub charms: Vec<(String, MartialArtsCharm)>,
 }
 
 impl<'source> ExaltMartialArtistMemo {
@@ -22,7 +22,7 @@ impl<'source> ExaltMartialArtistMemo {
         ExaltMartialArtist {
             style: &self.style,
             ability: self.ability.as_ref(),
-            charms: self.charms.iter().map(|(id, charm)| (*id, charm)).collect(),
+            charms: self.charms.iter().map(|(id, charm)| (id.as_str(), charm)).collect(),
         }
     }
 }

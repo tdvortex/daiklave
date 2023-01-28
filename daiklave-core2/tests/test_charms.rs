@@ -23,7 +23,7 @@ use daiklave_core2::{
     },
     hearthstones::hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory},
     martial_arts::{
-        charm::{MartialArtsCharm, MartialArtsCharmId, MartialArtsCharmKeyword},
+        charm::{MartialArtsCharm, MartialArtsCharmKeyword},
         style::MartialArtsStyle,
     },
     sorcery::{
@@ -1022,7 +1022,6 @@ fn test_martial_arts_charms() {
         ))
         .unwrap();
 
-    let gathering_light_concentration_id = MartialArtsCharmId(UniqueId::Placeholder(1));
     let gathering_light_concentration = MartialArtsCharm::builder(
         "Gathering Light Concentration".to_owned(),
         "Single Point Shining Into the Void Style".to_owned(),
@@ -1053,7 +1052,6 @@ fn test_martial_arts_charms() {
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
-            gathering_light_concentration_id,
             gathering_light_concentration.clone()
         )))
         .is_err());
@@ -1093,17 +1091,15 @@ fn test_martial_arts_charms() {
         .unwrap();
     let character = event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
-            gathering_light_concentration_id,
             gathering_light_concentration,
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts(gathering_light_concentration_id))
+        .get(CharmId::MartialArts("Gathering Light Concentration"))
         .is_some());
 
     // Exalts must meet the MA ability requirements of charms
-    let shining_starfall_execution_id = MartialArtsCharmId(UniqueId::Placeholder(2));
     let shining_starfall_execution = MartialArtsCharm::builder(
         "Shining Starfall Execution".to_owned(),
         "Single Point Shining Into the Void Style".to_owned(),
@@ -1130,7 +1126,6 @@ fn test_martial_arts_charms() {
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
-            shining_starfall_execution_id,
             shining_starfall_execution.clone()
         )))
         .is_err());
@@ -1142,13 +1137,12 @@ fn test_martial_arts_charms() {
         .unwrap();
     let character = event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
-            shining_starfall_execution_id,
             shining_starfall_execution,
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts(shining_starfall_execution_id))
+        .get(CharmId::MartialArts("Shining Starfall Execution"))
         .is_some());
 
     let character = event_source
@@ -1159,16 +1153,15 @@ fn test_martial_arts_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts(shining_starfall_execution_id))
+        .get(CharmId::MartialArts("Shining Starfall Execution"))
         .is_none());
     let character = event_source.undo().unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts(shining_starfall_execution_id))
+        .get(CharmId::MartialArts("Shining Starfall Execution"))
         .is_some());
 
     // Exalts must meet the Essence requirements of charms
-    let form_id = MartialArtsCharmId(UniqueId::Placeholder(3));
     let form = MartialArtsCharm::builder(
         "Single Point Shining Into the Void Form".to_owned(),
         "Single Point Shining Into the Void Style".to_owned(),
@@ -1180,8 +1173,8 @@ fn test_martial_arts_charms() {
     .action_type(CharmActionType::Simple)
     .keyword(MartialArtsCharmKeyword::Form)
     .duration("One Scene".to_owned())
-    .charm_prerequisite(gathering_light_concentration_id)
-    .charm_prerequisite(shining_starfall_execution_id)
+    .charm_prerequisite("Gathering Light Concentration".to_owned())
+    .charm_prerequisite("Shining Starfall Execution".to_owned())
     .summary("Two actions per round".to_owned())
     .description(
         "Sheathing her blade for a brief moment, the swordsman \
@@ -1201,7 +1194,6 @@ fn test_martial_arts_charms() {
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
-            form_id,
             form.clone()
         )))
         .is_err());
@@ -1210,13 +1202,12 @@ fn test_martial_arts_charms() {
         .unwrap();
     let character = event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
-            form_id,
             form.clone(),
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts(form_id))
+        .get(CharmId::MartialArts("Single Point Shining Into the Void Form"))
         .is_some());
 
     let character = event_source
@@ -1224,7 +1215,7 @@ fn test_martial_arts_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts(form_id))
+        .get(CharmId::MartialArts("Single Point Shining Into the Void Form"))
         .is_none());
 
     // ...unless they are Dawn Solars with Martial Arts Supernal
@@ -1256,46 +1247,45 @@ fn test_martial_arts_charms() {
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts(gathering_light_concentration_id))
+        .get(CharmId::MartialArts("Gathering Light Concentration"))
         .is_some());
     assert!(character
         .charms()
-        .get(CharmId::MartialArts(shining_starfall_execution_id))
+        .get(CharmId::MartialArts("Shining Starfall Execution"))
         .is_some());
     assert!(character
         .charms()
-        .get(CharmId::MartialArts(form_id))
+        .get(CharmId::MartialArts("Single Point Shining Into the Void Form"))
         .is_none());
 
     let character = event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
-            form_id,
             form.clone(),
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts(form_id))
+        .get(CharmId::MartialArts("Single Point Shining Into the Void Form"))
         .is_some());
 
     // Exalts must satisfy the Charm tree prerequisites of their Styles
     let character = event_source
         .apply_mutation(CharacterMutation::RemoveCharm(CharmName::MartialArts(
-            shining_starfall_execution_id,
+            "Shining Starfall Execution".to_owned()
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::MartialArts(shining_starfall_execution_id))
+        .get(CharmId::MartialArts("Shining Starfall Execution"))
         .is_none());
     assert!(character
         .charms()
-        .get(CharmId::MartialArts(form_id))
+        .get(CharmId::MartialArts("Single Point Shining Into the Void Form"))
         .is_none());
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::MartialArts(
-            form_id, form
+            form
         )))
         .is_err());
 }
