@@ -1,8 +1,12 @@
+mod local_tongue_name;
 mod major;
 pub use major::MajorLanguage;
 
 mod memo;
+mod set_native;
+pub use local_tongue_name::LocalTongueName;
 pub use memo::LanguageMutation;
+pub use set_native::SetNativeLanguage;
 
 use serde::{Deserialize, Serialize};
 

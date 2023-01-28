@@ -1,5 +1,7 @@
 mod add;
+mod remove;
 pub use add::AddSorcery;
+pub use remove::RemoveSorcery;
 mod archetype;
 /// A builder path to construct a sorcerous intiation.
 pub mod builder;

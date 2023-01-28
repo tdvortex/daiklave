@@ -1,33 +1,31 @@
 mod error;
-use crate::abilities::SetAbility;
+pub use crate::abilities::{SetAbility, AddSpecialty, RemoveSpecialty};
+pub use crate::armor::armor_item::{EquipArmor, UnequipArmor};
+pub use crate::armor::armor_item::mundane::{AddMundaneArmor, RemoveMundaneArmor};
+pub use crate::artifact::AttuneArtifact;
 pub use crate::attributes::SetAttribute;
+pub use crate::charms::charm::{AddCharm, RemoveCharm};
 pub use crate::exaltation::exalt::essence::{SetEssenceRating, SpendMotes, CommitMotes, RecoverMotes, UncommitMotes};
+pub use crate::exaltation::exalt::limit::{GainLimit, ReduceLimit, SetLimitTrigger};
+pub use crate::experience::{GainExperience, GainExaltExperience, SpendExperience, SpendExaltExperience};
+pub use crate::flaws::flaw::RemoveFlaw;
 pub use crate::health::{HealDamage, SetHealthTrack, TakeDamage};
+pub use crate::hearthstones::hearthstone::{SlotHearthstone, UnslotHearthstone};
+pub use crate::intimacies::intimacy::{AddIntimacy, RemoveIntimacy};
+pub use crate::languages::language::SetNativeLanguage;
 pub use crate::name::SetName;
 pub use crate::concept::{RemoveConcept, SetConcept};
 pub use crate::exaltation::mortal::SetMortal;
 pub use crate::exaltation::exalt::exalt_type::solar::SetSolar;
+pub use crate::sorcery::{AddSorcery, RemoveSorcery};
+pub use crate::weapons::weapon::{EquipWeapon, UnequipWeapon};
+pub use crate::weapons::weapon::mundane::{AddMundaneWeapon, RemoveMundaneWeapon};
 pub use crate::willpower::{GainWillpower, SpendWillpower, SetWillpowerRating};
-use std::num::{NonZeroU16, NonZeroU8};
 
 pub use error::CharacterMutationError;
 
 use crate::{
-    abilities::AbilityNameVanilla,
-    armor::armor_item::{mundane::AddMundaneArmor, ArmorNameMutation},
-    artifact::{AddArtifact, ArtifactNameMutation},
-    charms::charm::{AddCharm, CharmNameMutation},
-    exaltation::exalt::{
-        essence::{MotePoolName},
-    },
-    flaws::flaw::FlawMutation,
-    hearthstones::hearthstone::{AddHearthstone, AddManse, GeomancyLevel},
-    intimacies::intimacy::IntimacyMutation,
-    languages::language::LanguageMutation,
-    martial_arts::style::MartialArtsStyle,
-    merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
-    sorcery::{AddSorcery, SorceryArchetypeMerit, SorceryArchetypeName},
-    weapons::weapon::{mundane::AddMundaneWeapon, EquipHand, Equipped, WeaponNameMutation},
+    flaws::flaw::AddFlaw,
 };
 
 /// The API for the character, expressed as an owned struct. Each mutation has
@@ -76,120 +74,66 @@ pub enum CharacterMutation {
     /// Sets an ability (other than Craft or Martial Arts) to a dot rating.
     SetAbility(SetAbility),
     /// Adds a specialty to a non-zero, non-Craft, non-Martial Arts ability.
-    AddSpecialty(AbilityNameVanilla, String),
+    AddSpecialty(AddSpecialty),
     /// Removes a specialty from a non-Craft, non-Martial Arts ability.
-    RemoveSpecialty(AbilityNameVanilla, String),
-    /// Adds a Martial Arts style to a character. This purchases the
-    /// MartialArtist merit for the style, but does not grant any Martial Arts
-    /// dots or Martial Arts charms.
-    AddMartialArtsStyle(String, MartialArtsStyle),
-    /// Removes a Martial Arts style from a character, including the merit,
-    /// associated ability dots, specialties, and Charms.
-    RemoveMartialArtsStyle(String),
-    /// Sets the Ability dots for a specific Martial Arts style.
-    SetMartialArtsDots(String, u8),
-    /// Sets the Craft dots for a particular focus area.
-    SetCraftDots(String, u8),
+    RemoveSpecialty(RemoveSpecialty),
     /// Adds a mundane weapon to the character.
     AddMundaneWeapon(AddMundaneWeapon),
     /// Removes a mundane weapon from the character.
-    RemoveMundaneWeapon(String),
+    RemoveMundaneWeapon(RemoveMundaneWeapon),
     /// Equips the specific weapon. For a OneHanded weapon, will equip into
     /// the specified hand, otherwise the parameter is ignored.
-    EquipWeapon(WeaponNameMutation, Option<EquipHand>),
+    EquipWeapon(EquipWeapon),
     /// Unequips the specific weapon at the specified equipped position.
-    UnequipWeapon(WeaponNameMutation, Equipped),
-    /// Add an artifact to the character, which may be a weapon, armor item,
-    /// warstrider, or wonder.
-    AddArtifact(AddArtifact),
-    /// Removes an artifact from the character.
-    RemoveArtifact(ArtifactNameMutation),
+    UnequipWeapon(UnequipWeapon),
     /// Adds a piece of mundane armor.
     AddMundaneArmor(AddMundaneArmor),
     /// Removes a piece of mundane armor from the character.
-    RemoveMundaneArmor(String),
+    RemoveMundaneArmor(RemoveMundaneArmor),
     /// Equip a specific piece of armor.
-    EquipArmor(ArmorNameMutation),
+    EquipArmor(EquipArmor),
     /// Unequip any armor currently worn.
     UnequipArmor,
-    /// Add a manse, its associated demense, and its associated hearthstone
-    /// to the character.
-    AddManse(AddManse), // Manse, demense, hearthstone
-    /// Add a hearthstone to a character without a manse.
-    AddHearthstone(AddHearthstone),
-    /// Add a demense to a character without a manse.
-    AddDemense(String, GeomancyLevel),
-    /// Remove a demense (without a manse) from a character.
-    RemoveDemense(String),
     /// Slot a hearthstone into an artifact.
-    SlotHearthstone(ArtifactNameMutation, String),
+    SlotHearthstone(SlotHearthstone),
     /// Unslot a hearthstone from its current position.
-    UnslotHearthstone(String),
-    /// Remove a hearthstone from the character, unslotting it in the process
-    /// if needed.
-    RemoveHearthstone(String),
+    UnslotHearthstone(UnslotHearthstone),
     /// Attune to an artifact, committing motes to its ongoing use.
-    AttuneArtifact(ArtifactNameMutation, MotePoolName),
-    /// Add a stackable merit with an id for this instance and detail
-    AddStackableMerit(StackableMeritId, StackableMerit),
-    /// Remove a stackable merit
-    RemoveStackableMerit(StackableMeritId),
-    /// Add a nonstackable merit
-    AddNonStackableMerit(NonStackableMeritId, NonStackableMerit),
-    /// Remove a nonstackable merit
-    RemoveNonStackableMerit(NonStackableMeritId),
-    /// Add a language
-    AddLanguage(LanguageMutation),
+    AttuneArtifact(AttuneArtifact),
     /// Set the character's native language.
-    SetNativeLanguage(LanguageMutation),
-    /// Remove a language from the character
-    RemoveLanguage(LanguageMutation),
-    /// Adds the Exalted Healing merit to the character. This is not required
-    /// for Exalts.
-    AddExaltedHealing,
-    /// Removes the Exalted Healing merit from the character. This is not
-    /// allowed for Exalts.
-    RemoveExaltedHealing,
+    SetNativeLanguage(SetNativeLanguage),
     /// Adds a circle of Sorcery to a character. The circle, archetype, shaping
     /// ritual, and control spell must be provided. Circles must be provided in
     /// order: Terrestrial, Celestial, Solar.
-    AddSorcery(Box<AddSorcery>),
+    AddSorcery(AddSorcery),
     /// Removes the currently highest-known level of sorcery from the
     /// character.
     RemoveSorcery,
-    /// Adds a merit tied to a Sorcery Archetype owned by the character.
-    AddSorceryArchetypeMerit(
-        SorceryArchetypeName,
-        String,
-        SorceryArchetypeMerit,
-    ),
-    /// Removes a sorcery archetype merit.
-    RemoveSorceryArchetypeMerit(String),
     /// Adds a Charm to the character.
     AddCharm(AddCharm),
     /// Removes a Charm from the character. Note that this may cause cascading
     /// drops due to Charm tree dependencies.
-    RemoveCharm(CharmNameMutation),
+    RemoveCharm(RemoveCharm),
     /// Adds a Flaw to the character.
-    AddFlaw(FlawMutation),
+    AddFlaw(AddFlaw),
     /// Removes a Flaw from the character.
-    RemoveFlaw(String),
+    RemoveFlaw(RemoveFlaw),
     /// Adds an Intimacy to the character.
-    AddIntimacy(IntimacyMutation),
+    AddIntimacy(AddIntimacy),
     /// Removes an Intimacy from a character
-    RemoveIntimacy(IntimacyMutation),
+    RemoveIntimacy(RemoveIntimacy),
     /// Increases the Exalt's Limit track.
-    GainLimit(NonZeroU8),
+    GainLimit(GainLimit),
     /// Reduces the Exalt's Limit track.
-    ReduceLimit(NonZeroU8),
+    ReduceLimit(ReduceLimit),
     /// Sets the Exalt's Limit trigger.
-    SetLimitTrigger(String),
+    SetLimitTrigger(SetLimitTrigger),
     /// Adds normal, non-Exalt experience
-    GainExperience(NonZeroU16),
+    GainExperience(GainExperience),
     /// Spends normal, non-Exalt experience
-    SpendExperience(NonZeroU16),
+    SpendExperience(SpendExperience),
     /// Adds Exalt experience (Solar Experience, for example)
-    GainExaltExperience(NonZeroU16),
+    GainExaltExperience(GainExaltExperience),
     /// Spends Exalt experience
-    SpendExaltExperince(NonZeroU16),
+    SpendExaltExperince(SpendExaltExperience),
 }

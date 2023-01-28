@@ -1,7 +1,7 @@
 use std::collections::hash_map::Entry;
 
 use crate::{
-    flaws::{flaw::FlawMutation, Flaws},
+    flaws::{flaw::AddFlaw, Flaws},
     merits::merit::MeritError,
     Character, CharacterMutationError,
 };
@@ -15,9 +15,9 @@ impl<'view, 'source> Character<'source> {
     /// Adds a Flaw to the character.
     pub fn add_flaw(
         &mut self,
-        flaw: &'source FlawMutation,
+        flaw: &'source AddFlaw,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let FlawMutation {
+        let AddFlaw {
             name,
             book_reference,
             description,

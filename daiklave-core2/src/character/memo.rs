@@ -10,12 +10,12 @@ use crate::{
     exaltation::ExaltationMemo,
     experience::ExperiencePool,
     health::Health,
-    hearthstones::{hearthstone::GeomancyLevel, UnslottedHearthstoneMemo},
+    hearthstones::{hearthstone::{GeomancyLevel, HearthstoneName}, UnslottedHearthstoneMemo},
     intimacies::intimacy::{IntimacyLevel, IntimacyTypeMemo},
     languages::LanguagesMemo,
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
     willpower::Willpower,
-    Character,
+    Character, flaws::flaw::FlawName,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -30,11 +30,11 @@ pub struct CharacterMemo {
     pub(crate) attributes: Attributes,
     pub(crate) abilities: AbilitiesMemo,
     pub(crate) craft: CraftMemo,
-    pub(crate) hearthstone_inventory: HashMap<String, UnslottedHearthstoneMemo>,
+    pub(crate) hearthstone_inventory: HashMap<HearthstoneName, UnslottedHearthstoneMemo>,
     pub(crate) demenses_no_manse: HashMap<String, GeomancyLevel>,
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritId, NonStackableMerit>,
     pub(crate) stackable_merits: HashMap<StackableMeritId, StackableMerit>,
-    pub(crate) flaws: HashMap<String, (Option<BookReference>, String)>,
+    pub(crate) flaws: HashMap<FlawName, (Option<BookReference>, String)>,
     pub(crate) languages: LanguagesMemo,
     pub(crate) intimacies: HashMap<IntimacyTypeMemo, IntimacyLevel>,
     pub(crate) experience: ExperiencePool,

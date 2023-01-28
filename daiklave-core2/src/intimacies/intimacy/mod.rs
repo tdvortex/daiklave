@@ -1,13 +1,17 @@
+mod add;
 mod error;
 mod intimacy_type;
 mod level;
-mod mutation;
+mod memo;
+mod remove;
 
+pub use add::AddIntimacy;
 pub use error::IntimacyError;
 pub use intimacy_type::IntimacyType;
 pub(crate) use intimacy_type::IntimacyTypeMemo;
 pub use level::IntimacyLevel;
-pub use mutation::IntimacyMutation;
+pub(crate) use memo::IntimacyMemo;
+pub use remove::RemoveIntimacy;
 
 /// An Intimacy held by a character.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

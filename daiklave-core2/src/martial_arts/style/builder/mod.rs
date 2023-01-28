@@ -5,11 +5,13 @@ pub use with_weapons::MartialArtsStyleBuilderWithWeapons;
 
 use crate::{armor::armor_item::ArmorWeightClass, book_reference::BookReference};
 
+use super::MartialArtsStyleName;
+
 /// A builder to construct a new Martial Arts style. Required fields are name
 /// (already specified), description, and at least one weapon. Additional
 /// weapons are optional, as is a maximum armor weight and book reference.
 pub struct MartialArtsStyleBuilder {
-    pub(crate) name: String,
+    pub(crate) name: MartialArtsStyleName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) max_armor_weight: Option<ArmorWeightClass>,
 }

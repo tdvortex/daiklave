@@ -10,14 +10,14 @@ pub use with_merit_dots::ArtifactArmorItemBuilderWithMeritDots;
 
 use crate::book_reference::BookReference;
 
-use super::AddBaseArtifactArmor;
+use super::{AddBaseArtifactArmor, ArtifactArmorName};
 
 /// A builder to construct a new artifact armor. Enforces that required fields
 /// are specified in order: name, base artifact, magic material, merit dots,
 /// and finally hearthstone slots. Optional fields (lore, powers, and book
 /// reference) may be specified at any time prior to the final build().
 pub struct ArtifactArmorItemBuilder {
-    pub(crate) name: String,
+    pub(crate) name: ArtifactArmorName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,

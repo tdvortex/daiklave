@@ -20,9 +20,12 @@ mod base;
 /// Builder structs for weapons.
 pub mod builder;
 mod damage_type;
+mod equip;
 pub(crate) mod equipped;
 mod handedness;
 mod name;
+mod unequip;
+pub use unequip::UnequipWeapon;
 
 /// Traits that are specific to mundane (non-Artifact) weapons.
 pub mod mundane;
@@ -31,6 +34,7 @@ mod tag;
 mod weapon_type;
 mod weight_class;
 
+pub use equip::EquipWeapon;
 pub use equipped::{EquipHand, Equipped};
 pub use name::{WeaponName, WeaponNameMutation};
 pub use range::{AttackRange, RangeBand};

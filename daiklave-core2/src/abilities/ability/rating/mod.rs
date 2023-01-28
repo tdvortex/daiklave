@@ -1,8 +1,9 @@
+mod memo;
+pub(crate) use memo::AbilityRatingMemo;
+
 use std::{collections::HashSet, num::NonZeroU8};
 
-use crate::CharacterMutationError;
-
-use super::{AbilityError, AbilityRatingMemo};
+use crate::{CharacterMutationError, abilities::AbilityError};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum AbilityRating<'source> {

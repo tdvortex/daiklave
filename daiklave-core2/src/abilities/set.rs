@@ -1,6 +1,6 @@
 use crate::CharacterMutation;
 
-use super::{AbilityNameVanilla, AbilityError};
+use super::{AbilityError, ability::AbilityNameVanilla};
 
 pub struct SetAbility {
     name: AbilityNameVanilla,

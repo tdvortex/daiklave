@@ -1,4 +1,6 @@
 mod craft_memo;
+mod name;
+pub use name::CraftName;
 
 use std::collections::HashMap;
 

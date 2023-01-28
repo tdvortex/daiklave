@@ -7,7 +7,6 @@ use crate::{
     merits::merit::{
         nonstackable::NonStackableMeritTemplate,
         prerequisite::MeritPrerequisite,
-        stackable::StackableMeritTemplateId,
         template::{MeritTemplate, MeritTemplateDotOptions},
         MeritError, MeritType, StackableMeritTemplate,
     },

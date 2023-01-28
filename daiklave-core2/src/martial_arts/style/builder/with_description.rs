@@ -2,14 +2,14 @@ use std::collections::HashSet;
 
 use crate::{
     armor::armor_item::ArmorWeightClass, book_reference::BookReference,
-    martial_arts::style::MartialArtsStyleWeapon,
+    martial_arts::style::{MartialArtsStyleWeapon, MartialArtsStyleName},
 };
 
 use super::MartialArtsStyleBuilderWithWeapons;
 
 /// A Martial Arts Style builder after the description has been specified.
 pub struct MartialArtsStyleBuilderWithDescription {
-    pub(crate) name: String,
+    pub(crate) name: MartialArtsStyleName,
     pub(crate) description: String,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) max_armor_weight: Option<ArmorWeightClass>,

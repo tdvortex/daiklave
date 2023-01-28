@@ -15,7 +15,7 @@ fn test_armor() {
     assert!(character.armor().worn().is_none());
 
     // Add some armor
-    let chain_shirt = ArmorItem::base("Chain Shirt".to_owned())
+    let chain_shirt = ArmorItem::base_builder("Chain Shirt".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 592))
         .weight_class(ArmorWeightClass::Light)
         .tag(ArmorTag::Concealable)
@@ -72,9 +72,9 @@ fn test_armor() {
 
     // Add some artifact armor
     let mutation = CharacterMutation::AddArtifact(AddArtifact::Armor(
-        ArmorItem::artifact("Brilliant Sentinel".to_owned())
+        ArmorItem::artifact_builder("Brilliant Sentinel".to_owned())
             .base_artifact(
-                ArmorItem::base("Articulated Plate (Artifact)".to_owned())
+                ArmorItem::base_builder("Articulated Plate (Artifact)".to_owned())
                     .book_reference(BookReference::new(Book::CoreRulebook, 600))
                     .weight_class(ArmorWeightClass::Heavy)
                     .build_artifact(),

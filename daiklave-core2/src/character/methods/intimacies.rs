@@ -2,7 +2,7 @@ use std::collections::hash_map::Entry;
 
 use crate::{
     intimacies::{
-        intimacy::{IntimacyError, IntimacyMutation},
+        intimacy::{IntimacyError, IntimacyMemo},
         Intimacies,
     },
     Character, CharacterMutationError,
@@ -17,9 +17,9 @@ impl<'view, 'source> Character<'source> {
     /// Adds a new Intimacy to a character.
     pub fn add_intimacy(
         &mut self,
-        intimacy: &'source IntimacyMutation,
+        intimacy: &'source IntimacyMemo,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let IntimacyMutation {
+        let IntimacyMemo {
             intimacy_type,
             level,
         } = intimacy;
@@ -37,7 +37,7 @@ impl<'view, 'source> Character<'source> {
     /// Removes an Intimacy from the character.
     pub fn remove_intimacy(
         &mut self,
-        intimacy: &'source IntimacyMutation,
+        intimacy: &'source IntimacyMemo,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self
             .intimacies

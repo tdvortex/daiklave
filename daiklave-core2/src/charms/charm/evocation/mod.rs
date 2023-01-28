@@ -16,9 +16,11 @@ mod add;
 pub mod builder;
 mod evokable_name;
 mod keyword;
+mod name;
 pub use add::AddEvocation;
 pub use evokable_name::{EvokableName, EvokableNameMutation};
 pub use keyword::EvocationKeyword;
+pub use name::EvocationName;
 
 use self::builder::EvocationBuilder;
 

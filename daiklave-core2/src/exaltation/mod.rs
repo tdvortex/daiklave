@@ -46,8 +46,8 @@ use crate::{
 use self::{
     exalt::{
         essence::{
-            Essence, EssenceError, EssenceState, MoteCommitmentId, MotePool, MotePoolName,
-            MotesState, UncommitMotes,
+            Essence, EssenceError, EssenceState, MotePool, MotePoolName,
+            MotesState, UncommitMotes, MoteCommitmentName,
         },
         exalt_type::{
             solar::{charm::SolarCharm, Solar, SolarMemo, SolarSorcererView},
@@ -443,8 +443,8 @@ impl<'view, 'source> Exaltation<'source> {
                     .motes
                     .commitments
                     .iter()
-                    .map(|(name, _)| MoteCommitmentId::Other(*name))
-                    .collect::<Vec<MoteCommitmentId>>();
+                    .map(|(name, _)| MoteCommitmentName::Other(*name))
+                    .collect::<Vec<MoteCommitmentName>>();
                 for commit_id in to_uncommit.into_iter() {
                     exalt.uncommit_motes(commit_id)?;
                 }
@@ -543,15 +543,15 @@ impl<'view, 'source> Exaltation<'source> {
             }
             Exaltation::Exalt(exalt) => exalt.uncommit_motes(match to_uncommit {
                 UncommitMotes::UnattuneArtifact(ArtifactNameMutation::Armor(name)) => {
-                    MoteCommitmentId::AttunedArtifact(ArtifactName::Armor(name.as_str()))
+                    MoteCommitmentName::AttunedArtifact(ArtifactName::Armor(name.as_str()))
                 }
                 UncommitMotes::UnattuneArtifact(ArtifactNameMutation::Wonder(wonder_name)) => {
-                    MoteCommitmentId::AttunedArtifact(ArtifactName::Wonder(wonder_name.as_str()))
+                    MoteCommitmentName::AttunedArtifact(ArtifactName::Wonder(wonder_name.as_str()))
                 }
                 UncommitMotes::UnattuneArtifact(ArtifactNameMutation::Weapon(name)) => {
-                    MoteCommitmentId::AttunedArtifact(ArtifactName::Weapon(name.as_str()))
+                    MoteCommitmentName::AttunedArtifact(ArtifactName::Weapon(name.as_str()))
                 }
-                UncommitMotes::Other(name) => MoteCommitmentId::Other(name.as_str()),
+                UncommitMotes::Other(name) => MoteCommitmentName::Other(name.as_str()),
             }),
         }?;
         Ok(self)

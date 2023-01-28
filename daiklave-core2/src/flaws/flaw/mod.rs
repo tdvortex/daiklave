@@ -1,5 +1,9 @@
-mod mutation;
-pub use mutation::FlawMutation;
+mod add;
+mod name;
+mod remove;
+pub use add::AddFlaw;
+pub use name::FlawName;
+pub use remove::RemoveFlaw;
 
 use crate::book_reference::BookReference;
 

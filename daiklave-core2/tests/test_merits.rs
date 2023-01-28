@@ -68,9 +68,9 @@ fn test_merits() {
 
     // Artifact armor
     let mutation = CharacterMutation::AddArtifact(AddArtifact::Armor(
-        ArmorItem::artifact("Brilliant Sentinel".to_owned())
+        ArmorItem::artifact_builder("Brilliant Sentinel".to_owned())
             .base_artifact(
-                ArmorItem::base("Articulated Plate (Artifact)".to_owned())
+                ArmorItem::base_builder("Articulated Plate (Artifact)".to_owned())
                     .book_reference(BookReference::new(Book::CoreRulebook, 600))
                     .weight_class(ArmorWeightClass::Heavy)
                     .build_artifact(),

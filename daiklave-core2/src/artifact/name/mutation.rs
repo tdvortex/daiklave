@@ -40,3 +40,21 @@ impl From<&ArtifactName<'_>> for ArtifactNameMutation {
         }
     }
 }
+
+impl From<ArtifactWeaponName> for ArtifactNameMutation {
+    fn from(artifact_weapon_name: ArtifactWeaponName) -> Self {
+        Self::Weapon(artifact_weapon_name)
+    }
+}
+
+impl From<ArtifactArmorName> for ArtifactNameMutation {
+    fn from(artifact_armor_name: ArtifactArmorName) -> Self {
+        Self::Armor(artifact_armor_name)
+    }
+}
+
+impl From<WonderName> for ArtifactNameMutation {
+    fn from(wonder_name: WonderName) -> Self {
+        Self::Wonder(wonder_name)
+    }
+}

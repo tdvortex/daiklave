@@ -1,5 +1,13 @@
 mod error;
 mod experience_pool;
+mod gain;
+mod gain_exalt;
+mod spend;
+mod spend_exalt;
+pub use gain::GainExperience;
+pub use gain_exalt::GainExaltExperience;
+pub use spend::SpendExperience;
+pub use spend_exalt::SpendExaltExperience;
 pub use error::ExperienceError;
 pub use experience_pool::ExperiencePool;
 

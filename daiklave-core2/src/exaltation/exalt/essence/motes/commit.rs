@@ -1,6 +1,6 @@
 use std::num::NonZeroU8;
 
-use crate::exaltation::exalt::essence::{mote_commitment::OtherMoteCommitmentName, MotePoolName};
+use crate::{exaltation::exalt::essence::{mote_commitment::OtherMoteCommitmentName, MotePoolName}};
 
 pub struct CommitMotes {
     effect_name: OtherMoteCommitmentName,

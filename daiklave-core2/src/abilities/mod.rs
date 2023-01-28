@@ -1,20 +1,18 @@
+mod ability;
 mod abilities_vanilla;
-mod ability_name;
-mod ability_name_vanilla;
-mod ability_rating;
-mod ability_rating_memo;
 mod error;
 mod memo;
-mod name;
 mod set;
+mod add_specialty;
+mod remove_specialty;
 
+pub(crate) use ability::{AbilityRating, AbilityRatingMemo};
 pub(crate) use abilities_vanilla::AbilitiesVanilla;
-pub use ability_name::AbilityName;
-pub use name::AbilityNameVanilla;
-pub(crate) use ability_rating::AbilityRating;
-pub(crate) use ability_rating_memo::AbilityRatingMemo;
 pub(crate) use error::AbilityError;
 pub(crate) use memo::AbilitiesMemo;
+pub use ability::{Ability, AbilityName, AbilityNameVanilla, AbilityNameQualified};
+pub use add_specialty::AddSpecialty;
+pub use remove_specialty::RemoveSpecialty;
 pub use set::SetAbility;
 
 use crate::Character;
@@ -24,41 +22,25 @@ use crate::Character;
 pub struct Abilities<'view, 'source>(pub(crate) &'view Character<'source>);
 
 impl<'view, 'source> Abilities<'view, 'source> {
-    /// Get a "vanilla" ability (i.e. not Craft or Martial Arts).
-    pub fn get(&'view self, ability_name: AbilityNameVanilla) -> Ability<'view, 'source> {
-        Ability(AbilityType::Vanilla(
-            ability_name,
-            self.0.vanilla_abilities().get(ability_name),
-        ))
+    pub fn get(&'view self, ability_name: AbilityNameQualified<'_>) -> Option<Ability<'view, 'source>> {
+        match ability_name {
+            AbilityNameQualified::Vanilla(vanilla) => Some(self.get_vanilla(vanilla)),
+            AbilityNameQualified::Craft(focus) => self.get_craft(focus),
+            AbilityNameQualified::MartialArts(style_name) => self.get_martial_arts(style_name),
+        }
     }
 
-    /// Get a craft ability, by specifying the specific artisanal focus.
-    /// Returns None (not zero) if there are no dots in that ability.
-    pub fn craft(&'view self, focus: &'source str) -> Option<Ability<'view, 'source>> {
-        Some(Ability(AbilityType::Craft(
-            focus,
-            self.0.craft().0.get(focus)?,
-        )))
+
+    fn get_vanilla(&'view self, vanilla: AbilityNameVanilla) -> Ability<'view, 'source> {
+        self.0.vanilla_abilities().get(vanilla)
     }
 
-    /// Get a Martial Arts ability. Returns None if the character does not have
-    /// the Martial Artist merit for this style; returns 0 if the character has
-    /// the Martial Artis merit, but does not have any dots.
-    pub fn martial_arts(&'view self, style_name: &str) -> Option<Ability<'view, 'source>> {
-        let (style_name, rating_ptr) = match &self.0.exaltation {
-            crate::exaltation::Exaltation::Mortal(mortal) => {
-                let (style_name, mortal_martial_artist) =
-                    mortal.martial_arts_styles.get_key_value(style_name)?;
-                (*style_name, mortal_martial_artist.ability())
-            }
-            crate::exaltation::Exaltation::Exalt(exalt) => {
-                let (style_name, exalt_martial_artist) =
-                    exalt.martial_arts_styles.get_key_value(style_name)?;
-                (*style_name, exalt_martial_artist.ability())
-            }
-        };
+    fn get_craft(&'view self, focus: &str) -> Option<Ability<'view, 'source>> {
+        self.0.craft().0.get_key_value(focus).map(|(focus, ability_rating)| Ability(AbilityNameQualified::Craft(*focus), ability_rating))
+    }
 
-        Some(Ability(AbilityType::MartialArts(style_name, rating_ptr)))
+    fn get_martial_arts(&'view self, style_name: &str) -> Option<Ability<'view, 'source>> {
+        Some(self.0.martial_arts().style(style_name)?.ability())
     }
 
     /// Iterates over all abilities, in alphabetical order. Craft and Martial
@@ -79,7 +61,7 @@ impl<'view, 'source> Abilities<'view, 'source> {
             .0
             .craft()
             .iter()
-            .map(|focus| self.craft(focus).unwrap());
+            .map(|focus| self.get_craft(focus).unwrap());
 
         let after_craft = [
             AbilityNameVanilla::Dodge,
@@ -96,7 +78,7 @@ impl<'view, 'source> Abilities<'view, 'source> {
             .0
             .martial_arts()
             .iter()
-            .map(|style_id| self.martial_arts(style_id).unwrap());
+            .map(|style_id| self.get_martial_arts(style_id).unwrap());
 
         let after_martial_arts = [
             AbilityNameVanilla::Medicine,
@@ -124,74 +106,5 @@ impl<'view, 'source> Abilities<'view, 'source> {
     }
 }
 
-/// An individual ability, whether Craft, Martial Arts, or vanilla.
-pub struct Ability<'view, 'source>(pub(crate) AbilityType<'view, 'source>);
 
-impl<'view, 'source> Ability<'view, 'source> {
-    /// The name of the ability.
-    pub fn name(&self) -> AbilityName {
-        self.0.name()
-    }
 
-    /// If the ability is a Craft ability, the focus area of the ability.
-    /// None for vanilla and Martial Arts.
-    pub fn craft_focus(&self) -> Option<&'source str> {
-        self.0.craft_focus()
-    }
-
-    /// If the ability is a Martial Arts ability, the name of the Martial Arts
-    /// style (which can be used to look up other parameters).
-    /// None for vanilla and Craft.
-    pub fn martial_arts_style(&self) -> Option<&'source str> {
-        self.0.martial_arts_style()
-    }
-
-    /// The dots rating of the ability.
-    pub fn dots(&self) -> u8 {
-        self.0.rating().dots()
-    }
-
-    /// An iterator over the specialties that the ability has, if any.
-    /// Sorted alphabetically.
-    pub fn specialties(&self) -> impl Iterator<Item = &'source str> {
-        self.0.rating().specialties()
-    }
-}
-
-pub(crate) enum AbilityType<'view, 'source> {
-    Vanilla(AbilityNameVanilla, &'view AbilityRating<'source>),
-    Craft(&'source str, &'view AbilityRating<'source>),
-    MartialArts(&'source str, &'view AbilityRating<'source>),
-}
-
-impl<'view, 'source> AbilityType<'view, 'source> {
-    fn name(&self) -> AbilityName {
-        match self {
-            AbilityType::Vanilla(name, _) => (*name).into(),
-            AbilityType::Craft(_, _) => AbilityName::Craft,
-            AbilityType::MartialArts(_, _) => AbilityName::MartialArts,
-        }
-    }
-
-    fn craft_focus(&self) -> Option<&'source str> {
-        match self {
-            AbilityType::Craft(focus, _) => Some(*focus),
-            _ => None,
-        }
-    }
-
-    fn martial_arts_style(&self) -> Option<&'source str> {
-        match self {
-            AbilityType::MartialArts(name, _) => Some(*name),
-            _ => None,
-        }
-    }
-
-    fn rating(&self) -> &'view AbilityRating<'source> {
-        match self {
-            AbilityType::Vanilla(_, rating)
-            | AbilityType::Craft(_, rating)
-            | AbilityType::MartialArts(_, rating) => rating,
-        }
-    }
-}

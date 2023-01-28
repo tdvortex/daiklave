@@ -11,7 +11,7 @@ pub struct Flaws<'view, 'source>(pub(crate) &'view Character<'source>);
 impl<'view, 'source> Flaws<'view, 'source> {
     /// Iterates over all Flaws the character possesses by their name.
     pub fn iter(&self) -> impl Iterator<Item = &'source str> + '_ {
-        self.0.flaws.iter().map(|(&name, _)| name)
+        self.0.flaws.keys()
     }
 
     /// Gets a specific Flaw by its name.

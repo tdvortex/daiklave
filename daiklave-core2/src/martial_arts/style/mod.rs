@@ -1,6 +1,10 @@
 /// Builder path for constructing a new Martial Arts style.
 pub mod builder;
+mod add;
+mod name;
 mod weapon;
+pub use add::AddMartialArtsStyle;
+pub use name::MartialArtsStyleName;
 pub use weapon::MartialArtsStyleWeapon;
 
 use std::collections::HashSet;
@@ -23,9 +27,9 @@ pub struct MartialArtsStyle {
 
 impl<'source> MartialArtsStyle {
     /// Starts a builder to construct a new Martial Arts style.
-    pub fn builder(name: String) -> MartialArtsStyleBuilder {
+    pub fn builder(name: impl ToString) -> MartialArtsStyleBuilder {
         MartialArtsStyleBuilder {
-            name,
+            name: name.into(),
             book_reference: None,
             max_armor_weight: None,
         }

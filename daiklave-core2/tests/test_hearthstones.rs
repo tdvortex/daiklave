@@ -120,10 +120,10 @@ fn test_hearthstones() {
     let mutation = CharacterMutation::AddArtifact(AddArtifact::Weapon(adorei));
     event_source.apply_mutation(mutation).unwrap();
 
-    let freedoms_cadence = ArmorItem::artifact("Freedom's Cadence".to_owned())
+    let freedoms_cadence = ArmorItem::artifact_builder("Freedom's Cadence".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 621))
         .base_artifact(
-            ArmorItem::base("Chain Shirt (Artifact)".to_owned())
+            ArmorItem::base_builder("Chain Shirt (Artifact)".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 599))
                 .weight_class(ArmorWeightClass::Light)
                 .tag(ArmorTag::Concealable)

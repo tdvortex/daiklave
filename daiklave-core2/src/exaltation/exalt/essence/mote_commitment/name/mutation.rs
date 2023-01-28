@@ -28,3 +28,15 @@ impl Deref for MoteCommitmentNameMutation {
         }
     }
 }
+
+impl From<ArtifactNameMutation> for MoteCommitmentNameMutation {
+    fn from(artifact_name: ArtifactNameMutation) -> Self {
+        Self::AttunedArtifact(artifact_name)
+    }
+}
+
+impl From<OtherMoteCommitmentName> for MoteCommitmentNameMutation {
+    fn from(other: OtherMoteCommitmentName) -> Self {
+        Self::Other(other)
+    }
+}

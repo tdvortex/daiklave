@@ -1,4 +1,4 @@
-use crate::{name_and_concept::ConceptError, Character, CharacterMutationError};
+use crate::{Character, CharacterMutationError, ConceptError};
 
 impl<'source> Character<'source> {
     /// Returns the character's concept (if any).

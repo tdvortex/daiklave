@@ -10,7 +10,7 @@ use crate::{
         handedness::WeaponHandedness,
         mundane::{
             MundaneWeapon, MundaneWeaponHandedness, NaturalMundaneWeapon, OneHandedMundaneWeapon,
-            TwoHandedMundaneWeapon, WornMundaneWeapon,
+            TwoHandedMundaneWeapon, WornMundaneWeapon, AddMundaneWeapon,
         },
         range::{RangeBand, WeaponRange},
         tag::OptionalWeaponTag,
@@ -66,10 +66,10 @@ impl BaseWeaponBuilderWithAttack {
         self
     }
 
-    /// Completes the builder process, returning a new MundaneWeapon. This is
-    /// a borrowed copy but can be immediately memoized with .as_memo() if
-    /// needed.
-    pub fn build_mundane(self) -> (String, MundaneWeapon) {
+    /// Completes the builder process, returning a new AddMundaneWeapon. This
+    /// defaults to a single copy, but can be edited to insert multiple copies
+    /// simultaneously.
+    pub fn build_mundane(self) -> AddMundaneWeapon {
         match self.handedness {
             WeaponHandedness::Natural => (
                 self.name,

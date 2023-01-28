@@ -2,6 +2,7 @@ mod add;
 /// A builder path for constructing a Martial Arts charm.
 pub mod builder;
 mod keyword;
+mod name;
 
 use std::{
     collections::{HashMap, HashSet},
@@ -10,6 +11,7 @@ use std::{
 
 pub use add::AddMartialArtsCharm;
 pub use keyword::MartialArtsCharmKeyword;
+pub use name::MartialArtsCharmName;
 
 use serde::{Deserialize, Serialize};
 

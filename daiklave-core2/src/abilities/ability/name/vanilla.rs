@@ -1,5 +1,7 @@
 use crate::exaltation::exalt::exalt_type::solar::charm::SolarCharmAbility;
 
+use super::AbilityName;
+
 /// This is used to identify all ability ratings that must exist for a
 /// character. It excludes all Craft abilities and MartialArts styles.
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, PartialOrd, Ord)]

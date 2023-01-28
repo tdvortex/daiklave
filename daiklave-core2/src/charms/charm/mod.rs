@@ -1,10 +1,12 @@
 mod builder;
+mod remove;
 pub use builder::CharmBuilder;
 
 /// Evocations of artifacts and hearthstones.
 pub mod evocation;
-mod mutation;
+mod add;
 mod name;
+pub use remove::RemoveCharm;
 pub use name::{CharmName, CharmNameMutation};
 
 /// Evocations of spirits (and other supernatural beings), as well as Eclipse
@@ -14,7 +16,7 @@ use crate::{
     exaltation::exalt::exalt_type::solar::charm::SolarCharm, martial_arts::charm::MartialArtsCharm,
     sorcery::spell::Spell,
 };
-pub use mutation::AddCharm;
+pub use add::AddCharm;
 
 use self::evocation::Evocation;
 

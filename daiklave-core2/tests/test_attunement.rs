@@ -64,7 +64,7 @@ fn test_attunement() {
         .hearthstone_slots(2)
         .build();
 
-    let dauntless = ArmorItem::artifact("Dauntless".to_owned())
+    let dauntless = ArmorItem::artifact_builder("Dauntless".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 624))
         .lore(
             "When Zan the Invincible, Sword of Heaven, stood alone \
@@ -78,7 +78,7 @@ fn test_attunement() {
             such attempts.",
         )
         .base_artifact(
-            ArmorItem::base("Lamellar (Artifact)".to_owned())
+            ArmorItem::base_builder("Lamellar (Artifact)".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 600))
                 .weight_class(ArmorWeightClass::Medium)
                 .build_artifact(),

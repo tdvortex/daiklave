@@ -4,6 +4,7 @@ pub mod builder;
 mod ability;
 mod add;
 mod keyword;
+mod name;
 use std::{
     collections::{HashMap, HashSet},
     num::NonZeroU8,
@@ -12,6 +13,7 @@ use std::{
 pub use ability::SolarCharmAbility;
 pub use add::AddSolarCharm;
 pub use keyword::SolarCharmKeyword;
+pub use name::SolarCharmName;
 
 use serde::{Deserialize, Serialize};
 

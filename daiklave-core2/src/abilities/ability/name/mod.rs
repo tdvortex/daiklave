@@ -1,5 +1,7 @@
+mod qualified;
 mod vanilla;
 
+pub use qualified::{AbilityNameQualified, AbilityNameQualifiedMutation};
 pub use vanilla::AbilityNameVanilla;
 
 use serde::{Deserialize, Serialize};
@@ -14,8 +16,6 @@ use crate::exaltation::exalt::exalt_type::solar::{
     },
     charm::SolarCharmAbility,
 };
-
-use super::AbilityNameVanilla;
 
 /// This is used to identify all abilities, treating all Craft abilities as
 /// equivalent and all MartialArts abilities as equivalent.

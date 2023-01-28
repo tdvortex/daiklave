@@ -7,7 +7,9 @@ use super::{base::BaseWeapon, equipped::Equipped};
 mod add;
 mod grouped;
 mod memo;
+mod name;
 mod newtype;
+mod remove;
 
 pub use add::AddMundaneWeapon;
 pub(crate) use grouped::{
@@ -15,6 +17,8 @@ pub(crate) use grouped::{
     NonnaturalMundaneWeaponMemo,
 };
 pub use memo::MundaneWeapon;
+pub use name::MundaneWeaponName;
+pub use remove::RemoveMundaneWeapon;
 pub(crate) use memo::MundaneWeaponHandedness;
 pub(crate) use newtype::unarmed;
 pub(crate) use newtype::{

@@ -3,13 +3,13 @@ use std::collections::HashSet;
 use crate::{
     armor::armor_item::ArmorWeightClass,
     book_reference::BookReference,
-    martial_arts::style::{MartialArtsStyle, MartialArtsStyleWeapon},
+    martial_arts::style::{MartialArtsStyle, MartialArtsStyleWeapon, MartialArtsStyleName},
 };
 
 /// A Martial Arts style builder after at least one weapon has been specified.
 /// To complete the builder, call build().
 pub struct MartialArtsStyleBuilderWithWeapons {
-    pub(crate) name: String,
+    pub(crate) name: MartialArtsStyleName,
     pub(crate) description: String,
     pub(crate) first_weapon: MartialArtsStyleWeapon,
     pub(crate) usable_weapons: HashSet<MartialArtsStyleWeapon>,

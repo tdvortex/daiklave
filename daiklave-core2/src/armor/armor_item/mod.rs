@@ -6,22 +6,26 @@ pub mod builder;
 
 mod armor_type;
 mod base;
+mod equip;
 mod equipped;
 mod memo;
 /// Properties of mundane armor
 pub mod mundane;
 mod name;
 mod tag;
+mod unequip;
 mod weight_class;
 
 use std::collections::HashSet;
 
+pub use equip::EquipArmor;
 pub(crate) use armor_type::ArmorType;
 pub(crate) use equipped::{
     EquippedArmor, EquippedArmorMemo, EquippedArmorNoAttunement, EquippedArmorNoAttunementMemo,
 };
 pub use name::{ArmorName, ArmorNameMutation};
 pub use tag::ArmorTag;
+pub use unequip::UnequipArmor;
 pub use weight_class::ArmorWeightClass;
 
 use crate::{book_reference::BookReference, hearthstones::hearthstone::Hearthstone};
@@ -34,18 +38,18 @@ pub struct ArmorItem<'source>(pub(crate) ArmorType<'source>, pub(crate) bool);
 
 impl<'source> ArmorItem<'source> {
     /// Starts constructing a base armor item.
-    pub fn base(name: String) -> BaseArmorItemBuilder {
+    pub fn base_builder(name: impl ToString) -> BaseArmorItemBuilder {
         BaseArmorItemBuilder {
-            name,
+            name: name.to_string(),
             book_reference: None,
             tags: HashSet::new(),
         }
     }
 
     /// Starts construct an artifact armor item.
-    pub fn artifact(name: String) -> ArtifactArmorItemBuilder {
+    pub fn artifact_builder(name: impl ToString) -> ArtifactArmorItemBuilder {
         ArtifactArmorItemBuilder {
-            name,
+            name: name.into(),
             book_reference: None,
             lore: None,
             powers: None,

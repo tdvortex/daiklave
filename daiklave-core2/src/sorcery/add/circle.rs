@@ -1,8 +1,8 @@
-use super::{AddCelestialSorcery, AddSolarSorcery, AddTerrestrialSorcery};
+use crate::sorcery::{AddTerrestrialSorcery, AddCelestialSorcery, AddSolarSorcery};
 
-/// A mutation to add Sorcery to a character.
+/// Which Sorcery circle is being added.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum AddSorcery {
+pub enum AddSorceryCircle {
     /// Adds the Terrestrial circle of sorcery.
     Terrestrial(AddTerrestrialSorcery),
     /// Adds the Celestial circle of sorcery.

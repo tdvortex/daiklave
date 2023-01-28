@@ -1,4 +1,4 @@
-use super::{ability_rating::AbilityRating, AbilitiesMemo, AbilityNameVanilla};
+use super::{AbilitiesMemo, ability::{AbilityRating, AbilityNameVanilla}};
 
 /// A struct representing all non-Craft, non-Martial Arts abilities, including
 /// any specialties.

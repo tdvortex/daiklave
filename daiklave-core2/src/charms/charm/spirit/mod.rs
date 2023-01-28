@@ -4,6 +4,7 @@ pub mod builder;
 mod eclipse;
 mod inner;
 mod keyword;
+mod name;
 mod noneclipse;
 
 use std::collections::{HashMap, HashSet};
@@ -12,6 +13,7 @@ pub use add::AddSpiritCharm;
 pub use keyword::SpiritCharmKeyword;
 
 pub use eclipse::{AddEclipseCharm, EclipseCharm};
+pub use name::SpiritCharmName;
 pub use noneclipse::NonEclipseCharm;
 
 use self::builder::SpiritCharmBuilder;

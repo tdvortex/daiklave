@@ -1,10 +1,14 @@
 mod add;
 mod memo;
+mod name;
+mod remove;
 
 use std::ops::Deref;
 
 pub use add::AddMundaneArmor;
 pub use memo::MundaneArmor;
+pub use name::MundaneArmorName;
+pub use remove::RemoveMundaneArmor;
 
 use super::base::BaseArmor;
 
