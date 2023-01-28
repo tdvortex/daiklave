@@ -5,6 +5,7 @@ pub use builder::CharmBuilder;
 pub mod evocation;
 mod id;
 mod mutation;
+mod name;
 /// Evocations of spirits (and other supernatural beings), as well as Eclipse
 /// Charms.
 pub mod spirit;
@@ -13,6 +14,7 @@ use crate::{
     sorcery::spell::Spell,
 };
 pub use mutation::CharmMutation;
+pub use name::CharmName;
 
 use self::evocation::Evocation;
 

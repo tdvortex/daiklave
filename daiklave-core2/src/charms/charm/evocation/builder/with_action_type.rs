@@ -8,7 +8,7 @@ use crate::{
     charms::{
         charm::{
             evocation::{EvocationId, EvocationKeyword, EvokableNameMutation},
-            CharmId,
+            CharmName,
         },
         CharmActionType, CharmCostType,
     },
@@ -26,7 +26,7 @@ pub struct EvocationBuilderWithActionType {
     pub(crate) resonant: Option<String>,
     pub(crate) dissonant: Option<String>,
     pub(crate) evocation_tree: HashSet<EvocationId>,
-    pub(crate) upgrade_charm: Option<CharmId>,
+    pub(crate) upgrade_charm: Option<CharmName>,
     pub(crate) keywords: HashSet<EvocationKeyword>,
     pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
     pub(crate) action_type: CharmActionType,
@@ -67,8 +67,8 @@ impl EvocationBuilderWithActionType {
 
     /// Sets this Evocation as an upgrade of another Charm, usually a
     /// Solar Charm (or other Exalt-specific type).
-    pub fn upgrades(mut self, charm_id: CharmId) -> Self {
-        self.upgrade_charm = Some(charm_id);
+    pub fn upgrades(mut self, charm_name: CharmName) -> Self {
+        self.upgrade_charm = Some(charm_name);
         self
     }
 

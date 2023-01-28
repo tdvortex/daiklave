@@ -3,10 +3,11 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::sorcery::{
+    archetype::ShapingRitualSummary,
     circles::{celestial::CelestialSpell, terrestrial::TerrestrialSpell},
-    spell::SpellId,
-    ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryArchetypeMerit,
-    SorceryArchetypeMeritId,
+    spell::SpellName,
+    ShapingRitual, SorceryArchetype, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+    SorceryArchetypeName,
 };
 
 use super::{sorcerer::SolarCircleSorcerer, SolarSpell};
@@ -14,24 +15,24 @@ use super::{sorcerer::SolarCircleSorcerer, SolarSpell};
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SolarCircleSorcererMemo {
     pub(in crate::sorcery::circles) archetypes: HashMap<
-        SorceryArchetypeId,
+        SorceryArchetypeName,
         (
             SorceryArchetype,
             HashMap<SorceryArchetypeMeritId, SorceryArchetypeMerit>,
         ),
     >,
-    pub(in crate::sorcery::circles) circle_archetypes: [SorceryArchetypeId; 3],
-    pub(in crate::sorcery::circles) shaping_ritual_ids: [ShapingRitualId; 3],
+    pub(in crate::sorcery::circles) circle_archetypes: [SorceryArchetypeName; 3],
+    pub(in crate::sorcery::circles) shaping_ritual_names: [ShapingRitualSummary; 3],
     pub(in crate::sorcery::circles) shaping_rituals: [ShapingRitual; 3],
-    pub(in crate::sorcery::circles) terrestrial_control_spell_id: SpellId,
+    pub(in crate::sorcery::circles) terrestrial_control_spell_name: SpellName,
     pub(in crate::sorcery::circles) terrestrial_control_spell: TerrestrialSpell,
-    pub(in crate::sorcery::circles) terrestrial_spells: HashMap<SpellId, TerrestrialSpell>,
-    pub(in crate::sorcery::circles) celestial_control_spell_id: SpellId,
+    pub(in crate::sorcery::circles) terrestrial_spells: HashMap<SpellName, TerrestrialSpell>,
+    pub(in crate::sorcery::circles) celestial_control_spell_name: SpellName,
     pub(in crate::sorcery::circles) celestial_control_spell: CelestialSpell,
-    pub(in crate::sorcery::circles) celestial_spells: HashMap<SpellId, CelestialSpell>,
-    pub(in crate::sorcery::circles) solar_control_spell_id: SpellId,
+    pub(in crate::sorcery::circles) celestial_spells: HashMap<SpellName, CelestialSpell>,
+    pub(in crate::sorcery::circles) solar_control_spell_name: SpellName,
     pub(in crate::sorcery::circles) solar_control_spell: SolarSpell,
-    pub(in crate::sorcery::circles) solar_spells: HashMap<SpellId, SolarSpell>,
+    pub(in crate::sorcery::circles) solar_spells: HashMap<SpellName, SolarSpell>,
 }
 
 impl<'source> SolarCircleSorcererMemo {
@@ -42,13 +43,21 @@ impl<'source> SolarCircleSorcererMemo {
                 .iter()
                 .map(|(k, (archetype, merits))| {
                     (
-                        *k,
+                        k.as_str(),
                         (archetype, merits.iter().map(|(k, v)| (*k, v)).collect()),
                     )
                 })
                 .collect(),
-            circle_archetypes: self.circle_archetypes,
-            shaping_ritual_ids: self.shaping_ritual_ids,
+            circle_archetypes: [
+                self.circle_archetypes[0].as_str(),
+                self.circle_archetypes[1].as_str(),
+                self.circle_archetypes[2].as_str(),
+            ],
+            shaping_ritual_names: [
+                self.shaping_ritual_names[0].as_str(),
+                self.shaping_ritual_names[1].as_str(),
+                self.shaping_ritual_names[2].as_str(),
+            ],
             shaping_rituals: {
                 self.shaping_rituals
                     .iter()
@@ -59,19 +68,27 @@ impl<'source> SolarCircleSorcererMemo {
                     })
                     .map(|opt| opt.unwrap())
             },
-            terrestrial_control_spell_id: self.terrestrial_control_spell_id,
+            terrestrial_control_spell_name: self.terrestrial_control_spell_name.as_str(),
             terrestrial_control_spell: &self.terrestrial_control_spell,
             terrestrial_spells: self
                 .terrestrial_spells
                 .iter()
-                .map(|(k, v)| (*k, v))
+                .map(|(k, v)| (k.as_str(), v))
                 .collect(),
-            celestial_control_spell_id: self.celestial_control_spell_id,
+            celestial_control_spell_name: self.celestial_control_spell_name.as_str(),
             celestial_control_spell: &self.celestial_control_spell,
-            celestial_spells: self.celestial_spells.iter().map(|(k, v)| (*k, v)).collect(),
-            solar_control_spell_id: self.solar_control_spell_id,
+            celestial_spells: self
+                .celestial_spells
+                .iter()
+                .map(|(k, v)| (k.as_str(), v))
+                .collect(),
+            solar_control_spell_name: self.solar_control_spell_name.as_str(),
             solar_control_spell: &self.solar_control_spell,
-            solar_spells: self.solar_spells.iter().map(|(k, v)| (*k, v)).collect(),
+            solar_spells: self
+                .solar_spells
+                .iter()
+                .map(|(k, v)| (k.as_str(), v))
+                .collect(),
         }
     }
 }

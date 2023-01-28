@@ -1,10 +1,7 @@
 use crate::{
     abilities::AbilityName,
     martial_arts::style::MartialArtsStyle,
-    sorcery::{
-        spell::SpellId, ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
-        TerrestrialSpell,
-    },
+    sorcery::{ShapingRitual, SorceryArchetype, TerrestrialSpell},
     CharacterMutation,
 };
 
@@ -38,9 +35,9 @@ pub enum GuidedMutation {
     RemoveMartialArtsStyle(String),
     /// Sets the sorcery archetype for the character. Clears any
     /// previous sorcery archetype and/or shaping ritual.
-    SetSorceryArchetype(SorceryArchetypeId, SorceryArchetype),
+    SetSorceryArchetype(String, SorceryArchetype),
     /// Sets the shaping ritual for the character.
-    SetShapingRitual(ShapingRitualId, ShapingRitual),
+    SetShapingRitual(String, ShapingRitual),
     /// Sets the control spell for the character.
-    SetControlSpell(SpellId, TerrestrialSpell),
+    SetControlSpell(String, TerrestrialSpell),
 }

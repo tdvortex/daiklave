@@ -6,9 +6,9 @@ use crate::{
         circles::{
             celestial::CelestialSpell, sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell,
         },
-        spell::{Spell, SpellId, SpellMutation},
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
-        SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryArchetypeWithMerits, SorceryError,
+        spell::{Spell, SpellMutation},
+        ShapingRitual, SorceryArchetype, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+        SorceryArchetypeWithMerits, SorceryError,
     },
     CharacterMutationError,
 };
@@ -18,24 +18,24 @@ use super::{sorcerer_memo::SolarCircleSorcererMemo, SolarSpell};
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct SolarCircleSorcerer<'source> {
     pub(crate) archetypes: HashMap<
-        SorceryArchetypeId,
+        &'source str,
         (
             &'source SorceryArchetype,
             HashMap<SorceryArchetypeMeritId, &'source SorceryArchetypeMerit>,
         ),
     >,
-    pub(crate) circle_archetypes: [SorceryArchetypeId; 3],
-    pub(crate) shaping_ritual_ids: [ShapingRitualId; 3],
+    pub(crate) circle_archetypes: [&'source str; 3],
+    pub(crate) shaping_ritual_names: [&'source str; 3],
     pub(crate) shaping_rituals: [&'source ShapingRitual; 3],
-    pub(crate) terrestrial_control_spell_id: SpellId,
+    pub(crate) terrestrial_control_spell_name: &'source str,
     pub(crate) terrestrial_control_spell: &'source TerrestrialSpell,
-    pub(crate) terrestrial_spells: HashMap<SpellId, &'source TerrestrialSpell>,
-    pub(crate) celestial_control_spell_id: SpellId,
+    pub(crate) terrestrial_spells: HashMap<&'source str, &'source TerrestrialSpell>,
+    pub(crate) celestial_control_spell_name: &'source str,
     pub(crate) celestial_control_spell: &'source CelestialSpell,
-    pub(crate) celestial_spells: HashMap<SpellId, &'source CelestialSpell>,
-    pub(crate) solar_control_spell_id: SpellId,
+    pub(crate) celestial_spells: HashMap<&'source str, &'source CelestialSpell>,
+    pub(crate) solar_control_spell_name: &'source str,
     pub(crate) solar_control_spell: &'source SolarSpell,
-    pub(crate) solar_spells: HashMap<SpellId, &'source SolarSpell>,
+    pub(crate) solar_spells: HashMap<&'source str, &'source SolarSpell>,
 }
 
 impl<'view, 'source> SolarCircleSorcerer<'source> {
@@ -46,7 +46,7 @@ impl<'view, 'source> SolarCircleSorcerer<'source> {
                 .iter()
                 .map(|(k, (archetype, merits))| {
                     (
-                        *k,
+                        (*k).to_owned(),
                         (
                             (*archetype).to_owned(),
                             merits.iter().map(|(k, v)| (*k, (*v).to_owned())).collect(),
@@ -54,116 +54,147 @@ impl<'view, 'source> SolarCircleSorcerer<'source> {
                     )
                 })
                 .collect(),
-            circle_archetypes: self.circle_archetypes,
-            shaping_ritual_ids: self.shaping_ritual_ids,
+            circle_archetypes: [
+                (*self.circle_archetypes[0]).to_owned(),
+                (*self.circle_archetypes[1]).to_owned(),
+                (*self.circle_archetypes[2]).to_owned(),
+            ],
+            shaping_ritual_names: [
+                (*self.shaping_ritual_names[0]).to_owned(),
+                (*self.shaping_ritual_names[1]).to_owned(),
+                (*self.shaping_ritual_names[2]).to_owned(),
+            ],
             shaping_rituals: { self.shaping_rituals.map(|ptr| ptr.to_owned()) },
-            terrestrial_control_spell_id: self.terrestrial_control_spell_id,
+            terrestrial_control_spell_name: (*self.terrestrial_control_spell_name).to_owned(),
             terrestrial_control_spell: self.terrestrial_control_spell.to_owned(),
             terrestrial_spells: self
                 .terrestrial_spells
                 .iter()
-                .map(|(k, v)| (*k, (*v).to_owned()))
+                .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
                 .collect(),
-            celestial_control_spell_id: self.celestial_control_spell_id,
+            celestial_control_spell_name: (*self.celestial_control_spell_name).to_owned(),
             celestial_control_spell: self.celestial_control_spell.to_owned(),
             celestial_spells: self
                 .celestial_spells
                 .iter()
-                .map(|(k, v)| (*k, (*v).to_owned()))
+                .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
                 .collect(),
-            solar_control_spell_id: self.solar_control_spell_id,
+            solar_control_spell_name: (*self.solar_control_spell_name).to_owned(),
             solar_control_spell: self.solar_control_spell.to_owned(),
             solar_spells: self
                 .solar_spells
                 .iter()
-                .map(|(k, v)| (*k, (*v).to_owned()))
+                .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
                 .collect(),
         }
     }
 
     pub fn archetype(
         &'view self,
-        id: SorceryArchetypeId,
+        name: &str,
     ) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
-        if self.circle_archetypes.contains(&id) {
+        if self.circle_archetypes.contains(&name) {
             self.archetypes
-                .get(&id)
-                .map(|(archetype, merits)| (*archetype, merits))
+                .get_key_value(name)
+                .map(|(name, (archetype, merits))| (*name, *archetype, merits))
         } else {
             None
         }
     }
 
-    pub fn shaping_ritual(
-        &self,
-        circle: SorceryCircle,
-    ) -> (ShapingRitualId, &'source ShapingRitual) {
+    pub fn shaping_ritual(&self, circle: SorceryCircle) -> (&'source str, &'source ShapingRitual) {
         match circle {
-            SorceryCircle::Terrestrial => (self.shaping_ritual_ids[0], self.shaping_rituals[0]),
-            SorceryCircle::Celestial => (self.shaping_ritual_ids[1], self.shaping_rituals[1]),
-            SorceryCircle::Solar => (self.shaping_ritual_ids[2], self.shaping_rituals[2]),
+            SorceryCircle::Terrestrial => (self.shaping_ritual_names[0], self.shaping_rituals[0]),
+            SorceryCircle::Celestial => (self.shaping_ritual_names[1], self.shaping_rituals[1]),
+            SorceryCircle::Solar => (self.shaping_ritual_names[2], self.shaping_rituals[2]),
         }
     }
 
-    pub fn control_spell(&self, circle: SorceryCircle) -> (SpellId, Spell<'source>) {
+    pub fn control_spell(&self, circle: SorceryCircle) -> Spell<'source> {
         match circle {
-            SorceryCircle::Terrestrial => (
-                self.terrestrial_control_spell_id,
-                Spell::Terrestrial(self.terrestrial_control_spell),
+            SorceryCircle::Terrestrial => Spell::Terrestrial(
+                self.terrestrial_control_spell_name,
+                self.terrestrial_control_spell,
             ),
-            SorceryCircle::Celestial => (
-                self.celestial_control_spell_id,
-                Spell::Celestial(self.celestial_control_spell),
+            SorceryCircle::Celestial => Spell::Celestial(
+                self.celestial_control_spell_name,
+                self.celestial_control_spell,
             ),
-            SorceryCircle::Solar => (
-                self.solar_control_spell_id,
-                Spell::Solar(self.solar_control_spell),
-            ),
+            SorceryCircle::Solar => {
+                Spell::Solar(self.solar_control_spell_name, self.solar_control_spell)
+            }
         }
     }
 
-    pub fn get_spell(&self, spell_id: SpellId) -> Option<(Spell<'source>, bool)> {
-        if spell_id == self.terrestrial_control_spell_id {
-            Some((Spell::Terrestrial(self.terrestrial_control_spell), true))
-        } else if spell_id == self.celestial_control_spell_id {
-            Some((Spell::Celestial(self.celestial_control_spell), true))
-        } else if spell_id == self.solar_control_spell_id {
-            Some((Spell::Solar(self.solar_control_spell), true))
+    pub fn get_spell(&self, name: &str) -> Option<(Spell<'source>, bool)> {
+        if name == self.terrestrial_control_spell_name {
+            Some((
+                Spell::Terrestrial(
+                    self.terrestrial_control_spell_name,
+                    self.terrestrial_control_spell,
+                ),
+                true,
+            ))
+        } else if name == self.celestial_control_spell_name {
+            Some((
+                Spell::Celestial(
+                    self.celestial_control_spell_name,
+                    self.celestial_control_spell,
+                ),
+                true,
+            ))
+        } else if name == self.solar_control_spell_name {
+            Some((
+                Spell::Solar(self.solar_control_spell_name, self.solar_control_spell),
+                true,
+            ))
         } else {
             self.terrestrial_spells
-                .get(&spell_id)
-                .map(|terrestrial_spell| (Spell::Terrestrial(terrestrial_spell), false))
+                .get_key_value(name)
+                .map(|(terrestrial_spell_name, terrestrial_spell)| {
+                    (
+                        Spell::Terrestrial(terrestrial_spell_name, terrestrial_spell),
+                        false,
+                    )
+                })
                 .or_else(|| {
-                    self.celestial_spells
-                        .get(&spell_id)
-                        .map(|celestial_spell| (Spell::Celestial(celestial_spell), false))
+                    self.celestial_spells.get_key_value(name).map(
+                        |(celestial_spell_name, celestial_spell)| {
+                            (
+                                Spell::Celestial(celestial_spell_name, celestial_spell),
+                                false,
+                            )
+                        },
+                    )
                 })
                 .or_else(|| {
                     self.solar_spells
-                        .get(&spell_id)
-                        .map(|solar_spell| (Spell::Solar(solar_spell), false))
+                        .get_key_value(name)
+                        .map(|(solar_spell_name, solar_spell)| {
+                            (Spell::Solar(solar_spell_name, solar_spell), false)
+                        })
                 })
         }
     }
 
-    pub fn spells_iter(&self) -> impl Iterator<Item = SpellId> + '_ {
-        std::iter::once(self.terrestrial_control_spell_id)
+    pub fn spells_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
+        std::iter::once(self.terrestrial_control_spell_name)
             .chain(self.terrestrial_spells.keys().copied())
-            .chain(std::iter::once(self.celestial_control_spell_id))
+            .chain(std::iter::once(self.celestial_control_spell_name))
             .chain(self.celestial_spells.keys().copied())
     }
 
     pub fn add_spell(
         &mut self,
-        spell_id: SpellId,
+        name: &'source str,
         spell: &'source SpellMutation,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self.terrestrial_control_spell_id == spell_id
-            || self.celestial_control_spell_id == spell_id
-            || self.solar_control_spell_id == spell_id
-            || self.terrestrial_spells.contains_key(&spell_id)
-            || self.celestial_spells.contains_key(&spell_id)
-            || self.solar_spells.contains_key(&spell_id)
+        if self.terrestrial_control_spell_name == name
+            || self.celestial_control_spell_name == name
+            || self.solar_control_spell_name == name
+            || self.terrestrial_spells.contains_key(name)
+            || self.celestial_spells.contains_key(name)
+            || self.solar_spells.contains_key(name)
         {
             Err(CharacterMutationError::CharmError(
                 CharmError::DuplicateCharm,
@@ -171,27 +202,27 @@ impl<'view, 'source> SolarCircleSorcerer<'source> {
         } else {
             match spell {
                 SpellMutation::Terrestrial(terrestrial_spell) => {
-                    self.terrestrial_spells.insert(spell_id, terrestrial_spell);
+                    self.terrestrial_spells.insert(name, terrestrial_spell);
                 }
                 SpellMutation::Celestial(celestial_spell) => {
-                    self.celestial_spells.insert(spell_id, celestial_spell);
+                    self.celestial_spells.insert(name, celestial_spell);
                 }
                 SpellMutation::Solar(solar_spell) => {
-                    self.solar_spells.insert(spell_id, solar_spell);
+                    self.solar_spells.insert(name, solar_spell);
                 }
             }
             Ok(self)
         }
     }
 
-    pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
-        if self.terrestrial_spells.remove(&spell_id).is_none()
-            && self.celestial_spells.remove(&spell_id).is_none()
-            && self.solar_spells.remove(&spell_id).is_none()
+    pub fn remove_spell(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
+        if self.terrestrial_spells.remove(name).is_none()
+            && self.celestial_spells.remove(name).is_none()
+            && self.solar_spells.remove(name).is_none()
         {
-            if spell_id == self.solar_control_spell_id
-                || spell_id == self.celestial_control_spell_id
-                || spell_id == self.terrestrial_control_spell_id
+            if name == self.solar_control_spell_name
+                || name == self.celestial_control_spell_name
+                || name == self.terrestrial_control_spell_name
             {
                 Err(CharacterMutationError::SorceryError(
                     SorceryError::RemoveControlSpell,

@@ -17,7 +17,7 @@ use crate::{
     abilities::AbilitiesVanilla,
     attributes::Attributes,
     book_reference::BookReference,
-    charms::charm::{CharmId, CharmMutation},
+    charms::charm::{CharmMutation, CharmName},
     craft::Craft,
     exaltation::Exaltation,
     experience::ExperiencePool,
@@ -28,6 +28,7 @@ use crate::{
     merits::merit::{
         NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
     },
+    sorcery::{AddSorcery, SorceryCircle, SorceryError},
     willpower::Willpower,
 };
 
@@ -213,22 +214,12 @@ impl<'source> Character<'source> {
             CharacterMutation::RemoveLanguage(language_mutation) => {
                 self.remove_language(language_mutation)
             }
-            CharacterMutation::AddTerrestrialSorcery(add_terrestrial) => {
-                self.add_terrestrial_sorcery(add_terrestrial)
-            }
-            CharacterMutation::RemoveTerrestrialSorcery => self.remove_terrestrial_sorcery(),
-            CharacterMutation::AddCelestialSorcery(add_celestial) => {
-                self.add_celestial_sorcery(add_celestial)
-            }
-            CharacterMutation::RemoveCelestialSorcery => self.remove_celestial_sorcery(),
-            CharacterMutation::AddSolarSorcery(add_solar) => self.add_solar_sorcery(add_solar),
-            CharacterMutation::RemoveSolarSorcery => self.remove_solar_sorcery(),
             CharacterMutation::AddSorceryArchetypeMerit(
-                sorcery_archetype_id,
+                sorcery_archetype_name,
                 sorcery_archetype_merit_id,
                 sorcery_archetype_merit,
             ) => self.add_sorcery_archetype_merit(
-                *sorcery_archetype_id,
+                sorcery_archetype_name.as_str(),
                 *sorcery_archetype_merit_id,
                 sorcery_archetype_merit,
             ),
@@ -260,14 +251,16 @@ impl<'source> Character<'source> {
                 CharmMutation::Solar(solar_charm_id, solar_charm) => {
                     self.add_solar_charm(*solar_charm_id, solar_charm)
                 }
-                CharmMutation::Spell(spell_id, spell) => self.add_spell(*spell_id, spell),
+                CharmMutation::Spell((spell_name, spell)) => {
+                    self.add_spell(spell_name.as_str(), spell)
+                }
             },
-            CharacterMutation::RemoveCharm(charm_id) => match charm_id {
-                CharmId::Spirit(spirit_charm_id) => self.remove_eclipse_charm(*spirit_charm_id),
-                CharmId::Evocation(evocation_id) => self.remove_evocation(*evocation_id),
-                CharmId::MartialArts(ma_charm_id) => self.remove_martial_arts_charm(*ma_charm_id),
-                CharmId::Solar(solar_charm_id) => self.remove_solar_charm(*solar_charm_id),
-                CharmId::Spell(spell_id) => self.remove_spell(*spell_id),
+            CharacterMutation::RemoveCharm(charm_name) => match charm_name {
+                CharmName::Spirit(spirit_charm_id) => self.remove_eclipse_charm(*spirit_charm_id),
+                CharmName::Evocation(evocation_id) => self.remove_evocation(*evocation_id),
+                CharmName::MartialArts(ma_charm_id) => self.remove_martial_arts_charm(*ma_charm_id),
+                CharmName::Solar(solar_charm_id) => self.remove_solar_charm(*solar_charm_id),
+                CharmName::Spell(spell_name) => self.remove_spell(spell_name.as_str()),
             },
             CharacterMutation::AddFlaw(flaw_mutation) => self.add_flaw(flaw_mutation),
             CharacterMutation::RemoveFlaw(name) => self.remove_flaw(name.as_str()),
@@ -280,6 +273,26 @@ impl<'source> Character<'source> {
             CharacterMutation::SpendExperience(amount) => self.spend_base_experience(*amount),
             CharacterMutation::GainExaltExperience(amount) => self.gain_exalt_experience(*amount),
             CharacterMutation::SpendExaltExperince(amount) => self.spend_exalt_experience(*amount),
+            CharacterMutation::AddSorcery(add_sorcery) => match add_sorcery.as_ref() {
+                AddSorcery::Terrestrial(add_terrestrial) => {
+                    self.add_terrestrial_sorcery(add_terrestrial)
+                }
+                AddSorcery::Celestial(add_celestial) => self.add_celestial_sorcery(add_celestial),
+                AddSorcery::Solar(add_solar) => self.add_solar_sorcery(add_solar),
+            },
+            CharacterMutation::RemoveSorcery => {
+                let sorcery = self.sorcery().ok_or(CharacterMutationError::SorceryError(
+                    SorceryError::CircleSequence,
+                ))?;
+
+                if sorcery.control_spell(SorceryCircle::Solar).is_some() {
+                    self.remove_solar_sorcery()
+                } else if sorcery.control_spell(SorceryCircle::Celestial).is_some() {
+                    self.remove_celestial_sorcery()
+                } else {
+                    self.remove_terrestrial_sorcery()
+                }
+            }
         }
     }
 }

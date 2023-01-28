@@ -7,10 +7,9 @@ use daiklave_core2::{
     guided::{ExaltationChoice, GuidedEventSource, GuidedMutation},
     martial_arts::style::MartialArtsStyle,
     sorcery::{
-        spell::{Spell, SpellId, SpellKeyword},
-        ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle,
+        spell::{Spell, SpellKeyword},
+        ShapingRitual, SorceryArchetype, SorceryCircle,
     },
-    unique_id::UniqueId,
     CharacterMutation,
 };
 
@@ -249,9 +248,8 @@ fn test_guided_mortal() {
         the power of the Shadow Lover for your own."
             .to_owned(),
     );
-    let archetype_id = SorceryArchetypeId(UniqueId::Placeholder(1));
 
-    let mutation = GuidedMutation::SetSorceryArchetype(archetype_id, archetype);
+    let mutation = GuidedMutation::SetSorceryArchetype(archetype.0.clone(), archetype.1);
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -271,14 +269,13 @@ fn test_guided_mortal() {
         casting her control spell. She cannot draw more than ten \
         sorcerous motes per scene with this ritual.";
     let shaping_ritual = ShapingRitual::new(
-        archetype_id,
+        archetype.0,
+        "Gain motes from unrequited love towards you".to_owned(),
         Some(BookReference::new(Book::CoreRulebook, 467)),
         shaping_ritual_description.to_owned(),
     );
-    let shaping_ritual_id = ShapingRitualId(UniqueId::Placeholder(1));
 
-    let mutation = GuidedMutation::SetShapingRitual(shaping_ritual_id, shaping_ritual);
-    guided_builder.check_mutation(&mutation).unwrap();
+    let mutation = GuidedMutation::SetShapingRitual(shaping_ritual.0, shaping_ritual.2);
     guided_builder.apply_mutation(mutation).unwrap();
 
     // Add control spell
@@ -298,10 +295,9 @@ fn test_guided_mortal() {
                 .to_owned(),
         )
         .summary("Forbids the target from speaking on a specific topic.".to_owned())
-        .build_terrestrial();
-    let control_spell_id = SpellId(UniqueId::Placeholder(1));
+        .terrestrial();
 
-    let mutation = GuidedMutation::SetControlSpell(control_spell_id, control_spell);
+    let mutation = GuidedMutation::SetControlSpell(control_spell.0, control_spell.1);
     guided_builder.check_mutation(&mutation).unwrap();
     guided_builder.apply_mutation(mutation).unwrap();
 
@@ -507,10 +503,9 @@ fn test_guided_mortal() {
         character_view
             .sorcery()
             .unwrap()
-            .archetype(SorceryArchetypeId(UniqueId::Placeholder(1)))
+            .archetype("Bargain with Mara")
             .unwrap()
-            .0
-            .name(),
+            .0,
         "Bargain with Mara"
     );
     assert_eq!(
@@ -529,7 +524,6 @@ fn test_guided_mortal() {
             .unwrap()
             .control_spell(SorceryCircle::Terrestrial)
             .unwrap()
-            .1
             .name(),
         "Corrupted Words"
     );

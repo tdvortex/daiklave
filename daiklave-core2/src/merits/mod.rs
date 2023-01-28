@@ -190,7 +190,7 @@ impl<'view, 'source> Merits<'view, 'source> {
             MeritId::SorceryArchetype(sorcery_archetype_merit_id) => {
                 self.0.sorcery().and_then(|sorcery| {
                     sorcery.archetypes().find_map(|archetype_id| {
-                        sorcery.archetype(archetype_id).and_then(|(_, merits)| {
+                        sorcery.archetype(archetype_id).and_then(|(_, _, merits)| {
                             merits
                                 .get(&sorcery_archetype_merit_id)
                                 .map(|sorcery_archetype_merit| {
@@ -333,7 +333,7 @@ impl<'view, 'source> Merits<'view, 'source> {
             sorcery
                 .archetypes()
                 .filter_map(|archetype_id| sorcery.archetype(archetype_id))
-                .for_each(|(_, merits)| {
+                .for_each(|(_, _, merits)| {
                     merits.keys().for_each(|sorcery_archetype_merit_id| {
                         output.push(MeritId::SorceryArchetype(*sorcery_archetype_merit_id));
                     })

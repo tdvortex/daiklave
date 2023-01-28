@@ -13,7 +13,7 @@ mod memo;
 mod new;
 mod sorcery;
 
-use std::collections::{hash_map::Entry, HashSet};
+use std::collections::{hash_map::Entry, HashMap, HashSet};
 
 pub use error::SolarError;
 pub(crate) use memo::SolarMemo;
@@ -35,8 +35,8 @@ use crate::{
             solar::AddSolarSorcery,
             terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
         },
-        spell::{SpellId, SpellMutation},
-        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
+        spell::SpellMutation,
+        SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     CharacterMutationError,
 };
@@ -129,16 +129,16 @@ impl<'source> Solar<'source> {
         add_terrestrial: AddTerrestrialSorceryView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self.sorcery.is_none() {
-            self.sorcery = Some(SolarSorcererView::Terrestrial(
-                TerrestrialCircleSorcerer::new(
-                    add_terrestrial.archetype_id,
-                    add_terrestrial.archetype,
-                    add_terrestrial.shaping_ritual_id,
-                    add_terrestrial.shaping_ritual,
-                    add_terrestrial.control_spell_id,
-                    add_terrestrial.control_spell,
-                )?,
-            ));
+            self.sorcery = Some(SolarSorcererView::Terrestrial(TerrestrialCircleSorcerer {
+                archetype_name: add_terrestrial.archetype_name,
+                archetype: add_terrestrial.archetype,
+                archetype_merits: HashMap::new(),
+                shaping_ritual_name: add_terrestrial.shaping_ritual_name,
+                shaping_ritual: add_terrestrial.shaping_ritual,
+                control_spell_name: add_terrestrial.control_spell_name,
+                control_spell: add_terrestrial.control_spell,
+                other_spells: HashMap::new(),
+            }));
             Ok(self)
         } else {
             Err(CharacterMutationError::SorceryError(
@@ -177,7 +177,11 @@ impl<'source> Solar<'source> {
 
     pub(crate) fn remove_celestial_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
         if let Some(SolarSorcererView::Celestial(celestial)) = &mut self.sorcery {
-            self.sorcery = Some(SolarSorcererView::Terrestrial((&*celestial).into()));
+            self.sorcery = Some(SolarSorcererView::Terrestrial(
+                (&*celestial)
+                    .try_into()
+                    .map_err(CharacterMutationError::SorceryError)?,
+            ));
             Ok(self)
         } else {
             Err(CharacterMutationError::SorceryError(
@@ -213,13 +217,13 @@ impl<'source> Solar<'source> {
 
     pub(crate) fn add_sorcery_archetype_merit(
         &mut self,
-        sorcery_archetype_id: SorceryArchetypeId,
+        sorcery_archetype_name: &str,
         sorcery_archetype_merit_id: SorceryArchetypeMeritId,
         sorcery_archetype_merit: &'source SorceryArchetypeMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.sorcery {
             Some(SolarSorcererView::Terrestrial(terrestrial)) => {
-                if terrestrial.archetype_id != sorcery_archetype_id {
+                if terrestrial.archetype_name != sorcery_archetype_name {
                     Err(CharacterMutationError::SorceryError(
                         SorceryError::MissingArchetype,
                     ))
@@ -236,7 +240,7 @@ impl<'source> Solar<'source> {
                 }
             }
             Some(SolarSorcererView::Celestial(celestial)) => {
-                if let Some((_, merits)) = celestial.archetypes.get_mut(&sorcery_archetype_id) {
+                if let Some((_, merits)) = celestial.archetypes.get_mut(sorcery_archetype_name) {
                     if let Entry::Vacant(e) = merits.entry(sorcery_archetype_merit_id) {
                         e.insert(sorcery_archetype_merit);
                         Ok(self)
@@ -252,7 +256,7 @@ impl<'source> Solar<'source> {
                 }
             }
             Some(SolarSorcererView::Solar(solar)) => {
-                if let Some((_, merits)) = solar.archetypes.get_mut(&sorcery_archetype_id) {
+                if let Some((_, merits)) = solar.archetypes.get_mut(sorcery_archetype_name) {
                     if let Entry::Vacant(e) = merits.entry(sorcery_archetype_merit_id) {
                         e.insert(sorcery_archetype_merit);
                         Ok(self)
@@ -397,7 +401,7 @@ impl<'source> Solar<'source> {
 
     pub(crate) fn add_spell(
         &mut self,
-        spell_id: SpellId,
+        name: &'source str,
         spell: &'source SpellMutation,
     ) -> Result<&mut Self, CharacterMutationError> {
         match (&mut self.sorcery, spell) {
@@ -408,7 +412,7 @@ impl<'source> Solar<'source> {
                 Some(SolarSorcererView::Terrestrial(terrestrial)),
                 SpellMutation::Terrestrial(terrestrial_spell),
             ) => {
-                terrestrial.add_terrestrial_spell(spell_id, terrestrial_spell)?;
+                terrestrial.add_terrestrial_spell(name, terrestrial_spell)?;
                 Ok(self)
             }
             (Some(SolarSorcererView::Terrestrial(_)), _intelligence_dots) => Err(
@@ -418,39 +422,36 @@ impl<'source> Solar<'source> {
                 Some(SolarSorcererView::Celestial(celestial)),
                 SpellMutation::Terrestrial(terrestrial_spell),
             ) => {
-                celestial.add_terrestrial_spell(spell_id, terrestrial_spell)?;
+                celestial.add_terrestrial_spell(name, terrestrial_spell)?;
                 Ok(self)
             }
             (
                 Some(SolarSorcererView::Celestial(celestial)),
                 SpellMutation::Celestial(celestial_spell),
             ) => {
-                celestial.add_celestial_spell(spell_id, celestial_spell)?;
+                celestial.add_celestial_spell(name, celestial_spell)?;
                 Ok(self)
             }
             (Some(SolarSorcererView::Celestial(_)), SpellMutation::Solar(_)) => Err(
                 CharacterMutationError::CharmError(CharmError::PrerequisitesNotMet),
             ),
             (Some(SolarSorcererView::Solar(solar)), spell_mutation) => {
-                solar.add_spell(spell_id, spell_mutation)?;
+                solar.add_spell(name, spell_mutation)?;
                 Ok(self)
             }
         }
     }
 
-    pub(crate) fn remove_spell(
-        &mut self,
-        spell_id: SpellId,
-    ) -> Result<&mut Self, CharacterMutationError> {
+    pub(crate) fn remove_spell(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.sorcery {
             Some(SolarSorcererView::Terrestrial(terrestrial)) => {
-                terrestrial.remove_spell(spell_id)?;
+                terrestrial.remove_spell(name)?;
             }
             Some(SolarSorcererView::Celestial(celestial)) => {
-                celestial.remove_spell(spell_id)?;
+                celestial.remove_spell(name)?;
             }
             Some(SolarSorcererView::Solar(solar)) => {
-                solar.remove_spell(spell_id)?;
+                solar.remove_spell(name)?;
             }
             None => {
                 return Err(CharacterMutationError::CharmError(CharmError::NotFound));

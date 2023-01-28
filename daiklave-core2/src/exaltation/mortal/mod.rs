@@ -29,8 +29,8 @@ use crate::{
     merits::merit::MeritError,
     sorcery::{
         circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
-        spell::{SpellId, SpellMutation},
-        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
+        spell::SpellMutation,
+        SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryError,
     },
     weapons::{
         weapon::{
@@ -127,14 +127,16 @@ impl<'view, 'source> Mortal<'source> {
             ));
         }
 
-        self.sorcery = Some(TerrestrialCircleSorcerer::new(
-            add_terrestrial.archetype_id,
-            add_terrestrial.archetype,
-            add_terrestrial.shaping_ritual_id,
-            add_terrestrial.shaping_ritual,
-            add_terrestrial.control_spell_id,
-            add_terrestrial.control_spell,
-        )?);
+        self.sorcery = Some(TerrestrialCircleSorcerer {
+            archetype_name: add_terrestrial.archetype_name,
+            archetype: add_terrestrial.archetype,
+            archetype_merits: HashMap::new(),
+            shaping_ritual_name: add_terrestrial.shaping_ritual_name,
+            shaping_ritual: add_terrestrial.shaping_ritual,
+            control_spell_name: add_terrestrial.control_spell_name,
+            control_spell: add_terrestrial.control_spell,
+            other_spells: HashMap::new(),
+        });
 
         Ok(self)
     }
@@ -396,12 +398,12 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn add_sorcery_archetype_merit(
         &mut self,
-        sorcery_archetype_id: SorceryArchetypeId,
+        sorcery_archetype_name: &str,
         sorcery_archetype_merit_id: SorceryArchetypeMeritId,
         sorcery_archetype_merit: &'source SorceryArchetypeMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(terrestrial) = &mut self.sorcery {
-            if terrestrial.archetype_id != sorcery_archetype_id {
+            if terrestrial.archetype_name != sorcery_archetype_name {
                 Err(CharacterMutationError::SorceryError(
                     SorceryError::MissingArchetype,
                 ))
@@ -444,20 +446,20 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn add_spell(
         &mut self,
-        spell_id: SpellId,
+        name: &'source str,
         spell: &'source SpellMutation,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(terrestrial) = &mut self.sorcery {
             match spell {
                 SpellMutation::Terrestrial(terrestrial_spell) => {
-                    if terrestrial.control_spell_id == spell_id
-                        || terrestrial.other_spells.contains_key(&spell_id)
+                    if terrestrial.control_spell_name == name
+                        || terrestrial.other_spells.contains_key(name)
                     {
                         Err(CharacterMutationError::CharmError(
                             CharmError::DuplicateCharm,
                         ))
                     } else {
-                        terrestrial.other_spells.insert(spell_id, terrestrial_spell);
+                        terrestrial.other_spells.insert(name, terrestrial_spell);
                         Ok(self)
                     }
                 }
@@ -472,11 +474,11 @@ impl<'view, 'source> Mortal<'source> {
         }
     }
 
-    pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_spell(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
         if let Some(terrestrial) = &mut self.sorcery {
-            if terrestrial.other_spells.remove(&spell_id).is_some() {
+            if terrestrial.other_spells.remove(name).is_some() {
                 Ok(self)
-            } else if terrestrial.control_spell_id == spell_id {
+            } else if terrestrial.control_spell_name == name {
                 Err(CharacterMutationError::SorceryError(
                     SorceryError::RemoveControlSpell,
                 ))

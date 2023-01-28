@@ -5,8 +5,8 @@ use crate::{
     attributes::AttributeName,
     martial_arts::{style::MartialArtsStyle, MartialArtsError},
     sorcery::{
-        circles::terrestrial::AddTerrestrialSorceryView, spell::SpellId, ShapingRitual,
-        ShapingRitualId, SorceryArchetype, SorceryArchetypeId, TerrestrialSpell,
+        circles::terrestrial::AddTerrestrialSorceryView, ShapingRitual, SorceryArchetype,
+        TerrestrialSpell,
     },
     Character, CharacterMutation, CharacterMutationError,
 };
@@ -34,10 +34,9 @@ pub struct GuidedState<'source> {
     pub(in crate::guided) solar_favored_abilities: Option<HashSet<AbilityName>>,
     pub(in crate::guided) martial_arts_styles:
         Option<HashMap<&'source str, &'source MartialArtsStyle>>,
-    pub(in crate::guided) sorcery_archetype:
-        Option<(SorceryArchetypeId, &'source SorceryArchetype)>,
-    pub(in crate::guided) shaping_ritual: Option<(ShapingRitualId, &'source ShapingRitual)>,
-    pub(in crate::guided) control_spell: Option<(SpellId, &'source TerrestrialSpell)>,
+    pub(in crate::guided) sorcery_archetype: Option<(&'source str, &'source SorceryArchetype)>,
+    pub(in crate::guided) shaping_ritual: Option<(&'source str, &'source ShapingRitual)>,
+    pub(in crate::guided) control_spell: Option<(&'source str, &'source TerrestrialSpell)>,
 }
 
 impl<'source> GuidedState<'source> {
@@ -130,27 +129,27 @@ impl<'source> GuidedState<'source> {
                     ));
                 }
             }
-            GuidedMutation::SetSorceryArchetype(id, archetype) => {
+            GuidedMutation::SetSorceryArchetype(name, archetype) => {
                 if let Some(ExaltationChoice::Mortal) = self.exaltation_choice {
                     if self.sorcery_archetype.is_none() {
                         self.merit_dots += 5;
                     }
                 }
                 self.shaping_ritual = None;
-                self.sorcery_archetype = Some((*id, archetype));
+                self.sorcery_archetype = Some((name.as_str(), archetype));
                 self.update_bonus_points();
             }
-            GuidedMutation::SetShapingRitual(id, shaping_ritual) => {
+            GuidedMutation::SetShapingRitual(name, shaping_ritual) => {
                 if self.sorcery_archetype.is_none()
-                    || shaping_ritual.archetype_id() != self.sorcery_archetype.unwrap().0
+                    || name.as_str() != self.sorcery_archetype.unwrap().0
                 {
                     return Err(GuidedError::SorceryError(SorceryError::MissingArchetype));
                 }
 
-                self.shaping_ritual = Some((*id, shaping_ritual));
+                self.shaping_ritual = Some((name.as_str(), shaping_ritual));
             }
             GuidedMutation::SetControlSpell(id, spell) => {
-                self.control_spell = Some((*id, spell));
+                self.control_spell = Some((id.as_str(), spell));
             }
         }
 
@@ -761,20 +760,20 @@ impl<'source> GuidedState<'source> {
                     self.sorcery_archetype,
                 ) {
                     (
-                        Some((shaping_ritual_id, shaping_ritual)),
-                        Some((control_spell_id, control_spell)),
-                        Some((archetype_id, archetype)),
+                        Some((shaping_ritual_name, shaping_ritual)),
+                        Some((control_spell_name, control_spell)),
+                        Some((archetype_name, archetype)),
                     ) => {
                         self.character_view
                             .set_ability_dots(AbilityNameVanilla::Occult, 3)
                             .map_err(GuidedError::CharacterMutationError)?;
                         self.character_view
                             .add_terrestrial_sorcery_view(AddTerrestrialSorceryView {
-                                archetype_id,
+                                archetype_name,
                                 archetype,
-                                shaping_ritual_id,
+                                shaping_ritual_name,
                                 shaping_ritual,
-                                control_spell_id,
+                                control_spell_name,
                                 control_spell,
                             })
                             .map_err(GuidedError::CharacterMutationError)?;

@@ -8,7 +8,7 @@ use crate::{
     armor::armor_item::{mundane::AddMundaneArmor, ArmorNameMutation},
     artifact::{AddArtifact, ArtifactNameMutation},
     attributes::AttributeName,
-    charms::charm::{CharmId, CharmMutation},
+    charms::charm::{CharmMutation, CharmName},
     exaltation::exalt::{
         essence::{MotePoolName, UncommitMotes},
         exalt_type::solar::NewSolar,
@@ -20,13 +20,7 @@ use crate::{
     languages::language::LanguageMutation,
     martial_arts::style::MartialArtsStyle,
     merits::merit::{NonStackableMerit, NonStackableMeritId, StackableMerit, StackableMeritId},
-    sorcery::{
-        circles::{
-            celestial::AddCelestialSorcery, solar::AddSolarSorcery,
-            terrestrial::AddTerrestrialSorcery,
-        },
-        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
-    },
+    sorcery::{AddSorcery, SorceryArchetypeMerit, SorceryArchetypeMeritId, SorceryArchetypeName},
     weapons::weapon::{mundane::AddMundaneWeapon, EquipHand, Equipped, WeaponNameMutation},
 };
 
@@ -150,30 +144,16 @@ pub enum CharacterMutation {
     /// Removes the Exalted Healing merit from the character. This is not
     /// allowed for Exalts.
     RemoveExaltedHealing,
-    /// Adds Terrestrial circle sorcery to the character. The archetype,
-    /// shaping ritual, and control spell must be provided, along with an
-    /// Id for each.
-    AddTerrestrialSorcery(Box<AddTerrestrialSorcery>),
-    /// Removes Terrestrial circle sorcery from the character, making them no
-    /// longer a sorcerer.
-    RemoveTerrestrialSorcery,
-    /// Increases the character from Terrestrial sorcery to Celestial. If the
-    /// character is adding a shaping ritual to an already-known archetype, the
-    /// SorceryArchetype text may be left as None, otherwise it is required.
-    AddCelestialSorcery(Box<AddCelestialSorcery>),
-    /// Removes Celestial circle sorcery from the character, making them a
-    /// Terrestrial circle sorcerer.
-    RemoveCelestialSorcery,
-    /// Increases the character from Celestial sorcery to Solar circle. If the
-    /// character is adding a shaping ritual to an already-known archetype, the
-    /// SorceryArchetype text may be left as None, otherwise it is required.
-    AddSolarSorcery(Box<AddSolarSorcery>),
-    /// Removes Solar circle sorcery from the character, making them a
-    /// Celestial circle sorcerer.
-    RemoveSolarSorcery,
+    /// Adds a circle of Sorcery to a character. The circle, archetype, shaping
+    /// ritual, and control spell must be provided. Circles must be provided in
+    /// order: Terrestrial, Celestial, Solar.
+    AddSorcery(Box<AddSorcery>),
+    /// Removes the currently highest-known level of sorcery from the
+    /// character.
+    RemoveSorcery,
     /// Adds a merit tied to a Sorcery Archetype owned by the character.
     AddSorceryArchetypeMerit(
-        SorceryArchetypeId,
+        SorceryArchetypeName,
         SorceryArchetypeMeritId,
         SorceryArchetypeMerit,
     ),
@@ -183,7 +163,7 @@ pub enum CharacterMutation {
     AddCharm(CharmMutation),
     /// Removes a Charm from the character. Note that this may cause cascading
     /// drops due to Charm tree dependencies.
-    RemoveCharm(CharmId),
+    RemoveCharm(CharmName),
     /// Adds a Flaw to the character.
     AddFlaw(FlawMutation),
     /// Removes a Flaw from the character.

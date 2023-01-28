@@ -1,5 +1,7 @@
 use crate::sorcery::{
-    spell::SpellId, ShapingRitual, ShapingRitualId, SorceryArchetype, SorceryArchetypeId,
+    archetype::{ShapingRitualSummary, SorceryArchetypeName},
+    spell::SpellName,
+    ShapingRitual, SorceryArchetype,
 };
 
 use super::SolarSpell;
@@ -8,19 +10,19 @@ use super::SolarSpell;
 /// Sorcery to Solar-level.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddSolarSorcery {
-    /// The Id of the archetype used for the Solar circle. May be the same
+    /// The name of the archetype used for the Solar circle. May be the same
     /// as either the Terrestrial or Celestial circle, or entirely new.
-    pub archetype_id: SorceryArchetypeId,
+    pub archetype_name: SorceryArchetypeName,
     /// If necessary, the sorcery archetype added for the Solar Circle.
     /// Ignored if the Solar archetype id matches either prior circle.
     pub archetype: Option<SorceryArchetype>,
-    /// The Id of the shaping ritual for the Solar circle. This must be
+    /// The name (or short description) of the shaping ritual for the Solar circle. This must be
     /// unique.
-    pub shaping_ritual_id: ShapingRitualId,
+    pub shaping_ritual_name: ShapingRitualSummary,
     /// The shaping ritual for the Solar circle.
     pub shaping_ritual: ShapingRitual,
-    /// The Id for the Solar Control Spell.
-    pub control_spell_id: SpellId,
+    /// The name of the Solar Control Spell.
+    pub control_spell_name: SpellName,
     /// The Solar Control Spell.
     pub control_spell: SolarSpell,
 }

@@ -7,8 +7,8 @@ use crate::{
             solar::AddSolarSorcery,
             terrestrial::{AddTerrestrialSorcery, AddTerrestrialSorceryView},
         },
-        spell::{SpellId, SpellMutation},
-        Sorcery, SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+        spell::SpellMutation,
+        Sorcery, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
     Character, CharacterMutationError,
 };
@@ -88,12 +88,12 @@ impl<'view, 'source> Character<'source> {
     /// Adds a merit to a Sorcery Archetype owned by the character
     pub fn add_sorcery_archetype_merit(
         &mut self,
-        sorcery_archetype_id: SorceryArchetypeId,
+        sorcery_archetype_name: &'source str,
         sorcery_archetype_merit_id: SorceryArchetypeMeritId,
         sorcery_archetype_merit: &'source SorceryArchetypeMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_sorcery_archetype_merit(
-            sorcery_archetype_id,
+            sorcery_archetype_name,
             sorcery_archetype_merit_id,
             sorcery_archetype_merit,
         )?;
@@ -113,16 +113,16 @@ impl<'view, 'source> Character<'source> {
     /// Adds a Spell to the character.
     pub fn add_spell(
         &mut self,
-        spell_id: SpellId,
+        name: &'source str,
         spell: &'source SpellMutation,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.add_spell(spell_id, spell)?;
+        self.exaltation.add_spell(name, spell)?;
         Ok(self)
     }
 
     /// Removes a Spell from the character. Control Spells cannot be removed.
-    pub fn remove_spell(&mut self, spell_id: SpellId) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.remove_spell(spell_id)?;
+    pub fn remove_spell(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
+        self.exaltation.remove_spell(name)?;
         self.correct_evocations(&[]);
         Ok(self)
     }

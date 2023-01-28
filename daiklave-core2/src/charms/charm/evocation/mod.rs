@@ -22,7 +22,7 @@ pub use keyword::EvocationKeyword;
 
 use self::builder::EvocationBuilder;
 
-use super::CharmId;
+use super::{CharmId, CharmName};
 
 /// A Charm which is drawn from the unique power of a Hearthstone or named
 /// Artifact.
@@ -37,7 +37,7 @@ pub struct Evocation {
     dissonant: Option<String>,
     essence_required: NonZeroU8,
     evocation_tree: HashSet<EvocationId>,
-    upgrade_charm: Option<CharmId>,
+    upgrade_charm: Option<CharmName>,
     keywords: HashSet<EvocationKeyword>,
     costs: HashMap<CharmCostType, NonZeroU8>,
     action_type: CharmActionType,
@@ -127,8 +127,19 @@ impl<'source> Evocation {
 
     /// If the Evocation is an upgrade to a non-Evocation Charm, the Id of that
     /// Charm.
-    pub fn upgrade(&self) -> Option<CharmId> {
-        self.upgrade_charm
+    pub fn upgrade(&'source self) -> Option<CharmId<'source>> {
+        match &self.upgrade_charm {
+            Some(charm_name) => Some(match charm_name {
+                CharmName::Spirit(spirit_id) => CharmId::Spirit(*spirit_id),
+                CharmName::Evocation(evocation_id) => CharmId::Evocation(*evocation_id),
+                CharmName::MartialArts(martial_arts_charm_id) => {
+                    CharmId::MartialArts(*martial_arts_charm_id)
+                }
+                CharmName::Solar(solar_id) => CharmId::Solar(*solar_id),
+                CharmName::Spell(spell_name) => CharmId::Spell(spell_name.as_str()),
+            }),
+            None => None,
+        }
     }
 
     /// Any keywords the Evocation possesses.

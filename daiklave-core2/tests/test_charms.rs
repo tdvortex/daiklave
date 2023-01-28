@@ -9,7 +9,7 @@ use daiklave_core2::{
         charm::{
             evocation::{Evocation, EvocationId, EvocationKeyword, EvokableNameMutation},
             spirit::SpiritCharm,
-            Charm, CharmId, CharmMutation, SpiritCharmId, SpiritCharmKeyword,
+            Charm, CharmId, CharmMutation, CharmName, SpiritCharmId, SpiritCharmKeyword,
         },
         CharmActionType, CharmCostType,
     },
@@ -27,9 +27,8 @@ use daiklave_core2::{
         style::MartialArtsStyle,
     },
     sorcery::{
-        spell::{Spell, SpellId, SpellKeyword},
-        AddCelestialSorcery, AddSolarSorcery, AddTerrestrialSorcery, ShapingRitual,
-        ShapingRitualId, SorceryArchetype, SorceryArchetypeId, SorceryCircle,
+        spell::{Spell, SpellKeyword},
+        ShapingRitual, Sorcery, SorceryArchetype, SorceryCircle,
     },
     unique_id::UniqueId,
     weapons::weapon::{OptionalWeaponTag, Weapon, WeaponWeightClass},
@@ -181,7 +180,7 @@ fn test_solar_charms() {
 
     // Solars must meet Charm tree requirements
     event_source
-        .apply_mutation(CharacterMutation::RemoveCharm(CharmId::Solar(
+        .apply_mutation(CharacterMutation::RemoveCharm(CharmName::Solar(
             SolarCharmId(UniqueId::Placeholder(1)),
         )))
         .unwrap();
@@ -213,7 +212,7 @@ fn test_solar_charms() {
         )))
         .unwrap();
     let character = event_source
-        .apply_mutation(CharacterMutation::RemoveCharm(CharmId::Solar(
+        .apply_mutation(CharacterMutation::RemoveCharm(CharmName::Solar(
             SolarCharmId(UniqueId::Placeholder(1)),
         )))
         .unwrap();
@@ -507,7 +506,7 @@ fn test_evocations() {
         .is_some());
 
     let character = event_source
-        .apply_mutation(CharacterMutation::RemoveCharm(CharmId::Evocation(
+        .apply_mutation(CharacterMutation::RemoveCharm(CharmName::Evocation(
             howling_lotus_strike_id,
         )))
         .unwrap();
@@ -580,7 +579,7 @@ fn test_evocations() {
             .to_owned(),
     )
     .summary("Discount for Integrity-Protecting Prana".to_owned())
-    .upgrades(CharmId::Solar(integrity_protecting_prana_id)) // Simplifying test, ignoring Breeze-Catching Descent
+    .upgrades(CharmName::Solar(integrity_protecting_prana_id)) // Simplifying test, ignoring Breeze-Catching Descent
     .build();
 
     event_source
@@ -637,7 +636,6 @@ fn test_evocations() {
 fn test_spells() {
     let mut event_source = CharacterEventSource::default();
     // Non-sorcerers cannot add Spells
-    let cirrus_skiff_id = SpellId(UniqueId::Placeholder(1));
     let cirrus_skiff = Spell::builder("Cirrus Skiff".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 471))
         .sorcerous_motes(NonZeroU8::new(15).unwrap())
@@ -666,7 +664,6 @@ fn test_spells() {
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
-            cirrus_skiff_id,
             cirrus_skiff.clone()
         )))
         .is_err());
@@ -679,79 +676,69 @@ fn test_spells() {
         ))
         .unwrap();
 
-    let scarred_by_nightmares_id = SorceryArchetypeId(UniqueId::Placeholder(1));
-    let scarred_by_nightmares = SorceryArchetype::new(
-        "Scarred by Nightmares".to_owned(),
-        Some(BookReference::new(Book::CoreRulebook, 468)),
-        "Perhaps you were a child lost in the warped depths of the \
+    let add_sorcery = Sorcery::builder()
+        .terrestrial()
+        .archetype(SorceryArchetype::new(
+            "Scarred by Nightmares".to_owned(),
+            Some(BookReference::new(Book::CoreRulebook, 468)),
+            "Perhaps you were a child lost in the warped depths of the \
         Wyld or a hero treading where the logic of the world \
         crumbles away[...]"
-            .to_owned(),
-    );
-
-    let visions_id = ShapingRitualId(UniqueId::Placeholder(1));
-    let visions = ShapingRitual::new(
-        scarred_by_nightmares_id,
-        Some(BookReference::new(Book::CoreRulebook, 468)),
-        "When the sorcerer sleeps, her player may describe the \
+                .to_owned(),
+        ))
+        .shaping_ritual(ShapingRitual::new(
+            "Scarred by Nightmares".to_owned(),
+            "Gain motes from nightmares".to_owned(),
+            Some(BookReference::new(Book::CoreRulebook, 468)),
+            "When the sorcerer sleeps, her player may describe the \
         strange visions that haunt her."
-            .to_owned(),
-    );
+                .to_owned(),
+        ))
+        .unwrap()
+        .control_spell(
+            Spell::builder("Corrupted Words".to_owned())
+                .book_reference(BookReference::new(Book::CoreRulebook, 472))
+                .sorcerous_motes(NonZeroU8::new(15).unwrap())
+                .willpower(NonZeroU8::new(1).unwrap())
+                .keyword(SpellKeyword::Psyche)
+                .duration("Indefinite".to_owned())
+                .description(
+                    "The sorcerer speaks words that bind the tongue—she \
+                    evokes a seething, bilious mass of green Essence between \
+                    her hands and casts it down the throat of a victim at short \
+                    range, where it dissolves into a ward that censors that \
+                    character's mind."
+                        .to_owned(),
+                )
+                .control_spell_description(
+                    "A sorcerer who knows Corrupted Words as her control \
+                    spell may cast it with no obvious display of magical \
+                    intervention."
+                        .to_owned(),
+                )
+                .distortion(
+                    NonZeroU8::new(15).unwrap(),
+                    "Distorting this curse makes \
+                    it possible for the victim to speak around the forbidden \
+                    subject matter for five minutes."
+                        .to_owned(),
+                )
+                .summary("Prevent someone from talking about something".to_owned())
+                .terrestrial(),
+        );
 
-    let corrupted_words_id = SpellId(UniqueId::Placeholder(2));
-    let corrupted_words = Spell::builder("Corrupted Words".to_owned())
-        .book_reference(BookReference::new(Book::CoreRulebook, 472))
-        .sorcerous_motes(NonZeroU8::new(15).unwrap())
-        .willpower(NonZeroU8::new(1).unwrap())
-        .keyword(SpellKeyword::Psyche)
-        .duration("Indefinite".to_owned())
-        .description(
-            "The sorcerer speaks words that bind the tongue—she \
-    evokes a seething, bilious mass of green Essence between \
-    her hands and casts it down the throat of a victim at short \
-    range, where it dissolves into a ward that censors that \
-    character's mind."
-                .to_owned(),
-        )
-        .control_spell_description(
-            "A sorcerer who knows Corrupted Words as her control \
-    spell may cast it with no obvious display of magical \
-    intervention."
-                .to_owned(),
-        )
-        .distortion(
-            NonZeroU8::new(15).unwrap(),
-            "Distorting this curse makes \
-    it possible for the victim to speak around the forbidden \
-    subject matter for five minutes."
-                .to_owned(),
-        )
-        .summary("Prevent someone from talking about something".to_owned())
-        .build_terrestrial();
-
-    let add_terrestrial = AddTerrestrialSorcery {
-        archetype_id: scarred_by_nightmares_id,
-        archetype: scarred_by_nightmares,
-        shaping_ritual_id: visions_id,
-        shaping_ritual: visions,
-        control_spell_id: corrupted_words_id,
-        control_spell: corrupted_words,
-    };
-    let character = event_source
-        .apply_mutation(CharacterMutation::AddTerrestrialSorcery(Box::new(
-            add_terrestrial,
-        )))
-        .unwrap();
+    let mutation = CharacterMutation::AddSorcery(Box::new(add_sorcery));
+    let character = event_source.apply_mutation(mutation).unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Spell(corrupted_words_id))
+        .get(CharmId::Spell("Corrupted Words"))
         .is_some());
     assert_eq!(
         character
             .sorcery()
             .unwrap()
             .spells()
-            .get(corrupted_words_id)
+            .get("Corrupted Words")
             .unwrap()
             .1,
         true
@@ -759,20 +746,19 @@ fn test_spells() {
 
     let character = event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
-            cirrus_skiff_id,
             cirrus_skiff,
         )))
         .unwrap();
     assert!(character
         .charms()
-        .get(CharmId::Spell(cirrus_skiff_id))
+        .get(CharmId::Spell("Cirrus Skiff"))
         .is_some());
     assert_eq!(
         character
             .sorcery()
             .unwrap()
             .spells()
-            .get(cirrus_skiff_id)
+            .get("Cirrus Skiff")
             .unwrap()
             .1,
         false
@@ -812,7 +798,6 @@ fn test_spells() {
         .apply_mutation(CharacterMutation::SetSolar(new_solar))
         .unwrap();
 
-    let butterflies_id = SpellId(UniqueId::Placeholder(3));
     let butterflies = Spell::builder("Death of Obsidian Butterflies".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 470))
         .keyword(SpellKeyword::DecisiveOnly)
@@ -826,13 +811,11 @@ fn test_spells() {
         .build(SorceryCircle::Terrestrial);
     event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
-            butterflies_id,
             butterflies,
         )))
         .unwrap();
 
     // ...but not Celestial Spells or Solar circle spells
-    let demon_id = SpellId(UniqueId::Placeholder(4));
     let demon = Spell::builder("Demon of the Second Circle".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 477))
         .ritual()
@@ -846,7 +829,6 @@ fn test_spells() {
         )
         .build(SorceryCircle::Celestial);
 
-    let death_ray_id = SpellId(UniqueId::Placeholder(5));
     let death_ray = Spell::builder("Death Ray".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 481))
         .sorcerous_motes(NonZeroU8::new(25).unwrap())
@@ -879,148 +861,127 @@ fn test_spells() {
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
-            demon_id,
             demon.clone()
         )))
         .is_err());
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
-            death_ray_id,
             death_ray.clone()
         )))
         .is_err());
 
     // Solar Celestial sorcerer can add Terrestrial or Celestial spells
-    let magma_kraken_id = SpellId(UniqueId::Placeholder(6));
-    let magma_kraken = Spell::builder("Magma Kraken".to_owned())
-        .book_reference(BookReference::new(Book::CoreRulebook, 478))
-        .sorcerous_motes(NonZeroU8::new(30).unwrap())
-        .willpower(NonZeroU8::new(1).unwrap())
-        .duration("One scene".to_owned())
-        .summary("Summons tentacles of magma from the ground".to_owned())
-        .description(
-            "Calling to the Essence of fire and earth that roils deep beneath \
-    her, the sorcerer wills ten tentacles of lava to erupt from the \
-    ground, shaking the earth as they burst forward in torrents \
-    of molten stone."
-                .to_owned(),
-        )
-        .control_spell_description(
-            "A sorcerer who knows Magma Kraken as her control spell \
-    is forever chased by magmatic flame."
-                .to_owned(),
-        )
-        .distortion(
-            NonZeroU8::new(10).unwrap(),
-            " Distorting a Magma Kraken \
-    renders it incapable of perceiving and attacking the \
-    distorting sorcerer as well as all allies within close range \
-    of her."
-                .to_owned(),
-        )
-        .build_celestial();
-
-    let taboo_id = ShapingRitualId(UniqueId::Placeholder(2));
-    let taboo = ShapingRitual::new(
-        scarred_by_nightmares_id,
-        Some(BookReference::new(Book::CoreRulebook, 468)),
-        "The sorcerer abides by an esoteric taboo or is victim to a \
+    let add_sorcery = Sorcery::builder()
+        .celestial()
+        .existing_archetype("Scarred by Nightmares".to_owned())
+        .shaping_ritual(ShapingRitual::new(
+            "Scarred by Nightmares".to_owned(),
+            "Gain motes from a taboo or delusion".to_owned(),
+            Some(BookReference::new(Book::CoreRulebook, 468)),
+            "The sorcerer abides by an esoteric taboo or is victim to a \
     delusional belief inspired by the Wyld energies inside her \
     mind, a Defining Derangement which cannot be removed \
     or altered."
-            .to_owned(),
-    );
-
-    let add_celestial = AddCelestialSorcery {
-        archetype_id: scarred_by_nightmares_id,
-        archetype: None,
-        shaping_ritual_id: taboo_id,
-        shaping_ritual: taboo,
-        control_spell_id: magma_kraken_id,
-        control_spell: magma_kraken,
-    };
+                .to_owned(),
+        ))
+        .unwrap()
+        .control_spell(
+            Spell::builder("Magma Kraken".to_owned())
+                .book_reference(BookReference::new(Book::CoreRulebook, 478))
+                .sorcerous_motes(NonZeroU8::new(30).unwrap())
+                .willpower(NonZeroU8::new(1).unwrap())
+                .duration("One scene".to_owned())
+                .summary("Summons tentacles of magma from the ground".to_owned())
+                .description(
+                    "Calling to the Essence of fire and earth that roils deep beneath \
+her, the sorcerer wills ten tentacles of lava to erupt from the \
+ground, shaking the earth as they burst forward in torrents \
+of molten stone."
+                        .to_owned(),
+                )
+                .control_spell_description(
+                    "A sorcerer who knows Magma Kraken as her control spell \
+is forever chased by magmatic flame."
+                        .to_owned(),
+                )
+                .distortion(
+                    NonZeroU8::new(10).unwrap(),
+                    " Distorting a Magma Kraken \
+renders it incapable of perceiving and attacking the \
+distorting sorcerer as well as all allies within close range \
+of her."
+                        .to_owned(),
+                )
+                .celestial(),
+        );
 
     event_source
         .apply_mutation(CharacterMutation::SetEssenceRating(3))
         .unwrap();
     event_source
-        .apply_mutation(CharacterMutation::AddCelestialSorcery(Box::new(
-            add_celestial,
-        )))
+        .apply_mutation(CharacterMutation::AddSorcery(Box::new(add_sorcery)))
         .unwrap();
     event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
-            demon_id, demon,
-        )))
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(demon)))
         .unwrap();
 
     // ...but not Solar circle spells
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
-            death_ray_id,
             death_ray.clone()
         )))
         .is_err());
 
     // Solar Solar sorcerers can add any spell
-    let benediction_id = SpellId(UniqueId::Placeholder(7));
-    let benediction = Spell::builder("Benediction of Archgenesis".to_owned())
-        .book_reference(BookReference::new(Book::CoreRulebook, 480))
-        .ritual()
-        .willpower(NonZeroU8::new(3).unwrap())
-        .duration("Instant".to_owned())
-        .summary("Make the land fertile".to_owned())
-        .description(
-            "Chanting from one sunrise to the next, the sorcerer \
-    calls down a soft, warm rain that carries life-giving Essence."
-                .to_owned(),
-        )
-        .control_spell_description(
-            "A sorcerer who knows Benediction of Archgenesis as \
-    her control spell reduces the distance requirement to \
-    one hundred miles."
-                .to_owned(),
-        )
-        .distortion(
-            NonZeroU8::new(30).unwrap(),
-            "Distorting the Benediction \
-    of Archgenesis causes all plant life within (Essence) miles \
-    of the distorting sorcerer to wither and die, leaving a barren \
-    dead zone within the blessed land."
-                .to_owned(),
-        )
-        .build_solar();
-
-    let emotions_id = ShapingRitualId(UniqueId::Placeholder(3));
-    let emotions = ShapingRitual::new(
-        scarred_by_nightmares_id,
-        Some(BookReference::new(Book::CoreRulebook, 468)),
-        "The sorcerer may feed on emotional energies like the \
+    let add_sorcery = Sorcery::builder()
+        .solar()
+        .existing_archetype("Scarred by Nightmares".to_owned())
+        .shaping_ritual(ShapingRitual::new(
+            "Scarred by Nightmares".to_owned(),
+            "Gain motes by feeding on others' emotions".to_owned(),
+            Some(BookReference::new(Book::CoreRulebook, 468)),
+            "The sorcerer may feed on emotional energies like the \
     raksha, shaping the passions of others through spellcraft."
-            .to_owned(),
-    );
+                .to_owned(),
+        ))
+        .unwrap()
+        .control_spell(
+            Spell::builder("Benediction of Archgenesis".to_owned())
+                .book_reference(BookReference::new(Book::CoreRulebook, 480))
+                .ritual()
+                .willpower(NonZeroU8::new(3).unwrap())
+                .duration("Instant".to_owned())
+                .summary("Make the land fertile".to_owned())
+                .description(
+                    "Chanting from one sunrise to the next, the sorcerer \
+calls down a soft, warm rain that carries life-giving Essence."
+                        .to_owned(),
+                )
+                .control_spell_description(
+                    "A sorcerer who knows Benediction of Archgenesis as \
+her control spell reduces the distance requirement to \
+one hundred miles."
+                        .to_owned(),
+                )
+                .distortion(
+                    NonZeroU8::new(30).unwrap(),
+                    "Distorting the Benediction \
+of Archgenesis causes all plant life within (Essence) miles \
+of the distorting sorcerer to wither and die, leaving a barren \
+dead zone within the blessed land."
+                        .to_owned(),
+                )
+                .solar(),
+        );
 
-    let add_solar_sorcery = AddSolarSorcery {
-        archetype_id: scarred_by_nightmares_id,
-        archetype: None,
-        shaping_ritual_id: emotions_id,
-        shaping_ritual: emotions,
-        control_spell_id: benediction_id,
-        control_spell: benediction,
-    };
     event_source
         .apply_mutation(CharacterMutation::SetEssenceRating(5))
         .unwrap();
     event_source
-        .apply_mutation(CharacterMutation::AddSolarSorcery(Box::new(
-            add_solar_sorcery,
-        )))
+        .apply_mutation(CharacterMutation::AddSorcery(Box::new(add_sorcery)))
         .unwrap();
     event_source
-        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(
-            death_ray_id,
-            death_ray,
-        )))
+        .apply_mutation(CharacterMutation::AddCharm(CharmMutation::Spell(death_ray)))
         .unwrap();
 }
 
@@ -1319,7 +1280,7 @@ fn test_martial_arts_charms() {
 
     // Exalts must satisfy the Charm tree prerequisites of their Styles
     let character = event_source
-        .apply_mutation(CharacterMutation::RemoveCharm(CharmId::MartialArts(
+        .apply_mutation(CharacterMutation::RemoveCharm(CharmName::MartialArts(
             shining_starfall_execution_id,
         )))
         .unwrap();

@@ -1,7 +1,7 @@
 use crate::{
     exaltation::exalt::exalt_type::solar::charm::{SolarCharm, SolarCharmId},
     martial_arts::charm::{MartialArtsCharm, MartialArtsCharmId},
-    sorcery::spell::{SpellId, SpellMutation},
+    sorcery::spell::AddSpell,
 };
 
 use super::{
@@ -23,5 +23,5 @@ pub enum CharmMutation {
     /// A Solar charm.
     Solar(SolarCharmId, SolarCharm),
     /// A Spell.
-    Spell(SpellId, SpellMutation),
+    Spell(AddSpell),
 }

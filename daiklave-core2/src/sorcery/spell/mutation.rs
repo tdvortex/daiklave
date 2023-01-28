@@ -1,5 +1,7 @@
 use crate::sorcery::{CelestialSpell, SolarSpell, TerrestrialSpell};
 
+use super::SpellName;
+
 /// A Spell, grouped by its Circle.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SpellMutation {
@@ -12,3 +14,6 @@ pub enum SpellMutation {
     /// Unconquered Sun.
     Solar(SolarSpell),
 }
+
+/// A mutation to add a spell to a character.
+pub type AddSpell = (SpellName, SpellMutation);

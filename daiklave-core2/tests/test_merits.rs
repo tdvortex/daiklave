@@ -18,9 +18,8 @@ use daiklave_core2::{
         StackableMerit, StackableMeritId, StackableMeritTemplateId,
     },
     sorcery::{
-        spell::{Spell, SpellId, SpellKeyword},
-        AddTerrestrialSorcery, ShapingRitual, ShapingRitualId, SorceryArchetype,
-        SorceryArchetypeId, SorceryArchetypeMerit, SorceryArchetypeMeritId,
+        spell::{Spell, SpellKeyword},
+        ShapingRitual, Sorcery, SorceryArchetype, SorceryArchetypeMerit, SorceryArchetypeMeritId,
     },
     unique_id::UniqueId,
     weapons::weapon::{OptionalWeaponTag, Weapon, WeaponWeightClass},
@@ -182,7 +181,16 @@ fn test_merits() {
     let mutation = CharacterMutation::SetAbilityDots(AbilityNameVanilla::Occult, 3);
     event_source.apply_mutation(mutation).unwrap();
 
-    let control_spell = Spell::builder("Death of Obsidian Butterflies".to_owned())
+    let add_sorcery = Sorcery::builder().terrestrial().archetype(SorceryArchetype::new("The Talisman of Ten Thousand Eyes".to_owned(), Some(BookReference::new(Book::CoreRulebook, 470)), "A phylactery of great sorcerous puissance[...]".to_owned()))
+    .shaping_ritual(ShapingRitual::new("The Talisman of Ten Thousand Eyes".to_owned(), "Gain motes by stunting Shape Sorcery".to_owned(), Some(BookReference::new(Book::CoreRulebook, 470)), "When the sorcerer takes the first shape sorcery action to \
+    begin casting a spell and stunts it with a description of \
+    how she casts the spell through the talisman or draws on \
+    its power, she gains (stunt rating + 2) sorcerous motes \
+    towards completing this spell. This benefit can only be \
+    received once per scene. Stunts to enhance the sorcerer's \
+    control spell do not count against the once per scene limit."
+        .to_owned())).unwrap()
+        .control_spell(Spell::builder("Death of Obsidian Butterflies".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 470))
         .keyword(SpellKeyword::DecisiveOnly)
         .keyword(SpellKeyword::Perilous)
@@ -192,36 +200,14 @@ fn test_merits() {
         .description("Sculpting Essence into volant black glass, the sorcerer unleashes a cascade of obsidian butterflies[...]".to_owned())
         .control_spell_description("A sorcerer who knows Death of Obsidian Butterflies as her control spell gains (Essence) bonus dice to the spells attack roll[...]".to_owned())
         .summary("AOE attack that makes difficult terrain".to_owned())
-        .build_terrestrial();
+        .terrestrial());
 
-    let mutation = CharacterMutation::AddTerrestrialSorcery(Box::new(AddTerrestrialSorcery {
-        archetype_id: SorceryArchetypeId(UniqueId::Placeholder(1)),
-        archetype: SorceryArchetype::new(
-            "The Talisman of Ten Thousand Eyes".to_owned(),
-            Some(BookReference::new(Book::CoreRulebook, 470)),
-            "A phylactery of great sorcerous puissance[...]".to_owned(),
-        ),
-        shaping_ritual_id: ShapingRitualId(UniqueId::Placeholder(1)),
-        shaping_ritual: ShapingRitual::new(
-            SorceryArchetypeId(UniqueId::Placeholder(1)),
-            Some(BookReference::new(Book::CoreRulebook, 470)),
-            "When the sorcerer takes the first shape sorcery action to \
-            begin casting a spell and stunts it with a description of \
-            how she casts the spell through the talisman or draws on \
-            its power, she gains (stunt rating + 2) sorcerous motes \
-            towards completing this spell. This benefit can only be \
-            received once per scene. Stunts to enhance the sorcerer's \
-            control spell do not count against the once per scene limit."
-                .to_owned(),
-        ),
-        control_spell_id: SpellId(UniqueId::Placeholder(1)),
-        control_spell,
-    }));
+    let mutation = CharacterMutation::AddSorcery(Box::new(add_sorcery));
     event_source.apply_mutation(mutation).unwrap();
 
     // A sorcery archetype merit
     let mutation = CharacterMutation::AddSorceryArchetypeMerit(
-        SorceryArchetypeId(UniqueId::Placeholder(1)),
+        "The Talisman of Ten Thousand Eyes".to_owned(),
         SorceryArchetypeMeritId(UniqueId::Placeholder(1)),
         SorceryArchetypeMerit::new(
             "Astral Meditation".to_owned(),

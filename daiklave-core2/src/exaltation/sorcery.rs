@@ -1,10 +1,8 @@
 use crate::{
     exaltation::exalt::ExaltSorcery,
     sorcery::{
-        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer,
-        spell::{Spell, SpellId},
-        ShapingRitual, ShapingRitualId, SorceryArchetypeId, SorceryArchetypeWithMerits,
-        SorceryCircle,
+        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, spell::Spell, ShapingRitual,
+        SorceryArchetypeWithMerits, SorceryCircle,
     },
 };
 
@@ -15,24 +13,19 @@ pub(crate) enum ExaltationSorcery<'view, 'source> {
 }
 
 impl<'view, 'source> ExaltationSorcery<'view, 'source> {
-    pub fn archetype(
-        &self,
-        id: SorceryArchetypeId,
-    ) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
+    pub fn archetype(&self, name: &str) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         match self {
-            ExaltationSorcery::Mortal(terrestrial) => (*terrestrial).archetype(id),
-            ExaltationSorcery::Exalt(exalt_switch) => exalt_switch.archetype(id),
+            ExaltationSorcery::Mortal(terrestrial) => (*terrestrial).archetype(name),
+            ExaltationSorcery::Exalt(exalt_switch) => exalt_switch.archetype(name),
         }
     }
 
-    pub fn archetypes_iter(&self) -> impl Iterator<Item = SorceryArchetypeId> + '_ {
+    pub fn archetypes_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         match self {
             ExaltationSorcery::Mortal(terrestrial) => {
-                std::iter::once(terrestrial.archetype_id).collect::<Vec<SorceryArchetypeId>>()
+                std::iter::once(terrestrial.archetype_name).collect::<Vec<&str>>()
             }
-            ExaltationSorcery::Exalt(exalt) => {
-                exalt.archetypes_iter().collect::<Vec<SorceryArchetypeId>>()
-            }
+            ExaltationSorcery::Exalt(exalt) => exalt.archetypes_iter().collect::<Vec<&str>>(),
         }
         .into_iter()
     }
@@ -40,7 +33,7 @@ impl<'view, 'source> ExaltationSorcery<'view, 'source> {
     pub fn shaping_ritual(
         &self,
         circle: SorceryCircle,
-    ) -> Option<(ShapingRitualId, &'source ShapingRitual)> {
+    ) -> Option<(&'source str, &'source ShapingRitual)> {
         match (self, circle) {
             (ExaltationSorcery::Mortal(terrestrial), SorceryCircle::Terrestrial) => {
                 Some(terrestrial.shaping_ritual())
@@ -50,7 +43,7 @@ impl<'view, 'source> ExaltationSorcery<'view, 'source> {
         }
     }
 
-    pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, Spell<'source>)> {
+    pub fn control_spell(&self, circle: SorceryCircle) -> Option<Spell<'source>> {
         match (self, circle) {
             (ExaltationSorcery::Mortal(terrestrial), SorceryCircle::Terrestrial) => {
                 Some(terrestrial.control_spell())
@@ -60,20 +53,20 @@ impl<'view, 'source> ExaltationSorcery<'view, 'source> {
         }
     }
 
-    pub fn get_spell(&self, spell_id: SpellId) -> Option<(Spell<'source>, bool)> {
+    pub fn get_spell(&self, name: &str) -> Option<(Spell<'source>, bool)> {
         match self {
-            ExaltationSorcery::Mortal(terrestrial) => terrestrial.get_spell(spell_id),
-            ExaltationSorcery::Exalt(exalt_switch) => exalt_switch.get_spell(spell_id),
+            ExaltationSorcery::Mortal(terrestrial) => terrestrial.get_spell(name),
+            ExaltationSorcery::Exalt(exalt_switch) => exalt_switch.get_spell(name),
         }
     }
 
-    pub fn iter_spells(&self) -> impl Iterator<Item = SpellId> + '_ {
+    pub fn iter_spells(&self) -> impl Iterator<Item = &'source str> + '_ {
         match self {
             ExaltationSorcery::Mortal(terrestrial) => {
-                terrestrial.spells_iter().collect::<Vec<SpellId>>()
+                terrestrial.spells_iter().collect::<Vec<&str>>()
             }
             ExaltationSorcery::Exalt(exalt_switch) => {
-                exalt_switch.spells_iter().collect::<Vec<SpellId>>()
+                exalt_switch.spells_iter().collect::<Vec<&str>>()
             }
         }
         .into_iter()

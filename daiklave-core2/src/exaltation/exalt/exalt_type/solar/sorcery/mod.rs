@@ -7,8 +7,8 @@ use crate::sorcery::{
         celestial::sorcerer::CelestialCircleSorcerer, solar::sorcerer::SolarCircleSorcerer,
         terrestrial::sorcerer::TerrestrialCircleSorcerer,
     },
-    spell::{Spell, SpellId},
-    ShapingRitual, ShapingRitualId, SorceryArchetypeId, SorceryArchetypeWithMerits, SorceryCircle,
+    spell::Spell,
+    ShapingRitual, SorceryArchetypeWithMerits, SorceryCircle,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -33,30 +33,26 @@ impl<'view, 'source> SolarSorcererView<'source> {
 
     pub fn archetype(
         &'view self,
-        id: SorceryArchetypeId,
+        name: &str,
     ) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         match self {
-            SolarSorcererView::Terrestrial(terrestrial) => terrestrial.archetype(id),
-            SolarSorcererView::Celestial(celestial) => celestial.archetype(id),
-            SolarSorcererView::Solar(solar) => solar.archetype(id),
+            SolarSorcererView::Terrestrial(terrestrial) => terrestrial.archetype(name),
+            SolarSorcererView::Celestial(celestial) => celestial.archetype(name),
+            SolarSorcererView::Solar(solar) => solar.archetype(name),
         }
     }
 
-    pub fn archetypes_iter(&self) -> impl Iterator<Item = SorceryArchetypeId> + '_ {
+    pub fn archetypes_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         match self {
             SolarSorcererView::Terrestrial(terrestrial) => {
-                std::iter::once(terrestrial.archetype_id).collect::<Vec<SorceryArchetypeId>>()
+                std::iter::once(terrestrial.archetype_name).collect::<Vec<&str>>()
             }
-            SolarSorcererView::Celestial(celestial) => celestial
-                .archetypes
-                .keys()
-                .copied()
-                .collect::<Vec<SorceryArchetypeId>>(),
-            SolarSorcererView::Solar(solar) => solar
-                .archetypes
-                .keys()
-                .copied()
-                .collect::<Vec<SorceryArchetypeId>>(),
+            SolarSorcererView::Celestial(celestial) => {
+                celestial.archetypes.keys().copied().collect::<Vec<&str>>()
+            }
+            SolarSorcererView::Solar(solar) => {
+                solar.archetypes.keys().copied().collect::<Vec<&str>>()
+            }
         }
         .into_iter()
     }
@@ -64,7 +60,7 @@ impl<'view, 'source> SolarSorcererView<'source> {
     pub fn shaping_ritual(
         &self,
         circle: SorceryCircle,
-    ) -> Option<(ShapingRitualId, &'source ShapingRitual)> {
+    ) -> Option<(&'source str, &'source ShapingRitual)> {
         match (self, circle) {
             (SolarSorcererView::Terrestrial(terrestrial), SorceryCircle::Terrestrial) => {
                 Some(terrestrial.shaping_ritual())
@@ -75,7 +71,7 @@ impl<'view, 'source> SolarSorcererView<'source> {
         }
     }
 
-    pub fn control_spell(&self, circle: SorceryCircle) -> Option<(SpellId, Spell<'source>)> {
+    pub fn control_spell(&self, circle: SorceryCircle) -> Option<Spell<'source>> {
         match (self, circle) {
             (SolarSorcererView::Terrestrial(terrestrial), SorceryCircle::Terrestrial) => {
                 Some(terrestrial.control_spell())
@@ -86,23 +82,23 @@ impl<'view, 'source> SolarSorcererView<'source> {
         }
     }
 
-    pub fn get_spell(&self, spell_id: SpellId) -> Option<(Spell<'source>, bool)> {
+    pub fn get_spell(&self, name: &str) -> Option<(Spell<'source>, bool)> {
         match self {
-            SolarSorcererView::Terrestrial(terrestrial) => terrestrial.get_spell(spell_id),
-            SolarSorcererView::Celestial(celestial) => celestial.get_spell(spell_id),
-            SolarSorcererView::Solar(solar) => solar.get_spell(spell_id),
+            SolarSorcererView::Terrestrial(terrestrial) => terrestrial.get_spell(name),
+            SolarSorcererView::Celestial(celestial) => celestial.get_spell(name),
+            SolarSorcererView::Solar(solar) => solar.get_spell(name),
         }
     }
 
-    pub fn spells_iter(&self) -> impl Iterator<Item = SpellId> + '_ {
+    pub fn spells_iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         match self {
             SolarSorcererView::Terrestrial(terrestrial) => {
-                terrestrial.spells_iter().collect::<Vec<SpellId>>()
+                terrestrial.spells_iter().collect::<Vec<&str>>()
             }
             SolarSorcererView::Celestial(celestial) => {
-                celestial.spells_iter().collect::<Vec<SpellId>>()
+                celestial.spells_iter().collect::<Vec<&str>>()
             }
-            SolarSorcererView::Solar(solar) => solar.spells_iter().collect::<Vec<SpellId>>(),
+            SolarSorcererView::Solar(solar) => solar.spells_iter().collect::<Vec<&str>>(),
         }
         .into_iter()
     }

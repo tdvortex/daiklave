@@ -8,7 +8,6 @@ use super::{cost::SpellCost, SpellKeyword};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SpellInner {
-    pub(crate) name: String,
     pub(crate) summary: Option<String>,
     pub(crate) cost: SpellCost,
     pub(crate) duration: String,

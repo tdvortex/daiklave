@@ -1,11 +1,12 @@
-mod id;
-pub use id::SorceryArchetypeId;
-
+mod alias;
 mod merit;
+mod name;
+pub use alias::AddSorceryArchetype;
 pub use merit::{SorceryArchetypeMerit, SorceryArchetypeMeritId};
+pub use name::SorceryArchetypeName;
 
 mod shaping_ritual;
-pub use shaping_ritual::{ShapingRitual, ShapingRitualId};
+pub use shaping_ritual::{AddShapingRitual, ShapingRitual, ShapingRitualSummary};
 
 mod with_merits;
 pub use with_merits::SorceryArchetypeWithMerits;
@@ -18,24 +19,24 @@ use crate::book_reference::BookReference;
 /// unlocks various shaping rituals as well as unique merits.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SorceryArchetype {
-    name: String,
     book_reference: Option<BookReference>,
     description: String,
 }
 
 impl SorceryArchetype {
     /// Creates a new SorceryArchetype.
-    pub fn new(name: String, book_reference: Option<BookReference>, description: String) -> Self {
-        Self {
+    pub fn new(
+        name: String,
+        book_reference: Option<BookReference>,
+        description: String,
+    ) -> AddSorceryArchetype {
+        (
             name,
-            book_reference,
-            description,
-        }
-    }
-
-    /// The name of the archetype
-    pub fn name(&self) -> &str {
-        self.name.as_str()
+            Self {
+                book_reference,
+                description,
+            },
+        )
     }
 
     /// The book reference for the archetype, if any

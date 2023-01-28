@@ -1,17 +1,16 @@
-mod id;
-pub use id::ShapingRitualId;
+mod alias;
+pub use alias::{AddShapingRitual, ShapingRitualSummary};
 
 use serde::{Deserialize, Serialize};
 
 use crate::book_reference::BookReference;
 
-use super::SorceryArchetypeId;
+use super::SorceryArchetypeName;
 
 /// A shaping ritual, one method that a sorcerous archetype might use to
 /// generate Sorcerous Motes.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ShapingRitual {
-    archetype_id: SorceryArchetypeId,
     book_reference: Option<BookReference>,
     description: String,
 }
@@ -19,20 +18,19 @@ pub struct ShapingRitual {
 impl ShapingRitual {
     /// Create a new ShapingRitual
     pub fn new(
-        archetype_id: SorceryArchetypeId,
+        archetype_name: SorceryArchetypeName,
+        ritual_summary: ShapingRitualSummary,
         book_reference: Option<BookReference>,
         description: String,
-    ) -> Self {
-        Self {
-            archetype_id,
-            book_reference,
-            description,
-        }
-    }
-
-    /// The Id of the SorceryArchetype associated with this ritual
-    pub fn archetype_id(&self) -> SorceryArchetypeId {
-        self.archetype_id
+    ) -> AddShapingRitual {
+        (
+            archetype_name,
+            ritual_summary,
+            Self {
+                book_reference,
+                description,
+            },
+        )
     }
 
     /// The book reference for the shaping ritual, if any
