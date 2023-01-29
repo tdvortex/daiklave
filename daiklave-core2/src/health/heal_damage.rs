@@ -2,13 +2,8 @@ use std::num::NonZeroU8;
 
 use crate::CharacterMutation;
 
-pub struct HealDamage(NonZeroU8);
-
-impl HealDamage {
-    pub fn new(amount: NonZeroU8) -> Self {
-        Self(amount)
-    }
-}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct HealDamage(pub NonZeroU8);
 
 impl From<HealDamage> for CharacterMutation {
     fn from(heal_damage: HealDamage) -> Self {

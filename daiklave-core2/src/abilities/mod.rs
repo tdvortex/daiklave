@@ -32,7 +32,7 @@ impl<'view, 'source> Abilities<'view, 'source> {
 
 
     fn get_vanilla(&'view self, vanilla: AbilityNameVanilla) -> Ability<'view, 'source> {
-        self.0.vanilla_abilities().get(vanilla)
+        Ability(AbilityNameQualified::Vanilla(vanilla), self.0.vanilla_abilities().get(vanilla))
     }
 
     fn get_craft(&'view self, focus: &str) -> Option<Ability<'view, 'source>> {
@@ -55,13 +55,13 @@ impl<'view, 'source> Abilities<'view, 'source> {
             AbilityNameVanilla::Bureaucracy,
         ]
         .iter()
-        .map(|ability_name| self.get(*ability_name));
+        .map(|vanilla| self.get_vanilla(*vanilla));
 
         let craft = self
             .0
             .craft()
             .iter()
-            .map(|focus| self.get_craft(focus).unwrap());
+            .filter_map(|focus| self.get_craft(focus));
 
         let after_craft = [
             AbilityNameVanilla::Dodge,
@@ -72,13 +72,13 @@ impl<'view, 'source> Abilities<'view, 'source> {
             AbilityNameVanilla::Lore,
         ]
         .iter()
-        .map(|ability_name| self.get(*ability_name));
+        .map(|vanilla| self.get_vanilla(*vanilla));
 
         let martial_arts = self
             .0
             .martial_arts()
             .iter()
-            .map(|style_id| self.get_martial_arts(style_id).unwrap());
+            .filter_map(|style_id| self.get_martial_arts(style_id));
 
         let after_martial_arts = [
             AbilityNameVanilla::Medicine,
@@ -96,7 +96,7 @@ impl<'view, 'source> Abilities<'view, 'source> {
             AbilityNameVanilla::War,
         ]
         .iter()
-        .map(|ability_name| self.get(*ability_name));
+        .map(|vanilla| self.get_vanilla(*vanilla));
 
         before_craft
             .chain(craft)

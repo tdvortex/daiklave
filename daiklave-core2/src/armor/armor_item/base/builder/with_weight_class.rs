@@ -33,14 +33,14 @@ impl BaseArmorItemBuilderWithWeightClass {
 
     /// Completes the build process as a mundane armor item.
     pub fn build_mundane(self) -> AddMundaneArmor {
-        (
-            self.name,
-            MundaneArmor(BaseArmor {
+        AddMundaneArmor {
+            name: self.name.into(),
+            armor: MundaneArmor(BaseArmor {
                 book_reference: self.book_reference,
                 tags: self.tags,
                 weight_class: self.weight_class,
             }),
-        )
+        }
     }
 
     /// Completes the build process as a base artifact armor item.

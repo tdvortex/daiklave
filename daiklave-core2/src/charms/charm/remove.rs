@@ -2,13 +2,8 @@ use crate::CharacterMutation;
 
 use super::CharmNameMutation;
 
-pub struct RemoveCharm(CharmNameMutation);
-
-impl RemoveCharm {
-    pub fn new(name: CharmNameMutation) -> Self {
-        Self(name)
-    }
-}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RemoveCharm(pub CharmNameMutation);
 
 impl From<RemoveCharm> for CharacterMutation {
     fn from(remove_charm: RemoveCharm) -> Self {

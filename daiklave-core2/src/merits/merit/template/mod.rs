@@ -1,9 +1,6 @@
 mod dot_options;
 pub(crate) use dot_options::MeritTemplateDotOptions;
 
-mod id;
-pub use id::MeritTemplateId;
-
 mod with_dots;
 pub(crate) use with_dots::{MeritTemplateWithDots, MeritTemplateWithDotsMemo};
 
@@ -28,7 +25,6 @@ impl MeritTemplate {
                     Err(MeritError::InvalidDotRating)
                 } else {
                     Ok(MeritTemplateWithDotsMemo {
-                        name: self.name,
                         book_reference: self.book_reference,
                         merit_type: self.merit_type,
                         shared_description: self.shared_description,
@@ -42,7 +38,6 @@ impl MeritTemplate {
                     Err(MeritError::InvalidDotRating)
                 } else {
                     Ok(MeritTemplateWithDotsMemo {
-                        name: self.name,
                         book_reference: self.book_reference,
                         merit_type: self.merit_type,
                         shared_description: self.shared_description,

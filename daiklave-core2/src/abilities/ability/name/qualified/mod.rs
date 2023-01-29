@@ -18,7 +18,7 @@ impl From<AbilityNameVanilla> for AbilityNameQualified<'_> {
 impl<'source> From<&'source AbilityNameQualifiedMutation> for AbilityNameQualified<'source> {
     fn from(name: &'source AbilityNameQualifiedMutation) -> Self {
         match name {
-            AbilityNameQualifiedMutation::Vanilla(vanilla) => vanilla.into(),
+            AbilityNameQualifiedMutation::Vanilla(vanilla) => (*vanilla).into(),
             AbilityNameQualifiedMutation::Craft(_) => todo!(),
             AbilityNameQualifiedMutation::MartialArts(_) => todo!(),
         }

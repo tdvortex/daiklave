@@ -17,7 +17,7 @@ mod template;
 mod unslot;
 mod unslotted;
 
-pub use add::{AddHearthstone, AddManse, Demense, Manse};
+pub use add::{AddHearthstone};
 pub use name::HearthstoneName;
 pub use slot::SlotHearthstone;
 pub use unslot::UnslotHearthstone;

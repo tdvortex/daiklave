@@ -2,13 +2,8 @@ use crate::CharacterMutation;
 
 use super::trigger::LimitTrigger;
 
-pub struct SetLimitTrigger(LimitTrigger);
-
-impl SetLimitTrigger {
-    pub fn new(trigger: impl ToString) -> Self {
-        Self(trigger.into())
-    }
-}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SetLimitTrigger(pub LimitTrigger);
 
 impl From<SetLimitTrigger> for CharacterMutation {
     fn from(set_limit_trigger: SetLimitTrigger) -> Self {

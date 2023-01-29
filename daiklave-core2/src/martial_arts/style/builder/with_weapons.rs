@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use crate::{
     armor::armor_item::ArmorWeightClass,
     book_reference::BookReference,
-    martial_arts::style::{MartialArtsStyle, MartialArtsStyleWeapon, MartialArtsStyleName},
+    martial_arts::style::{MartialArtsStyle, MartialArtsStyleWeapon, MartialArtsStyleName, AddMartialArtsStyle},
 };
 
 /// A Martial Arts style builder after at least one weapon has been specified.
@@ -51,16 +51,16 @@ impl MartialArtsStyleBuilderWithWeapons {
     }
 
     /// Completes the builder, returning a Martial Arts style.
-    pub fn build(self) -> (String, MartialArtsStyle) {
-        (
-            self.name,
-            MartialArtsStyle {
+    pub fn build(self) -> AddMartialArtsStyle {
+        AddMartialArtsStyle {
+            style_name: self.name,
+            style: MartialArtsStyle {
                 book_reference: self.book_reference,
                 description: self.description,
                 first_weapon: self.first_weapon,
                 usable_weapons: self.usable_weapons,
                 max_armor_weight: self.max_armor_weight,
             },
-        )
+        }
     }
 }

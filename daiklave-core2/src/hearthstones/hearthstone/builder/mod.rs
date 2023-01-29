@@ -14,7 +14,7 @@ pub use with_powers::HearthstoneBuilderWithPowers;
 
 use crate::book_reference::BookReference;
 
-use super::HearthstoneCategory;
+use super::{HearthstoneCategory, HearthstoneName};
 
 /// A builder path to construct a Hearthstone. Required fields (in order) are
 /// name, category, level, and powers. After powers, keywords may be provided.
@@ -25,7 +25,7 @@ use super::HearthstoneCategory;
 /// Linked and not WildBorn may have any combination of ManseBorn, Steady, or
 /// Dependent, or none of them.
 pub struct HearthstoneBuilder {
-    pub(crate) name: String,
+    pub(crate) name: HearthstoneName,
     pub(crate) book_reference: Option<BookReference>,
 }
 

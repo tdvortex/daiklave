@@ -1,4 +1,6 @@
+mod add;
 mod error;
+pub use add::AddLanguages;
 pub use error::LanguageError;
 /// Details of individual languages.
 pub mod language;

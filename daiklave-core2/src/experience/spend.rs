@@ -2,13 +2,8 @@ use std::num::NonZeroU16;
 
 use crate::CharacterMutation;
 
-pub struct SpendExperience(NonZeroU16);
-
-impl SpendExperience {
-    pub fn new(amount: NonZeroU16) -> Self {
-        Self(amount)
-    }
-}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct SpendExperience(pub NonZeroU16);
 
 impl From<SpendExperience> for CharacterMutation {
     fn from(spend_experience: SpendExperience) -> Self {

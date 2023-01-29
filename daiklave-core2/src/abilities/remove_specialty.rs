@@ -2,22 +2,14 @@ use crate::CharacterMutation;
 
 use super::ability::AbilityNameQualifiedMutation;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RemoveSpecialty {
-    ability_name: AbilityNameQualifiedMutation,
-    specialty: String,
-}
-
-impl RemoveSpecialty {
-    pub fn new(ability_name: AbilityNameQualifiedMutation, specialty: String) -> Self {
-        Self {
-            ability_name,
-            specialty,
-        }
-    }
+    pub ability_name: AbilityNameQualifiedMutation,
+    pub specialty: String,
 }
 
 impl From<RemoveSpecialty> for CharacterMutation {
     fn from(remove_specialty: RemoveSpecialty) -> Self {
-        CharacterMutation::AddSpecialty(remove_specialty)
+        CharacterMutation::RemoveSpecialty(remove_specialty)
     }
 }

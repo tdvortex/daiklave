@@ -2,6 +2,7 @@ use crate::CharacterMutation;
 
 use super::{WeaponNameMutation, Equipped};
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UnequipWeapon {
     name: WeaponNameMutation,
     equipped: Equipped,

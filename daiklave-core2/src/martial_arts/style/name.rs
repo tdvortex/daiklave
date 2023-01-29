@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MartialArtsStyleName(String);
 
 impl<T> From<T> for MartialArtsStyleName where T: ToString {

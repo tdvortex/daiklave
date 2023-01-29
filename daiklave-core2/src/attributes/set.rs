@@ -1,7 +1,10 @@
 use std::num::NonZeroU8;
 
+use crate::CharacterMutation;
+
 use super::{AttributeName, AttributeError};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SetAttribute {
     name: AttributeName,
     dots: NonZeroU8
@@ -17,5 +20,11 @@ impl SetAttribute {
                 dots,
             })
         }
+    }
+}
+
+impl From<SetAttribute> for CharacterMutation {
+    fn from(set_attribute: SetAttribute) -> Self {
+        Self::SetAttribute(set_attribute)
     }
 }

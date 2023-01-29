@@ -5,6 +5,7 @@ use crate::{weapons::weapon::{builder::base::BaseWeaponBuilder, range::WeaponRan
 use super::{MundaneWeapon, MundaneWeaponName};
 
 /// A Mundane weapon and its name, to be added to a character.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddMundaneWeapon {
     name: MundaneWeaponName,
     weapon: MundaneWeapon,
@@ -19,6 +20,11 @@ impl AddMundaneWeapon {
             attack_range: WeaponRange::ContactOnly,
             tags: HashSet::new(),
         }
+    }
+
+    pub fn set_quantity(&mut self, quantity: NonZeroU8) -> &mut Self {
+        self.quantity = quantity;
+        self
     }
 }
 

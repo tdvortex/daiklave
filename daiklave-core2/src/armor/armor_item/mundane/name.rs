@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MundaneArmorName(String);
 
 impl<T> From<T> for MundaneArmorName where T: ToString {

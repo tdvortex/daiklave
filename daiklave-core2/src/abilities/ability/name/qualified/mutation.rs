@@ -2,6 +2,7 @@ use crate::{craft::CraftName, martial_arts::style::MartialArtsStyleName, abiliti
 
 use super::AbilityNameQualified;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AbilityNameQualifiedMutation {
     Vanilla(AbilityNameVanilla),
     Craft(CraftName),

@@ -1,9 +1,16 @@
 mod add;
+pub use add::AddMerit;
+
+mod manse_name;
+pub use manse_name::ManseName;
 
 /// Builder path for making new merits.
 pub mod builder;
 
 pub(crate) mod constants;
+
+mod demense_name;
+pub use demense_name::DemenseName;
 
 mod error;
 pub use error::MeritError;
@@ -16,7 +23,7 @@ pub use merit_type::MeritType;
 
 mod nonstackable;
 pub(crate) use nonstackable::NonStackableMeritView;
-pub use nonstackable::{NonStackableMerit, NonStackableMeritId};
+pub use nonstackable::{NonStackableMerit};
 
 mod prerequisite;
 pub use prerequisite::MeritPrerequisite;
@@ -27,7 +34,7 @@ pub(crate) use source::MeritSource;
 mod stackable;
 pub(crate) use stackable::StackableMeritView;
 pub use stackable::{
-    StackableMerit, StackableMeritId, StackableMeritTemplate, StackableMeritTemplateId,
+    StackableMerit, StackableMeritTemplate,
 };
 
 mod template;

@@ -2,6 +2,7 @@ use crate::CharacterMutation;
 
 use super::{AbilityError, ability::AbilityNameVanilla};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SetAbility {
     name: AbilityNameVanilla,
     dots: u8    

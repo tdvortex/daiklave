@@ -2,18 +2,10 @@ use crate::{CharacterMutation, exaltation::exalt::essence::MotePoolName};
 
 use super::ArtifactNameMutation;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AttuneArtifact{
-    artifact_name: ArtifactNameMutation,
-    first: MotePoolName,
-}
-
-impl AttuneArtifact {
-    pub fn new(artifact_name: ArtifactNameMutation, first: MotePoolName) -> Self {
-        Self {
-            artifact_name,
-            first,
-        }
-    }
+    pub artifact_name: ArtifactNameMutation,
+    pub first: MotePoolName,
 }
 
 impl From<AttuneArtifact> for CharacterMutation {

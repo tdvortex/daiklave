@@ -1,5 +1,5 @@
 use crate::{
-    armor::armor_item::artifact::BaseArtifactArmor, artifact::MagicMaterial,
+    armor::armor_item::artifact::{BaseArtifactArmor, ArtifactArmorName}, artifact::MagicMaterial,
     book_reference::BookReference,
 };
 
@@ -7,7 +7,7 @@ use super::with_hearthstone_slots::ArtifactArmorItemBuilderWithHearthstoneSlots;
 
 /// An artifact armor item builder after merit dots have been specified.
 pub struct ArtifactArmorItemBuilderWithMeritDots {
-    pub(crate) name: String,
+    pub(crate) name: ArtifactArmorName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,

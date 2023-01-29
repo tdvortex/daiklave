@@ -2,13 +2,8 @@ use crate::CharacterMutation;
 
 use super::MundaneArmorName;
 
-pub struct RemoveMundaneArmor(MundaneArmorName);
-
-impl RemoveMundaneArmor {
-    pub fn new(name: MundaneArmorName) -> Self {
-        Self(name)
-    }
-}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RemoveMundaneArmor(pub MundaneArmorName);
 
 impl From<RemoveMundaneArmor> for CharacterMutation {
     fn from(remove_mundane_armor: RemoveMundaneArmor) -> Self {

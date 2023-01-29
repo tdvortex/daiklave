@@ -4,6 +4,7 @@ use crate::CharacterMutation;
 
 use super::WoundPenalty;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SetHealthTrack(pub HashMap<WoundPenalty, u8>);
 
 impl From<SetHealthTrack> for CharacterMutation {

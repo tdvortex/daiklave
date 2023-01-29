@@ -1,7 +1,10 @@
 use std::num::NonZeroU8;
 
+use crate::CharacterMutation;
+
 use super::WillpowerError;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SetWillpowerRating(NonZeroU8);
 
 impl SetWillpowerRating {
@@ -11,5 +14,11 @@ impl SetWillpowerRating {
         } else {
             Ok(SetWillpowerRating(rating))
         }
+    }
+}
+
+impl From<SetWillpowerRating> for CharacterMutation {
+    fn from(set_willpower_rating: SetWillpowerRating) -> Self {
+        Self::SetWillpowerRating(set_willpower_rating)
     }
 }

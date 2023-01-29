@@ -2,13 +2,8 @@ use std::num::NonZeroU8;
 
 use crate::CharacterMutation;
 
-pub struct RecoverMotes(NonZeroU8);
-
-impl RecoverMotes {
-    pub fn new(amount: NonZeroU8) -> Self {
-        Self(amount)
-    }
-}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct RecoverMotes(pub NonZeroU8);
 
 impl From<RecoverMotes> for CharacterMutation {
     fn from(recover_motes: RecoverMotes) -> Self {

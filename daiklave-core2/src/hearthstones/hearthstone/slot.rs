@@ -2,18 +2,10 @@ use crate::{CharacterMutation, artifact::ArtifactNameMutation};
 
 use super::HearthstoneName;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SlotHearthstone {
-    artifact_name: ArtifactNameMutation,
-    hearthstone_name: HearthstoneName,
-}
-
-impl SlotHearthstone {
-    pub fn new(artifact_name: ArtifactNameMutation, hearthstone_name: HearthstoneName) -> Self {
-        Self {
-            artifact_name,
-            hearthstone_name,
-        }
-    }
+    pub artifact_name: ArtifactNameMutation,
+    pub hearthstone_name: HearthstoneName,
 }
 
 impl From<SlotHearthstone> for CharacterMutation {

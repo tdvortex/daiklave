@@ -1,12 +1,7 @@
 use crate::CharacterMutation;
 
-pub struct SetConcept(String);
-
-impl SetConcept {
-    pub fn new(concept: String) -> Self {
-        Self(concept)
-    }
-}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SetConcept(pub String);
 
 impl From<SetConcept> for CharacterMutation {
     fn from(set_concept: SetConcept) -> Self {

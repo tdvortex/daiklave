@@ -1,4 +1,4 @@
-use crate::CharacterMutation;
+use crate::{CharacterMutation, merits::merit::AddMerit};
 
 use super::{MartialArtsStyleName, MartialArtsStyle, builder::MartialArtsStyleBuilder};
 
@@ -20,6 +20,6 @@ impl AddMartialArtsStyle {
 
 impl From<AddMartialArtsStyle> for CharacterMutation {
     fn from(add_martial_arts_style: AddMartialArtsStyle) -> Self {
-        todo!()
+        Self::AddMerit(add_martial_arts_style.into::<AddMerit>())
     }
 }

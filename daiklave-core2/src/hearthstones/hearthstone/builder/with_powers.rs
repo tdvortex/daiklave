@@ -2,7 +2,7 @@ use crate::{
     book_reference::BookReference,
     hearthstones::hearthstone::{
         details::HearthstoneDetailsMemo, stability::HearthstoneStability,
-        template::HearthstoneTemplate, AddHearthstone, GeomancyLevel, HearthstoneCategory,
+        template::HearthstoneTemplate, AddHearthstone, GeomancyLevel, HearthstoneCategory, HearthstoneName,
     },
 };
 
@@ -13,7 +13,7 @@ use super::{
 /// A Hearthstone builder after its powers have been specified. If the
 /// hearthstone has no keywords, it can be completed here with build().
 pub struct HearthstoneBuilderWithPowers {
-    pub(crate) name: String,
+    pub(crate) name: HearthstoneName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) powers: String,
     pub(crate) category: HearthstoneCategory,
@@ -93,20 +93,20 @@ impl HearthstoneBuilderWithPowers {
         }
     }
 
-    /// Completes the builder, returning an AddHearthstone.
+    /// Completes the builder, returning an AddHearthstone struct.
     pub fn build(self) -> AddHearthstone {
-        (
-            self.name,
-            HearthstoneTemplate {
+        AddHearthstone {
+            name: self.name,
+            template: HearthstoneTemplate {
                 details: HearthstoneDetailsMemo {
                     book_reference: self.book_reference,
                     category: self.category,
                     geomancy_level: self.geomancy_level,
                     powers: self.powers,
-                    is_dependent: false,
+                    is_dependent: self.is_dependent,
                 },
                 stability: HearthstoneStability::Unspecified,
             },
-        )
+        }
     }
 }

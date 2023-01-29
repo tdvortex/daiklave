@@ -4,18 +4,10 @@ use crate::CharacterMutation;
 
 use super::MundaneWeaponName;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RemoveMundaneWeapon {
-    name: MundaneWeaponName,
-    quantity: NonZeroU8,
-}
-
-impl RemoveMundaneWeapon {
-    pub fn new(name: impl ToString, quantity: NonZeroU8) -> Self {
-        Self {
-            name: name.into(),
-            quantity,
-        }
-    }
+    pub name: MundaneWeaponName,
+    pub quantity: NonZeroU8,
 }
 
 impl From<RemoveMundaneWeapon> for CharacterMutation {

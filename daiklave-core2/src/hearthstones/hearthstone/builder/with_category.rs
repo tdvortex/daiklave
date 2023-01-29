@@ -1,13 +1,13 @@
 use crate::{
     book_reference::BookReference,
-    hearthstones::hearthstone::{GeomancyLevel, HearthstoneCategory},
+    hearthstones::hearthstone::{GeomancyLevel, HearthstoneCategory, HearthstoneName},
 };
 
 use super::HearthstoneBuilderWithLevel;
 
 /// A Hearthstone builder after category has been specified.
 pub struct HearthstoneBuilderWithCategory {
-    pub(crate) name: String,
+    pub(crate) name: HearthstoneName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) category: HearthstoneCategory,
 }

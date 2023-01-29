@@ -2,13 +2,8 @@ use std::num::NonZeroU16;
 
 use crate::CharacterMutation;
 
-pub struct GainExaltExperience(NonZeroU16);
-
-impl GainExaltExperience {
-    pub fn new(amount: NonZeroU16) -> Self {
-        Self(amount)
-    }
-}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct GainExaltExperience(pub NonZeroU16);
 
 impl From<GainExaltExperience> for CharacterMutation {
     fn from(gain_exalt_experience: GainExaltExperience) -> Self {

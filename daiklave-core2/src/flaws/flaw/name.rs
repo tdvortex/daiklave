@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FlawName(String);
 
 impl<T> From<T> for FlawName where T: ToString {

@@ -2,14 +2,14 @@ use crate::{
     book_reference::BookReference,
     hearthstones::hearthstone::{
         details::HearthstoneDetailsMemo, stability::HearthstoneStability,
-        template::HearthstoneTemplate, AddHearthstone, GeomancyLevel, HearthstoneCategory,
+        template::HearthstoneTemplate, AddHearthstone, GeomancyLevel, HearthstoneCategory, HearthstoneName,
     },
 };
 
 /// A hearthstone that is neither Linked nor WildBorn. It may be Manse-Born,
 /// Steady, or Dependent, in any combination or none of the above.
 pub struct NotLinkedOrWildbornHearthstoneBuilder {
-    pub(crate) name: String,
+    pub(crate) name: HearthstoneName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) powers: String,
     pub(crate) category: HearthstoneCategory,
@@ -53,9 +53,9 @@ impl NotLinkedOrWildbornHearthstoneBuilder {
             (false, false) => HearthstoneStability::Unspecified,
         };
 
-        (
-            self.name,
-            HearthstoneTemplate {
+        AddHearthstone {
+            name: self.name,
+            template: HearthstoneTemplate {
                 details: HearthstoneDetailsMemo {
                     book_reference: self.book_reference,
                     category: self.category,
@@ -65,6 +65,7 @@ impl NotLinkedOrWildbornHearthstoneBuilder {
                 },
                 stability,
             },
-        )
+        }
     }
+
 }

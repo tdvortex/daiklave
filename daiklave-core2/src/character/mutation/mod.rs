@@ -13,6 +13,7 @@ pub use crate::health::{HealDamage, SetHealthTrack, TakeDamage};
 pub use crate::hearthstones::hearthstone::{SlotHearthstone, UnslotHearthstone};
 pub use crate::intimacies::intimacy::{AddIntimacy, RemoveIntimacy};
 pub use crate::languages::language::SetNativeLanguage;
+use crate::merits::merit::AddMerit;
 pub use crate::name::SetName;
 pub use crate::concept::{RemoveConcept, SetConcept};
 pub use crate::exaltation::mortal::SetMortal;
@@ -135,5 +136,7 @@ pub enum CharacterMutation {
     /// Adds Exalt experience (Solar Experience, for example)
     GainExaltExperience(GainExaltExperience),
     /// Spends Exalt experience
-    SpendExaltExperince(SpendExaltExperience),
+    SpendExaltExperience(SpendExaltExperience),
+    AddMerit(AddMerit),
+    RemoveMerit(RemoveMerit),
 }

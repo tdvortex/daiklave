@@ -1,6 +1,6 @@
 use crate::{
     book_reference::BookReference,
-    merits::merit::{template::MeritTemplateId, MeritPrerequisite, MeritType},
+    merits::merit::{MeritPrerequisite, MeritType},
 };
 
 use super::{with_dots::StackableMeritWithDots, StackableMerit};
@@ -16,10 +16,6 @@ impl<'source> StackableMeritView<'source> {
             detail: self.detail.to_owned(),
             dotted: self.dotted.as_memo(),
         }
-    }
-
-    pub fn template_id(&self) -> MeritTemplateId {
-        self.dotted.template_id()
     }
 
     pub fn template_name(&self) -> &'source str {

@@ -2,14 +2,14 @@ use crate::{
     book_reference::BookReference,
     hearthstones::hearthstone::{
         details::HearthstoneDetailsMemo, stability::HearthstoneStability,
-        template::HearthstoneTemplate, AddHearthstone, GeomancyLevel, HearthstoneCategory,
+        template::HearthstoneTemplate, AddHearthstone, GeomancyLevel, HearthstoneCategory, HearthstoneName,
     },
 };
 
 /// A Wild-Born hearthstone. It may not be Linked, ManseBorn, or Steady, but it
 /// may be Dependent.
 pub struct WildBornHearthstoneBuilder {
-    pub(crate) name: String,
+    pub(crate) name: HearthstoneName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) powers: String,
     pub(crate) category: HearthstoneCategory,
@@ -30,11 +30,11 @@ impl WildBornHearthstoneBuilder {
         self
     }
 
-    /// Completes the builder, returning a HearthstoneTemplate.
+    /// Completes the builder, returning an AddHearthstone struct.
     pub fn build(self) -> AddHearthstone {
-        (
-            self.name,
-            HearthstoneTemplate {
+        AddHearthstone {
+            name: self.name,
+            template: HearthstoneTemplate {
                 details: HearthstoneDetailsMemo {
                     book_reference: self.book_reference,
                     category: self.category,
@@ -44,6 +44,6 @@ impl WildBornHearthstoneBuilder {
                 },
                 stability: HearthstoneStability::WildBorn,
             },
-        )
+        }
     }
 }

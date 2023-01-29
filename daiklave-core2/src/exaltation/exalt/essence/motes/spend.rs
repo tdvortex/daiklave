@@ -2,18 +2,10 @@ use std::num::NonZeroU8;
 
 use crate::{CharacterMutation, exaltation::exalt::essence::MotePoolName};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SpendMotes {
-    first: MotePoolName,
-    amount: NonZeroU8,
-}
-
-impl SpendMotes {
-    pub fn new(first: MotePoolName, amount: NonZeroU8) -> Self {
-        Self {
-            first,
-            amount,
-        }
-    }
+    pub first: MotePoolName,
+    pub amount: NonZeroU8,
 }
 
 impl From<SpendMotes> for CharacterMutation {

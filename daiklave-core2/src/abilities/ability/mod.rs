@@ -16,12 +16,12 @@ impl<'view, 'source> Ability<'view, 'source> {
 
     /// The dots rating of the ability.
     pub fn dots(&self) -> u8 {
-        self.0.rating().dots()
+        self.1.dots()
     }
 
     /// An iterator over the specialties that the ability has, if any.
     /// Sorted alphabetically.
     pub fn specialties(&self) -> impl Iterator<Item = &'source str> {
-        self.0.rating().specialties()
+        self.1.specialties()
     }
 }

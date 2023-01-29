@@ -1,6 +1,5 @@
 
 mod mutation;
-use std::ops::Deref;
 
 pub use mutation::ArtifactNameMutation;
 
@@ -13,18 +12,6 @@ pub enum ArtifactName<'source> {
     Armor(&'source str),
     /// A wonder's name.
     Wonder(&'source str),
-}
-
-impl<'any, 'source> Deref for ArtifactName<'source> {
-    type Target = str;
-
-    fn deref(&'any self) -> &'source Self::Target {
-        match self {
-            ArtifactName::Weapon(name) => *name,
-            ArtifactName::Armor(name) => *name,
-            ArtifactName::Wonder(name) => *name,
-        }
-    }
 }
 
 impl<'source> From<&'source ArtifactNameMutation> for ArtifactName<'source> {

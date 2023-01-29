@@ -1,5 +1,5 @@
 use crate::{
-    armor::armor_item::artifact::BaseArtifactArmor, artifact::MagicMaterial,
+    armor::armor_item::artifact::{BaseArtifactArmor, ArtifactArmorName}, artifact::MagicMaterial,
     book_reference::BookReference,
 };
 
@@ -8,7 +8,7 @@ use super::with_magic_material::ArtifactArmorItemBuilderWithMagicMaterial;
 /// An artifact armor builder after the base artifact armor has been
 /// specified.
 pub struct ArtifactArmorItemBuilderWithBaseArmor {
-    pub(crate) name: String,
+    pub(crate) name: ArtifactArmorName,
     pub(crate) base_armor_name: String,
     pub(crate) base_armor: BaseArtifactArmor,
     pub(crate) book_reference: Option<BookReference>,

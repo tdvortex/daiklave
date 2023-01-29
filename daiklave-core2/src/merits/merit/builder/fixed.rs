@@ -77,7 +77,6 @@ impl FixedMeritTemplateBuilder {
     /// the dot value is not in the range [0, 5] inclusive.
     pub fn stackable(
         self,
-        id: StackableMeritTemplateId,
     ) -> Result<StackableMeritTemplate, MeritError> {
         if !(0..=5).contains(&self.dot_requirement) {
             Err(MeritError::InvalidDotRating)

@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CraftName(String);
 
 impl<T> From<T> for CraftName where T: ToString {

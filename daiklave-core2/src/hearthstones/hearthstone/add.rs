@@ -1,13 +1,16 @@
-use super::HearthstoneTemplate;
+use super::{HearthstoneTemplate, HearthstoneName, builder::HearthstoneBuilder};
 
 /// A hearthstone and its name, to be added to a character.
-pub type AddHearthstone = (String, HearthstoneTemplate);
+pub struct AddHearthstone {
+    name: HearthstoneName,
+    template: HearthstoneTemplate,
+}
 
-/// Currently the only property of a manse is its name.
-pub type Manse = String;
-
-/// Currently the only propery of a demense is its name.
-pub type Demense = String;
-
-/// A manse, its demense, and its hearthstone, to be added to a character.
-pub type AddManse = (Manse, Demense, AddHearthstone);
+impl AddHearthstone {
+    pub fn builder(name: impl ToString) -> HearthstoneBuilder {
+        HearthstoneBuilder {
+            name: name.into(),
+            book_reference: None,
+        }
+    }
+}

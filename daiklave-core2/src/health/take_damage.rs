@@ -4,18 +4,10 @@ use crate::CharacterMutation;
 
 use super::DamageLevel;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TakeDamage {
-    level: DamageLevel,
-    amount: NonZeroU8,
-}
-
-impl TakeDamage {
-    pub fn new(level: DamageLevel, amount: NonZeroU8) -> Self {
-        Self {
-            level,
-            amount,
-        }
-    }
+    pub level: DamageLevel,
+    pub amount: NonZeroU8,
 }
 
 impl From<TakeDamage> for CharacterMutation {

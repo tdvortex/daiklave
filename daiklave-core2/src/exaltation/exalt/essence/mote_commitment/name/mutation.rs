@@ -4,6 +4,7 @@ use crate::artifact::ArtifactNameMutation;
 
 use super::{OtherMoteCommitmentName, MoteCommitmentName};
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MoteCommitmentNameMutation {
     AttunedArtifact(ArtifactNameMutation),
     Other(OtherMoteCommitmentName),

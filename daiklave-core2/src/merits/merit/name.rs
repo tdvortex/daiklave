@@ -1,8 +1,6 @@
 use crate::{
-    artifact::ArtifactName, languages::language::MajorLanguage, sorcery::SorceryArchetypeMeritId,
+    artifact::ArtifactName, languages::language::MajorLanguage,
 };
-
-use super::{nonstackable::NonStackableMeritId, stackable::StackableMeritId};
 
 /// The name of a specific instance of a merit as owned by a character. Not to
 /// be confused with MeritTemplateId, which describes a specific merit without
@@ -35,10 +33,10 @@ pub enum MeritInstanceName<'a> {
     /// Pain Tolerance.
     NonStackable(&'a str),
     /// A merit which associated with a specific Sorcery Archetype.
-    SorceryArchetype(SorceryArchetypeMeritId),
+    SorceryArchetype(&'a str),
     /// A merit which is stackable and requires a qualifying descriptor for
-    /// each purchase. The first parameter 6is the general template (like 
+    /// each purchase. The first parameter is the general template (like 
     /// "Allies") and the second parameter is the specific detail (like 
     /// "Rakan Thulio")
-    Stackable(StackableMeritId),
+    Stackable(&'a str, &'a str),
 }

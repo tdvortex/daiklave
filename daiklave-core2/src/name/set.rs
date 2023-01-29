@@ -1,12 +1,7 @@
 use crate::CharacterMutation;
 
-pub struct SetName(String);
-
-impl SetName {
-    pub fn new(name: String) -> Self {
-        Self(name)
-    }
-}
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SetName(pub String);
 
 impl From<SetName> for CharacterMutation {
     fn from(set_name: SetName) -> Self {

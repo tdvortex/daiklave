@@ -1,5 +1,5 @@
 use crate::{
-    armor::armor_item::artifact::AddArtifactArmor, weapons::weapon::artifact::ArtifactWeapon,
+    armor::armor_item::artifact::AddArtifactArmor, weapons::weapon::artifact::ArtifactWeapon, CharacterMutation,
 };
 
 /// Builders for Wonders and Warstriders.
@@ -41,5 +41,17 @@ impl AddArtifact {
             hearthstone_slots: 0,
             attunement_cost: None,
         }
+    }
+}
+
+impl From<AddArtifactArmor> for AddArtifact {
+    fn from(add_artifact_armor: AddArtifactArmor) -> Self {
+        Self::Armor(add_artifact_armor)
+    }
+}
+
+impl From<AddArtifact> for CharacterMutation {
+    fn from(add_artifact: AddArtifact) -> Self {
+        Self::AddMerit(add_artifact.into())
     }
 }

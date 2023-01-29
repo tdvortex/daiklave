@@ -1,7 +1,7 @@
 use crate::{
     armor::armor_item::artifact::{
         no_attunement::ArtifactArmorNoAttunementMemo, AddArtifactArmor, ArtifactArmor,
-        BaseArtifactArmor,
+        BaseArtifactArmor, ArtifactArmorName,
     },
     artifact::MagicMaterial,
     book_reference::BookReference,
@@ -9,7 +9,7 @@ use crate::{
 
 /// An artifact armor builder after specifying the number of hearthstone slots.
 pub struct ArtifactArmorItemBuilderWithHearthstoneSlots {
-    pub(crate) name: String,
+    pub(crate) name: ArtifactArmorName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
@@ -41,9 +41,9 @@ impl ArtifactArmorItemBuilderWithHearthstoneSlots {
 
     /// Finalizes the construction of a piece of artifact armor.
     pub fn build(self) -> AddArtifactArmor {
-        (
-            self.name,
-            ArtifactArmor(
+        AddArtifactArmor {
+            name: self.name,
+            armor: ArtifactArmor(
                 ArtifactArmorNoAttunementMemo {
                     book_reference: self.book_reference,
                     lore: self.lore,
@@ -62,6 +62,6 @@ impl ArtifactArmorItemBuilderWithHearthstoneSlots {
                 },
                 None,
             ),
-        )
+        }
     }
 }
