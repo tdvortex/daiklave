@@ -5,7 +5,7 @@ use crate::{
     book_reference::{Book, BookReference},
     hearthstones::hearthstone::GeomancyLevel,
     languages::language::MajorLanguage,
-    sorcery::{SorceryArchetypeMeritDetails},
+    sorcery::{SorceryArchetypeMerit},
 };
 
 use super::{
@@ -48,7 +48,7 @@ pub(crate) enum MeritSource<'source> {
     MartialArtist(&'source str),
     MortalSorcerer,
     NonStackable(&'source str, NonStackableMeritView<'source>),
-    SorceryArchetype(&'source str, &'source SorceryArchetypeMeritDetails),
+    SorceryArchetype(SorceryArchetypeMerit<'source>),
     Stackable(&'source str, &'source str, StackableMeritView<'source>), // Template name, instance detail
 }
 
@@ -78,28 +78,9 @@ impl<'source> MeritSource<'source> {
             MeritSource::Stackable(template_name, instance_name, _) => {
                 MeritInstanceName::Stackable(*template_name, *&instance_name)
             }
-            MeritSource::SorceryArchetype(merit_name, _) => MeritInstanceName::SorceryArchetype(*merit_name),
+            MeritSource::SorceryArchetype(sorcery_merit) => MeritInstanceName::SorceryArchetype(sorcery_merit.archetype_name(), sorcery_merit.name()),
         }
     }
-
-    // pub fn template_name(&self) -> &'source str {
-    //     match self {
-    //         MeritSource::Artifact(_, _) => "Artifact",
-    //         MeritSource::DemenseNoManse(_, _) => "Demense",
-    //         MeritSource::DemenseWithManse(_, _, _) => "Demense",
-    //         MeritSource::ExaltedHealing(_) => "Exalted Healing",
-    //         MeritSource::HearthstoneNoManse(_, _) => "Hearthstone",
-    //         MeritSource::HearthstoneWithManse(_, _) => "Hearthstone",
-    //         MeritSource::LocalTongues(_) => "Language",
-    //         MeritSource::MajorLanguage(_) => "Language",
-    //         MeritSource::Manse(_, _, _) => "Manse",
-    //         MeritSource::MartialArtist(_) => "Martial Artist",
-    //         MeritSource::MortalSorcerer => "Terrestrial Circle Sorcerer (Mortal)",
-    //         MeritSource::NonStackable(_, nonstackable) => nonstackable.template_name(),
-    //         MeritSource::Stackable(_, stackable) => stackable.template_name(),
-    //         MeritSource::SorceryArchetype(_, sorcery_merit) => (*sorcery_merit).name(),
-    //     }
-    // }
 
     pub fn book_reference(&self) -> Option<BookReference> {
         match self {
@@ -122,43 +103,9 @@ impl<'source> MeritSource<'source> {
             MeritSource::MortalSorcerer => Some(BookReference::new(Book::CoreRulebook, 470)),
             MeritSource::NonStackable(_, nonstackable) => nonstackable.book_reference(),
             MeritSource::Stackable(_, _, stackable) => stackable.book_reference(),
-            MeritSource::SorceryArchetype(_, sorcery_merit) => (*sorcery_merit).book_reference(),
+            MeritSource::SorceryArchetype(sorcery_merit) => sorcery_merit.book_reference(),
         }
     }
-
-    // pub fn detail(&self) -> Option<&'source str> {
-    //     match self {
-    //         MeritSource::Artifact(name, _) => match name {
-    //             ArtifactName::Weapon(name)
-    //             | ArtifactName::Armor(name)
-    //             | ArtifactName::Wonder(name) => Some(*name),
-    //         },
-    //         MeritSource::DemenseNoManse(name, _) => Some(*name),
-    //         MeritSource::DemenseWithManse(_, name, _) => Some(*name),
-    //         MeritSource::ExaltedHealing(_) => None,
-    //         MeritSource::HearthstoneNoManse(name, _) => Some(*name),
-    //         MeritSource::HearthstoneWithManse(name, _) => Some(*name),
-    //         MeritSource::Manse(_, detail, _) => Some(*detail),
-    //         MeritSource::MartialArtist(style_name) => Some(*style_name),
-    //         MeritSource::MortalSorcerer => None,
-    //         MeritSource::NonStackable(_, _) => None,
-    //         MeritSource::Stackable(_, stackable) => Some(stackable.detail()),
-    //         MeritSource::LocalTongues(_) => Some("Local Tongues"),
-    //         MeritSource::MajorLanguage(major) => Some(match major {
-    //             MajorLanguage::Dragontongue => "Dragontongue",
-    //             MajorLanguage::Flametongue => "Flametongue",
-    //             MajorLanguage::ForestTongue => "Forest-Tongue",
-    //             MajorLanguage::GuildCant => "Guild Cant",
-    //             MajorLanguage::HighRealm => "High Realm",
-    //             MajorLanguage::LowRealm => "Low Realm",
-    //             MajorLanguage::OldRealm => "Old Realm",
-    //             MajorLanguage::Riverspeak => "Riverspeak",
-    //             MajorLanguage::Seatongue => "Seatongue",
-    //             MajorLanguage::Skytongue => "Skytongue",
-    //         }),
-    //         MeritSource::SorceryArchetype(_, _) => None,
-    //     }
-    // }
 
     pub fn dots(&self) -> u8 {
         match self {
@@ -184,7 +131,7 @@ impl<'source> MeritSource<'source> {
             MeritSource::MortalSorcerer => 5,
             MeritSource::NonStackable(_, nonstackable) => nonstackable.dots(),
             MeritSource::Stackable(_, _, stackable) => stackable.dots(),
-            MeritSource::SorceryArchetype(_, sorcery_merit) => (*sorcery_merit).dots(),
+            MeritSource::SorceryArchetype(sorcery_merit) => sorcery_merit.dots(),
         }
     }
 
@@ -203,7 +150,7 @@ impl<'source> MeritSource<'source> {
             MeritSource::MortalSorcerer => MeritType::Story,
             MeritSource::NonStackable(_, nonstackable) => nonstackable.merit_type(),
             MeritSource::Stackable(_, _, stackable) => stackable.merit_type(),
-            MeritSource::SorceryArchetype(_, _) => MeritType::Story,
+            MeritSource::SorceryArchetype(_) => MeritType::Story,
         }
     }
 
@@ -257,8 +204,8 @@ impl<'source> MeritSource<'source> {
             MeritSource::MortalSorcerer => (MORTAL_SORCERY, None),
             MeritSource::NonStackable(_, nonstackable) => nonstackable.description(),
             MeritSource::Stackable(_, _, stackable) => stackable.description(),
-            MeritSource::SorceryArchetype(_, sorcery_merit) => {
-                ((*sorcery_merit).description(), None)
+            MeritSource::SorceryArchetype(sorcery_merit) => {
+                (sorcery_merit.description(), None)
             }
         }
     }

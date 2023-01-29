@@ -33,7 +33,7 @@ pub enum MeritInstanceName<'a> {
     /// Pain Tolerance.
     NonStackable(&'a str),
     /// A merit which associated with a specific Sorcery Archetype.
-    SorceryArchetype(&'a str),
+    SorceryArchetype(&'a str, &'a str),
     /// A merit which is stackable and requires a qualifying descriptor for
     /// each purchase. The first parameter is the general template (like 
     /// "Allies") and the second parameter is the specific detail (like 

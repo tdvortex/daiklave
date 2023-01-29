@@ -24,7 +24,6 @@ use crate::{
     abilities::AbilitiesVanilla,
     attributes::Attributes,
     book_reference::BookReference,
-    charms::charm::{AddCharm, CharmNameMutation},
     craft::Craft,
     exaltation::Exaltation,
     experience::ExperiencePool,
@@ -33,13 +32,12 @@ use crate::{
     intimacies::intimacy::{IntimacyLevel, IntimacyTypeMemo},
     languages::language::LanguageMutation,
     merits::merit::{NonStackableMeritView, StackableMeritView},
-    sorcery::{SorceryCircle, SorceryError},
     willpower::Willpower,
 };
 
 use self::mutation::{
     CommitMotes, HealDamage, RecoverMotes, SetAttribute,
-    SetName, SetWillpowerRating, SpendMotes, TakeDamage, SetEssenceRating, EquipWeapon, UnequipWeapon, RemoveMundaneWeapon, EquipArmor, SetConcept, SlotHearthstone, UnslotHearthstone, AttuneArtifact,
+    SetName, SetWillpowerRating, SpendMotes, TakeDamage, SetEssenceRating, EquipWeapon, UnequipWeapon, RemoveMundaneWeapon, EquipArmor, SetConcept, SlotHearthstone, UnslotHearthstone, AttuneArtifact, RemoveFlaw, GainLimit, ReduceLimit, SetLimitTrigger, GainExperience, SpendExperience, GainExaltExperience, GainWillpower, SpendWillpower, SetHealthTrack, SpendExaltExperience,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -152,59 +150,28 @@ impl<'source> Character<'source> {
             CharacterMutation::SetNativeLanguage(language_mutation) => {
                 self.set_native_language(language_mutation)
             }
-            CharacterMutation::AddCharm(add_charm) => match add_charm {
-                AddCharm::Eclipse((spirit_charm_name, eclipse_charm)) => {
-                    self.add_eclipse_charm(spirit_charm_name.as_str(), eclipse_charm)
-                }
-                AddCharm::Evocation((evocation_name, evocation)) => {
-                    self.add_evocation(evocation_name.as_str(), evocation)
-                }
-                AddCharm::MartialArts((ma_charm_name, ma_charm)) => {
-                    self.add_martial_arts_charm(ma_charm_name.as_str(), ma_charm)
-                }
-                AddCharm::Solar((solar_charm_name, solar_charm)) => {
-                    self.add_solar_charm(solar_charm_name.as_str(), solar_charm)
-                }
-                AddCharm::Spell(add_) => self.add_spell(spell_name.as_str(), spell),
-            },
-            CharacterMutation::RemoveCharm(charm_name) => match charm_name {
-                CharmNameMutation::Spirit(spirit_charm_id) => {
-                    self.remove_eclipse_charm(spirit_charm_id.as_str())
-                }
-                CharmNameMutation::Evocation(evocation_name) => {
-                    self.remove_evocation(evocation_name.as_str())
-                }
-                CharmNameMutation::MartialArts(ma_charm_name) => {
-                    self.remove_martial_arts_charm(ma_charm_name.as_str())
-                }
-                CharmNameMutation::Solar(solar_charm_name) => {
-                    self.remove_solar_charm(solar_charm_name.as_str())
-                }
-                CharmNameMutation::Spell(spell_name) => self.remove_spell(spell_name.as_str()),
-            },
-            CharacterMutation::AddFlaw(flaw_mutation) => self.add_flaw(flaw_mutation),
-            CharacterMutation::RemoveFlaw(name) => self.remove_flaw(name.as_str()),
-            CharacterMutation::AddIntimacy(intimacy) => self.add_intimacy(intimacy),
-            CharacterMutation::RemoveIntimacy(intimacy) => self.remove_intimacy(intimacy),
-            CharacterMutation::GainLimit(amount) => self.gain_limit(*amount),
-            CharacterMutation::ReduceLimit(amount) => self.reduce_limit(*amount),
-            CharacterMutation::SetLimitTrigger(trigger) => self.set_limit_trigger(trigger.as_str()),
-            CharacterMutation::GainExperience(amount) => self.gain_base_experience(*amount),
-            CharacterMutation::SpendExperience(amount) => self.spend_base_experience(*amount),
-            CharacterMutation::GainExaltExperience(amount) => self.gain_exalt_experience(*amount),
-            CharacterMutation::RemoveSorcery => {
-                let sorcery = self.sorcery().ok_or(CharacterMutationError::SorceryError(
-                    SorceryError::CircleSequence,
-                ))?;
-
-                if sorcery.control_spell(SorceryCircle::Solar).is_some() {
-                    self.remove_solar_sorcery()
-                } else if sorcery.control_spell(SorceryCircle::Celestial).is_some() {
-                    self.remove_celestial_sorcery()
-                } else {
-                    self.remove_terrestrial_sorcery()
-                }
-            }
+            CharacterMutation::AddCharm(add_charm) => self.add_charm(add_charm),
+            CharacterMutation::RemoveCharm(remove_charm) => self.remove_charm(remove_charm),
+            CharacterMutation::AddFlaw(add_flaw) => self.add_flaw(add_flaw),
+            CharacterMutation::RemoveFlaw(RemoveFlaw(name)) => self.remove_flaw(name),
+            CharacterMutation::AddIntimacy(add_intimacy) => self.add_intimacy(add_intimacy),
+            CharacterMutation::RemoveIntimacy(remove_intimcay) => self.remove_intimacy(remove_intimcay),
+            CharacterMutation::GainLimit(GainLimit(amount)) => self.gain_limit(*amount),
+            CharacterMutation::ReduceLimit(ReduceLimit(amount)) => self.reduce_limit(*amount),
+            CharacterMutation::SetLimitTrigger(SetLimitTrigger(trigger)) => self.set_limit_trigger(trigger),
+            CharacterMutation::GainExperience(GainExperience(amount)) => self.gain_base_experience(*amount),
+            CharacterMutation::SpendExperience(SpendExperience(amount)) => self.spend_base_experience(*amount),
+            CharacterMutation::GainExaltExperience(GainExaltExperience(amount)) => self.gain_exalt_experience(*amount),
+            CharacterMutation::SpendExaltExperience(SpendExaltExperience(amount)) => self.spend_exalt_experience(*amount),
+            CharacterMutation::RemoveSorcery => self.remove_sorcery(),
+            CharacterMutation::GainWillpower(GainWillpower(amount)) => self.gain_willpower(*amount),
+            CharacterMutation::SpendWillpower(SpendWillpower(amount)) => self.spend_willpower(*amount),
+            CharacterMutation::SetHealthTrack(SetHealthTrack(hashmap)) => self.set_health_track(hashmap),
+            CharacterMutation::AddSorcery(add_sorcery) => self.add_sorcery(add_sorcery),
+            CharacterMutation::AddMerit(add_merit) => self.add_merit(add_merit),
+            CharacterMutation::RemoveMerit(remove_merit) => self.remove_merit(remove_merit),
+            CharacterMutation::AddLanguages(_) => todo!(),
+            CharacterMutation::RemoveLanguage(_) => todo!(),
         }
     }
 }

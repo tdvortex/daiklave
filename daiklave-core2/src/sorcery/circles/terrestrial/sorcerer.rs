@@ -31,7 +31,11 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
         name: &str,
     ) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
         if name == self.archetype_name {
-            Some((self.archetype_name, self.archetype, &self.archetype_merits))
+            Some(SorceryArchetypeWithMerits {
+                archetype_name: self.archetype_name,
+                archetype: self.archetype,
+                merits: &self.archetype_merits,
+            })
         } else {
             None
         }

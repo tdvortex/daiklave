@@ -1,6 +1,6 @@
-use crate::{sorcery::SorceryArchetypeName, book_reference::BookReference};
+use crate::{sorcery::SorceryArchetypeName, CharacterMutation, merits::merit::AddMerit};
 
-use super::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName};
+use super::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName, builder::SorceryArchetypeMeritBuilderWithDots};
 
 pub struct AddSorceryArchetypeMerit {
     archetype_name: SorceryArchetypeName,
@@ -8,22 +8,14 @@ pub struct AddSorceryArchetypeMerit {
     merit: SorceryArchetypeMeritDetails,
 }
 
-impl AddSorceryArchetypeMerit {
-    pub fn new(
-        archetype_name: SorceryArchetypeName,
-        merit_name: SorceryArchetypeMeritName,
-        book_reference: Option<BookReference>,
-        dots: u8,
-        description: String,
-    ) -> AddSorceryArchetypeMerit {
-        AddSorceryArchetypeMerit {
-            archetype_name,
-            merit_name,
-            merit: SorceryArchetypeMeritDetails {
-                book_reference,
-                dots,
-                description,
-            }
-        }
+impl From<SorceryArchetypeMeritBuilderWithDots> for AddSorceryArchetypeMerit {
+    fn from(builder: SorceryArchetypeMeritBuilderWithDots) -> Self {
+        builder.build()
+    }
+}
+
+impl From<AddSorceryArchetypeMerit> for CharacterMutation {
+    fn from(add_sorcery_merit: AddSorceryArchetypeMerit) -> Self {
+        AddMerit::from(add_sorcery_merit).into()
     }
 }

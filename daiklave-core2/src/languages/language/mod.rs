@@ -1,3 +1,4 @@
+mod add;
 mod local_tongue_name;
 mod major;
 mod remove;
@@ -6,6 +7,7 @@ pub use remove::RemoveLanguage;
 
 mod mutation;
 mod set_native;
+pub use add::AddLanguage;
 pub use local_tongue_name::LocalTongueName;
 pub(crate) use mutation::LanguageMutation;
 pub use set_native::SetNativeLanguage;

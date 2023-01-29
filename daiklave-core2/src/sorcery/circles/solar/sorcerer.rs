@@ -46,7 +46,11 @@ impl<'view, 'source> SolarCircleSorcerer<'source> {
         if self.circle_archetypes.contains(&name) {
             self.archetypes
                 .get_key_value(name)
-                .map(|(name, (archetype, merits))| (*name, *archetype, merits))
+                .map(|(name, (archetype, merits))| SorceryArchetypeWithMerits {
+                    archetype_name: *name,
+                    archetype: *archetype,
+                    merits,
+                })
         } else {
             None
         }

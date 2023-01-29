@@ -1,11 +1,11 @@
 use crate::{CharacterMutation, charms::charm::AddCharm};
 
-use super::{MartialArtsCharm, MartialArtsCharmName};
+use super::{MartialArtsCharmDetails, MartialArtsCharmName};
 
 /// A Martial Arts charm to be added to a character.
 pub struct AddMartialArtsCharm {
     name: MartialArtsCharmName,
-    charm: MartialArtsCharm,
+    charm: MartialArtsCharmDetails,
 }
 
 impl From<AddMartialArtsCharm> for CharacterMutation {

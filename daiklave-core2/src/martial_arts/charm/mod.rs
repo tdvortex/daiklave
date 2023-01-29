@@ -22,9 +22,16 @@ use crate::{
 
 use self::builder::MartialArtsCharmBuilder;
 
-/// A Martial Arts charm.
+pub struct MartialArtsCharm<'source> {
+    name: &'source str,
+    style_name: &'source str,
+    details: &'source MartialArtsCharmDetails,
+}
+
+
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct MartialArtsCharm {
+pub(crate) struct MartialArtsCharmDetails {
     style: String,
     book_reference: Option<BookReference>,
     summary: Option<String>,
@@ -41,7 +48,7 @@ pub struct MartialArtsCharm {
     duration: String,
 }
 
-impl<'source> MartialArtsCharm {
+impl<'source> MartialArtsCharmDetails {
     /// Starts a builder to create a new Martial Arts Charm.
     pub fn builder(charm_name: String, style_name: String) -> MartialArtsCharmBuilder {
         MartialArtsCharmBuilder {

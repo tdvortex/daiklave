@@ -6,7 +6,7 @@ use crate::{
 };
 
 use self::{
-    artifact::builder::ArtifactWeaponBuilder,
+    artifact::{builder::ArtifactWeaponBuilder, AddBaseArtifactWeapon},
     base::{builder::BaseWeaponBuilder, BaseWeapon},
     range::WeaponRange,
 };
@@ -48,9 +48,9 @@ pub struct Weapon<'source>(pub(crate) WeaponType<'source>);
 impl<'view, 'source> Weapon<'source> {
     /// Starts constructing a base weapon, which is either a mundane
     /// weapon (like "sword") or base artifact weapon (like "daiklave").
-    pub fn base(name: String) -> BaseWeaponBuilder {
+    pub fn new_base(name: impl Into<String>) -> BaseWeaponBuilder {
         BaseWeaponBuilder {
-            name,
+            name: name.into(),
             book_reference: None,
             attack_range: WeaponRange::ContactOnly,
             tags: HashSet::new(),
@@ -59,9 +59,10 @@ impl<'view, 'source> Weapon<'source> {
 
     /// Starts constructing a unique, named artifact weapon (like "Volcano
     /// Cutter").
-    pub fn artifact(name: String) -> ArtifactWeaponBuilder {
+    pub fn new_artifact(base_weapon: AddBaseArtifactWeapon) -> ArtifactWeaponBuilder {
         ArtifactWeaponBuilder {
-            name,
+            base_weapon_name: base_weapon.name,
+            base_weapon: base_weapon.weapon,
             book_reference: None,
             lore: None,
             powers: None,

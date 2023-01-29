@@ -26,7 +26,7 @@ use crate::{
         CharmError,
     },
     hearthstones::UnslottedHearthstone,
-    martial_arts::{charm::MartialArtsCharm, style::MartialArtsStyle, MartialArtist},
+    martial_arts::{charm::MartialArtsCharmDetails, style::MartialArtsStyle, MartialArtist},
     sorcery::{
         circles::{
             celestial::{sorcerer::CelestialCircleSorcerer, AddCelestialSorcery},
@@ -34,7 +34,7 @@ use crate::{
             terrestrial::AddTerrestrialSorceryView,
         },
         spell::SpellMutation,
-        Sorcery, SorceryArchetypeMeritDetails, SorceryError,
+        Sorcery, SorceryArchetypeMeritDetails, SorceryError, AddTerrestrialSorcery,
     },
     weapons::weapon::{
         artifact::ArtifactWeapon, mundane::MundaneWeapon, EquipHand, Equipped, Weapon,
@@ -267,7 +267,7 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn add_terrestrial_sorcery(
         &mut self,
-        add_terrestrial: AddTerrestrialSorceryView<'source>,
+        add_terrestrial: &'source AddTerrestrialSorcery,
         occult_dots: u8,
         intelligence_dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -1087,7 +1087,7 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn add_martial_arts_charm(
         &mut self,
         name: &'source str,
-        martial_arts_charm: &'source MartialArtsCharm,
+        martial_arts_charm: &'source MartialArtsCharmDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => Err(CharacterMutationError::CharmError(CharmError::Mortal)),

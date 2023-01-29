@@ -23,12 +23,3 @@ pub struct AddTerrestrialSorcery {
     /// Their Terrestrial Control Spell.
     pub control_spell: TerrestrialSpell,
 }
-
-pub(crate) struct AddTerrestrialSorceryView<'source> {
-    pub archetype_name: &'source str,
-    pub archetype: &'source SorceryArchetypeDetails,
-    pub shaping_ritual_name: &'source str,
-    pub shaping_ritual: &'source ShapingRitualDetails,
-    pub control_spell_name: &'source str,
-    pub control_spell: &'source TerrestrialSpell,
-}

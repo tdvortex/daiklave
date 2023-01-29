@@ -6,14 +6,14 @@ use std::{
 use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
-    martial_arts::charm::{AddMartialArtsCharm, MartialArtsCharm, MartialArtsCharmKeyword},
+    martial_arts::{charm::{AddMartialArtsCharm, MartialArtsCharmDetails, MartialArtsCharmKeyword, MartialArtsCharmName}, style::MartialArtsStyleName},
 };
 
 /// A Martial Arts Charm builder after the description has been provided. To
 /// complete the builder, call build().
 pub struct MartialArtsCharmBuilderWithDescription {
-    pub(crate) name: String,
-    pub(crate) style: String,
+    pub(crate) name: MartialArtsCharmName,
+    pub(crate) style: MartialArtsStyleName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) charms_required: HashSet<String>,
     pub(crate) mastery: Option<String>,
@@ -85,9 +85,9 @@ impl MartialArtsCharmBuilderWithDescription {
 
     /// Completes the builder, returning a Martial Arts Charm.
     pub fn build(self) -> AddMartialArtsCharm {
-        (
-            self.name,
-            MartialArtsCharm {
+        AddMartialArtsCharm {
+            name: self.name,
+            charm: MartialArtsCharmDetails {
                 style: self.style,
                 book_reference: self.book_reference,
                 summary: self.summary,
@@ -103,6 +103,6 @@ impl MartialArtsCharmBuilderWithDescription {
                 action_type: self.action_type,
                 duration: self.duration,
             },
-        )
+        }
     }
 }

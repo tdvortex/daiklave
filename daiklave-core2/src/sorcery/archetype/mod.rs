@@ -4,7 +4,7 @@ mod merits;
 mod name;
 pub use add::AddSorceryArchetype;
 pub(crate) use merit::SorceryArchetypeMeritDetails;
-pub use merit::{SorceryArchetypeMeritName};
+pub use merit::{SorceryArchetypeMeritName, SorceryArchetypeMerit};
 pub use merits::SorceryArchetypeMerits;
 pub use name::SorceryArchetypeName;
 

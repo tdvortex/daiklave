@@ -106,8 +106,8 @@ pub enum CharacterMutation {
     AttuneArtifact(AttuneArtifact),
     /// Set the character's native language.
     SetNativeLanguage(SetNativeLanguage),
-    /// Adds (non-native) languages to the character.
-    AddLanguages(AddLanguages),
+    /// Adds a (non-native) language to the character.
+    AddLanguage(AddLanguage),
     /// Removes a language from the character.
     RemoveLanguage(RemoveLanguage),
     /// Adds a circle of Sorcery to a character. The circle, archetype, shaping

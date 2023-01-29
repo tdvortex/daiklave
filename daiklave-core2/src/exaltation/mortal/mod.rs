@@ -30,9 +30,9 @@ use crate::{
     martial_arts::{style::MartialArtsStyle, MartialArtsError},
     merits::merit::MeritError,
     sorcery::{
-        circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
+        circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer},
         spell::SpellMutation,
-        SorceryArchetypeMeritDetails, SorceryError,
+        SorceryArchetypeMeritDetails, SorceryError, AddTerrestrialSorcery,
     },
     weapons::{
         weapon::{
@@ -106,7 +106,7 @@ impl<'view, 'source> Mortal<'source> {
 
     pub fn add_terrestrial_sorcery(
         &mut self,
-        add_terrestrial: AddTerrestrialSorceryView<'source>,
+        add_terrestrial: &'source AddTerrestrialSorcery,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self.sorcery.is_some() {
             return Err(CharacterMutationError::SorceryError(
@@ -115,13 +115,13 @@ impl<'view, 'source> Mortal<'source> {
         }
 
         self.sorcery = Some(TerrestrialCircleSorcerer {
-            archetype_name: add_terrestrial.archetype_name,
-            archetype: add_terrestrial.archetype,
+            archetype_name: &add_terrestrial.archetype_name,
+            archetype: &add_terrestrial.archetype,
             archetype_merits: HashMap::new(),
-            shaping_ritual_name: add_terrestrial.shaping_ritual_name,
-            shaping_ritual: add_terrestrial.shaping_ritual,
-            control_spell_name: add_terrestrial.control_spell_name,
-            control_spell: add_terrestrial.control_spell,
+            shaping_ritual_name: &add_terrestrial.shaping_ritual_summary,
+            shaping_ritual: &add_terrestrial.shaping_ritual,
+            control_spell_name: &add_terrestrial.control_spell_name,
+            control_spell: &add_terrestrial.control_spell,
             other_spells: HashMap::new(),
         });
 

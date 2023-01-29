@@ -5,9 +5,9 @@ use crate::{
 
 use super::with_magic_material::ArtifactWeaponBuilderWithMagicMaterial;
 
-/// An artifact builder after the base weapon has been specified.
+/// An artifact builder after the name has been specified.
 /// The next stage is .material().
-pub struct ArtifactWeaponBuilderWithBaseWeapon {
+pub struct ArtifactWeaponBuilderWithName {
     pub(crate) name: ArtifactWeaponName,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
@@ -16,7 +16,7 @@ pub struct ArtifactWeaponBuilderWithBaseWeapon {
     pub(crate) base_weapon: BaseArtifactWeapon,
 }
 
-impl ArtifactWeaponBuilderWithBaseWeapon {
+impl ArtifactWeaponBuilderWithName {
     /// Add flavor text to describe the weapon's forging, history, and prior
     /// wielders.
     pub fn lore(mut self, lore: String) -> Self {

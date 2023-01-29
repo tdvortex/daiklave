@@ -49,14 +49,13 @@ use crate::{
     },
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::UnslottedHearthstone,
-    martial_arts::{charm::MartialArtsCharm, style::MartialArtsStyle, MartialArtsError},
+    martial_arts::{charm::MartialArtsCharmDetails, style::MartialArtsStyle, MartialArtsError},
     sorcery::{
         circles::{
             celestial::AddCelestialSorcery, solar::AddSolarSorcery,
-            terrestrial::AddTerrestrialSorceryView,
         },
         spell::SpellMutation,
-        Sorcery, SorceryArchetypeMeritDetails, SorceryError,
+        Sorcery, SorceryArchetypeMeritDetails, SorceryError, AddTerrestrialSorcery,
     },
     weapons::{
         weapon::{
@@ -440,7 +439,7 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn add_terrestrial_sorcery(
         &mut self,
-        add_terrestrial: AddTerrestrialSorceryView<'source>,
+        add_terrestrial: &'source AddTerrestrialSorcery,
         occult_dots: u8,
         _intelligence_dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
@@ -1063,7 +1062,7 @@ impl<'view, 'source> Exalt<'source> {
     pub fn add_martial_arts_charm(
         &mut self,
         name: &'source str,
-        martial_arts_charm: &'source MartialArtsCharm,
+        martial_arts_charm: &'source MartialArtsCharmDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
         let style = self
             .martial_arts_styles

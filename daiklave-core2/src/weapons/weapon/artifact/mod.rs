@@ -12,7 +12,8 @@ pub use name::ArtifactWeaponName;
 use std::ops::Deref;
 
 pub use add_base::AddBaseArtifactWeapon;
-pub use base::BaseArtifactWeapon;
+pub(crate) use base::BaseArtifactWeapon;
+pub(crate) use handedness::ArtifactWeaponHandedness;
 pub(crate) use grouped::{
     HandlessArtifactWeapon, HandlessArtifactWeaponMemo, HandlessArtifactWeaponNoAttunement,
     HandlessArtifactWeaponNoAttunementMemo, NonnaturalArtifactWeapon, NonnaturalArtifactWeaponMemo,
@@ -25,7 +26,7 @@ pub(crate) use newtype::{
     WornArtifactWeaponMemo, WornArtifactWeaponView,
 };
 
-use self::{inner::ArtifactWeaponInner, handedness::ArtifactWeaponHandedness};
+use self::{inner::ArtifactWeaponInner};
 
 use super::{
     equipped::{EquipHand, Equipped},

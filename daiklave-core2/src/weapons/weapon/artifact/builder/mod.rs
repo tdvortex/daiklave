@@ -1,29 +1,43 @@
-mod with_base_weapon;
+mod with_name;
 mod with_heartstone_slots;
 mod with_magic_material;
 mod with_merit_dots;
 
-pub use with_base_weapon::ArtifactWeaponBuilderWithBaseWeapon;
+pub use with_name::ArtifactWeaponBuilderWithName;
 pub use with_heartstone_slots::ArtifactWeaponBuilderWithHearthstoneSlots;
 pub use with_magic_material::ArtifactWeaponBuilderWithMagicMaterial;
 pub use with_merit_dots::ArtifactWeaponBuilderWithMeritDots;
 
 use crate::book_reference::BookReference;
 
-use super::{AddBaseArtifactWeapon, ArtifactWeaponName};
+use super::{AddBaseArtifactWeapon, ArtifactWeaponName, BaseArtifactWeapon};
 
-/// A builder to construct a new artifact weapon. Enforces that required fields
-/// are specified in order: name, base artifact, magic material, merit dots,
-/// and finally hearthstone slots. Optional fields (lore, powers, and book
-/// reference) may be specified at any time prior to the final build().
 pub struct ArtifactWeaponBuilder {
-    pub(crate) name: ArtifactWeaponName,
+    pub(crate) base_weapon_name: String,
+    pub(crate) base_weapon: BaseArtifactWeapon,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
     pub(crate) book_reference: Option<BookReference>,
 }
 
+impl From<AddBaseArtifactWeapon> for ArtifactWeaponBuilder {
+    fn from(add_base_weapon: AddBaseArtifactWeapon) -> Self {
+        Self::base_weapon(add_base_weapon)
+    }
+}
+
 impl ArtifactWeaponBuilder {
+    pub fn base_weapon(add_base_weapon: AddBaseArtifactWeapon) -> Self {
+        Self {
+            base_weapon_name: add_base_weapon.name,
+            base_weapon: add_base_weapon.weapon,
+            lore: None,
+            powers: None,
+            book_reference: None
+        }
+    }
+
+
     /// Add flavor text to describe the weapon's forging, history, and prior
     /// wielders.
     pub fn lore(mut self, lore: String) -> Self {
@@ -45,15 +59,14 @@ impl ArtifactWeaponBuilder {
         self
     }
 
-    /// Specifies the base artifact weapon for the artifact.
-    pub fn base_artifact(
+    pub fn name(
         self,
-        add_base_artifact_weapon: AddBaseArtifactWeapon,
-    ) -> ArtifactWeaponBuilderWithBaseWeapon {
-        ArtifactWeaponBuilderWithBaseWeapon {
-            name: self.name,
-            base_weapon_name: add_base_artifact_weapon.name,
-            base_weapon: add_base_artifact_weapon.weapon,
+        name: impl Into<ArtifactWeaponName>,
+    ) -> ArtifactWeaponBuilderWithName {
+        ArtifactWeaponBuilderWithName {
+            name: name.into(),
+            base_weapon_name: self.base_weapon_name,
+            base_weapon: self.base_weapon,
             lore: self.lore,
             powers: self.powers,
             book_reference: self.book_reference,

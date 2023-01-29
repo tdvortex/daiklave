@@ -3,12 +3,11 @@ use crate::{
     book_reference::BookReference,
     weapons::weapon::{
         artifact::{
-            base::BaseArtifactWeapon, inner::ArtifactWeaponInnerMemo,
-            memo::ArtifactWeaponHandedness, AddArtifactWeapon,
-            OneHandedArtifactWeaponMemo, TwoHandedArtifactWeaponMemo, WornArtifactWeaponMemo, NaturalArtifactWeaponMemo, ArtifactWeaponName,
+            base::BaseArtifactWeapon, inner::ArtifactWeaponInnerMemo, AddArtifactWeapon,
+            OneHandedArtifactWeaponMemo, TwoHandedArtifactWeaponMemo, WornArtifactWeaponMemo, NaturalArtifactWeaponMemo, ArtifactWeaponName, ArtifactWeaponHandedness,
         },
         handedness::WeaponHandedness,
-    },
+    }, CharacterMutation,
 };
 
 /// An artifact builder after having its hearthstone slots specified.
@@ -94,5 +93,11 @@ impl ArtifactWeaponBuilderWithHearthstoneSlots {
                 ),
             },
         }
+    }
+}
+
+impl From<ArtifactWeaponBuilderWithHearthstoneSlots> for CharacterMutation {
+    fn from(builder: ArtifactWeaponBuilderWithHearthstoneSlots) -> Self {
+        builder.build().into()
     }
 }

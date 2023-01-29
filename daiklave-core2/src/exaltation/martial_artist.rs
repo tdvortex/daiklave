@@ -5,7 +5,7 @@ use crate::{
     exaltation::{
         exalt::martial_arts::ExaltMartialArtist, mortal::martial_arts::MortalMartialArtist,
     },
-    martial_arts::{charm::MartialArtsCharm, style::MartialArtsStyleWeapon},
+    martial_arts::{charm::MartialArtsCharmDetails, style::MartialArtsStyleWeapon},
 };
 
 pub(crate) enum ExaltationMartialArtist<'view, 'source> {
@@ -49,12 +49,12 @@ impl<'view, 'source> ExaltationMartialArtist<'view, 'source> {
         }
     }
 
-    pub fn charms(&self) -> impl Iterator<Item = (&'source str, &'source MartialArtsCharm)> + '_ {
+    pub fn charms(&self) -> impl Iterator<Item = (&'source str, &'source MartialArtsCharmDetails)> + '_ {
         match self {
             ExaltationMartialArtist::Mortal(_) => Vec::new().into_iter(),
             ExaltationMartialArtist::Exalt(view) => view
                 .charms()
-                .collect::<Vec<(&'source str, &'source MartialArtsCharm)>>()
+                .collect::<Vec<(&'source str, &'source MartialArtsCharmDetails)>>()
                 .into_iter(),
         }
     }

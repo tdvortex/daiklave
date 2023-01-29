@@ -1,26 +1,23 @@
 use crate::CharacterMutation;
 
-use super::{IntimacyLevel, IntimacyTypeMemo};
+use super::{IntimacyTypeMemo};
 
 /// An Intimacy to be removed from a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RemoveIntimacy {
     pub(crate) intimacy_type: IntimacyTypeMemo,
-    pub(crate) level: IntimacyLevel,
 }
 
 impl RemoveIntimacy {
-    pub fn tie(target: impl ToString, emotion: impl ToString, level: IntimacyLevel) -> Self {
+    pub fn tie(target: impl Into<String>, emotion: impl Into<String>) -> Self {
         Self {
-            intimacy_type: IntimacyTypeMemo::Tie(target.to_string(), emotion.to_string()),
-            level,
+            intimacy_type: IntimacyTypeMemo::Tie(target.into(), emotion.into()),
         }
     }
 
-    pub fn principle(description: impl ToString, level: IntimacyLevel) -> Self {
+    pub fn principle(description: impl Into<String>) -> Self {
         Self {
-            intimacy_type: IntimacyTypeMemo::Principle(description.to_string()),
-            level,
+            intimacy_type: IntimacyTypeMemo::Principle(description.into()),
         }
     }
 }

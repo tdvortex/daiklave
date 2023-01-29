@@ -5,7 +5,7 @@ use crate::{
         circles::{
             celestial::AddCelestialSorcery,
             solar::AddSolarSorcery,
-            terrestrial::{AddTerrestrialSorcery, AddTerrestrialSorceryView},
+            terrestrial::{AddTerrestrialSorcery},
         },
         spell::SpellMutation,
         Sorcery, SorceryArchetypeMeritDetails, AddSorcery, AddSorceryCircle,
@@ -24,13 +24,6 @@ impl<'view, 'source> Character<'source> {
     pub fn add_terrestrial_sorcery(
         &mut self,
         add_terrestrial: &'source AddTerrestrialSorcery,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.add_terrestrial_sorcery_view(add_terrestrial.into())
-    }
-
-    pub(crate) fn add_terrestrial_sorcery_view(
-        &mut self,
-        add_terrestrial: AddTerrestrialSorceryView<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_terrestrial_sorcery(
             add_terrestrial,

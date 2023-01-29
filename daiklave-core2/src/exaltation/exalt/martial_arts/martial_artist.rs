@@ -1,14 +1,14 @@
 use crate::{
     abilities::AbilityRating,
     exaltation::mortal::martial_arts::MortalMartialArtist,
-    martial_arts::{charm::MartialArtsCharm, style::MartialArtsStyle},
+    martial_arts::{charm::MartialArtsCharmDetails, style::MartialArtsStyle},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ExaltMartialArtist<'source> {
     pub(crate) style: &'source MartialArtsStyle,
     pub(crate) ability: AbilityRating<'source>,
-    pub(crate) charms: Vec<(&'source str, &'source MartialArtsCharm)>,
+    pub(crate) charms: Vec<(&'source str, &'source MartialArtsCharmDetails)>,
 }
 
 impl<'view, 'source> ExaltMartialArtist<'source> {
@@ -26,7 +26,7 @@ impl<'view, 'source> ExaltMartialArtist<'source> {
 
     pub fn charms(
         &'view self,
-    ) -> impl Iterator<Item = (&'source str, &'source MartialArtsCharm)> + '_ {
+    ) -> impl Iterator<Item = (&'source str, &'source MartialArtsCharmDetails)> + '_ {
         self.charms.iter().map(|(k, v)| (*k, *v))
     }
 }

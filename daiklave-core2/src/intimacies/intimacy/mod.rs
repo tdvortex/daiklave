@@ -2,7 +2,6 @@ mod add;
 mod error;
 mod intimacy_type;
 mod level;
-mod memo;
 mod remove;
 
 pub use add::AddIntimacy;
@@ -10,7 +9,6 @@ pub use error::IntimacyError;
 pub use intimacy_type::IntimacyType;
 pub(crate) use intimacy_type::IntimacyTypeMemo;
 pub use level::IntimacyLevel;
-pub(crate) use memo::IntimacyMemo;
 pub use remove::RemoveIntimacy;
 
 /// An Intimacy held by a character.

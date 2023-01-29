@@ -32,6 +32,15 @@ pub struct BaseWeaponBuilder {
 }
 
 impl BaseWeaponBuilder {
+    pub fn name(name: impl Into<String>) -> Self {
+        Self {
+            name: name.into(),
+            book_reference: None,
+            attack_range: WeaponRange::ContactOnly,
+            tags: HashSet::new()
+        }
+    }
+
     /// The book reference for the base weapon. Note that, for artifacts,
     /// this is for the non-unique weapon (like "grand daiklave") not the
     /// page reference of the unique weapon (like "Volcano Cutter").

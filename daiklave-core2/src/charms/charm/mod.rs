@@ -13,7 +13,7 @@ pub use name::{CharmName, CharmNameMutation};
 /// Charms.
 pub mod spirit;
 use crate::{
-    exaltation::exalt::exalt_type::solar::charm::SolarCharm, martial_arts::charm::MartialArtsCharm,
+    exaltation::exalt::exalt_type::solar::charm::SolarCharm, martial_arts::charm::MartialArtsCharmDetails,
     sorcery::spell::Spell,
 };
 pub use add::AddCharm;
@@ -30,7 +30,7 @@ pub enum Charm<'source> {
     /// An Evocation of an artifact or hearthstone.
     Evocation(&'source Evocation),
     /// A Martial Arts charm for a specific style.
-    MartialArts(&'source MartialArtsCharm),
+    MartialArts(&'source MartialArtsCharmDetails),
     /// A Solar charm.
     Solar(&'source SolarCharm),
     /// A Spell.

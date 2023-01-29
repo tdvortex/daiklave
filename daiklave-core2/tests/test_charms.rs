@@ -23,7 +23,7 @@ use daiklave_core2::{
     },
     hearthstones::hearthstone::{GeomancyLevel, Hearthstone, HearthstoneCategory},
     martial_arts::{
-        charm::{MartialArtsCharm, MartialArtsCharmKeyword},
+        charm::{MartialArtsCharmDetails, MartialArtsCharmKeyword},
         style::MartialArtsStyle,
     },
     sorcery::{
@@ -992,7 +992,7 @@ fn test_martial_arts_charms() {
         ))
         .unwrap();
 
-    let gathering_light_concentration = MartialArtsCharm::builder(
+    let gathering_light_concentration = MartialArtsCharmDetails::builder(
         "Gathering Light Concentration".to_owned(),
         "Single Point Shining Into the Void Style".to_owned(),
     )
@@ -1070,7 +1070,7 @@ fn test_martial_arts_charms() {
         .is_some());
 
     // Exalts must meet the MA ability requirements of charms
-    let shining_starfall_execution = MartialArtsCharm::builder(
+    let shining_starfall_execution = MartialArtsCharmDetails::builder(
         "Shining Starfall Execution".to_owned(),
         "Single Point Shining Into the Void Style".to_owned(),
     )
@@ -1132,7 +1132,7 @@ fn test_martial_arts_charms() {
         .is_some());
 
     // Exalts must meet the Essence requirements of charms
-    let form = MartialArtsCharm::builder(
+    let form = MartialArtsCharmDetails::builder(
         "Single Point Shining Into the Void Form".to_owned(),
         "Single Point Shining Into the Void Style".to_owned(),
     )

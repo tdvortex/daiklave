@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::book_reference::BookReference;
 
-use super::{AddShapingRitual, ShapingRitualDetails};
+use super::{AddShapingRitual, ShapingRitualDetails, merit::builder::SorceryArchetypeMeritBuilder};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SorceryArchetypeName(String);
@@ -26,13 +26,13 @@ impl SorceryArchetypeName {
     }
 
     pub fn new_merit(&self) -> SorceryArchetypeMeritBuilder {
-        
+        SorceryArchetypeMeritBuilder::archetype_name(self.clone())
     }
 }
 
-impl<T> From<T> for SorceryArchetypeName where T: ToString {
+impl<T> From<T> for SorceryArchetypeName where T: Into<String> {
     fn from(name: T) -> Self {
-        Self(name.to_string())
+        Self(name.into())
     }
 }
 

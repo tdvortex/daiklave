@@ -1,11 +1,7 @@
-mod add;
 mod error;
-pub use add::AddLanguages;
 pub use error::LanguageError;
 /// Details of individual languages.
 pub mod language;
-mod memo;
-pub(crate) use memo::LanguagesMemo;
 
 use crate::Character;
 
@@ -26,7 +22,7 @@ impl<'view, 'source> Languages<'view, 'source> {
         std::iter::once((self.0.native_language.into(), true)).chain(
             self.0.other_languages
                 .iter()
-                .map(|language| (language.into(), false)),
+                .map(|language| ((*language).into(), false)),
         )
     }
 }

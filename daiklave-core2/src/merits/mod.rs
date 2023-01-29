@@ -3,7 +3,7 @@ pub mod merit;
 
 use crate::{
     armor::armor_item::ArmorName, artifact::ArtifactName, exaltation::Exaltation,
-    languages::language::Language, weapons::weapon::WeaponName, Character,
+    languages::language::{Language, LanguageMutation}, weapons::weapon::WeaponName, Character,
 };
 
 use self::merit::{Merit, MeritInstanceName, MeritSource};
@@ -154,10 +154,10 @@ impl<'view, 'source> Merits<'view, 'source> {
             MeritInstanceName::LocalTongues => {
                 let purchased = self
                     .0
-                    .languages
+                    .other_languages
                     .iter()
-                    .filter(|(language, native)| {
-                        !native && matches!(language, Language::LocalTongue(_))
+                    .filter(|&language| {
+                        matches!(language, LanguageMutation::LocalTongue(_))
                     })
                     .count();
 
@@ -170,30 +170,21 @@ impl<'view, 'source> Merits<'view, 'source> {
             MeritInstanceName::MajorLanguage(major) => {
                 if self
                     .0
-                    .languages
                     .other_languages
-                    .contains(&Language::MajorLanguage(major))
+                    .contains(&LanguageMutation::MajorLanguage(major))
                 {
                     Some(Merit(MeritSource::MajorLanguage(major)))
                 } else {
                     None
                 }
             }
-            MeritInstanceName::SorceryArchetype(sorcery_archetype_merit_id) => {
-                self.0.sorcery().and_then(|sorcery| {
-                    sorcery.archetypes().find_map(|archetype_id| {
-                        sorcery.archetype(archetype_id).and_then(|(_, _, merits)| {
-                            merits
-                                .get(&sorcery_archetype_merit_id)
-                                .map(|sorcery_archetype_merit| {
-                                    Merit(MeritSource::SorceryArchetype(
-                                        sorcery_archetype_merit_id,
-                                        sorcery_archetype_merit,
-                                    ))
-                                })
-                        })
-                    })
-                })
+            MeritInstanceName::SorceryArchetype(archetype_name, merit_name) => {
+                self
+                .0
+                .sorcery()
+                .and_then(|sorcery|sorcery.archetype(archetype_name))
+                .and_then(|archetype| archetype.merits().get(merit_name))
+                .map(|sorcery_archetype_merit| Merit(MeritSource::SorceryArchetype(sorcery_archetype_merit)))
             }
         }
     }
@@ -324,14 +315,15 @@ impl<'view, 'source> Merits<'view, 'source> {
         if let Some(sorcery) = self.0.sorcery() {
             sorcery
                 .archetypes()
-                .filter_map(|archetype_id| sorcery.archetype(archetype_id))
-                .for_each(|(_, _, merits)| {
-                    merits.keys().for_each(|sorcery_archetype_merit_id| {
-                        output.push(MeritInstanceName::SorceryArchetype(
-                            *sorcery_archetype_merit_id,
-                        ));
-                    })
-                })
+                .filter_map(|name| sorcery.archetype(name))
+                .flat_map(|archetype| archetype
+                    .merits()
+                    .iter()
+                    .map(|merit_name| MeritInstanceName::SorceryArchetype(archetype.name(), merit_name))
+                    .collect::<Vec<MeritInstanceName>>()
+                    .into_iter()
+                )
+                .for_each(|merit_id| output.push(merit_id));
         }
 
         output.into_iter()
