@@ -19,10 +19,6 @@ impl<'source> Deref for WornArtifactWeaponView<'source> {
 }
 
 impl<'source> WornArtifactWeaponView<'source> {
-    pub(crate) fn as_memo(&self) -> WornArtifactWeapon {
-        WornArtifactWeapon(self.0.as_memo())
-    }
-
     pub(crate) fn hearthstone_slots_mut(
         &mut self,
     ) -> &mut Vec<Option<SlottedHearthstone<'source>>> {

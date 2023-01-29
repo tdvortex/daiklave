@@ -53,7 +53,7 @@ impl<'source> Character<'source> {
             (SolarCharmAbility::Craft, _) => self.craft().max(),
             (solar_ability, _) => self
                 .abilities()
-                .get(solar_ability.try_into().unwrap())
+                .get_vanilla(solar_ability.try_into().unwrap())
                 .dots(),
         };
 
@@ -187,7 +187,7 @@ impl<'source> Character<'source> {
                         SolarCharmAbility::Craft => self.craft().max(),
                         other_solar_ability => self
                             .abilities()
-                            .get(other_solar_ability.try_into().unwrap())
+                            .get_vanilla(other_solar_ability.try_into().unwrap())
                             .dots(),
                     };
                     if dots_required > actual_dots {

@@ -1,7 +1,6 @@
 use crate::{merits::merit::{DemenseName, ManseName}, hearthstones::hearthstone::AddHearthstone, CharacterMutation};
 
-use super::AddMerit;
-
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddManse {
     pub manse_name: ManseName,
     pub demense_name: DemenseName,
@@ -10,6 +9,6 @@ pub struct AddManse {
 
 impl From<AddManse> for CharacterMutation {
     fn from(add_manse: AddManse) -> Self {
-        Self::AddMerit(add_manse.into::<AddMerit>())
+        Self::AddMerit(add_manse.into())
     }
 }

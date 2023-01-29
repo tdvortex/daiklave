@@ -14,7 +14,7 @@ pub use spells::Spells;
 pub mod spell;
 
 pub use archetype::{
-    AddShapingRitual, ShapingRitual, ShapingRitualSummary, SorceryArchetype, SorceryArchetypeMerit,
+    AddShapingRitual, ShapingRitual, SorceryArchetypeMerit,
     SorceryArchetypeName, SorceryArchetypeWithMerits,
 };
 pub use circles::{
@@ -25,7 +25,7 @@ pub(crate) use error::SorceryError;
 
 use crate::exaltation::ExaltationSorcery;
 
-use self::{builder::SorceryBuilder, spell::Spell};
+use self::{builder::SorceryBuilder, spell::Spell, archetype::SorceryArchetype};
 
 /// A character's Sorcery abilities.
 pub struct Sorcery<'view, 'source>(pub(crate) ExaltationSorcery<'view, 'source>);

@@ -92,26 +92,6 @@ pub(crate) struct Exalt<'source> {
 }
 
 impl<'view, 'source> Exalt<'source> {
-    pub fn as_memo(&self) -> ExaltMemo {
-        ExaltMemo {
-            armor: self.armor.as_memo(),
-            essence: self.essence.as_memo(),
-            evocations: self
-                .evocations
-                .iter()
-                .map(|(id, charm)| ((*id).to_owned(), (*charm).to_owned()))
-                .collect(),
-            martial_arts_styles: self
-                .martial_arts_styles
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
-                .collect(),
-            exalt_type: self.exalt_type.as_memo(),
-            weapons: self.weapons.as_memo(),
-            wonders: self.wonders.as_memo(),
-        }
-    }
-
     pub fn exalt_type(&self) -> &ExaltType<'source> {
         &self.exalt_type
     }
@@ -725,7 +705,7 @@ impl<'view, 'source> Exalt<'source> {
         wonder: &'source Wonder,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Entry::Vacant(e) = self.wonders.0.entry(name) {
-            e.insert((wonder.0.as_ref(), None));
+            e.insert(((&wonder.0).into(), None));
             Ok(self)
         } else {
             Err(CharacterMutationError::ArtifactError(

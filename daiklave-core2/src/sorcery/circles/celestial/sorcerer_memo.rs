@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 
 use crate::sorcery::{
-    archetype::{ShapingRitualSummary, SorceryArchetypeName},
+    archetype::{SorceryArchetypeName},
     circles::terrestrial::TerrestrialSpell,
     spell::SpellName,
     ShapingRitual, SorceryArchetype, SorceryArchetypeMerit,
@@ -21,7 +21,7 @@ pub(crate) struct CelestialCircleSorcererMemo {
         ),
     >,
     pub(in crate::sorcery::circles) circle_archetypes: [SorceryArchetypeName; 2],
-    pub(in crate::sorcery::circles) shaping_ritual_names: [ShapingRitualSummary; 2],
+    pub(in crate::sorcery::circles) shaping_ritual_names: [String; 2],
     pub(in crate::sorcery::circles) shaping_rituals: [ShapingRitual; 2],
     pub(in crate::sorcery::circles) terrestrial_control_spell_name: SpellName,
     pub(in crate::sorcery::circles) terrestrial_control_spell: TerrestrialSpell,

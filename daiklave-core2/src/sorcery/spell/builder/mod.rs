@@ -11,14 +11,14 @@ pub use with_willpower::SpellBuilderWithWillpower;
 
 use crate::book_reference::BookReference;
 
-use super::SpellKeyword;
+use super::{SpellKeyword, SpellName};
 
 /// Builder for a Spell. Required fields: name (already specified),
 /// sorcerous motes (or ritual), willpower cost (1+), duration, description,
 /// and finally circle. Optional fields: book reference, summary, keywords,
 /// control spell description, and distortion description.
 pub struct SpellBuilder {
-    pub(crate) name: String,
+    pub(crate) name: SpellName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
     pub(crate) keywords: HashSet<SpellKeyword>,

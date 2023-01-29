@@ -1,6 +1,6 @@
 use crate::{
     book_reference::BookReference,
-    merits::merit::{template::MeritTemplateId, MeritPrerequisite, MeritType},
+    merits::merit::{MeritPrerequisite, MeritType},
 };
 
 pub(crate) use self::dots::{
@@ -26,41 +26,6 @@ pub(crate) enum StackableMeritWithDots<'source> {
 }
 
 impl<'source> StackableMeritWithDots<'source> {
-    pub fn as_memo(&self) -> StackableMeritWithDotsMemo {
-        match self {
-            StackableMeritWithDots::Zero(zero) => StackableMeritWithDotsMemo::Zero(zero.as_memo()),
-            StackableMeritWithDots::One(one) => StackableMeritWithDotsMemo::One(one.as_memo()),
-            StackableMeritWithDots::Two(two) => StackableMeritWithDotsMemo::Two(two.as_memo()),
-            StackableMeritWithDots::Three(three) => {
-                StackableMeritWithDotsMemo::Three(three.as_memo())
-            }
-            StackableMeritWithDots::Four(four) => StackableMeritWithDotsMemo::Four(four.as_memo()),
-            StackableMeritWithDots::Five(five) => StackableMeritWithDotsMemo::Five(five.as_memo()),
-        }
-    }
-
-    pub fn template_id(&self) -> MeritTemplateId {
-        match self {
-            StackableMeritWithDots::Zero(zero) => zero.template_id(),
-            StackableMeritWithDots::One(one) => one.template_id(),
-            StackableMeritWithDots::Two(two) => two.template_id(),
-            StackableMeritWithDots::Three(three) => three.template_id(),
-            StackableMeritWithDots::Four(four) => four.template_id(),
-            StackableMeritWithDots::Five(five) => five.template_id(),
-        }
-    }
-
-    pub fn template_name(&self) -> &'source str {
-        match self {
-            StackableMeritWithDots::Zero(zero) => zero.name(),
-            StackableMeritWithDots::One(one) => one.name(),
-            StackableMeritWithDots::Two(two) => two.name(),
-            StackableMeritWithDots::Three(three) => three.name(),
-            StackableMeritWithDots::Four(four) => four.name(),
-            StackableMeritWithDots::Five(five) => five.name(),
-        }
-    }
-
     pub fn book_reference(&self) -> Option<BookReference> {
         match self {
             StackableMeritWithDots::Zero(zero) => zero.book_reference(),

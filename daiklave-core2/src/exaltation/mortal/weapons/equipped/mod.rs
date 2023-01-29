@@ -33,22 +33,6 @@ pub(crate) struct MortalEquippedWeapons<'source> {
 }
 
 impl<'view, 'source> MortalEquippedWeapons<'source> {
-    pub fn as_memo(&self) -> MortalEquippedWeaponsMemo {
-        MortalEquippedWeaponsMemo {
-            handless_mundane: self
-                .handless_mundane
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
-                .collect(),
-            handless_artifact: self
-                .handless_artifact
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
-                .collect(),
-            hands: self.hands.as_memo(),
-        }
-    }
-
     pub fn get_weapon(&self, name: WeaponName<'_>, equipped: Equipped) -> Option<Weapon<'source>> {
         match (name, equipped) {
             (WeaponName::Unarmed, Equipped::Natural) => {

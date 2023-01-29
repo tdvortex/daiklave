@@ -48,22 +48,6 @@ impl<'source> From<MortalEquippedWeapons<'source>> for ExaltEquippedWeapons<'sou
 }
 
 impl<'view, 'source> ExaltEquippedWeapons<'source> {
-    pub fn as_memo(&self) -> ExaltEquippedWeaponsMemo {
-        ExaltEquippedWeaponsMemo {
-            handless_mundane: self
-                .handless_mundane
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
-                .collect(),
-            handless_artifact: self
-                .handless_artifact
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
-                .collect(),
-            hands: self.hands.as_memo(),
-        }
-    }
-
     pub fn get_weapon(
         &self,
         weapon_name: WeaponName<'_>,

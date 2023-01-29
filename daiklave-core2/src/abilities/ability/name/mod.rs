@@ -228,3 +228,13 @@ impl From<SolarCharmAbility> for AbilityName {
         }
     }
 }
+
+impl From<AbilityNameQualified<'_>> for AbilityName {
+    fn from(qualified: AbilityNameQualified) -> Self {
+        match qualified {
+            AbilityNameQualified::Vanilla(vanilla) => vanilla.into(),
+            AbilityNameQualified::Craft(_) => Self::Craft,
+            AbilityNameQualified::MartialArts(_) => Self::MartialArts,
+        }
+    }
+}

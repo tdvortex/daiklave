@@ -17,20 +17,20 @@ pub(crate) struct WonderNoAttunementMemo {
     pub attunement_cost: Option<u8>,
 }
 
-impl<'source> WonderNoAttunementMemo {
-    pub fn as_ref(&'source self) -> WonderNoAttunement<'source> {
-        WonderNoAttunement {
-            book_reference: self.book_reference,
-            lore: self.lore.as_deref(),
-            powers: self.powers.as_ref(),
-            hearthstone_slots: self
+impl From<&WonderNoAttunement<'_>> for WonderNoAttunementMemo {
+    fn from(view: &WonderNoAttunement<'_>) -> Self {
+        Self {
+            book_reference: view.book_reference,
+            lore: view.lore.map(|s| s.to_owned()),
+            powers: view.powers.to_owned(),
+            hearthstone_slots: view
                 .hearthstone_slots
                 .iter()
-                .map(|option| option.as_ref().map(|hearthstone| hearthstone.as_ref()))
+                .map(|option| option.as_ref().map(|hearthstone| hearthstone.into()))
                 .collect(),
-            merit_dots: self.merit_dots,
-            magic_material: self.magic_material,
-            attunement_cost: self.attunement_cost,
+            merit_dots: view.merit_dots,
+            magic_material: view.magic_material,
+            attunement_cost: view.attunement_cost,
         }
     }
 }

@@ -1,6 +1,4 @@
 mod mutation;
-use std::ops::Deref;
-
 pub use mutation::MoteCommitmentNameMutation;
 mod other;
 pub use other::OtherMoteCommitmentName;
@@ -12,21 +10,10 @@ pub enum MoteCommitmentName<'source> {
     Other(&'source str),
 }
 
-impl<'any, 'source> Deref for MoteCommitmentName<'source> {
-    type Target = str;
-
-    fn deref(&'any self) -> &'source Self::Target {
-        match self {
-            MoteCommitmentName::AttunedArtifact(artifact_name) => &**artifact_name,
-            MoteCommitmentName::Other(other_name) => *other_name,
-        }
-    }
-}
-
 impl<'source> From<&'source MoteCommitmentNameMutation> for MoteCommitmentName<'source> {
     fn from(name: &'source MoteCommitmentNameMutation) -> Self {
         match name {
-            MoteCommitmentNameMutation::AttunedArtifact(artifact_name) => MoteCommitmentName::AttunedArtifact(artifact_name.as_str()),
+            MoteCommitmentNameMutation::AttunedArtifact(artifact_name) => MoteCommitmentName::AttunedArtifact(artifact_name.into()),
             MoteCommitmentNameMutation::Other(other_name) => MoteCommitmentName::Other(other_name.as_str()),
         }
     }

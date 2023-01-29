@@ -24,8 +24,8 @@ impl SolarSorceryBuilder {
     /// The Solar begins a new archetype.
     pub fn new_archetype(self, archetype: AddSorceryArchetype) -> SolarSorceryBuilderWithArchetype {
         SolarSorceryBuilderWithArchetype {
-            archetype_name: archetype.0,
-            archetype: Some(archetype.1),
+            archetype_name: archetype.name,
+            archetype: Some(archetype.archetype),
         }
     }
 }

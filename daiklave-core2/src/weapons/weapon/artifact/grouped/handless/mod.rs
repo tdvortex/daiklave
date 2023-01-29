@@ -20,10 +20,6 @@ pub(crate) struct HandlessArtifactWeapon<'source>(
 );
 
 impl<'source> HandlessArtifactWeapon<'source> {
-    pub fn as_memo(&self) -> HandlessArtifactWeaponMemo {
-        HandlessArtifactWeaponMemo(self.0.as_memo(), self.1)
-    }
-
     pub(crate) fn hearthstone_slots_mut(
         &mut self,
     ) -> &mut Vec<Option<SlottedHearthstone<'source>>> {

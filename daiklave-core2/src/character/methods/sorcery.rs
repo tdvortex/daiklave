@@ -34,7 +34,7 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_terrestrial_sorcery(
             add_terrestrial,
-            self.abilities().get(AbilityNameVanilla::Occult).dots(),
+            self.abilities().get_vanilla(AbilityNameVanilla::Occult).dots(),
             self.attributes().get(AttributeName::Intelligence).dots(),
         )?;
         Ok(self)
@@ -53,7 +53,7 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_celestial_sorcery(
             add_celestial,
-            self.abilities().get(AbilityNameVanilla::Occult).dots(),
+            self.abilities().get_vanilla(AbilityNameVanilla::Occult).dots(),
             self.attributes().get(AttributeName::Intelligence).dots(),
             self.essence().map_or(1, |essence| essence.rating()),
         )?;
@@ -73,7 +73,7 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_solar_sorcery(
             add_solar,
-            self.abilities().get(AbilityNameVanilla::Occult).dots(),
+            self.abilities().get_vanilla(AbilityNameVanilla::Occult).dots(),
             self.essence().map_or(1, |essence| essence.rating()),
         )?;
         Ok(self)
@@ -128,7 +128,7 @@ impl<'view, 'source> Character<'source> {
     }
 
     pub(crate) fn correct_sorcery_level(&mut self) -> bool {
-        let occult_dots = self.abilities().get(AbilityNameVanilla::Occult).dots();
+        let occult_dots = self.abilities().get_vanilla(AbilityNameVanilla::Occult).dots();
         let intelligence_dots = self.attributes().get(AttributeName::Intelligence).dots();
         let essence_rating = self.essence().map(|essence| essence.rating()).unwrap_or(0);
         self.exaltation

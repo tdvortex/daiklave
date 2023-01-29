@@ -19,17 +19,6 @@ pub(crate) struct ExaltWonders<'source>(
 );
 
 impl<'source> ExaltWonders<'source> {
-    pub fn as_memo(&self) -> ExaltWondersMemo {
-        ExaltWondersMemo(
-            self.0
-                .iter()
-                .map(|(k, (no_attunement, attunement))| {
-                    ((*k).to_owned(), (no_attunement.as_memo(), *attunement))
-                })
-                .collect(),
-        )
-    }
-
     pub fn iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         self.0.keys().copied()
     }

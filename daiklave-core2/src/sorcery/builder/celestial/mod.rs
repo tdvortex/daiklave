@@ -26,8 +26,8 @@ impl CelestialSorceryBuilder {
         archetype: AddSorceryArchetype,
     ) -> CelestialSorceryBuilderWithArchetype {
         CelestialSorceryBuilderWithArchetype {
-            archetype_name: archetype.0,
-            archetype: Some(archetype.1),
+            archetype_name: archetype.name,
+            archetype: Some(archetype.archetype),
         }
     }
 }

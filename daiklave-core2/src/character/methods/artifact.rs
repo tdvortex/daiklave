@@ -20,11 +20,11 @@ impl<'view, 'source> Character<'source> {
         match add_artifact {
             AddArtifact::Weapon(artifact_weapon) => {
                 self.exaltation
-                    .add_artifact_weapon(artifact_weapon.0.as_str(), artifact_weapon.1.as_ref())?;
+                    .add_artifact_weapon(artifact_weapon.0.as_str(), artifact_weapon.1.into())?;
             }
-            AddArtifact::Armor((name, artifact_armor)) => {
+            AddArtifact::Armor(artifact_armor) => {
                 self.exaltation
-                    .add_artifact_armor(name.as_str(), artifact_armor.as_ref())?;
+                    .add_artifact_armor(artifact_armor.name.as_str(), (&artifact_armor.armor).into())?;
             }
             AddArtifact::Wonder((name, wonder)) => {
                 self.exaltation.add_wonder(name.as_str(), wonder)?;

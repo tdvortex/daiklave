@@ -1,51 +1,45 @@
 use serde::{Deserialize, Serialize};
 
+use crate::merits::merit::{ManseName, DemenseName};
+
 use super::HearthstoneOrigin;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum HearthstoneOriginMemo {
     // Manse is required
-    Linked((String, String)),
+    Linked((ManseName, DemenseName)),
     // Manse is optional
-    ManseBorn(Option<(String, String)>),
+    ManseBorn(Option<(ManseName, DemenseName)>),
     // Manse is optional
-    ManseBornSteady(Option<(String, String)>),
+    ManseBornSteady(Option<(ManseName, DemenseName)>),
     // Manse is optional
-    Steady(Option<(String, String)>),
+    Steady(Option<(ManseName, DemenseName)>),
     // Manse is not allowed
     WildBorn,
     // Manse is optional
-    Unspecified(Option<(String, String)>),
+    Unspecified(Option<(ManseName, DemenseName)>),
 }
 
-impl<'source> HearthstoneOriginMemo {
-    pub fn as_ref(&'source self) -> HearthstoneOrigin {
-        match self {
-            HearthstoneOriginMemo::Linked((manse, demense)) => {
-                HearthstoneOrigin::Linked((manse.as_str(), demense.as_str()))
+impl From<&HearthstoneOrigin<'_>> for HearthstoneOriginMemo {
+    fn from(view: &HearthstoneOrigin<'_>) -> Self {
+        match view {
+            HearthstoneOrigin::Linked(m_and_d) => {
+                HearthstoneOriginMemo::Linked((m_and_d.0.into(), m_and_d.1.into()))
             }
-            HearthstoneOriginMemo::ManseBorn(maybe_m_and_d) => HearthstoneOrigin::ManseBorn(
-                maybe_m_and_d
-                    .as_ref()
-                    .map(|m_and_d| (m_and_d.0.as_str(), m_and_d.1.as_str())),
+            HearthstoneOrigin::ManseBorn(maybe_m_and_d) => HearthstoneOriginMemo::ManseBorn(
+                maybe_m_and_d.map(|m_and_d| (m_and_d.0.into(), m_and_d.1.into())),
             ),
-            HearthstoneOriginMemo::ManseBornSteady(maybe_m_and_d) => {
-                HearthstoneOrigin::ManseBornSteady(
-                    maybe_m_and_d
-                        .as_ref()
-                        .map(|m_and_d| (m_and_d.0.as_str(), m_and_d.1.as_str())),
+            HearthstoneOrigin::ManseBornSteady(maybe_m_and_d) => {
+                HearthstoneOriginMemo::ManseBornSteady(
+                    maybe_m_and_d.map(|m_and_d| (m_and_d.0.into(), m_and_d.1.into())),
                 )
             }
-            HearthstoneOriginMemo::Steady(maybe_m_and_d) => HearthstoneOrigin::Steady(
-                maybe_m_and_d
-                    .as_ref()
-                    .map(|m_and_d| (m_and_d.0.as_str(), m_and_d.1.as_str())),
+            HearthstoneOrigin::Steady(maybe_m_and_d) => HearthstoneOriginMemo::Steady(
+                maybe_m_and_d.map(|m_and_d| (m_and_d.0.into(), m_and_d.1.into())),
             ),
-            HearthstoneOriginMemo::WildBorn => HearthstoneOrigin::WildBorn,
-            HearthstoneOriginMemo::Unspecified(maybe_m_and_d) => HearthstoneOrigin::Unspecified(
-                maybe_m_and_d
-                    .as_ref()
-                    .map(|m_and_d| (m_and_d.0.as_str(), m_and_d.1.as_str())),
+            HearthstoneOrigin::WildBorn => HearthstoneOriginMemo::WildBorn,
+            HearthstoneOrigin::Unspecified(maybe_m_and_d) => HearthstoneOriginMemo::Unspecified(
+                maybe_m_and_d.map(|m_and_d| (m_and_d.0.into(), m_and_d.1.into())),
             ),
         }
     }

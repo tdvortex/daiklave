@@ -15,14 +15,18 @@ pub(crate) struct SlottedHearthstone<'source> {
     pub origin: HearthstoneOrigin<'source>,
 }
 
-impl<'source> SlottedHearthstone<'source> {
-    pub fn as_memo(&self) -> SlottedHearthstoneMemo {
-        SlottedHearthstoneMemo {
-            name: self.name.to_owned(),
-            details: self.details.as_memo(),
-            origin: self.origin.as_memo(),
+impl<'source> From<&'source SlottedHearthstoneMemo> for SlottedHearthstone<'source> {
+    fn from(memo: &'source SlottedHearthstoneMemo) -> Self {
+        Self {
+            name: memo.name.as_str(),
+            details: (&memo.details).into(),
+            origin: (&memo.origin).into(),
         }
     }
+}
+
+impl<'source> SlottedHearthstone<'source> {
+
 
     pub fn book_reference(&self) -> Option<BookReference> {
         self.details.book_reference()

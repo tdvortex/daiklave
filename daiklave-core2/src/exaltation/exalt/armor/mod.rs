@@ -28,22 +28,6 @@ pub(crate) struct ExaltArmor<'source> {
 }
 
 impl<'source> ExaltArmor<'source> {
-    pub fn as_memo(&self) -> ExaltArmorMemo {
-        ExaltArmorMemo {
-            equipped: self.equipped.as_ref().map(|view| view.as_memo()),
-            unequipped_mundane: self
-                .unequipped_mundane
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
-                .collect(),
-            unequipped_artifact: self
-                .unequipped_artifact
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
-                .collect(),
-        }
-    }
-
     pub fn worn_armor(&self) -> Option<ArmorItem<'source>> {
         if let Some(equipped) = &self.equipped {
             match equipped {
@@ -129,7 +113,7 @@ impl<'source> ExaltArmor<'source> {
                 ArmorError::DuplicateArmor,
             ))
         } else if let Entry::Vacant(e) = self.unequipped_mundane.entry(name) {
-            e.insert(armor.as_ref());
+            e.insert(armor.into());
             Ok(self)
         } else {
             Err(CharacterMutationError::ArmorError(

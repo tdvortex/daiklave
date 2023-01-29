@@ -29,7 +29,7 @@ impl<'view, 'source> Character<'source> {
             ));
         }
 
-        let old_dots = self.abilities().get(ability_name).dots();
+        let old_dots = self.abilities().get_vanilla(ability_name.into()).dots();
         self.abilities.get_mut(ability_name).set_dots(dots)?;
 
         if old_dots > dots {

@@ -11,14 +11,14 @@ pub(crate) enum EquippedArmor<'source> {
     Artifact(&'source str, ArtifactArmorView<'source>),
 }
 
-impl<'source> EquippedArmor<'source> {
-    pub fn as_memo(&self) -> EquippedArmorMemo {
-        match self {
-            EquippedArmor::Mundane(name, view) => {
-                EquippedArmorMemo::Mundane((*name).to_owned(), view.as_memo())
+impl<'source> From<&'source EquippedArmorMemo> for EquippedArmor<'source> {
+    fn from(memo: &'source EquippedArmorMemo) -> Self {
+        match memo {
+            EquippedArmorMemo::Mundane(name, memo) => {
+                EquippedArmor::Mundane(name.as_str(), memo.into())
             }
-            EquippedArmor::Artifact(name, view) => {
-                EquippedArmorMemo::Artifact((*name).to_owned(), view.as_memo())
+            EquippedArmorMemo::Artifact(name, memo) => {
+                EquippedArmor::Artifact(name.as_str(), memo.into())
             }
         }
     }

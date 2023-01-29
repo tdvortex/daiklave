@@ -19,10 +19,6 @@ impl<'source> Deref for OneHandedArtifactWeaponView<'source> {
 }
 
 impl<'source> OneHandedArtifactWeaponView<'source> {
-    pub(crate) fn as_memo(&self) -> OneHandedArtifactWeapon {
-        OneHandedArtifactWeapon(self.0.as_memo())
-    }
-
     pub(crate) fn hearthstone_slots_mut(
         &mut self,
     ) -> &mut Vec<Option<SlottedHearthstone<'source>>> {

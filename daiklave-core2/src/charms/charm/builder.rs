@@ -30,7 +30,7 @@ impl CharmBuilder {
     /// Constructs the Charm as a Spell
     pub fn spell(self) -> SpellBuilder {
         SpellBuilder {
-            name: self.name,
+            name: self.name.into(),
             book_reference: self.book_reference,
             summary: self.summary,
             keywords: HashSet::new(),

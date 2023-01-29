@@ -17,15 +17,6 @@ pub(crate) struct MortalWonders<'source>(
 );
 
 impl<'source> MortalWonders<'source> {
-    pub fn as_memo(&self) -> MortalWondersMemo {
-        MortalWondersMemo(
-            self.0
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
-                .collect(),
-        )
-    }
-
     pub fn iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         self.0.keys().copied()
     }

@@ -24,7 +24,7 @@ impl<'view, 'source> Character<'source> {
         template: &'source HearthstoneTemplate,
     ) -> Result<&mut Self, CharacterMutationError> {
         let unslotted = UnslottedHearthstone {
-            details: template.details.as_ref(),
+            details: (&template.details).into(),
             origin: match template.stability {
                 HearthstoneStability::Linked => {
                     HearthstoneOrigin::Linked((manse_name, demense_name))
@@ -60,7 +60,7 @@ impl<'view, 'source> Character<'source> {
         template: &'source HearthstoneTemplate,
     ) -> Result<&mut Self, CharacterMutationError> {
         let unslotted = UnslottedHearthstone {
-            details: template.details.as_ref(),
+            details: (&template.details).into(),
             origin: match template.stability {
                 HearthstoneStability::Linked => {
                     return Err(CharacterMutationError::HearthstoneError(

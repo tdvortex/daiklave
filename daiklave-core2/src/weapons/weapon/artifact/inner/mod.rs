@@ -22,23 +22,6 @@ pub struct ArtifactWeaponInner<'source> {
 }
 
 impl<'view, 'source> ArtifactWeaponInner<'source> {
-    pub fn as_memo(&self) -> ArtifactWeaponTraitsMemo {
-        ArtifactWeaponTraitsMemo {
-            book_reference: self.book_reference,
-            merit_dots: self.merit_dots,
-            base_weapon_name: self.base_weapon_name.to_owned(),
-            base_weapon: self.base_weapon.clone(),
-            lore: self.lore.map(|s| s.to_string()),
-            powers: self.powers.map(|s| s.to_string()),
-            hearthstone_slots: self
-                .hearthstone_slots
-                .iter()
-                .map(|option| option.map(|hearthstone| hearthstone.as_memo()))
-                .collect(),
-            magic_material: self.magic_material,
-        }
-    }
-
     pub fn base_artifact_weapon(&self) -> &'source BaseWeapon {
         self.base_weapon
     }

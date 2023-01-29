@@ -19,7 +19,7 @@ impl<'source> Character<'source> {
     pub fn remove_concept(&mut self) -> Result<&mut Self, CharacterMutationError> {
         if self.concept.is_none() {
             return Err(CharacterMutationError::ConceptError(
-                ConceptError::NoConcept,
+                ConceptError::NotFound,
             ));
         }
 

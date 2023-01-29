@@ -63,22 +63,7 @@ impl<'source> Solar<'source> {
             limit_trigger: None,
         }
     }
-
-    pub(crate) fn as_memo(&self) -> SolarMemo {
-        SolarMemo {
-            caste: self.caste.as_memo(),
-            favored_abilities: self.favored_abilities,
-            sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
-            limit: self.limit.as_memo(),
-            solar_charms: self
-                .solar_charms
-                .iter()
-                .map(|(charm_id, charm)| ((*charm_id).to_owned(), (*charm).to_owned()))
-                .collect(),
-            experience: self.experience,
-        }
-    }
-
+    
     /// Returns True if the ability is a caste ability for the charcter. Note
     /// that MartialArts is a caste ability if and only if Brawl is a caste
     /// ability.

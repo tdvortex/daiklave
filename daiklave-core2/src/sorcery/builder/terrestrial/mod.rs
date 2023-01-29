@@ -15,8 +15,8 @@ impl TerrestrialSorceryBuilder {
         archetype: AddSorceryArchetype,
     ) -> TerrestrialSorceryBuilderWithArchetype {
         TerrestrialSorceryBuilderWithArchetype {
-            archetype_name: archetype.0,
-            archetype: archetype.1,
+            archetype_name: archetype.name,
+            archetype: archetype.archetype,
         }
     }
 }

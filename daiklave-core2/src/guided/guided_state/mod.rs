@@ -1,11 +1,11 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::{
-    abilities::{AbilityName, AbilityNameVanilla},
+    abilities::{AbilityName, AbilityNameVanilla, SetAbility},
     attributes::AttributeName,
     martial_arts::{style::MartialArtsStyle, MartialArtsError},
     sorcery::{
-        circles::terrestrial::AddTerrestrialSorceryView, ShapingRitual, SorceryArchetype,
+        circles::terrestrial::AddTerrestrialSorceryView, ShapingRitual,
         TerrestrialSpell,
     },
     Character, CharacterMutation, CharacterMutationError,
@@ -53,10 +53,10 @@ impl<'source> GuidedState<'source> {
 
         match guided_mutation {
             GuidedMutation::CharacterMutation(character_mutation) => {
-                if let CharacterMutation::SetAbility(ability_name_vanilla, dots) =
+                if let CharacterMutation::SetAbility(SetAbility{ name, dots }) =
                     character_mutation
                 {
-                    self.check_abilities_floor(*ability_name_vanilla, *dots)?;
+                    self.check_abilities_floor(*name, *dots)?;
                 }
 
                 self.character_view

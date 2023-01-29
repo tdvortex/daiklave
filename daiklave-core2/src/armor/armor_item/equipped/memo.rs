@@ -1,23 +1,23 @@
 use serde::{Deserialize, Serialize};
 
-use crate::armor::armor_item::{artifact::ArtifactArmor, mundane::MundaneArmor};
+use crate::armor::armor_item::{artifact::{ArtifactArmor, ArtifactArmorName}, mundane::{MundaneArmor, MundaneArmorName}};
 
 use super::EquippedArmor;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum EquippedArmorMemo {
-    Mundane(String, MundaneArmor),
-    Artifact(String, ArtifactArmor),
+    Mundane(MundaneArmorName, MundaneArmor),
+    Artifact(ArtifactArmorName, ArtifactArmor),
 }
 
-impl<'source> EquippedArmorMemo {
-    pub fn as_ref(&'source self) -> EquippedArmor<'source> {
-        match self {
-            EquippedArmorMemo::Mundane(name, memo) => {
-                EquippedArmor::Mundane(name.as_str(), memo.as_ref())
+impl From<&EquippedArmor<'_>> for EquippedArmorMemo {
+    fn from(view: &EquippedArmor<'_>) -> Self {
+        match view {
+            EquippedArmor::Mundane(name, view) => {
+                EquippedArmorMemo::Mundane((*name).into(), view.into())
             }
-            EquippedArmorMemo::Artifact(name, memo) => {
-                EquippedArmor::Artifact(name.as_str(), memo.as_ref())
+            EquippedArmor::Artifact(name, view) => {
+                EquippedArmorMemo::Artifact((*name).into(), view.into())
             }
         }
     }

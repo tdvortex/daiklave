@@ -103,7 +103,7 @@ impl HearthstoneBuilderWithPowers {
                     category: self.category,
                     geomancy_level: self.geomancy_level,
                     powers: self.powers,
-                    is_dependent: self.is_dependent,
+                    is_dependent: false,
                 },
                 stability: HearthstoneStability::Unspecified,
             },

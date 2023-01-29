@@ -31,7 +31,7 @@ impl<'view, 'source> Abilities<'view, 'source> {
     }
 
 
-    fn get_vanilla(&'view self, vanilla: AbilityNameVanilla) -> Ability<'view, 'source> {
+    pub(crate) fn get_vanilla(&'view self, vanilla: AbilityNameVanilla) -> Ability<'view, 'source> {
         Ability(AbilityNameQualified::Vanilla(vanilla), self.0.vanilla_abilities().get(vanilla))
     }
 

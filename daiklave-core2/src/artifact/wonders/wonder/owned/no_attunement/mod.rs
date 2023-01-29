@@ -18,23 +18,25 @@ pub(crate) struct WonderNoAttunement<'source> {
     pub attunement_cost: Option<u8>,
 }
 
-impl<'source> WonderNoAttunement<'source> {
-    pub fn as_memo(&self) -> WonderNoAttunementMemo {
-        WonderNoAttunementMemo {
-            book_reference: self.book_reference,
-            lore: self.lore.as_ref().map(|s| s.to_string()),
-            powers: self.powers.to_string(),
-            hearthstone_slots: self
+impl<'source> From<&'source WonderNoAttunementMemo> for WonderNoAttunement<'source> {
+    fn from(memo: &'source WonderNoAttunementMemo) -> Self {
+        Self {
+            book_reference: memo.book_reference,
+            lore: memo.lore.as_deref(),
+            powers: memo.powers.as_ref(),
+            hearthstone_slots: memo
                 .hearthstone_slots
                 .iter()
-                .map(|option| option.map(|heartstone| heartstone.as_memo()))
+                .map(|option| option.as_ref().map(|hearthstone| hearthstone.into()))
                 .collect(),
-            merit_dots: self.merit_dots,
-            magic_material: self.magic_material,
-            attunement_cost: self.attunement_cost,
+            merit_dots: memo.merit_dots,
+            magic_material: memo.magic_material,
+            attunement_cost: memo.attunement_cost,
         }
     }
+}
 
+impl<'source> WonderNoAttunement<'source> {
     pub fn book_reference(&self) -> Option<BookReference> {
         self.book_reference
     }

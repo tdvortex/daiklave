@@ -6,6 +6,8 @@ pub(crate) use with_dots::{
     ZeroDotsNonStackableMeritMemo,
 };
 
+mod name;
+pub use name::NonStackableMeritName;
 mod template;
 pub use template::NonStackableMeritTemplate;
 
@@ -14,7 +16,7 @@ mod with_dots;
 mod view;
 pub(crate) use view::NonStackableMeritView;
 
-use super::{prerequisite::MeritPrerequisite, MeritError};
+use super::{prerequisite::MeritPrerequisite, MeritError, add::AddNonStackableMerit};
 
 /// A merit which is nonstackable, i.e. can only be purchased once per
 /// character.
@@ -41,7 +43,12 @@ impl<'source> NonStackableMerit {
             }
         };
 
-        Ok((template_name, Self(dotted)))
+        Ok(
+            AddNonStackableMerit {
+                name: template_name.into(),
+                merit: Self(dotted),
+            }
+        )
     }
 
     pub(crate) fn as_ref(&'source self) -> NonStackableMeritView<'source> {

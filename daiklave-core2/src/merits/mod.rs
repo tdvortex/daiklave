@@ -61,22 +61,31 @@ impl<'view, 'source> Merits<'view, 'source> {
                     })
                 }
             },
-            MeritInstanceName::DemenseNoManse(name) => self
+            MeritInstanceName::Demense(demense_name) => self
                 .0
                 .demenses_no_manse
-                .get_key_value(name)
-                .map(|(name, geomancy)| Merit(MeritSource::DemenseNoManse(name, *geomancy))),
-            MeritInstanceName::DemenseWithManse(hearthstone_name) => self
-                .0
-                .hearthstones()
-                .get(hearthstone_name)
-                .and_then(|hearthstone| {
-                    hearthstone.manse_and_demense().map(|(_, demense)| {
-                        Merit(MeritSource::DemenseWithManse(
-                            hearthstone.name(),
-                            demense,
-                            hearthstone.geomancy_level(),
-                        ))
+                .get_key_value(demense_name)
+                .map(|(name, geomancy)| Merit(MeritSource::DemenseNoManse(*name, *geomancy)))
+                .or_else(|| {
+                    self.0.hearthstones().iter().find_map(|hearthstone_name| {
+                        self.0
+                            .hearthstones()
+                            .get(hearthstone_name)
+                            .and_then(|hearthstone| {
+                                hearthstone.manse_and_demense().and_then(
+                                    |(_, actual_demense_name)| {
+                                        if actual_demense_name == demense_name {
+                                            Some(Merit(MeritSource::DemenseWithManse(
+                                                hearthstone.name(),
+                                                actual_demense_name,
+                                                hearthstone.geomancy_level(),
+                                            )))
+                                        } else {
+                                            None
+                                        }
+                                    },
+                                )
+                            })
                     })
                 }),
             MeritInstanceName::ExaltedHealing => match &self.0.exaltation {
@@ -89,31 +98,14 @@ impl<'view, 'source> Merits<'view, 'source> {
                 }
                 Exaltation::Exalt(_) => Some(Merit(MeritSource::ExaltedHealing(true))),
             },
-            MeritInstanceName::HearthstoneNoManse(hearthstone_id) => self
+            MeritInstanceName::Hearthstone(hearthstone_name) => self
                 .0
                 .hearthstones()
-                .get(hearthstone_id)
-                .and_then(|hearthstone| {
-                    if hearthstone.manse_and_demense().is_some() {
-                        None
-                    } else {
-                        Some(Merit(MeritSource::HearthstoneNoManse(
-                            hearthstone.name(),
-                            hearthstone.geomancy_level(),
-                        )))
-                    }
-                }),
-            MeritInstanceName::HearthstoneWithManse(hearthstone_id) => self
-                .0
-                .hearthstones()
-                .get(hearthstone_id)
-                .and_then(|hearthstone| {
-                    hearthstone.manse_and_demense().map(|_| {
-                        Merit(MeritSource::HearthstoneWithManse(
-                            hearthstone.name(),
-                            hearthstone.geomancy_level(),
-                        ))
-                    })
+                .get(hearthstone_name)
+                .map(|hearthstone| if hearthstone.manse_and_demense().is_some() {
+                    Merit(MeritSource::HearthstoneWithManse(hearthstone.name(), hearthstone.geomancy_level()))
+                } else {
+                    Merit(MeritSource::HearthstoneNoManse(hearthstone.name(), hearthstone.geomancy_level()))
                 }),
             MeritInstanceName::Manse(hearthstone_name) => self
                 .0
@@ -154,11 +146,11 @@ impl<'view, 'source> Merits<'view, 'source> {
                 .nonstackable_merits
                 .get(&nonstackable_id)
                 .map(|merit| Merit(MeritSource::NonStackable(nonstackable_id, merit.clone()))),
-            MeritInstanceName::Stackable(stackable_id) => self
+            MeritInstanceName::Stackable(template_name, instance_name) => self
                 .0
                 .stackable_merits
-                .get(&stackable_id)
-                .map(|merit| Merit(MeritSource::Stackable(stackable_id, *merit))),
+                .get_key_value(&(template_name, instance_name))
+                .map(|((template_name, detail), merit)| Merit(MeritSource::Stackable(*template_name, *detail, *merit))),
             MeritInstanceName::LocalTongues => {
                 let purchased = self
                     .0
@@ -252,7 +244,7 @@ impl<'view, 'source> Merits<'view, 'source> {
         self.0
             .demenses_no_manse
             .keys()
-            .map(|unique_id| MeritInstanceName::DemenseNoManse(*unique_id))
+            .map(|unique_id| MeritInstanceName::Demense(*unique_id))
             .for_each(|merit_id| output.push(merit_id));
 
         // Hearthstones and manses
@@ -262,12 +254,10 @@ impl<'view, 'source> Merits<'view, 'source> {
             .filter_map(|hearthstone_id| self.0.hearthstones().get(hearthstone_id))
             .for_each(|hearthstone| {
                 let hearthstone_name = hearthstone.name();
-                if hearthstone.manse_and_demense().is_some() {
-                    output.push(MeritInstanceName::Manse(hearthstone_name));
-                    output.push(MeritInstanceName::DemenseWithManse(hearthstone_name));
-                    output.push(MeritInstanceName::HearthstoneWithManse(hearthstone_name));
-                } else {
-                    output.push(MeritInstanceName::HearthstoneNoManse(hearthstone_name));
+                output.push(MeritInstanceName::Hearthstone(hearthstone_name));
+                if let Some((manse, demense)) = hearthstone.manse_and_demense() {
+                    output.push(MeritInstanceName::Manse(manse));
+                    output.push(MeritInstanceName::Demense(demense));
                 }
             });
 
@@ -286,7 +276,9 @@ impl<'view, 'source> Merits<'view, 'source> {
         self.0.languages().iter().for_each(|(language, is_native)| {
             if !is_native {
                 match language {
-                    Language::MajorLanguage(major) => output.push(MeritInstanceName::MajorLanguage(major)),
+                    Language::MajorLanguage(major) => {
+                        output.push(MeritInstanceName::MajorLanguage(major))
+                    }
                     Language::LocalTongue(_) => {
                         if !local_added {
                             output.push(MeritInstanceName::LocalTongues);
@@ -325,7 +317,7 @@ impl<'view, 'source> Merits<'view, 'source> {
         self.0
             .stackable_merits
             .keys()
-            .map(|stackable_merit_id| MeritInstanceName::Stackable(*stackable_merit_id))
+            .map(|(template_name, detail)| MeritInstanceName::Stackable(*template_name, *detail))
             .for_each(|merit_id| output.push(merit_id));
 
         // Sorcery merits
@@ -335,7 +327,9 @@ impl<'view, 'source> Merits<'view, 'source> {
                 .filter_map(|archetype_id| sorcery.archetype(archetype_id))
                 .for_each(|(_, _, merits)| {
                     merits.keys().for_each(|sorcery_archetype_merit_id| {
-                        output.push(MeritInstanceName::SorceryArchetype(*sorcery_archetype_merit_id));
+                        output.push(MeritInstanceName::SorceryArchetype(
+                            *sorcery_archetype_merit_id,
+                        ));
                     })
                 })
         }

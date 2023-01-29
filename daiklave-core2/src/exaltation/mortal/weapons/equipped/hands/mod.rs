@@ -69,25 +69,6 @@ impl<'source> Default for MortalHands<'source> {
 }
 
 impl<'view, 'source> MortalHands<'source> {
-    pub fn as_memo(&self) -> MortalHandsMemo {
-        match self {
-            MortalHands::Empty => MortalHandsMemo::Empty,
-            MortalHands::MainHand(view) => MortalHandsMemo::MainHand(view.as_memo()),
-            MortalHands::OffHand(view) => MortalHandsMemo::OffHand(view.as_memo()),
-            MortalHands::Both(arr) => MortalHandsMemo::Both(Box::new(
-                arr.iter()
-                    .map(|el| el.as_memo())
-                    .enumerate()
-                    .fold([None, None], |mut opt_arr, (i, memo)| {
-                        opt_arr[i] = Some(memo);
-                        opt_arr
-                    })
-                    .map(|opt| opt.unwrap()),
-            )),
-            MortalHands::TwoHanded(view) => MortalHandsMemo::TwoHanded(view.as_memo()),
-        }
-    }
-
     pub fn get_weapon(
         &'view self,
         name: WeaponName<'_>,

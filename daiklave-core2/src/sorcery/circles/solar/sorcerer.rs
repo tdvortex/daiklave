@@ -13,7 +13,7 @@ use crate::{
     CharacterMutationError,
 };
 
-use super::{sorcerer_memo::SolarCircleSorcererMemo, SolarSpell};
+use super::{SolarSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct SolarCircleSorcerer<'source> {
@@ -39,56 +39,6 @@ pub(crate) struct SolarCircleSorcerer<'source> {
 }
 
 impl<'view, 'source> SolarCircleSorcerer<'source> {
-    pub fn as_memo(&self) -> SolarCircleSorcererMemo {
-        SolarCircleSorcererMemo {
-            archetypes: self
-                .archetypes
-                .iter()
-                .map(|(k, (archetype, merits))| {
-                    (
-                        (*k).to_owned(),
-                        (
-                            (*archetype).to_owned(),
-                            merits.iter().map(|(k, v)| ((*k).to_owned(), (*v).to_owned())).collect(),
-                        ),
-                    )
-                })
-                .collect(),
-            circle_archetypes: [
-                (*self.circle_archetypes[0]).to_owned(),
-                (*self.circle_archetypes[1]).to_owned(),
-                (*self.circle_archetypes[2]).to_owned(),
-            ],
-            shaping_ritual_names: [
-                (*self.shaping_ritual_names[0]).to_owned(),
-                (*self.shaping_ritual_names[1]).to_owned(),
-                (*self.shaping_ritual_names[2]).to_owned(),
-            ],
-            shaping_rituals: { self.shaping_rituals.map(|ptr| ptr.to_owned()) },
-            terrestrial_control_spell_name: (*self.terrestrial_control_spell_name).to_owned(),
-            terrestrial_control_spell: self.terrestrial_control_spell.to_owned(),
-            terrestrial_spells: self
-                .terrestrial_spells
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
-                .collect(),
-            celestial_control_spell_name: (*self.celestial_control_spell_name).to_owned(),
-            celestial_control_spell: self.celestial_control_spell.to_owned(),
-            celestial_spells: self
-                .celestial_spells
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
-                .collect(),
-            solar_control_spell_name: (*self.solar_control_spell_name).to_owned(),
-            solar_control_spell: self.solar_control_spell.to_owned(),
-            solar_spells: self
-                .solar_spells
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
-                .collect(),
-        }
-    }
-
     pub fn archetype(
         &'view self,
         name: &str,

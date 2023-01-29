@@ -23,7 +23,7 @@ pub use merit_type::MeritType;
 
 mod nonstackable;
 pub(crate) use nonstackable::NonStackableMeritView;
-pub use nonstackable::{NonStackableMerit};
+pub use nonstackable::{NonStackableMerit, NonStackableMeritName};
 
 mod prerequisite;
 pub use prerequisite::MeritPrerequisite;
@@ -38,7 +38,6 @@ pub use stackable::{
 };
 
 mod template;
-pub use template::MeritTemplateId;
 
 use crate::book_reference::BookReference;
 
@@ -58,32 +57,15 @@ impl<'source> Merit<'source> {
         }
     }
 
-    /// The Id of this instance of the merit as owned by the character.
-    pub fn id(&self) -> MeritInstanceName {
-        self.0.id()
-    }
-
-    /// The Id of the merit template which this merit instantiates.
-    pub fn template_id(&self) -> MeritTemplateId {
-        self.0.template_id()
-    }
-
-    /// The name of the merit, excluding any detailing. For example, this would
-    /// be "Allies" not "Allies (Ragara Kvin)".
-    pub fn template_name(&self) -> &'source str {
-        self.0.template_name()
+    /// The type, template name, and details of this instance of the merit as 
+    /// owned by the character.
+    pub fn name(&self) -> MeritInstanceName {
+        self.0.name()
     }
 
     /// The book reference for the merit, if any.
     pub fn book_reference(&self) -> Option<BookReference> {
         self.0.book_reference()
-    }
-
-    /// If the merit is stackable, the detail element describing this unique
-    /// instance. For example, if the instance were "Allies (Ragara Kvin)",
-    /// this would return Some("Ragara Kvin").
-    pub fn detail(&self) -> Option<&'source str> {
-        self.0.detail()
     }
 
     /// The number of dots for this merit. If the merit is an N/A artifact,

@@ -103,7 +103,7 @@ impl FixedMeritTemplateBuilder {
             Err(MeritError::InvalidDotRating)
         } else {
             Ok(NonStackableMeritTemplate(
-                self.name,
+                self.name.into(),
                 MeritTemplate {
                     book_reference: self.book_reference,
                     merit_type: self.merit_type,

@@ -19,12 +19,6 @@ pub enum ExaltType<'source> {
 }
 
 impl<'source> ExaltType<'source> {
-    pub(crate) fn as_memo(&self) -> ExaltTypeMemo {
-        match self {
-            ExaltType::Solar(view) => ExaltTypeMemo::Solar(view.as_memo()),
-        }
-    }
-
     pub(crate) fn sonance(&self, magic_material: MagicMaterial) -> Option<Sonance> {
         match (self, magic_material) {
             (ExaltType::Solar(_), _) => Some(Sonance::Resonant),

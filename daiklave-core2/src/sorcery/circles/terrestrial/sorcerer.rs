@@ -11,7 +11,7 @@ use crate::{
     CharacterMutationError,
 };
 
-use super::{sorcerer_memo::TerrestrialCircleSorcererMemo, TerrestrialSpell};
+use super::{TerrestrialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TerrestrialCircleSorcerer<'source> {
@@ -26,27 +26,6 @@ pub(crate) struct TerrestrialCircleSorcerer<'source> {
 }
 
 impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
-    pub fn as_memo(&self) -> TerrestrialCircleSorcererMemo {
-        TerrestrialCircleSorcererMemo {
-            archetype_name: self.archetype_name.to_owned(),
-            archetype: self.archetype.to_owned(),
-            archetype_merits: self
-                .archetype_merits
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
-                .collect(),
-            shaping_ritual_name: self.shaping_ritual_name.to_owned(),
-            shaping_ritual: self.shaping_ritual.to_owned(),
-            control_spell_name: self.control_spell_name.to_owned(),
-            control_spell: self.control_spell.to_owned(),
-            other_spells: self
-                .other_spells
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
-                .collect(),
-        }
-    }
-
     pub fn archetype(
         &'view self,
         name: &str,
@@ -70,7 +49,7 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
         &self,
         add_sorcery: &'source AddCelestialSorcery,
     ) -> Result<CelestialCircleSorcerer<'source>, CharacterMutationError> {
-        if add_sorcery.shaping_ritual_name == self.shaping_ritual_name {
+        if add_sorcery.shaping_ritual_summary == self.shaping_ritual_name {
             return Err(CharacterMutationError::SorceryError(
                 SorceryError::DuplicateShapingRitual,
             ));
@@ -98,7 +77,7 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
             circle_archetypes: [self.archetype_name, add_sorcery.archetype_name.as_str()],
             shaping_ritual_names: [
                 self.shaping_ritual_name,
-                add_sorcery.shaping_ritual_name.as_str(),
+                add_sorcery.shaping_ritual_summary.as_str(),
             ],
             shaping_rituals: [self.shaping_ritual, &add_sorcery.shaping_ritual],
             terrestrial_control_spell_name: self.control_spell_name,

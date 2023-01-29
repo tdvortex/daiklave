@@ -20,20 +20,6 @@ pub(crate) enum EquippedOneHandedWeaponNoAttunement<'source> {
 }
 
 impl<'view, 'source> EquippedOneHandedWeaponNoAttunement<'source> {
-    pub fn as_memo(&'source self) -> EquippedOneHandedWeaponNoAttunementMemo {
-        match self {
-            EquippedOneHandedWeaponNoAttunement::Mundane(name, view) => {
-                EquippedOneHandedWeaponNoAttunementMemo::Mundane((*name).to_owned(), view.as_memo())
-            }
-            EquippedOneHandedWeaponNoAttunement::Artifact(name, view) => {
-                EquippedOneHandedWeaponNoAttunementMemo::Artifact(
-                    (*name).to_owned(),
-                    view.as_memo(),
-                )
-            }
-        }
-    }
-
     pub fn get_weapon(
         &'view self,
         name: WeaponName<'_>,

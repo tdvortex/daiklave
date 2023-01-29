@@ -1,5 +1,8 @@
 use std::ops::Deref;
 
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct HearthstoneName(String);
 
 impl<T> From<T> for HearthstoneName where T: ToString {

@@ -37,25 +37,6 @@ impl<'source> Default for ExaltHands<'source> {
 }
 
 impl<'view, 'source> ExaltHands<'source> {
-    pub fn as_memo(&self) -> ExaltHandsMemo {
-        match self {
-            ExaltHands::Empty => ExaltHandsMemo::Empty,
-            ExaltHands::MainHand(view) => ExaltHandsMemo::MainHand(view.as_memo()),
-            ExaltHands::OffHand(view) => ExaltHandsMemo::OffHand(view.as_memo()),
-            ExaltHands::Both(arr) => ExaltHandsMemo::Both(Box::new(
-                arr.iter()
-                    .map(|el| el.as_memo())
-                    .enumerate()
-                    .fold([None, None], |mut opt_arr, (i, memo)| {
-                        opt_arr[i] = Some(memo);
-                        opt_arr
-                    })
-                    .map(|opt| opt.unwrap()),
-            )),
-            ExaltHands::TwoHanded(view) => ExaltHandsMemo::TwoHanded(view.as_memo()),
-        }
-    }
-
     pub fn get_weapon(&self, name: WeaponName<'_>, equipped: Equipped) -> Option<Weapon<'source>> {
         match (self, equipped) {
             (ExaltHands::Empty, _) | (_, Equipped::Natural) | (_, Equipped::Worn) => None,

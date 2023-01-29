@@ -1,6 +1,7 @@
 /// Builder path for constructing a Spell.
 pub mod builder;
 
+mod add;
 mod cost;
 mod inner;
 mod keyword;
@@ -9,9 +10,10 @@ mod name;
 
 use std::{collections::HashSet, num::NonZeroU8};
 
+pub use add::AddSpell;
 pub(crate) use inner::SpellInner;
 pub use keyword::SpellKeyword;
-pub use mutation::{AddSpell, SpellMutation};
+pub use mutation::{SpellMutation};
 pub use name::SpellName;
 
 use crate::book_reference::BookReference;
@@ -34,9 +36,9 @@ pub enum Spell<'source> {
 
 impl<'source> Spell<'source> {
     /// Starts constructing a new Spell.
-    pub fn builder(name: String) -> SpellBuilder {
+    pub fn builder(name: impl ToString) -> SpellBuilder {
         SpellBuilder {
-            name,
+            name: name.into(),
             book_reference: None,
             summary: None,
             keywords: HashSet::new(),

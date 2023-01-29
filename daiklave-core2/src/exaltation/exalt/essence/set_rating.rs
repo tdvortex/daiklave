@@ -5,7 +5,7 @@ use crate::CharacterMutation;
 use super::EssenceError;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct SetEssenceRating(NonZeroU8);
+pub struct SetEssenceRating(pub(crate) NonZeroU8);
 
 impl SetEssenceRating {
     pub fn new(dots: NonZeroU8) -> Result<Self, EssenceError> {

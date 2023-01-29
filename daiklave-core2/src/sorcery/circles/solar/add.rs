@@ -1,5 +1,5 @@
 use crate::sorcery::{
-    archetype::{ShapingRitualSummary, SorceryArchetypeName},
+    archetype::{SorceryArchetypeName},
     spell::SpellName,
     ShapingRitual, SorceryArchetype,
 };
@@ -16,9 +16,9 @@ pub struct AddSolarSorcery {
     /// If necessary, the sorcery archetype added for the Solar Circle.
     /// Ignored if the Solar archetype id matches either prior circle.
     pub archetype: Option<SorceryArchetype>,
-    /// The name (or short description) of the shaping ritual for the Solar circle. This must be
+    /// A short description of the shaping ritual for the Solar circle. This must be
     /// unique.
-    pub shaping_ritual_name: ShapingRitualSummary,
+    pub shaping_ritual_summary: String,
     /// The shaping ritual for the Solar circle.
     pub shaping_ritual: ShapingRitual,
     /// The name of the Solar Control Spell.

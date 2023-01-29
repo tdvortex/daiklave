@@ -1,6 +1,8 @@
 use std::ops::Deref;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub struct MundaneWeaponName(String);
 
 impl<T> From<T> for MundaneWeaponName where T: ToString {

@@ -1,3 +1,5 @@
+use std::num::NonZeroU8;
+
 use crate::{willpower::Willpower, Character, CharacterMutationError};
 
 impl<'source> Character<'source> {
@@ -19,9 +21,9 @@ impl<'source> Character<'source> {
     /// Sets the character's permanent willpower rating to the specified dots
     /// amount. This will also reset their current willpower amount to be the
     /// same amount.
-    pub fn set_willpower_rating(&mut self, dots: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_willpower_rating(&mut self, dots: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
         self.willpower.rating = dots;
-        self.willpower.current = dots;
+        self.willpower.current = dots.get();
         Ok(self)
     }
 }

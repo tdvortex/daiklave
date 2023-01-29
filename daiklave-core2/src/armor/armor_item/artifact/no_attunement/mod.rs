@@ -18,24 +18,30 @@ pub struct ArtifactArmorNoAttunement<'source> {
     pub(crate) hearthstone_slots: Vec<Option<SlottedHearthstone<'source>>>,
 }
 
-impl<'source> ArtifactArmorNoAttunement<'source> {
-    pub fn as_memo(&self) -> ArtifactArmorNoAttunementMemo {
-        ArtifactArmorNoAttunementMemo {
-            book_reference: self.book_reference,
-            lore: self.lore.map(|s| s.to_owned()),
-            powers: self.powers.map(|s| s.to_owned()),
-            base_armor_name: self.base_armor_name.to_owned(),
-            base_armor: self.base_armor.to_owned(),
-            magic_material: self.magic_material,
-            merit_dots: self.merit_dots,
-            hearthstone_slots: self
+impl<'source> From<&'source ArtifactArmorNoAttunementMemo> for ArtifactArmorNoAttunement<'source> {
+    fn from(memo: &'source ArtifactArmorNoAttunementMemo) -> Self {
+        Self {
+            book_reference: memo.book_reference,
+            lore: memo.lore.as_deref(),
+            powers: memo.powers.as_deref(),
+            base_armor_name: memo.base_armor_name.as_str(),
+            base_armor: &memo.base_armor,
+            magic_material: memo.magic_material,
+            merit_dots: memo.merit_dots,
+            hearthstone_slots: memo
                 .hearthstone_slots
                 .iter()
-                .map(|option| option.map(|hearthstone| hearthstone.as_memo()))
+                .map(|maybe_hearthstone| {
+                    maybe_hearthstone
+                        .as_ref()
+                        .map(|hearthstone| hearthstone.into())
+                })
                 .collect(),
         }
     }
+}
 
+impl<'source> ArtifactArmorNoAttunement<'source> {
     pub fn book_reference(&self) -> Option<BookReference> {
         self.book_reference
     }

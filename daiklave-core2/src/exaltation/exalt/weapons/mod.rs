@@ -37,13 +37,6 @@ pub(crate) struct ExaltWeapons<'source> {
 }
 
 impl<'view, 'source> ExaltWeapons<'source> {
-    pub fn as_memo(&'source self) -> ExaltWeaponsMemo {
-        ExaltWeaponsMemo {
-            equipped: self.equipped.as_memo(),
-            unequipped: self.unequipped.as_memo(),
-        }
-    }
-
     pub fn get_weapon(
         &'view self,
         name: WeaponName<'_>,

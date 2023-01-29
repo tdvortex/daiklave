@@ -18,17 +18,6 @@ pub(crate) enum HandlessArtifactWeaponNoAttunement<'source> {
 }
 
 impl<'source> HandlessArtifactWeaponNoAttunement<'source> {
-    pub fn as_memo(&self) -> HandlessArtifactWeaponNoAttunementMemo {
-        match self {
-            HandlessArtifactWeaponNoAttunement::Natural(view) => {
-                HandlessArtifactWeaponNoAttunementMemo::Natural(view.as_memo())
-            }
-            HandlessArtifactWeaponNoAttunement::Worn(view) => {
-                HandlessArtifactWeaponNoAttunementMemo::Worn(view.as_memo())
-            }
-        }
-    }
-
     pub(crate) fn hearthstone_slots_mut(
         &mut self,
     ) -> &mut Vec<Option<SlottedHearthstone<'source>>> {

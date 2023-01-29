@@ -1,5 +1,8 @@
 use std::ops::Deref;
 
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SorceryArchetypeName(String);
 
 impl<T> From<T> for SorceryArchetypeName where T: ToString {

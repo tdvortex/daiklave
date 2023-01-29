@@ -1,5 +1,7 @@
 mod add;
+mod name;
 pub use add::AddSorceryArchetypeMerit;
+pub use name::SorceryArchetypeMeritName;
 
 use serde::{Deserialize, Serialize};
 
@@ -16,28 +18,6 @@ pub struct SorceryArchetypeMerit {
 }
 
 impl<'source> SorceryArchetypeMerit {
-    /// Creates a new Sorcery Archetype merit.
-    pub fn new(
-        sorcery_archetype_name: String,
-        merit_name: String,
-        book_reference: Option<BookReference>,
-        dots: u8,
-        description: String,
-    ) -> AddSorceryArchetypeMerit {
-        (sorcery_archetype_name,
-            merit_name, 
-        SorceryArchetypeMerit {
-            book_reference,
-            dots,
-            description,
-        })
-    }
-
-    /// The name of the merit.
-    pub fn name(&'source self) -> &'source str {
-        self.name.as_str()
-    }
-
     /// The book reference for the merit.
     pub fn book_reference(&self) -> Option<BookReference> {
         self.book_reference

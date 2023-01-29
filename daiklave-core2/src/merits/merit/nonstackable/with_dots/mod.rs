@@ -25,40 +25,6 @@ pub(crate) enum NonStackableMeritWithDots<'source> {
 }
 
 impl<'source> NonStackableMeritWithDots<'source> {
-    pub fn as_memo(&self) -> NonStackableMeritWithDotsMemo {
-        match self {
-            NonStackableMeritWithDots::Zero(zero) => {
-                NonStackableMeritWithDotsMemo::Zero(zero.as_memo())
-            }
-            NonStackableMeritWithDots::One(one) => {
-                NonStackableMeritWithDotsMemo::One(one.as_memo())
-            }
-            NonStackableMeritWithDots::Two(two) => {
-                NonStackableMeritWithDotsMemo::Two(two.as_memo())
-            }
-            NonStackableMeritWithDots::Three(three) => {
-                NonStackableMeritWithDotsMemo::Three(three.as_memo())
-            }
-            NonStackableMeritWithDots::Four(four) => {
-                NonStackableMeritWithDotsMemo::Four(four.as_memo())
-            }
-            NonStackableMeritWithDots::Five(five) => {
-                NonStackableMeritWithDotsMemo::Five(five.as_memo())
-            }
-        }
-    }
-
-    pub fn template_name(&self) -> &'source str {
-        match self {
-            NonStackableMeritWithDots::Zero(zero) => zero.name(),
-            NonStackableMeritWithDots::One(one) => one.name(),
-            NonStackableMeritWithDots::Two(two) => two.name(),
-            NonStackableMeritWithDots::Three(three) => three.name(),
-            NonStackableMeritWithDots::Four(four) => four.name(),
-            NonStackableMeritWithDots::Five(five) => five.name(),
-        }
-    }
-
     pub fn book_reference(&self) -> Option<BookReference> {
         match self {
             NonStackableMeritWithDots::Zero(zero) => zero.book_reference(),

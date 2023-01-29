@@ -17,14 +17,14 @@ impl CelestialSorceryBuilderWithArchetype {
         self,
         shaping_ritual: AddShapingRitual,
     ) -> Result<CelestialSorceryBuilderWithShapingRitual, SorceryError> {
-        if shaping_ritual.0 != self.archetype_name {
+        if shaping_ritual.archetype_name != self.archetype_name {
             Err(SorceryError::MissingArchetype)
         } else {
             Ok(CelestialSorceryBuilderWithShapingRitual {
                 archetype_name: self.archetype_name,
                 archetype: self.archetype,
-                shaping_ritual_name: shaping_ritual.1,
-                shaping_ritual: shaping_ritual.2,
+                shaping_ritual_summary: shaping_ritual.summary,
+                shaping_ritual: shaping_ritual.ritual,
             })
         }
     }

@@ -1,5 +1,5 @@
 use crate::sorcery::{
-    archetype::{ShapingRitualSummary, SorceryArchetypeName},
+    archetype::{SorceryArchetypeName},
     spell::SpellName,
     ShapingRitual, SorceryArchetype,
 };
@@ -14,9 +14,8 @@ pub struct AddTerrestrialSorcery {
     pub archetype_name: SorceryArchetypeName,
     /// The Archetype they inititate into.
     pub archetype: SorceryArchetype,
-    /// The name of their first Shaping Ritual (or a short blurb to describe
-    /// it.)
-    pub shaping_ritual_name: ShapingRitualSummary,
+    /// A short summary of their first Shaping Ritual.
+    pub shaping_ritual_summary: String,
     /// The first Shaping Ritual.
     pub shaping_ritual: ShapingRitual,
     /// The name of their Terrestrial Control Spell.
@@ -30,7 +29,7 @@ impl<'source> AddTerrestrialSorcery {
         AddTerrestrialSorceryView {
             archetype_name: self.archetype_name.as_str(),
             archetype: &self.archetype,
-            shaping_ritual_name: self.shaping_ritual_name.as_str(),
+            shaping_ritual_name: self.shaping_ritual_summary.as_str(),
             shaping_ritual: &self.shaping_ritual,
             control_spell_name: self.control_spell_name.as_str(),
             control_spell: &self.control_spell,

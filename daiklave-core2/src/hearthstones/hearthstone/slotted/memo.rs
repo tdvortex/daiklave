@@ -13,12 +13,12 @@ pub(crate) struct SlottedHearthstoneMemo {
     pub origin: HearthstoneOriginMemo,
 }
 
-impl<'source> SlottedHearthstoneMemo {
-    pub fn as_ref(&'source self) -> SlottedHearthstone<'source> {
-        SlottedHearthstone {
-            name: self.name.as_str(),
-            details: self.details.as_ref(),
-            origin: self.origin.as_ref(),
+impl From<&SlottedHearthstone<'_>> for SlottedHearthstoneMemo {
+    fn from(view: &SlottedHearthstone<'_>) -> Self {
+        Self {
+            name: view.name.to_owned(),
+            details: (&view.details).into(),
+            origin: (&view.origin).into(),
         }
     }
 }

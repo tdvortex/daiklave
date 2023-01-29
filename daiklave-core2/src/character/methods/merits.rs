@@ -4,8 +4,7 @@ use crate::{
     abilities::{AbilityName, AbilityNameVanilla},
     merits::{
         merit::{
-            MeritError, MeritPrerequisite, NonStackableMerit, NonStackableMeritId, StackableMerit,
-            StackableMeritId,
+            MeritError, MeritPrerequisite, NonStackableMerit, StackableMerit,
         },
         Merits,
     },
@@ -21,12 +20,13 @@ impl<'view, 'source> Character<'source> {
     /// Adds a stackable merit to the character.
     pub fn add_stackable_merit(
         &mut self,
-        stackable_merit_id: StackableMeritId,
-        stackable_merit: &'source StackableMerit,
+        template_name: &'source str,
+        instance_name: &'source str,
+        merit: &'source StackableMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.validate_merit_prerequisites(stackable_merit.prerequisites())?;
-        if let Entry::Vacant(e) = self.stackable_merits.entry(stackable_merit_id) {
-            e.insert(stackable_merit.as_ref());
+        self.validate_merit_prerequisites(merit.prerequisites())?;
+        if let Entry::Vacant(e) = self.stackable_merits.entry((template_name, instance_name)) {
+            e.insert(merit.into());
             Ok(self)
         } else {
             Err(CharacterMutationError::MeritError(
@@ -38,9 +38,10 @@ impl<'view, 'source> Character<'source> {
     /// Removes a nonstackable merit from the character.
     pub fn remove_stackable_merit(
         &mut self,
-        stackable_merit_id: StackableMeritId,
+        template_name: &str,
+        instance_name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self.stackable_merits.remove(&stackable_merit_id).is_some() {
+        if self.stackable_merits.remove(&(template_name, instance_name)).is_some() {
             Ok(self)
         } else {
             Err(CharacterMutationError::MeritError(MeritError::NotFound))
@@ -84,7 +85,7 @@ impl<'view, 'source> Character<'source> {
                         }
                         other_ability => {
                             if let Ok(vanilla) = AbilityNameVanilla::try_from(other_ability) {
-                                if self.abilities().get(vanilla).dots() >= dots_required.get() {
+                                if self.abilities().get_vanilla(vanilla).dots() >= dots_required.get() {
                                     qualified = true;
                                     break;
                                 }
@@ -111,12 +112,12 @@ impl<'view, 'source> Character<'source> {
     /// Adds a nonstackable merit to the character.
     pub fn add_nonstackable_merit(
         &mut self,
-        nonstackable_merit_id: NonStackableMeritId,
+        nonstackable_merit_name: &'source str,
         nonstackable_merit: &'source NonStackableMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.validate_merit_prerequisites(nonstackable_merit.prerequisites())?;
 
-        if let Entry::Vacant(e) = self.nonstackable_merits.entry(nonstackable_merit_id) {
+        if let Entry::Vacant(e) = self.nonstackable_merits.entry(nonstackable_merit_name) {
             e.insert(nonstackable_merit.as_ref());
             Ok(self)
         } else {
@@ -129,11 +130,11 @@ impl<'view, 'source> Character<'source> {
     /// Removes a nonstackable merit from the character.
     pub fn remove_nonstackable_merit(
         &mut self,
-        nonstackable_merit_id: NonStackableMeritId,
+        nonstackable_merit_name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self
             .nonstackable_merits
-            .remove(&nonstackable_merit_id)
+            .remove(&nonstackable_merit_name)
             .is_some()
         {
             Ok(self)
@@ -181,17 +182,17 @@ impl<'view, 'source> Character<'source> {
     pub(crate) fn correct_merits(&mut self) {
         self.nonstackable_merits
             .iter()
-            .filter_map(|(id, merit)| {
+            .filter_map(|(name, merit)| {
                 if self
                     .validate_merit_prerequisites(merit.prerequisites())
                     .is_err()
                 {
-                    Some(*id)
+                    Some(*name)
                 } else {
                     None
                 }
             })
-            .collect::<Vec<NonStackableMeritId>>()
+            .collect::<Vec<&str>>()
             .into_iter()
             .for_each(|id| {
                 self.nonstackable_merits.remove(&id);
@@ -199,20 +200,20 @@ impl<'view, 'source> Character<'source> {
 
         self.stackable_merits
             .iter()
-            .filter_map(|(id, merit)| {
+            .filter_map(|((template_name, detail), merit)| {
                 if self
                     .validate_merit_prerequisites(merit.prerequisites())
                     .is_err()
                 {
-                    Some(*id)
+                    Some((*template_name, *detail))
                 } else {
                     None
                 }
             })
-            .collect::<Vec<StackableMeritId>>()
+            .collect::<Vec<(&str, &str)>>()
             .into_iter()
-            .for_each(|id| {
-                self.stackable_merits.remove(&id);
+            .for_each(|key| {
+                self.stackable_merits.remove(&key);
             });
     }
 }

@@ -58,21 +58,6 @@ pub(crate) struct Mortal<'source> {
 }
 
 impl<'view, 'source> Mortal<'source> {
-    pub fn as_memo(&self) -> MortalMemo {
-        MortalMemo {
-            armor: self.armor.as_memo(),
-            martial_arts_styles: self
-                .martial_arts_styles
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
-                .collect(),
-            sorcery: self.sorcery.as_ref().map(|sorcery| sorcery.as_memo()),
-            weapons: self.weapons.as_memo(),
-            wonders: self.wonders.as_memo(),
-            exalted_healing: self.exalted_healing,
-        }
-    }
-
     pub(crate) fn add_martial_arts_style(
         &mut self,
         name: &'source str,
@@ -319,7 +304,7 @@ impl<'view, 'source> Mortal<'source> {
         wonder: &'source Wonder,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Entry::Vacant(e) = self.wonders.0.entry(name) {
-            e.insert(wonder.0.as_ref());
+            e.insert((&wonder.0).into());
             Ok(self)
         } else {
             Err(CharacterMutationError::ArtifactError(

@@ -1,5 +1,8 @@
 use std::ops::Deref;
 
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SpellName(String);
 
 impl<T> From<T> for SpellName where T: ToString {

@@ -26,11 +26,13 @@ use crate::{
     intimacies::intimacy::{IntimacyLevel, IntimacyType},
     languages::Languages,
     merits::merit::{
-        NonStackableMeritId, NonStackableMeritView, StackableMeritId, StackableMeritView,
+        NonStackableMeritView, StackableMeritView,
     },
-    sorcery::{AddSorcery, SorceryCircle, SorceryError},
+    sorcery::{SorceryCircle, SorceryError},
     willpower::Willpower,
 };
+
+use self::mutation::{SpendMotes, SetName, SetConcept, CommitMotes, TakeDamage, RecoverMotes, SetEssenceRating, SetWillpowerRating, HealDamage, SetAttribute, SetAbility};
 
 /// A borrowed instance of a Character which references a CharacterEventSource
 /// object.
@@ -55,107 +57,56 @@ pub struct Character<'source> {
 }
 
 impl<'source> Character<'source> {
-    /// Clones the character and all contained values into an owned struct.
-    pub fn as_memo(&self) -> CharacterMemo {
-        CharacterMemo {
-            name: self.name.to_string(),
-            concept: self.concept.map(|s| s.to_string()),
-            exalt_state: self.exaltation.as_memo(),
-            willpower: self.willpower,
-            health: self.health,
-            attributes: self.attributes,
-            abilities: self.abilities.as_memo(),
-            craft: self.craft.as_memo(),
-            hearthstone_inventory: self
-                .hearthstone_inventory
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
-                .collect(),
-            demenses_no_manse: self
-                .demenses_no_manse
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), (*v)))
-                .collect(),
-            nonstackable_merits: self
-                .nonstackable_merits
-                .iter()
-                .map(|(k, v)| (*k, v.as_memo()))
-                .collect(),
-            stackable_merits: self
-                .stackable_merits
-                .iter()
-                .map(|(k, v)| (*k, v.as_memo()))
-                .collect(),
-            flaws: self
-                .flaws
-                .iter()
-                .map(|(name, (book_reference, description))| {
-                    (
-                        (*name).to_owned(),
-                        (*book_reference, (*description).to_owned()),
-                    )
-                })
-                .collect(),
-            languages: self.languages.as_memo(),
-            intimacies: self
-                .intimacies
-                .iter()
-                .map(|(intimacy_type, level)| (intimacy_type.as_memo(), *level))
-                .collect(),
-            experience: self.experience,
-        }
-    }
-
     /// Applies a specific CharacterMutation or returns an error.
     pub fn apply_mutation(
         &mut self,
         mutation: &'source CharacterMutation,
     ) -> Result<&mut Self, CharacterMutationError> {
         match mutation {
-            CharacterMutation::SetName(name) => self.set_name(name.as_str()),
-            CharacterMutation::SetConcept(concept) => self.set_concept(concept.as_str()),
+            CharacterMutation::SetName(SetName(name)) => self.set_name(name.as_str()),
+            CharacterMutation::SetConcept(SetConcept(concept)) => self.set_concept(concept.as_str()),
             CharacterMutation::RemoveConcept => self.remove_concept(),
             CharacterMutation::SetMortal => self.set_mortal(),
-            CharacterMutation::SetSolar(solar_traits) => self.set_solar(solar_traits),
-            CharacterMutation::SpendMotes(first, amount) => self.spend_motes(*first, *amount),
-            CharacterMutation::CommitMotes(name, first, amount) => {
-                self.commit_motes(name, *first, *amount)
+            CharacterMutation::SetSolar(set_solar) => self.set_solar(set_solar),
+            CharacterMutation::SpendMotes(SpendMotes {
+                first,
+                amount,
+            }) => self.spend_motes(*first, amount.get()),
+            CharacterMutation::CommitMotes(CommitMotes {
+                effect_name,
+                first,
+                amount,
+            }) => {
+                self.commit_motes(effect_name.as_str(), *first, amount.get())
             }
-            CharacterMutation::RecoverMotes(amount) => self.recover_motes(*amount),
-            CharacterMutation::UncommitMotes(name) => self.uncommit_motes(name),
-            CharacterMutation::SetEssenceRating(rating) => self.set_essence_rating(*rating),
-            CharacterMutation::SetCurrentWillpower(amount) => self.set_current_willpower(*amount),
-            CharacterMutation::SetWillpowerRating(dots) => self.set_willpower_rating(*dots),
-            CharacterMutation::SetWoundPenalties(wound_penalties) => {
-                self.set_wound_penalties(wound_penalties)
+            CharacterMutation::RecoverMotes(RecoverMotes(amount)) => self.recover_motes(amount.get()),
+            CharacterMutation::UncommitMotes(uncommit_motes) => self.uncommit_motes(uncommit_motes),
+            CharacterMutation::SetEssenceRating(SetEssenceRating(rating)) => self.set_essence_rating(rating.get()),
+            CharacterMutation::SetWillpowerRating(SetWillpowerRating(dots)) => self.set_willpower_rating(*dots),
+            CharacterMutation::TakeDamage(TakeDamage{
+                level,
+                amount,
+            }) => {
+                self.take_damage(*level, amount.get())
             }
-            CharacterMutation::TakeDamage(damage_level, amount) => {
-                self.take_damage(*damage_level, *amount)
+            CharacterMutation::HealDamage(HealDamage(amount)) => self.heal_damage(amount.get()),
+            CharacterMutation::SetAttribute(SetAttribute {
+                name,
+                dots,
+            }) => {
+                self.set_attribute(*name, dots.get())
             }
-            CharacterMutation::HealDamage(amount) => self.heal_damage(*amount),
-            CharacterMutation::SetAttribute(attribute_name, dots) => {
-                self.set_attribute(*attribute_name, *dots)
-            }
-            CharacterMutation::SetAbility(ability_name, dots) => {
-                self.set_ability_dots(*ability_name, *dots)
+            CharacterMutation::SetAbility(SetAbility{
+                name,
+                dots,
+            }) => {
+                self.set_ability_dots(*name, *dots)
             }
             CharacterMutation::AddSpecialty(ability_name, specialty) => {
                 self.add_specialty(*ability_name, specialty.as_str())
             }
             CharacterMutation::RemoveSpecialty(ability_name, specialty) => {
                 self.remove_specialty(*ability_name, specialty.as_str())
-            }
-            CharacterMutation::AddMartialArtsStyle(name, style) => {
-                self.add_martial_arts_style(name.as_str(), style)
-            }
-            CharacterMutation::RemoveMartialArtsStyle(name) => {
-                self.remove_martial_arts_style(name.as_str())
-            }
-            CharacterMutation::SetMartialArtsDots(name, dots) => {
-                self.set_martial_arts_dots(name.as_str(), *dots)
-            }
-            CharacterMutation::SetCraftDots(focus, dots) => {
-                self.set_craft_dots(focus.as_str(), *dots)
             }
             CharacterMutation::AddMundaneWeapon((name, mundane_weapon)) => {
                 self.add_mundane_weapon(name.as_str(), mundane_weapon)
@@ -166,78 +117,29 @@ impl<'source> Character<'source> {
             CharacterMutation::UnequipWeapon(name, equipped) => {
                 self.unequip_weapon(name.as_ref(), *equipped)
             }
-            CharacterMutation::AddArtifact(artifact) => self.add_artifact(artifact),
             CharacterMutation::RemoveMundaneWeapon(name) => {
                 self.remove_mundane_weapon(name.as_str())
             }
-            CharacterMutation::RemoveArtifact(artifact_name) => self.remove_artifact(artifact_name),
             CharacterMutation::AddMundaneArmor((name, armor_item)) => {
                 self.add_mundane_armor(name.as_str(), armor_item)
             }
             CharacterMutation::EquipArmor(name) => self.equip_armor(name.as_ref()),
             CharacterMutation::RemoveMundaneArmor(name) => self.remove_mundane_armor(name.as_str()),
             CharacterMutation::UnequipArmor => self.unequip_armor(),
-            CharacterMutation::AddManse((manse, demense, (hearthstone_name, template))) => self
-                .add_manse(
-                    manse.as_str(),
-                    demense.as_str(),
-                    hearthstone_name.as_str(),
-                    template,
-                ),
-            CharacterMutation::AddHearthstone((hearthstone_name, template)) => {
-                self.add_hearthstone(hearthstone_name.as_str(), template)
-            }
             CharacterMutation::SlotHearthstone(artifact_name, hearthstone_name) => {
                 self.slot_hearthstone(artifact_name.as_ref(), hearthstone_name.as_str())
             }
             CharacterMutation::UnslotHearthstone(hearthstone_name) => {
                 self.unslot_hearthstone(hearthstone_name.as_str())
             }
-            CharacterMutation::RemoveHearthstone(hearthstone_name) => {
-                self.remove_hearthstone(hearthstone_name.as_str())
-            }
             CharacterMutation::AttuneArtifact(artifact_name, first) => {
                 self.attune_artifact(artifact_name.as_ref(), *first)
-            }
-            CharacterMutation::AddStackableMerit(stackable_merit_id, stackable_merit) => {
-                self.add_stackable_merit(*stackable_merit_id, stackable_merit)
-            }
-            CharacterMutation::AddNonStackableMerit(nonstackable_merit_id, nonstackable_merit) => {
-                self.add_nonstackable_merit(*nonstackable_merit_id, nonstackable_merit)
-            }
-            CharacterMutation::AddLanguage(language_mutation) => {
-                self.add_language(language_mutation)
             }
             CharacterMutation::SetNativeLanguage(language_mutation) => {
                 self.set_native_language(language_mutation)
             }
-            CharacterMutation::RemoveLanguage(language_mutation) => {
-                self.remove_language(language_mutation)
-            }
-            CharacterMutation::AddSorceryArchetypeMerit(
-                sorcery_archetype_name,
-                sorcery_archetype_merit_name,
-                sorcery_archetype_merit,
-            ) => self.add_sorcery_archetype_merit(
-                sorcery_archetype_name.as_str(),
-                sorcery_archetype_merit_name.as_str(),
-                sorcery_archetype_merit,
-            ),
-            CharacterMutation::RemoveSorceryArchetypeMerit(sorcery_archetype_merit_name) => {
-                self.remove_sorcery_archetype_merit(sorcery_archetype_merit_name.as_str())
-            }
-            CharacterMutation::AddDemense(name, geomancy_level) => {
-                self.add_demense(name.as_str(), *geomancy_level)
-            }
             CharacterMutation::AddExaltedHealing => self.add_exalted_healing(),
-            CharacterMutation::RemoveStackableMerit(stackable_merit_id) => {
-                self.remove_stackable_merit(*stackable_merit_id)
-            }
-            CharacterMutation::RemoveNonStackableMerit(nonstackable_merit_id) => {
-                self.remove_nonstackable_merit(*nonstackable_merit_id)
-            }
             CharacterMutation::RemoveExaltedHealing => self.remove_exalted_healing(),
-            CharacterMutation::RemoveDemense(name) => self.remove_demense(name.as_str()),
             CharacterMutation::AddCharm(charm) => match charm {
                 AddCharm::Eclipse((spirit_charm_name, eclipse_charm)) => {
                     self.add_eclipse_charm(spirit_charm_name.as_str(), eclipse_charm)
@@ -278,14 +180,6 @@ impl<'source> Character<'source> {
             CharacterMutation::GainExperience(amount) => self.gain_base_experience(*amount),
             CharacterMutation::SpendExperience(amount) => self.spend_base_experience(*amount),
             CharacterMutation::GainExaltExperience(amount) => self.gain_exalt_experience(*amount),
-            CharacterMutation::SpendExaltExperince(amount) => self.spend_exalt_experience(*amount),
-            CharacterMutation::AddSorcery(add_sorcery) => match add_sorcery.as_ref() {
-                AddSorcery::Terrestrial(add_terrestrial) => {
-                    self.add_terrestrial_sorcery(add_terrestrial)
-                }
-                AddSorcery::Celestial(add_celestial) => self.add_celestial_sorcery(add_celestial),
-                AddSorcery::Solar(add_solar) => self.add_solar_sorcery(add_solar),
-            },
             CharacterMutation::RemoveSorcery => {
                 let sorcery = self.sorcery().ok_or(CharacterMutationError::SorceryError(
                     SorceryError::CircleSequence,

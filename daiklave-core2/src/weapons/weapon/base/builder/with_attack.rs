@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, num::NonZeroU8};
 
 use crate::{
     book_reference::BookReference,
@@ -71,9 +71,9 @@ impl BaseWeaponBuilderWithAttack {
     /// simultaneously.
     pub fn build_mundane(self) -> AddMundaneWeapon {
         match self.handedness {
-            WeaponHandedness::Natural => (
-                self.name,
-                MundaneWeapon(MundaneWeaponHandedness::Natural(NaturalMundaneWeapon(
+            WeaponHandedness::Natural => AddMundaneWeapon {
+                name: self.name.into(),
+                weapon: MundaneWeapon(MundaneWeaponHandedness::Natural(NaturalMundaneWeapon(
                     BaseWeapon {
                         book_reference: self.book_reference,
                         weight_class: self.weight_class,
@@ -83,10 +83,11 @@ impl BaseWeaponBuilderWithAttack {
                         tags: self.tags,
                     },
                 ))),
-            ),
-            WeaponHandedness::Worn => (
-                self.name,
-                MundaneWeapon(MundaneWeaponHandedness::Worn(
+                quantity: NonZeroU8::new(1).unwrap(),
+            },
+            WeaponHandedness::Worn => AddMundaneWeapon {
+                name: self.name.into(),
+                weapon: MundaneWeapon(MundaneWeaponHandedness::Worn(
                     WornMundaneWeapon(BaseWeapon {
                         book_reference: self.book_reference,
                         weight_class: self.weight_class,
@@ -97,10 +98,11 @@ impl BaseWeaponBuilderWithAttack {
                     }),
                     false,
                 )),
-            ),
-            WeaponHandedness::OneHanded => (
-                self.name,
-                MundaneWeapon(MundaneWeaponHandedness::OneHanded(
+                quantity: NonZeroU8::new(1).unwrap(),
+            },
+            WeaponHandedness::OneHanded => AddMundaneWeapon {
+                name: self.name.into(),
+                weapon: MundaneWeapon(MundaneWeaponHandedness::OneHanded(
                     OneHandedMundaneWeapon(BaseWeapon {
                         book_reference: self.book_reference,
                         weight_class: self.weight_class,
@@ -111,10 +113,11 @@ impl BaseWeaponBuilderWithAttack {
                     }),
                     None,
                 )),
-            ),
-            WeaponHandedness::TwoHanded => (
-                self.name,
-                MundaneWeapon(MundaneWeaponHandedness::TwoHanded(
+                quantity: NonZeroU8::new(1).unwrap(),
+            },
+            WeaponHandedness::TwoHanded => AddMundaneWeapon {
+                name: self.name.into(),
+                weapon: MundaneWeapon(MundaneWeaponHandedness::TwoHanded(
                     TwoHandedMundaneWeapon(BaseWeapon {
                         book_reference: self.book_reference,
                         weight_class: self.weight_class,
@@ -125,7 +128,8 @@ impl BaseWeaponBuilderWithAttack {
                     }),
                     false,
                 )),
-            ),
+                quantity: NonZeroU8::new(1).unwrap(),
+            },
         }
     }
 

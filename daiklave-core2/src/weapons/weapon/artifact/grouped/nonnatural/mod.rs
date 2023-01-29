@@ -12,12 +12,6 @@ pub(crate) struct NonnaturalArtifactWeapon<'source>(
     pub Option<u8>,
 );
 
-impl<'source> NonnaturalArtifactWeapon<'source> {
-    pub fn as_memo(&self) -> NonnaturalArtifactWeaponMemo {
-        NonnaturalArtifactWeaponMemo(self.0.as_memo(), self.1)
-    }
-}
-
 impl<'source> From<NonnaturalArtifactWeaponNoAttunement<'source>>
     for NonnaturalArtifactWeapon<'source>
 {

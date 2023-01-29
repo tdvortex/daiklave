@@ -47,7 +47,7 @@ use self::{
     exalt::{
         essence::{
             Essence, EssenceError, EssenceState, MotePool, MotePoolName,
-            MotesState, UncommitMotes, MoteCommitmentName,
+            MotesState, UncommitMotes, MoteCommitmentName, MoteCommitmentNameMutation,
         },
         exalt_type::{
             solar::{charm::SolarCharm, Solar, SolarMemo, SolarSorcererView},
@@ -71,17 +71,6 @@ impl<'source> Default for Exaltation<'source> {
 }
 
 impl<'source> Exaltation<'source> {
-    pub fn as_memo(&self) -> ExaltationMemo {
-        match self {
-            Exaltation::Mortal(box_view) => {
-                ExaltationMemo::Mortal(Box::new(box_view.as_ref().as_memo()))
-            }
-            Exaltation::Exalt(box_view) => {
-                ExaltationMemo::Exalt(Box::new(box_view.as_ref().as_memo()))
-            }
-        }
-    }
-
     pub fn get_weapon(
         &self,
         weapon_name: WeaponName<'_>,
@@ -398,7 +387,7 @@ impl<'view, 'source> Exaltation<'source> {
         &mut self,
         solar: &'source SolarMemo,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.set_solar_view(solar.as_ref())
+        self.set_solar_view(solar.into())
     }
 
     pub fn set_solar_view(
@@ -541,17 +530,17 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Mortal(_) => {
                 Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
             }
-            Exaltation::Exalt(exalt) => exalt.uncommit_motes(match to_uncommit {
-                UncommitMotes::UnattuneArtifact(ArtifactNameMutation::Armor(name)) => {
+            Exaltation::Exalt(exalt) => exalt.uncommit_motes(match to_uncommit.0 {
+                MoteCommitmentNameMutation::AttunedArtifact(ArtifactNameMutation::Armor(name)) => {
                     MoteCommitmentName::AttunedArtifact(ArtifactName::Armor(name.as_str()))
                 }
-                UncommitMotes::UnattuneArtifact(ArtifactNameMutation::Wonder(wonder_name)) => {
+                MoteCommitmentNameMutation::AttunedArtifact(ArtifactNameMutation::Wonder(wonder_name)) => {
                     MoteCommitmentName::AttunedArtifact(ArtifactName::Wonder(wonder_name.as_str()))
                 }
-                UncommitMotes::UnattuneArtifact(ArtifactNameMutation::Weapon(name)) => {
+                MoteCommitmentNameMutation::AttunedArtifact(ArtifactNameMutation::Weapon(name)) => {
                     MoteCommitmentName::AttunedArtifact(ArtifactName::Weapon(name.as_str()))
                 }
-                UncommitMotes::Other(name) => MoteCommitmentName::Other(name.as_str()),
+                MoteCommitmentNameMutation::Other(name) => MoteCommitmentName::Other(name.as_str()),
             }),
         }?;
         Ok(self)

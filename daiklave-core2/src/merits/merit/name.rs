@@ -10,7 +10,7 @@ pub enum MeritInstanceName<'a> {
     /// The merit associated with a specific owned Artifact.
     Artifact(ArtifactName<'a>),
     /// The merit associated with a Demense.
-    DemenseNoManse(&'a str),
+    Demense(&'a str),
     /// The Exalted Healing merit, which all Exalts get for free but mortals
     /// must purchase as a Supernatural merit.
     ExaltedHealing,

@@ -4,7 +4,7 @@ use crate::{
     book_reference::BookReference,
     sorcery::spell::{
         cost::{SpellCost, SpellMotesCost},
-        SpellKeyword,
+        SpellKeyword, SpellName,
     },
 };
 
@@ -13,7 +13,7 @@ use super::SpellBuilderWithWillpower;
 /// A Spell builder after the Sorcerous Mote cost has been specified (or set
 /// to be a ritual).
 pub struct SpellBuilderWithMoteCost {
-    pub(crate) name: String,
+    pub(crate) name: SpellName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
     pub(crate) keywords: HashSet<SpellKeyword>,

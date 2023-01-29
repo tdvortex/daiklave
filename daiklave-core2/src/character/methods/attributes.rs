@@ -22,7 +22,7 @@ impl<'source> Character<'source> {
         if old_dots > dots {
             let sorcery_removed = if attribute_name == AttributeName::Intelligence {
                 self.exaltation.correct_sorcery_level(
-                    self.abilities().get(AbilityNameVanilla::Occult).dots(),
+                    self.abilities().get_vanilla(AbilityNameVanilla::Occult).dots(),
                     dots,
                     self.essence().map_or(1, |essence| essence.rating()),
                 )

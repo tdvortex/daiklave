@@ -5,8 +5,6 @@ use crate::{
     weapons::weapon::base::BaseWeapon,
 };
 
-use super::ArtifactWeaponInner;
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ArtifactWeaponTraitsMemo {
     pub(crate) book_reference: Option<BookReference>,
@@ -17,23 +15,4 @@ pub struct ArtifactWeaponTraitsMemo {
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
     pub(crate) hearthstone_slots: Vec<Option<SlottedHearthstoneMemo>>,
-}
-
-impl<'source> ArtifactWeaponTraitsMemo {
-    pub fn as_ref(&'source self) -> ArtifactWeaponInner<'source> {
-        ArtifactWeaponInner {
-            book_reference: self.book_reference,
-            merit_dots: self.merit_dots,
-            base_weapon_name: self.base_weapon_name.as_str(),
-            base_weapon: &self.base_weapon,
-            lore: self.lore.as_deref(),
-            powers: self.powers.as_deref(),
-            hearthstone_slots: self
-                .hearthstone_slots
-                .iter()
-                .map(|option| option.as_ref().map(|memo| memo.as_ref()))
-                .collect(),
-            magic_material: self.magic_material,
-        }
-    }
 }

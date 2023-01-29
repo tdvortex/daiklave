@@ -15,7 +15,7 @@ use crate::{
     CharacterMutationError,
 };
 
-use super::{sorcerer_memo::CelestialCircleSorcererMemo, spell::CelestialSpell};
+use super::{spell::CelestialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct CelestialCircleSorcerer<'source> {
@@ -38,41 +38,6 @@ pub(crate) struct CelestialCircleSorcerer<'source> {
 }
 
 impl<'view, 'source> CelestialCircleSorcerer<'source> {
-    pub fn as_memo(&self) -> CelestialCircleSorcererMemo {
-        CelestialCircleSorcererMemo {
-            archetypes: self
-                .archetypes
-                .iter()
-                .map(|(k, (archetype, merits))| {
-                    (
-                        (*k).to_owned(),
-                        (
-                            (*archetype).to_owned(),
-                            merits.iter().map(|(k, v)| ((*k).to_owned(), (*v).to_owned())).collect(),
-                        ),
-                    )
-                })
-                .collect(),
-            circle_archetypes: self.circle_archetypes.map(|s| s.to_owned()),
-            shaping_ritual_names: self.shaping_ritual_names.map(|s| s.to_owned()),
-            shaping_rituals: self.shaping_rituals.map(|ptr| ptr.to_owned()),
-            terrestrial_control_spell_name: (*self.terrestrial_control_spell_name).to_owned(),
-            terrestrial_control_spell: self.terrestrial_control_spell.to_owned(),
-            terrestrial_spells: self
-                .terrestrial_spells
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
-                .collect(),
-            celestial_control_spell_name: (*self.celestial_control_spell_name).to_owned(),
-            celestial_control_spell: self.celestial_control_spell.to_owned(),
-            celestial_spells: self
-                .celestial_spells
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
-                .collect(),
-        }
-    }
-
     pub fn archetype(
         &'view self,
         name: &str,
@@ -119,8 +84,8 @@ impl<'view, 'source> CelestialCircleSorcerer<'source> {
         &self,
         add_solar: &'source AddSolarSorcery,
     ) -> Result<SolarCircleSorcerer<'source>, CharacterMutationError> {
-        if add_solar.shaping_ritual_name == self.shaping_ritual_names[0]
-            || add_solar.shaping_ritual_name == self.shaping_ritual_names[1]
+        if add_solar.shaping_ritual_summary == self.shaping_ritual_names[0]
+            || add_solar.shaping_ritual_summary == self.shaping_ritual_names[1]
         {
             return Err(CharacterMutationError::SorceryError(
                 SorceryError::DuplicateShapingRitual,
@@ -149,7 +114,7 @@ impl<'view, 'source> CelestialCircleSorcerer<'source> {
             shaping_ritual_names: [
                 self.shaping_ritual_names[0],
                 self.shaping_ritual_names[1],
-                add_solar.shaping_ritual_name.as_str(),
+                add_solar.shaping_ritual_summary.as_str(),
             ],
             shaping_rituals: [
                 self.shaping_rituals[0],

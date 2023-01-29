@@ -26,10 +26,6 @@ impl<'source> MeritTemplateWithDots<'source> {
         }
     }
 
-    pub fn name(&self) -> &'source str {
-        self.name
-    }
-
     pub fn book_reference(&self) -> Option<BookReference> {
         self.book_reference
     }

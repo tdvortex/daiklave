@@ -2,14 +2,14 @@ use std::{collections::HashSet, num::NonZeroU8};
 
 use crate::{
     book_reference::BookReference,
-    sorcery::spell::{cost::SpellCost, SpellKeyword},
+    sorcery::spell::{cost::SpellCost, SpellKeyword, SpellName},
 };
 
 use super::SpellBuilderWithDescription;
 
 /// A Spell builder after the duration has been specified.
 pub struct SpellBuilderWithDuration {
-    pub(crate) name: String,
+    pub(crate) name: SpellName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
     pub(crate) keywords: HashSet<SpellKeyword>,

@@ -38,21 +38,6 @@ impl<'source> From<EquippedTwoHandedWeaponNoAttunement<'source>>
 }
 
 impl<'view, 'source> EquippedTwoHandedWeapon<'source> {
-    pub fn as_memo(&'source self) -> EquippedTwoHandedWeaponMemo {
-        match self {
-            EquippedTwoHandedWeapon::Mundane(name, view) => {
-                EquippedTwoHandedWeaponMemo::Mundane((*name).to_owned(), view.as_memo())
-            }
-            EquippedTwoHandedWeapon::Artifact(name, view, attunement) => {
-                EquippedTwoHandedWeaponMemo::Artifact(
-                    (*name).to_owned(),
-                    view.as_memo(),
-                    *attunement,
-                )
-            }
-        }
-    }
-
     pub fn get_weapon(&'view self, name: WeaponName<'_>) -> Option<Weapon<'source>> {
         match (self, name) {
             (EquippedTwoHandedWeapon::Mundane(name, two), WeaponName::Mundane(target_name)) => {

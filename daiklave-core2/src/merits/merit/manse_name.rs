@@ -1,5 +1,8 @@
 use std::ops::Deref;
 
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ManseName(String);
 
 impl<T> From<T> for ManseName where T: ToString {

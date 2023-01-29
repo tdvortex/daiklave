@@ -23,8 +23,15 @@ impl<'source> Deref for MundaneArmorView<'source> {
     }
 }
 
-impl<'source> MundaneArmorView<'source> {
-    pub fn as_memo(&self) -> MundaneArmor {
-        MundaneArmor(self.0.to_owned())
+impl<'source> From<&'source MundaneArmor> for MundaneArmorView<'source> {
+    fn from(memo: &'source MundaneArmor) -> Self {
+        Self(&memo.0)
+    }
+}
+
+// Do this as an Into to prevent it appearing in public interface
+impl Into<MundaneArmor> for &MundaneArmorView<'_> {
+    fn into(self) -> MundaneArmor {
+        MundaneArmor((*self).0.to_owned())
     }
 }

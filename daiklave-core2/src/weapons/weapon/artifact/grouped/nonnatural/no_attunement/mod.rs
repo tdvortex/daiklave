@@ -33,20 +33,6 @@ impl<'source> Deref for NonnaturalArtifactWeaponNoAttunement<'source> {
 }
 
 impl<'source> NonnaturalArtifactWeaponNoAttunement<'source> {
-    pub fn as_memo(&self) -> NonnaturalArtifactWeaponNoAttunementMemo {
-        match self {
-            NonnaturalArtifactWeaponNoAttunement::Worn(view) => {
-                NonnaturalArtifactWeaponNoAttunementMemo::Worn(view.as_memo())
-            }
-            NonnaturalArtifactWeaponNoAttunement::OneHanded(view) => {
-                NonnaturalArtifactWeaponNoAttunementMemo::OneHanded(view.as_memo())
-            }
-            NonnaturalArtifactWeaponNoAttunement::TwoHanded(view) => {
-                NonnaturalArtifactWeaponNoAttunementMemo::TwoHanded(view.as_memo())
-            }
-        }
-    }
-
     pub fn hearthstone_slots_mut(&mut self) -> &mut Vec<Option<SlottedHearthstone<'source>>> {
         match self {
             NonnaturalArtifactWeaponNoAttunement::Worn(WornArtifactWeaponView(

@@ -317,7 +317,7 @@ fn test_merits() {
         .get(MeritInstanceName::Artifact(ArtifactName::Weapon("Volcano Cutter")))
         .unwrap();
     assert_eq!(
-        volcano_cutter.id(),
+        volcano_cutter.name(),
         MeritInstanceName::Artifact(ArtifactName::Weapon("Volcano Cutter"))
     );
     assert_eq!(volcano_cutter.template_name(), "Artifact");
@@ -335,7 +335,7 @@ fn test_merits() {
         .get(MeritInstanceName::Artifact(ArtifactName::Armor("Brilliant Sentinel")))
         .unwrap();
     assert_eq!(
-        brilliant_sentinel.id(),
+        brilliant_sentinel.name(),
         MeritInstanceName::Artifact(ArtifactName::Armor("Brilliant Sentinel"))
     );
     assert_eq!(brilliant_sentinel.template_name(), "Artifact");
@@ -355,7 +355,7 @@ fn test_merits() {
         )))
         .unwrap();
     assert_eq!(
-        belt.id(),
+        belt.name(),
         MeritInstanceName::Artifact(ArtifactName::Wonder("Belt of Shadow Walking"))
     );
     assert_eq!(belt.template_name(), "Artifact");
@@ -375,7 +375,7 @@ fn test_merits() {
         ))
         .unwrap();
     assert_eq!(
-        jewel.id(),
+        jewel.name(),
         MeritInstanceName::HearthstoneNoManse("Jewel of the Celestial Mandarin")
     );
     assert_eq!(jewel.template_name(), "Hearthstone");
@@ -390,9 +390,9 @@ fn test_merits() {
     assert!(jewel.description().1.is_some());
 
     let nowhere = merits
-        .get(MeritInstanceName::DemenseNoManse("Nowhere special"))
+        .get(MeritInstanceName::Demense("Nowhere special"))
         .unwrap();
-    assert_eq!(nowhere.id(), MeritInstanceName::DemenseNoManse("Nowhere special"));
+    assert_eq!(nowhere.name(), MeritInstanceName::Demense("Nowhere special"));
     assert_eq!(nowhere.template_name(), "Demense");
     assert_eq!(
         nowhere.book_reference(),
@@ -407,7 +407,7 @@ fn test_merits() {
     let eye = merits
         .get(MeritInstanceName::HearthstoneWithManse("Hierophant's Eye"))
         .unwrap();
-    assert_eq!(eye.id(), MeritInstanceName::HearthstoneWithManse("Hierophant's Eye"));
+    assert_eq!(eye.name(), MeritInstanceName::HearthstoneWithManse("Hierophant's Eye"));
     assert_eq!(eye.template_name(), "Hearthstone");
     assert_eq!(
         eye.book_reference(),
@@ -420,7 +420,7 @@ fn test_merits() {
     assert!(eye.description().1.is_some());
 
     let manse = merits.get(MeritInstanceName::Manse("Hierophant's Eye")).unwrap();
-    assert_eq!(manse.id(), MeritInstanceName::Manse("Hierophant's Eye"));
+    assert_eq!(manse.name(), MeritInstanceName::Manse("Hierophant's Eye"));
     assert_eq!(manse.template_name(), "Manse");
     assert_eq!(
         manse.book_reference(),
@@ -433,7 +433,7 @@ fn test_merits() {
     assert!(manse.description().1.is_some());
 
     let ma_crane = merits.get(MeritInstanceName::MartialArtist("Crane Style")).unwrap();
-    assert_eq!(ma_crane.id(), MeritInstanceName::MartialArtist("Crane Style"));
+    assert_eq!(ma_crane.name(), MeritInstanceName::MartialArtist("Crane Style"));
     assert_eq!(ma_crane.template_name(), "Martial Artist");
     assert_eq!(
         ma_crane.book_reference(),
@@ -446,7 +446,7 @@ fn test_merits() {
     assert!(ma_crane.description().1.is_none());
 
     let exalted_healing = merits.get(MeritInstanceName::ExaltedHealing).unwrap();
-    assert_eq!(exalted_healing.id(), MeritInstanceName::ExaltedHealing);
+    assert_eq!(exalted_healing.name(), MeritInstanceName::ExaltedHealing);
     assert_eq!(exalted_healing.template_name(), "Exalted Healing");
     assert_eq!(
         exalted_healing.book_reference(),
@@ -462,7 +462,7 @@ fn test_merits() {
     assert!(exalted_healing.description().1.is_none());
 
     let mortal_sorcerer = merits.get(MeritInstanceName::MortalSorcerer).unwrap();
-    assert_eq!(mortal_sorcerer.id(), MeritInstanceName::MortalSorcerer);
+    assert_eq!(mortal_sorcerer.name(), MeritInstanceName::MortalSorcerer);
     assert_eq!(
         mortal_sorcerer.template_name(),
         "Terrestrial Circle Sorcerer (Mortal)"
@@ -486,7 +486,7 @@ fn test_merits() {
         )))
         .unwrap();
     assert_eq!(
-        astral_meditation.id(),
+        astral_meditation.name(),
         MeritInstanceName::SorceryArchetype(SorceryArchetypeMeritId(UniqueId::Placeholder(1)))
     );
     assert_eq!(astral_meditation.template_name(), "Astral Meditation");
@@ -507,7 +507,7 @@ fn test_merits() {
         .get(MeritInstanceName::MajorLanguage(MajorLanguage::HighRealm))
         .unwrap();
     assert_eq!(
-        high_realm.id(),
+        high_realm.name(),
         MeritInstanceName::MajorLanguage(MajorLanguage::HighRealm)
     );
     assert_eq!(high_realm.template_name(), "Language");
@@ -522,7 +522,7 @@ fn test_merits() {
     assert!(high_realm.description().1.is_some());
 
     let other_languages = merits.get(MeritInstanceName::LocalTongues).unwrap();
-    assert_eq!(other_languages.id(), MeritInstanceName::LocalTongues);
+    assert_eq!(other_languages.name(), MeritInstanceName::LocalTongues);
     assert_eq!(other_languages.template_name(), "Language");
     assert_eq!(
         other_languages.book_reference(),
@@ -540,7 +540,7 @@ fn test_merits() {
         ))))
         .unwrap();
     assert_eq!(
-        retainers.id(),
+        retainers.name(),
         MeritInstanceName::Stackable(StackableMeritId(UniqueId::Placeholder(1)))
     );
     assert_eq!(retainers.template_name(), "Retainers");
@@ -563,7 +563,7 @@ fn test_merits() {
         )))
         .unwrap();
     assert_eq!(
-        eidetic_memory.id(),
+        eidetic_memory.name(),
         MeritInstanceName::NonStackable(NonStackableMeritId(UniqueId::Placeholder(1)))
     );
     assert_eq!(eidetic_memory.template_name(), "Eidetic Memory");
@@ -586,7 +586,7 @@ fn test_merits() {
         )))
         .unwrap();
     assert_eq!(
-        iron_stomach.id(),
+        iron_stomach.name(),
         MeritInstanceName::NonStackable(NonStackableMeritId(UniqueId::Placeholder(2)))
     );
     assert_eq!(iron_stomach.template_name(), "Iron Stomach");
@@ -626,7 +626,7 @@ fn test_merits() {
 
     // Exalted Healing should be free
     let exalted_healing = merits.get(MeritInstanceName::ExaltedHealing).unwrap();
-    assert_eq!(exalted_healing.id(), MeritInstanceName::ExaltedHealing);
+    assert_eq!(exalted_healing.name(), MeritInstanceName::ExaltedHealing);
     assert_eq!(exalted_healing.template_name(), "Exalted Healing");
     assert_eq!(
         exalted_healing.book_reference(),

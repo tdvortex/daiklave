@@ -19,20 +19,24 @@ pub struct ArtifactArmorNoAttunementMemo {
     pub(crate) hearthstone_slots: Vec<Option<SlottedHearthstoneMemo>>,
 }
 
-impl<'source> ArtifactArmorNoAttunementMemo {
-    pub fn as_ref(&'source self) -> ArtifactArmorNoAttunement<'source> {
-        ArtifactArmorNoAttunement {
-            book_reference: self.book_reference,
-            lore: self.lore.as_deref(),
-            powers: self.powers.as_deref(),
-            base_armor_name: self.base_armor_name.as_str(),
-            base_armor: &self.base_armor,
-            magic_material: self.magic_material,
-            merit_dots: self.merit_dots,
-            hearthstone_slots: self
+impl From<&ArtifactArmorNoAttunement<'_>> for ArtifactArmorNoAttunementMemo {
+    fn from(view: &ArtifactArmorNoAttunement<'_>) -> Self {
+        Self {
+            book_reference: view.book_reference,
+            lore: view.lore.map(|s| s.to_owned()),
+            powers: view.powers.map(|s| s.to_owned()),
+            base_armor_name: view.base_armor_name.to_owned(),
+            base_armor: view.base_armor.to_owned(),
+            magic_material: view.magic_material,
+            merit_dots: view.merit_dots,
+            hearthstone_slots: view
                 .hearthstone_slots
                 .iter()
-                .map(|option| option.as_ref().map(|hearthstone| hearthstone.as_ref()))
+                .map(|maybe_hearthstone| {
+                    maybe_hearthstone
+                        .as_ref()
+                        .map(|hearthstone| hearthstone.into())
+                })
                 .collect(),
         }
     }

@@ -41,7 +41,7 @@ impl<'source> Hearthstone<'source> {
     /// Starts constructing a new HearthstoneTemplate with a name.
     pub fn builder(name: String) -> HearthstoneBuilder {
         HearthstoneBuilder {
-            name,
+            name: name.into(),
             book_reference: None,
         }
     }

@@ -2,14 +2,14 @@ use std::{collections::HashSet, num::NonZeroU8};
 
 use crate::{
     book_reference::BookReference,
-    sorcery::spell::{cost::SpellCost, SpellKeyword},
+    sorcery::spell::{cost::SpellCost, SpellKeyword, SpellName},
 };
 
 use super::SpellBuilderWithDuration;
 
 /// A Spell builder after the willpower cost has been specified.
 pub struct SpellBuilderWithWillpower {
-    pub(crate) name: String,
+    pub(crate) name: SpellName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
     pub(crate) keywords: HashSet<SpellKeyword>,

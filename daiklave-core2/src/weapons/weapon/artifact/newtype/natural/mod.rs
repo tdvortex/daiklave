@@ -20,10 +20,6 @@ impl<'source> Deref for NaturalArtifactWeaponView<'source> {
 }
 
 impl<'source> NaturalArtifactWeaponView<'source> {
-    pub(crate) fn as_memo(&self) -> NaturalArtifactWeapon {
-        NaturalArtifactWeapon(self.0.as_memo())
-    }
-
     pub(crate) fn hearthstone_slots_mut(
         &mut self,
     ) -> &mut Vec<Option<SlottedHearthstone<'source>>> {

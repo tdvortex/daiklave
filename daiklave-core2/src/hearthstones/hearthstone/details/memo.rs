@@ -16,14 +16,14 @@ pub(crate) struct HearthstoneDetailsMemo {
     pub is_dependent: bool,
 }
 
-impl<'source> HearthstoneDetailsMemo {
-    pub fn as_ref(&'source self) -> HearthstoneDetails<'source> {
-        HearthstoneDetails {
-            book_reference: self.book_reference,
-            category: self.category,
-            geomancy_level: self.geomancy_level,
-            powers: self.powers.as_str(),
-            is_dependent: self.is_dependent,
+impl From<&HearthstoneDetails<'_>> for HearthstoneDetailsMemo {
+    fn from(view: &HearthstoneDetails<'_>) -> Self {
+        Self {
+            book_reference: view.book_reference,
+            category: view.category,
+            geomancy_level: view.geomancy_level,
+            powers: view.powers.to_owned(),
+            is_dependent: view.is_dependent,
         }
     }
 }

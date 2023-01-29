@@ -1,3 +1,5 @@
+use std::num::NonZeroU8;
+
 use crate::{
     exaltation::{exalt::exalt_type::ExaltType, Exaltation},
     Character, CharacterMutationError,
@@ -22,8 +24,7 @@ impl<'source> Character<'source> {
             return Ok(self);
         }
         self.exaltation.set_mortal()?;
-        let new_willpower_rating = self.willpower().rating().max(2) - 2;
-        self.set_willpower_rating(new_willpower_rating)?;
+        self.set_willpower_rating(NonZeroU8::new(self.willpower.rating.get().max(2) - 2).unwrap_or(NonZeroU8::new(1).unwrap()))?;
         Ok(self)
     }
 

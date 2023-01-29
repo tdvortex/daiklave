@@ -1,13 +1,16 @@
 mod demense;
 mod exalted_healing;
 mod manse;
+mod nonstackable;
 pub use demense::AddDemense;
 pub use exalted_healing::AddExaltedHealing;
+pub use nonstackable::AddNonStackableMerit;
 
 use crate::{artifact::AddArtifact, hearthstones::hearthstone::{AddHearthstone}, sorcery::AddSorcery, languages::AddLanguages, martial_arts::style::AddMartialArtsStyle};
 
 use self::manse::AddManse;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AddMerit {
     Artifact(AddArtifact),
     Demense(AddDemense),

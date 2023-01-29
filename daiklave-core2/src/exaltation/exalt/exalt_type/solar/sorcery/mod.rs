@@ -19,18 +19,6 @@ pub(crate) enum SolarSorcererView<'source> {
 }
 
 impl<'view, 'source> SolarSorcererView<'source> {
-    pub fn as_memo(&self) -> SolarSorcererMemo {
-        match self {
-            SolarSorcererView::Terrestrial(view) => {
-                SolarSorcererMemo::Terrestrial(Box::new(view.as_memo()))
-            }
-            SolarSorcererView::Celestial(view) => {
-                SolarSorcererMemo::Celestial(Box::new(view.as_memo()))
-            }
-            SolarSorcererView::Solar(view) => SolarSorcererMemo::Solar(Box::new(view.as_memo())),
-        }
-    }
-
     pub fn archetype(
         &'view self,
         name: &str,

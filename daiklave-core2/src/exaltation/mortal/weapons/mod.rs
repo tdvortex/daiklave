@@ -45,13 +45,6 @@ impl<'source> From<ExaltWeapons<'source>> for MortalWeapons<'source> {
 }
 
 impl<'view, 'source> MortalWeapons<'source> {
-    pub fn as_memo(&self) -> MortalWeaponsMemo {
-        MortalWeaponsMemo {
-            equipped: self.equipped.as_memo(),
-            unequipped: self.unequipped.as_memo(),
-        }
-    }
-
     pub fn get_weapon(
         &'view self,
         name: WeaponName<'_>,

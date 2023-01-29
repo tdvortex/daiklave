@@ -3,7 +3,7 @@ use crate::{
     merits::merit::{MeritPrerequisite, MeritType},
 };
 
-use super::{with_dots::StackableMeritWithDots, StackableMerit};
+use super::{with_dots::StackableMeritWithDots};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct StackableMeritView<'source> {
@@ -11,23 +11,8 @@ pub(crate) struct StackableMeritView<'source> {
 }
 
 impl<'source> StackableMeritView<'source> {
-    pub fn as_memo(&self) -> StackableMerit {
-        StackableMerit {
-            detail: self.detail.to_owned(),
-            dotted: self.dotted.as_memo(),
-        }
-    }
-
-    pub fn template_name(&self) -> &'source str {
-        self.dotted.template_name()
-    }
-
     pub fn book_reference(&self) -> Option<BookReference> {
         self.dotted.book_reference()
-    }
-
-    pub fn detail(&self) -> &'source str {
-        self.detail
     }
 
     pub fn dots(&self) -> u8 {

@@ -5,7 +5,7 @@ use crate::CharacterMutation;
 use super::WillpowerError;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct SetWillpowerRating(NonZeroU8);
+pub struct SetWillpowerRating(pub(crate) NonZeroU8);
 
 impl SetWillpowerRating {
     pub fn new(rating: NonZeroU8) -> Result<Self, WillpowerError> {

@@ -15,13 +15,6 @@ pub(crate) struct UnslottedHearthstone<'source> {
 }
 
 impl<'source> UnslottedHearthstone<'source> {
-    pub fn as_memo(&self) -> UnslottedHearthstoneMemo {
-        UnslottedHearthstoneMemo {
-            details: self.details.as_memo(),
-            origin: self.origin.as_memo(),
-        }
-    }
-
     pub fn book_reference(&self) -> Option<BookReference> {
         self.details.book_reference()
     }

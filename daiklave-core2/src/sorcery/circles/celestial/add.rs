@@ -1,5 +1,5 @@
 use crate::sorcery::{
-    archetype::{ShapingRitualSummary, SorceryArchetypeName},
+    archetype::{SorceryArchetypeName},
     spell::SpellName,
     ShapingRitual, SorceryArchetype,
 };
@@ -16,9 +16,9 @@ pub struct AddCelestialSorcery {
     /// If necessary, the sorcery archetype added for the Celestial Circle.
     /// Ignored if the Celestial archetype id is the same as Terrestrial.
     pub archetype: Option<SorceryArchetype>,
-    /// The name (or short description) of the shaping ritual for the Celestial
+    /// A short description of the shaping ritual for the Celestial
     /// circle. This must be unique.
-    pub shaping_ritual_name: ShapingRitualSummary,
+    pub shaping_ritual_summary: String,
     /// The shaping ritual for the Celestial circle.
     pub shaping_ritual: ShapingRitual,
     /// The name of the Celestial Control Spell.

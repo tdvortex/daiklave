@@ -4,7 +4,6 @@ use super::{
     newtype::{
         NaturalArtifactWeapon, OneHandedArtifactWeapon, TwoHandedArtifactWeapon, WornArtifactWeapon,
     },
-    ArtifactWeaponView,
 };
 
 /// A magical weapon, like a daiklave or a direlash.
@@ -17,21 +16,4 @@ pub enum ArtifactWeaponHandedness {
     Worn(WornArtifactWeapon, bool),
     OneHanded(OneHandedArtifactWeapon, Option<EquipHand>),
     TwoHanded(TwoHandedArtifactWeapon, bool),
-}
-
-impl<'source> ArtifactWeaponHandedness {
-    pub(crate) fn as_ref(&'source self) -> ArtifactWeaponView<'source> {
-        match self {
-            ArtifactWeaponHandedness::Natural(memo) => ArtifactWeaponView::Natural(memo.as_ref()),
-            ArtifactWeaponHandedness::Worn(memo, equipped) => {
-                ArtifactWeaponView::Worn(memo.as_ref(), *equipped)
-            }
-            ArtifactWeaponHandedness::OneHanded(memo, equipped) => {
-                ArtifactWeaponView::OneHanded(memo.as_ref(), *equipped)
-            }
-            ArtifactWeaponHandedness::TwoHanded(memo, equipped) => {
-                ArtifactWeaponView::TwoHanded(memo.as_ref(), *equipped)
-            }
-        }
-    }
 }
