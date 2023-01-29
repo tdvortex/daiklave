@@ -1,15 +1,15 @@
 use crate::sorcery::{
     archetype::{SorceryArchetypeName},
     circles::terrestrial::AddTerrestrialSpell,
-    AddSorcery, AddTerrestrialSorcery, ShapingRitual, SorceryArchetype, add::AddSorceryCircle,
+    AddSorcery, AddTerrestrialSorcery, ShapingRitualDetails, SorceryArchetypeDetails, add::AddSorceryCircle,
 };
 
 /// A Terrestrial sorcery builder after the shaping ritual has been specified.
 pub struct TerrestrialSorceryBuilderWithShapingRitual {
     pub(crate) archetype_name: SorceryArchetypeName,
-    pub(crate) archetype: SorceryArchetype,
+    pub(crate) archetype: SorceryArchetypeDetails,
     pub(crate) shaping_ritual_summary: String,
-    pub(crate) shaping_ritual: ShapingRitual,
+    pub(crate) shaping_ritual: ShapingRitualDetails,
 }
 
 impl TerrestrialSorceryBuilderWithShapingRitual {

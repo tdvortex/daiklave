@@ -24,3 +24,15 @@ impl From<AbilityNameVanilla> for AbilityNameQualifiedMutation {
         Self::Vanilla(vanilla)
     }
 }
+
+impl From<CraftName> for AbilityNameQualifiedMutation {
+    fn from(craft_name: CraftName) -> Self {
+        Self::Craft(craft_name)
+    }
+}
+
+impl From<MartialArtsStyleName> for AbilityNameQualifiedMutation {
+    fn from(style_name: MartialArtsStyleName) -> Self {
+        Self::MartialArts(style_name)
+    }
+}

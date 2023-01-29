@@ -3,8 +3,6 @@ use crate::{
     martial_arts::style::MartialArtsStyle,
 };
 
-use super::MortalMartialArtistMemo;
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MortalMartialArtist<'source> {
     pub style: &'source MartialArtsStyle,
@@ -17,10 +15,6 @@ impl<'view, 'source> MortalMartialArtist<'source> {
         ability: AbilityRating<'source>,
     ) -> Self {
         Self { style, ability }
-    }
-
-    pub fn as_memo(&'view self) -> MortalMartialArtistMemo {
-        MortalMartialArtistMemo::new(self.style.clone(), self.ability.as_memo())
     }
 
     pub fn style(&'view self) -> &'source MartialArtsStyle {

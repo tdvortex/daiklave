@@ -1,4 +1,16 @@
+use crate::{charms::charm::{spirit::SpiritCharmName, AddCharm}, CharacterMutation};
+
 use super::EclipseCharm;
 
 /// An Eclipse Charm to be added to a character.
-pub type AddEclipseCharm = (String, EclipseCharm);
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AddEclipseCharm {
+    name: SpiritCharmName,
+    charm: EclipseCharm,
+}
+
+impl From<AddEclipseCharm> for CharacterMutation {
+    fn from(add_eclipse: AddEclipseCharm) -> Self {
+        AddCharm::from(add_eclipse).into()
+    }
+}

@@ -6,6 +6,6 @@ pub struct AddExaltedHealing;
 
 impl From<AddExaltedHealing> for CharacterMutation {
     fn from(add_exalted_healing: AddExaltedHealing) -> Self {
-        Self::AddMerit(AddMerit::ExaltedHealing)
+        AddMerit::from(add_exalted_healing).into()
     }
 }

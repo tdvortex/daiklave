@@ -10,14 +10,14 @@ pub use with_merit_dots::ArtifactWeaponBuilderWithMeritDots;
 
 use crate::book_reference::BookReference;
 
-use super::AddBaseArtifactWeapon;
+use super::{AddBaseArtifactWeapon, ArtifactWeaponName};
 
 /// A builder to construct a new artifact weapon. Enforces that required fields
 /// are specified in order: name, base artifact, magic material, merit dots,
 /// and finally hearthstone slots. Optional fields (lore, powers, and book
 /// reference) may be specified at any time prior to the final build().
 pub struct ArtifactWeaponBuilder {
-    pub(crate) name: String,
+    pub(crate) name: ArtifactWeaponName,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
     pub(crate) book_reference: Option<BookReference>,
@@ -52,8 +52,8 @@ impl ArtifactWeaponBuilder {
     ) -> ArtifactWeaponBuilderWithBaseWeapon {
         ArtifactWeaponBuilderWithBaseWeapon {
             name: self.name,
-            base_weapon_name: add_base_artifact_weapon.0,
-            base_weapon: add_base_artifact_weapon.1,
+            base_weapon_name: add_base_artifact_weapon.name,
+            base_weapon: add_base_artifact_weapon.weapon,
             lore: self.lore,
             powers: self.powers,
             book_reference: self.book_reference,

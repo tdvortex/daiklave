@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use crate::weapons::weapon::{artifact::OneHandedArtifactWeapon, mundane::OneHandedMundaneWeapon};
+use crate::weapons::weapon::{artifact::{OneHandedArtifactWeaponMemo}, mundane::OneHandedMundaneWeaponMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum EquippedOneHandedWeaponNoAttunementMemo {
-    Mundane(String, OneHandedMundaneWeapon),
-    Artifact(String, OneHandedArtifactWeapon),
+    Mundane(String, OneHandedMundaneWeaponMemo),
+    Artifact(String, OneHandedArtifactWeaponMemo),
 }

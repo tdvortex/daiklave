@@ -9,13 +9,3 @@ pub(crate) struct IntimacyInner<'source> {
     pub intimacy_level: IntimacyLevel,
     pub description: &'source str,
 }
-
-impl<'source> IntimacyInner<'source> {
-    pub fn as_memo(&self) -> IntimacyInnerMemo {
-        IntimacyInnerMemo {
-            intimacy_type: self.intimacy_type.as_memo(),
-            intimacy_level: self.intimacy_level,
-            description: self.description.to_owned(),
-        }
-    }
-}

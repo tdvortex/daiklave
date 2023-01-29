@@ -5,7 +5,7 @@ mod worn;
 
 pub(crate) use natural::NaturalMundaneWeapon;
 pub(crate) use natural::{unarmed, NaturalMundaneWeaponView};
-pub(crate) use one_handed::OneHandedMundaneWeapon;
+pub(crate) use one_handed::OneHandedMundaneWeaponMemo;
 pub(crate) use one_handed::OneHandedMundaneWeaponView;
 pub(crate) use two_handed::TwoHandedMundaneWeapon;
 pub(crate) use two_handed::TwoHandedMundaneWeaponView;

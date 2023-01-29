@@ -53,8 +53,8 @@ impl ArtifactArmorItemBuilder {
             book_reference: self.book_reference,
             lore: self.lore,
             powers: self.powers,
-            base_armor: add_base_artifact.1,
-            base_armor_name: add_base_artifact.0,
+            base_armor: add_base_artifact.armor,
+            base_armor_name: add_base_artifact.name,
         }
     }
 }

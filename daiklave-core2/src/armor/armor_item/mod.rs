@@ -4,6 +4,7 @@ pub mod artifact;
 /// Builders for artifact and base armor.
 pub mod builder;
 
+mod add;
 mod armor_type;
 mod base;
 mod equip;
@@ -18,6 +19,7 @@ mod weight_class;
 
 use std::collections::HashSet;
 
+pub use add::AddArmor;
 pub use equip::EquipArmor;
 pub(crate) use armor_type::ArmorType;
 pub(crate) use equipped::{

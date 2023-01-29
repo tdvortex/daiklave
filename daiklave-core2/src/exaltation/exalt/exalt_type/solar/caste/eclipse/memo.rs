@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::charms::charm::EclipseCharm;
 
-use super::{Eclipse, EclipseAbility};
+use super::{EclipseAbility};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EclipseMemo {
@@ -22,20 +22,6 @@ impl<'source> EclipseMemo {
             caste_not_supernal,
             supernal,
             eclipse_charms: HashMap::new(),
-        }
-    }
-
-    pub(in crate::exaltation::exalt::exalt_type::solar::caste) fn as_ref(
-        &'source self,
-    ) -> Eclipse<'source> {
-        Eclipse {
-            caste_not_supernal: self.caste_not_supernal,
-            supernal: self.supernal,
-            eclipse_charms: self
-                .eclipse_charms
-                .iter()
-                .map(|(id, charm)| (id.as_str(), charm))
-                .collect(),
         }
     }
 }

@@ -11,15 +11,6 @@ use crate::{abilities::AbilityRating, CharacterMutationError};
 pub struct Craft<'source>(pub(crate) HashMap<&'source str, AbilityRating<'source>>);
 
 impl<'source> Craft<'source> {
-    pub(crate) fn as_memo(&self) -> CraftMemo {
-        CraftMemo(
-            self.0
-                .iter()
-                .map(|(k, v)| (k.to_string(), v.as_memo()))
-                .collect(),
-        )
-    }
-
     pub fn set_dots(
         &mut self,
         focus: &'source str,

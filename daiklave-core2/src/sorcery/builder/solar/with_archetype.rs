@@ -1,6 +1,6 @@
 use crate::sorcery::{
     archetype::{AddShapingRitual, SorceryArchetypeName},
-    SorceryArchetype, SorceryError,
+    SorceryArchetypeDetails, SorceryError,
 };
 
 use super::with_shaping_ritual::SolarSorceryBuilderWithShapingRitual;
@@ -8,7 +8,7 @@ use super::with_shaping_ritual::SolarSorceryBuilderWithShapingRitual;
 /// A Solar sorcery builder after the archetype has been specified.
 pub struct SolarSorceryBuilderWithArchetype {
     pub(crate) archetype_name: SorceryArchetypeName,
-    pub(crate) archetype: Option<SorceryArchetype>,
+    pub(crate) archetype: Option<SorceryArchetypeDetails>,
 }
 
 impl SolarSorceryBuilderWithArchetype {

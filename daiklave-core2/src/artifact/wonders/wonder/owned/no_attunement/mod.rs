@@ -23,7 +23,7 @@ impl<'source> From<&'source WonderNoAttunementMemo> for WonderNoAttunement<'sour
         Self {
             book_reference: memo.book_reference,
             lore: memo.lore.as_deref(),
-            powers: memo.powers.as_ref(),
+            powers: memo.powers.as_str(),
             hearthstone_slots: memo
                 .hearthstone_slots
                 .iter()

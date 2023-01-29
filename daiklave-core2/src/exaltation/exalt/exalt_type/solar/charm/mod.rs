@@ -42,9 +42,9 @@ pub struct SolarCharm {
 
 impl<'source> SolarCharm {
     /// Starts building a new Solar Charm.
-    pub fn builder(name: String) -> SolarCharmBuilder {
+    pub fn builder(name: impl Into<SolarCharmName>) -> SolarCharmBuilder {
         SolarCharmBuilder {
-            name,
+            name: name.into(),
             book_reference: None,
             summary: None,
             charms_required: HashSet::new(),

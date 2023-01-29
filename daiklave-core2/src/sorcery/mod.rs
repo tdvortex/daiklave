@@ -1,6 +1,6 @@
 mod add;
 mod remove;
-pub use add::AddSorcery;
+pub use add::{AddSorcery, AddSorceryCircle};
 pub use remove::RemoveSorcery;
 mod archetype;
 /// A builder path to construct a sorcerous intiation.
@@ -13,8 +13,9 @@ pub use spells::Spells;
 /// Properties of an individual Spell.
 pub mod spell;
 
+pub(crate) use archetype::SorceryArchetypeMeritDetails;
 pub use archetype::{
-    AddShapingRitual, ShapingRitual, SorceryArchetypeMerit,
+    AddShapingRitual, ShapingRitualDetails,
     SorceryArchetypeName, SorceryArchetypeWithMerits,
 };
 pub use circles::{
@@ -25,7 +26,7 @@ pub(crate) use error::SorceryError;
 
 use crate::exaltation::ExaltationSorcery;
 
-use self::{builder::SorceryBuilder, spell::Spell, archetype::SorceryArchetype};
+use self::{builder::SorceryBuilder, spell::Spell, archetype::SorceryArchetypeDetails};
 
 /// A character's Sorcery abilities.
 pub struct Sorcery<'view, 'source>(pub(crate) ExaltationSorcery<'view, 'source>);
@@ -50,7 +51,7 @@ impl<'view, 'source> Sorcery<'view, 'source> {
     pub fn shaping_ritual(
         &self,
         circle: SorceryCircle,
-    ) -> Option<(&'source str, &'source ShapingRitual)> {
+    ) -> Option<(&'source str, &'source ShapingRitualDetails)> {
         self.0.shaping_ritual(circle)
     }
 

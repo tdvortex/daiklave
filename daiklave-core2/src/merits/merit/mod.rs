@@ -34,7 +34,7 @@ pub(crate) use source::MeritSource;
 mod stackable;
 pub(crate) use stackable::StackableMeritView;
 pub use stackable::{
-    StackableMerit, StackableMeritTemplate,
+    StackableMerit, StackableMeritTemplate, StackableMeritTemplateName
 };
 
 mod template;

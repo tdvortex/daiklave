@@ -23,7 +23,7 @@ impl<'view, 'source> Character<'source> {
     /// Removes a Martial Arts style from the character.
     pub fn remove_martial_arts_style(
         &mut self,
-        name: &'source str,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.remove_martial_arts_style(name)?;
         Ok(self)
@@ -32,11 +32,19 @@ impl<'view, 'source> Character<'source> {
     /// Sets the ability dots for a specific Martial Arts style.
     pub fn set_martial_arts_dots(
         &mut self,
-        name: &'source str,
+        name: &str,
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.set_martial_arts_dots(name, dots)?;
         Ok(self)
+    }
+
+    pub fn add_martial_arts_specialty(&mut self, style_name: &'source str, specialty: &'source str) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
+    }
+
+    pub fn remove_martial_arts_specialty(&mut self, style_name: &str, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
     }
 
     /// Adds a Martial Arts Charm to the character.

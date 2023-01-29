@@ -19,9 +19,3 @@ impl<'source> Deref for NaturalMundaneWeaponView<'source> {
         self.0
     }
 }
-
-impl<'source> NaturalMundaneWeaponView<'source> {
-    pub fn as_memo(&'source self) -> NaturalMundaneWeapon {
-        NaturalMundaneWeapon(self.0.clone())
-    }
-}

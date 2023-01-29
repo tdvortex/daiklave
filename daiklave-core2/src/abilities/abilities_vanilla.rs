@@ -1,4 +1,4 @@
-use super::{AbilitiesMemo, ability::{AbilityRating, AbilityNameVanilla}};
+use super::{ability::{AbilityRating, AbilityNameVanilla}};
 
 /// A struct representing all non-Craft, non-Martial Arts abilities, including
 /// any specialties.
@@ -31,35 +31,6 @@ pub(crate) struct AbilitiesVanilla<'source> {
 }
 
 impl<'view, 'source> AbilitiesVanilla<'source> {
-    pub(crate) fn as_memo(&self) -> AbilitiesMemo {
-        AbilitiesMemo {
-            archery: self.archery.as_memo(),
-            athletics: self.athletics.as_memo(),
-            awareness: self.awareness.as_memo(),
-            brawl: self.brawl.as_memo(),
-            bureaucracy: self.bureaucracy.as_memo(),
-            dodge: self.dodge.as_memo(),
-            integrity: self.integrity.as_memo(),
-            investigation: self.investigation.as_memo(),
-            larceny: self.larceny.as_memo(),
-            linguistics: self.linguistics.as_memo(),
-            lore: self.lore.as_memo(),
-            medicine: self.medicine.as_memo(),
-            melee: self.melee.as_memo(),
-            occult: self.occult.as_memo(),
-            performance: self.performance.as_memo(),
-            presence: self.presence.as_memo(),
-            resistance: self.resistance.as_memo(),
-            ride: self.ride.as_memo(),
-            sail: self.sail.as_memo(),
-            socialize: self.socialize.as_memo(),
-            stealth: self.stealth.as_memo(),
-            survival: self.survival.as_memo(),
-            thrown: self.thrown.as_memo(),
-            war: self.war.as_memo(),
-        }
-    }
-
     pub(crate) fn get(
         &'view self,
         ability_name: AbilityNameVanilla,

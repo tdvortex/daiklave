@@ -1,6 +1,6 @@
 mod memo;
 
-pub use memo::ArtifactWeaponTraitsMemo;
+pub use memo::ArtifactWeaponInnerMemo;
 
 use crate::{
     artifact::{ArtifactName, MagicMaterial},
@@ -20,6 +20,23 @@ pub struct ArtifactWeaponInner<'source> {
     pub(crate) powers: Option<&'source str>,
     pub(crate) hearthstone_slots: Vec<Option<SlottedHearthstone<'source>>>,
 }
+
+impl<'source> From<&'source ArtifactWeaponInnerMemo> for ArtifactWeaponInner<'source> {
+    fn from(memo: &'source ArtifactWeaponInnerMemo) -> Self {
+        Self {
+            book_reference: memo.book_reference,
+            merit_dots: memo.merit_dots,
+            magic_material: memo.magic_material,
+            base_weapon_name: &memo.base_weapon_name,
+            base_weapon: &memo.base_weapon,
+            lore: memo.lore.as_deref(),
+            powers: memo.powers.as_deref(),
+            hearthstone_slots: memo.hearthstone_slots.iter().map(|maybe_hearthstone| maybe_hearthstone.as_ref().map(|hearthstone| hearthstone.into())).collect(),
+        }
+    }
+}
+
+
 
 impl<'view, 'source> ArtifactWeaponInner<'source> {
     pub fn base_artifact_weapon(&self) -> &'source BaseWeapon {

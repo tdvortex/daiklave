@@ -3,9 +3,9 @@ use crate::{
     book_reference::BookReference,
     weapons::weapon::{
         artifact::{
-            base::BaseArtifactWeapon, inner::ArtifactWeaponTraitsMemo,
-            memo::ArtifactWeaponHandedness, ArtifactWeapon, NaturalArtifactWeapon,
-            OneHandedArtifactWeapon, TwoHandedArtifactWeapon, WornArtifactWeapon,
+            base::BaseArtifactWeapon, inner::ArtifactWeaponInnerMemo,
+            memo::ArtifactWeaponHandedness, AddArtifactWeapon,
+            OneHandedArtifactWeaponMemo, TwoHandedArtifactWeaponMemo, WornArtifactWeaponMemo, NaturalArtifactWeaponMemo, ArtifactWeaponName,
         },
         handedness::WeaponHandedness,
     },
@@ -14,7 +14,7 @@ use crate::{
 /// An artifact builder after having its hearthstone slots specified.
 /// The final step is .build() to finish the builder.
 pub struct ArtifactWeaponBuilderWithHearthstoneSlots {
-    pub(crate) name: String,
+    pub(crate) name: ArtifactWeaponName,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
     pub(crate) book_reference: Option<BookReference>,
@@ -47,8 +47,9 @@ impl ArtifactWeaponBuilderWithHearthstoneSlots {
         self
     }
 
-    /// Completes the builder, returning an Artifact Weapon.
-    pub fn build(self) -> ArtifactWeapon {
+    /// Completes the builder, returning an artifact weapon to be added to a 
+    /// character.
+    pub fn build(self) -> AddArtifactWeapon {
         let (handedness, base_weapon) = (self.base_weapon.handedness, self.base_weapon.base_weapon);
 
         let empty_hearthstone_slots = (0..self.hearthstone_slots).fold(Vec::new(), |mut v, _| {
@@ -56,7 +57,7 @@ impl ArtifactWeaponBuilderWithHearthstoneSlots {
             v
         });
 
-        let named_artifact_weapon = ArtifactWeaponTraitsMemo {
+        let named_artifact_weapon = ArtifactWeaponInnerMemo {
             book_reference: self.book_reference,
             merit_dots: self.merit_dots,
             base_weapon_name: self.base_weapon_name,
@@ -67,29 +68,31 @@ impl ArtifactWeaponBuilderWithHearthstoneSlots {
             magic_material: self.magic_material,
         };
 
+        
+
         match handedness {
-            WeaponHandedness::Natural => ArtifactWeapon(
-                self.name,
-                ArtifactWeaponHandedness::Natural(NaturalArtifactWeapon(named_artifact_weapon)),
-            ),
-            WeaponHandedness::Worn => ArtifactWeapon(
-                self.name,
-                ArtifactWeaponHandedness::Worn(WornArtifactWeapon(named_artifact_weapon), false),
-            ),
-            WeaponHandedness::OneHanded => ArtifactWeapon(
-                self.name,
-                ArtifactWeaponHandedness::OneHanded(
-                    OneHandedArtifactWeapon(named_artifact_weapon),
+            WeaponHandedness::Natural => AddArtifactWeapon {
+                name: self.name,
+                handedness: ArtifactWeaponHandedness::Natural(NaturalArtifactWeaponMemo(named_artifact_weapon)),
+            },
+            WeaponHandedness::Worn => AddArtifactWeapon {
+                name: self.name,
+                handedness: ArtifactWeaponHandedness::Worn(WornArtifactWeaponMemo(named_artifact_weapon), false),
+            },
+            WeaponHandedness::OneHanded => AddArtifactWeapon {
+                name: self.name,
+                handedness: ArtifactWeaponHandedness::OneHanded(
+                    OneHandedArtifactWeaponMemo(named_artifact_weapon),
                     None,
                 ),
-            ),
-            WeaponHandedness::TwoHanded => ArtifactWeapon(
-                self.name,
-                ArtifactWeaponHandedness::TwoHanded(
-                    TwoHandedArtifactWeapon(named_artifact_weapon),
+            },
+            WeaponHandedness::TwoHanded => AddArtifactWeapon {
+                name: self.name,
+                handedness: ArtifactWeaponHandedness::TwoHanded(
+                    TwoHandedArtifactWeaponMemo(named_artifact_weapon),
                     false,
                 ),
-            ),
+            },
         }
     }
 }

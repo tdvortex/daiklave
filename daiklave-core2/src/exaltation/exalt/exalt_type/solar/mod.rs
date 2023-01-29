@@ -33,7 +33,7 @@ use crate::{
             terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
         },
         spell::SpellMutation,
-        SorceryArchetypeMerit, SorceryError,
+        SorceryArchetypeMeritDetails, SorceryError,
     },
     CharacterMutationError,
 };
@@ -201,7 +201,7 @@ impl<'source> Solar<'source> {
         &mut self,
         sorcery_archetype_name: &str,
         sorcery_archetype_merit_name: &'source str,
-        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+        sorcery_archetype_merit: &'source SorceryArchetypeMeritDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.sorcery {
             Some(SolarSorcererView::Terrestrial(terrestrial)) => {

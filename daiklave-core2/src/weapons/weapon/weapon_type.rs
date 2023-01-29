@@ -7,14 +7,14 @@ use crate::{
 };
 
 use super::{
-    artifact::ArtifactWeaponView, base::BaseWeapon, equipped::Equipped, mundane::MundaneWeaponView,
+    artifact::ArtifactWeapon, base::BaseWeapon, equipped::Equipped, mundane::MundaneWeaponView,
     AttackRange, WeaponName, WeaponTag, WeaponWeightClass,
 };
 
 pub(crate) enum WeaponType<'source> {
     Unarmed,
     Mundane(&'source str, MundaneWeaponView<'source>, NonZeroU8),
-    Artifact(&'source str, ArtifactWeaponView<'source>, Option<u8>),
+    Artifact(&'source str, ArtifactWeapon<'source>, Option<u8>),
 }
 
 impl<'view, 'source> WeaponType<'source> {
@@ -210,7 +210,7 @@ impl<'view, 'source> WeaponType<'source> {
             WeaponType::Unarmed => true,
             WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeaponView::Natural(_)),
             WeaponType::Artifact(_, artifact, _) => {
-                matches!(artifact, ArtifactWeaponView::Natural(..))
+                matches!(artifact, ArtifactWeapon::Natural(..))
             }
         }
     }
@@ -220,7 +220,7 @@ impl<'view, 'source> WeaponType<'source> {
             WeaponType::Unarmed => false,
             WeaponType::Mundane(_, mundane, _) => matches!(mundane, MundaneWeaponView::Worn(..)),
             WeaponType::Artifact(_, artifact, _) => {
-                matches!(artifact, ArtifactWeaponView::Worn(..))
+                matches!(artifact, ArtifactWeapon::Worn(..))
             }
         }
     }
@@ -232,7 +232,7 @@ impl<'view, 'source> WeaponType<'source> {
                 matches!(mundane, MundaneWeaponView::OneHanded(..))
             }
             WeaponType::Artifact(_, artifact, _) => {
-                matches!(artifact, ArtifactWeaponView::OneHanded(..))
+                matches!(artifact, ArtifactWeapon::OneHanded(..))
             }
         }
     }
@@ -244,7 +244,7 @@ impl<'view, 'source> WeaponType<'source> {
                 matches!(mundane, MundaneWeaponView::TwoHanded(..))
             }
             WeaponType::Artifact(_, artifact, _) => {
-                matches!(artifact, ArtifactWeaponView::TwoHanded(..))
+                matches!(artifact, ArtifactWeapon::TwoHanded(..))
             }
         }
     }

@@ -5,7 +5,7 @@ use crate::{
     sorcery::{
         circles::celestial::{sorcerer::CelestialCircleSorcerer, AddCelestialSorcery},
         spell::Spell,
-        ShapingRitual, SorceryArchetype, SorceryArchetypeMerit,
+        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeMeritDetails,
         SorceryArchetypeWithMerits, SorceryError,
     },
     CharacterMutationError,
@@ -16,10 +16,10 @@ use super::{TerrestrialSpell};
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TerrestrialCircleSorcerer<'source> {
     pub archetype_name: &'source str,
-    pub archetype: &'source SorceryArchetype,
-    pub archetype_merits: HashMap<&'source str, &'source SorceryArchetypeMerit>,
+    pub archetype: &'source SorceryArchetypeDetails,
+    pub archetype_merits: HashMap<&'source str, &'source SorceryArchetypeMeritDetails>,
     pub shaping_ritual_name: &'source str,
-    pub shaping_ritual: &'source ShapingRitual,
+    pub shaping_ritual: &'source ShapingRitualDetails,
     pub control_spell_name: &'source str,
     pub control_spell: &'source TerrestrialSpell,
     pub other_spells: HashMap<&'source str, &'source TerrestrialSpell>,
@@ -37,7 +37,7 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
         }
     }
 
-    pub fn shaping_ritual(&self) -> (&'source str, &'source ShapingRitual) {
+    pub fn shaping_ritual(&self) -> (&'source str, &'source ShapingRitualDetails) {
         (self.shaping_ritual_name, self.shaping_ritual)
     }
 

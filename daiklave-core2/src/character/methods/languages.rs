@@ -1,23 +1,28 @@
 use crate::{
-    languages::{language::LanguageMutation, LanguageError, Languages},
+    languages::{language::{LanguageMutation, SetNativeLanguage, RemoveLanguage}, LanguageError, Languages, AddLanguages},
     Character, CharacterMutationError,
 };
 
 impl<'view, 'source> Character<'source> {
     /// Get all languages spoken by the character.
-    pub fn languages(&'view self) -> &'view Languages<'source> {
-        &self.languages
+    pub fn languages(&'view self) -> Languages<'view, 'source> {
+        Languages(self)
     }
 
-    /// Add a (non-native) language to the character.
-    pub fn add_language(
+    /// Add (non-native) languages to the character.
+    pub fn add_languages(
         &mut self,
-        language_mutation: &'source LanguageMutation,
+        add_languages: &'source AddLanguages
     ) -> Result<&mut Self, CharacterMutationError> {
-        let language = language_mutation.as_ref();
+        add_languages.0.iter().try_fold(self, |acc, mutation| acc.add_language(mutation))
+    }
 
-        if self.languages.native_language == language
-            || !self.languages.other_languages.insert(language)
+    fn add_language(
+        &mut self,
+        language: &'source LanguageMutation,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if self.native_language == language
+            || !self.other_languages.insert(language)
         {
             Err(CharacterMutationError::LanguageError(
                 LanguageError::DuplicateLanguage,
@@ -31,18 +36,18 @@ impl<'view, 'source> Character<'source> {
     /// native language.
     pub fn set_native_language(
         &mut self,
-        language_mutation: &'source LanguageMutation,
+        set_native_language: &'source SetNativeLanguage,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let language = language_mutation.as_ref();
+        let language = &set_native_language.0;
 
-        if self.languages.native_language == language
-            || self.languages.other_languages.contains(&language)
+        if self.native_language == language
+            || self.other_languages.contains(language)
         {
             Err(CharacterMutationError::LanguageError(
                 LanguageError::DuplicateLanguage,
             ))
         } else {
-            self.languages.native_language = language;
+            self.native_language = language;
             Ok(self)
         }
     }
@@ -50,15 +55,15 @@ impl<'view, 'source> Character<'source> {
     /// Removes a language from the character.
     pub fn remove_language(
         &mut self,
-        language_mutation: &'source LanguageMutation,
+        remove_language: &RemoveLanguage,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let language = language_mutation.as_ref();
+        let language = &remove_language.0;
 
-        if self.languages.native_language == language {
+        if self.native_language == language {
             Err(CharacterMutationError::LanguageError(
                 LanguageError::RemoveNative,
             ))
-        } else if !self.languages.other_languages.remove(&language) {
+        } else if !self.other_languages.remove(language) {
             Err(CharacterMutationError::LanguageError(
                 LanguageError::NotFound,
             ))

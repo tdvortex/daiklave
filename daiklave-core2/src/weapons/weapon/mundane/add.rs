@@ -7,8 +7,8 @@ use super::{MundaneWeapon, MundaneWeaponName};
 /// A Mundane weapon and its name, to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddMundaneWeapon {
-    name: MundaneWeaponName,
-    weapon: MundaneWeapon,
+    pub(crate) name: MundaneWeaponName,
+    pub(crate) weapon: MundaneWeapon,
     pub quantity: NonZeroU8,
 }
 

@@ -1,28 +1,20 @@
 mod ability;
 mod anima_effect;
-mod memo;
 
 pub use ability::TwilightAbility;
-pub(crate) use memo::TwilightMemo;
 
+use serde::{Serialize, Deserialize};
 use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
 use self::anima_effect::{TWILIGHT_ONE, TWILIGHT_THREE, TWILIGHT_TWO};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct Twilight {
     pub caste_not_supernal: [TwilightAbility; 4],
     pub supernal: TwilightAbility,
 }
 
 impl Twilight {
-    pub(crate) fn as_memo(&self) -> TwilightMemo {
-        TwilightMemo {
-            caste_not_supernal: self.caste_not_supernal,
-            supernal: self.supernal,
-        }
-    }
-
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal

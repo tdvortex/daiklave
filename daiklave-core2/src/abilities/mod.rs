@@ -10,7 +10,7 @@ pub(crate) use ability::{AbilityRating, AbilityRatingMemo};
 pub(crate) use abilities_vanilla::AbilitiesVanilla;
 pub(crate) use error::AbilityError;
 pub(crate) use memo::AbilitiesMemo;
-pub use ability::{Ability, AbilityName, AbilityNameVanilla, AbilityNameQualified};
+pub use ability::{Ability, AbilityName, AbilityNameVanilla, AbilityNameQualified, AbilityNameQualifiedMutation};
 pub use add_specialty::AddSpecialty;
 pub use remove_specialty::RemoveSpecialty;
 pub use set::SetAbility;

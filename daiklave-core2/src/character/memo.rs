@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use serde::{Deserialize, Serialize};
 
@@ -12,8 +12,8 @@ use crate::{
     health::Health,
     hearthstones::{hearthstone::{GeomancyLevel, HearthstoneName}, UnslottedHearthstoneMemo},
     intimacies::intimacy::{IntimacyLevel, IntimacyTypeMemo},
-    languages::LanguagesMemo,
-    merits::merit::{NonStackableMerit, StackableMerit, DemenseName, NonStackableMeritName},
+    languages::{language::LanguageMutation},
+    merits::merit::{NonStackableMerit, StackableMerit, DemenseName, NonStackableMeritName, StackableMeritTemplateName},
     willpower::Willpower,
     flaws::flaw::FlawName,
 };
@@ -35,7 +35,8 @@ pub struct CharacterMemo {
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritName, NonStackableMerit>,
     pub(crate) stackable_merits: HashMap<(StackableMeritTemplateName, String), StackableMerit>,
     pub(crate) flaws: HashMap<FlawName, (Option<BookReference>, String)>,
-    pub(crate) languages: LanguagesMemo,
+    pub(crate) native_language: LanguageMutation,
+    pub(crate) other_languages: HashSet<LanguageMutation>,
     pub(crate) intimacies: HashMap<IntimacyTypeMemo, IntimacyLevel>,
     pub(crate) experience: ExperiencePool,
 }

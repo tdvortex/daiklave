@@ -1,5 +1,5 @@
 mod memo;
-pub use memo::TwoHandedArtifactWeapon;
+pub(crate) use memo::TwoHandedArtifactWeaponMemo;
 
 use std::ops::Deref;
 
@@ -9,6 +9,14 @@ use crate::{
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TwoHandedArtifactWeaponView<'source>(pub(crate) ArtifactWeaponInner<'source>);
+
+
+impl<'source> From<&'source TwoHandedArtifactWeaponMemo> for TwoHandedArtifactWeaponView<'source> {
+    fn from(memo: &'source TwoHandedArtifactWeaponMemo) -> Self {
+        Self((&memo.0).into())
+    }
+}
+
 
 impl<'source> Deref for TwoHandedArtifactWeaponView<'source> {
     type Target = ArtifactWeaponInner<'source>;

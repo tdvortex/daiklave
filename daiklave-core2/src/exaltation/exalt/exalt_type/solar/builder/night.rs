@@ -3,7 +3,7 @@ use crate::{
     exaltation::exalt::{
         exalt_type::solar::{
             caste::{
-                night::{NightAbility, NightMemo},
+                night::{NightAbility, Night},
                 SolarCasteMemo,
             },
             SetSolar, SolarError, SolarMemo,
@@ -92,7 +92,7 @@ impl NightBuilder {
         let limit_trigger = self.limit_trigger.ok_or(SolarError::LimitTriggerRequired)?;
 
         Ok(SetSolar(Box::new(SolarMemo {
-            caste: SolarCasteMemo::Night(NightMemo {
+            caste: SolarCasteMemo::Night(Night {
                 caste_not_supernal,
                 supernal,
             }),

@@ -6,7 +6,7 @@ use crate::{
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct ArtifactWeaponTraitsMemo {
+pub struct ArtifactWeaponInnerMemo {
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) merit_dots: u8,
     pub(crate) magic_material: MagicMaterial,

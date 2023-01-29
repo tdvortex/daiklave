@@ -1,6 +1,6 @@
 use crate::{
     artifact::MagicMaterial, book_reference::BookReference,
-    weapons::weapon::artifact::base::BaseArtifactWeapon,
+    weapons::weapon::artifact::{base::BaseArtifactWeapon, ArtifactWeaponName},
 };
 
 use super::with_merit_dots::ArtifactWeaponBuilderWithMeritDots;
@@ -8,7 +8,7 @@ use super::with_merit_dots::ArtifactWeaponBuilderWithMeritDots;
 /// An artifact weapon after specifying its Magic Material. The next
 /// step is .merit_dots().
 pub struct ArtifactWeaponBuilderWithMagicMaterial {
-    pub(crate) name: String,
+    pub(crate) name: ArtifactWeaponName,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
     pub(crate) book_reference: Option<BookReference>,

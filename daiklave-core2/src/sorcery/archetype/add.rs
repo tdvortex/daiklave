@@ -1,10 +1,10 @@
 use crate::book_reference::BookReference;
 
-use super::{SorceryArchetype, SorceryArchetypeName};
+use super::{SorceryArchetypeDetails, SorceryArchetypeName};
 
 pub struct AddSorceryArchetype {
     pub(crate) name: SorceryArchetypeName,
-    pub(crate) archetype: SorceryArchetype
+    pub(crate) archetype: SorceryArchetypeDetails
 }
 
 impl AddSorceryArchetype {
@@ -15,7 +15,7 @@ impl AddSorceryArchetype {
     ) -> Self {
         Self {
             name: name.into(),
-            archetype: SorceryArchetype {
+            archetype: SorceryArchetypeDetails {
                 book_reference,
                 description,
             },

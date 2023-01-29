@@ -1,11 +1,11 @@
 use crate::{sorcery::SorceryArchetypeName, book_reference::BookReference};
 
-use super::{SorceryArchetypeMerit, SorceryArchetypeMeritName};
+use super::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName};
 
 pub struct AddSorceryArchetypeMerit {
     archetype_name: SorceryArchetypeName,
     merit_name: SorceryArchetypeMeritName,
-    merit: SorceryArchetypeMerit,
+    merit: SorceryArchetypeMeritDetails,
 }
 
 impl AddSorceryArchetypeMerit {
@@ -19,7 +19,7 @@ impl AddSorceryArchetypeMerit {
         AddSorceryArchetypeMerit {
             archetype_name,
             merit_name,
-            merit: SorceryArchetypeMerit {
+            merit: SorceryArchetypeMeritDetails {
                 book_reference,
                 dots,
                 description,

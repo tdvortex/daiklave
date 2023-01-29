@@ -1,28 +1,20 @@
 mod ability;
 mod anima_effect;
-mod memo;
 
 pub use ability::ZenithAbility;
-pub(crate) use memo::ZenithMemo;
 
+use serde::{Serialize, Deserialize};
 use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
 use self::anima_effect::{ZENITH_ONE, ZENITH_THREE, ZENITH_TWO};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct Zenith {
     pub caste_not_supernal: [ZenithAbility; 4],
     pub supernal: ZenithAbility,
 }
 
 impl Zenith {
-    pub(crate) fn as_memo(&self) -> ZenithMemo {
-        ZenithMemo {
-            caste_not_supernal: self.caste_not_supernal,
-            supernal: self.supernal,
-        }
-    }
-
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal

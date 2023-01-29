@@ -1,11 +1,10 @@
 mod anima_effect;
 mod caste_ability;
-mod memo;
 mod supernal_ability;
 
 pub use caste_ability::DawnCasteAbility;
 pub(crate) use caste_ability::DawnCasteAbilityNoBrawl;
-pub(crate) use memo::DawnMemo;
+use serde::{Serialize, Deserialize};
 pub use supernal_ability::DawnSupernalAbility;
 pub(crate) use supernal_ability::DawnSupernalLayout;
 
@@ -13,18 +12,12 @@ use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
 use self::anima_effect::{DAWN_ONE, DAWN_THREE, DAWN_TWO};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct Dawn {
     pub layout: DawnSupernalLayout,
 }
 
 impl Dawn {
-    pub(crate) fn as_memo(&self) -> DawnMemo {
-        DawnMemo {
-            layout: self.layout,
-        }
-    }
-
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         match (self.layout, ability) {
             (DawnSupernalLayout::Brawl(_), AbilityName::MartialArts)

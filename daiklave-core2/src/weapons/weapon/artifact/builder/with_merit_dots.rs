@@ -1,6 +1,6 @@
 use crate::{
     artifact::MagicMaterial, book_reference::BookReference,
-    weapons::weapon::artifact::base::BaseArtifactWeapon,
+    weapons::weapon::artifact::{base::BaseArtifactWeapon, ArtifactWeaponName},
 };
 
 use super::with_heartstone_slots::ArtifactWeaponBuilderWithHearthstoneSlots;
@@ -8,7 +8,7 @@ use super::with_heartstone_slots::ArtifactWeaponBuilderWithHearthstoneSlots;
 /// An artifact builder after the number of merit dots is specified.
 /// The next step is .hearthstone_slots().
 pub struct ArtifactWeaponBuilderWithMeritDots {
-    pub(crate) name: String,
+    pub(crate) name: ArtifactWeaponName,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
     pub(crate) book_reference: Option<BookReference>,

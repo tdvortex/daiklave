@@ -1,6 +1,6 @@
 use crate::{
-    abilities::{Abilities, AbilitiesVanilla, AbilityError, AbilityNameVanilla},
-    Character, CharacterMutationError,
+    abilities::{Abilities, AbilitiesVanilla, AbilityError, AbilityNameVanilla, AbilityNameQualifiedMutation},
+    Character, CharacterMutationError, character::mutation::{RemoveSpecialty, SetAbility, AddSpecialty},
 };
 
 impl<'view, 'source> Character<'source> {
@@ -13,12 +13,7 @@ impl<'view, 'source> Character<'source> {
         Abilities(self)
     }
 
-    /// Set an ability's dots to a specific dot value. If this sets the ability
-    /// to 0 dots, will erase all specialties. If Occult is lowered, may cause
-    /// Sorcery circles to be dropped. If Brawl is lowered to 0, will cause all
-    /// Martial Arts styles (and their associated Charm) to be dropped. May
-    /// cause Solar Charms to be dropped, cascading to all dependent Charms.
-    pub fn set_ability_dots(
+    pub fn set_vanilla_ability_dots(
         &mut self,
         ability_name: AbilityNameVanilla,
         dots: u8,
@@ -37,8 +32,8 @@ impl<'view, 'source> Character<'source> {
 
             let ma_style_removed = if ability_name == AbilityNameVanilla::Brawl && dots == 0 {
                 let mut ma_style_removed = false;
-                for style_id in self.martial_arts().iter() {
-                    if self.remove_martial_arts_style(style_id).is_ok() {
+                for style_name in self.martial_arts().iter() {
+                    if self.remove_martial_arts_style(style_name).is_ok() {
                         ma_style_removed = true;
                     }
                 }
@@ -60,8 +55,35 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 
+    /// Set an ability's dots to a specific dot value. If this sets the ability
+    /// to 0 dots, will erase all specialties. If Occult is lowered, may cause
+    /// Sorcery circles to be dropped. If Brawl is lowered to 0, will cause all
+    /// Martial Arts styles (and their associated Charm) to be dropped. May
+    /// cause Solar Charms to be dropped, cascading to all dependent Charms.
+    pub fn set_ability_dots(
+        &mut self,
+        set_ability: &'source SetAbility,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match &set_ability.name {
+            AbilityNameQualifiedMutation::Vanilla(vanilla) => self.set_vanilla_ability_dots(*vanilla, set_ability.dots),
+            AbilityNameQualifiedMutation::Craft(focus) => self.set_craft_dots(focus, set_ability.dots),
+            AbilityNameQualifiedMutation::MartialArts(style) => self.set_martial_arts_dots(style, set_ability.dots)
+        }
+    }
+
     /// Adds a specialty to an ability.
     pub fn add_specialty(
+        &mut self,
+        add_specialty: &'source AddSpecialty
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match &add_specialty.ability_name {
+            AbilityNameQualifiedMutation::Vanilla(vanilla) => self.add_vanilla_specialty(*vanilla, &add_specialty.specialty),
+            AbilityNameQualifiedMutation::Craft(focus) => self.add_craft_specialty(focus, &add_specialty.specialty),
+            AbilityNameQualifiedMutation::MartialArts(style) => self.add_martial_arts_specialty(style, &add_specialty.specialty),
+        }
+    }
+
+    pub fn add_vanilla_specialty(
         &mut self,
         ability_name: AbilityNameVanilla,
         specialty: &'source str,
@@ -75,12 +97,21 @@ impl<'view, 'source> Character<'source> {
     /// Removes a specialty from an ability.
     pub fn remove_specialty(
         &mut self,
-        ability_name: AbilityNameVanilla,
-        specialty: &str,
+        remove_specialty: &RemoveSpecialty,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.abilities
-            .get_mut(ability_name)
-            .remove_specialty(specialty)?;
+        match &remove_specialty.ability_name {
+            AbilityNameQualifiedMutation::Vanilla(vanilla) => self.remove_vanilla_specialty(*vanilla, &remove_specialty.specialty),
+            AbilityNameQualifiedMutation::Craft(focus) => self.remove_craft_specialty(focus, &remove_specialty.specialty),
+            AbilityNameQualifiedMutation::MartialArts(style) => self.remove_martial_arts_specialty(style, &remove_specialty.specialty),
+        }        
+    }
+
+    pub fn remove_vanilla_specialty(
+        &mut self,
+        ability_name: AbilityNameVanilla,
+        specialty: &str
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.abilities.get_mut(ability_name).remove_specialty(specialty)?;
         Ok(self)
     }
 }

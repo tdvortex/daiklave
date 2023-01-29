@@ -7,7 +7,7 @@ use crate::{
             celestial::CelestialSpell, sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell,
         },
         spell::{Spell, SpellMutation},
-        ShapingRitual, SorceryArchetype, SorceryArchetypeMerit,
+        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeMeritDetails,
         SorceryArchetypeWithMerits, SorceryError,
     },
     CharacterMutationError,
@@ -20,13 +20,13 @@ pub(crate) struct SolarCircleSorcerer<'source> {
     pub(crate) archetypes: HashMap<
         &'source str,
         (
-            &'source SorceryArchetype,
-            HashMap<&'source str, &'source SorceryArchetypeMerit>,
+            &'source SorceryArchetypeDetails,
+            HashMap<&'source str, &'source SorceryArchetypeMeritDetails>,
         ),
     >,
     pub(crate) circle_archetypes: [&'source str; 3],
     pub(crate) shaping_ritual_names: [&'source str; 3],
-    pub(crate) shaping_rituals: [&'source ShapingRitual; 3],
+    pub(crate) shaping_rituals: [&'source ShapingRitualDetails; 3],
     pub(crate) terrestrial_control_spell_name: &'source str,
     pub(crate) terrestrial_control_spell: &'source TerrestrialSpell,
     pub(crate) terrestrial_spells: HashMap<&'source str, &'source TerrestrialSpell>,
@@ -52,7 +52,7 @@ impl<'view, 'source> SolarCircleSorcerer<'source> {
         }
     }
 
-    pub fn shaping_ritual(&self, circle: SorceryCircle) -> (&'source str, &'source ShapingRitual) {
+    pub fn shaping_ritual(&self, circle: SorceryCircle) -> (&'source str, &'source ShapingRitualDetails) {
         match circle {
             SorceryCircle::Terrestrial => (self.shaping_ritual_names[0], self.shaping_rituals[0]),
             SorceryCircle::Celestial => (self.shaping_ritual_names[1], self.shaping_rituals[1]),

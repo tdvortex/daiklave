@@ -16,9 +16,3 @@ impl<'source> Deref for TwoHandedMundaneWeaponView<'source> {
         self.0
     }
 }
-
-impl<'source> TwoHandedMundaneWeaponView<'source> {
-    pub fn as_memo(&'source self) -> TwoHandedMundaneWeapon {
-        TwoHandedMundaneWeapon(self.0.clone())
-    }
-}

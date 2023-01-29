@@ -14,18 +14,6 @@ pub struct MotesState<'source> {
 }
 
 impl<'source> MotesState<'source> {
-    pub(crate) fn as_memo(&self) -> MotesStateMemo {
-        MotesStateMemo {
-            peripheral: self.peripheral,
-            personal: self.personal,
-            commitments: self
-                .commitments
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), *v))
-                .collect(),
-        }
-    }
-
     /// The exalt's current Peripheral mote pool.
     pub fn peripheral(&self) -> &MotePool {
         &self.peripheral

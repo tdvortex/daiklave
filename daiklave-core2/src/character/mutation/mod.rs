@@ -1,4 +1,5 @@
 mod error;
+use crate::{Character};
 pub use crate::abilities::{SetAbility, AddSpecialty, RemoveSpecialty};
 pub use crate::armor::armor_item::{EquipArmor, UnequipArmor};
 pub use crate::armor::armor_item::mundane::{AddMundaneArmor, RemoveMundaneArmor};
@@ -12,6 +13,8 @@ pub use crate::flaws::flaw::RemoveFlaw;
 pub use crate::health::{HealDamage, SetHealthTrack, TakeDamage};
 pub use crate::hearthstones::hearthstone::{SlotHearthstone, UnslotHearthstone};
 pub use crate::intimacies::intimacy::{AddIntimacy, RemoveIntimacy};
+use crate::languages::AddLanguages;
+use crate::languages::language::RemoveLanguage;
 pub use crate::languages::language::SetNativeLanguage;
 use crate::merits::merit::AddMerit;
 pub use crate::name::SetName;
@@ -103,6 +106,10 @@ pub enum CharacterMutation {
     AttuneArtifact(AttuneArtifact),
     /// Set the character's native language.
     SetNativeLanguage(SetNativeLanguage),
+    /// Adds (non-native) languages to the character.
+    AddLanguages(AddLanguages),
+    /// Removes a language from the character.
+    RemoveLanguage(RemoveLanguage),
     /// Adds a circle of Sorcery to a character. The circle, archetype, shaping
     /// ritual, and control spell must be provided. Circles must be provided in
     /// order: Terrestrial, Celestial, Solar.
@@ -140,3 +147,10 @@ pub enum CharacterMutation {
     AddMerit(AddMerit),
     RemoveMerit(RemoveMerit),
 }
+
+impl<'source> CharacterMutation {
+    pub fn apply_mutation(&'source self, character: &mut Character<'source>) -> Result<&mut Character, CharacterMutationError> {
+        character.apply_mutation(self)
+    }
+}
+

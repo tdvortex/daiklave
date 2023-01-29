@@ -18,16 +18,6 @@ impl<'source> Default for AbilityRating<'source> {
 }
 
 impl<'source> AbilityRating<'source> {
-    pub fn as_memo(&self) -> AbilityRatingMemo {
-        match self {
-            AbilityRating::Zero => AbilityRatingMemo::Zero,
-            AbilityRating::NonZero(dots, specialties) => AbilityRatingMemo::NonZero(
-                *dots,
-                specialties.iter().map(|s| s.to_string()).collect(),
-            ),
-        }
-    }
-
     pub fn dots(&self) -> u8 {
         match self {
             AbilityRating::Zero => 0,

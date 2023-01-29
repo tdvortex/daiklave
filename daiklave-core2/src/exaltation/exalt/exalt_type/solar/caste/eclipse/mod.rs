@@ -19,10 +19,6 @@ pub(crate) struct Eclipse<'source> {
 }
 
 impl<'source> Eclipse<'source> {
-    pub(crate) fn as_memo(&self) -> EclipseMemo {
-        EclipseMemo::new(self.caste_not_supernal, self.supernal)
-    }
-
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         if self
             .caste_not_supernal

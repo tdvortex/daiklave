@@ -1,3 +1,5 @@
+mod name;
+pub use name::StackableMeritTemplateName;
 mod template;
 pub use template::StackableMeritTemplate;
 

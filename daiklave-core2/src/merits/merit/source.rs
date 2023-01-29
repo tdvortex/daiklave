@@ -5,7 +5,7 @@ use crate::{
     book_reference::{Book, BookReference},
     hearthstones::hearthstone::GeomancyLevel,
     languages::language::MajorLanguage,
-    sorcery::{SorceryArchetypeMerit},
+    sorcery::{SorceryArchetypeMeritDetails},
 };
 
 use super::{
@@ -48,7 +48,7 @@ pub(crate) enum MeritSource<'source> {
     MartialArtist(&'source str),
     MortalSorcerer,
     NonStackable(&'source str, NonStackableMeritView<'source>),
-    SorceryArchetype(&'source str, &'source SorceryArchetypeMerit),
+    SorceryArchetype(&'source str, &'source SorceryArchetypeMeritDetails),
     Stackable(&'source str, &'source str, StackableMeritView<'source>), // Template name, instance detail
 }
 

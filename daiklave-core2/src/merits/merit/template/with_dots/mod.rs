@@ -16,16 +16,6 @@ pub(crate) struct MeritTemplateWithDots<'source> {
 }
 
 impl<'source> MeritTemplateWithDots<'source> {
-    pub fn as_memo(&self) -> MeritTemplateWithDotsMemo {
-        MeritTemplateWithDotsMemo {
-            book_reference: self.book_reference,
-            merit_type: self.merit_type,
-            shared_description: self.shared_description.to_owned(),
-            dot_description: self.dot_description.map(|s| s.to_owned()),
-            prerequisites: self.prerequisites.to_vec(),
-        }
-    }
-
     pub fn book_reference(&self) -> Option<BookReference> {
         self.book_reference
     }

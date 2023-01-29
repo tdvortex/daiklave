@@ -21,4 +21,12 @@ impl<'view, 'source> Character<'source> {
             Ok(self)
         }
     }
+
+    pub fn add_craft_specialty(&mut self, focus: &'source str, specialty: &'source str) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
+    }
+
+    pub fn remove_craft_specialty(&mut self, focus: &str, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
+    }
 }

@@ -9,7 +9,7 @@ use crate::{
             terrestrial::TerrestrialSpell,
         },
         spell::Spell,
-        ShapingRitual, SorceryArchetype, SorceryArchetypeMerit, SorceryArchetypeWithMerits,
+        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeMeritDetails, SorceryArchetypeWithMerits,
         SorceryError,
     },
     CharacterMutationError,
@@ -22,13 +22,13 @@ pub(crate) struct CelestialCircleSorcerer<'source> {
     pub(crate) archetypes: HashMap<
         &'source str,
         (
-            &'source SorceryArchetype,
-            HashMap<&'source str, &'source SorceryArchetypeMerit>,
+            &'source SorceryArchetypeDetails,
+            HashMap<&'source str, &'source SorceryArchetypeMeritDetails>,
         ),
     >,
     pub(crate) circle_archetypes: [&'source str; 2],
     pub(crate) shaping_ritual_names: [&'source str; 2],
-    pub(crate) shaping_rituals: [&'source ShapingRitual; 2],
+    pub(crate) shaping_rituals: [&'source ShapingRitualDetails; 2],
     pub(crate) terrestrial_control_spell_name: &'source str,
     pub(crate) terrestrial_control_spell: &'source TerrestrialSpell,
     pub(crate) terrestrial_spells: HashMap<&'source str, &'source TerrestrialSpell>,
@@ -45,7 +45,11 @@ impl<'view, 'source> CelestialCircleSorcerer<'source> {
         if self.circle_archetypes.contains(&name) {
             self.archetypes
                 .get_key_value(name)
-                .map(|(name, (archetype, merits))| (*name, *archetype, merits))
+                .map(|(archetype_name, (archetype, merits))| SorceryArchetypeWithMerits {
+                    archetype_name: *archetype_name,
+                    archetype: *archetype,
+                    merits,
+                })
         } else {
             None
         }
@@ -54,7 +58,7 @@ impl<'view, 'source> CelestialCircleSorcerer<'source> {
     pub fn shaping_ritual(
         &self,
         circle: SorceryCircle,
-    ) -> Option<(&'source str, &'source ShapingRitual)> {
+    ) -> Option<(&'source str, &'source ShapingRitualDetails)> {
         match circle {
             SorceryCircle::Terrestrial => {
                 Some((self.shaping_ritual_names[0], self.shaping_rituals[0]))

@@ -8,7 +8,7 @@ pub(crate) use no_attunement::{
 };
 
 use crate::weapons::weapon::{
-    artifact::{ArtifactWeaponView, TwoHandedArtifactWeaponView},
+    artifact::{ArtifactWeapon, TwoHandedArtifactWeaponView},
     mundane::{MundaneWeaponView, TwoHandedMundaneWeaponView},
     weapon_type::WeaponType,
     Weapon, WeaponName,
@@ -60,7 +60,7 @@ impl<'view, 'source> EquippedTwoHandedWeapon<'source> {
                 } else {
                     Some(Weapon(WeaponType::Artifact(
                         *name,
-                        ArtifactWeaponView::TwoHanded(two.clone(), true),
+                        ArtifactWeapon::TwoHanded(two.clone(), true),
                         *attunement,
                     )))
                 }

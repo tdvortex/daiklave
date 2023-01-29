@@ -1,11 +1,13 @@
 mod local_tongue_name;
 mod major;
+mod remove;
 pub use major::MajorLanguage;
+pub use remove::RemoveLanguage;
 
-mod memo;
+mod mutation;
 mod set_native;
 pub use local_tongue_name::LocalTongueName;
-pub use memo::LanguageMutation;
+pub(crate) use mutation::LanguageMutation;
 pub use set_native::SetNativeLanguage;
 
 use serde::{Deserialize, Serialize};
@@ -19,17 +21,11 @@ pub enum Language<'source> {
     LocalTongue(&'source str),
 }
 
-impl<'source> Language<'source> {
-    pub(crate) fn as_memo(&self) -> LanguageMutation {
-        match self {
-            Language::MajorLanguage(major) => LanguageMutation::MajorLanguage(*major),
-            Language::LocalTongue(local) => LanguageMutation::LocalTongue(local.to_string()),
+impl<'source> From<&'source LanguageMutation> for Language<'source> {
+    fn from(mutation: &'source LanguageMutation) -> Self {
+        match mutation {
+            LanguageMutation::MajorLanguage(major) => Self::MajorLanguage(*major),
+            LanguageMutation::LocalTongue(local) => Self::LocalTongue(local),
         }
-    }
-}
-
-impl<'source> Default for Language<'source> {
-    fn default() -> Self {
-        Self::MajorLanguage(Default::default())
     }
 }

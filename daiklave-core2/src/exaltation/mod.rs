@@ -34,10 +34,10 @@ use crate::{
             terrestrial::AddTerrestrialSorceryView,
         },
         spell::SpellMutation,
-        Sorcery, SorceryArchetypeMerit, SorceryError,
+        Sorcery, SorceryArchetypeMeritDetails, SorceryError,
     },
     weapons::weapon::{
-        artifact::ArtifactWeaponView, mundane::MundaneWeapon, EquipHand, Equipped, Weapon,
+        artifact::ArtifactWeapon, mundane::MundaneWeapon, EquipHand, Equipped, Weapon,
         WeaponName,
     },
     CharacterMutationError,
@@ -188,7 +188,7 @@ impl<'source> Exaltation<'source> {
 
     pub(crate) fn remove_martial_arts_style(
         &mut self,
-        name: &'source str,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
@@ -625,7 +625,7 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn add_artifact_weapon(
         &mut self,
         name: &'source str,
-        weapon: ArtifactWeaponView<'source>,
+        weapon: ArtifactWeapon<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
@@ -950,7 +950,7 @@ impl<'view, 'source> Exaltation<'source> {
         &mut self,
         sorcery_archetype_name: &str,
         sorcery_archetype_merit_name: &'source str,
-        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+        sorcery_archetype_merit: &'source SorceryArchetypeMeritDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {

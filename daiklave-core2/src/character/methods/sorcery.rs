@@ -8,7 +8,7 @@ use crate::{
             terrestrial::{AddTerrestrialSorcery, AddTerrestrialSorceryView},
         },
         spell::SpellMutation,
-        Sorcery, SorceryArchetypeMerit,
+        Sorcery, SorceryArchetypeMeritDetails, AddSorcery, AddSorceryCircle,
     },
     Character, CharacterMutationError,
 };
@@ -25,7 +25,7 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         add_terrestrial: &'source AddTerrestrialSorcery,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.add_terrestrial_sorcery_view(add_terrestrial.as_ref())
+        self.add_terrestrial_sorcery_view(add_terrestrial.into())
     }
 
     pub(crate) fn add_terrestrial_sorcery_view(
@@ -85,12 +85,26 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 
+    /// Removes the highest level of sorcery the character has attained.
+    pub fn remove_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
+        self.remove_solar_sorcery().or_else(|_| self.remove_celestial_sorcery()).or_else(|_| self.remove_terrestrial_sorcery())
+    }
+
+    /// Adds a circle of sorcery to the character.
+    pub fn add_sorcery(&mut self, add_sorcery: &'source AddSorcery) -> Result<&mut Self, CharacterMutationError> {
+        match &add_sorcery.0.as_ref() {
+            AddSorceryCircle::Terrestrial(add_terrestrial) => self.add_terrestrial_sorcery(add_terrestrial),
+            AddSorceryCircle::Celestial(add_celestial) => self.add_celestial_sorcery(add_celestial),
+            AddSorceryCircle::Solar(add_solar) => self.add_solar_sorcery(add_solar),
+        }
+    }
+
     /// Adds a merit to a Sorcery Archetype owned by the character
     pub fn add_sorcery_archetype_merit(
         &mut self,
         sorcery_archetype_name: &'source str,
         sorcery_archetype_merit_name: &'source str,
-        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+        sorcery_archetype_merit: &'source SorceryArchetypeMeritDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_sorcery_archetype_merit(
             sorcery_archetype_name,

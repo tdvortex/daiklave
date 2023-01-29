@@ -28,16 +28,6 @@ pub(crate) enum SolarCaste<'source> {
 }
 
 impl<'source> SolarCaste<'source> {
-    pub(crate) fn as_memo(&self) -> SolarCasteMemo {
-        match self {
-            SolarCaste::Dawn(view) => SolarCasteMemo::Dawn(view.as_memo()),
-            SolarCaste::Zenith(view) => SolarCasteMemo::Zenith(view.as_memo()),
-            SolarCaste::Twilight(view) => SolarCasteMemo::Twilight(view.as_memo()),
-            SolarCaste::Night(view) => SolarCasteMemo::Night(view.as_memo()),
-            SolarCaste::Eclipse(view) => SolarCasteMemo::Eclipse(view.as_memo()),
-        }
-    }
-
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         match self {
             SolarCaste::Dawn(dawn) => dawn.has_caste_ability(ability),

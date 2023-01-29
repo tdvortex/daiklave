@@ -22,7 +22,7 @@ pub use remove::RemoveMundaneWeapon;
 pub(crate) use memo::MundaneWeaponHandedness;
 pub(crate) use newtype::unarmed;
 pub(crate) use newtype::{
-    NaturalMundaneWeapon, OneHandedMundaneWeapon, TwoHandedMundaneWeapon, WornMundaneWeapon,
+    NaturalMundaneWeapon, OneHandedMundaneWeaponMemo, TwoHandedMundaneWeapon, WornMundaneWeapon,
 };
 pub(crate) use newtype::{
     NaturalMundaneWeaponView, OneHandedMundaneWeaponView, TwoHandedMundaneWeaponView,

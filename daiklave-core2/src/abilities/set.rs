@@ -1,22 +1,35 @@
-use crate::CharacterMutation;
+use crate::{CharacterMutation, craft::CraftName, martial_arts::style::MartialArtsStyleName};
 
-use super::{AbilityError, ability::AbilityNameVanilla};
+use super::{AbilityError, ability::AbilityNameVanilla, AbilityNameQualifiedMutation};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SetAbility {
-    name: AbilityNameVanilla,
-    dots: u8    
+    pub(crate) name: AbilityNameQualifiedMutation,
+    pub(crate) dots: u8    
 }
 
 impl SetAbility {
-    pub fn new(name: AbilityNameVanilla, dots: u8) -> Result<Self, AbilityError> {
+    pub fn vanilla(name: AbilityNameVanilla, dots: u8) -> Result<Self, AbilityError> {
         if dots > 5 {
             Err(AbilityError::InvalidRating)
         } else {
-            Ok(Self {
-                name,
-                dots,
-            })
+            Ok(Self { name: name.into(), dots })
+        }
+    }
+
+    pub fn craft(focus: CraftName, dots: u8) -> Result<Self, AbilityError> {
+        if dots > 5 {
+            Err(AbilityError::InvalidRating)
+        } else {
+            Ok(Self { name: focus.into(), dots })
+        }
+    }
+
+    pub fn martial_arts(style: MartialArtsStyleName, dots: u8) -> Result<Self, AbilityError> {
+        if dots > 5 {
+            Err(AbilityError::InvalidRating)
+        } else {
+            Ok(Self { name: style.into(), dots })
         }
     }
 }

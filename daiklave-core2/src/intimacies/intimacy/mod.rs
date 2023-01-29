@@ -16,14 +16,14 @@ pub use remove::RemoveIntimacy;
 /// An Intimacy held by a character.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Intimacy<'source> {
-    pub(crate) intimacy_type: IntimacyType<'source>,
+    pub(crate) intimacy_type: &'source IntimacyTypeMemo,
     pub(crate) level: IntimacyLevel,
 }
 
 impl<'source> Intimacy<'source> {
     /// The type of the Intimacy. ("type" is a reserved keyword in Rust.)
     pub fn intimacy_type(&self) -> IntimacyType<'source> {
-        self.intimacy_type
+        (self.intimacy_type).into()
     }
 
     /// The level of the Intimacy.
@@ -33,7 +33,7 @@ impl<'source> Intimacy<'source> {
 
     /// If the intimacy is a Tie, what the Tie is towards.
     pub fn tie_to(&self) -> Option<&'source str> {
-        if let IntimacyType::Tie(tie_to, _) = self.intimacy_type {
+        if let IntimacyTypeMemo::Tie(tie_to, _) = self.intimacy_type {
             Some(tie_to)
         } else {
             None
@@ -44,7 +44,7 @@ impl<'source> Intimacy<'source> {
     /// quality of a Tie, or is a statement of the Principle.
     pub fn description(&self) -> &'source str {
         match self.intimacy_type {
-            IntimacyType::Tie(_, description) | IntimacyType::Principle(description) => description,
+            IntimacyTypeMemo::Tie(_, description) | IntimacyTypeMemo::Principle(description) => description,
         }
     }
 }

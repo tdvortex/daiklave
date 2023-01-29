@@ -118,7 +118,7 @@ impl<'view, 'source> Character<'source> {
         self.validate_merit_prerequisites(nonstackable_merit.prerequisites())?;
 
         if let Entry::Vacant(e) = self.nonstackable_merits.entry(nonstackable_merit_name) {
-            e.insert(nonstackable_merit.as_ref());
+            e.insert(nonstackable_merit.into());
             Ok(self)
         } else {
             Err(CharacterMutationError::MeritError(

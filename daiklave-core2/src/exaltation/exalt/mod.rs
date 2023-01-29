@@ -56,12 +56,12 @@ use crate::{
             terrestrial::AddTerrestrialSorceryView,
         },
         spell::SpellMutation,
-        Sorcery, SorceryArchetypeMerit, SorceryError,
+        Sorcery, SorceryArchetypeMeritDetails, SorceryError,
     },
     weapons::{
         weapon::{
             artifact::{
-                ArtifactWeaponView, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
+                ArtifactWeapon, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
                 NonnaturalArtifactWeapon,
             },
             mundane::{HandlessMundaneWeapon, MundaneWeapon},
@@ -563,7 +563,7 @@ impl<'view, 'source> Exalt<'source> {
     pub fn add_artifact_weapon(
         &mut self,
         name: &'source str,
-        weapon: ArtifactWeaponView<'source>,
+        weapon: ArtifactWeapon<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.add_artifact_weapon(name, weapon)?;
         Ok(self)
@@ -901,7 +901,7 @@ impl<'view, 'source> Exalt<'source> {
         &mut self,
         sorcery_archetype_name: &str,
         sorcery_archetype_merit_name: &'source str,
-        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+        sorcery_archetype_merit: &'source SorceryArchetypeMeritDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => {

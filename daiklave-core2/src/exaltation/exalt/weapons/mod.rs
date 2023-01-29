@@ -6,7 +6,7 @@ use crate::{
     weapons::{
         weapon::{
             artifact::{
-                ArtifactWeaponView, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
+                ArtifactWeapon, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
                 NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement,
             },
             equipped::{EquippedOneHandedWeapon, EquippedTwoHandedWeapon},
@@ -688,10 +688,10 @@ impl<'view, 'source> ExaltWeapons<'source> {
     pub fn add_artifact_weapon(
         &mut self,
         name: &'source str,
-        weapon: ArtifactWeaponView<'source>,
+        weapon: ArtifactWeapon<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match weapon {
-            ArtifactWeaponView::Natural(natural) => {
+            ArtifactWeapon::Natural(natural) => {
                 if self.equipped.handless_artifact.contains_key(name) {
                     Err(CharacterMutationError::WeaponError(
                         WeaponError::DuplicateArtifact,
@@ -708,7 +708,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     ))
                 }
             }
-            ArtifactWeaponView::Worn(worn, _) => {
+            ArtifactWeapon::Worn(worn, _) => {
                 if self.equipped.handless_artifact.contains_key(name) {
                     Err(CharacterMutationError::WeaponError(
                         WeaponError::DuplicateArtifact,
@@ -724,7 +724,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     Ok(self)
                 }
             }
-            ArtifactWeaponView::OneHanded(one_handed, _) => {
+            ArtifactWeapon::OneHanded(one_handed, _) => {
                 if self
                     .equipped
                     .hands
@@ -750,7 +750,7 @@ impl<'view, 'source> ExaltWeapons<'source> {
                     Ok(self)
                 }
             }
-            ArtifactWeaponView::TwoHanded(two_handed, _) => {
+            ArtifactWeapon::TwoHanded(two_handed, _) => {
                 if self
                     .equipped
                     .hands

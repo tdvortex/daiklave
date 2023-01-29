@@ -3,7 +3,7 @@ use crate::{
     exaltation::exalt::{
         exalt_type::solar::{
             caste::{
-                twilight::{TwilightAbility, TwilightMemo},
+                twilight::{TwilightAbility, Twilight},
                 SolarCasteMemo,
             },
             SetSolar, SolarError, SolarMemo,
@@ -92,7 +92,7 @@ impl TwilightBuilder {
         let limit_trigger = self.limit_trigger.ok_or(SolarError::LimitTriggerRequired)?;
 
         Ok(SetSolar(Box::new(SolarMemo {
-            caste: SolarCasteMemo::Twilight(TwilightMemo {
+            caste: SolarCasteMemo::Twilight(Twilight {
                 caste_not_supernal,
                 supernal,
             }),

@@ -6,14 +6,14 @@ use std::{
 use crate::{
     book_reference::BookReference,
     charms::CharmCostType,
-    exaltation::exalt::exalt_type::solar::charm::{ability::SolarCharmAbility, SolarCharmKeyword},
+    exaltation::exalt::exalt_type::solar::charm::{ability::SolarCharmAbility, SolarCharmKeyword, SolarCharmName},
 };
 
 use super::with_ability_requirement::SolarCharmBuilderWithAbilityRequirement;
 
 /// A Solar Charm builder after the Essence requirement has been specified.
 pub struct SolarCharmBuilderWithEssenceRequirement {
-    pub(crate) name: String,
+    pub(crate) name: SolarCharmName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
     pub(crate) charms_required: HashSet<String>,

@@ -1,6 +1,6 @@
 use crate::sorcery::{
     archetype::{AddShapingRitual, SorceryArchetypeName},
-    SorceryArchetype, SorceryError,
+    SorceryArchetypeDetails, SorceryError,
 };
 
 use super::TerrestrialSorceryBuilderWithShapingRitual;
@@ -8,7 +8,7 @@ use super::TerrestrialSorceryBuilderWithShapingRitual;
 /// A Terrestrial Sorcery builder after the archetype has been specified.
 pub struct TerrestrialSorceryBuilderWithArchetype {
     pub(crate) archetype_name: SorceryArchetypeName,
-    pub(crate) archetype: SorceryArchetype,
+    pub(crate) archetype: SorceryArchetypeDetails,
 }
 
 impl TerrestrialSorceryBuilderWithArchetype {

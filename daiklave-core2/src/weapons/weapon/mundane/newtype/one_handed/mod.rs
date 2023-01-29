@@ -2,7 +2,7 @@ mod memo;
 
 use std::ops::Deref;
 
-pub use memo::OneHandedMundaneWeapon;
+pub use memo::OneHandedMundaneWeaponMemo;
 
 use crate::weapons::weapon::base::BaseWeapon;
 
@@ -15,11 +15,5 @@ impl<'source> Deref for OneHandedMundaneWeaponView<'source> {
 
     fn deref(&self) -> &Self::Target {
         self.0
-    }
-}
-
-impl<'source> OneHandedMundaneWeaponView<'source> {
-    pub(crate) fn as_memo(&'source self) -> OneHandedMundaneWeapon {
-        OneHandedMundaneWeapon(self.0.clone())
     }
 }

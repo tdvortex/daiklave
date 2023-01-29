@@ -1,6 +1,6 @@
 use crate::{
     artifact::MagicMaterial, book_reference::BookReference,
-    weapons::weapon::artifact::base::BaseArtifactWeapon,
+    weapons::weapon::artifact::{base::BaseArtifactWeapon, ArtifactWeaponName},
 };
 
 use super::with_magic_material::ArtifactWeaponBuilderWithMagicMaterial;
@@ -8,7 +8,7 @@ use super::with_magic_material::ArtifactWeaponBuilderWithMagicMaterial;
 /// An artifact builder after the base weapon has been specified.
 /// The next stage is .material().
 pub struct ArtifactWeaponBuilderWithBaseWeapon {
-    pub(crate) name: String,
+    pub(crate) name: ArtifactWeaponName,
     pub(crate) lore: Option<String>,
     pub(crate) powers: Option<String>,
     pub(crate) book_reference: Option<BookReference>,

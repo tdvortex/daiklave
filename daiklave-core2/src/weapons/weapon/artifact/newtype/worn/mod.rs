@@ -1,5 +1,5 @@
 mod memo;
-pub use memo::WornArtifactWeapon;
+pub(crate) use memo::WornArtifactWeaponMemo;
 
 use std::ops::Deref;
 
@@ -15,6 +15,12 @@ impl<'source> Deref for WornArtifactWeaponView<'source> {
 
     fn deref(&self) -> &Self::Target {
         &self.0
+    }
+}
+
+impl<'source> From<&'source WornArtifactWeaponMemo> for WornArtifactWeaponView<'source> {
+    fn from(memo: &'source WornArtifactWeaponMemo) -> Self {
+        Self((&memo.0).into())
     }
 }
 

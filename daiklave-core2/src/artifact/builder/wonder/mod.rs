@@ -1,6 +1,6 @@
 use crate::{
     artifact::{
-        wonders::{AddWonder, Wonder, WonderNoAttunementMemo},
+        wonders::{AddWonder, Wonder, WonderNoAttunementMemo, WonderName},
         MagicMaterial,
     },
     book_reference::BookReference,
@@ -11,7 +11,7 @@ use crate::{
 /// order) are name, merit dots, and powers. Hearthstone slots are also
 /// required but are defaulted to 0.
 pub struct WonderBuilder {
-    pub(crate) name: String,
+    pub(crate) name: WonderName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) lore: Option<String>,
     pub(crate) magic_material: Option<MagicMaterial>,
@@ -66,7 +66,7 @@ impl WonderBuilder {
 
 /// A wonder builder after merit dots have been specified.
 pub struct WonderBuilderWithMeritDots {
-    name: String,
+    name: WonderName,
     book_reference: Option<BookReference>,
     lore: Option<String>,
     magic_material: Option<MagicMaterial>,
@@ -123,7 +123,7 @@ impl WonderBuilderWithMeritDots {
 
 /// A wonder builder with powers.
 pub struct WonderBuilderWithPowers {
-    name: String,
+    name: WonderName,
     book_reference: Option<BookReference>,
     lore: Option<String>,
     magic_material: Option<MagicMaterial>,
@@ -166,9 +166,9 @@ impl WonderBuilderWithPowers {
 
     /// Completes the builder.
     pub fn build(self) -> AddWonder {
-        (
-            self.name,
-            Wonder(WonderNoAttunementMemo {
+        AddWonder {
+            name: self.name,
+            wonder: Wonder(WonderNoAttunementMemo {
                 book_reference: self.book_reference,
                 lore: self.lore,
                 powers: self.powers,
@@ -180,6 +180,6 @@ impl WonderBuilderWithPowers {
                 magic_material: self.magic_material,
                 attunement_cost: self.attunement_cost,
             }),
-        )
+        }
     }
 }

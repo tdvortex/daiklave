@@ -10,7 +10,7 @@ pub(crate) use no_attunement::EquippedOneHandedWeaponNoAttunement;
 pub use no_attunement::EquippedOneHandedWeaponNoAttunementMemo;
 
 use crate::weapons::weapon::{
-    artifact::{ArtifactWeaponView, OneHandedArtifactWeaponView},
+    artifact::{ArtifactWeapon, OneHandedArtifactWeaponView},
     mundane::{MundaneWeaponView, OneHandedMundaneWeaponView},
     weapon_type::WeaponType,
     Weapon, WeaponName,
@@ -62,7 +62,7 @@ impl<'view, 'source> EquippedOneHandedWeapon<'source> {
                 } else {
                     Some(Weapon(WeaponType::Artifact(
                         *name,
-                        ArtifactWeaponView::OneHanded(one.clone(), Some(hand)),
+                        ArtifactWeapon::OneHanded(one.clone(), Some(hand)),
                         *attunement,
                     )))
                 }

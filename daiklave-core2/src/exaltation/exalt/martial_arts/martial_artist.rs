@@ -4,8 +4,6 @@ use crate::{
     martial_arts::{charm::MartialArtsCharm, style::MartialArtsStyle},
 };
 
-use super::ExaltMartialArtistMemo;
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ExaltMartialArtist<'source> {
     pub(crate) style: &'source MartialArtsStyle,
@@ -14,18 +12,6 @@ pub(crate) struct ExaltMartialArtist<'source> {
 }
 
 impl<'view, 'source> ExaltMartialArtist<'source> {
-    pub fn as_memo(&'view self) -> ExaltMartialArtistMemo {
-        ExaltMartialArtistMemo {
-            style: self.style.to_owned(),
-            ability: self.ability.as_memo(),
-            charms: self
-                .charms
-                .iter()
-                .map(|(charm_name, charm)| ((*charm_name).to_owned(), (*charm).to_owned()))
-                .collect(),
-        }
-    }
-
     pub fn style(&'view self) -> &'source MartialArtsStyle {
         self.style
     }

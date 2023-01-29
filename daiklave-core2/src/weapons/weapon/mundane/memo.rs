@@ -1,7 +1,7 @@
 use crate::weapons::weapon::equipped::EquipHand;
 
 use super::newtype::{
-    NaturalMundaneWeapon, OneHandedMundaneWeapon, TwoHandedMundaneWeapon, WornMundaneWeapon,
+    NaturalMundaneWeapon, OneHandedMundaneWeaponMemo, TwoHandedMundaneWeapon, WornMundaneWeapon,
 };
 
 /// An nonmagical, nonunique weapon.
@@ -12,6 +12,6 @@ pub struct MundaneWeapon(pub(crate) MundaneWeaponHandedness);
 pub(crate) enum MundaneWeaponHandedness {
     Natural(NaturalMundaneWeapon),
     Worn(WornMundaneWeapon, bool),
-    OneHanded(OneHandedMundaneWeapon, Option<EquipHand>),
+    OneHanded(OneHandedMundaneWeaponMemo, Option<EquipHand>),
     TwoHanded(TwoHandedMundaneWeapon, bool),
 }

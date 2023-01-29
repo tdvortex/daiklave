@@ -4,8 +4,8 @@ use crate::{
         exalt_type::solar::{
             caste::{
                 dawn::{
-                    DawnCasteAbility, DawnCasteAbilityNoBrawl, DawnMemo, DawnSupernalAbility,
-                    DawnSupernalLayout,
+                    DawnCasteAbility, DawnCasteAbilityNoBrawl, DawnSupernalAbility,
+                    DawnSupernalLayout, Dawn,
                 },
                 SolarCasteMemo,
             },
@@ -290,7 +290,7 @@ impl DawnBuilder {
         };
 
         Ok(SetSolar(Box::new(SolarMemo {
-            caste: SolarCasteMemo::Dawn(DawnMemo { layout }),
+            caste: SolarCasteMemo::Dawn(Dawn { layout }),
             favored_abilities,
             sorcery: None,
             limit: LimitMemo {

@@ -1,51 +1,30 @@
+use std::ops::Deref;
+
 use serde::{Deserialize, Serialize};
 
-use crate::merits::merit::prerequisite::MeritPrerequisite;
-
-use super::{
-    FiveDotsNonStackableMeritMemo, FourDotsNonStackableMeritMemo, NonStackableMeritWithDots,
-    OneDotNonStackableMeritMemo, ThreeDotsNonStackableMeritMemo, TwoDotsNonStackableMeritMemo,
-    ZeroDotsNonStackableMeritMemo,
-};
+use crate::merits::merit::{template::MeritTemplateWithDotsMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum NonStackableMeritWithDotsMemo {
-    Zero(ZeroDotsNonStackableMeritMemo),
-    One(OneDotNonStackableMeritMemo),
-    Two(TwoDotsNonStackableMeritMemo),
-    Three(ThreeDotsNonStackableMeritMemo),
-    Four(FourDotsNonStackableMeritMemo),
-    Five(FiveDotsNonStackableMeritMemo),
+    Zero(MeritTemplateWithDotsMemo),
+    One(MeritTemplateWithDotsMemo),
+    Two(MeritTemplateWithDotsMemo),
+    Three(MeritTemplateWithDotsMemo),
+    Four(MeritTemplateWithDotsMemo),
+    Five(MeritTemplateWithDotsMemo),
 }
 
-impl<'source> NonStackableMeritWithDotsMemo {
-    pub fn as_ref(&'source self) -> NonStackableMeritWithDots<'source> {
-        match self {
-            NonStackableMeritWithDotsMemo::Zero(zero) => {
-                NonStackableMeritWithDots::Zero(zero.as_ref())
-            }
-            NonStackableMeritWithDotsMemo::One(one) => NonStackableMeritWithDots::One(one.as_ref()),
-            NonStackableMeritWithDotsMemo::Two(two) => NonStackableMeritWithDots::Two(two.as_ref()),
-            NonStackableMeritWithDotsMemo::Three(three) => {
-                NonStackableMeritWithDots::Three(three.as_ref())
-            }
-            NonStackableMeritWithDotsMemo::Four(four) => {
-                NonStackableMeritWithDots::Four(four.as_ref())
-            }
-            NonStackableMeritWithDotsMemo::Five(five) => {
-                NonStackableMeritWithDots::Five(five.as_ref())
-            }
-        }
-    }
+impl Deref for NonStackableMeritWithDotsMemo {
+    type Target = MeritTemplateWithDotsMemo;
 
-    pub fn prerequisites(&self) -> impl ExactSizeIterator<Item = MeritPrerequisite> + '_ {
-        match self {
-            NonStackableMeritWithDotsMemo::Zero(zero) => zero.0.prerequisites.iter().copied(),
-            NonStackableMeritWithDotsMemo::One(one) => one.0.prerequisites.iter().copied(),
-            NonStackableMeritWithDotsMemo::Two(two) => two.0.prerequisites.iter().copied(),
-            NonStackableMeritWithDotsMemo::Three(three) => three.0.prerequisites.iter().copied(),
-            NonStackableMeritWithDotsMemo::Four(four) => four.0.prerequisites.iter().copied(),
-            NonStackableMeritWithDotsMemo::Five(five) => five.0.prerequisites.iter().copied(),
+    fn deref(&self) -> &Self::Target {
+        match &self {
+            NonStackableMeritWithDotsMemo::Zero(with_dots)
+            | NonStackableMeritWithDotsMemo::One(with_dots)
+            | NonStackableMeritWithDotsMemo::Two(with_dots)
+            | NonStackableMeritWithDotsMemo::Three(with_dots)
+            | NonStackableMeritWithDotsMemo::Four(with_dots)
+            | NonStackableMeritWithDotsMemo::Five(with_dots) => with_dots,
         }
     }
 }

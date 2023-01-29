@@ -9,7 +9,7 @@ use crate::{
         damage_type::WeaponDamageType,
         handedness::WeaponHandedness,
         mundane::{
-            MundaneWeapon, MundaneWeaponHandedness, NaturalMundaneWeapon, OneHandedMundaneWeapon,
+            MundaneWeapon, MundaneWeaponHandedness, NaturalMundaneWeapon, OneHandedMundaneWeaponMemo,
             TwoHandedMundaneWeapon, WornMundaneWeapon, AddMundaneWeapon,
         },
         range::{RangeBand, WeaponRange},
@@ -103,7 +103,7 @@ impl BaseWeaponBuilderWithAttack {
             WeaponHandedness::OneHanded => AddMundaneWeapon {
                 name: self.name.into(),
                 weapon: MundaneWeapon(MundaneWeaponHandedness::OneHanded(
-                    OneHandedMundaneWeapon(BaseWeapon {
+                    OneHandedMundaneWeaponMemo(BaseWeapon {
                         book_reference: self.book_reference,
                         weight_class: self.weight_class,
                         range_bands: self.attack_range,
@@ -134,23 +134,21 @@ impl BaseWeaponBuilderWithAttack {
     }
 
     /// Completes the builder process, returning a new
-    /// BaseArtifactWeapon.
+    /// AddBaseArtifactWeapon.
     pub fn build_artifact(self) -> AddBaseArtifactWeapon {
-        let base_weapon = BaseWeapon {
-            book_reference: self.book_reference,
-            weight_class: self.weight_class,
-            range_bands: self.attack_range,
-            primary_ability: self.primary_attack,
-            damage_type: self.damage_type,
-            tags: self.tags,
-        };
-
-        (
-            self.name,
-            BaseArtifactWeapon {
+        AddBaseArtifactWeapon {
+            name: self.name,
+            weapon: BaseArtifactWeapon {
                 handedness: self.handedness,
-                base_weapon,
+                base_weapon: BaseWeapon {
+                    book_reference: self.book_reference,
+                    weight_class: self.weight_class,
+                    range_bands: self.attack_range,
+                    primary_ability: self.primary_attack,
+                    damage_type: self.damage_type,
+                    tags: self.tags,
+                }
             },
-        )
+        }
     }
 }

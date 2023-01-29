@@ -1,5 +1,7 @@
 use crate::{Character, CharacterMutation, CharacterMutationError};
 
+use super::CharacterEvent;
+
 /// A container to hold a successfully applied sequence of mutations, with
 /// capability to undo/redo mutations.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -55,11 +57,21 @@ impl<'source> CharacterEventSource {
     /// Applies a character mutation, and returns the Character after the
     pub fn apply_mutation(
         &'source mut self,
-        mutation: CharacterMutation,
+        mutation: impl Into<CharacterMutation>,
     ) -> Result<Character<'source>, CharacterMutationError> {
+        let mutation: CharacterMutation = mutation.into();
         self.as_character()?.apply_mutation(&mutation)?;
         self.future = Vec::new();
         self.history.push(mutation);
         self.as_character()
+    }
+
+    /// Applies an event to the event source and returns the Character after 
+    /// the event.
+    pub fn apply_event(
+        &'source mut self,
+        event: impl CharacterEvent<'source>
+    ) -> Result<Character<'source>, CharacterMutationError> {
+        event.apply_event(self)
     }
 }

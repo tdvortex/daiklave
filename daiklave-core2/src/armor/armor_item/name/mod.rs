@@ -11,3 +11,12 @@ pub enum ArmorName<'source> {
     /// Plate (Artifact)").
     Artifact(&'source str),
 }
+
+impl<'source> From<&'source ArmorNameMutation> for ArmorName<'source> {
+    fn from(name: &'source ArmorNameMutation) -> Self {
+        match name {
+            ArmorNameMutation::Mundane(name) => Self::Mundane(name),
+            ArmorNameMutation::Artifact(name) => Self::Artifact(name),
+        }
+    }
+}

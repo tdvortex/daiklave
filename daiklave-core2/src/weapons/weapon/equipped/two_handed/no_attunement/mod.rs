@@ -1,7 +1,7 @@
 use std::num::NonZeroU8;
 
 use crate::weapons::weapon::{
-    artifact::{ArtifactWeaponView, TwoHandedArtifactWeaponView},
+    artifact::{ArtifactWeapon, TwoHandedArtifactWeaponView},
     mundane::{MundaneWeaponView, TwoHandedMundaneWeaponView},
     weapon_type::WeaponType,
     Weapon, WeaponName,
@@ -43,7 +43,7 @@ impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
                 } else {
                     Some(Weapon(WeaponType::Artifact(
                         *actual_name,
-                        ArtifactWeaponView::TwoHanded(two.clone(), true),
+                        ArtifactWeapon::TwoHanded(two.clone(), true),
                         None,
                     )))
                 }

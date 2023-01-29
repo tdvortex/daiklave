@@ -7,14 +7,14 @@ use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
     exaltation::exalt::exalt_type::solar::charm::{
-        ability::SolarCharmAbility, AddSolarCharm, SolarCharm, SolarCharmKeyword,
+        ability::SolarCharmAbility, AddSolarCharm, SolarCharm, SolarCharmKeyword, SolarCharmName,
     },
 };
 
 /// A Solar Charm builder after the description has been specified. To
 /// complete the builder, call build().
 pub struct SolarCharmBuilderWithDescription {
-    pub(crate) name: String,
+    pub(crate) name: SolarCharmName,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
     pub(crate) charms_required: HashSet<String>,
@@ -67,9 +67,9 @@ impl SolarCharmBuilderWithDescription {
 
     /// Completes the builder, returning a new Solar Charm.
     pub fn build(self) -> AddSolarCharm {
-        (
-            self.name,
-            SolarCharm {
+        AddSolarCharm {
+            name: self.name,
+            charm: SolarCharm {
                 book_reference: self.book_reference,
                 summary: self.summary,
                 description: self.description,
@@ -82,6 +82,6 @@ impl SolarCharmBuilderWithDescription {
                 action_type: self.action_type,
                 duration: self.duration,
             },
-        )
+        }
     }
 }

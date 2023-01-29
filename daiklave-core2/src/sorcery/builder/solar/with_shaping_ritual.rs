@@ -1,15 +1,15 @@
 use crate::sorcery::{
     archetype::{SorceryArchetypeName},
     circles::solar::AddSolarSpell,
-    AddSolarSorcery, AddSorcery, ShapingRitual, SorceryArchetype, add::AddSorceryCircle,
+    AddSolarSorcery, AddSorcery, ShapingRitualDetails, SorceryArchetypeDetails, add::AddSorceryCircle,
 };
 
 /// A Solar sorcery builder after the shaping ritual has been specified.
 pub struct SolarSorceryBuilderWithShapingRitual {
     pub(crate) archetype_name: SorceryArchetypeName,
-    pub(crate) archetype: Option<SorceryArchetype>,
+    pub(crate) archetype: Option<SorceryArchetypeDetails>,
     pub(crate) shaping_ritual_summary: String,
-    pub(crate) shaping_ritual: ShapingRitual,
+    pub(crate) shaping_ritual: ShapingRitualDetails,
 }
 
 impl SolarSorceryBuilderWithShapingRitual {

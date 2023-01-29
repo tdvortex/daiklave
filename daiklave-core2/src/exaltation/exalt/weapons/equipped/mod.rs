@@ -9,7 +9,7 @@ use crate::{
     weapons::{
         weapon::{
             artifact::{
-                ArtifactWeaponView, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
+                ArtifactWeapon, HandlessArtifactWeapon, HandlessArtifactWeaponNoAttunement,
                 WornArtifactWeaponView,
             },
             equipped::{EquippedOneHandedWeapon, EquippedTwoHandedWeapon},
@@ -92,7 +92,7 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
                     HandlessArtifactWeaponNoAttunement::Natural(weapon) => {
                         Some(Weapon(WeaponType::Artifact(
                             name,
-                            ArtifactWeaponView::Natural(weapon.clone()),
+                            ArtifactWeapon::Natural(weapon.clone()),
                             attunement,
                         )))
                     }
@@ -109,7 +109,7 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
                     HandlessArtifactWeaponNoAttunement::Worn(weapon) => {
                         Some(Weapon(WeaponType::Artifact(
                             name,
-                            ArtifactWeaponView::Worn(weapon.clone(), true),
+                            ArtifactWeapon::Worn(weapon.clone(), true),
                             attunement,
                         )))
                     }

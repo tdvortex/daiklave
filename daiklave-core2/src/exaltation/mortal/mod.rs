@@ -32,11 +32,11 @@ use crate::{
     sorcery::{
         circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer, AddTerrestrialSorceryView},
         spell::SpellMutation,
-        SorceryArchetypeMerit, SorceryError,
+        SorceryArchetypeMeritDetails, SorceryError,
     },
     weapons::{
         weapon::{
-            artifact::ArtifactWeaponView,
+            artifact::ArtifactWeapon,
             mundane::{HandlessMundaneWeapon, MundaneWeapon},
             EquipHand, Equipped, Weapon, WeaponName,
         },
@@ -78,7 +78,7 @@ impl<'view, 'source> Mortal<'source> {
 
     pub(crate) fn remove_martial_arts_style(
         &mut self,
-        name: &'source str,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.martial_arts_styles
             .remove(name)
@@ -90,7 +90,7 @@ impl<'view, 'source> Mortal<'source> {
 
     pub(crate) fn set_martial_arts_dots(
         &mut self,
-        name: &'source str,
+        name: &str,
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(style) = self.martial_arts_styles.get_mut(name) {
@@ -191,7 +191,7 @@ impl<'view, 'source> Mortal<'source> {
     pub fn add_artifact_weapon(
         &mut self,
         name: &'source str,
-        weapon: ArtifactWeaponView<'source>,
+        weapon: ArtifactWeapon<'source>,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.weapons.add_artifact_weapon(name, weapon)?;
         Ok(self)
@@ -387,7 +387,7 @@ impl<'view, 'source> Mortal<'source> {
         &mut self,
         sorcery_archetype_name: &str,
         sorcery_archetype_merit_name: &'source str,
-        sorcery_archetype_merit: &'source SorceryArchetypeMerit,
+        sorcery_archetype_merit: &'source SorceryArchetypeMeritDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(terrestrial) = &mut self.sorcery {
             if terrestrial.archetype_name != sorcery_archetype_name {

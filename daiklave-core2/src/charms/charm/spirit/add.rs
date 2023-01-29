@@ -1,4 +1,7 @@
-use super::SpiritCharm;
+use super::{SpiritCharm, SpiritCharmName};
 
 /// A Spirit charm (which may be Eclipse or not) to be added to a character.
-pub type AddSpiritCharm = (String, SpiritCharm);
+pub struct AddSpiritCharm {
+    name: SpiritCharmName,
+    charm: SpiritCharm,
+}

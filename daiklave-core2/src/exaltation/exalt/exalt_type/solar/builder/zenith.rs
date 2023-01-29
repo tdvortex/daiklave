@@ -3,7 +3,7 @@ use crate::{
     exaltation::exalt::{
         exalt_type::solar::{
             caste::{
-                zenith::{ZenithAbility, ZenithMemo},
+                zenith::{ZenithAbility, Zenith},
                 SolarCasteMemo,
             },
             SetSolar, SolarError, SolarMemo,
@@ -92,7 +92,7 @@ impl ZenithBuilder {
         let limit_trigger = self.limit_trigger.ok_or(SolarError::LimitTriggerRequired)?;
 
         Ok(SetSolar(Box::new(SolarMemo {
-            caste: SolarCasteMemo::Zenith(ZenithMemo {
+            caste: SolarCasteMemo::Zenith(Zenith {
                 caste_not_supernal,
                 supernal,
             }),

@@ -12,7 +12,7 @@ use crate::{
     weapons::{
         weapon::{
             artifact::{
-                ArtifactWeaponView, NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement,
+                ArtifactWeapon, NonnaturalArtifactWeapon, NonnaturalArtifactWeaponNoAttunement,
             },
             mundane::{MundaneWeaponView, NonnaturalMundaneWeapon},
             Equipped, Weapon, WeaponName, WeaponType,
@@ -42,21 +42,6 @@ impl<'source> From<MortalUnequippedWeapons<'source>> for ExaltUnequippedWeapons<
 }
 
 impl<'view, 'source> ExaltUnequippedWeapons<'source> {
-    pub fn as_memo(&self) -> ExaltUnequippedWeaponsMemo {
-        ExaltUnequippedWeaponsMemo {
-            mundane: self
-                .mundane
-                .iter()
-                .map(|(k, (v, count))| ((*k).to_owned(), (v.as_memo(), *count)))
-                .collect(),
-            artifact: self
-                .artifact
-                .iter()
-                .map(|(k, v)| ((*k).to_owned(), v.as_memo()))
-                .collect(),
-        }
-    }
-
     pub fn get_weapon(&'view self, weapon_name: WeaponName<'_>) -> Option<Weapon<'source>> {
         match weapon_name {
             WeaponName::Unarmed => Some(crate::weapons::weapon::mundane::unarmed()),
@@ -92,21 +77,21 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
                     NonnaturalArtifactWeaponNoAttunement::Worn(worn) => {
                         Some(Weapon(WeaponType::Artifact(
                             name,
-                            ArtifactWeaponView::Worn(worn.clone(), false),
+                            ArtifactWeapon::Worn(worn.clone(), false),
                             attunement,
                         )))
                     }
                     NonnaturalArtifactWeaponNoAttunement::OneHanded(one) => {
                         Some(Weapon(WeaponType::Artifact(
                             name,
-                            ArtifactWeaponView::OneHanded(one.clone(), None),
+                            ArtifactWeapon::OneHanded(one.clone(), None),
                             attunement,
                         )))
                     }
                     NonnaturalArtifactWeaponNoAttunement::TwoHanded(two) => {
                         Some(Weapon(WeaponType::Artifact(
                             name,
-                            ArtifactWeaponView::TwoHanded(two.clone(), false),
+                            ArtifactWeapon::TwoHanded(two.clone(), false),
                             attunement,
                         )))
                     }

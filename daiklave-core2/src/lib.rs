@@ -32,9 +32,9 @@ pub mod experience;
 /// a character.
 pub mod flaws;
 
-/// A character builder with additional logic for bonus points, free starting
-/// dots, and other constraints.
-pub mod guided;
+// A character builder with additional logic for bonus points, free starting
+// dots, and other constraints.
+// pub mod guided;
 
 /// The Health struct and methods related to damage and healing.
 pub mod health;

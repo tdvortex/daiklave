@@ -18,16 +18,16 @@ impl<'view, 'source> Character<'source> {
         add_artifact: &'source AddArtifact,
     ) -> Result<&mut Self, CharacterMutationError> {
         match add_artifact {
-            AddArtifact::Weapon(artifact_weapon) => {
+            AddArtifact::Weapon(add_artifact_weapon) => {
                 self.exaltation
-                    .add_artifact_weapon(artifact_weapon.0.as_str(), artifact_weapon.1.into())?;
+                    .add_artifact_weapon(add_artifact_weapon.name.as_str(), (&add_artifact_weapon.handedness).into())?;
             }
-            AddArtifact::Armor(artifact_armor) => {
+            AddArtifact::Armor(add_artifact_armor) => {
                 self.exaltation
-                    .add_artifact_armor(artifact_armor.name.as_str(), (&artifact_armor.armor).into())?;
+                    .add_artifact_armor(add_artifact_armor.name.as_str(), (&add_artifact_armor.armor).into())?;
             }
-            AddArtifact::Wonder((name, wonder)) => {
-                self.exaltation.add_wonder(name.as_str(), wonder)?;
+            AddArtifact::Wonder(add_wonder) => {
+                self.exaltation.add_wonder(&add_wonder.name, &add_wonder.wonder)?;
             }
         }
         Ok(self)

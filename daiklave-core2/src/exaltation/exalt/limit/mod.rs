@@ -20,13 +20,6 @@ pub struct Limit<'source> {
 }
 
 impl<'source> Limit<'source> {
-    pub(crate) fn as_memo(&self) -> LimitMemo {
-        LimitMemo {
-            track: self.track,
-            trigger: self.trigger.to_owned(),
-        }
-    }
-
     /// The current amount of Limit the character possesses.
     pub fn track(&self) -> u8 {
         self.track.min(10)
