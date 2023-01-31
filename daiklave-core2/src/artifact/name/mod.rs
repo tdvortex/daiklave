@@ -17,9 +17,9 @@ pub enum ArtifactName<'source> {
 impl<'source> From<&'source ArtifactNameMutation> for ArtifactName<'source> {
     fn from(name: &'source ArtifactNameMutation) -> Self {
         match name {
-            ArtifactNameMutation::Weapon(artifact_weapon_name) => ArtifactName::Weapon(&***artifact_weapon_name),
-            ArtifactNameMutation::Armor(_) => todo!(),
-            ArtifactNameMutation::Wonder(_) => todo!(),
+            ArtifactNameMutation::Weapon(artifact_weapon_name) => Self::Weapon(artifact_weapon_name.as_str()),
+            ArtifactNameMutation::Armor(artifact_armor_name) => Self::Armor(artifact_armor_name.as_str()),
+            ArtifactNameMutation::Wonder(wonder_name) => Self::Wonder(wonder_name.as_str()),
         }
     }
 }

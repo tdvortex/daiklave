@@ -16,7 +16,7 @@ pub mod spell;
 pub(crate) use archetype::{SorceryArchetypeMeritDetails, ShapingRitualDetails};
 pub use archetype::{
     AddShapingRitual, SorceryArchetypeMerit,
-    SorceryArchetypeName, SorceryArchetypeWithMerits,
+    SorceryArchetypeName, SorceryArchetypeWithMerits, AddSorceryArchetypeMerit
 };
 pub use circles::{
     AddCelestialSorcery, AddSolarSorcery, AddTerrestrialSorcery, CelestialSpell, SolarSpell,

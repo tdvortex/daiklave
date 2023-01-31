@@ -5,9 +5,9 @@ use serde::{Serialize, Deserialize};
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ManseName(String);
 
-impl<T> From<T> for ManseName where T: ToString {
+impl<T> From<T> for ManseName where T: Into<String> {
     fn from(name: T) -> Self {
-        Self(name.to_string())
+        Self(name.into())
     }
 }
 

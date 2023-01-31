@@ -6,7 +6,7 @@ use std::{
 use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
-    martial_arts::{charm::{AddMartialArtsCharm, MartialArtsCharmDetails, MartialArtsCharmKeyword, MartialArtsCharmName}, style::MartialArtsStyleName},
+    martial_arts::{charm::{AddMartialArtsCharm, MartialArtsCharmDetails, MartialArtsCharmKeyword, MartialArtsCharmName}, style::MartialArtsStyleName}, CharacterMutation,
 };
 
 /// A Martial Arts Charm builder after the description has been provided. To
@@ -15,7 +15,7 @@ pub struct MartialArtsCharmBuilderWithDescription {
     pub(crate) name: MartialArtsCharmName,
     pub(crate) style: MartialArtsStyleName,
     pub(crate) book_reference: Option<BookReference>,
-    pub(crate) charms_required: HashSet<String>,
+    pub(crate) charms_required: HashSet<MartialArtsCharmName>,
     pub(crate) mastery: Option<String>,
     pub(crate) terrestrial: Option<String>,
     pub(crate) enlightenment: Option<String>,
@@ -43,10 +43,11 @@ impl MartialArtsCharmBuilderWithDescription {
     }
 
     /// Adds another Martial Arts charm as a prerequisite.
-    pub fn charm_prerequisite(mut self, charm_name: String) -> Self {
-        self.charms_required.insert(charm_name);
+    pub fn charm_prerequisite(mut self, charm_name: impl Into<MartialArtsCharmName>) -> Self {
+        self.charms_required.insert(charm_name.into());
         self
     }
+
     /// Adds a description of the Mastery effect for this Charm.
     pub fn mastery(mut self, description: String) -> Self {
         self.mastery = Some(description);
@@ -83,12 +84,12 @@ impl MartialArtsCharmBuilderWithDescription {
         self
     }
 
-    /// Completes the builder, returning a Martial Arts Charm.
+    /// Completes the builder.
     pub fn build(self) -> AddMartialArtsCharm {
         AddMartialArtsCharm {
             name: self.name,
+            style: self.style,
             charm: MartialArtsCharmDetails {
-                style: self.style,
                 book_reference: self.book_reference,
                 summary: self.summary,
                 description: self.description,
@@ -104,5 +105,11 @@ impl MartialArtsCharmBuilderWithDescription {
                 duration: self.duration,
             },
         }
+    }
+}
+
+impl From<MartialArtsCharmBuilderWithDescription> for CharacterMutation {
+    fn from(builder: MartialArtsCharmBuilderWithDescription) -> Self {
+        AddMartialArtsCharm::from(builder).into()
     }
 }

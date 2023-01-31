@@ -5,9 +5,9 @@ use serde::{Serialize, Deserialize};
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct MartialArtsCharmName(String);
 
-impl<T> From<T> for MartialArtsCharmName where T: ToString {
+impl<T> From<T> for MartialArtsCharmName where T: Into<String> {
     fn from(name: T) -> Self {
-        Self(name.to_string())
+        Self(name.into())
     }
 }
 

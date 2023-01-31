@@ -4,23 +4,23 @@ use serde::{Deserialize, Serialize};
 
 use crate::book_reference::BookReference;
 
-use super::{AddShapingRitual, ShapingRitualDetails, merit::builder::SorceryArchetypeMeritBuilder};
+use super::{AddShapingRitual, ShapingRitualDetails};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SorceryArchetypeName(String);
 
 impl SorceryArchetypeName {
     pub fn new_shaping_ritual(&self, 
-        summary: impl ToString, 
+        summary: impl Into<String>, 
         book_reference: Option<BookReference>, 
-        description: impl ToString
+        description: impl Into<String>
     ) -> AddShapingRitual {
         AddShapingRitual {
             archetype_name: self.clone(),
-            summary: summary.to_string(),
+            summary: summary.into(),
             ritual: ShapingRitualDetails {
                 book_reference,
-                description: description.to_string(),
+                description: description.into(),
             }
         }
     }

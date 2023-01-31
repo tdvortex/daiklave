@@ -155,7 +155,7 @@ fn test_merits() {
     let mutation = CharacterMutation::SetAbility(AbilityNameVanilla::Brawl, 1);
     event_source.apply_mutation(mutation).unwrap();
 
-    let (crane_style_name, crane_style) = MartialArtsStyle::builder("Crane Style".to_owned())
+    let (crane_style_name, crane_style) = MartialArtsStyle::with_name("Crane Style".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 443))
         .description(
             "Crane style is a defensive style, emulating the grace of the \
@@ -190,7 +190,7 @@ fn test_merits() {
     received once per scene. Stunts to enhance the sorcerer's \
     control spell do not count against the once per scene limit."
         .to_owned())).unwrap()
-        .control_spell(Spell::builder("Death of Obsidian Butterflies".to_owned())
+        .control_spell(Spell::with_name("Death of Obsidian Butterflies".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 470))
         .keyword(SpellKeyword::DecisiveOnly)
         .keyword(SpellKeyword::Perilous)

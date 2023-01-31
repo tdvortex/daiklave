@@ -7,7 +7,7 @@ pub use manse_name::ManseName;
 /// Builder path for making new merits.
 pub mod builder;
 
-pub(crate) mod constants;
+mod constants;
 
 mod demense_name;
 pub use demense_name::DemenseName;

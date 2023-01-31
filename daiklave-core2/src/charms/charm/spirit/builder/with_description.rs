@@ -9,7 +9,7 @@ use crate::{
         charm::{
             spirit::{
                 inner::SpiritCharmInner, noneclipse::AddNonEclipseCharm, AddEclipseCharm,
-                AddSpiritCharm, EclipseCharm, NonEclipseCharm, SpiritCharm,
+                AddSpiritCharm, EclipseCharm, NonEclipseCharm,
             },
             SpiritCharmKeyword,
         },
@@ -79,26 +79,30 @@ impl SpiritCharmBuilderWithDescription {
     }
 
     /// Finishes the builder, returning an Eclipse charm.
-    pub fn build_eclipse(self) -> AddEclipseCharm {
+    pub fn eclipse(self) -> AddEclipseCharm {
         let (name, inner) = self.build_inner();
-        (name, EclipseCharm(inner))
+        AddEclipseCharm {
+            name: name.into(),
+            charm: EclipseCharm(inner),
+        }
     }
 
     /// Finishes the builder, returning a non-Eclipse Spirit charm.
-    pub fn build_non_eclipse(self) -> AddNonEclipseCharm {
+    pub fn non_eclipse(self) -> AddNonEclipseCharm {
         let (name, inner) = self.build_inner();
-        (name, NonEclipseCharm(inner))
+        AddNonEclipseCharm {
+            name: name.into(),
+            charm: NonEclipseCharm(inner),
+        }
     }
 
     /// Finishes the builder, retuning a Spirit charm, either Eclipse or
     /// Non-Eclipse as specified.
     pub fn build(self, eclipse: bool) -> AddSpiritCharm {
         if eclipse {
-            let (name, eclipse) = self.build_eclipse();
-            (name, SpiritCharm::Eclipse(eclipse))
+            AddSpiritCharm::Eclipse(self.eclipse())
         } else {
-            let (name, noneclipse) = self.build_non_eclipse();
-            (name, SpiritCharm::NonEclipse(noneclipse))
+            AddSpiritCharm::NonEclipse(self.non_eclipse())
         }
     }
 }

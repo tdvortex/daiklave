@@ -31,7 +31,6 @@ use crate::{
         circles::{
             celestial::{sorcerer::CelestialCircleSorcerer, AddCelestialSorcery},
             solar::AddSolarSorcery,
-            terrestrial::AddTerrestrialSorceryView,
         },
         spell::SpellMutation,
         Sorcery, SorceryArchetypeMeritDetails, SorceryError, AddTerrestrialSorcery,

@@ -3,6 +3,7 @@ use crate::{CharacterMutation, charms::charm::AddCharm};
 use super::{Evocation, EvocationName};
 
 /// An Evocation to add to a character.
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddEvocation {
     name: EvocationName,
     evocation: Evocation,

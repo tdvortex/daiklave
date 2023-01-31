@@ -2,6 +2,7 @@ use crate::{sorcery::SorceryArchetypeName, CharacterMutation, merits::merit::Add
 
 use super::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName, builder::SorceryArchetypeMeritBuilderWithDots};
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddSorceryArchetypeMerit {
     archetype_name: SorceryArchetypeName,
     merit_name: SorceryArchetypeMeritName,

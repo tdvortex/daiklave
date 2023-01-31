@@ -47,19 +47,8 @@ pub struct Evocation {
 
 impl Evocation {
     /// Starts a builder for a new Evocation.
-    pub fn builder(evokable_name: EvokableNameMutation, name: String) -> EvocationBuilder {
-        EvocationBuilder {
-            name,
-            book_reference: None,
-            summary: None,
-            evokable_name,
-            resonant: None,
-            dissonant: None,
-            evocation_tree: HashSet::new(),
-            upgrade_charm: None,
-            keywords: HashSet::new(),
-            costs: HashMap::new(),
-        }
+    pub fn of(evokable_name: impl Into<EvokableNameMutation>) -> EvocationBuilder {
+        EvocationBuilder::evocation_of(evokable_name)
     }
 }
 

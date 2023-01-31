@@ -1,6 +1,10 @@
 /// Details for an individual merit.
 pub mod merit;
 
+pub mod merit_new;
+
+mod merits_new;
+
 use crate::{
     armor::armor_item::ArmorName, artifact::ArtifactName, exaltation::Exaltation,
     languages::language::{Language, LanguageMutation}, weapons::weapon::WeaponName, Character,

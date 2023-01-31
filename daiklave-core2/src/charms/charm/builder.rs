@@ -15,6 +15,14 @@ pub struct CharmBuilder {
 }
 
 impl CharmBuilder {
+    pub fn name(name: impl Into<String>) -> Self {
+        Self {
+            name: name.into(),
+            book_reference: None,
+            summary: None,
+        }
+    }
+
     /// Defines the book reference for the Charm/Spell
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
@@ -41,19 +49,17 @@ impl CharmBuilder {
 
     /// Constructs the Charm as an Evocation. Requires specifying what it is an
     /// evocation of (artifact or hearthstone).
-    pub fn evocation(self, evokable_name: EvokableNameMutation) -> EvocationBuilder {
-        EvocationBuilder {
-            name: self.name,
-            book_reference: self.book_reference,
-            summary: self.summary,
-            evokable_name,
-            resonant: None,
-            dissonant: None,
-            evocation_tree: HashSet::new(),
-            upgrade_charm: None,
-            keywords: HashSet::new(),
-            costs: HashMap::new(),
+    pub fn evocation(self, evokable_name: impl Into<EvokableNameMutation>) -> EvocationBuilder {
+        let mut builder = EvocationBuilder::evocation_of(evokable_name);
+        if let Some(book_reference) = self.book_reference {
+            builder = builder.book_reference(book_reference);
         }
+
+        if let Some(summary) = self.summary {
+            builder = builder.summary(summary);
+        }
+
+        builder
     }
 
     /// Constructs the charm as a Spirit charm, which may or may not also be

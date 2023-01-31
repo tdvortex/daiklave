@@ -1,7 +1,7 @@
-use super::{SpiritCharm, SpiritCharmName};
+use super::{AddEclipseCharm, noneclipse::AddNonEclipseCharm};
 
 /// A Spirit charm (which may be Eclipse or not) to be added to a character.
-pub struct AddSpiritCharm {
-    name: SpiritCharmName,
-    charm: SpiritCharm,
+pub enum AddSpiritCharm {
+    Eclipse(AddEclipseCharm),
+    NonEclipse(AddNonEclipseCharm),
 }

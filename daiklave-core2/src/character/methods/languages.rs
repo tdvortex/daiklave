@@ -1,5 +1,5 @@
 use crate::{
-    languages::{language::{LanguageMutation, SetNativeLanguage, RemoveLanguage}, LanguageError, Languages, AddLanguages},
+    languages::{language::{SetNativeLanguage, RemoveLanguage, AddLanguage}, LanguageError, Languages},
     Character, CharacterMutationError,
 };
 
@@ -9,20 +9,12 @@ impl<'view, 'source> Character<'source> {
         Languages(self)
     }
 
-    /// Add (non-native) languages to the character.
-    pub fn add_languages(
+    pub fn add_language(
         &mut self,
-        add_languages: &'source AddLanguages
+        language: &'source AddLanguage,
     ) -> Result<&mut Self, CharacterMutationError> {
-        add_languages.0.iter().try_fold(self, |acc, mutation| acc.add_language(mutation))
-    }
-
-    fn add_language(
-        &mut self,
-        language: &'source LanguageMutation,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        if self.native_language == language
-            || !self.other_languages.insert(language)
+        if self.native_language == &language.0
+            || !self.other_languages.insert(&language.0)
         {
             Err(CharacterMutationError::LanguageError(
                 LanguageError::DuplicateLanguage,

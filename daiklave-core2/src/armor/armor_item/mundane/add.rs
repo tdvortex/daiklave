@@ -13,9 +13,9 @@ pub struct AddMundaneArmor {
 }
 
 impl AddMundaneArmor {
-    pub fn builder(name: impl ToString) -> BaseArmorItemBuilder {
+    pub fn builder(name: impl Into<String>) -> BaseArmorItemBuilder {
         BaseArmorItemBuilder {
-            name: name.to_string(),
+            name: name.into(),
             book_reference: None,
             tags: HashSet::new(),
         }

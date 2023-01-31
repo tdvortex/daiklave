@@ -1,33 +1,30 @@
+use std::ops::Deref;
+
 use serde::{Deserialize, Serialize};
 
-use crate::merits::merit::MeritPrerequisite;
-
-use super::{
-    dots::{
-        FiveDotsStackableMeritMemo, FourDotsStackableMeritMemo, OneDotStackableMeritMemo,
-        ThreeDotsStackableMeritMemo, TwoDotsStackableMeritMemo, ZeroDotsStackableMeritMemo,
-    },
-};
+use crate::merits::merit::{template::MeritTemplateWithDotsMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum StackableMeritWithDotsMemo {
-    Zero(ZeroDotsStackableMeritMemo),
-    One(OneDotStackableMeritMemo),
-    Two(TwoDotsStackableMeritMemo),
-    Three(ThreeDotsStackableMeritMemo),
-    Four(FourDotsStackableMeritMemo),
-    Five(FiveDotsStackableMeritMemo),
+    Zero(MeritTemplateWithDotsMemo),
+    One(MeritTemplateWithDotsMemo),
+    Two(MeritTemplateWithDotsMemo),
+    Three(MeritTemplateWithDotsMemo),
+    Four(MeritTemplateWithDotsMemo),
+    Five(MeritTemplateWithDotsMemo),
 }
 
-impl<'source> StackableMeritWithDotsMemo {
-    pub fn prerequisites(&self) -> impl ExactSizeIterator<Item = MeritPrerequisite> + '_ {
+impl Deref for StackableMeritWithDotsMemo {
+    type Target = MeritTemplateWithDotsMemo;
+
+    fn deref(&self) -> &Self::Target {
         match self {
-            StackableMeritWithDotsMemo::Zero(zero) => zero.0.prerequisites.iter().copied(),
-            StackableMeritWithDotsMemo::One(one) => one.0.prerequisites.iter().copied(),
-            StackableMeritWithDotsMemo::Two(two) => two.0.prerequisites.iter().copied(),
-            StackableMeritWithDotsMemo::Three(three) => three.0.prerequisites.iter().copied(),
-            StackableMeritWithDotsMemo::Four(four) => four.0.prerequisites.iter().copied(),
-            StackableMeritWithDotsMemo::Five(five) => five.0.prerequisites.iter().copied(),
+            StackableMeritWithDotsMemo::Zero(_) => todo!(),
+            | StackableMeritWithDotsMemo::One(_) => todo!(),
+            | StackableMeritWithDotsMemo::Two(_) => todo!(),
+            | StackableMeritWithDotsMemo::Three(_) => todo!(),
+            | StackableMeritWithDotsMemo::Four(_) => todo!(),
+            | StackableMeritWithDotsMemo::Five(_) => todo!(),
         }
     }
 }

@@ -2,11 +2,13 @@ mod demense;
 mod exalted_healing;
 mod manse;
 mod nonstackable;
+mod stackable;
 pub use demense::AddDemense;
 pub use exalted_healing::AddExaltedHealing;
 pub use nonstackable::AddNonStackableMerit;
+pub use stackable::AddStackableMerit;
 
-use crate::{artifact::AddArtifact, hearthstones::hearthstone::{AddHearthstone}, sorcery::{AddSorcery, AddTerrestrialSorcery}, languages::AddLanguages, martial_arts::style::AddMartialArtsStyle, CharacterMutation, charms::charm::AddCharm};
+use crate::{artifact::AddArtifact, hearthstones::hearthstone::{AddHearthstone}, languages::{language::AddLanguage}, martial_arts::style::AddMartialArtsStyle, CharacterMutation, sorcery::AddSorceryArchetypeMerit};
 
 use self::manse::AddManse;
 
@@ -16,7 +18,7 @@ pub enum AddMerit {
     Demense(AddDemense),
     ExaltedHealing,
     Hearthstone(AddHearthstone),
-    Languages(AddLanguages),
+    Language(AddLanguage),
     Manse(AddManse),
     MartialArtist(AddMartialArtsStyle),
     NonStackable(AddNonStackableMerit),
@@ -42,9 +44,9 @@ impl From<AddExaltedHealing> for AddMerit {
     }
 }
 
-impl From<AddLanguages> for AddMerit {
-    fn from(add_languages: AddLanguages) -> Self {
-        Self::Languages(add_languages)
+impl From<AddLanguage> for AddMerit {
+    fn from(add_language: AddLanguage) -> Self {
+        Self::Language(add_language)
     }
 }
 

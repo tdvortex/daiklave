@@ -13,9 +13,9 @@ pub struct AddMundaneWeapon {
 }
 
 impl AddMundaneWeapon {
-    pub fn builder(name: impl ToString) -> BaseWeaponBuilder {
+    pub fn builder(name: impl Into<String>) -> BaseWeaponBuilder {
         BaseWeaponBuilder {
-            name: name.to_string(),
+            name: name.into(),
             book_reference: None,
             attack_range: WeaponRange::ContactOnly,
             tags: HashSet::new(),

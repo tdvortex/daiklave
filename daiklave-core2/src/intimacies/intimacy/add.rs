@@ -10,16 +10,16 @@ pub struct AddIntimacy {
 }
 
 impl AddIntimacy {
-    pub fn tie(target: impl ToString, emotion: impl ToString, level: IntimacyLevel) -> Self {
+    pub fn tie(target: impl Into<String>, emotion: impl Into<String>, level: IntimacyLevel) -> Self {
         Self {
-            intimacy_type: IntimacyTypeMemo::Tie(target.to_string(), emotion.to_string()),
+            intimacy_type: IntimacyTypeMemo::Tie(target.into(), emotion.into()),
             level,
         }
     }
 
-    pub fn principle(description: impl ToString, level: IntimacyLevel) -> Self {
+    pub fn principle(description: impl Into<String>, level: IntimacyLevel) -> Self {
         Self {
-            intimacy_type: IntimacyTypeMemo::Principle(description.to_string()),
+            intimacy_type: IntimacyTypeMemo::Principle(description.into()),
             level,
         }
     }

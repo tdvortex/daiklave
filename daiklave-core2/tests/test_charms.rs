@@ -612,7 +612,7 @@ fn test_evocations() {
 fn test_spells() {
     let mut event_source = CharacterEventSource::default();
     // Non-sorcerers cannot add Spells
-    let cirrus_skiff = Spell::builder("Cirrus Skiff".to_owned())
+    let cirrus_skiff = Spell::with_name("Cirrus Skiff".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 471))
         .sorcerous_motes(NonZeroU8::new(15).unwrap())
         .willpower(NonZeroU8::new(1).unwrap())
@@ -672,7 +672,7 @@ fn test_spells() {
         ))
         .unwrap()
         .control_spell(
-            Spell::builder("Corrupted Words".to_owned())
+            Spell::with_name("Corrupted Words".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 472))
                 .sorcerous_motes(NonZeroU8::new(15).unwrap())
                 .willpower(NonZeroU8::new(1).unwrap())
@@ -772,7 +772,7 @@ fn test_spells() {
         .apply_mutation(CharacterMutation::SetSolar(new_solar))
         .unwrap();
 
-    let butterflies = Spell::builder("Death of Obsidian Butterflies".to_owned())
+    let butterflies = Spell::with_name("Death of Obsidian Butterflies".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 470))
         .keyword(SpellKeyword::DecisiveOnly)
         .keyword(SpellKeyword::Perilous)
@@ -788,7 +788,7 @@ fn test_spells() {
         .unwrap();
 
     // ...but not Celestial Spells or Solar circle spells
-    let demon = Spell::builder("Demon of the Second Circle".to_owned())
+    let demon = Spell::with_name("Demon of the Second Circle".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 477))
         .ritual()
         .willpower(NonZeroU8::new(3).unwrap())
@@ -801,7 +801,7 @@ fn test_spells() {
         )
         .build(SorceryCircle::Celestial);
 
-    let death_ray = Spell::builder("Death Ray".to_owned())
+    let death_ray = Spell::with_name("Death Ray".to_owned())
         .book_reference(BookReference::new(Book::CoreRulebook, 481))
         .sorcerous_motes(NonZeroU8::new(25).unwrap())
         .willpower(NonZeroU8::new(2).unwrap())
@@ -856,7 +856,7 @@ fn test_spells() {
         ))
         .unwrap()
         .control_spell(
-            Spell::builder("Magma Kraken".to_owned())
+            Spell::with_name("Magma Kraken".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 478))
                 .sorcerous_motes(NonZeroU8::new(30).unwrap())
                 .willpower(NonZeroU8::new(1).unwrap())
@@ -916,7 +916,7 @@ of her."
         ))
         .unwrap()
         .control_spell(
-            Spell::builder("Benediction of Archgenesis".to_owned())
+            Spell::with_name("Benediction of Archgenesis".to_owned())
                 .book_reference(BookReference::new(Book::CoreRulebook, 480))
                 .ritual()
                 .willpower(NonZeroU8::new(3).unwrap())
@@ -960,7 +960,7 @@ fn test_martial_arts_charms() {
     let mut event_source = CharacterEventSource::default();
     // Mortals cannot add MA charms, even if they have the right style
     let (single_point_name, single_point) =
-        MartialArtsStyle::builder("Single Point Shining Into the Void Style".to_owned())
+        MartialArtsStyle::with_name("Single Point Shining Into the Void Style".to_owned())
             .book_reference(BookReference::new(Book::CoreRulebook, 434))
             .description(
                 "Single Point Shining Into the Void is a sword style that\
@@ -1286,7 +1286,7 @@ fn test_eclipse_charms() {
     grow far beyond their usual size in an instant."
                 .to_owned(),
         )
-        .build_eclipse();
+        .eclipse();
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Eclipse(
@@ -1379,7 +1379,7 @@ fn test_eclipse_charms() {
     the traits of light artifact armor."
                 .to_owned(),
         )
-        .build_eclipse();
+        .eclipse();
 
     assert!(event_source
         .apply_mutation(CharacterMutation::AddCharm(AddCharm::Eclipse(

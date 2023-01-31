@@ -1,11 +1,19 @@
 use std::ops::Deref;
 
+use crate::martial_arts::charm::builder::MartialArtsCharmBuilder;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MartialArtsStyleName(String);
 
-impl<T> From<T> for MartialArtsStyleName where T: ToString {
+impl MartialArtsStyleName {
+    pub fn new_charm(&self) -> MartialArtsCharmBuilder {
+        MartialArtsCharmBuilder::style(self.clone())
+    }
+}
+
+impl<T> From<T> for MartialArtsStyleName where T: Into<String> {
     fn from(name: T) -> Self {
-        Self(name.to_string())
+        Self(name.into())
     }
 }
 

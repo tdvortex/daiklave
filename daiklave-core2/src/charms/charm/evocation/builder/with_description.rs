@@ -7,7 +7,7 @@ use crate::{
     book_reference::BookReference,
     charms::{
         charm::{
-            evocation::{AddEvocation, EvocationKeyword, EvokableNameMutation},
+            evocation::{AddEvocation, EvocationKeyword, EvokableNameMutation, EvocationName},
             CharmNameMutation, Evocation,
         },
         CharmActionType, CharmCostType,
@@ -19,7 +19,7 @@ use crate::{
 pub struct EvocationBuilderWithDescription {
     pub(crate) evokable_name: EvokableNameMutation,
     pub(crate) book_reference: Option<BookReference>,
-    pub(crate) name: String,
+    pub(crate) name: EvocationName,
     pub(crate) summary: Option<String>,
     pub(crate) essence_required: NonZeroU8,
     pub(crate) resonant: Option<String>,
@@ -93,9 +93,9 @@ impl EvocationBuilderWithDescription {
 
     /// Completes the builder and returns a CharmMutation of the Evocation.
     pub fn build(self) -> AddEvocation {
-        (
-            self.name,
-            Evocation {
+        AddEvocation {
+            name: self.name,
+            evocation: Evocation {
                 evokable_name: self.evokable_name,
                 book_reference: self.book_reference,
                 summary: self.summary,
@@ -110,6 +110,6 @@ impl EvocationBuilderWithDescription {
                 action_type: self.action_type,
                 duration: self.duration,
             },
-        )
+        }
     }
 }

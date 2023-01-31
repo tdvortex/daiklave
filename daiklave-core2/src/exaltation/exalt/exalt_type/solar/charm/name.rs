@@ -5,9 +5,9 @@ use serde::{Serialize, Deserialize};
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SolarCharmName(String);
 
-impl<T> From<T> for SolarCharmName where T: ToString {
+impl<T> From<T> for SolarCharmName where T: Into<String> {
     fn from(name: T) -> Self {
-        Self(name.to_string())
+        Self(name.into())
     }
 }
 

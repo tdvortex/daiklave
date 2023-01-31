@@ -32,7 +32,7 @@ pub use weight_class::ArmorWeightClass;
 
 use crate::{book_reference::BookReference, hearthstones::hearthstone::Hearthstone};
 
-use self::{artifact::builder::ArtifactArmorItemBuilder, base::builder::BaseArmorItemBuilder};
+use self::{artifact::{builder::ArtifactArmorItemBuilder, ArtifactArmorName}, base::builder::BaseArmorItemBuilder};
 
 /// A single piece of armor owned by a character
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -40,16 +40,16 @@ pub struct ArmorItem<'source>(pub(crate) ArmorType<'source>, pub(crate) bool);
 
 impl<'source> ArmorItem<'source> {
     /// Starts constructing a base armor item.
-    pub fn base_builder(name: impl ToString) -> BaseArmorItemBuilder {
+    pub fn base_builder(name: impl Into<String>) -> BaseArmorItemBuilder {
         BaseArmorItemBuilder {
-            name: name.to_string(),
+            name: name.into(),
             book_reference: None,
             tags: HashSet::new(),
         }
     }
 
     /// Starts construct an artifact armor item.
-    pub fn artifact_builder(name: impl ToString) -> ArtifactArmorItemBuilder {
+    pub fn artifact_builder(name: impl Into<ArtifactArmorName>) -> ArtifactArmorItemBuilder {
         ArtifactArmorItemBuilder {
             name: name.into(),
             book_reference: None,

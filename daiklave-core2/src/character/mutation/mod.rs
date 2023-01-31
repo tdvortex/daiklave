@@ -9,14 +9,13 @@ pub use crate::charms::charm::{AddCharm, RemoveCharm};
 pub use crate::exaltation::exalt::essence::{SetEssenceRating, SpendMotes, CommitMotes, RecoverMotes, UncommitMotes};
 pub use crate::exaltation::exalt::limit::{GainLimit, ReduceLimit, SetLimitTrigger};
 pub use crate::experience::{GainExperience, GainExaltExperience, SpendExperience, SpendExaltExperience};
-pub use crate::flaws::flaw::RemoveFlaw;
+pub use crate::flaws::flaw::{AddFlaw, RemoveFlaw};
 pub use crate::health::{HealDamage, SetHealthTrack, TakeDamage};
 pub use crate::hearthstones::hearthstone::{SlotHearthstone, UnslotHearthstone};
 pub use crate::intimacies::intimacy::{AddIntimacy, RemoveIntimacy};
-use crate::languages::AddLanguages;
-use crate::languages::language::RemoveLanguage;
+pub use crate::languages::language::{RemoveLanguage, AddLanguage};
 pub use crate::languages::language::SetNativeLanguage;
-use crate::merits::merit::AddMerit;
+pub use crate::merits::merit::AddMerit;
 pub use crate::name::SetName;
 pub use crate::concept::{RemoveConcept, SetConcept};
 pub use crate::exaltation::mortal::SetMortal;
@@ -27,10 +26,6 @@ pub use crate::weapons::weapon::mundane::{AddMundaneWeapon, RemoveMundaneWeapon}
 pub use crate::willpower::{GainWillpower, SpendWillpower, SetWillpowerRating};
 
 pub use error::CharacterMutationError;
-
-use crate::{
-    flaws::flaw::AddFlaw,
-};
 
 /// The API for the character, expressed as an owned struct. Each mutation has
 /// an associated pub method on Character and CharacterEventSource which

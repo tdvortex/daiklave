@@ -1,0 +1,3 @@
+use super::FixedMeritTemplateBuilderWithDescription;
+
+pub struct FixedStackableMeritTemplateBuilder(pub(crate) FixedMeritTemplateBuilderWithDescription);

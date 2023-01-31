@@ -31,12 +31,12 @@ impl Deref for ArtifactNameMutation {
     }
 }
 
-impl From<&ArtifactName<'_>> for ArtifactNameMutation {
-    fn from(name: &ArtifactName<'_>) -> Self {
+impl From<ArtifactName<'_>> for ArtifactNameMutation {
+    fn from(name: ArtifactName<'_>) -> Self {
         match name {
-            ArtifactName::Weapon(artifact_weapon_name) => ArtifactNameMutation::Weapon((*artifact_weapon_name).to_owned().into()),
-            ArtifactName::Armor(_) => todo!(),
-            ArtifactName::Wonder(_) => todo!(),
+            ArtifactName::Weapon(name) => Self::Weapon(name.into()),
+            ArtifactName::Armor(name) => Self::Armor(name.into()),
+            ArtifactName::Wonder(name) => Self::Wonder(name.into()),
         }
     }
 }

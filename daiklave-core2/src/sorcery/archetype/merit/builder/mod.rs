@@ -104,6 +104,6 @@ impl SorceryArchetypeMeritBuilderWithDots {
 
 impl From<SorceryArchetypeMeritBuilderWithDots> for CharacterMutation {
     fn from(builder: SorceryArchetypeMeritBuilderWithDots) -> Self {
-        builder.build().into()
+        AddSorceryArchetypeMerit::from(builder).into()
     }
 }

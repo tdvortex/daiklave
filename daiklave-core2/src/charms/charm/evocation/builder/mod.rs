@@ -8,26 +8,22 @@ use crate::{
     charms::{charm::CharmNameMutation, CharmCostType},
 };
 
-use super::{EvocationKeyword, EvokableNameMutation};
+use super::{EvocationKeyword, EvokableNameMutation, EvocationName};
 
 mod with_action_type;
 mod with_description;
 mod with_duration;
 mod with_essence_requirement;
+mod with_name;
 pub use with_action_type::EvocationBuilderWithActionType;
 pub use with_description::EvocationBuilderWithDescription;
 pub use with_duration::EvocationBuilderWithDuration;
+pub use with_name::EvocationBuilderWithName;
 pub use with_essence_requirement::EvocationBuilderWithEssenceRequirement;
 
-/// A builder for an Evocation. Required fields (in order): name (already
-/// specified), evokable item (already specified), essence requirement,
-/// action type, duration, and description. Optional fields: book reference,
-/// other evocations as prerequisites, a charm which it upgrades, resonant
-/// effect, dissonant effect, charm keywords, charm costs, and a short summary.
 pub struct EvocationBuilder {
     pub(crate) evokable_name: EvokableNameMutation,
     pub(crate) book_reference: Option<BookReference>,
-    pub(crate) name: String,
     pub(crate) summary: Option<String>,
     pub(crate) resonant: Option<String>,
     pub(crate) dissonant: Option<String>,
@@ -38,6 +34,20 @@ pub struct EvocationBuilder {
 }
 
 impl EvocationBuilder {
+    pub fn evocation_of(name: impl Into<EvokableNameMutation>) -> Self {
+        Self {
+            evokable_name: name.into(),
+            book_reference: Default::default(),
+            summary: Default::default(),
+            resonant: Default::default(),
+            dissonant: Default::default(),
+            evocation_tree: Default::default(),
+            upgrade_charm: Default::default(),
+            keywords: Default::default(),
+            costs: Default::default(),
+        }
+    }
+
     /// Sets the book reference for the Evocation.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
@@ -95,18 +105,15 @@ impl EvocationBuilder {
         self
     }
 
-    /// Sets an essence requirement for using this Charm. Maxes out at 5 dots.
-    pub fn essence_required(
+    pub fn name(
         self,
-        essence_required: NonZeroU8,
-    ) -> EvocationBuilderWithEssenceRequirement {
-        EvocationBuilderWithEssenceRequirement {
+        name: impl Into<EvocationName>,
+    ) -> EvocationBuilderWithName {
+        EvocationBuilderWithName {
             evokable_name: self.evokable_name,
             book_reference: self.book_reference,
-            name: self.name,
+            name: name.into(),
             summary: self.summary,
-            essence_required: essence_required
-                .clamp(NonZeroU8::new(1).unwrap(), NonZeroU8::new(5).unwrap()),
             resonant: self.resonant,
             dissonant: self.dissonant,
             evocation_tree: self.evocation_tree,
@@ -114,5 +121,11 @@ impl EvocationBuilder {
             keywords: self.keywords,
             costs: self.costs,
         }
+    }
+}
+
+impl<T> From<T> for EvocationBuilder where T: Into<EvokableNameMutation> {
+    fn from(name: T) -> Self {
+        Self::evocation_of(name)
     }
 }

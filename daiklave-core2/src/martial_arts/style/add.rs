@@ -9,7 +9,7 @@ pub struct AddMartialArtsStyle {
 }
 
 impl AddMartialArtsStyle {
-    pub fn builder(name: impl ToString) -> MartialArtsStyleBuilder {
+    pub fn name(name: impl Into<MartialArtsStyleName>) -> MartialArtsStyleBuilder {
         MartialArtsStyleBuilder {
             name: name.into(),
             book_reference: None,

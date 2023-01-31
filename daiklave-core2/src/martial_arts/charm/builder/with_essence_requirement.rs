@@ -15,7 +15,7 @@ pub struct MartialArtsCharmBuilderWithEssenceRequirement {
     pub(crate) name: MartialArtsCharmName,
     pub(crate) style: MartialArtsStyleName,
     pub(crate) book_reference: Option<BookReference>,
-    pub(crate) charms_required: HashSet<String>,
+    pub(crate) charms_required: HashSet<MartialArtsCharmName>,
     pub(crate) mastery: Option<String>,
     pub(crate) terrestrial: Option<String>,
     pub(crate) enlightenment: Option<String>,
@@ -39,8 +39,8 @@ impl MartialArtsCharmBuilderWithEssenceRequirement {
     }
 
     /// Adds another Martial Arts charm as a prerequisite.
-    pub fn charm_prerequisite(mut self, charm_name: String) -> Self {
-        self.charms_required.insert(charm_name);
+    pub fn charm_prerequisite(mut self, charm_name: impl Into<MartialArtsCharmName>) -> Self {
+        self.charms_required.insert(charm_name.into());
         self
     }
 

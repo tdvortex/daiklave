@@ -27,7 +27,7 @@ pub struct MartialArtsStyle {
 
 impl<'source> MartialArtsStyle {
     /// Starts a builder to construct a new Martial Arts style.
-    pub fn builder(name: impl ToString) -> MartialArtsStyleBuilder {
+    pub fn with_name(name: impl Into<MartialArtsStyleName>) -> MartialArtsStyleBuilder {
         MartialArtsStyleBuilder {
             name: name.into(),
             book_reference: None,

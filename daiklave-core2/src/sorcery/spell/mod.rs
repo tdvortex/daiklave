@@ -36,7 +36,7 @@ pub enum Spell<'source> {
 
 impl<'source> Spell<'source> {
     /// Starts constructing a new Spell.
-    pub fn builder(name: impl ToString) -> SpellBuilder {
+    pub fn with_name(name: impl Into<SpellName>) -> SpellBuilder {
         SpellBuilder {
             name: name.into(),
             book_reference: None,

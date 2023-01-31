@@ -10,6 +10,7 @@ pub(crate) struct MeritTemplateWithDotsMemo {
     pub book_reference: Option<BookReference>,
     pub merit_type: MeritType,
     pub shared_description: String,
-    pub dot_description: Option<String>,
     pub prerequisites: Vec<MeritPrerequisite>,
+    pub dots: u8,
+    pub dot_description: Option<String>,
 }

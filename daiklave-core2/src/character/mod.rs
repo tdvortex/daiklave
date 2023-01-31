@@ -170,7 +170,7 @@ impl<'source> Character<'source> {
             CharacterMutation::AddSorcery(add_sorcery) => self.add_sorcery(add_sorcery),
             CharacterMutation::AddMerit(add_merit) => self.add_merit(add_merit),
             CharacterMutation::RemoveMerit(remove_merit) => self.remove_merit(remove_merit),
-            CharacterMutation::AddLanguages(_) => todo!(),
+            CharacterMutation::AddLanguage() => todo!(),
             CharacterMutation::RemoveLanguage(_) => todo!(),
         }
     }

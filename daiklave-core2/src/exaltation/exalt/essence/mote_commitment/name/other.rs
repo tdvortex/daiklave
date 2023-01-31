@@ -3,9 +3,9 @@ use std::ops::Deref;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OtherMoteCommitmentName(String);
 
-impl<T> From<T> for OtherMoteCommitmentName where T: ToString {
+impl<T> From<T> for OtherMoteCommitmentName where T: Into<String> {
     fn from(name: T) -> Self {
-        Self(name.to_string())
+        Self(name.into())
     }
 }
 

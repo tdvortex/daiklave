@@ -2,11 +2,13 @@ mod with_ability_requirement;
 mod with_action_type;
 mod with_description;
 mod with_duration;
+mod with_name;
 mod with_essence_requirement;
 pub use with_ability_requirement::MartialArtsCharmBuilderWithAbilityRequirement;
 pub use with_action_type::MartialArtsCharmBuilderWithActionType;
 pub use with_description::MartialArtsCharmBuilderWithDescription;
 pub use with_duration::MartialArtsCharmBuilderWithDuration;
+pub use with_name::MartialArtsCharmBuilderWithName;
 pub use with_essence_requirement::MartialArtsCharmBuilderWithEssenceRequirement;
 
 use std::{
@@ -14,21 +16,14 @@ use std::{
     num::NonZeroU8,
 };
 
-use crate::{book_reference::BookReference, charms::CharmCostType, martial_arts::style::MartialArtsStyleName};
+use crate::{book_reference::BookReference, charms::{CharmCostType}, martial_arts::style::MartialArtsStyleName};
 
 use super::{MartialArtsCharmKeyword, MartialArtsCharmName};
 
-/// A builder path to construct a Martial Arts charm. Required fields, in
-/// order, are: name(already specified), style name (already specified), Essence
-/// requirement, ability dots requirement, action type, duration, and
-/// description. Optional fields: book reference, prerequisite Martial Arts
-/// Charms, a Mastery effect, a Terrestrial effect, an Enlightenment effect,
-/// Charm keywords, costs, and a short summary.
 pub struct MartialArtsCharmBuilder {
-    pub(crate) name: MartialArtsCharmName,
     pub(crate) style: MartialArtsStyleName,
     pub(crate) book_reference: Option<BookReference>,
-    pub(crate) charms_required: HashSet<String>,
+    pub(crate) charms_required: HashSet<MartialArtsCharmName>,
     pub(crate) mastery: Option<String>,
     pub(crate) terrestrial: Option<String>,
     pub(crate) enlightenment: Option<String>,
@@ -38,6 +33,21 @@ pub struct MartialArtsCharmBuilder {
 }
 
 impl MartialArtsCharmBuilder {
+    pub fn style(style_name: impl Into<MartialArtsStyleName>) -> Self {
+        Self {
+            style: style_name.into(),
+            book_reference: Default::default(),
+            charms_required: Default::default(),
+            mastery: Default::default(),
+            terrestrial: Default::default(),
+            enlightenment: Default::default(),
+            keywords: Default::default(),
+            costs: Default::default(),
+            summary: Default::default(),
+        }
+    }
+
+
     /// Sets the book reference for the Charm.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
@@ -51,8 +61,8 @@ impl MartialArtsCharmBuilder {
     }
 
     /// Adds another Martial Arts charm as a prerequisite.
-    pub fn charm_prerequisite(mut self, charm_name: String) -> Self {
-        self.charms_required.insert(charm_name);
+    pub fn charm_prerequisite(mut self, charm_name: impl Into<MartialArtsCharmName>) -> Self {
+        self.charms_required.insert(charm_name.into());
         self
     }
 
@@ -92,13 +102,9 @@ impl MartialArtsCharmBuilder {
         self
     }
 
-    /// Sets an essence requirement for using this Charm. Maxes out at 5 dots.
-    pub fn essence_required(
-        self,
-        essence_required: NonZeroU8,
-    ) -> MartialArtsCharmBuilderWithEssenceRequirement {
-        MartialArtsCharmBuilderWithEssenceRequirement {
-            name: self.name,
+    pub fn name(self, name: impl Into<MartialArtsCharmName>) -> MartialArtsCharmBuilderWithName {
+        MartialArtsCharmBuilderWithName {
+            name: name.into(),
             style: self.style,
             book_reference: self.book_reference,
             charms_required: self.charms_required,
@@ -108,7 +114,6 @@ impl MartialArtsCharmBuilder {
             keywords: self.keywords,
             costs: self.costs,
             summary: self.summary,
-            essence_required,
         }
     }
 }
