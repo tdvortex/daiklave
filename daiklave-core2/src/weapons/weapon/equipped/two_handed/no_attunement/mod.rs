@@ -8,7 +8,7 @@ use crate::weapons::weapon::{
 };
 
 mod memo;
-pub use memo::EquippedTwoHandedWeaponNoAttunementMemo;
+pub(crate) use memo::EquippedTwoHandedWeaponNoAttunementMemo;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum EquippedTwoHandedWeaponNoAttunement<'source> {

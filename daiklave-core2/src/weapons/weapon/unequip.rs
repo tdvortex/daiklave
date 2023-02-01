@@ -1,7 +1,8 @@
-use crate::CharacterMutation;
+use crate::{CharacterMutation, weapons::WeaponError};
 
-use super::{WeaponNameMutation, Equipped};
+use super::{WeaponNameMutation, Equipped, WeaponName};
 
+/// A mutation to unequip a particular weapon.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UnequipWeapon {
     pub(crate) name: WeaponNameMutation,
@@ -9,10 +10,16 @@ pub struct UnequipWeapon {
 }
 
 impl UnequipWeapon {
-    pub fn new(name: WeaponNameMutation, equipped: Equipped) -> Self {
-        Self {
-            name,
-            equipped,
+    /// Creates a new UnequipWeapon mutation. Returns Err if trying to unequip
+    /// a Natural weapon.
+    pub fn new(name: WeaponName<'_>, equipped: Equipped) -> Result<Self, WeaponError> {
+        if equipped == Equipped::Natural {
+            Err(WeaponError::UnequipNatural)
+        } else {
+            Ok(Self {
+                name: name.into(),
+                equipped,
+            })
         }
     }
 }

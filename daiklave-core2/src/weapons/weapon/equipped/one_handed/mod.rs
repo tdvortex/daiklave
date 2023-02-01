@@ -5,9 +5,9 @@ mod no_attunement;
 use std::num::NonZeroU8;
 
 pub use equip_hand::EquipHand;
-pub use memo::EquippedOneHandedWeaponMemo;
+pub(crate) use memo::EquippedOneHandedWeaponMemo;
 pub(crate) use no_attunement::EquippedOneHandedWeaponNoAttunement;
-pub use no_attunement::EquippedOneHandedWeaponNoAttunementMemo;
+pub(crate) use no_attunement::EquippedOneHandedWeaponNoAttunementMemo;
 
 use crate::weapons::weapon::{
     artifact::{ArtifactWeapon, OneHandedArtifactWeaponView},

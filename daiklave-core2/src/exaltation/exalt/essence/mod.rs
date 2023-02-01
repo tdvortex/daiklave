@@ -13,7 +13,8 @@ pub(crate) use motes::{MotesState};
 use crate::{artifact::ArtifactName, armor::armor_item::{ArmorType, ArmorWeightClass}, weapons::weapon::WeaponType};
 
 use super::{AnimaEffect, Exalt};
-pub use mote_commitment::{MoteCommitment, MoteCommitmentName, MoteCommitmentNameMutation};
+pub use mote_commitment::{MoteCommitment, MoteCommitmentName};
+pub(crate) use mote_commitment::MoteCommitmentNameMutation;
 pub(crate) use mote_pool::MotePool;
 pub use mote_pool::MotePoolName;
 pub use set_rating::SetEssenceRating;

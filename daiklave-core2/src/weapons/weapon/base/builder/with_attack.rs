@@ -4,19 +4,15 @@ use crate::{
     book_reference::BookReference,
     weapons::weapon::{
         ability::WeaponAbility,
-        artifact::{AddBaseArtifactWeapon, BaseArtifactWeapon},
-        base::BaseWeapon,
         damage_type::WeaponDamageType,
         handedness::WeaponHandedness,
-        mundane::{
-            MundaneWeapon, MundaneWeaponHandedness, NaturalMundaneWeapon, OneHandedMundaneWeaponMemo,
-            TwoHandedMundaneWeapon, WornMundaneWeapon, AddMundaneWeapon,
-        },
         range::{RangeBand, WeaponRange},
         tag::OptionalWeaponTag,
         weight_class::WeaponWeightClass,
     },
 };
+
+use super::{mundane::MundaneWeaponBuilderWithAttack, BaseArtifactWeaponBuilderWithAttack};
 
 /// A base weapon builder after the primary attack skill is specified.
 pub struct BaseWeaponBuilderWithAttack {
@@ -66,89 +62,13 @@ impl BaseWeaponBuilderWithAttack {
         self
     }
 
-    /// Completes the builder process, returning a new AddMundaneWeapon. This
-    /// defaults to a single copy, but can be edited to insert multiple copies
-    /// simultaneously.
-    pub fn build_mundane(self) -> AddMundaneWeapon {
-        match self.handedness {
-            WeaponHandedness::Natural => AddMundaneWeapon {
-                name: self.name.into(),
-                weapon: MundaneWeapon(MundaneWeaponHandedness::Natural(NaturalMundaneWeapon(
-                    BaseWeapon {
-                        book_reference: self.book_reference,
-                        weight_class: self.weight_class,
-                        range_bands: self.attack_range,
-                        primary_ability: self.primary_attack,
-                        damage_type: self.damage_type,
-                        tags: self.tags,
-                    },
-                ))),
-                quantity: NonZeroU8::new(1).unwrap(),
-            },
-            WeaponHandedness::Worn => AddMundaneWeapon {
-                name: self.name.into(),
-                weapon: MundaneWeapon(MundaneWeaponHandedness::Worn(
-                    WornMundaneWeapon(BaseWeapon {
-                        book_reference: self.book_reference,
-                        weight_class: self.weight_class,
-                        range_bands: self.attack_range,
-                        primary_ability: self.primary_attack,
-                        damage_type: self.damage_type,
-                        tags: self.tags,
-                    }),
-                    false,
-                )),
-                quantity: NonZeroU8::new(1).unwrap(),
-            },
-            WeaponHandedness::OneHanded => AddMundaneWeapon {
-                name: self.name.into(),
-                weapon: MundaneWeapon(MundaneWeaponHandedness::OneHanded(
-                    OneHandedMundaneWeaponMemo(BaseWeapon {
-                        book_reference: self.book_reference,
-                        weight_class: self.weight_class,
-                        range_bands: self.attack_range,
-                        primary_ability: self.primary_attack,
-                        damage_type: self.damage_type,
-                        tags: self.tags,
-                    }),
-                    None,
-                )),
-                quantity: NonZeroU8::new(1).unwrap(),
-            },
-            WeaponHandedness::TwoHanded => AddMundaneWeapon {
-                name: self.name.into(),
-                weapon: MundaneWeapon(MundaneWeaponHandedness::TwoHanded(
-                    TwoHandedMundaneWeapon(BaseWeapon {
-                        book_reference: self.book_reference,
-                        weight_class: self.weight_class,
-                        range_bands: self.attack_range,
-                        primary_ability: self.primary_attack,
-                        damage_type: self.damage_type,
-                        tags: self.tags,
-                    }),
-                    false,
-                )),
-                quantity: NonZeroU8::new(1).unwrap(),
-            },
-        }
+    /// Sets the weapon to be a mundane weapon.
+    pub fn mundane(self) -> MundaneWeaponBuilderWithAttack {
+        MundaneWeaponBuilderWithAttack(self, NonZeroU8::new(1).unwrap())
     }
 
-    /// Completes the builder process, returning a new
-    /// AddBaseArtifactWeapon.
-    pub fn build_artifact(self) -> AddBaseArtifactWeapon {
-        AddBaseArtifactWeapon {
-            name: self.name,
-            weapon: BaseArtifactWeapon {
-                handedness: self.handedness,
-                base_weapon: BaseWeapon {
-                    book_reference: self.book_reference,
-                    weight_class: self.weight_class,
-                    range_bands: self.attack_range,
-                    primary_ability: self.primary_attack,
-                    damage_type: self.damage_type,
-                    tags: self.tags,
-                }
-            },
-        }
+    /// Sets the weapon to be a base artifact weapon.
+    pub fn artifact(self) -> BaseArtifactWeaponBuilderWithAttack {
+        BaseArtifactWeaponBuilderWithAttack(self)
     }
 }

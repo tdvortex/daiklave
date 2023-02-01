@@ -1,5 +1,6 @@
 mod name;
-pub use name::{MoteCommitmentName, MoteCommitmentNameMutation, OtherMoteCommitmentName};
+pub use name::{MoteCommitmentName};
+pub(crate) use name::{OtherMoteCommitmentName, MoteCommitmentNameMutation};
 
 /// A single committed mote effect.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, num::NonZeroU8};
 
 use crate::{
     book_reference::BookReference,
@@ -10,7 +10,7 @@ use crate::{
     },
 };
 
-use super::with_handedness::BaseWeaponBuilderWithHandedness;
+use super::{with_handedness::BaseWeaponBuilderWithHandedness, mundane::MundaneWeaponBuilderWithWeight, BaseArtifactWeaponBuilderWithWeight};
 
 /// A base weapon builder after specifying weight class.
 pub struct BaseWeaponBuilderWithWeight {
@@ -55,6 +55,16 @@ impl BaseWeaponBuilderWithWeight {
     pub fn tag(mut self, tag: OptionalWeaponTag) -> Self {
         self.tags.insert(tag);
         self
+    }
+
+    /// Sets the weapon to be a mundane weapon.
+    pub fn mundane(self) -> MundaneWeaponBuilderWithWeight {
+        MundaneWeaponBuilderWithWeight(self, NonZeroU8::new(1).unwrap())
+    }
+
+    /// Sets the weapon to be a base artifact weapon.
+    pub fn artifact(self) -> BaseArtifactWeaponBuilderWithWeight {
+        BaseArtifactWeaponBuilderWithWeight(self)
     }
 
     /// Defines the weapon to be Natural, part of the wielder's body.

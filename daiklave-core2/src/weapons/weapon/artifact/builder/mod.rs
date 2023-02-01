@@ -12,6 +12,7 @@ use crate::book_reference::BookReference;
 
 use super::{AddBaseArtifactWeapon, ArtifactWeaponName, BaseArtifactWeapon};
 
+/// A builder to construct a new artifact weapon.
 pub struct ArtifactWeaponBuilder {
     pub(crate) base_weapon_name: String,
     pub(crate) base_weapon: BaseArtifactWeapon,
@@ -27,7 +28,9 @@ impl From<AddBaseArtifactWeapon> for ArtifactWeaponBuilder {
 }
 
 impl ArtifactWeaponBuilder {
-    pub fn base_weapon(add_base_weapon: AddBaseArtifactWeapon) -> Self {
+    /// Starts a new builder with this artifact base weapon.
+    pub fn base_weapon(add_base_weapon: impl Into<AddBaseArtifactWeapon>) -> Self {
+        let add_base_weapon: AddBaseArtifactWeapon = add_base_weapon.into();
         Self {
             base_weapon_name: add_base_weapon.name,
             base_weapon: add_base_weapon.weapon,
@@ -59,6 +62,7 @@ impl ArtifactWeaponBuilder {
         self
     }
 
+    /// Sets the name for this artifact weapon.
     pub fn name(
         self,
         name: impl Into<ArtifactWeaponName>,

@@ -4,15 +4,10 @@ use crate::weapons::weapon::{mundane::MundaneWeaponName, artifact::ArtifactWeapo
 
 use super::WeaponName;
 
-/// The name of a weapon to be added, removed, equipped, or unequipped.
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
-pub enum WeaponNameMutation {
-    /// All characters have the Unarmed weapon for free, and it cannot
-    /// be removed.
+pub(crate) enum WeaponNameMutation {
     Unarmed,
-    /// A mundane weapon without artifact traits.
     Mundane(MundaneWeaponName),
-    /// A unique magical weapon.
     Artifact(ArtifactWeaponName),
 }
 
@@ -22,6 +17,16 @@ impl From<WeaponName<'_>> for WeaponNameMutation {
             WeaponName::Unarmed => todo!(),
             WeaponName::Mundane(name) => Self::Mundane(name.into()),
             WeaponName::Artifact(name) => Self::Artifact(name.into()),
+        }
+    }
+}
+
+impl<'source> Into<WeaponName<'source>> for &'source WeaponNameMutation {
+    fn into(self) -> WeaponName<'source> {
+        match self {
+            WeaponNameMutation::Unarmed => WeaponName::Unarmed,
+            WeaponNameMutation::Mundane(name) => WeaponName::Mundane(name.as_str()),
+            WeaponNameMutation::Artifact(name) => WeaponName::Artifact(name.as_str()),
         }
     }
 }

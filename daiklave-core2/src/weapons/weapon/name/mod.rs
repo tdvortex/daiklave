@@ -1,5 +1,9 @@
 mod mutation;
-pub use mutation::WeaponNameMutation;
+pub(crate) use mutation::WeaponNameMutation;
+
+use crate::weapons::WeaponError;
+
+use super::{Equipped, UnequipWeapon, EquipWeapon};
 
 /// The name of a weapon.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
@@ -13,13 +17,30 @@ pub enum WeaponName<'source> {
     Artifact(&'source str),
 }
 
+impl<'source> WeaponName<'source> {
+    /// Creates a mutation to equip this weapon as a two-handed weapon.
+    pub fn equip_two_handed(self) -> EquipWeapon {
+        EquipWeapon::two_handed(self)
+    }
 
-impl<'source> From<&'source WeaponNameMutation> for WeaponName<'source> {
-    fn from(weapon_name: &'source WeaponNameMutation) -> Self {
-        match weapon_name {
-            WeaponNameMutation::Unarmed => Self::Unarmed,
-            WeaponNameMutation::Mundane(mundane_name) => Self::Mundane(mundane_name.as_str()),
-            WeaponNameMutation::Artifact(artifact_name) => Self::Artifact(artifact_name.as_str()),
-        }
+    /// Creates a mutation to equip this weapon as a worn weapon.
+    pub fn equip_worn(self) -> EquipWeapon {
+        EquipWeapon::worn(self)
+    }
+
+    /// Creates a mutation to equip this weapon in the main hand.
+    pub fn equip_main_hand(self) -> EquipWeapon {
+        EquipWeapon::main_hand(self)
+    }
+
+    /// Creates a mutation to equip this weapon in the off hand.
+    pub fn equip_off_hand(self) -> EquipWeapon {
+        EquipWeapon::off_hand(self)
+    }
+
+    /// Creates a mutation to unequip a weapon. Returns an Err if trying to
+    /// unequip a worn weapon.
+    pub fn unequip(self, equipped: Equipped) -> Result<UnequipWeapon, WeaponError> {
+        UnequipWeapon::new(self, equipped)
     }
 }

@@ -15,7 +15,7 @@ impl<'source> Character<'source> {
     /// box.
     pub fn set_health_track(
         &mut self,
-        new_wound_penalties: &HashMap<WoundPenalty, u8>
+        _new_wound_penalties: &HashMap<WoundPenalty, u8>
     ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }

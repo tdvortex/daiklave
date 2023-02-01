@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, num::NonZeroU8};
 
 use crate::{
     book_reference::BookReference,
@@ -11,7 +11,7 @@ use crate::{
     },
 };
 
-use super::with_damage_type::BaseWeaponBuilderWithDamageType;
+use super::{with_damage_type::BaseWeaponBuilderWithDamageType, mundane::MundaneWeaponBuilderWithHandedness, BaseArtifactWeaponBuilderWithHandedness};
 
 /// A weapon builder, after being specified as natural, worn, one-handed,
 /// or two-handed.
@@ -58,6 +58,16 @@ impl BaseWeaponBuilderWithHandedness {
     pub fn tag(mut self, tag: OptionalWeaponTag) -> Self {
         self.tags.insert(tag);
         self
+    }
+
+    /// Sets the weapon to be a mundane weapon.
+    pub fn mundane(self) -> MundaneWeaponBuilderWithHandedness {
+        MundaneWeaponBuilderWithHandedness(self, NonZeroU8::new(1).unwrap())
+    }
+
+    /// Sets the weapon to be a base artifact weapon.
+    pub fn artifact(self) -> BaseArtifactWeaponBuilderWithHandedness {
+        BaseArtifactWeaponBuilderWithHandedness(self)
     }
 
     /// Sets the weapon to deal Lethal damage by default. Typical for bladed or

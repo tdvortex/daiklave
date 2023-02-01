@@ -1,14 +1,18 @@
+mod artifact;
+mod mundane;
 mod with_attack;
 mod with_damage_type;
 mod with_handedness;
 mod with_weight;
 
+pub use artifact::{BaseArtifactWeaponBuilder, BaseArtifactWeaponBuilderWithAttack, BaseArtifactWeaponBuilderWithDamageType, BaseArtifactWeaponBuilderWithHandedness, BaseArtifactWeaponBuilderWithWeight};
+pub use mundane::{MundaneWeaponBuilder,MundaneWeaponBuilderWithAttack, MundaneWeaponBuilderWithDamageType, MundaneWeaponBuilderWithHandedness, MundaneWeaponBuilderWithWeight};
 pub use with_attack::BaseWeaponBuilderWithAttack;
 pub use with_damage_type::BaseWeaponBuilderWithDamageType;
 pub use with_handedness::BaseWeaponBuilderWithHandedness;
 pub use with_weight::BaseWeaponBuilderWithWeight;
 
-use std::collections::HashSet;
+use std::{collections::HashSet, num::NonZeroU8};
 
 use crate::{
     book_reference::BookReference,
@@ -32,6 +36,7 @@ pub struct BaseWeaponBuilder {
 }
 
 impl BaseWeaponBuilder {
+    /// Starts building a new base weapon with the given name.
     pub fn name(name: impl Into<String>) -> Self {
         Self {
             name: name.into(),
@@ -39,6 +44,16 @@ impl BaseWeaponBuilder {
             attack_range: WeaponRange::ContactOnly,
             tags: HashSet::new()
         }
+    }
+
+    /// Sets the weapon to be a mundane weapon.
+    pub fn mundane(self) -> MundaneWeaponBuilder {
+        MundaneWeaponBuilder(self, NonZeroU8::new(1).unwrap())
+    }
+
+    /// Sets the weapon to be a base artifact weapon.
+    pub fn artifact(self) -> BaseArtifactWeaponBuilder {
+        BaseArtifactWeaponBuilder(self)
     }
 
     /// The book reference for the base weapon. Note that, for artifacts,

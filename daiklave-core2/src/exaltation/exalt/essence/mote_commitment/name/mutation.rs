@@ -3,7 +3,7 @@ use crate::artifact::ArtifactNameMutation;
 use super::{OtherMoteCommitmentName, MoteCommitmentName};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum MoteCommitmentNameMutation {
+pub(crate) enum MoteCommitmentNameMutation {
     AttunedArtifact(ArtifactNameMutation),
     Other(OtherMoteCommitmentName),
 }
@@ -13,6 +13,15 @@ impl From<&MoteCommitmentName<'_>> for MoteCommitmentNameMutation {
         match name {
             MoteCommitmentName::AttunedArtifact(artifact_name) => MoteCommitmentNameMutation::AttunedArtifact((*artifact_name).into()),
             MoteCommitmentName::Other(other_name) => MoteCommitmentNameMutation::Other((*other_name).into()),
+        }
+    }
+}
+
+impl<'source> Into<MoteCommitmentName<'source>> for &'source MoteCommitmentNameMutation {
+    fn into(self) -> MoteCommitmentName<'source> {
+        match self {
+            MoteCommitmentNameMutation::AttunedArtifact(name) => MoteCommitmentName::AttunedArtifact(name.into()),
+            MoteCommitmentNameMutation::Other(name) => MoteCommitmentName::Other(name.as_str()),
         }
     }
 }

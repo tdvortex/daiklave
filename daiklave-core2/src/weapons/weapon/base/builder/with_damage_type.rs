@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, num::NonZeroU8};
 
 use crate::{
     book_reference::BookReference,
@@ -12,7 +12,7 @@ use crate::{
     },
 };
 
-use super::with_attack::BaseWeaponBuilderWithAttack;
+use super::{with_attack::BaseWeaponBuilderWithAttack, mundane::MundaneWeaponBuilderWithDamageType, BaseArtifactWeaponBuilderWithDamageType};
 
 /// A base weapon builder after having its damage type specified.
 pub struct BaseWeaponBuilderWithDamageType {
@@ -59,6 +59,16 @@ impl BaseWeaponBuilderWithDamageType {
     pub fn tag(mut self, tag: OptionalWeaponTag) -> Self {
         self.tags.insert(tag);
         self
+    }
+
+    /// Sets the weapon to be a mundane weapon.
+    pub fn mundane(self) -> MundaneWeaponBuilderWithDamageType {
+        MundaneWeaponBuilderWithDamageType(self, NonZeroU8::new(1).unwrap())
+    }
+
+    /// Sets the weapon to be a base artifact weapon.
+    pub fn artifact(self) -> BaseArtifactWeaponBuilderWithDamageType {
+        BaseArtifactWeaponBuilderWithDamageType(self)
     }
 
     /// Sets the weapon to be usable with the Brawl skill at close range. May

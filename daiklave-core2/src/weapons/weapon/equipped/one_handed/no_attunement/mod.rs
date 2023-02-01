@@ -7,7 +7,7 @@ use crate::weapons::weapon::{
     Weapon, WeaponType,
 };
 
-pub use memo::EquippedOneHandedWeaponNoAttunementMemo;
+pub(crate) use memo::EquippedOneHandedWeaponNoAttunementMemo;
 
 use super::EquipHand;
 

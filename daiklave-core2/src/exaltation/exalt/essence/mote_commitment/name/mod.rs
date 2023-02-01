@@ -1,21 +1,15 @@
 mod mutation;
-pub use mutation::MoteCommitmentNameMutation;
 mod other;
-pub use other::OtherMoteCommitmentName;
+pub(crate) use mutation::MoteCommitmentNameMutation;
+pub(crate) use other::OtherMoteCommitmentName;
 
 use crate::artifact::ArtifactName;
 
+/// The name of a mote commitment effect.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MoteCommitmentName<'source> {
+    /// The character has attuned to an artifact.
     AttunedArtifact(ArtifactName<'source>),
+    /// The character has committed motes to some other effect, like a Charm.
     Other(&'source str),
-}
-
-impl<'source> From<&'source MoteCommitmentNameMutation> for MoteCommitmentName<'source> {
-    fn from(name: &'source MoteCommitmentNameMutation) -> Self {
-        match name {
-            MoteCommitmentNameMutation::AttunedArtifact(artifact_name) => MoteCommitmentName::AttunedArtifact(artifact_name.into()),
-            MoteCommitmentNameMutation::Other(other_name) => MoteCommitmentName::Other(other_name.as_str()),
-        }
-    }
 }

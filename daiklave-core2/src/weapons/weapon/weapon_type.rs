@@ -35,7 +35,7 @@ impl<'view, 'source> WeaponType<'source> {
                 output
             }
             WeaponType::Mundane(_, _, _) => vec![],
-            Unarmed => vec![]
+            WeaponType::Unarmed => vec![]
         }
     }
 
