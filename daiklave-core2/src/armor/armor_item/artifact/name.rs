@@ -2,6 +2,8 @@ use std::ops::Deref;
 
 use serde::{Serialize, Deserialize};
 
+/// The name of an Artifact piece of armor. This is the unique name of the
+/// item, like "Brilliant Sentinel".
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub struct ArtifactArmorName(String);
 

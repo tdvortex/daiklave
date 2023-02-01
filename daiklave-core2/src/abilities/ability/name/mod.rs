@@ -1,7 +1,8 @@
 mod qualified;
 mod vanilla;
 
-pub use qualified::{AbilityNameQualified, AbilityNameQualifiedMutation};
+pub use qualified::{AbilityNameQualified};
+pub(crate) use qualified::AbilityNameQualifiedMutation;
 pub use vanilla::AbilityNameVanilla;
 
 use serde::{Deserialize, Serialize};

@@ -1,4 +1,4 @@
-use crate::exaltation::exalt::exalt_type::solar::charm::SolarCharmAbility;
+use crate::{exaltation::exalt::exalt_type::solar::charm::SolarCharmAbility, abilities::{AddSpecialty, RemoveSpecialty}};
 
 use super::AbilityName;
 
@@ -57,6 +57,16 @@ pub enum AbilityNameVanilla {
 }
 
 impl AbilityNameVanilla {
+    /// Creates a mutation to add a specialty to this ability.
+    pub fn add_specialty(&self, specialty: impl Into<String>) -> AddSpecialty {
+        AddSpecialty::new((*self).into(), specialty)
+    }
+
+    /// Creates a mutation to remove a specific specialty from this ability.
+    pub fn remove_specialty(&self, specialty: impl Into<String>) -> RemoveSpecialty {
+        RemoveSpecialty::new((*self).into(), specialty)
+    }
+    
     /// Iterates over all ability names except for Craft and Martial Arts,
     /// in alphabetical order.
     pub fn iter() -> impl Iterator<Item = AbilityNameVanilla> {

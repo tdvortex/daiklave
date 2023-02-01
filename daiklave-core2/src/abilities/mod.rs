@@ -10,7 +10,8 @@ pub(crate) use ability::{AbilityRating, AbilityRatingMemo};
 pub(crate) use abilities_vanilla::AbilitiesVanilla;
 pub(crate) use error::AbilityError;
 pub(crate) use memo::AbilitiesMemo;
-pub use ability::{Ability, AbilityName, AbilityNameVanilla, AbilityNameQualified, AbilityNameQualifiedMutation};
+pub use ability::{Ability, AbilityName, AbilityNameVanilla, AbilityNameQualified};
+pub(crate) use ability::AbilityNameQualifiedMutation;
 pub use add_specialty::AddSpecialty;
 pub use remove_specialty::RemoveSpecialty;
 pub use set::SetAbility;
@@ -22,6 +23,9 @@ use crate::Character;
 pub struct Abilities<'view, 'source>(pub(crate) &'view Character<'source>);
 
 impl<'view, 'source> Abilities<'view, 'source> {
+    /// Get a specific ability by its name. May return None for Craft abilities
+    /// for which the character has no dots, or Martial Arts style the 
+    /// character lacks the Martial Artist merit for.
     pub fn get(&'view self, ability_name: AbilityNameQualified<'_>) -> Option<Ability<'view, 'source>> {
         match ability_name {
             AbilityNameQualified::Vanilla(vanilla) => Some(self.get_vanilla(vanilla)),
@@ -29,7 +33,6 @@ impl<'view, 'source> Abilities<'view, 'source> {
             AbilityNameQualified::MartialArts(style_name) => self.get_martial_arts(style_name),
         }
     }
-
 
     pub(crate) fn get_vanilla(&'view self, vanilla: AbilityNameVanilla) -> Ability<'view, 'source> {
         Ability(AbilityNameQualified::Vanilla(vanilla), self.0.vanilla_abilities().get(vanilla))
