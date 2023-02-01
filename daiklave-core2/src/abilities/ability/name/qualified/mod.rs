@@ -1,7 +1,7 @@
 mod mutation;
 pub(crate) use mutation::AbilityNameQualifiedMutation;
 
-use crate::abilities::{AddSpecialty, RemoveSpecialty};
+use crate::abilities::{AddSpecialty, RemoveSpecialty, SetAbility, AbilityError};
 
 use super::AbilityNameVanilla;
 
@@ -21,6 +21,11 @@ impl<'source> AbilityNameQualified<'source> {
     /// Creates a mutation to add a specialty to this ability.
     pub fn add_specialty(&self, specialty: impl Into<String>) -> AddSpecialty {
         AddSpecialty::new(*self, specialty)
+    }
+
+    /// Creates a mutation to set the dots to a specific level.
+    pub fn set_dots(&self, dots: u8) -> Result<SetAbility, AbilityError> {
+        SetAbility::new(*self, dots)
     }
 
     /// Creates a mutation to remove a specific specialty from this ability.

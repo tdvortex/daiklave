@@ -1,7 +1,8 @@
-use crate::{CharacterMutation, craft::CraftName, martial_arts::style::MartialArtsStyleName};
+use crate::{CharacterMutation};
 
-use super::{AbilityError, ability::AbilityNameVanilla, AbilityNameQualifiedMutation};
+use super::{AbilityError, AbilityNameQualifiedMutation, AbilityNameQualified};
 
+/// A mutation to set a specific ability to a dot level.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SetAbility {
     pub(crate) name: AbilityNameQualifiedMutation,
@@ -9,27 +10,12 @@ pub struct SetAbility {
 }
 
 impl SetAbility {
-    pub fn vanilla(name: AbilityNameVanilla, dots: u8) -> Result<Self, AbilityError> {
+    /// Creates a new SetAbility mutation.
+    pub fn new(name: AbilityNameQualified<'_>, dots: u8) -> Result<Self, AbilityError> {
         if dots > 5 {
             Err(AbilityError::InvalidRating)
         } else {
             Ok(Self { name: name.into(), dots })
-        }
-    }
-
-    pub fn craft(focus: CraftName, dots: u8) -> Result<Self, AbilityError> {
-        if dots > 5 {
-            Err(AbilityError::InvalidRating)
-        } else {
-            Ok(Self { name: focus.into(), dots })
-        }
-    }
-
-    pub fn martial_arts(style: MartialArtsStyleName, dots: u8) -> Result<Self, AbilityError> {
-        if dots > 5 {
-            Err(AbilityError::InvalidRating)
-        } else {
-            Ok(Self { name: style.into(), dots })
         }
     }
 }

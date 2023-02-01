@@ -1,4 +1,4 @@
-use crate::{exaltation::exalt::exalt_type::solar::charm::SolarCharmAbility, abilities::{AddSpecialty, RemoveSpecialty}};
+use crate::{exaltation::exalt::exalt_type::solar::charm::SolarCharmAbility, abilities::{AddSpecialty, RemoveSpecialty, SetAbility, AbilityError}};
 
 use super::AbilityName;
 
@@ -60,6 +60,11 @@ impl AbilityNameVanilla {
     /// Creates a mutation to add a specialty to this ability.
     pub fn add_specialty(&self, specialty: impl Into<String>) -> AddSpecialty {
         AddSpecialty::new((*self).into(), specialty)
+    }
+
+    /// Creates a mutation to set the dots to a specific level.
+    pub fn set_dots(&self, dots: u8) -> Result<SetAbility, AbilityError> {
+        SetAbility::new((*self).into(), dots)
     }
 
     /// Creates a mutation to remove a specific specialty from this ability.
