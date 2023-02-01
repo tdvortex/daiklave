@@ -91,28 +91,6 @@ impl<'source> ExaltWonders<'source> {
         Ok((name, UnslottedHearthstone { details, origin }))
     }
 
-    pub fn attune_wonder(
-        &mut self,
-        wonder_name: &str,
-        personal_committed: u8,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        let attunement = &mut self
-            .0
-            .get_mut(wonder_name)
-            .ok_or(CharacterMutationError::ArtifactError(
-                ArtifactError::NotFound,
-            ))?
-            .1;
-        if attunement.is_some() {
-            Err(CharacterMutationError::EssenceError(
-                EssenceError::AlreadyAttuned,
-            ))
-        } else {
-            *attunement = Some(personal_committed);
-            Ok(self)
-        }
-    }
-
     pub fn unattune_wonder(
         &mut self,
         wonder_name: &str,

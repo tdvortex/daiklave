@@ -2,6 +2,7 @@ use crate::CharacterMutation;
 
 use super::trigger::LimitTrigger;
 
+/// A mutation to set the Limit Trigger for a Celestial Exalt.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SetLimitTrigger(pub LimitTrigger);
 

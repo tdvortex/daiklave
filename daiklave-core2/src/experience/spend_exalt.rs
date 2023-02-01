@@ -2,6 +2,8 @@ use std::num::NonZeroU16;
 
 use crate::CharacterMutation;
 
+/// A mutation to spend Exalt experience (e.g. Solar Experience). This reduces
+/// current experience and leaves total unchanged.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SpendExaltExperience(pub NonZeroU16);
 

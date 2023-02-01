@@ -55,7 +55,10 @@ pub enum CharacterMutation {
     /// Set the Essence rating of the character. Note: also ends all mote
     /// commitments and recovers all motes.
     SetEssenceRating(SetEssenceRating),
+    /// Increases the character's current available willpower.
     GainWillpower(GainWillpower),
+    /// Decreases the character's current available willpower, to a minimum of
+    /// zero.
     SpendWillpower(SpendWillpower),
     /// Sets the permanent willpower rating of the character. Also resets
     /// current willpower to permanent rating.
@@ -140,11 +143,14 @@ pub enum CharacterMutation {
     GainExaltExperience(GainExaltExperience),
     /// Spends Exalt experience
     SpendExaltExperience(SpendExaltExperience),
+    /// Adds a merit to the character.
     AddMerit(AddMerit),
+    /// Removes a merit from the character.
     RemoveMerit(RemoveMerit),
 }
 
 impl<'view, 'source> CharacterMutation {
+    /// Apply the mutation to a Character.
     pub fn apply_mutation(&'source self, character: &'view mut Character<'source>) -> Result<&'view mut Character<'source>, CharacterMutationError> {
         character.apply_mutation(self)
     }

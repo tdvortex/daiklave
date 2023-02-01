@@ -2,8 +2,18 @@ use std::ops::Deref;
 
 use serde::{Serialize, Deserialize};
 
+use super::SetLimitTrigger;
+
+/// A Limit Trigger for a Celestial Exalt.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LimitTrigger(String);
+
+impl LimitTrigger {
+    /// Creates a mutation to set a Celestial Exalt's limit trigger.
+    pub fn set(self) -> SetLimitTrigger {
+        SetLimitTrigger(self)
+    }
+}
 
 impl<T> From<T> for LimitTrigger where T: Into<String> {
     fn from(name: T) -> Self {

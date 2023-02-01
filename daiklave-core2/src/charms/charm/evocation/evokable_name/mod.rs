@@ -1,5 +1,5 @@
 mod mutation;
-pub use mutation::EvokableNameMutation;
+pub(crate) use mutation::EvokableNameMutation;
 
 use crate::artifact::ArtifactName;
 
@@ -15,8 +15,9 @@ pub enum EvokableName<'source> {
 }
 
 impl<'source> EvokableName<'source> {
-    pub fn evocation(&self, name: impl Into<EvocationName>) -> EvocationBuilderWithName {
-        EvocationBuilder::evocation_of(self.to_owned()).name(name)
+    /// Starts a builder process to construct an evocation for this item.
+    pub fn with_evocation(self, name: impl Into<EvocationName>) -> EvocationBuilderWithName {
+        EvocationBuilder::evocation_of(self).name(name)
     }
 }
 

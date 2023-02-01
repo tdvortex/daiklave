@@ -2,6 +2,7 @@ use std::num::NonZeroU8;
 
 use crate::CharacterMutation;
 
+/// A mutation to increase the Limit track of a Celestial Exalted.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct GainLimit(pub NonZeroU8);
 

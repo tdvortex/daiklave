@@ -4,9 +4,12 @@ use crate::CharacterMutation;
 
 use super::DamageLevel;
 
+/// A mutation to add damage to a character.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct TakeDamage {
+    /// The level of damage applied.
     pub level: DamageLevel,
+    /// The amount of damage to add.
     pub amount: NonZeroU8,
 }
 

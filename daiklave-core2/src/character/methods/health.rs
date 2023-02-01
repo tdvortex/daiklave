@@ -11,21 +11,13 @@ impl<'source> Character<'source> {
         &self.health
     }
 
+    /// Sets the character to have the specified number of each type of health 
+    /// box.
     pub fn set_health_track(
         &mut self,
         new_wound_penalties: &HashMap<WoundPenalty, u8>
     ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
-    }
-
-    /// Sets a character's health track to be the specified set of wound
-    /// penalies. Additionally heals all damage.
-    pub fn set_wound_penalties(
-        &mut self,
-        new_wound_penalties: &[WoundPenalty],
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.health.set_wound_penalties(new_wound_penalties)?;
-        Ok(self)
     }
 
     /// Adds damage to character (including overflow rollovers). Caps out at

@@ -5,8 +5,8 @@ use super::{SolarCharm, SolarCharmName};
 /// A Solar Charm to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddSolarCharm {
-    name: SolarCharmName,
-    charm: SolarCharm,
+    pub(crate) name: SolarCharmName,
+    pub(crate) charm: SolarCharm,
 }
 
 impl From<AddSolarCharm> for CharacterMutation {

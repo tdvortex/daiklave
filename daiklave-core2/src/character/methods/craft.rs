@@ -22,10 +22,12 @@ impl<'view, 'source> Character<'source> {
         }
     }
 
-    pub fn add_craft_specialty(&mut self, focus: &'source str, specialty: &'source str) -> Result<&mut Self, CharacterMutationError> {
+    /// Adds a specialty to a specific Craft ability.
+    pub fn add_craft_specialty(&mut self, focus: &str, specialty: &'source str) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
+    /// Removes a specialty from a specific Craft ability.
     pub fn remove_craft_specialty(&mut self, focus: &str, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }

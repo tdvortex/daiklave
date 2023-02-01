@@ -18,7 +18,8 @@ mod evokable_name;
 mod keyword;
 mod name;
 pub use add::AddEvocation;
-pub use evokable_name::{EvokableName, EvokableNameMutation};
+pub use evokable_name::{EvokableName};
+pub(crate) use evokable_name::EvokableNameMutation;
 pub use keyword::EvocationKeyword;
 pub use name::EvocationName;
 
@@ -37,7 +38,7 @@ pub struct Evocation {
     pub(crate) resonant: Option<String>,
     pub(crate) dissonant: Option<String>,
     pub(crate) essence_required: NonZeroU8,
-    pub(crate) evocation_tree: HashSet<String>,
+    pub(crate) evocation_tree: HashSet<EvocationName>,
     pub(crate) upgrade_charm: Option<CharmNameMutation>,
     pub(crate) keywords: HashSet<EvocationKeyword>,
     pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
@@ -47,7 +48,7 @@ pub struct Evocation {
 
 impl Evocation {
     /// Starts a builder for a new Evocation.
-    pub fn of(evokable_name: impl Into<EvokableNameMutation>) -> EvocationBuilder {
+    pub fn of(evokable_name: EvokableName<'_>) -> EvocationBuilder {
         EvocationBuilder::evocation_of(evokable_name)
     }
 }

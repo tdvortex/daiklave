@@ -5,7 +5,7 @@ mod eclipse;
 mod inner;
 mod keyword;
 mod name;
-mod noneclipse;
+mod spirit_only;
 
 use std::collections::{HashMap, HashSet};
 
@@ -14,7 +14,7 @@ pub use keyword::SpiritCharmKeyword;
 
 pub use eclipse::{AddEclipseCharm, EclipseCharm};
 pub use name::SpiritCharmName;
-pub use noneclipse::NonEclipseCharm;
+pub use spirit_only::{AddSpiritOnlyCharm, SpiritOnlyCharm};
 
 use self::builder::SpiritCharmBuilder;
 
@@ -23,7 +23,7 @@ pub enum SpiritCharm {
     /// The Charm is also learnable by Eclipse Caste Solars.
     Eclipse(EclipseCharm),
     /// The Charm is only usable by Spirits.
-    NonEclipse(NonEclipseCharm),
+    SpiritOnly(SpiritOnlyCharm),
 }
 
 impl SpiritCharm {

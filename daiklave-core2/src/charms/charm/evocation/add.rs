@@ -1,12 +1,19 @@
 use crate::{CharacterMutation, charms::charm::AddCharm};
 
-use super::{Evocation, EvocationName};
+use super::{Evocation, EvocationName, EvokableName, builder::EvocationBuilder};
 
 /// An Evocation to add to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddEvocation {
-    name: EvocationName,
-    evocation: Evocation,
+    pub(crate) name: EvocationName,
+    pub(crate) evocation: Evocation,
+}
+
+impl AddEvocation {
+    /// Starts constructing a new Evocation for the given item.
+    pub fn evocation_of(evokable: EvokableName<'_>) -> EvocationBuilder {
+        EvocationBuilder::evocation_of(evokable)
+    }
 }
 
 impl From<AddEvocation> for CharacterMutation {

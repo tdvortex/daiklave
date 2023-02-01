@@ -4,12 +4,9 @@ use crate::{artifact::{ArtifactNameMutation, wonders::WonderName}, hearthstones:
 
 use super::EvokableName;
 
-/// The name of an item which is capable of having Evocations.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum EvokableNameMutation {
-    /// Hearthstones may have unlockable Evocations.
+pub(crate) enum EvokableNameMutation {
     Hearthstone(HearthstoneName),
-    /// Artifacts may have unlockable Evocations.
     Artifact(ArtifactNameMutation),
 }
 

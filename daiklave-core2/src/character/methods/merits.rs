@@ -127,10 +127,12 @@ impl<'view, 'source> Character<'source> {
             .collect()
     }
 
+    /// Adds a merit to the character.
     pub fn add_merit(&mut self, add_merit: &'source AddMerit) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
+    /// Removes a merit from the character.
     pub fn remove_merit(&mut self, remove_merit: &RemoveMerit) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }

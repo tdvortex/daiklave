@@ -30,6 +30,14 @@ pub struct HearthstoneBuilder {
 }
 
 impl HearthstoneBuilder {
+    /// Starts a new builder with the specified name.
+    pub fn name(name: impl Into<HearthstoneName>) -> Self {
+        Self {
+            name: name.into(),
+            book_reference: None,
+        }
+    }
+
     /// The book reference for the hearthstone.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);

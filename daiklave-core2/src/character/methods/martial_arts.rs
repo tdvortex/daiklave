@@ -39,6 +39,7 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 
+    /// Adds a specialty to a Martial Arts style ability.
     pub fn add_martial_arts_specialty(
         &mut self,
         style_name: &'source str,
@@ -47,6 +48,7 @@ impl<'view, 'source> Character<'source> {
         todo!()
     }
 
+    /// Removes a specialty from a Martial Arts style ability.
     pub fn remove_martial_arts_specialty(
         &mut self,
         style_name: &str,

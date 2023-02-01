@@ -92,40 +92,6 @@ impl Health {
         }
     }
 
-    pub(crate) fn set_wound_penalties(
-        &mut self,
-        new_wound_penalties: &[WoundPenalty],
-    ) -> Result<&mut Self, CharacterMutationError> {
-        self.bashing_damage = 0;
-        self.lethal_damage = 0;
-        self.aggravated_damage = 0;
-        self.zero_boxes = 0;
-        self.minus_one_boxes = 0;
-        self.minus_two_boxes = 0;
-        self.minus_four_boxes = 0;
-        self.incapacitated_boxes = 0;
-        for wound_penalty in new_wound_penalties.iter() {
-            match wound_penalty {
-                WoundPenalty::Zero => {
-                    self.zero_boxes += 1;
-                }
-                WoundPenalty::MinusOne => {
-                    self.minus_one_boxes += 1;
-                }
-                WoundPenalty::MinusTwo => {
-                    self.minus_two_boxes += 1;
-                }
-                WoundPenalty::MinusFour => {
-                    self.minus_four_boxes += 1;
-                }
-                WoundPenalty::Incapacitated => {
-                    self.incapacitated_boxes += 1;
-                }
-            }
-        }
-        Ok(self)
-    }
-
     pub(crate) fn take_damage(
         &mut self,
         damage_level: DamageLevel,

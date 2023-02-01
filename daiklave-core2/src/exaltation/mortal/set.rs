@@ -1,9 +1,11 @@
 use crate::CharacterMutation;
 
+/// A mutation to set the character to be mortal, removing any prior
+/// Exaltation.
 pub struct SetMortal;
 
 impl From<SetMortal> for CharacterMutation {
-    fn from(set_mortal: SetMortal) -> Self {
+    fn from(_set_mortal: SetMortal) -> Self {
         CharacterMutation::SetMortal
     }
 }

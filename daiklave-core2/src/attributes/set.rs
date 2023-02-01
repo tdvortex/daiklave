@@ -4,6 +4,7 @@ use crate::CharacterMutation;
 
 use super::{AttributeName, AttributeError};
 
+/// A mutation to set an attribute to a specific dot value.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SetAttribute {
     pub(crate) name: AttributeName,
@@ -11,6 +12,7 @@ pub struct SetAttribute {
 }
 
 impl SetAttribute {
+    /// Creates a new SetAttribute mutation. Returns Err if dots > 5.
     pub fn new(name: AttributeName, dots: NonZeroU8) -> Result<Self, AttributeError> {
         if dots > NonZeroU8::new(5).unwrap() {
             Err(AttributeError::InvalidRating)

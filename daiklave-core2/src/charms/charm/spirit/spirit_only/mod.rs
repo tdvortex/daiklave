@@ -1,7 +1,7 @@
 mod add;
-pub use add::AddNonEclipseCharm;
+pub use add::AddSpiritOnlyCharm;
 
 use super::inner::SpiritCharmInner;
 
 /// A Spirit Charm not usable by an Eclipse Caste Solar.
-pub struct NonEclipseCharm(pub(crate) SpiritCharmInner);
+pub struct SpiritOnlyCharm(pub(crate) SpiritCharmInner);

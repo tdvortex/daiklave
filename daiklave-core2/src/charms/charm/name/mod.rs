@@ -1,6 +1,8 @@
 mod mutation;
 pub(crate) use mutation::CharmNameMutation;
 
+use super::RemoveCharm;
+
 /// The name of a Charm.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum CharmName<'source> {
@@ -14,4 +16,11 @@ pub enum CharmName<'source> {
     Solar(&'source str),
     /// A Spell.
     Spell(&'source str),
+}
+
+impl<'source> CharmName<'source> {
+    /// Creates a mutation to remove this charm from the character.
+    pub fn remove(self) -> RemoveCharm {
+        RemoveCharm(self.into())
+    }
 }

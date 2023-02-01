@@ -8,7 +8,7 @@ use crate::{
     charms::{charm::{CharmNameMutation, CharmName}, CharmCostType},
 };
 
-use super::{EvocationKeyword, EvokableNameMutation, EvocationName};
+use super::{EvocationKeyword, EvokableNameMutation, EvocationName, EvokableName};
 
 mod with_action_type;
 mod with_description;
@@ -21,20 +21,23 @@ pub use with_duration::EvocationBuilderWithDuration;
 pub use with_name::EvocationBuilderWithName;
 pub use with_essence_requirement::EvocationBuilderWithEssenceRequirement;
 
+/// A builder to construct a new Evocation charm.
 pub struct EvocationBuilder {
     pub(crate) evokable_name: EvokableNameMutation,
     pub(crate) book_reference: Option<BookReference>,
     pub(crate) summary: Option<String>,
     pub(crate) resonant: Option<String>,
     pub(crate) dissonant: Option<String>,
-    pub(crate) evocation_tree: HashSet<String>,
+    pub(crate) evocation_tree: HashSet<EvocationName>,
     pub(crate) upgrade_charm: Option<CharmNameMutation>,
     pub(crate) keywords: HashSet<EvocationKeyword>,
     pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
 }
 
 impl EvocationBuilder {
-    pub fn evocation_of(name: impl Into<EvokableNameMutation>) -> Self {
+    /// Starts the builder to create an evocation for a specific item capable
+    /// of having evocations, either an artifact or hearthstone.
+    pub fn evocation_of(name: EvokableName<'_>) -> Self {
         Self {
             evokable_name: name.into(),
             book_reference: Default::default(),
@@ -75,8 +78,8 @@ impl EvocationBuilder {
     }
 
     /// Adds a charm tree prerequisite on other Evocations.
-    pub fn evocation_prerequisite(mut self, prerequisite_name: String) -> Self {
-        self.evocation_tree.insert(prerequisite_name);
+    pub fn evocation_prerequisite(mut self, prerequisite_name: impl Into<EvocationName>) -> Self {
+        self.evocation_tree.insert(prerequisite_name.into());
         self
     }
 
@@ -105,6 +108,7 @@ impl EvocationBuilder {
         self
     }
 
+    /// Specifies the name for this Evocation.
     pub fn name(
         self,
         name: impl Into<EvocationName>,
@@ -124,8 +128,8 @@ impl EvocationBuilder {
     }
 }
 
-impl<T> From<T> for EvocationBuilder where T: Into<EvokableNameMutation> {
+impl<'a, T> From<T> for EvocationBuilder where T: Into<EvokableName<'a>> {
     fn from(name: T) -> Self {
-        Self::evocation_of(name)
+        Self::evocation_of(name.into())
     }
 }

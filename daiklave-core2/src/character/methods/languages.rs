@@ -9,6 +9,7 @@ impl<'view, 'source> Character<'source> {
         Languages(self)
     }
 
+    /// Adds a new (non-native) language to the character.
     pub fn add_language(
         &mut self,
         language: &'source AddLanguage,
@@ -44,7 +45,8 @@ impl<'view, 'source> Character<'source> {
         }
     }
 
-    /// Removes a language from the character.
+    /// Removes a language from the character. Native languages cannot be 
+    /// removed.
     pub fn remove_language(
         &mut self,
         remove_language: &RemoveLanguage,

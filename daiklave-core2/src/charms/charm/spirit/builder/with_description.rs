@@ -8,8 +8,8 @@ use crate::{
     charms::{
         charm::{
             spirit::{
-                inner::SpiritCharmInner, noneclipse::AddNonEclipseCharm, AddEclipseCharm,
-                AddSpiritCharm, EclipseCharm, NonEclipseCharm,
+                inner::SpiritCharmInner, spirit_only::AddSpiritOnlyCharm, AddEclipseCharm,
+                AddSpiritCharm, EclipseCharm, SpiritOnlyCharm,
             },
             SpiritCharmKeyword,
         },
@@ -87,12 +87,12 @@ impl SpiritCharmBuilderWithDescription {
         }
     }
 
-    /// Finishes the builder, returning a non-Eclipse Spirit charm.
-    pub fn non_eclipse(self) -> AddNonEclipseCharm {
+    /// Finishes the builder, returning a non-Eclipse, Spirit-Only charm.
+    pub fn non_eclipse(self) -> AddSpiritOnlyCharm {
         let (name, inner) = self.build_inner();
-        AddNonEclipseCharm {
-            name: name.into(),
-            charm: NonEclipseCharm(inner),
+        AddSpiritOnlyCharm {
+            _name: name.into(),
+            _charm: SpiritOnlyCharm(inner),
         }
     }
 
@@ -102,7 +102,7 @@ impl SpiritCharmBuilderWithDescription {
         if eclipse {
             AddSpiritCharm::Eclipse(self.eclipse())
         } else {
-            AddSpiritCharm::NonEclipse(self.non_eclipse())
+            AddSpiritCharm::SpiritOnly(self.non_eclipse())
         }
     }
 }

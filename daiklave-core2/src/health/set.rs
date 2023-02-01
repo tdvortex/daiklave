@@ -4,6 +4,8 @@ use crate::CharacterMutation;
 
 use super::WoundPenalty;
 
+/// A mutation to set the character's health track to have the specified 
+/// boxes.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SetHealthTrack(pub HashMap<WoundPenalty, u8>);
 

@@ -3,7 +3,7 @@ mod mutation;
 
 pub(crate) use mutation::ArtifactNameMutation;
 
-use crate::exaltation::exalt::essence::MotePoolName;
+use crate::{exaltation::exalt::essence::MotePoolName, hearthstones::hearthstone::{HearthstoneName, SlotHearthstone}};
 
 use super::AttuneArtifact;
 
@@ -20,10 +20,15 @@ pub enum ArtifactName<'source> {
 
 impl<'source> ArtifactName<'source> {
     /// Attune to an artifact with this name using the specified mote pool.
-    pub fn attune(&self, first: MotePoolName) -> AttuneArtifact {
+    pub fn attune(self, first: MotePoolName) -> AttuneArtifact {
         AttuneArtifact {
-            artifact_name: (*self).into(),
+            artifact_name: self.into(),
             first,
         }
+    }
+    
+    /// Slot a hearthstone into this artifact.
+    pub fn slot_hearthstone(self, hearthstone_name: impl Into<HearthstoneName>) -> SlotHearthstone {
+        Into::<HearthstoneName>::into(hearthstone_name).slot_into(self)
     }
 }

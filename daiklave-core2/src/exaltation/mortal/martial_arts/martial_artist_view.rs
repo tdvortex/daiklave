@@ -10,13 +10,6 @@ pub(crate) struct MortalMartialArtist<'source> {
 }
 
 impl<'view, 'source> MortalMartialArtist<'source> {
-    pub(in crate::exaltation::mortal) fn new(
-        style: &'source MartialArtsStyle,
-        ability: AbilityRating<'source>,
-    ) -> Self {
-        Self { style, ability }
-    }
-
     pub fn style(&'view self) -> &'source MartialArtsStyle {
         self.style
     }

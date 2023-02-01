@@ -1,6 +1,6 @@
 use crate::{
     artifact::{
-        wonders::Wonders, AddArtifact, ArtifactName, ArtifactNameMutation, MagicMaterial, Sonance,
+        wonders::Wonders, AddArtifact, ArtifactName, MagicMaterial, Sonance,
     },
     exaltation::{exalt::essence::MotePoolName, Exaltation},
     Character, CharacterMutationError,
@@ -36,19 +36,19 @@ impl<'view, 'source> Character<'source> {
     /// Removes an artifact from the character.
     pub fn remove_artifact(
         &mut self,
-        artifact_name: &ArtifactNameMutation,
+        artifact_name: ArtifactName<'_>,
     ) -> Result<&mut Self, CharacterMutationError> {
         match artifact_name {
-            ArtifactNameMutation::Weapon(artifact_weapon_name) => {
+            ArtifactName::Weapon(artifact_weapon_name) => {
                 self.exaltation
-                    .remove_artifact_weapon(artifact_weapon_name.as_str())?;
+                    .remove_artifact_weapon(artifact_weapon_name)?;
             }
-            ArtifactNameMutation::Armor(artifact_armor_name) => {
+            ArtifactName::Armor(artifact_armor_name) => {
                 self.exaltation
-                    .remove_artifact_armor(artifact_armor_name.as_str())?;
+                    .remove_artifact_armor(artifact_armor_name)?;
             }
-            ArtifactNameMutation::Wonder(wonder_name) => {
-                self.exaltation.remove_wonder(wonder_name.as_str())?;
+            ArtifactName::Wonder(wonder_name) => {
+                self.exaltation.remove_wonder(wonder_name)?;
             }
         }
         // May lose evocations along with the artifact

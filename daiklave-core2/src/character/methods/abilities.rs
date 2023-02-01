@@ -13,6 +13,7 @@ impl<'view, 'source> Character<'source> {
         Abilities(self)
     }
 
+    /// Sets the dot rating for a non-Craft, non-Martial Arts ability.
     pub fn set_vanilla_ability_dots(
         &mut self,
         ability_name: AbilityNameVanilla,
@@ -83,6 +84,7 @@ impl<'view, 'source> Character<'source> {
         }
     }
 
+    /// Adds a specialty to a non-Craft, non-Martial Arts ability.
     pub fn add_vanilla_specialty(
         &mut self,
         ability_name: AbilityNameVanilla,
@@ -106,6 +108,7 @@ impl<'view, 'source> Character<'source> {
         }        
     }
 
+    /// Removes a specialty from a non-Craft, non-Martial Arts ability.
     pub fn remove_vanilla_specialty(
         &mut self,
         ability_name: AbilityNameVanilla,
