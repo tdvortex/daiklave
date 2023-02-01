@@ -2,14 +2,9 @@ use crate::armor::armor_item::{mundane::MundaneArmorName, artifact::ArtifactArmo
 
 use super::ArmorName;
 
-/// The name of a piece of armor to be added, removed, equipped, or unequipped.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum ArmorNameMutation {
-    /// Mundane, non-artifact armor.
+pub(crate) enum ArmorNameMutation {
     Mundane(MundaneArmorName),
-    /// Artifact armor. This is the name for the specific piece of armor (like
-    /// "Brilliant Sentinel"), not the generic item name (like "Articulated
-    /// Plate (Artifact)").
     Artifact(ArtifactArmorName),
 }
 
@@ -18,6 +13,15 @@ impl From<ArmorName<'_>> for ArmorNameMutation {
         match name {
             ArmorName::Mundane(name) => Self::Mundane(name.into()),
             ArmorName::Artifact(name) => Self::Artifact(name.into()),
+        }
+    }
+}
+
+impl<'source> Into<ArmorName<'source>> for &'source ArmorNameMutation {
+    fn into(self) -> ArmorName<'source> {
+        match self {
+            ArmorNameMutation::Mundane(name) => ArmorName::Mundane(name.as_str()),
+            ArmorNameMutation::Artifact(name) => ArmorName::Artifact(name.as_str()),
         }
     }
 }

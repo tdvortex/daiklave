@@ -24,6 +24,17 @@ pub struct ArtifactArmorItemBuilder {
 }
 
 impl ArtifactArmorItemBuilder {
+    /// Creates a new builder with the given name.
+    pub fn name(name: impl Into<ArtifactArmorName>) -> Self {
+        Self {
+            name: name.into(),
+            book_reference: None,
+            lore: None,
+            powers: None,
+        }
+    }
+
+
     /// The book and page number where the named artifact armor is listed.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);

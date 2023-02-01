@@ -2,13 +2,12 @@ use std::collections::HashSet;
 
 use crate::{
     armor::armor_item::{
-        artifact::BaseArtifactArmor,
-        base::BaseArmor,
-        mundane::{AddMundaneArmor, MundaneArmor},
         ArmorTag, ArmorWeightClass,
     },
     book_reference::BookReference,
 };
+
+use super::{MundaneArmorBuilderWithWeightClass, BaseArtifactArmorBuilderWithWeightClass};
 
 /// A base armor item builder after the weight class has been set.
 pub struct BaseArmorItemBuilderWithWeightClass {
@@ -31,29 +30,23 @@ impl BaseArmorItemBuilderWithWeightClass {
         self
     }
 
-    /// Completes the build process as a mundane armor item.
-    pub fn build_mundane(self) -> AddMundaneArmor {
-        AddMundaneArmor {
+    /// Sets the base armor item to be mundane.
+    pub fn mundane(self) -> MundaneArmorBuilderWithWeightClass {
+        MundaneArmorBuilderWithWeightClass {
             name: self.name.into(),
-            armor: MundaneArmor(BaseArmor {
-                book_reference: self.book_reference,
-                tags: self.tags,
-                weight_class: self.weight_class,
-            }),
+            book_reference: self.book_reference,
+            tags: self.tags,
+            weight_class: self.weight_class,
         }
     }
 
-    /// Completes the build process as a base artifact armor item.
-    /// This is **not** usable directly but is added to an artifact armor item
-    /// build.
-    pub fn build_artifact(self) -> (String, BaseArtifactArmor) {
-        (
-            self.name,
-            BaseArtifactArmor(BaseArmor {
-                book_reference: self.book_reference,
-                tags: self.tags,
-                weight_class: self.weight_class,
-            }),
-        )
+    /// Sets the base armor item to be an artifact.
+    pub fn artifact(self) -> BaseArtifactArmorBuilderWithWeightClass {
+        BaseArtifactArmorBuilderWithWeightClass {
+            name: self.name,
+            book_reference: self.book_reference,
+            tags: self.tags,
+            weight_class: self.weight_class,
+        }
     }
 }

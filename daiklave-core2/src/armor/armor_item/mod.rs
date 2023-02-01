@@ -13,6 +13,7 @@ mod memo;
 /// Properties of mundane armor
 pub mod mundane;
 mod name;
+mod remove;
 mod tag;
 mod unequip;
 mod weight_class;
@@ -20,19 +21,25 @@ mod weight_class;
 use std::collections::HashSet;
 
 pub use add::AddArmor;
-pub use equip::EquipArmor;
 pub(crate) use armor_type::ArmorType;
+pub use equip::EquipArmor;
 pub(crate) use equipped::{
     EquippedArmor, EquippedArmorMemo, EquippedArmorNoAttunement, EquippedArmorNoAttunementMemo,
 };
-pub use name::{ArmorName, ArmorNameMutation};
+pub use name::ArmorName;
+pub(crate) use name::ArmorNameMutation;
 pub use tag::ArmorTag;
 pub use unequip::UnequipArmor;
 pub use weight_class::ArmorWeightClass;
 
-use crate::{book_reference::BookReference, hearthstones::hearthstone::Hearthstone, merits::merit_new::Merit};
+use crate::{
+    book_reference::BookReference, hearthstones::hearthstone::Hearthstone, merits::merit_new::Merit,
+};
 
-use self::{artifact::{builder::ArtifactArmorItemBuilder, ArtifactArmorName}, base::builder::BaseArmorItemBuilder};
+use self::{
+    artifact::{builder::ArtifactArmorItemBuilder, ArtifactArmorName},
+    base::builder::BaseArmorBuilder,
+};
 
 /// A single piece of armor owned by a character
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -44,8 +51,8 @@ impl<'source> ArmorItem<'source> {
     }
 
     /// Starts constructing a base armor item.
-    pub fn base_builder(name: impl Into<String>) -> BaseArmorItemBuilder {
-        BaseArmorItemBuilder {
+    pub fn base_builder(name: impl Into<String>) -> BaseArmorBuilder {
+        BaseArmorBuilder {
             name: name.into(),
             book_reference: None,
             tags: HashSet::new(),

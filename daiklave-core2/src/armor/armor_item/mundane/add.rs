@@ -1,6 +1,4 @@
-use std::{collections::HashSet};
-
-use crate::{armor::armor_item::builder::base::BaseArmorItemBuilder, CharacterMutation};
+use crate::{armor::armor_item::builder::base::{MundaneArmorBuilder, MundaneArmorBuilderWithWeightClass}, CharacterMutation};
 
 use super::{MundaneArmor, MundaneArmorName};
 
@@ -13,12 +11,15 @@ pub struct AddMundaneArmor {
 }
 
 impl AddMundaneArmor {
-    pub fn builder(name: impl Into<String>) -> BaseArmorItemBuilder {
-        BaseArmorItemBuilder {
-            name: name.into(),
-            book_reference: None,
-            tags: HashSet::new(),
-        }
+    /// Starts constructing a new piece of armor.
+    pub fn name(name: impl Into<MundaneArmorName>) -> MundaneArmorBuilder {
+        MundaneArmorBuilder::name(name)
+    }
+}
+
+impl From<MundaneArmorBuilderWithWeightClass> for AddMundaneArmor {
+    fn from(builder: MundaneArmorBuilderWithWeightClass) -> Self {
+        builder.build()
     }
 }
 

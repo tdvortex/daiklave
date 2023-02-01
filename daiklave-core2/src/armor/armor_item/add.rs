@@ -1,10 +1,30 @@
 use crate::CharacterMutation;
 
-use super::{artifact::AddArtifactArmor, mundane::AddMundaneArmor};
+use super::{artifact::{AddArtifactArmor, builder::ArtifactArmorItemBuilder, ArtifactArmorName}, mundane::{AddMundaneArmor, MundaneArmorName}, builder::base::{MundaneArmorBuilder, BaseArtifactArmorBuilder}};
 
+/// A mutation to add a piece of armor to a character.
 pub enum AddArmor {
+    /// Adds a named piece of artifact armor to the character.
     Artifact(AddArtifactArmor),
+    /// Adds a mundane, nonmagical piece of armor to the character.
     Mundane(AddMundaneArmor),
+}
+
+impl AddArmor {
+    /// Starts constructing a base artifact armor item.
+    pub fn base_artifact(name: impl Into<String>) -> BaseArtifactArmorBuilder {
+        BaseArtifactArmorBuilder::name(name)
+    }
+
+    /// Starts constructing a piece of named artifact armor.
+    pub fn artifact(name: impl Into<ArtifactArmorName>) -> ArtifactArmorItemBuilder {
+        ArtifactArmorItemBuilder::name(name)
+    }
+
+    /// Starts constructing a piece of mundane armor.
+    pub fn mundane(name: impl Into<MundaneArmorName>) -> MundaneArmorBuilder {
+        MundaneArmorBuilder::name(name)
+    }
 }
 
 impl From<AddArtifactArmor> for AddArmor {

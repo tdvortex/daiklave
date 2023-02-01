@@ -1,5 +1,7 @@
 mod mutation;
-pub use mutation::ArmorNameMutation;
+pub(crate) use mutation::ArmorNameMutation;
+
+use super::{EquipArmor, remove::RemoveArmor};
 
 /// The name of a piece of armor.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -12,11 +14,17 @@ pub enum ArmorName<'source> {
     Artifact(&'source str),
 }
 
-impl<'source> From<&'source ArmorNameMutation> for ArmorName<'source> {
-    fn from(name: &'source ArmorNameMutation) -> Self {
-        match name {
-            ArmorNameMutation::Mundane(name) => Self::Mundane(name),
-            ArmorNameMutation::Artifact(name) => Self::Artifact(name),
+impl<'source> ArmorName<'source> {
+    /// Constructs a mutation to equip this armor.
+    pub fn equip(self) -> EquipArmor {
+        EquipArmor(self.into())
+    }
+
+    /// Constructs a mutation to remove this armor from a character.
+    pub fn remove(self) -> RemoveArmor {
+        match self {
+            ArmorName::Mundane(name) => RemoveArmor::Mundane(name.into()),
+            ArmorName::Artifact(name) => RemoveArmor::Artifact(name.into()),
         }
     }
 }
