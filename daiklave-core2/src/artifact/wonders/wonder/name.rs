@@ -2,6 +2,7 @@ use std::ops::Deref;
 
 use serde::{Serialize, Deserialize};
 
+/// The name of a non-weapon, non-armor, non-warstrider artifact.
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub struct WonderName(String);
 

@@ -45,7 +45,7 @@ use crate::{
 use self::{
     exalt::{
         essence::{
-            Essence, EssenceError, EssenceState, MotePool, MotePoolName,
+            Essence, EssenceError, EssenceState, MotePoolName,
             MotesState, UncommitMotes, MoteCommitmentName, MoteCommitmentNameMutation,
         },
         exalt_type::{
@@ -409,9 +409,11 @@ impl<'view, 'source> Exaltation<'source> {
                     essence: EssenceState {
                         rating: NonZeroU8::new(1).unwrap(),
                         motes: MotesState {
-                            peripheral: MotePool::new(33, 0),
-                            personal: MotePool::new(13, 0),
-                            commitments: Default::default(),
+                            peripheral_available: 33,
+                            peripheral_spent: 0,
+                            personal_available: 13,
+                            personal_spent: 0,
+                            other_commitments: Default::default(),
                         },
                     },
                     evocations: Vec::new(),
@@ -429,7 +431,7 @@ impl<'view, 'source> Exaltation<'source> {
                 let to_uncommit = exalt
                     .essence
                     .motes
-                    .commitments
+                    .other_commitments
                     .iter()
                     .map(|(name, _)| MoteCommitmentName::Other(*name))
                     .collect::<Vec<MoteCommitmentName>>();
@@ -457,9 +459,11 @@ impl<'view, 'source> Exaltation<'source> {
                     essence: EssenceState {
                         rating: exalt.essence.rating,
                         motes: MotesState {
-                            peripheral: MotePool::new(26 * exalt.essence().rating() * 7, 0),
-                            personal: MotePool::new(10 + exalt.essence().rating() * 3, 0),
-                            commitments: Default::default(),
+                            peripheral_available: 26 * exalt.essence().rating() * 7,
+                            peripheral_spent: 0,
+                            personal_available: 10 + exalt.essence().rating() * 3,
+                            personal_spent: 0,
+                            other_commitments: Default::default(),
                         },
                     },
                     // Preserve Evocations
@@ -485,7 +489,7 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn spend_motes(
         &mut self,
         first: MotePoolName,
-        amount: u8,
+        amount: NonZeroU8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => {
@@ -500,7 +504,7 @@ impl<'view, 'source> Exaltation<'source> {
         &mut self,
         name: &'source str,
         first: MotePoolName,
-        amount: u8,
+        amount: NonZeroU8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => {
@@ -511,7 +515,7 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub fn recover_motes(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn recover_motes(&mut self, amount: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => {
                 Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
@@ -545,10 +549,10 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub fn set_essence_rating(&mut self, rating: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_essence_rating(&mut self, rating: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Exalt(exalt) => {
-                if !(1..=5).contains(&rating) {
+                if rating > NonZeroU8::new(5).unwrap() {
                     return Err(CharacterMutationError::EssenceError(
                         EssenceError::InvalidRating,
                     ));
@@ -556,12 +560,12 @@ impl<'view, 'source> Exaltation<'source> {
 
                 let old_rating = exalt.essence().rating();
                 exalt.set_essence_rating(rating)?;
-                if old_rating > rating {
-                    if rating < 5 {
+                if old_rating > rating.get() {
+                    if rating < NonZeroU8::new(5).unwrap() {
                         exalt.remove_solar_sorcery().ok();
                     }
 
-                    if rating < 3 {
+                    if rating < NonZeroU8::new(3).unwrap() {
                         exalt.remove_celestial_sorcery().ok();
                     }
                 }

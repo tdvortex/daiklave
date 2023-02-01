@@ -1,21 +1,20 @@
 mod name;
 pub use name::MotePoolName;
-use serde::{Deserialize, Serialize};
 
-use crate::CharacterMutationError;
-
-use super::EssenceError;
+use super::{MoteCommitment};
 
 /// The available and spent motes from either a peripheral or personal pool.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Hash)]
-pub struct MotePool {
-    available: u8,
-    spent: u8,
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MotePool<'source> {
+    pub(crate) name: MotePoolName,
+    pub(crate) available: u8,
+    pub(crate) spent: u8,
+    pub(crate) commitments: Vec<MoteCommitment<'source>>,
 }
 
-impl MotePool {
-    pub(crate) fn new(available: u8, spent: u8) -> Self {
-        Self { available, spent }
+impl<'source> MotePool<'source> {
+    pub fn name(&self) -> MotePoolName {
+        self.name
     }
 
     /// The available motes from the specific pool.
@@ -28,44 +27,18 @@ impl MotePool {
         self.spent
     }
 
-    /// Spend a number of motes, shifting them from available to spent.
-    pub(crate) fn spend(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
-        if amount > self.available {
-            Err(CharacterMutationError::EssenceError(
-                EssenceError::InsufficientMotes,
-            ))
-        } else {
-            self.available -= amount;
-            self.spent += amount;
-            Ok(self)
-        }
+    /// The sum of the committed motes from the specific pool.
+    pub fn committed(&self) -> u8 {
+        self.commitments.iter().fold(0, |sum, commitment| {
+            match self.name {
+                MotePoolName::Peripheral => sum+commitment.peripheral,
+                MotePoolName::Personal => sum+commitment.personal
+            }
+        })
     }
 
-    /// Commit a number of motes, removing the from the pool and locking them
-    /// inside the committed effect.
-    pub(crate) fn commit(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
-        if amount > self.available {
-            Err(CharacterMutationError::EssenceError(
-                EssenceError::InsufficientMotes,
-            ))
-        } else {
-            self.available -= amount;
-            Ok(self)
-        }
-    }
-
-    /// Recover spent motes, shifting them from spent to available.
-    pub(crate) fn recover(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
-        let recovered = amount.min(self.spent);
-        self.spent -= recovered;
-        self.available += recovered;
-        Ok(self)
-    }
-
-    /// Recover motes from a commitment effect, adding these to spent, where
-    /// they can later be recovered.
-    pub(crate) fn uncommit(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
-        self.spent += amount;
-        Ok(self)
+    /// All active mote commitment effects on this pool.
+    pub fn commitments(&self) -> impl Iterator<Item = MoteCommitment<'source>> + '_ {
+        self.commitments.iter().copied()
     }
 }

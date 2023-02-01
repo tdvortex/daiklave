@@ -1,6 +1,8 @@
 use std::ops::Deref;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct OtherMoteCommitmentName(String);
 
 impl<T> From<T> for OtherMoteCommitmentName where T: Into<String> {

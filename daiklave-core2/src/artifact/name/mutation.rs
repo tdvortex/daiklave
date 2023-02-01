@@ -6,16 +6,10 @@ use crate::{weapons::weapon::artifact::ArtifactWeaponName, armor::armor_item::ar
 
 use super::ArtifactName;
 
-/// The name of a magical creation (weapon, armor, warstrider, or wonder).
-/// For use in adding, removing, or otherwise changing a character's state with
-/// regards to an artifact.
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
-pub enum ArtifactNameMutation {
-    /// An artifact weapon's name.
+pub(crate) enum ArtifactNameMutation {
     Weapon(ArtifactWeaponName),
-    /// An artifact armor item's name.
     Armor(ArtifactArmorName),
-    /// A wonder's name.
     Wonder(WonderName),
 }
 
@@ -37,6 +31,16 @@ impl From<ArtifactName<'_>> for ArtifactNameMutation {
             ArtifactName::Weapon(name) => Self::Weapon(name.into()),
             ArtifactName::Armor(name) => Self::Armor(name.into()),
             ArtifactName::Wonder(name) => Self::Wonder(name.into()),
+        }
+    }
+}
+
+impl<'source> Into<ArtifactName<'source>> for &'source ArtifactNameMutation {
+    fn into(self) -> ArtifactName<'source> {
+        match self {
+            ArtifactNameMutation::Weapon(name) => ArtifactName::Weapon(name.as_str()),
+            ArtifactNameMutation::Armor(name) => ArtifactName::Armor(name.as_str()),
+            ArtifactNameMutation::Wonder(name) => ArtifactName::Wonder(name.as_str()),
         }
     }
 }

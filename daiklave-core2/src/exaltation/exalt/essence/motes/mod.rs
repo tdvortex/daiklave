@@ -1,10 +1,3 @@
-use crate::{
-    armor::armor_item::{ArmorType, ArmorWeightClass},
-    artifact::ArtifactName,
-    exaltation::exalt::{ExaltArmor, ExaltWeapons, ExaltWonders},
-    weapons::weapon::WeaponType,
-};
-
 mod commit;
 mod state;
 mod uncommit;
@@ -16,114 +9,62 @@ pub use spend::SpendMotes;
 pub use uncommit::UncommitMotes;
 pub(crate) use state::{MotesState, MotesStateMemo};
 
-use super::{MoteCommitment, MotePool, mote_commitment::MoteCommitmentName};
+use super::{MoteCommitment, MotePool, MotePoolName};
 
 /// The current status of an Exalt's motes of Essence.
 pub struct Motes<'view, 'source> {
     pub(crate) state: &'view MotesState<'source>,
-    pub(crate) weapons: &'view ExaltWeapons<'source>,
-    pub(crate) armor: &'view ExaltArmor<'source>,
-    pub(crate) wonders: &'view ExaltWonders<'source>,
+    pub(crate) attunements: Vec<MoteCommitment<'source>>,
 }
 
 impl<'view, 'source> Motes<'view, 'source> {
     /// The Exalt's peripheral motes.
-    pub fn peripheral(&self) -> &'view MotePool {
-        self.state.peripheral()
+    pub fn peripheral(&self) -> MotePool {
+        self.peripheral_and_personal().0
     }
 
     /// The Exalt's personal motes.
-    pub fn personal(&self) -> &'view MotePool {
-        self.state.personal()
+    pub fn personal(&self) -> MotePool {
+        self.peripheral_and_personal().1
+    }
+
+    /// Returns both the peripheral and personal pools simultaneously.
+    pub fn peripheral_and_personal(&self) -> (MotePool<'source>, MotePool<'source>) {
+        let (peripheral_commitments, personal_commitments) = self.committed().fold(
+            (Vec::new(), Vec::new()),
+            |(mut peripheral, mut personal), commitment| {
+                if commitment.peripheral > 0 {
+                    peripheral.push(commitment);
+                }
+
+                if commitment.personal > 0 {
+                    personal.push(commitment);
+                }
+                (peripheral, personal)
+            }
+        );
+
+        (
+            MotePool {
+                name: MotePoolName::Peripheral,
+                available: self.state.peripheral_available,
+                spent: self.state.peripheral_spent,
+                commitments: peripheral_commitments,
+            },
+            MotePool {
+                name: MotePoolName::Personal,
+                available: self.state.personal_available,
+                spent: self.state.personal_spent,
+                commitments: personal_commitments,
+            }
+        )
+
+
     }
 
     /// All effects the Exalt has currently committed motes to (including
     /// artifact attunement)
-    pub fn committed(&self) -> impl Iterator<Item = (MoteCommitmentName<'source>, MoteCommitment)> + '_ {
-        let other_commitments = self
-            .state
-            .commitments
-            .iter()
-            .map(|(k, v)| (MoteCommitmentName::Other(*k), *v));
- 
-        let weapon_commitments =
-            self.weapons.iter().filter_map(|(weapon_id, equipped)| {
-                match self
-                    .weapons
-                    .get_weapon(weapon_id, equipped)
-                    .map(|weapon| weapon.0)
-                {
-                    None => None,
-                    Some(WeaponType::Unarmed) => None,
-                    Some(WeaponType::Mundane(_, _, _)) => None,
-                    Some(WeaponType::Artifact(artifact_weapon_name, _weapon, attunement)) => {
-                        attunement.map(|personal| {
-                            (
-                                MoteCommitmentName::AttunedArtifact(ArtifactName::Weapon(
-                                    artifact_weapon_name,
-                                )),
-                                MoteCommitment {
-                                    peripheral: 5 - personal.min(5),
-                                    personal: personal.min(5),
-                                },
-                            )
-                        })
-                    }
-                }
-            });
-
-        let armor_commitments = self.armor.iter().filter_map(|armor_id| {
-            self.armor
-                .get(armor_id)
-                .and_then(|armor_item| match armor_item.0 {
-                    ArmorType::Artifact(artifact_armor_name, armor, attunement) => {
-                        if let Some(personal) = attunement {
-                            let amount = match armor.base_armor().weight_class() {
-                                ArmorWeightClass::Light => 4,
-                                ArmorWeightClass::Medium => 5,
-                                ArmorWeightClass::Heavy => 6,
-                            };
-
-                            Some((
-                                MoteCommitmentName::AttunedArtifact(ArtifactName::Armor(
-                                    artifact_armor_name,
-                                )),
-                                MoteCommitment {
-                                    peripheral: amount - personal.min(amount),
-                                    personal: personal.min(amount),
-                                },
-                            ))
-                        } else {
-                            None
-                        }
-                    }
-                    ArmorType::Mundane(_, _) => None,
-                })
-        });
-
-        let wonder_commitments = self.wonders.iter().filter_map(|wonder_name| {
-            self.wonders.get(wonder_name).and_then(|wonder| {
-                if let Some(personal) = wonder.2 {
-                    if let Some(amount) = wonder.1.attunement_cost {
-                        Some((
-                            MoteCommitmentName::AttunedArtifact(ArtifactName::Wonder(wonder.0)),
-                            MoteCommitment {
-                                peripheral: amount - personal.min(amount),
-                                personal: personal.min(amount),
-                            },
-                        ))
-                    } else {
-                        None
-                    }
-                } else {
-                    None
-                }
-            })
-        });
-
-        other_commitments
-            .chain(weapon_commitments)
-            .chain(armor_commitments)
-            .chain(wonder_commitments)
+    pub fn committed(&self) -> impl Iterator<Item = MoteCommitment<'source>> + '_ {
+        self.attunements.iter().copied().chain(self.state.commitments())
     }
 }

@@ -1,3 +1,5 @@
+use std::num::NonZeroU8;
+
 use crate::{
     exaltation::exalt::essence::{Essence, MotePoolName, UncommitMotes},
     Character, CharacterMutationError,
@@ -13,7 +15,7 @@ impl<'view, 'source> Character<'source> {
     pub fn spend_motes(
         &mut self,
         first: MotePoolName,
-        amount: u8,
+        amount: NonZeroU8,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.spend_motes(first, amount)?;
         Ok(self)
@@ -25,7 +27,7 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         name: &'source str,
         first: MotePoolName,
-        amount: u8,
+        amount: NonZeroU8,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.commit_motes(name, first, amount)?;
         Ok(self)
@@ -33,7 +35,7 @@ impl<'view, 'source> Character<'source> {
 
     /// Recovers motes, moving them from spent to available. Will not uncommit
     /// motes.
-    pub fn recover_motes(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn recover_motes(&mut self, amount: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.recover_motes(amount)?;
         Ok(self)
     }
@@ -51,13 +53,13 @@ impl<'view, 'source> Character<'source> {
     /// Changes the essence rating of the character to the specified value.
     /// This also uncommits all active effects and recovers all motes. If
     /// the rating is decreased, may cause Charms or Sorcery to be lost.
-    pub fn set_essence_rating(&mut self, rating: u8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_essence_rating(&mut self, rating: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
         let old_rating = self.essence().map(|essence| essence.rating()).unwrap_or(0);
-        if old_rating == rating {
+        if old_rating == rating.get() {
             return Ok(self);
         }
         self.exaltation.set_essence_rating(rating)?;
-        if old_rating > rating {
+        if old_rating > rating.get() {
             self.correct_sorcery_level();
             self.correct_solar_charms(&[]);
             self.correct_eclipse_charms(&[]);

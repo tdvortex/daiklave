@@ -78,19 +78,19 @@ impl<'source> Character<'source> {
             CharacterMutation::SetMortal => self.set_mortal(),
             CharacterMutation::SetSolar(set_solar) => self.set_solar(set_solar),
             CharacterMutation::SpendMotes(SpendMotes { first, amount }) => {
-                self.spend_motes(*first, amount.get())
+                self.spend_motes(*first, *amount)
             }
             CharacterMutation::CommitMotes(CommitMotes {
                 effect_name,
                 first,
                 amount,
-            }) => self.commit_motes(effect_name.as_str(), *first, amount.get()),
+            }) => self.commit_motes(effect_name.as_str(), *first, *amount),
             CharacterMutation::RecoverMotes(RecoverMotes(amount)) => {
-                self.recover_motes(amount.get())
+                self.recover_motes(*amount)
             }
             CharacterMutation::UncommitMotes(uncommit_motes) => self.uncommit_motes(uncommit_motes),
             CharacterMutation::SetEssenceRating(SetEssenceRating(rating)) => {
-                self.set_essence_rating(rating.get())
+                self.set_essence_rating(*rating)
             }
             CharacterMutation::SetWillpowerRating(SetWillpowerRating(dots)) => {
                 self.set_willpower_rating(*dots)

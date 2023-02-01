@@ -91,7 +91,7 @@ impl<'view, 'source> Weapon<'source> {
 
     /// If the weapon is currently attuned, returns the commitment. Also
     /// returns the artifact weapon name for later unattunement.
-    pub fn mote_commitment(&self) -> Option<(&'source str, MoteCommitment)> {
+    pub fn mote_commitment(&self) -> Option<MoteCommitment<'source>> {
         self.0.mote_commitment()
     }
 

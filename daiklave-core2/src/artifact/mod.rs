@@ -6,13 +6,13 @@ mod magic_material;
 mod name;
 mod sonance;
 
+mod attune;
 /// Artifacts which are not weapons, armor, or warstriders.
 pub mod wonders;
-mod attune;
 
 pub use add::AddArtifact;
 pub use attune::AttuneArtifact;
 pub use magic_material::MagicMaterial;
-pub use name::{ArtifactName, ArtifactNameMutation};
+pub use name::ArtifactName;
+pub(crate) use name::ArtifactNameMutation;
 pub use sonance::Sonance;
-

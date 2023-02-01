@@ -2,8 +2,8 @@ use std::num::NonZeroU8;
 
 use crate::{
     book_reference::{Book, BookReference},
-    exaltation::exalt::essence::MoteCommitment,
-    hearthstones::hearthstone::Hearthstone, merits::merit_new::{Merit, MeritSource},
+    exaltation::exalt::essence::{MoteCommitment, MoteCommitmentName},
+    hearthstones::hearthstone::Hearthstone, merits::merit_new::{Merit, MeritSource}, artifact::ArtifactName,
 };
 
 use super::{
@@ -58,19 +58,19 @@ impl<'view, 'source> WeaponType<'source> {
         }
     }
 
-    pub fn mote_commitment(&self) -> Option<(&'source str, MoteCommitment)> {
+    pub fn mote_commitment(&self) -> Option<MoteCommitment<'source>> {
         match self {
             WeaponType::Mundane(_, _, _) | WeaponType::Unarmed => None,
             WeaponType::Artifact(name, _artifact_weapon, maybe_personal) => {
                 let personal = *maybe_personal.as_ref()?;
                 let peripheral = 5 - 5.min(personal);
-                Some((
-                    *name,
+                Some(
                     MoteCommitment {
+                        name: MoteCommitmentName::AttunedArtifact(ArtifactName::Weapon(*name)),
                         peripheral,
                         personal,
                     },
-                ))
+                )
             }
         }
     }

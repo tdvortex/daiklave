@@ -5,6 +5,7 @@ pub use other::OtherMoteCommitmentName;
 
 use crate::artifact::ArtifactName;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MoteCommitmentName<'source> {
     AttunedArtifact(ArtifactName<'source>),
     Other(&'source str),
