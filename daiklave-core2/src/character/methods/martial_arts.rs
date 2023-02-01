@@ -1,5 +1,5 @@
 use crate::{
-    martial_arts::{charm::MartialArtsCharmDetails, style::MartialArtsStyle, MartialArts},
+    martial_arts::{charm::AddMartialArtsCharm, style::MartialArtsStyle, MartialArts},
     Character, CharacterMutationError,
 };
 
@@ -39,22 +39,32 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 
-    pub fn add_martial_arts_specialty(&mut self, style_name: &'source str, specialty: &'source str) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_martial_arts_specialty(
+        &mut self,
+        style_name: &'source str,
+        specialty: &'source str,
+    ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
-    pub fn remove_martial_arts_specialty(&mut self, style_name: &str, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_martial_arts_specialty(
+        &mut self,
+        style_name: &str,
+        specialty: &str,
+    ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
     /// Adds a Martial Arts Charm to the character.
     pub fn add_martial_arts_charm(
         &mut self,
-        martial_arts_charm_name: &'source str,
-        martial_arts_charm: &'source MartialArtsCharmDetails,
+        add_martial_arts_charm: &'source AddMartialArtsCharm,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation
-            .add_martial_arts_charm(martial_arts_charm_name, martial_arts_charm)?;
+        self.exaltation.add_martial_arts_charm(
+            &add_martial_arts_charm.style,
+            &add_martial_arts_charm.name,
+            &add_martial_arts_charm.charm,
+        )?;
         Ok(self)
     }
 

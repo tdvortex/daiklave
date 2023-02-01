@@ -28,11 +28,11 @@ use crate::{
     charms::CharmError,
     hearthstones::UnslottedHearthstone,
     martial_arts::{style::MartialArtsStyle, MartialArtsError},
-    merits::merit::MeritError,
+    merits::merit_new::{MeritError, SorceryArchetypeMeritDetails},
     sorcery::{
         circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer},
         spell::SpellMutation,
-        SorceryArchetypeMeritDetails, SorceryError, AddTerrestrialSorcery,
+        SorceryError, AddTerrestrialSorcery,
     },
     weapons::{
         weapon::{
@@ -419,7 +419,7 @@ impl<'view, 'source> Mortal<'source> {
         if let Some(terrestrial) = &mut self.sorcery {
             if terrestrial
                 .archetype_merits
-                .remove(&sorcery_archetype_merit_name)
+                .remove(sorcery_archetype_merit_name)
                 .is_none()
             {
                 Err(CharacterMutationError::MeritError(MeritError::NotFound))

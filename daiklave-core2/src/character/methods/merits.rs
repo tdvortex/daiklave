@@ -3,30 +3,146 @@ use std::collections::hash_map::Entry;
 use crate::{
     abilities::{AbilityName, AbilityNameVanilla},
     merits::{
-        merit::{
-            MeritError, MeritPrerequisite, NonStackableMerit, StackableMerit,
+        merit_new::{
+            MeritError, MeritPrerequisite, NonStackableMerit, StackableMerit, Merit, MeritSource, AddStackableMerit, AddNonStackableMerit, AddMerit, RemoveMerit,
         },
-        Merits,
     },
-    Character, CharacterMutationError,
+    Character, CharacterMutationError, exaltation::Exaltation, languages::language::LanguageMutation,
 };
 
 impl<'view, 'source> Character<'source> {
     /// Access all Merits owned by the character.
-    pub fn merits(&'view self) -> Merits<'view, 'source> {
-        Merits(self)
+    pub fn merits(&self) -> Vec<Merit<'source>> {
+        let armor = self.armor();
+        let from_armor = armor
+            .iter()
+            .filter_map(|armor_name| armor.get(armor_name))
+            .flat_map(|armor_item| armor_item.merits().into_iter());
+
+        let weapons = self.weapons();
+        let from_weapons = weapons
+            .iter()
+            .filter_map(|(name, equipped)| weapons.get(name, equipped))
+            .flat_map(|weapon| weapon.merits().into_iter());
+
+        let wonders = self.wonders();
+        let from_wonders = wonders
+            .iter()
+            .filter_map(|name| wonders.get(name))
+            .flat_map(|wonder| wonder.merits().into_iter());
+
+        let demenses = self.demenses_no_manse.iter().map(|(name, level)| {
+            Merit(MeritSource::Demense {
+                name: *name,
+                has_manse: false,
+                geomancy_level: *level,
+            })
+        });
+
+        let hearthstones = self.hearthstones();
+        let from_hearthstones = hearthstones
+            .iter()
+            .filter_map(|name| hearthstones.get(name))
+            .flat_map(|hearthstone| hearthstone.merits().into_iter());
+
+        let exalted_healing = if let Exaltation::Mortal(mortal) = &self.exaltation {
+            if mortal.exalted_healing {
+                vec![Merit(MeritSource::ExaltedHealing { is_exalt: false })]
+            } else {
+                vec![]
+            }
+        } else {
+            vec![Merit(MeritSource::ExaltedHealing { is_exalt: true })]
+        }
+        .into_iter();
+
+        let (local_count, mut language_merits) = self.other_languages.iter().fold(
+            (0, Vec::new()),
+            |(local_count, mut majors), language| match language {
+                LanguageMutation::MajorLanguage(major) => {
+                    majors.push(Merit(MeritSource::MajorLanguage(*major)));
+                    (local_count, majors)
+                }
+                LanguageMutation::LocalTongue(_) => (local_count + 1, majors),
+            },
+        );
+        if local_count > 0 {
+            language_merits.push(Merit(MeritSource::LocalTongues { count: local_count }));
+        }
+        let languages = language_merits.into_iter();
+
+        let martial_artists = self
+            .martial_arts()
+            .iter()
+            .map(|style_name| Merit(MeritSource::MartialArtist { style_name }));
+
+        let mortal_sorcerer = if let Exaltation::Mortal(mortal) = &self.exaltation {
+            if mortal.sorcery.is_some() {
+                vec![Merit(MeritSource::MortalSorcerer)]
+            } else {
+                vec![]
+            }
+        } else {
+            vec![]
+        }
+        .into_iter();
+
+        let nonstackable = self.nonstackable_merits.iter().map(|(name, instance)| {
+            Merit(MeritSource::NonStackable(NonStackableMerit {
+                name,
+                instance,
+            }))
+        });
+        let stackable =
+            self
+                .stackable_merits
+                .iter()
+                .map(|((template_name, detail), instance)| {
+                    Merit(MeritSource::Stackable(StackableMerit {
+                        template_name,
+                        detail,
+                        instance,
+                    }))
+                });
+        let maybe_sorcery = self.sorcery();
+        let sorcery_merits = maybe_sorcery.iter().flat_map(|sorcery| {
+            sorcery
+                .archetypes()
+                .filter_map(|name| sorcery.archetype(name))
+                .flat_map(|with_merits| with_merits.merits().iter().collect::<Vec<Merit>>().into_iter())
+        });
+
+        from_armor
+            .chain(from_weapons)
+            .chain(from_wonders)
+            .chain(demenses)
+            .chain(from_hearthstones)
+            .chain(exalted_healing)
+            .chain(languages)
+            .chain(martial_artists)
+            .chain(mortal_sorcerer)
+            .chain(nonstackable)
+            .chain(stackable)
+            .chain(sorcery_merits)
+            .collect()
+    }
+
+    pub fn add_merit(&mut self, add_merit: &'source AddMerit) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
+    }
+
+    pub fn remove_merit(&mut self, remove_merit: &RemoveMerit) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
     }
 
     /// Adds a stackable merit to the character.
     pub fn add_stackable_merit(
         &mut self,
-        template_name: &'source str,
-        instance_name: &'source str,
-        merit: &'source StackableMerit,
+        add_stackable_merit: &'source AddStackableMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.validate_merit_prerequisites(merit.prerequisites())?;
-        if let Entry::Vacant(e) = self.stackable_merits.entry((template_name, instance_name)) {
-            e.insert(merit.into());
+        self.validate_merit_prerequisites(add_stackable_merit.instance.0.prerequisites.iter().copied())?;
+        if let Entry::Vacant(e) = self.stackable_merits.entry((&add_stackable_merit.template_name, &add_stackable_merit.detail)) {
+            e.insert(&add_stackable_merit.instance);
             Ok(self)
         } else {
             Err(CharacterMutationError::MeritError(
@@ -38,10 +154,10 @@ impl<'view, 'source> Character<'source> {
     /// Removes a nonstackable merit from the character.
     pub fn remove_stackable_merit(
         &mut self,
-        template_name: &str,
-        instance_name: &str,
+        template_name: &'source str,
+        detail: &'source str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self.stackable_merits.remove(&(template_name, instance_name)).is_some() {
+        if self.stackable_merits.remove(&(template_name, detail)).is_some() {
             Ok(self)
         } else {
             Err(CharacterMutationError::MeritError(MeritError::NotFound))
@@ -112,13 +228,12 @@ impl<'view, 'source> Character<'source> {
     /// Adds a nonstackable merit to the character.
     pub fn add_nonstackable_merit(
         &mut self,
-        nonstackable_merit_name: &'source str,
-        nonstackable_merit: &'source NonStackableMerit,
+        add_nonstackable_merit: &'source AddNonStackableMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.validate_merit_prerequisites(nonstackable_merit.prerequisites())?;
+        self.validate_merit_prerequisites(add_nonstackable_merit.instance.0.prerequisites.iter().copied())?;
 
-        if let Entry::Vacant(e) = self.nonstackable_merits.entry(nonstackable_merit_name) {
-            e.insert(nonstackable_merit.into());
+        if let Entry::Vacant(e) = self.nonstackable_merits.entry(&add_nonstackable_merit.name) {
+            e.insert(&add_nonstackable_merit.instance);
             Ok(self)
         } else {
             Err(CharacterMutationError::MeritError(
@@ -134,7 +249,7 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         if self
             .nonstackable_merits
-            .remove(&nonstackable_merit_name)
+            .remove(nonstackable_merit_name)
             .is_some()
         {
             Ok(self)
@@ -174,7 +289,7 @@ impl<'view, 'source> Character<'source> {
                 }
             }
             crate::exaltation::Exaltation::Exalt(_) => Err(CharacterMutationError::MeritError(
-                MeritError::ExaltedHealing,
+                MeritError::RemoveExaltedHealing,
             )),
         }
     }
@@ -184,7 +299,7 @@ impl<'view, 'source> Character<'source> {
             .iter()
             .filter_map(|(name, merit)| {
                 if self
-                    .validate_merit_prerequisites(merit.prerequisites())
+                    .validate_merit_prerequisites(merit.0.prerequisites.iter().copied())
                     .is_err()
                 {
                     Some(*name)
@@ -202,7 +317,7 @@ impl<'view, 'source> Character<'source> {
             .iter()
             .filter_map(|((template_name, detail), merit)| {
                 if self
-                    .validate_merit_prerequisites(merit.prerequisites())
+                    .validate_merit_prerequisites(merit.0.prerequisites.iter().copied())
                     .is_err()
                 {
                     Some((*template_name, *detail))

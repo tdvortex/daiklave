@@ -6,12 +6,12 @@ pub struct FixedNonStackableMeritTemplateBuilder(pub(crate) FixedMeritTemplateBu
 
 impl FixedNonStackableMeritTemplateBuilder {
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
-        self.0.book_reference(book_reference);
+        self = Self(self.0.book_reference(book_reference));
         self
     }
 
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
-        self.0.prerequisite(prerequisite);
+        self = Self(self.0.prerequisite(prerequisite));
         self
     }
 

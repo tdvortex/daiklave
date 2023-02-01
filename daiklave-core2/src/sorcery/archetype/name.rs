@@ -24,10 +24,6 @@ impl SorceryArchetypeName {
             }
         }
     }
-
-    pub fn new_merit(&self) -> SorceryArchetypeMeritBuilder {
-        SorceryArchetypeMeritBuilder::archetype_name(self.clone())
-    }
 }
 
 impl<T> From<T> for SorceryArchetypeName where T: Into<String> {

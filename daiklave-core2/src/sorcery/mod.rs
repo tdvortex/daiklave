@@ -13,10 +13,10 @@ pub use spells::Spells;
 /// Properties of an individual Spell.
 pub mod spell;
 
-pub(crate) use archetype::{SorceryArchetypeMeritDetails, ShapingRitualDetails};
+pub(crate) use archetype::{ShapingRitualDetails};
 pub use archetype::{
-    AddShapingRitual, SorceryArchetypeMerit,
-    SorceryArchetypeName, SorceryArchetypeWithMerits, AddSorceryArchetypeMerit
+    AddShapingRitual,
+    SorceryArchetypeName, SorceryArchetypeWithMerits
 };
 pub use circles::{
     AddCelestialSorcery, AddSolarSorcery, AddTerrestrialSorcery, CelestialSpell, SolarSpell,

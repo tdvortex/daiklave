@@ -2,6 +2,7 @@ use crate::{
     artifact::ArtifactName,
     book_reference::BookReference,
     hearthstones::{hearthstone::Hearthstone, HearthstonePosition},
+    merits::merit_new::{Merit, MeritSource},
 };
 
 use super::{
@@ -143,6 +144,26 @@ impl<'source> ArmorType<'source> {
         match self {
             ArmorType::Artifact(_, no_attunement, _) => no_attunement.powers,
             ArmorType::Mundane(_, _) => None,
+        }
+    }
+
+    pub(crate) fn merits(&self) -> Vec<Merit<'source>> {
+        match self {
+            ArmorType::Artifact(name, armor, _) => {
+                let mut output = vec![Merit(MeritSource::Artifact {
+                    name,
+                    dots: armor.merit_dots,
+                })];
+                output.extend(
+                    armor
+                        .hearthstone_slots
+                        .iter()
+                        .filter_map(|maybe_hearthstone| maybe_hearthstone.as_ref())
+                        .flat_map(|slotted| slotted.merits().into_iter()),
+                );
+                output
+            }
+            ArmorType::Mundane(_, _) => vec![],
         }
     }
 }

@@ -18,6 +18,16 @@ pub(crate) enum SolarSorcererView<'source> {
     Solar(SolarCircleSorcerer<'source>),
 }
 
+impl<'source> From<&'source SolarSorcererMemo> for SolarSorcererView<'source> {
+    fn from(memo: &'source SolarSorcererMemo) -> Self {
+        match memo {
+            SolarSorcererMemo::Terrestrial(box_terrestrial) => Self::Terrestrial(box_terrestrial.as_ref().into()),
+            SolarSorcererMemo::Celestial(box_celestial) => Self::Celestial(box_celestial.as_ref().into()),
+            SolarSorcererMemo::Solar(box_solar) => Self::Solar(box_solar.as_ref().into()),
+        }
+    }
+}
+
 impl<'view, 'source> SolarSorcererView<'source> {
     pub fn archetype(
         &'view self,

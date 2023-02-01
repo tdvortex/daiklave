@@ -6,8 +6,8 @@ use super::{AttributeName, AttributeError};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SetAttribute {
-    name: AttributeName,
-    dots: NonZeroU8
+    pub(crate) name: AttributeName,
+    pub(crate) dots: NonZeroU8
 }
 
 impl SetAttribute {

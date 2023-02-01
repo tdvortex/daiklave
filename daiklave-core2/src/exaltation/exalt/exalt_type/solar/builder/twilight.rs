@@ -8,7 +8,7 @@ use crate::{
             },
             SetSolar, SolarError, SolarMemo,
         },
-        LimitMemo,
+        LimitMemo, limit::LimitTrigger,
     },
     experience::ExperiencePool,
 };
@@ -18,7 +18,7 @@ pub struct TwilightBuilder {
     pub(crate) caste_abilities: Vec<TwilightAbility>,
     pub(crate) supernal_ability: Option<TwilightAbility>,
     pub(crate) favored_abilities: Vec<AbilityName>,
-    pub(crate) limit_trigger: Option<String>,
+    pub(crate) limit_trigger: Option<LimitTrigger>,
 }
 
 impl TwilightBuilder {
@@ -42,8 +42,8 @@ impl TwilightBuilder {
     }
 
     /// Sets the Solar's Limit Trigger.
-    pub fn limit_trigger(mut self, limit_trigger: String) -> Self {
-        self.limit_trigger = Some(limit_trigger);
+    pub fn limit_trigger(mut self, limit_trigger: impl Into<LimitTrigger>) -> Self {
+        self.limit_trigger = Some(limit_trigger.into());
         self
     }
 

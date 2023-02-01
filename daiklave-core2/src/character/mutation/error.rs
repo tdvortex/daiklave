@@ -11,7 +11,7 @@ use crate::{
     intimacies::intimacy::IntimacyError,
     languages::LanguageError,
     martial_arts::MartialArtsError,
-    merits::merit::MeritError,
+    merits::merit_new::MeritError,
     sorcery::SorceryError,
     weapons::WeaponError, concept::ConceptError,
 };

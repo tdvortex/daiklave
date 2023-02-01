@@ -50,12 +50,11 @@ use crate::{
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::UnslottedHearthstone,
     martial_arts::{charm::MartialArtsCharmDetails, style::MartialArtsStyle, MartialArtsError},
+    merits::merit_new::SorceryArchetypeMeritDetails,
     sorcery::{
-        circles::{
-            celestial::AddCelestialSorcery, solar::AddSolarSorcery,
-        },
+        circles::{celestial::AddCelestialSorcery, solar::AddSolarSorcery},
         spell::SpellMutation,
-        Sorcery, SorceryArchetypeMeritDetails, SorceryError, AddTerrestrialSorcery,
+        AddTerrestrialSorcery, Sorcery, SorceryError,
     },
     weapons::{
         weapon::{
@@ -73,7 +72,7 @@ use crate::{
 
 use self::{
     essence::{
-        Essence, EssenceError, EssenceState, MoteCommitment, MotePoolName, MoteCommitmentName,
+        Essence, EssenceError, EssenceState, MoteCommitment, MoteCommitmentName, MotePoolName,
     },
     exalt_type::{solar::charm::SolarCharm, ExaltType},
     martial_arts::ExaltMartialArtist,
@@ -404,10 +403,10 @@ impl<'view, 'source> Exalt<'source> {
 
     pub(crate) fn remove_martial_arts_style(
         &mut self,
-        name: &'source str,
+        name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.martial_arts_styles
-            .remove(&name)
+            .remove(name)
             .ok_or(CharacterMutationError::MartialArtsError(
                 MartialArtsError::StyleNotFound,
             ))?;
@@ -416,14 +415,14 @@ impl<'view, 'source> Exalt<'source> {
 
     pub(crate) fn set_martial_arts_dots(
         &mut self,
-        name: &'source str,
+        name: &str,
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         if dots > 5 {
             Err(CharacterMutationError::AbilityError(
                 AbilityError::InvalidRating,
             ))
-        } else if let Some(style) = self.martial_arts_styles.get_mut(&name) {
+        } else if let Some(style) = self.martial_arts_styles.get_mut(name) {
             let old_dots = style.ability().dots();
             style.ability_mut().set_dots(dots)?;
             if old_dots > dots {
@@ -1061,27 +1060,25 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn add_martial_arts_charm(
         &mut self,
+        style_name: &str,
         name: &'source str,
         martial_arts_charm: &'source MartialArtsCharmDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let style = self
-            .martial_arts_styles
-            .get(&martial_arts_charm.style())
-            .ok_or(CharacterMutationError::MartialArtsError(
-                MartialArtsError::StyleNotFound,
-            ))?;
-        let required_ability = martial_arts_charm.ability_required();
+        let style = self.martial_arts_styles.get(style_name).ok_or(
+            CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound),
+        )?;
+        let required_ability = martial_arts_charm.ability_required;
         let actual_ability = style.ability().dots();
 
-        if required_ability > actual_ability {
+        if required_ability.get() > actual_ability {
             return Err(CharacterMutationError::CharmError(
                 CharmError::PrerequisitesNotMet,
             ));
         }
 
-        let required_essence = martial_arts_charm.essence_required();
+        let required_essence = martial_arts_charm.essence_required;
         let actual_essence = self.essence.rating;
-        if actual_essence.get() < required_essence {
+        if actual_essence < required_essence {
             let mut martial_arts_supernal = false;
             // May still be okay for a Dawn caste, Martial Arts supernal solar
             let ExaltType::Solar(solar) = &self.exalt_type;
@@ -1098,7 +1095,9 @@ impl<'view, 'source> Exalt<'source> {
         }
 
         let mut unmet_charm_prerequisites = martial_arts_charm
-            .charms_required()
+            .charms_required
+            .iter()
+            .map(|prerequisite_charm_name| prerequisite_charm_name.as_str())
             .collect::<HashSet<&str>>();
 
         for known_charm_id in style.charms().map(|(known_charm_name, _)| known_charm_name) {
@@ -1117,7 +1116,7 @@ impl<'view, 'source> Exalt<'source> {
             ))
         } else {
             self.martial_arts_styles_mut()
-                .get_mut(&martial_arts_charm.style())
+                .get_mut(style_name)
                 .ok_or(CharacterMutationError::MartialArtsError(
                     MartialArtsError::StyleNotFound,
                 ))?
@@ -1142,18 +1141,18 @@ impl<'view, 'source> Exalt<'source> {
             let ids_to_remove: HashSet<&str> = martial_artist.charms.iter().fold(
                 HashSet::from_iter(force_remove.iter().copied()),
                 |mut ids_to_remove, (known_charm_name, known_charm)| {
-                    if known_charm.ability_required() > actual_ability {
+                    if known_charm.ability_required.get() > actual_ability {
                         ids_to_remove.insert(*known_charm_name);
                     }
 
-                    if known_charm.essence_required() > actual_essence.get()
+                    if known_charm.essence_required > actual_essence
                         && !is_martial_arts_supernal
                     {
                         ids_to_remove.insert(*known_charm_name);
                     }
 
-                    for prereq_charm_id in known_charm.charms_required() {
-                        if ids_to_remove.contains(&prereq_charm_id) {
+                    for prereq_charm_name in known_charm.charms_required.iter() {
+                        if ids_to_remove.contains(prereq_charm_name.as_str()) {
                             ids_to_remove.insert(*known_charm_name);
                         }
                     }

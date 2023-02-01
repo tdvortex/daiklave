@@ -7,7 +7,8 @@ pub mod evocation;
 mod add;
 mod name;
 pub use remove::RemoveCharm;
-pub use name::{CharmName, CharmNameMutation};
+pub use name::{CharmName};
+pub(crate) use name::CharmNameMutation;
 
 /// Evocations of spirits (and other supernatural beings), as well as Eclipse
 /// Charms.

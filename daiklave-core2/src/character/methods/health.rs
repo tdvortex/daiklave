@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{
     health::{DamageLevel, Health, WoundPenalty},
     Character, CharacterMutationError,
@@ -7,6 +9,13 @@ impl<'source> Character<'source> {
     /// Gets the character's health state (read-only).
     pub fn health(&self) -> &Health {
         &self.health
+    }
+
+    pub fn set_health_track(
+        &mut self,
+        new_wound_penalties: &HashMap<WoundPenalty, u8>
+    ) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
     }
 
     /// Sets a character's health track to be the specified set of wound

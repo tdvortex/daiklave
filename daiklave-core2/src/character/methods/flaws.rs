@@ -2,7 +2,7 @@ use std::collections::hash_map::Entry;
 
 use crate::{
     flaws::{flaw::AddFlaw, Flaws},
-    merits::merit::MeritError,
+    merits::merit_new::MeritError,
     Character, CharacterMutationError,
 };
 

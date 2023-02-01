@@ -4,7 +4,7 @@ use super::{MajorLanguage, LocalTongueName, Language};
 
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum LanguageMutation {
+pub(crate) enum LanguageMutation {
     MajorLanguage(MajorLanguage),
     LocalTongue(LocalTongueName),
 }

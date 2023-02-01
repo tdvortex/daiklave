@@ -12,7 +12,7 @@ impl From<&MoteCommitmentName<'_>> for MoteCommitmentNameMutation {
     fn from(name: &MoteCommitmentName<'_>) -> Self {
         match name {
             MoteCommitmentName::AttunedArtifact(artifact_name) => MoteCommitmentNameMutation::AttunedArtifact((*artifact_name).into()),
-            MoteCommitmentName::Other(other_name) => MoteCommitmentNameMutation::Other(other_name.into()),
+            MoteCommitmentName::Other(other_name) => MoteCommitmentNameMutation::Other((*other_name).into()),
         }
     }
 }

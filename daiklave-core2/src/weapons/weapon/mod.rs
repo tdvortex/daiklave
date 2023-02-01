@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::{
     book_reference::BookReference, exaltation::exalt::essence::MoteCommitment,
-    hearthstones::hearthstone::Hearthstone,
+    hearthstones::hearthstone::Hearthstone, merits::merit_new::Merit,
 };
 
 use self::{
@@ -46,6 +46,10 @@ pub use weight_class::WeaponWeightClass;
 pub struct Weapon<'source>(pub(crate) WeaponType<'source>);
 
 impl<'view, 'source> Weapon<'source> {
+    pub(crate) fn merits(&self) -> Vec<Merit<'source>> {
+        self.0.merits()
+    }
+
     /// Starts constructing a base weapon, which is either a mundane
     /// weapon (like "sword") or base artifact weapon (like "daiklave").
     pub fn new_base(name: impl Into<String>) -> BaseWeaponBuilder {

@@ -17,7 +17,7 @@ pub struct MartialArts<'view, 'source>(pub(crate) &'view Exaltation<'source>);
 
 impl<'view, 'source> MartialArts<'view, 'source> {
     /// The details of a particular Martial Arts style.
-    pub fn style(&'view self, name: &'view str) -> Option<MartialArtist<'view, 'source>> {
+    pub fn style(&self, name: &str) -> Option<MartialArtist<'view, 'source>> {
         self.0.martial_artist(name)
     }
 

@@ -4,8 +4,8 @@ use super::{WeaponNameMutation, Equipped};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UnequipWeapon {
-    name: WeaponNameMutation,
-    equipped: Equipped,
+    pub(crate) name: WeaponNameMutation,
+    pub(crate) equipped: Equipped,
 }
 
 impl UnequipWeapon {

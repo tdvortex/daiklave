@@ -31,13 +31,13 @@ use crate::{
     hearthstones::{hearthstone::GeomancyLevel, UnslottedHearthstone},
     intimacies::intimacy::{IntimacyLevel, IntimacyTypeMemo},
     languages::language::LanguageMutation,
-    merits::merit::{NonStackableMeritView, StackableMeritView},
+    merits::{merit_new::{NonStackableMeritInstance, StackableMeritInstance}},
     willpower::Willpower,
 };
 
 use self::mutation::{
     CommitMotes, HealDamage, RecoverMotes, SetAttribute,
-    SetName, SetWillpowerRating, SpendMotes, TakeDamage, SetEssenceRating, EquipWeapon, UnequipWeapon, RemoveMundaneWeapon, EquipArmor, SetConcept, SlotHearthstone, UnslotHearthstone, AttuneArtifact, RemoveFlaw, GainLimit, ReduceLimit, SetLimitTrigger, GainExperience, SpendExperience, GainExaltExperience, GainWillpower, SpendWillpower, SetHealthTrack, SpendExaltExperience,
+    SetName, SetWillpowerRating, SpendMotes, TakeDamage, SetEssenceRating, EquipWeapon, UnequipWeapon, RemoveMundaneWeapon, EquipArmor, SetConcept, SlotHearthstone, UnslotHearthstone, AttuneArtifact, RemoveFlaw, GainLimit, ReduceLimit, SetLimitTrigger, GainExperience, SpendExperience, GainExaltExperience, GainWillpower, SpendWillpower, SetHealthTrack, SpendExaltExperience, RemoveMundaneArmor, RemoveCharm,
 };
 
 /// A borrowed instance of a Character which references a CharacterEventSource
@@ -54,8 +54,8 @@ pub struct Character<'source> {
     pub(crate) craft: Craft<'source>,
     pub(crate) hearthstone_inventory: HashMap<&'source str, UnslottedHearthstone<'source>>,
     pub(crate) demenses_no_manse: HashMap<&'source str, GeomancyLevel>,
-    pub(crate) stackable_merits: HashMap<(&'source str, &'source str), StackableMeritView<'source>>, // Keyed by the
-    pub(crate) nonstackable_merits: HashMap<&'source str, NonStackableMeritView<'source>>, // Keyed by the template name
+    pub(crate) stackable_merits: HashMap<(&'source str, &'source str), &'source StackableMeritInstance>,
+    pub(crate) nonstackable_merits: HashMap<&'source str, &'source NonStackableMeritInstance>,
     pub(crate) flaws: HashMap<&'source str, (Option<BookReference>, &'source str)>,
     pub(crate) native_language: &'source LanguageMutation,
     pub(crate) other_languages: HashSet<&'source LanguageMutation>,
@@ -130,7 +130,7 @@ impl<'source> Character<'source> {
                 self.add_mundane_armor(add_mundane_armor)
             }
             CharacterMutation::EquipArmor(EquipArmor(name)) => self.equip_armor(name.into()),
-            CharacterMutation::RemoveMundaneArmor(name) => self.remove_mundane_armor(name.as_str()),
+            CharacterMutation::RemoveMundaneArmor(RemoveMundaneArmor(name)) => self.remove_mundane_armor(name.as_str()),
             CharacterMutation::UnequipArmor => self.unequip_armor(),
             CharacterMutation::SlotHearthstone(SlotHearthstone {
                 artifact_name,
@@ -151,7 +151,7 @@ impl<'source> Character<'source> {
                 self.set_native_language(language_mutation)
             }
             CharacterMutation::AddCharm(add_charm) => self.add_charm(add_charm),
-            CharacterMutation::RemoveCharm(remove_charm) => self.remove_charm(remove_charm),
+            CharacterMutation::RemoveCharm(RemoveCharm(charm_name)) => self.remove_charm(charm_name.into()),
             CharacterMutation::AddFlaw(add_flaw) => self.add_flaw(add_flaw),
             CharacterMutation::RemoveFlaw(RemoveFlaw(name)) => self.remove_flaw(name),
             CharacterMutation::AddIntimacy(add_intimacy) => self.add_intimacy(add_intimacy),
@@ -170,8 +170,8 @@ impl<'source> Character<'source> {
             CharacterMutation::AddSorcery(add_sorcery) => self.add_sorcery(add_sorcery),
             CharacterMutation::AddMerit(add_merit) => self.add_merit(add_merit),
             CharacterMutation::RemoveMerit(remove_merit) => self.remove_merit(remove_merit),
-            CharacterMutation::AddLanguage() => todo!(),
-            CharacterMutation::RemoveLanguage(_) => todo!(),
+            CharacterMutation::AddLanguage(add_language) => self.add_language(add_language),
+            CharacterMutation::RemoveLanguage(remove_language) => self.remove_language(remove_language),
         }
     }
 }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::merits::merit::{ManseName, DemenseName};
+use crate::merits::merit_new::{manse::ManseName, DemenseName};
 
 use super::HearthstoneOrigin;
 

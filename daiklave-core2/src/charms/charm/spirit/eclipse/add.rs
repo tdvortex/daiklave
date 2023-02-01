@@ -5,8 +5,8 @@ use super::EclipseCharm;
 /// An Eclipse Charm to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddEclipseCharm {
-    name: SpiritCharmName,
-    charm: EclipseCharm,
+    pub(crate) name: SpiritCharmName,
+    pub(crate) charm: EclipseCharm,
 }
 
 impl From<AddEclipseCharm> for CharacterMutation {

@@ -11,9 +11,9 @@ pub use remove::RemoveSorceryArchetypeMerit;
 use crate::book_reference::BookReference;
 
 pub(crate) struct SorceryArchetypeMerit<'source> {
-    archetype_name: &'source str,
-    merit_name: &'source str,
-    details: &'source SorceryArchetypeMeritDetails,
+    pub archetype_name: &'source str,
+    pub merit_name: &'source str,
+    pub details: &'source SorceryArchetypeMeritDetails,
 }
 
 impl<'source> SorceryArchetypeMerit<'source> {

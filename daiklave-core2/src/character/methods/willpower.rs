@@ -8,6 +8,14 @@ impl<'source> Character<'source> {
         &self.willpower
     }
 
+    pub fn gain_willpower(&mut self, amount: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
+    }
+
+    pub fn spend_willpower(&mut self, amount: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
+        todo!()
+    }
+
     /// Sets the character's willpower to the specified amount. This is allowed
     /// to exceed their ordinary rating.
     pub fn set_current_willpower(

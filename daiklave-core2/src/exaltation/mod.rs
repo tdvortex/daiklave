@@ -33,13 +33,13 @@ use crate::{
             solar::AddSolarSorcery,
         },
         spell::SpellMutation,
-        Sorcery, SorceryArchetypeMeritDetails, SorceryError, AddTerrestrialSorcery,
+        Sorcery, SorceryError, AddTerrestrialSorcery,
     },
     weapons::weapon::{
         artifact::ArtifactWeapon, mundane::MundaneWeapon, EquipHand, Equipped, Weapon,
         WeaponName,
     },
-    CharacterMutationError,
+    CharacterMutationError, merits::merit_new::SorceryArchetypeMeritDetails,
 };
 
 use self::{
@@ -202,7 +202,7 @@ impl<'source> Exaltation<'source> {
 
     pub(crate) fn set_martial_arts_dots(
         &mut self,
-        name: &'source str,
+        name: &str,
         dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
@@ -220,7 +220,7 @@ impl<'source> Exaltation<'source> {
 impl<'view, 'source> Exaltation<'source> {
     pub(crate) fn martial_artist(
         &'view self,
-        name: &'view str,
+        name: &str,
     ) -> Option<MartialArtist<'view, 'source>> {
         match self {
             Exaltation::Mortal(mortal) => {
@@ -529,7 +529,7 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Mortal(_) => {
                 Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
             }
-            Exaltation::Exalt(exalt) => exalt.uncommit_motes(match to_uncommit.0 {
+            Exaltation::Exalt(exalt) => exalt.uncommit_motes(match &to_uncommit.0 {
                 MoteCommitmentNameMutation::AttunedArtifact(ArtifactNameMutation::Armor(name)) => {
                     MoteCommitmentName::AttunedArtifact(ArtifactName::Armor(name.as_str()))
                 }
@@ -1085,13 +1085,14 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn add_martial_arts_charm(
         &mut self,
+        style_name: &str,
         name: &'source str,
         martial_arts_charm: &'source MartialArtsCharmDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => Err(CharacterMutationError::CharmError(CharmError::Mortal)),
             Exaltation::Exalt(exalt) => {
-                exalt.add_martial_arts_charm(name, martial_arts_charm)?;
+                exalt.add_martial_arts_charm(style_name, name, martial_arts_charm)?;
                 Ok(self)
             }
         }

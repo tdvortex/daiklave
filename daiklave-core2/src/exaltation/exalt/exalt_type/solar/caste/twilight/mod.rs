@@ -8,7 +8,7 @@ use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
 
 use self::anima_effect::{TWILIGHT_ONE, TWILIGHT_THREE, TWILIGHT_TWO};
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct Twilight {
     pub caste_not_supernal: [TwilightAbility; 4],
     pub supernal: TwilightAbility,

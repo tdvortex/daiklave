@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
-use crate::book_reference::BookReference;
+use crate::{book_reference::BookReference, merits::merit_new::SorceryArchetypeMeritDetails};
 
-use super::{SorceryArchetypeDetails, SorceryArchetypeMeritDetails, SorceryArchetypeMerits};
+use super::{SorceryArchetypeDetails, SorceryArchetypeMerits};
 
 pub struct SorceryArchetypeWithMerits<'view, 'source> {
     archetype_name: &'source str,

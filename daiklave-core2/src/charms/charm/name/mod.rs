@@ -1,5 +1,5 @@
 mod mutation;
-pub use mutation::CharmNameMutation;
+pub(crate) use mutation::CharmNameMutation;
 
 /// The name of a Charm.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

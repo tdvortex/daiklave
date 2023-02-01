@@ -8,9 +8,9 @@ use crate::{
             terrestrial::{AddTerrestrialSorcery},
         },
         spell::SpellMutation,
-        Sorcery, SorceryArchetypeMeritDetails, AddSorcery, AddSorceryCircle,
+        Sorcery, AddSorcery, AddSorceryCircle,
     },
-    Character, CharacterMutationError,
+    Character, CharacterMutationError, merits::merit_new::AddSorceryArchetypeMerit,
 };
 
 impl<'view, 'source> Character<'source> {
@@ -80,7 +80,13 @@ impl<'view, 'source> Character<'source> {
 
     /// Removes the highest level of sorcery the character has attained.
     pub fn remove_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
-        self.remove_solar_sorcery().or_else(|_| self.remove_celestial_sorcery()).or_else(|_| self.remove_terrestrial_sorcery())
+        if self.remove_solar_sorcery().is_ok() {
+            Ok(self)
+        } else if self.remove_celestial_sorcery().is_ok() {
+            Ok(self)
+        } else {
+            self.remove_terrestrial_sorcery()
+        }
     }
 
     /// Adds a circle of sorcery to the character.
@@ -95,14 +101,12 @@ impl<'view, 'source> Character<'source> {
     /// Adds a merit to a Sorcery Archetype owned by the character
     pub fn add_sorcery_archetype_merit(
         &mut self,
-        sorcery_archetype_name: &'source str,
-        sorcery_archetype_merit_name: &'source str,
-        sorcery_archetype_merit: &'source SorceryArchetypeMeritDetails,
+        add_sorcery_archetype_merit: &'source AddSorceryArchetypeMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_sorcery_archetype_merit(
-            sorcery_archetype_name,
-            sorcery_archetype_merit_name,
-            sorcery_archetype_merit,
+            &add_sorcery_archetype_merit.archetype_name,
+            &add_sorcery_archetype_merit.name,
+            &add_sorcery_archetype_merit.details,
         )?;
         Ok(self)
     }

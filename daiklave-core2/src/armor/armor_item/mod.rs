@@ -30,7 +30,7 @@ pub use tag::ArmorTag;
 pub use unequip::UnequipArmor;
 pub use weight_class::ArmorWeightClass;
 
-use crate::{book_reference::BookReference, hearthstones::hearthstone::Hearthstone};
+use crate::{book_reference::BookReference, hearthstones::hearthstone::Hearthstone, merits::merit_new::Merit};
 
 use self::{artifact::{builder::ArtifactArmorItemBuilder, ArtifactArmorName}, base::builder::BaseArmorItemBuilder};
 
@@ -39,6 +39,10 @@ use self::{artifact::{builder::ArtifactArmorItemBuilder, ArtifactArmorName}, bas
 pub struct ArmorItem<'source>(pub(crate) ArmorType<'source>, pub(crate) bool);
 
 impl<'source> ArmorItem<'source> {
+    pub(crate) fn merits(&self) -> Vec<Merit<'source>> {
+        self.0.merits()
+    }
+
     /// Starts constructing a base armor item.
     pub fn base_builder(name: impl Into<String>) -> BaseArmorItemBuilder {
         BaseArmorItemBuilder {

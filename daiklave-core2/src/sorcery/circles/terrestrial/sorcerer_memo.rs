@@ -2,11 +2,11 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::sorcery::{
+use crate::{sorcery::{
     archetype::{SorceryArchetypeName},
     spell::SpellName,
-    ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeMeritDetails,
-};
+    ShapingRitualDetails, SorceryArchetypeDetails,
+}, merits::merit_new::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName}};
 
 use super::{TerrestrialSpell};
 
@@ -14,7 +14,7 @@ use super::{TerrestrialSpell};
 pub(crate) struct TerrestrialCircleSorcererMemo {
     pub archetype_name: SorceryArchetypeName,
     pub archetype: SorceryArchetypeDetails,
-    pub archetype_merits: HashMap<String, SorceryArchetypeMeritDetails>,
+    pub archetype_merits: HashMap<SorceryArchetypeMeritName, SorceryArchetypeMeritDetails>,
     pub shaping_ritual_name: String,
     pub shaping_ritual: ShapingRitualDetails,
     pub control_spell_name: SpellName,

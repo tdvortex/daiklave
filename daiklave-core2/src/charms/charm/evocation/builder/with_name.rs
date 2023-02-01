@@ -1,6 +1,6 @@
 use std::{num::NonZeroU8, collections::{HashSet, HashMap}};
 
-use crate::{charms::{charm::{evocation::{EvokableNameMutation, EvocationKeyword, EvocationName}, CharmNameMutation}, CharmCostType}, book_reference::BookReference};
+use crate::{charms::{charm::{evocation::{EvokableNameMutation, EvocationKeyword, EvocationName}, CharmNameMutation, CharmName}, CharmCostType}, book_reference::BookReference};
 
 use super::EvocationBuilderWithEssenceRequirement;
 
@@ -52,8 +52,8 @@ impl EvocationBuilderWithName {
 
     /// Sets this Evocation as an upgrade of another Charm, usually a
     /// Solar Charm (or other Exalt-specific type).
-    pub fn upgrades(mut self, charm_name: CharmNameMutation) -> Self {
-        self.upgrade_charm = Some(charm_name);
+    pub fn upgrades(mut self, charm_name: CharmName<'_>) -> Self {
+        self.upgrade_charm = Some(charm_name.into());
         self
     }
 

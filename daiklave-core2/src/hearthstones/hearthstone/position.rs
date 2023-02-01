@@ -1,4 +1,4 @@
-use crate::{artifact::ArtifactName, book_reference::BookReference};
+use crate::{artifact::ArtifactName, book_reference::BookReference, merits::merit_new::{Merit, MeritSource}};
 
 use super::{
     category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword,
@@ -12,6 +12,25 @@ pub(crate) enum HearthstonePosition<'source> {
 }
 
 impl<'source> HearthstonePosition<'source> {
+    pub(crate) fn merits(&self) -> Vec<Merit<'source>> {
+        match self {
+            HearthstonePosition::Slotted(_, slotted) => slotted.merits(),
+            HearthstonePosition::Unslotted(name, slotted) => {
+                if let Some((manse, demense)) = slotted.manse_and_demense() {
+                    vec![
+                        Merit(MeritSource::Demense { name: demense, has_manse: true, geomancy_level: self.geomancy_level() }),
+                        Merit(MeritSource::Hearthstone { name: *name, has_manse: true, geomancy_level: self.geomancy_level() }),
+                        Merit(MeritSource::Manse { name: manse, geomancy_level: self.geomancy_level() })
+                    ]
+                } else {
+                    vec![
+                        Merit(MeritSource::Hearthstone { name: *name, has_manse: false, geomancy_level: self.geomancy_level() })
+                    ]
+                }
+            }
+        }
+    }
+
     pub fn name(&self) -> &'source str {
         match self {
             HearthstonePosition::Slotted(_, slotted) => slotted.name,

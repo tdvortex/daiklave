@@ -27,6 +27,18 @@ pub(crate) enum SolarCaste<'source> {
     Eclipse(Eclipse<'source>),
 }
 
+impl<'source> From<&'source SolarCasteMemo> for SolarCaste<'source> {
+    fn from(memo: &'source SolarCasteMemo) -> Self {
+        match memo {
+            SolarCasteMemo::Dawn(dawn) => Self::Dawn(*dawn),
+            SolarCasteMemo::Zenith(zenith) => Self::Zenith(*zenith),
+            SolarCasteMemo::Twilight(twilight) => Self::Twilight(*twilight),
+            SolarCasteMemo::Night(night) => Self::Night(*night),
+            SolarCasteMemo::Eclipse(eclipse) => Self::Eclipse(eclipse.into()),
+        }
+    }
+}
+
 impl<'source> SolarCaste<'source> {
     pub fn has_caste_ability(&self, ability: AbilityName) -> bool {
         match self {

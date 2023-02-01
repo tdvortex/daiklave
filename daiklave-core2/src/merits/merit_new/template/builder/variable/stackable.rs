@@ -6,17 +6,17 @@ pub struct VariableStackableMeritTemplateBuilder(pub(crate) VariableMeritTemplat
 
 impl VariableStackableMeritTemplateBuilder {
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
-        self.0.book_reference(book_reference);
+        self = Self(self.0.book_reference(book_reference));
         self
     }
 
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
-        self.0.prerequisite(prerequisite);
+        self = Self(self.0.prerequisite(prerequisite));
         self
     }
 
     pub fn dot_option(mut self, dots: u8, description: impl Into<String>) -> Self {
-        self.0.dot_option(dots, description);
+        self = Self(self.0.dot_option(dots, description));
         self
     }
 

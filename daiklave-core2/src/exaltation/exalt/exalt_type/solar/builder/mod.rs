@@ -9,17 +9,19 @@ pub use night::NightBuilder;
 pub use twilight::TwilightBuilder;
 pub use zenith::ZenithBuilder;
 
+use crate::exaltation::exalt::limit::LimitTrigger;
+
 /// A builder for constructing a new Solar Exalted. Requires choosing a caste
 /// first, then the caste/supernal/favored abilities for that caste. A Limit
 /// Trigger must also be provided but can be be set at any time.
 pub struct SolarBuilder {
-    pub(crate) limit_trigger: Option<String>,
+    pub(crate) limit_trigger: Option<LimitTrigger>,
 }
 
 impl SolarBuilder {
     /// Sets the Limit Trigger for the Solar.
-    pub fn limit_trigger(mut self, limit_trigger: String) -> Self {
-        self.limit_trigger = Some(limit_trigger);
+    pub fn limit_trigger(mut self, limit_trigger: impl Into<LimitTrigger>) -> Self {
+        self.limit_trigger = Some(limit_trigger.into());
         self
     }
 

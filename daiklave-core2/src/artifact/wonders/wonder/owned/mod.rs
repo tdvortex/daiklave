@@ -2,7 +2,10 @@ mod no_attunement;
 pub(crate) use no_attunement::{WonderNoAttunement, WonderNoAttunementMemo};
 
 use crate::{
-    artifact::MagicMaterial, book_reference::BookReference, hearthstones::hearthstone::Hearthstone,
+    artifact::MagicMaterial,
+    book_reference::BookReference,
+    hearthstones::hearthstone::Hearthstone,
+    merits::merit_new::{Merit, MeritSource},
 };
 
 /// A Wonder that belongs to the character, and may be attuned or unattuned.
@@ -13,6 +16,21 @@ pub struct OwnedWonder<'source>(
 );
 
 impl<'source> OwnedWonder<'source> {
+    pub(crate) fn merits(&self) -> Vec<Merit<'source>> {
+        let mut output = vec![Merit(MeritSource::Artifact {
+            name: self.0,
+            dots: self.1.merit_dots,
+        })];
+        output.extend(
+            self.1
+                .hearthstone_slots
+                .iter()
+                .filter_map(|maybe_hearthstone| maybe_hearthstone.as_ref())
+                .flat_map(|slotted| slotted.merits().into_iter()),
+        );
+        output
+    }
+
     /// The wonder's name.
     pub fn name(&self) -> &'source str {
         self.0

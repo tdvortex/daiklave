@@ -3,7 +3,7 @@ use crate::CharacterMutation;
 use super::{LanguageMutation, MajorLanguage, LocalTongueName, Language};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct AddLanguage(pub LanguageMutation);
+pub struct AddLanguage(pub(crate) LanguageMutation);
 
 impl AddLanguage {
     pub fn major_language(major_language: MajorLanguage) -> Self {

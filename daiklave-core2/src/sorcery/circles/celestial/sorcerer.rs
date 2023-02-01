@@ -2,6 +2,7 @@ use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
     charms::CharmError,
+    merits::merit_new::SorceryArchetypeMeritDetails,
     sorcery::{
         circles::{
             solar::{sorcerer::SolarCircleSorcerer, AddSolarSorcery},
@@ -9,13 +10,12 @@ use crate::{
             terrestrial::TerrestrialSpell,
         },
         spell::Spell,
-        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeMeritDetails, SorceryArchetypeWithMerits,
-        SorceryError,
+        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeWithMerits, SorceryError,
     },
     CharacterMutationError,
 };
 
-use super::{spell::CelestialSpell};
+use super::{sorcerer_memo::CelestialCircleSorcererMemo, spell::CelestialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct CelestialCircleSorcerer<'source> {
@@ -37,6 +37,54 @@ pub(crate) struct CelestialCircleSorcerer<'source> {
     pub(crate) celestial_spells: HashMap<&'source str, &'source CelestialSpell>,
 }
 
+impl<'source> From<&'source CelestialCircleSorcererMemo> for CelestialCircleSorcerer<'source> {
+    fn from(memo: &'source CelestialCircleSorcererMemo) -> Self {
+        CelestialCircleSorcerer {
+            archetypes: memo
+                .archetypes
+                .iter()
+                .map(|(archetype_name, (archetype_details, merits_map))| {
+                    (
+                        archetype_name.as_str(),
+                        (
+                            archetype_details,
+                            merits_map
+                                .iter()
+                                .map(|(merit_name, merit_details)| {
+                                    (merit_name.as_str(), merit_details)
+                                })
+                                .collect(),
+                        ),
+                    )
+                })
+                .collect(),
+            circle_archetypes: [
+                memo.circle_archetypes[0].as_str(),
+                memo.circle_archetypes[1].as_str(),
+            ],
+            shaping_ritual_names: [
+                memo.shaping_ritual_names[0].as_str(),
+                memo.shaping_ritual_names[1].as_str(),
+            ],
+            shaping_rituals: [&memo.shaping_rituals[0], &memo.shaping_rituals[1]],
+            terrestrial_control_spell_name: &memo.terrestrial_control_spell_name,
+            terrestrial_control_spell: &memo.terrestrial_control_spell,
+            terrestrial_spells: memo
+                .terrestrial_spells
+                .iter()
+                .map(|(spell_name, spell)| (spell_name.as_str(), spell))
+                .collect(),
+            celestial_control_spell_name: &memo.celestial_control_spell_name,
+            celestial_control_spell: &memo.celestial_control_spell,
+            celestial_spells: memo
+                .celestial_spells
+                .iter()
+                .map(|(spell_name, spell)| (spell_name.as_str(), spell))
+                .collect(),
+        }
+    }
+}
+
 impl<'view, 'source> CelestialCircleSorcerer<'source> {
     pub fn archetype(
         &'view self,
@@ -45,11 +93,13 @@ impl<'view, 'source> CelestialCircleSorcerer<'source> {
         if self.circle_archetypes.contains(&name) {
             self.archetypes
                 .get_key_value(name)
-                .map(|(archetype_name, (archetype, merits))| SorceryArchetypeWithMerits {
-                    archetype_name: *archetype_name,
-                    archetype: *archetype,
-                    merits,
-                })
+                .map(
+                    |(archetype_name, (archetype, merits))| SorceryArchetypeWithMerits {
+                        archetype_name: *archetype_name,
+                        archetype: *archetype,
+                        merits,
+                    },
+                )
         } else {
             None
         }

@@ -1,4 +1,5 @@
 mod error;
+use crate::merits::merit_new::RemoveMerit;
 use crate::{Character};
 pub use crate::abilities::{SetAbility, AddSpecialty, RemoveSpecialty};
 pub use crate::armor::armor_item::{EquipArmor, UnequipArmor};
@@ -15,7 +16,7 @@ pub use crate::hearthstones::hearthstone::{SlotHearthstone, UnslotHearthstone};
 pub use crate::intimacies::intimacy::{AddIntimacy, RemoveIntimacy};
 pub use crate::languages::language::{RemoveLanguage, AddLanguage};
 pub use crate::languages::language::SetNativeLanguage;
-pub use crate::merits::merit::AddMerit;
+pub use crate::merits::merit_new::AddMerit;
 pub use crate::name::SetName;
 pub use crate::concept::{RemoveConcept, SetConcept};
 pub use crate::exaltation::mortal::SetMortal;
@@ -143,8 +144,8 @@ pub enum CharacterMutation {
     RemoveMerit(RemoveMerit),
 }
 
-impl<'source> CharacterMutation {
-    pub fn apply_mutation(&'source self, character: &mut Character<'source>) -> Result<&mut Character, CharacterMutationError> {
+impl<'view, 'source> CharacterMutation {
+    pub fn apply_mutation(&'source self, character: &'view mut Character<'source>) -> Result<&'view mut Character<'source>, CharacterMutationError> {
         character.apply_mutation(self)
     }
 }

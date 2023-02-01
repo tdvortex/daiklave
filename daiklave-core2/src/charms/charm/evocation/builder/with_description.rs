@@ -8,7 +8,7 @@ use crate::{
     charms::{
         charm::{
             evocation::{AddEvocation, EvocationKeyword, EvokableNameMutation, EvocationName},
-            CharmNameMutation, Evocation,
+            CharmNameMutation, Evocation, CharmName,
         },
         CharmActionType, CharmCostType,
     },
@@ -68,11 +68,11 @@ impl EvocationBuilderWithDescription {
 
     /// Sets this Evocation as an upgrade of another Charm, usually a
     /// Solar Charm (or other Exalt-specific type).
-    pub fn upgrades(mut self, charm_name: CharmNameMutation) -> Self {
-        self.upgrade_charm = Some(charm_name);
+    pub fn upgrades(mut self, charm_name: CharmName<'_>) -> Self {
+        self.upgrade_charm = Some(charm_name.into());
         self
     }
-
+    
     /// Adds a cost to use this Charm.
     pub fn cost(mut self, cost_type: CharmCostType, amount: NonZeroU8) -> Self {
         self.costs

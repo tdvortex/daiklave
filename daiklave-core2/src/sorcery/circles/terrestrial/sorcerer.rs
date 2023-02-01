@@ -2,16 +2,16 @@ use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
     charms::CharmError,
+    merits::merit_new::SorceryArchetypeMeritDetails,
     sorcery::{
         circles::celestial::{sorcerer::CelestialCircleSorcerer, AddCelestialSorcery},
         spell::Spell,
-        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeMeritDetails,
-        SorceryArchetypeWithMerits, SorceryError,
+        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeWithMerits, SorceryError,
     },
     CharacterMutationError,
 };
 
-use super::{TerrestrialSpell};
+use super::{sorcerer_memo::TerrestrialCircleSorcererMemo, TerrestrialSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct TerrestrialCircleSorcerer<'source> {
@@ -23,6 +23,29 @@ pub(crate) struct TerrestrialCircleSorcerer<'source> {
     pub control_spell_name: &'source str,
     pub control_spell: &'source TerrestrialSpell,
     pub other_spells: HashMap<&'source str, &'source TerrestrialSpell>,
+}
+
+impl<'source> From<&'source TerrestrialCircleSorcererMemo> for TerrestrialCircleSorcerer<'source> {
+    fn from(memo: &'source TerrestrialCircleSorcererMemo) -> Self {
+        Self {
+            archetype_name: &memo.archetype_name,
+            archetype: &memo.archetype,
+            archetype_merits: memo
+                .archetype_merits
+                .iter()
+                .map(|(merit_name, merit_details)| (merit_name.as_str(), merit_details))
+                .collect(),
+            shaping_ritual_name: &memo.shaping_ritual_name,
+            shaping_ritual: &memo.shaping_ritual,
+            control_spell_name: &memo.control_spell_name,
+            control_spell: &memo.control_spell,
+            other_spells: memo
+                .other_spells
+                .iter()
+                .map(|(spell_name, spell)| (spell_name.as_str(), spell))
+                .collect(),
+        }
+    }
 }
 
 impl<'view, 'source> TerrestrialCircleSorcerer<'source> {

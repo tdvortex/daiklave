@@ -8,8 +8,8 @@ use super::{MundaneArmor, MundaneArmorName};
 /// character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddMundaneArmor {
-    name: MundaneArmorName,
-    armor: MundaneArmor,
+    pub(crate) name: MundaneArmorName,
+    pub(crate) armor: MundaneArmor,
 }
 
 impl AddMundaneArmor {

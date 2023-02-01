@@ -2,6 +2,7 @@ use crate::{merits::merit_new::instance::DemenseName, hearthstones::hearthstone:
 
 use super::{name::ManseName, builder::ManseBuilder};
 
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddManse {
     manse_name: ManseName,
     demense_name: DemenseName,

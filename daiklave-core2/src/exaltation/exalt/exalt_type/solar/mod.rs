@@ -25,7 +25,7 @@ use crate::{
     charms::{charm::Charm, CharmError},
     exaltation::exalt::{AnimaEffect, Limit},
     experience::ExperiencePool,
-    merits::merit::MeritError,
+    merits::merit_new::{MeritError, SorceryArchetypeMeritDetails},
     sorcery::{
         circles::{
             celestial::AddCelestialSorcery,
@@ -33,7 +33,7 @@ use crate::{
             terrestrial::{sorcerer::TerrestrialCircleSorcerer},
         },
         spell::SpellMutation,
-        SorceryArchetypeMeritDetails, SorceryError, AddTerrestrialSorcery,
+        SorceryError, AddTerrestrialSorcery,
     },
     CharacterMutationError,
 };

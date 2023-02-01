@@ -1,4 +1,4 @@
-use crate::{artifact::ArtifactName, book_reference::BookReference};
+use crate::{artifact::ArtifactName, book_reference::BookReference, merits::merit_new::{Merit}};
 
 mod add;
 /// A builder path for creating new Hearthstones.
@@ -86,5 +86,9 @@ impl<'source> Hearthstone<'source> {
     /// The name of the manse and that manse's domain, if they exist.
     pub fn manse_and_demense(&self) -> Option<(&'source str, &'source str)> {
         self.0.manse_and_demense()
+    }
+
+    pub(crate) fn merits(&self) -> Vec<Merit<'source>> {
+        self.0.merits()
     }
 }

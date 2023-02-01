@@ -3,7 +3,7 @@ use std::num::NonZeroU8;
 use crate::{
     book_reference::{Book, BookReference},
     exaltation::exalt::essence::MoteCommitment,
-    hearthstones::hearthstone::Hearthstone,
+    hearthstones::hearthstone::Hearthstone, merits::merit_new::{Merit, MeritSource},
 };
 
 use super::{
@@ -18,6 +18,27 @@ pub(crate) enum WeaponType<'source> {
 }
 
 impl<'view, 'source> WeaponType<'source> {
+    pub(crate) fn merits(&self) -> Vec<Merit<'source>> {
+        match self {
+            WeaponType::Artifact(name, weapon, _) => {
+                let mut output = vec![Merit(MeritSource::Artifact {
+                    name,
+                    dots: weapon.merit_dots,
+                })];
+                output.extend(
+                    weapon
+                        .hearthstone_slots
+                        .iter()
+                        .filter_map(|maybe_hearthstone| maybe_hearthstone.as_ref())
+                        .flat_map(|slotted| slotted.merits().into_iter()),
+                );
+                output
+            }
+            WeaponType::Mundane(_, _, _) => vec![],
+            Unarmed => vec![]
+        }
+    }
+
     pub fn is_artifact(&self) -> bool {
         matches!(self, WeaponType::Artifact(_, _, _))
     }

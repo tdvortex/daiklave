@@ -15,7 +15,7 @@ pub struct VariableStackableMeritTemplate {
 }
 
 impl VariableStackableMeritTemplate {
-    pub fn instance(self, dots: u8, detail: impl Into<String>) -> Result<AddStackableMerit, MeritError> {
+    pub fn instance(mut self, dots: u8, detail: impl Into<String>) -> Result<AddStackableMerit, MeritError> {
         let dot_description = if self.min_dots.0 == dots {
             self.min_dots.1
         } else {

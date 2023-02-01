@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::charms::charm::EclipseCharm;
+use crate::charms::charm::{EclipseCharm, spirit::SpiritCharmName};
 
 use super::{EclipseAbility};
 
@@ -10,18 +10,5 @@ use super::{EclipseAbility};
 pub struct EclipseMemo {
     pub(crate) caste_not_supernal: [EclipseAbility; 4],
     pub(crate) supernal: EclipseAbility,
-    pub(crate) eclipse_charms: HashMap<String, EclipseCharm>,
-}
-
-impl<'source> EclipseMemo {
-    pub(in crate::exaltation::exalt::exalt_type::solar::caste::eclipse) fn new(
-        caste_not_supernal: [EclipseAbility; 4],
-        supernal: EclipseAbility,
-    ) -> Self {
-        Self {
-            caste_not_supernal,
-            supernal,
-            eclipse_charms: HashMap::new(),
-        }
-    }
+    pub(crate) eclipse_charms: HashMap<SpiritCharmName, EclipseCharm>,
 }

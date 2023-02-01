@@ -2,18 +2,18 @@ use std::collections::HashMap;
 
 use crate::{
     charms::CharmError,
+    merits::merit_new::SorceryArchetypeMeritDetails,
     sorcery::{
         circles::{
             celestial::CelestialSpell, sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell,
         },
         spell::{Spell, SpellMutation},
-        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeMeritDetails,
-        SorceryArchetypeWithMerits, SorceryError,
+        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeWithMerits, SorceryError,
     },
     CharacterMutationError,
 };
 
-use super::{SolarSpell};
+use super::{sorcerer_memo::SolarCircleSorcererMemo, SolarSpell};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct SolarCircleSorcerer<'source> {
@@ -38,6 +38,67 @@ pub(crate) struct SolarCircleSorcerer<'source> {
     pub(crate) solar_spells: HashMap<&'source str, &'source SolarSpell>,
 }
 
+impl<'source> From<&'source SolarCircleSorcererMemo> for SolarCircleSorcerer<'source> {
+    fn from(memo: &'source SolarCircleSorcererMemo) -> Self {
+        SolarCircleSorcerer {
+            archetypes: memo
+                .archetypes
+                .iter()
+                .map(|(archetype_name, (archetype_details, merits_map))| {
+                    (
+                        archetype_name.as_str(),
+                        (
+                            archetype_details,
+                            merits_map
+                                .iter()
+                                .map(|(merit_name, merit_details)| {
+                                    (merit_name.as_str(), merit_details)
+                                })
+                                .collect(),
+                        ),
+                    )
+                })
+                .collect(),
+            circle_archetypes: [
+                memo.circle_archetypes[0].as_str(),
+                memo.circle_archetypes[1].as_str(),
+                memo.circle_archetypes[2].as_str(),
+            ],
+            shaping_ritual_names: [
+                memo.shaping_ritual_names[0].as_str(),
+                memo.shaping_ritual_names[1].as_str(),
+                memo.shaping_ritual_names[2].as_str(),
+            ],
+            shaping_rituals: [
+                &memo.shaping_rituals[0],
+                &memo.shaping_rituals[1],
+                &memo.shaping_rituals[2],
+            ],
+            terrestrial_control_spell_name: &memo.terrestrial_control_spell_name,
+            terrestrial_control_spell: &memo.terrestrial_control_spell,
+            terrestrial_spells: memo
+                .terrestrial_spells
+                .iter()
+                .map(|(spell_name, spell)| (spell_name.as_str(), spell))
+                .collect(),
+            celestial_control_spell_name: &memo.celestial_control_spell_name,
+            celestial_control_spell: &memo.celestial_control_spell,
+            celestial_spells: memo
+                .celestial_spells
+                .iter()
+                .map(|(spell_name, spell)| (spell_name.as_str(), spell))
+                .collect(),
+            solar_control_spell_name: &memo.solar_control_spell_name,
+            solar_control_spell: &memo.solar_control_spell,
+            solar_spells: memo
+                .solar_spells
+                .iter()
+                .map(|(spell_name, spell)| (spell_name.as_str(), spell))
+                .collect(),
+        }
+    }
+}
+
 impl<'view, 'source> SolarCircleSorcerer<'source> {
     pub fn archetype(
         &'view self,
@@ -56,7 +117,10 @@ impl<'view, 'source> SolarCircleSorcerer<'source> {
         }
     }
 
-    pub fn shaping_ritual(&self, circle: SorceryCircle) -> (&'source str, &'source ShapingRitualDetails) {
+    pub fn shaping_ritual(
+        &self,
+        circle: SorceryCircle,
+    ) -> (&'source str, &'source ShapingRitualDetails) {
         match circle {
             SorceryCircle::Terrestrial => (self.shaping_ritual_names[0], self.shaping_rituals[0]),
             SorceryCircle::Celestial => (self.shaping_ritual_names[1], self.shaping_rituals[1]),

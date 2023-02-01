@@ -5,9 +5,9 @@ use super::{MartialArtsCharmDetails, MartialArtsCharmName, builder::MartialArtsC
 /// A Martial Arts charm to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddMartialArtsCharm {
-    name: MartialArtsCharmName,
-    style: MartialArtsStyleName,
-    charm: MartialArtsCharmDetails,
+    pub(crate) name: MartialArtsCharmName,
+    pub(crate) style: MartialArtsStyleName,
+    pub(crate) charm: MartialArtsCharmDetails,
 }
 
 impl From<MartialArtsCharmBuilderWithDescription> for AddMartialArtsCharm {

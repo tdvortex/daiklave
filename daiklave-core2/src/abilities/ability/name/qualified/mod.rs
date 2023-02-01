@@ -3,6 +3,7 @@ pub use mutation::AbilityNameQualifiedMutation;
 
 use super::AbilityNameVanilla;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum AbilityNameQualified<'source> {
     Vanilla(AbilityNameVanilla),
     Craft(&'source str),

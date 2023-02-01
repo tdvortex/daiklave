@@ -30,19 +30,19 @@ use super::name::{CharmName, CharmNameMutation};
 /// Artifact.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Evocation {
-    evokable_name: EvokableNameMutation,
-    book_reference: Option<BookReference>,
-    summary: Option<String>,
-    description: String,
-    resonant: Option<String>,
-    dissonant: Option<String>,
-    essence_required: NonZeroU8,
-    evocation_tree: HashSet<String>,
-    upgrade_charm: Option<CharmNameMutation>,
-    keywords: HashSet<EvocationKeyword>,
-    costs: HashMap<CharmCostType, NonZeroU8>,
-    action_type: CharmActionType,
-    duration: String,
+    pub(crate) evokable_name: EvokableNameMutation,
+    pub(crate) book_reference: Option<BookReference>,
+    pub(crate) summary: Option<String>,
+    pub(crate) description: String,
+    pub(crate) resonant: Option<String>,
+    pub(crate) dissonant: Option<String>,
+    pub(crate) essence_required: NonZeroU8,
+    pub(crate) evocation_tree: HashSet<String>,
+    pub(crate) upgrade_charm: Option<CharmNameMutation>,
+    pub(crate) keywords: HashSet<EvocationKeyword>,
+    pub(crate) costs: HashMap<CharmCostType, NonZeroU8>,
+    pub(crate) action_type: CharmActionType,
+    pub(crate) duration: String,
 }
 
 impl Evocation {

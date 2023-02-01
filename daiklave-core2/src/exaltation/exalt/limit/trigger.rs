@@ -1,6 +1,8 @@
 use std::ops::Deref;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LimitTrigger(String);
 
 impl<T> From<T> for LimitTrigger where T: Into<String> {
