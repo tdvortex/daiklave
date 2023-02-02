@@ -15,6 +15,7 @@ use crate::{
 };
 
 /// A builder for a Night caste Solar.
+#[derive(Default)]
 pub struct NightBuilder {
     pub(crate) caste_abilities: Vec<NightAbility>,
     pub(crate) supernal_ability: Option<NightAbility>,
@@ -23,6 +24,11 @@ pub struct NightBuilder {
 }
 
 impl NightBuilder {
+    /// Creates a new Night builder.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
     /// Adds a Caste ability to the Night.
     pub fn caste_ability(mut self, caste_ability: NightAbility) -> Self {
         self.caste_abilities.push(caste_ability);

@@ -18,6 +18,7 @@ use crate::{
 };
 
 /// A builder for a Dawn caste Solar.
+#[derive(Default)]
 pub struct DawnBuilder {
     pub(crate) caste_abilities: Vec<DawnCasteAbility>,
     pub(crate) supernal_ability: Option<DawnSupernalAbility>,
@@ -26,6 +27,11 @@ pub struct DawnBuilder {
 }
 
 impl DawnBuilder {
+    /// Creates a new Dawn builder.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
     /// Adds a Caste ability to the Dawn. Martial Arts cannot be a Caste
     /// ability.
     pub fn caste_ability(mut self, caste_ability: DawnCasteAbility) -> Self {

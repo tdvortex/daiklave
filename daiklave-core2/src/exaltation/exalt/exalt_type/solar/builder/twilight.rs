@@ -15,6 +15,7 @@ use crate::{
 };
 
 /// A builder for a Twilight caste Solar.
+#[derive(Default)]
 pub struct TwilightBuilder {
     pub(crate) caste_abilities: Vec<TwilightAbility>,
     pub(crate) supernal_ability: Option<TwilightAbility>,
@@ -23,6 +24,11 @@ pub struct TwilightBuilder {
 }
 
 impl TwilightBuilder {
+    /// Creates a new Twilight builder.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
     /// Adds a Caste ability to the Twilight.
     pub fn caste_ability(mut self, caste_ability: TwilightAbility) -> Self {
         self.caste_abilities.push(caste_ability);

@@ -5,7 +5,7 @@ use crate::{
     book_reference::BookReference,
     martial_arts::style::{
         AddMartialArtsStyle, MartialArtsStyleDetails, MartialArtsStyleName, MartialArtsStyleWeapon,
-    },
+    }, CharacterMutation,
 };
 
 /// A Martial Arts style builder after at least one weapon has been specified.
@@ -43,8 +43,8 @@ impl MartialArtsStyleBuilderWithWeapons {
     /// Enables the style to be used with a specific type of weapon. This may
     /// be a mundane weapon (like "sword"), a category of artifact weapon (like
     /// "dailklave"), but not a specific artifact weapon (like "Spring Razor").
-    pub fn weapon(mut self, weapon: String) -> Self {
-        let style_weapon = MartialArtsStyleWeapon::BaseWeapon(weapon);
+    pub fn weapon(mut self, weapon: impl Into<String>) -> Self {
+        let style_weapon = MartialArtsStyleWeapon::BaseWeapon(weapon.into());
 
         if self.first_weapon != style_weapon {
             self.usable_weapons.insert(style_weapon);
@@ -64,5 +64,11 @@ impl MartialArtsStyleBuilderWithWeapons {
                 max_armor_weight: self.max_armor_weight,
             },
         }
+    }
+}
+
+impl From<MartialArtsStyleBuilderWithWeapons> for CharacterMutation {
+    fn from(builder: MartialArtsStyleBuilderWithWeapons) -> Self {
+        builder.build().into()
     }
 }

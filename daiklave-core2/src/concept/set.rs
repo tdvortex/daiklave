@@ -1,5 +1,6 @@
 use crate::CharacterMutation;
 
+/// A mutation to set the character's concept.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SetConcept(pub String);
 

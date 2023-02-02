@@ -3,6 +3,7 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
+
 /// Structs related to a character's Abilities (skills) and specialties.
 pub mod abilities;
 
@@ -53,6 +54,9 @@ pub mod martial_arts;
 
 /// Merits logic
 pub mod merits;
+
+/// All of the ways a character can be atomically updated.
+pub mod mutations;
 
 /// Sorcery logic
 pub mod sorcery;

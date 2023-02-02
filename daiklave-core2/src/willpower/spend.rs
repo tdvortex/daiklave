@@ -2,6 +2,7 @@ use std::num::NonZeroU8;
 
 use crate::CharacterMutation;
 
+/// A mutation to spend the character's willpower.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SpendWillpower(pub NonZeroU8);
 

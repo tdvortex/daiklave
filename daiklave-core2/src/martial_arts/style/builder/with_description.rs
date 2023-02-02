@@ -44,11 +44,11 @@ impl MartialArtsStyleBuilderWithDescription {
     /// Enables the style to be used with a specific type of weapon. This may
     /// be a mundane weapon (like "sword"), a category of artifact weapon (like
     /// "dailklave"), but not a specific artifact weapon (like "Spring Razor").
-    pub fn weapon(self, weapon: String) -> MartialArtsStyleBuilderWithWeapons {
+    pub fn weapon(self, weapon: impl Into<String>) -> MartialArtsStyleBuilderWithWeapons {
         MartialArtsStyleBuilderWithWeapons {
             name: self.name,
             description: self.description,
-            first_weapon: MartialArtsStyleWeapon::BaseWeapon(weapon),
+            first_weapon: MartialArtsStyleWeapon::BaseWeapon(weapon.into()),
             book_reference: self.book_reference,
             usable_weapons: HashSet::new(),
             max_armor_weight: self.max_armor_weight,

@@ -6,7 +6,7 @@ use crate::{
     attributes::AttributeError,
     charms::CharmError,
     concept::ConceptError,
-    exaltation::exalt::essence::EssenceError,
+    exaltation::exalt::{essence::EssenceError, exalt_type::solar::SolarError},
     experience::ExperienceError,
     hearthstones::HearthstoneError,
     intimacies::intimacy::IntimacyError,
@@ -60,6 +60,9 @@ pub enum CharacterMutationError {
     /// Error related to merits
     #[error("Merit error")]
     MeritError(#[from] MeritError),
+    /// Error specific to the Solar Exalted
+    #[error("Solar error")]
+    SolarError(#[from] SolarError),
     /// Error related to Sorcery
     #[error("Sorcery error")]
     SorceryError(#[from] SorceryError),

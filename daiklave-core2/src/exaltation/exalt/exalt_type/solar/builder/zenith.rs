@@ -15,6 +15,7 @@ use crate::{
 };
 
 /// A builder for a Zenith caste Solar.
+#[derive(Default)]
 pub struct ZenithBuilder {
     pub(crate) caste_abilities: Vec<ZenithAbility>,
     pub(crate) supernal_ability: Option<ZenithAbility>,
@@ -23,6 +24,11 @@ pub struct ZenithBuilder {
 }
 
 impl ZenithBuilder {
+    /// Creates a new Zenith builder.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
     /// Adds a Caste ability to the Zenith.
     pub fn caste_ability(mut self, caste_ability: ZenithAbility) -> Self {
         self.caste_abilities.push(caste_ability);

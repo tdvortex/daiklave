@@ -3,7 +3,7 @@ pub(crate) use memo::AbilityRatingMemo;
 
 use std::{collections::HashSet, num::NonZeroU8};
 
-use crate::{abilities::AbilityError, CharacterMutationError};
+use crate::{abilities::AbilityError, character::mutation::CharacterMutationError};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum AbilityRating<'source> {

@@ -1,5 +1,6 @@
 use crate::CharacterMutation;
 
+/// A mutation to remove the character's concept.
 pub struct RemoveConcept;
 
 impl From<RemoveConcept> for CharacterMutation {

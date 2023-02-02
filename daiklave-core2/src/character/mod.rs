@@ -10,7 +10,7 @@ pub use memo::CharacterMemo;
 
 mod methods;
 
-mod mutation;
+pub mod mutation;
 pub use mutation::{CharacterMutation, CharacterMutationError};
 
 mod redo;

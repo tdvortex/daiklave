@@ -17,6 +17,7 @@ use crate::{
 };
 
 /// A builder for an Eclipse caste Solar.
+#[derive(Default)]
 pub struct EclipseBuilder {
     pub(crate) caste_abilities: Vec<EclipseAbility>,
     pub(crate) supernal_ability: Option<EclipseAbility>,
@@ -25,6 +26,11 @@ pub struct EclipseBuilder {
 }
 
 impl EclipseBuilder {
+    /// Creates a new Eclipse builder.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
     /// Adds a Caste ability to the Eclipse.
     pub fn caste_ability(mut self, caste_ability: EclipseAbility) -> Self {
         self.caste_abilities.push(caste_ability);
