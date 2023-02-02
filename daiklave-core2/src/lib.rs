@@ -68,5 +68,5 @@ pub(crate) mod name;
 mod willpower;
 
 pub use character::{
-    Character, CharacterEventSource, CharacterMemo, CharacterMutation, CharacterMutationError,
+    Character, CharacterEventSource, CharacterMemo, CharacterMutation, CharacterMutationError, CharacterEvent
 };

@@ -2,11 +2,11 @@ use std::num::NonZeroU8;
 
 use crate::{
     exaltation::exalt::essence::{mote_commitment::OtherMoteCommitmentName, MotePoolName},
-    CharacterMutation,
+    CharacterMutation,  
 };
 
 /// A mutation to commit motes to an effect other than attuning to
-/// and artifact. For artifact attunements, use [AttuneArtifact].
+/// and artifact. For artifact attunements, use [crate::artifact::AttuneArtifact].
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CommitMotes {
     /// The name of the effect.

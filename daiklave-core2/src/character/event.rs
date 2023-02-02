@@ -1,6 +1,8 @@
 use crate::{Character, CharacterEventSource, CharacterMutation, CharacterMutationError};
 
+/// A trait for something which can modify a [CharacterEventSource].
 pub trait CharacterEvent<'source> {
+    /// Resolves the event into the event source or errors.
     fn apply_event(
         self,
         event_source: &'source mut CharacterEventSource,
