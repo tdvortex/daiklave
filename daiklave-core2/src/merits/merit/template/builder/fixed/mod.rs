@@ -12,10 +12,10 @@ use std::collections::HashSet;
 use crate::{merits::{merit::{MeritPrerequisite, MeritType}}, book_reference::BookReference};
 
 pub struct FixedMeritTemplateBuilder {
-    name: String,
-    dots: u8,
-    prerequisites: HashSet<MeritPrerequisite>,
-    book_reference: Option<BookReference>,
+    pub(crate) name: String,
+    pub(crate) dots: u8,
+    pub(crate) prerequisites: HashSet<MeritPrerequisite>,
+    pub(crate) book_reference: Option<BookReference>,
 }
 
 impl FixedMeritTemplateBuilder {

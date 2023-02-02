@@ -109,7 +109,7 @@ impl<'view, 'source> Character<'source> {
             sorcery
                 .archetypes()
                 .filter_map(|name| sorcery.archetype(name))
-                .flat_map(|with_merits| with_merits.merits().iter().collect::<Vec<Merit>>().into_iter())
+                .flat_map(|with_merits| with_merits.merits().into_iter())
         });
 
         from_armor

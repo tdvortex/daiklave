@@ -1,28 +1,18 @@
 use crate::sorcery::{
-    archetype::{SorceryArchetypeName},
-    spell::SpellName,
-    ShapingRitualDetails, SorceryArchetypeDetails,
+    archetype::SorceryArchetypeName, spell::SpellName, ShapingRitualDetails,
+    SorceryArchetypeDetails,
 };
 
 use super::SolarSpell;
 
-/// A struct containing all of the details to upgrade from Celestial-level
+/// A mutation to upgrade the character from Celestial-level
 /// Sorcery to Solar-level.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddSolarSorcery {
-    /// The name of the archetype used for the Solar circle. May be the same
-    /// as either the Terrestrial or Celestial circle, or entirely new.
-    pub archetype_name: SorceryArchetypeName,
-    /// If necessary, the sorcery archetype added for the Solar Circle.
-    /// Ignored if the Solar archetype id matches either prior circle.
-    pub archetype: Option<SorceryArchetypeDetails>,
-    /// A short description of the shaping ritual for the Solar circle. This must be
-    /// unique.
-    pub shaping_ritual_summary: String,
-    /// The shaping ritual for the Solar circle.
-    pub shaping_ritual: ShapingRitualDetails,
-    /// The name of the Solar Control Spell.
-    pub control_spell_name: SpellName,
-    /// The Solar Control Spell.
-    pub control_spell: SolarSpell,
+    pub(crate) archetype_name: SorceryArchetypeName,
+    pub(crate) archetype: Option<SorceryArchetypeDetails>,
+    pub(crate) shaping_ritual_summary: String,
+    pub(crate) shaping_ritual: ShapingRitualDetails,
+    pub(crate) control_spell_name: SpellName,
+    pub(crate) control_spell: SolarSpell,
 }

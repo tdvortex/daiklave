@@ -2,7 +2,7 @@ use crate::{
     exaltation::exalt::ExaltSorcery,
     sorcery::{
         circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, spell::Spell,
-        SorceryArchetypeWithMerits, SorceryCircle, ShapingRitual,
+        SorceryArchetype, SorceryCircle, ShapingRitual,
     },
 };
 
@@ -13,7 +13,7 @@ pub(crate) enum ExaltationSorcery<'view, 'source> {
 }
 
 impl<'view, 'source> ExaltationSorcery<'view, 'source> {
-    pub fn archetype(&self, name: &str) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
+    pub fn archetype(&self, name: &str) -> Option<SorceryArchetype<'view, 'source>> {
         match self {
             ExaltationSorcery::Mortal(terrestrial) => (*terrestrial).archetype(name),
             ExaltationSorcery::Exalt(exalt_switch) => exalt_switch.archetype(name),

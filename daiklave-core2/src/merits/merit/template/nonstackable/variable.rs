@@ -5,13 +5,13 @@ use crate::{book_reference::BookReference, merits::merit::{MeritType, MeritPrere
 use super::NonStackableMeritTemplateName;
 
 pub struct VariableNonStackableMeritTemplate {
-    name: NonStackableMeritTemplateName,
-    book_reference: Option<BookReference>,
-    merit_type: MeritType,
-    description: String,
-    prerequisites: HashSet<MeritPrerequisite>,
-    min_dots: (u8, String),
-    other_dots: HashMap<u8, String>,
+    pub(crate) name: NonStackableMeritTemplateName,
+    pub(crate) book_reference: Option<BookReference>,
+    pub(crate) merit_type: MeritType,
+    pub(crate) description: String,
+    pub(crate) prerequisites: HashSet<MeritPrerequisite>,
+    pub(crate) min_dots: (u8, String),
+    pub(crate) other_dots: HashMap<u8, String>,
 }
 
 impl From<VariableNonStackableMeritTemplateBuilder> for VariableNonStackableMeritTemplate {

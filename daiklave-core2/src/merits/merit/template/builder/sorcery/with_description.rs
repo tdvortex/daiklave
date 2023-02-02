@@ -1,11 +1,11 @@
 use crate::{sorcery::SorceryArchetypeName, merits::merit::{instance::{SorceryArchetypeMeritName, SorceryArchetypeMeritDetails}, AddSorceryArchetypeMerit}, book_reference::BookReference};
 
 pub struct SorceryArchetypeMeritBuilderWithDescription {
-    archetype_name: SorceryArchetypeName,
-    name: SorceryArchetypeMeritName,
-    description: String,
-    book_reference: Option<BookReference>,
-    dots: u8,
+    pub(crate) archetype_name: SorceryArchetypeName,
+    pub(crate) name: SorceryArchetypeMeritName,
+    pub(crate) description: String,
+    pub(crate) book_reference: Option<BookReference>,
+    pub(crate) dots: u8,
 }
 
 impl SorceryArchetypeMeritBuilderWithDescription {

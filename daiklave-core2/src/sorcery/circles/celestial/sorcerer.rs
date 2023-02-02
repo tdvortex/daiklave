@@ -10,7 +10,7 @@ use crate::{
             terrestrial::TerrestrialSpell,
         },
         spell::Spell,
-        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeWithMerits, SorceryError, ShapingRitual,
+        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetype, SorceryError, ShapingRitual,
     },
     CharacterMutationError,
 };
@@ -89,12 +89,12 @@ impl<'view, 'source> CelestialCircleSorcerer<'source> {
     pub fn archetype(
         &'view self,
         name: &str,
-    ) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
+    ) -> Option<SorceryArchetype<'view, 'source>> {
         if self.circle_archetypes.contains(&name) {
             self.archetypes
                 .get_key_value(name)
                 .map(
-                    |(archetype_name, (archetype, merits))| SorceryArchetypeWithMerits {
+                    |(archetype_name, (archetype, merits))| SorceryArchetype {
                         archetype_name: *archetype_name,
                         archetype: *archetype,
                         merits,

@@ -3,10 +3,10 @@ use crate::{sorcery::SorceryArchetypeName, book_reference::BookReference, merits
 use super::SorceryArchetypeMeritBuilderWithDescription;
 
 pub struct SorceryArchetypeMeritBuilderWithDots {
-    archetype_name: SorceryArchetypeName,
-    name: SorceryArchetypeMeritName,
-    book_reference: Option<BookReference>,
-    dots: u8,
+    pub(crate) archetype_name: SorceryArchetypeName,
+    pub(crate) name: SorceryArchetypeMeritName,
+    pub(crate) book_reference: Option<BookReference>,
+    pub(crate) dots: u8,
 }
 
 impl SorceryArchetypeMeritBuilderWithDots {

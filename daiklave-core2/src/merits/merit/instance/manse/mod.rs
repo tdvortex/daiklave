@@ -1,4 +1,6 @@
 mod add;
+
+/// A builder path to construct a new merit.
 pub mod builder;
 mod name;
 mod remove;

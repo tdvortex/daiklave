@@ -1,6 +1,6 @@
 use crate::{
     exaltation::exalt::exalt_type::solar::SolarSorcererView,
-    sorcery::{spell::Spell, SorceryArchetypeWithMerits, SorceryCircle, ShapingRitual},
+    sorcery::{spell::Spell, SorceryArchetype, SorceryCircle, ShapingRitual},
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -9,7 +9,7 @@ pub(crate) enum ExaltSorcery<'view, 'source> {
 }
 
 impl<'view, 'source> ExaltSorcery<'view, 'source> {
-    pub fn archetype(&self, name: &str) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
+    pub fn archetype(&self, name: &str) -> Option<SorceryArchetype<'view, 'source>> {
         match self {
             ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer.archetype(name),
         }

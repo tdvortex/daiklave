@@ -8,7 +8,7 @@ use crate::sorcery::{
         terrestrial::sorcerer::TerrestrialCircleSorcerer,
     },
     spell::Spell,
-    SorceryArchetypeWithMerits, SorceryCircle, ShapingRitual,
+    SorceryArchetype, SorceryCircle, ShapingRitual,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -32,7 +32,7 @@ impl<'view, 'source> SolarSorcererView<'source> {
     pub fn archetype(
         &'view self,
         name: &str,
-    ) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
+    ) -> Option<SorceryArchetype<'view, 'source>> {
         match self {
             SolarSorcererView::Terrestrial(terrestrial) => terrestrial.archetype(name),
             SolarSorcererView::Celestial(celestial) => celestial.archetype(name),

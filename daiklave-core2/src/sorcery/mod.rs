@@ -16,7 +16,7 @@ pub mod spell;
 pub(crate) use archetype::{ShapingRitualDetails};
 pub use archetype::{
     AddShapingRitual,
-    SorceryArchetypeName, SorceryArchetypeWithMerits, ShapingRitual
+    SorceryArchetypeName, SorceryArchetype, ShapingRitual
 };
 pub use circles::{
     AddCelestialSorcery, AddSolarSorcery, AddTerrestrialSorcery, CelestialSpell, SolarSpell,
@@ -38,7 +38,7 @@ impl<'view, 'source> Sorcery<'view, 'source> {
     }
 
     /// The details of a specific sorcerous archetype, if it exists.
-    pub fn archetype(&self, name: &str) -> Option<SorceryArchetypeWithMerits<'view, 'source>> {
+    pub fn archetype(&self, name: &str) -> Option<SorceryArchetype<'view, 'source>> {
         self.0.archetype(name)
     }
 

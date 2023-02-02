@@ -1,8 +1,8 @@
-use crate::sorcery::{
+use crate::{sorcery::{
     archetype::{SorceryArchetypeName},
     spell::SpellName,
-    ShapingRitualDetails, SorceryArchetypeDetails,
-};
+    ShapingRitualDetails, SorceryArchetypeDetails, AddSorcery,
+}, CharacterMutation};
 
 use super::TerrestrialSpell;
 
@@ -10,16 +10,16 @@ use super::TerrestrialSpell;
 /// Terrestrial-circle Sorcerer.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddTerrestrialSorcery {
-    /// The name of the Sorcery Archetype they initiate into.
-    pub archetype_name: SorceryArchetypeName,
-    /// The Archetype they inititate into.
-    pub archetype: SorceryArchetypeDetails,
-    /// A short summary of their first Shaping Ritual.
-    pub shaping_ritual_summary: String,
-    /// The first Shaping Ritual.
-    pub shaping_ritual: ShapingRitualDetails,
-    /// The name of their Terrestrial Control Spell.
-    pub control_spell_name: SpellName,
-    /// Their Terrestrial Control Spell.
-    pub control_spell: TerrestrialSpell,
+    pub(crate) archetype_name: SorceryArchetypeName,
+    pub(crate) archetype: SorceryArchetypeDetails,
+    pub(crate) shaping_ritual_summary: String,
+    pub(crate) shaping_ritual: ShapingRitualDetails,
+    pub(crate) control_spell_name: SpellName,
+    pub(crate) control_spell: TerrestrialSpell,
+}
+
+impl From<AddTerrestrialSorcery> for CharacterMutation {
+    fn from(add_terrestrial: AddTerrestrialSorcery) -> Self {
+        AddSorcery::from(add_terrestrial).into()
+    }
 }
