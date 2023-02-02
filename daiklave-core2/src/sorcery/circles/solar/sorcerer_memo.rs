@@ -2,14 +2,16 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{sorcery::{
-    circles::{celestial::CelestialSpell, terrestrial::TerrestrialSpell},
-    spell::SpellName,
-    ShapingRitualDetails, SorceryArchetypeDetails,
-    SorceryArchetypeName,
-}, merits::merit::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName}};
+use crate::{
+    merits::merit::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName},
+    sorcery::{
+        circles::{celestial::CelestialSpell, terrestrial::TerrestrialSpell},
+        spell::SpellName,
+        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeName,
+    },
+};
 
-use super::{SolarSpell};
+use super::SolarSpell;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SolarCircleSorcererMemo {

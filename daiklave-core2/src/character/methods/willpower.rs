@@ -10,13 +10,19 @@ impl<'source> Character<'source> {
 
     /// Increases the character's current willpower by the specified amount.
     /// This may take the character's current total above their maximum.
-    pub fn gain_willpower(&mut self, _amount: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn gain_willpower(
+        &mut self,
+        _amount: NonZeroU8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
     /// Decreases the character's current willpower by the specified amount,
     /// to a minimum of 0.
-    pub fn spend_willpower(&mut self, _amount: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn spend_willpower(
+        &mut self,
+        _amount: NonZeroU8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
@@ -33,7 +39,10 @@ impl<'source> Character<'source> {
     /// Sets the character's permanent willpower rating to the specified dots
     /// amount. This will also reset their current willpower amount to be the
     /// same amount.
-    pub fn set_willpower_rating(&mut self, dots: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_willpower_rating(
+        &mut self,
+        dots: NonZeroU8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.willpower.rating = dots;
         self.willpower.current = dots.get();
         Ok(self)

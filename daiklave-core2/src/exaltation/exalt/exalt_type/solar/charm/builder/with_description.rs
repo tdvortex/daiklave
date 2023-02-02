@@ -7,7 +7,8 @@ use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
     exaltation::exalt::exalt_type::solar::charm::{
-        ability::SolarCharmAbility, AddSolarCharm, SolarCharmKeyword, SolarCharmName, SolarCharmDetails,
+        ability::SolarCharmAbility, AddSolarCharm, SolarCharmDetails, SolarCharmKeyword,
+        SolarCharmName,
     },
 };
 

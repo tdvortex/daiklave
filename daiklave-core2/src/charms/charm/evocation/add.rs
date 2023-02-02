@@ -1,6 +1,6 @@
-use crate::{CharacterMutation, charms::charm::AddCharm};
+use crate::{charms::charm::AddCharm, CharacterMutation};
 
-use super::{Evocation, EvocationName, EvokableName, builder::EvocationBuilder};
+use super::{builder::EvocationBuilder, Evocation, EvocationName, EvokableName};
 
 /// An Evocation to add to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]

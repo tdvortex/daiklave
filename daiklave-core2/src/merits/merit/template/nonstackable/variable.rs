@@ -1,6 +1,12 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::{book_reference::BookReference, merits::merit::{MeritType, MeritPrerequisite, AddNonStackableMerit, MeritError, MeritInstanceInner, NonStackableMeritInstance, template::builder::VariableNonStackableMeritTemplateBuilder}};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{
+        template::builder::VariableNonStackableMeritTemplateBuilder, AddNonStackableMerit,
+        MeritError, MeritInstanceInner, MeritPrerequisite, MeritType, NonStackableMeritInstance,
+    },
+};
 
 use super::NonStackableMeritTemplateName;
 
@@ -20,13 +26,14 @@ impl From<VariableNonStackableMeritTemplateBuilder> for VariableNonStackableMeri
     }
 }
 
-
 impl VariableNonStackableMeritTemplate {
     pub fn instance(mut self, dots: u8) -> Result<AddNonStackableMerit, MeritError> {
         let dot_description = if self.min_dots.0 == dots {
             self.min_dots.1
         } else {
-            self.other_dots.remove(&dots).ok_or(MeritError::InvalidDotRating)?
+            self.other_dots
+                .remove(&dots)
+                .ok_or(MeritError::InvalidDotRating)?
         };
         let inner = MeritInstanceInner {
             book_reference: self.book_reference,
@@ -37,7 +44,7 @@ impl VariableNonStackableMeritTemplate {
             dot_description: Some(dot_description),
         };
         let instance = NonStackableMeritInstance(inner);
-        
+
         Ok(AddNonStackableMerit {
             name: self.name,
             instance,

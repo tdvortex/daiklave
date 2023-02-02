@@ -11,7 +11,10 @@ pub use with_merit_type::VariableMeritTemplateBuilderWithMeritType;
 
 use std::collections::HashSet;
 
-use crate::{merits::merit::{MeritPrerequisite, MeritType}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{MeritPrerequisite, MeritType},
+};
 
 /// A builder for a merit which can have multiple dot levels.
 pub struct VariableMeritTemplateBuilder {
@@ -36,7 +39,7 @@ impl VariableMeritTemplateBuilder {
         self
     }
 
-    /// Adds a prerequisite to purchase the merit. Merit prerequisites are 
+    /// Adds a prerequisite to purchase the merit. Merit prerequisites are
     /// always and "or" relationship, like Stamina 3 or Resistance 3.
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
         self.prerequisites.insert(prerequisite);

@@ -1,4 +1,7 @@
-use crate::{armor::armor_item::builder::base::{MundaneArmorBuilder, MundaneArmorBuilderWithWeightClass}, CharacterMutation};
+use crate::{
+    armor::armor_item::builder::base::{MundaneArmorBuilder, MundaneArmorBuilderWithWeightClass},
+    CharacterMutation,
+};
 
 use super::{MundaneArmor, MundaneArmorName};
 

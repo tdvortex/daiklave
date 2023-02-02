@@ -1,6 +1,6 @@
-use crate::{CharacterMutation, charms::charm::AddCharm};
+use crate::{charms::charm::AddCharm, CharacterMutation};
 
-use super::{SpellName, SpellMutation};
+use super::{SpellMutation, SpellName};
 
 /// A mutation to add a spell to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]

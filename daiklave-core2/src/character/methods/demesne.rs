@@ -1,8 +1,8 @@
 use std::collections::hash_map::Entry;
 
 use crate::{
-    merits::merit::{MeritError, AddDemense}, Character,
-    CharacterMutationError,
+    merits::merit::{AddDemense, MeritError},
+    Character, CharacterMutationError,
 };
 
 impl<'source> Character<'source> {

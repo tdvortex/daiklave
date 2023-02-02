@@ -1,7 +1,6 @@
 use crate::sorcery::{
-    archetype::{SorceryArchetypeName},
-    circles::solar::AddSolarSpell,
-    AddSolarSorcery, AddSorcery, ShapingRitualDetails, SorceryArchetypeDetails, add::AddSorceryCircle,
+    add::AddSorceryCircle, archetype::SorceryArchetypeName, circles::solar::AddSolarSpell,
+    AddSolarSorcery, AddSorcery, ShapingRitualDetails, SorceryArchetypeDetails,
 };
 
 /// A Solar sorcery builder after the shaping ritual has been specified.

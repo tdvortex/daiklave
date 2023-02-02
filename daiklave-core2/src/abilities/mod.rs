@@ -1,18 +1,18 @@
-mod ability;
 mod abilities_vanilla;
+mod ability;
+mod add_specialty;
 mod error;
 mod memo;
-mod set;
-mod add_specialty;
 mod remove_specialty;
+mod set;
 
-pub(crate) use ability::{AbilityRating, AbilityRatingMemo};
 pub(crate) use abilities_vanilla::AbilitiesVanilla;
+pub(crate) use ability::AbilityNameQualifiedMutation;
+pub use ability::{Ability, AbilityName, AbilityNameQualified, AbilityNameVanilla};
+pub(crate) use ability::{AbilityRating, AbilityRatingMemo};
+pub use add_specialty::AddSpecialty;
 pub(crate) use error::AbilityError;
 pub(crate) use memo::AbilitiesMemo;
-pub use ability::{Ability, AbilityName, AbilityNameVanilla, AbilityNameQualified};
-pub(crate) use ability::AbilityNameQualifiedMutation;
-pub use add_specialty::AddSpecialty;
 pub use remove_specialty::RemoveSpecialty;
 pub use set::SetAbility;
 
@@ -24,9 +24,12 @@ pub struct Abilities<'view, 'source>(pub(crate) &'view Character<'source>);
 
 impl<'view, 'source> Abilities<'view, 'source> {
     /// Get a specific ability by its name. May return None for Craft abilities
-    /// for which the character has no dots, or Martial Arts style the 
+    /// for which the character has no dots, or Martial Arts style the
     /// character lacks the Martial Artist merit for.
-    pub fn get(&'view self, ability_name: AbilityNameQualified<'_>) -> Option<Ability<'view, 'source>> {
+    pub fn get(
+        &'view self,
+        ability_name: AbilityNameQualified<'_>,
+    ) -> Option<Ability<'view, 'source>> {
         match ability_name {
             AbilityNameQualified::Vanilla(vanilla) => Some(self.get_vanilla(vanilla)),
             AbilityNameQualified::Craft(focus) => self.get_craft(focus),
@@ -35,11 +38,20 @@ impl<'view, 'source> Abilities<'view, 'source> {
     }
 
     pub(crate) fn get_vanilla(&'view self, vanilla: AbilityNameVanilla) -> Ability<'view, 'source> {
-        Ability(AbilityNameQualified::Vanilla(vanilla), self.0.vanilla_abilities().get(vanilla))
+        Ability(
+            AbilityNameQualified::Vanilla(vanilla),
+            self.0.vanilla_abilities().get(vanilla),
+        )
     }
 
     fn get_craft(&'view self, focus: &str) -> Option<Ability<'view, 'source>> {
-        self.0.craft().0.get_key_value(focus).map(|(focus, ability_rating)| Ability(AbilityNameQualified::Craft(*focus), ability_rating))
+        self.0
+            .craft()
+            .0
+            .get_key_value(focus)
+            .map(|(focus, ability_rating)| {
+                Ability(AbilityNameQualified::Craft(*focus), ability_rating)
+            })
     }
 
     fn get_martial_arts(&'view self, style_name: &str) -> Option<Ability<'view, 'source>> {
@@ -108,6 +120,3 @@ impl<'view, 'source> Abilities<'view, 'source> {
             .chain(after_martial_arts)
     }
 }
-
-
-

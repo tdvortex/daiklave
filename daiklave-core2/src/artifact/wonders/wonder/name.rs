@@ -1,12 +1,15 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// The name of a non-weapon, non-armor, non-warstrider artifact.
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
 pub struct WonderName(String);
 
-impl<T> From<T> for WonderName where T: Into<String> {
+impl<T> From<T> for WonderName
+where
+    T: Into<String>,
+{
     fn from(name: T) -> Self {
         Self(name.into())
     }

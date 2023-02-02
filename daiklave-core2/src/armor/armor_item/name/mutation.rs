@@ -1,4 +1,4 @@
-use crate::armor::armor_item::{mundane::MundaneArmorName, artifact::ArtifactArmorName};
+use crate::armor::armor_item::{artifact::ArtifactArmorName, mundane::MundaneArmorName};
 
 use super::ArmorName;
 

@@ -1,10 +1,15 @@
-use std::collections::{HashMap, HashSet, hash_map::Entry};
+use std::collections::{hash_map::Entry, HashMap, HashSet};
 
-use crate::{book_reference::BookReference, merits::merit::{MeritType, MeritPrerequisite}};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{MeritPrerequisite, MeritType},
+};
 
-use super::{VariableStackableMeritTemplateBuilder, nonstackable::VariableNonStackableMeritTemplateBuilder};
+use super::{
+    nonstackable::VariableNonStackableMeritTemplateBuilder, VariableStackableMeritTemplateBuilder,
+};
 
-/// A variable-dot merit template builder with at least one dot option 
+/// A variable-dot merit template builder with at least one dot option
 /// supplied.
 pub struct VariableMeritTemplateBuilderWithDots {
     pub(crate) name: String,
@@ -23,7 +28,7 @@ impl VariableMeritTemplateBuilderWithDots {
         self
     }
 
-    /// Adds a prerequisite to purchase the merit. Merit prerequisites are 
+    /// Adds a prerequisite to purchase the merit. Merit prerequisites are
     /// always and "or" relationship, like Stamina 3 or Resistance 3.
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
         self.prerequisites.insert(prerequisite);
@@ -37,7 +42,7 @@ impl VariableMeritTemplateBuilderWithDots {
             std::cmp::Ordering::Less => {
                 let (old_min, old_min_description) = self.min_dots;
                 self.min_dots = (dots, description.into());
-    
+
                 if let Entry::Vacant(e) = self.other_dots.entry(old_min) {
                     e.insert(old_min_description);
                 }
@@ -51,7 +56,7 @@ impl VariableMeritTemplateBuilderWithDots {
                 }
             }
         }
-    
+
         self
     }
 
@@ -60,7 +65,7 @@ impl VariableMeritTemplateBuilderWithDots {
         VariableNonStackableMeritTemplateBuilder(self)
     }
 
-    /// Indicates that this merit may be purchased multiple times per 
+    /// Indicates that this merit may be purchased multiple times per
     /// character.
     pub fn stackable(self) -> VariableStackableMeritTemplateBuilder {
         VariableStackableMeritTemplateBuilder(self)

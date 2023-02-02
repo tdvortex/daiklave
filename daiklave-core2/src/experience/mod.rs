@@ -4,12 +4,12 @@ mod gain;
 mod gain_exalt;
 mod spend;
 mod spend_exalt;
+pub use error::ExperienceError;
+pub use experience_pool::ExperiencePool;
 pub use gain::GainExperience;
 pub use gain_exalt::GainExaltExperience;
 pub use spend::SpendExperience;
 pub use spend_exalt::SpendExaltExperience;
-pub use error::ExperienceError;
-pub use experience_pool::ExperiencePool;
 
 /// A character's Experience points
 pub struct Experience {

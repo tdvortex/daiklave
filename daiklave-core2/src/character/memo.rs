@@ -9,13 +9,19 @@ use crate::{
     craft::CraftMemo,
     exaltation::ExaltationMemo,
     experience::ExperiencePool,
-    health::Health,
-    hearthstones::{hearthstone::{GeomancyLevel, HearthstoneName}, UnslottedHearthstoneMemo},
-    intimacies::intimacy::{IntimacyLevel, IntimacyTypeMemo},
-    languages::{language::LanguageMutation},
-    merits::merit::{DemenseName, NonStackableMeritInstance, StackableMeritInstance, template::{NonStackableMeritName, StackableMeritTemplateName}},
-    willpower::Willpower,
     flaws::flaw::FlawName,
+    health::Health,
+    hearthstones::{
+        hearthstone::{GeomancyLevel, HearthstoneName},
+        UnslottedHearthstoneMemo,
+    },
+    intimacies::intimacy::{IntimacyLevel, IntimacyTypeMemo},
+    languages::language::LanguageMutation,
+    merits::merit::{
+        template::{NonStackableMeritName, StackableMeritTemplateName},
+        DemenseName, NonStackableMeritInstance, StackableMeritInstance,
+    },
+    willpower::Willpower,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -33,7 +39,8 @@ pub struct CharacterMemo {
     pub(crate) hearthstone_inventory: HashMap<HearthstoneName, UnslottedHearthstoneMemo>,
     pub(crate) demenses_no_manse: HashMap<DemenseName, GeomancyLevel>,
     pub(crate) nonstackable_merits: HashMap<NonStackableMeritName, NonStackableMeritInstance>,
-    pub(crate) stackable_merits: HashMap<(StackableMeritTemplateName, String), StackableMeritInstance>,
+    pub(crate) stackable_merits:
+        HashMap<(StackableMeritTemplateName, String), StackableMeritInstance>,
     pub(crate) flaws: HashMap<FlawName, (Option<BookReference>, String)>,
     pub(crate) native_language: LanguageMutation,
     pub(crate) other_languages: HashSet<LanguageMutation>,

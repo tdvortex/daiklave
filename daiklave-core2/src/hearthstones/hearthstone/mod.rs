@@ -1,4 +1,4 @@
-use crate::{artifact::ArtifactName, book_reference::BookReference, merits::merit::{Merit}};
+use crate::{artifact::ArtifactName, book_reference::BookReference, merits::merit::Merit};
 
 mod add;
 /// A builder path for creating new Hearthstones.
@@ -17,14 +17,14 @@ mod template;
 mod unslot;
 mod unslotted;
 
-pub use add::{AddHearthstone};
+pub use add::AddHearthstone;
 pub use name::HearthstoneName;
-pub use slot::SlotHearthstone;
-pub use unslot::UnslotHearthstone;
 pub(crate) use origin::HearthstoneOrigin;
 pub(crate) use position::HearthstonePosition;
+pub use slot::SlotHearthstone;
 pub(crate) use slotted::{SlottedHearthstone, SlottedHearthstoneMemo};
 pub(crate) use stability::HearthstoneStability;
+pub use unslot::UnslotHearthstone;
 pub(crate) use unslotted::{UnslottedHearthstone, UnslottedHearthstoneMemo};
 
 use self::builder::HearthstoneBuilder;

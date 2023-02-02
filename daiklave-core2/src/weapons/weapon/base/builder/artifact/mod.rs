@@ -8,7 +8,10 @@ pub use with_damage_type::BaseArtifactWeaponBuilderWithDamageType;
 pub use with_handedness::BaseArtifactWeaponBuilderWithHandedness;
 pub use with_weight::BaseArtifactWeaponBuilderWithWeight;
 
-use crate::{weapons::weapon::{OptionalWeaponTag, RangeBand, WeaponWeightClass}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    weapons::weapon::{OptionalWeaponTag, RangeBand, WeaponWeightClass},
+};
 
 use super::BaseWeaponBuilder;
 
@@ -55,7 +58,10 @@ impl BaseArtifactWeaponBuilder {
     }
 
     /// Sets the weapon to be Light, Medium, or Heavy.
-    pub fn weight_class(self, weight_class: WeaponWeightClass) -> BaseArtifactWeaponBuilderWithWeight {
+    pub fn weight_class(
+        self,
+        weight_class: WeaponWeightClass,
+    ) -> BaseArtifactWeaponBuilderWithWeight {
         BaseArtifactWeaponBuilderWithWeight(self.0.weight_class(weight_class))
     }
 }

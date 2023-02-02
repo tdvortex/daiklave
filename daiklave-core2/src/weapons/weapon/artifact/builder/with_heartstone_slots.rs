@@ -4,10 +4,12 @@ use crate::{
     weapons::weapon::{
         artifact::{
             base::BaseArtifactWeapon, inner::ArtifactWeaponInnerMemo, AddArtifactWeapon,
-            OneHandedArtifactWeaponMemo, TwoHandedArtifactWeaponMemo, WornArtifactWeaponMemo, NaturalArtifactWeaponMemo, ArtifactWeaponName, ArtifactWeaponHandedness,
+            ArtifactWeaponHandedness, ArtifactWeaponName, NaturalArtifactWeaponMemo,
+            OneHandedArtifactWeaponMemo, TwoHandedArtifactWeaponMemo, WornArtifactWeaponMemo,
         },
         handedness::WeaponHandedness,
-    }, CharacterMutation,
+    },
+    CharacterMutation,
 };
 
 /// An artifact builder after having its hearthstone slots specified.
@@ -46,7 +48,7 @@ impl ArtifactWeaponBuilderWithHearthstoneSlots {
         self
     }
 
-    /// Completes the builder, returning an artifact weapon to be added to a 
+    /// Completes the builder, returning an artifact weapon to be added to a
     /// character.
     pub fn build(self) -> AddArtifactWeapon {
         let (handedness, base_weapon) = (self.base_weapon.handedness, self.base_weapon.base_weapon);
@@ -67,16 +69,19 @@ impl ArtifactWeaponBuilderWithHearthstoneSlots {
             magic_material: self.magic_material,
         };
 
-        
-
         match handedness {
             WeaponHandedness::Natural => AddArtifactWeapon {
                 name: self.name,
-                handedness: ArtifactWeaponHandedness::Natural(NaturalArtifactWeaponMemo(named_artifact_weapon)),
+                handedness: ArtifactWeaponHandedness::Natural(NaturalArtifactWeaponMemo(
+                    named_artifact_weapon,
+                )),
             },
             WeaponHandedness::Worn => AddArtifactWeapon {
                 name: self.name,
-                handedness: ArtifactWeaponHandedness::Worn(WornArtifactWeaponMemo(named_artifact_weapon), false),
+                handedness: ArtifactWeaponHandedness::Worn(
+                    WornArtifactWeaponMemo(named_artifact_weapon),
+                    false,
+                ),
             },
             WeaponHandedness::OneHanded => AddArtifactWeapon {
                 name: self.name,

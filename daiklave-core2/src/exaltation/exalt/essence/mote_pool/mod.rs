@@ -1,7 +1,7 @@
 mod name;
 pub use name::MotePoolName;
 
-use super::{MoteCommitment};
+use super::MoteCommitment;
 
 /// The available and spent motes from either a peripheral or personal pool.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -29,12 +29,12 @@ impl<'source> MotePool<'source> {
 
     /// The sum of the committed motes from the specific pool.
     pub fn committed(&self) -> u8 {
-        self.commitments.iter().fold(0, |sum, commitment| {
-            match self.name {
-                MotePoolName::Peripheral => sum+commitment.peripheral,
-                MotePoolName::Personal => sum+commitment.personal
-            }
-        })
+        self.commitments
+            .iter()
+            .fold(0, |sum, commitment| match self.name {
+                MotePoolName::Peripheral => sum + commitment.peripheral,
+                MotePoolName::Personal => sum + commitment.personal,
+            })
     }
 
     /// All active mote commitment effects on this pool.

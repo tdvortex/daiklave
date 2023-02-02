@@ -1,6 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use crate::armor::armor_item::{artifact::{ArtifactArmorNoAttunementMemo, ArtifactArmorName}, mundane::{MundaneArmor, MundaneArmorName}};
+use crate::armor::armor_item::{
+    artifact::{ArtifactArmorName, ArtifactArmorNoAttunementMemo},
+    mundane::{MundaneArmor, MundaneArmorName},
+};
 
 use super::EquippedArmorNoAttunement;
 
@@ -17,10 +20,7 @@ impl From<&EquippedArmorNoAttunement<'_>> for EquippedArmorNoAttunementMemo {
                 EquippedArmorNoAttunementMemo::Mundane((*name).into(), mundane_armor.into())
             }
             EquippedArmorNoAttunement::Artifact(name, artifact_armor) => {
-                EquippedArmorNoAttunementMemo::Artifact(
-                    (*name).into(),
-                    artifact_armor.into(),
-                )
+                EquippedArmorNoAttunementMemo::Artifact((*name).into(), artifact_armor.into())
             }
         }
     }

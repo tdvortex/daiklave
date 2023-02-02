@@ -12,13 +12,16 @@ pub use shaping_ritual::{AddShapingRitual, ShapingRitual};
 mod details;
 pub(crate) use details::SorceryArchetypeDetails;
 
-use crate::{book_reference::BookReference, merits::merit::{SorceryArchetypeMeritDetails, Merit, MeritSource, SorceryArchetypeMerit}};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{Merit, MeritSource, SorceryArchetypeMerit, SorceryArchetypeMeritDetails},
+};
 
 /// A sorcery archetype which the character has initiated into.
 pub struct SorceryArchetype<'view, 'source> {
     pub(crate) archetype_name: &'source str,
     pub(crate) archetype: &'source SorceryArchetypeDetails,
-    pub(crate) merits: &'view HashMap<&'source str, &'source SorceryArchetypeMeritDetails>
+    pub(crate) merits: &'view HashMap<&'source str, &'source SorceryArchetypeMeritDetails>,
 }
 
 impl<'view, 'source> SorceryArchetype<'view, 'source> {
@@ -39,10 +42,15 @@ impl<'view, 'source> SorceryArchetype<'view, 'source> {
 
     /// The merits associated with this archetype.
     pub fn merits(&self) -> Vec<Merit<'source>> {
-        self.merits.iter().map(|(&merit_name, details)| Merit(MeritSource::SorceryArchetype(SorceryArchetypeMerit {
-            archetype_name: self.archetype_name,
-            merit_name,
-            details,
-        }))).collect()
+        self.merits
+            .iter()
+            .map(|(&merit_name, details)| {
+                Merit(MeritSource::SorceryArchetype(SorceryArchetypeMerit {
+                    archetype_name: self.archetype_name,
+                    merit_name,
+                    details,
+                }))
+            })
+            .collect()
     }
 }

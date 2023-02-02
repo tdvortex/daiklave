@@ -1,8 +1,11 @@
 use std::collections::HashSet;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{book_reference::BookReference, merits::merit::{merit_type::MeritType, prerequisite::MeritPrerequisite}};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{merit_type::MeritType, prerequisite::MeritPrerequisite},
+};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MeritInstanceInner {

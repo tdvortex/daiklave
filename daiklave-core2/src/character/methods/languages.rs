@@ -1,5 +1,8 @@
 use crate::{
-    languages::{language::{SetNativeLanguage, RemoveLanguage, AddLanguage}, LanguageError, Languages},
+    languages::{
+        language::{AddLanguage, RemoveLanguage, SetNativeLanguage},
+        LanguageError, Languages,
+    },
     Character, CharacterMutationError,
 };
 
@@ -14,9 +17,7 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         language: &'source AddLanguage,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self.native_language == &language.0
-            || !self.other_languages.insert(&language.0)
-        {
+        if self.native_language == &language.0 || !self.other_languages.insert(&language.0) {
             Err(CharacterMutationError::LanguageError(
                 LanguageError::DuplicateLanguage,
             ))
@@ -33,9 +34,7 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         let language = &set_native_language.0;
 
-        if self.native_language == language
-            || self.other_languages.contains(language)
-        {
+        if self.native_language == language || self.other_languages.contains(language) {
             Err(CharacterMutationError::LanguageError(
                 LanguageError::DuplicateLanguage,
             ))
@@ -45,7 +44,7 @@ impl<'view, 'source> Character<'source> {
         }
     }
 
-    /// Removes a language from the character. Native languages cannot be 
+    /// Removes a language from the character. Native languages cannot be
     /// removed.
     pub fn remove_language(
         &mut self,

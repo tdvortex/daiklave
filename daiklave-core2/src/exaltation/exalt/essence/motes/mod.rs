@@ -1,13 +1,13 @@
 mod commit;
-mod state;
-mod uncommit;
 mod recover;
 mod spend;
+mod state;
+mod uncommit;
 pub use commit::CommitMotes;
 pub use recover::RecoverMotes;
 pub use spend::SpendMotes;
-pub use uncommit::UncommitMotes;
 pub(crate) use state::{MotesState, MotesStateMemo};
+pub use uncommit::UncommitMotes;
 
 use super::{MoteCommitment, MotePool, MotePoolName};
 
@@ -41,7 +41,7 @@ impl<'view, 'source> Motes<'view, 'source> {
                     personal.push(commitment);
                 }
                 (peripheral, personal)
-            }
+            },
         );
 
         (
@@ -56,15 +56,16 @@ impl<'view, 'source> Motes<'view, 'source> {
                 available: self.state.personal_available,
                 spent: self.state.personal_spent,
                 commitments: personal_commitments,
-            }
+            },
         )
-
-
     }
 
     /// All effects the Exalt has currently committed motes to (including
     /// artifact attunement)
     pub fn committed(&self) -> impl Iterator<Item = MoteCommitment<'source>> + '_ {
-        self.attunements.iter().copied().chain(self.state.commitments())
+        self.attunements
+            .iter()
+            .copied()
+            .chain(self.state.commitments())
     }
 }

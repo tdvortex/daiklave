@@ -36,7 +36,7 @@ mod weight_class;
 
 pub use equip::EquipWeapon;
 pub use equipped::{EquipHand, Equipped};
-pub use name::{WeaponName};
+pub use name::WeaponName;
 pub(crate) use name::WeaponNameMutation;
 pub use range::{AttackRange, RangeBand};
 pub use tag::{OptionalWeaponTag, WeaponTag};

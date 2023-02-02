@@ -12,10 +12,11 @@ pub struct SorceryArchetypeName(String);
 
 impl SorceryArchetypeName {
     /// Create a new shaping ritual associated with this archetype.
-    pub fn new_shaping_ritual(&self, 
-        summary: impl Into<String>, 
-        book_reference: Option<BookReference>, 
-        description: impl Into<String>
+    pub fn new_shaping_ritual(
+        &self,
+        summary: impl Into<String>,
+        book_reference: Option<BookReference>,
+        description: impl Into<String>,
     ) -> AddShapingRitual {
         AddShapingRitual {
             archetype_name: self.clone(),
@@ -23,12 +24,15 @@ impl SorceryArchetypeName {
             ritual: ShapingRitualDetails {
                 book_reference,
                 description: description.into(),
-            }
+            },
         }
     }
 }
 
-impl<T> From<T> for SorceryArchetypeName where T: Into<String> {
+impl<T> From<T> for SorceryArchetypeName
+where
+    T: Into<String>,
+{
     fn from(name: T) -> Self {
         Self(name.into())
     }

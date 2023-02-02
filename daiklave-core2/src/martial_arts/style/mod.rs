@@ -1,6 +1,6 @@
+mod add;
 /// Builder path for constructing a new Martial Arts style.
 pub mod builder;
-mod add;
 mod name;
 mod weapon;
 pub use add::AddMartialArtsStyle;
@@ -12,7 +12,6 @@ use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
 
 use crate::{armor::armor_item::ArmorWeightClass, book_reference::BookReference};
-
 
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 pub(crate) struct MartialArtsStyleDetails {

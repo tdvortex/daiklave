@@ -9,7 +9,10 @@ pub use with_merit_type::FixedMeritTemplateBuilderWithMeritType;
 
 use std::collections::HashSet;
 
-use crate::{merits::{merit::{MeritPrerequisite, MeritType}}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{MeritPrerequisite, MeritType},
+};
 
 /// A builder for a merit with a fixed dot cost.
 pub struct FixedMeritTemplateBuilder {
@@ -26,7 +29,7 @@ impl FixedMeritTemplateBuilder {
         self
     }
 
-    /// Adds a prerequisite to purchase the merit. Merit prerequisites are 
+    /// Adds a prerequisite to purchase the merit. Merit prerequisites are
     /// always and "or" relationship, like Stamina 3 or Resistance 3.
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
         self.prerequisites.insert(prerequisite);
@@ -44,4 +47,3 @@ impl FixedMeritTemplateBuilder {
         }
     }
 }
-

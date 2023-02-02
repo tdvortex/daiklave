@@ -1,6 +1,9 @@
-use std::{num::NonZeroU8};
+use std::num::NonZeroU8;
 
-use crate::{weapons::weapon::{builder::base::{BaseWeaponBuilder, MundaneWeaponBuilder}}, CharacterMutation};
+use crate::{
+    weapons::weapon::builder::base::{BaseWeaponBuilder, MundaneWeaponBuilder},
+    CharacterMutation,
+};
 
 use super::{MundaneWeapon, MundaneWeaponName};
 

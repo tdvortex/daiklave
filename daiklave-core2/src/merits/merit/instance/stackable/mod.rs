@@ -7,7 +7,7 @@ mod remove;
 
 pub use add::AddStackableMerit;
 pub use remove::RemoveStackableMerit;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct StackableMeritInstance(pub MeritInstanceInner);

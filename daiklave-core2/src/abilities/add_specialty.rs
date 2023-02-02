@@ -19,7 +19,6 @@ impl AddSpecialty {
     }
 }
 
-
 impl From<AddSpecialty> for CharacterMutation {
     fn from(add_specialty: AddSpecialty) -> Self {
         CharacterMutation::AddSpecialty(add_specialty)

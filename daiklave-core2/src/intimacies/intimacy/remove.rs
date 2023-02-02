@@ -1,6 +1,6 @@
 use crate::CharacterMutation;
 
-use super::{IntimacyTypeMemo, IntimacyType};
+use super::{IntimacyType, IntimacyTypeMemo};
 
 /// An Intimacy to be removed from a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -12,7 +12,7 @@ impl RemoveIntimacy {
     /// Constructs a mutation to remove the specified Intimacy.
     pub fn new(intimacy_type: IntimacyType<'_>) -> Self {
         Self {
-            intimacy_type: intimacy_type.into()
+            intimacy_type: intimacy_type.into(),
         }
     }
 }

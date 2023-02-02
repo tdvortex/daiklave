@@ -1,7 +1,10 @@
 use crate::{
     abilities::AbilityRating,
     exaltation::mortal::martial_arts::MortalMartialArtistDetails,
-    martial_arts::{charm::{MartialArtsCharmDetails, MartialArtsCharm}, style::MartialArtsStyleDetails},
+    martial_arts::{
+        charm::{MartialArtsCharm, MartialArtsCharmDetails},
+        style::MartialArtsStyleDetails,
+    },
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -1,4 +1,4 @@
-use crate::{CharacterMutation, exaltation::exalt::essence::MoteCommitmentNameMutation};
+use crate::{exaltation::exalt::essence::MoteCommitmentNameMutation, CharacterMutation};
 
 /// An instruction to uncommit a specific mote commitment.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -3,8 +3,8 @@ mod anima_effect;
 
 pub use ability::ZenithAbility;
 
-use serde::{Serialize, Deserialize};
 use crate::{abilities::AbilityName, exaltation::exalt::AnimaEffect};
+use serde::{Deserialize, Serialize};
 
 use self::anima_effect::{ZENITH_ONE, ZENITH_THREE, ZENITH_TWO};
 

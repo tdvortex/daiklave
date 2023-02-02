@@ -6,4 +6,4 @@ mod worn;
 pub(crate) use natural::{NaturalArtifactWeaponMemo, NaturalArtifactWeaponView};
 pub(crate) use one_handed::{OneHandedArtifactWeaponMemo, OneHandedArtifactWeaponView};
 pub(crate) use two_handed::{TwoHandedArtifactWeaponMemo, TwoHandedArtifactWeaponView};
-pub(crate) use worn::{WornArtifactWeaponView, WornArtifactWeaponMemo};
+pub(crate) use worn::{WornArtifactWeaponMemo, WornArtifactWeaponView};

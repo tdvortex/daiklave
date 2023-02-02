@@ -1,4 +1,4 @@
-use super::{ability::{AbilityRating, AbilityNameVanilla}};
+use super::ability::{AbilityNameVanilla, AbilityRating};
 
 /// A struct representing all non-Craft, non-Martial Arts abilities, including
 /// any specialties.

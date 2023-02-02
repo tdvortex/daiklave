@@ -1,9 +1,24 @@
 use std::num::NonZeroU8;
 
-use crate::{weapons::weapon::{builder::base::BaseWeaponBuilderWithAttack, RangeBand, OptionalWeaponTag, mundane::{AddMundaneWeapon, MundaneWeapon, MundaneWeaponHandedness, NaturalMundaneWeapon, WornMundaneWeapon, OneHandedMundaneWeaponMemo, TwoHandedMundaneWeapon}, handedness::WeaponHandedness, base::BaseWeapon}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    weapons::weapon::{
+        base::BaseWeapon,
+        builder::base::BaseWeaponBuilderWithAttack,
+        handedness::WeaponHandedness,
+        mundane::{
+            AddMundaneWeapon, MundaneWeapon, MundaneWeaponHandedness, NaturalMundaneWeapon,
+            OneHandedMundaneWeaponMemo, TwoHandedMundaneWeapon, WornMundaneWeapon,
+        },
+        OptionalWeaponTag, RangeBand,
+    },
+};
 
 /// A mundane weapon builder after the attack ability has been specified.
-pub struct MundaneWeaponBuilderWithAttack(pub(crate) BaseWeaponBuilderWithAttack, pub(crate) NonZeroU8);
+pub struct MundaneWeaponBuilderWithAttack(
+    pub(crate) BaseWeaponBuilderWithAttack,
+    pub(crate) NonZeroU8,
+);
 
 impl MundaneWeaponBuilderWithAttack {
     /// Sets the book reference for the mundane weapon.
@@ -45,7 +60,7 @@ impl MundaneWeaponBuilderWithAttack {
         self
     }
 
-    /// Completes the builder process, returning a new AddMundaneWeapon. 
+    /// Completes the builder process, returning a new AddMundaneWeapon.
     pub fn build_mundane(self) -> AddMundaneWeapon {
         match self.0.handedness {
             WeaponHandedness::Natural => AddMundaneWeapon {
@@ -109,5 +124,4 @@ impl MundaneWeaponBuilderWithAttack {
             },
         }
     }
-
 }

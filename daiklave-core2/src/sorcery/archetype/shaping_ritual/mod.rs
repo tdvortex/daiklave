@@ -1,7 +1,7 @@
 mod add;
 mod details;
+pub use add::AddShapingRitual;
 pub(crate) use details::ShapingRitualDetails;
-pub use add::{AddShapingRitual};
 
 use crate::book_reference::BookReference;
 
@@ -10,7 +10,7 @@ use crate::book_reference::BookReference;
 pub struct ShapingRitual<'source> {
     pub(crate) archetype_name: &'source str,
     pub(crate) summary: &'source str,
-    pub(crate) details: &'source ShapingRitualDetails
+    pub(crate) details: &'source ShapingRitualDetails,
 }
 
 impl<'source> ShapingRitual<'source> {

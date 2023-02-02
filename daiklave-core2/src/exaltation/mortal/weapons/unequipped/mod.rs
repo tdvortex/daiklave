@@ -63,20 +63,12 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
                 }
             },
             WeaponName::Artifact(name) => match self.artifact.get_key_value(name)? {
-                (name, NonnaturalArtifactWeaponNoAttunement::Worn(worn)) => {
-                    Some(Weapon(WeaponType::Artifact(
-                        *name,
-                        ArtifactWeapon::Worn(worn.clone(), false),
-                        None,
-                    )))
-                }
-                (name, NonnaturalArtifactWeaponNoAttunement::OneHanded(one)) => {
-                    Some(Weapon(WeaponType::Artifact(
-                        *name,
-                        ArtifactWeapon::OneHanded(one.clone(), None),
-                        None,
-                    )))
-                }
+                (name, NonnaturalArtifactWeaponNoAttunement::Worn(worn)) => Some(Weapon(
+                    WeaponType::Artifact(*name, ArtifactWeapon::Worn(worn.clone(), false), None),
+                )),
+                (name, NonnaturalArtifactWeaponNoAttunement::OneHanded(one)) => Some(Weapon(
+                    WeaponType::Artifact(*name, ArtifactWeapon::OneHanded(one.clone(), None), None),
+                )),
                 (name, NonnaturalArtifactWeaponNoAttunement::TwoHanded(two)) => {
                     Some(Weapon(WeaponType::Artifact(
                         *name,

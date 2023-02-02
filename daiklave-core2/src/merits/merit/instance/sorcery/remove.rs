@@ -1,4 +1,4 @@
-use crate::{sorcery::SorceryArchetypeName, merits::merit::{RemoveMerit}, CharacterMutation};
+use crate::{merits::merit::RemoveMerit, sorcery::SorceryArchetypeName, CharacterMutation};
 
 use super::SorceryArchetypeMeritName;
 

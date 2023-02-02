@@ -1,8 +1,11 @@
-use crate::{merits::merit::{template::stackable::VariableStackableMeritTemplate, MeritPrerequisite}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{template::stackable::VariableStackableMeritTemplate, MeritPrerequisite},
+};
 
 use super::VariableMeritTemplateBuilderWithDots;
 
-/// A builder for a merit which can be purchased multiple times at potentially 
+/// A builder for a merit which can be purchased multiple times at potentially
 /// different dot levels.
 pub struct VariableStackableMeritTemplateBuilder(pub(crate) VariableMeritTemplateBuilderWithDots);
 
@@ -13,7 +16,7 @@ impl VariableStackableMeritTemplateBuilder {
         self
     }
 
-    /// Adds a prerequisite to purchase the merit. Merit prerequisites are 
+    /// Adds a prerequisite to purchase the merit. Merit prerequisites are
     /// always and "or" relationship, like Stamina 3 or Resistance 3.
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
         self = Self(self.0.prerequisite(prerequisite));
@@ -36,7 +39,7 @@ impl VariableStackableMeritTemplateBuilder {
             description: self.0.description,
             prerequisites: self.0.prerequisites,
             min_dots: self.0.min_dots,
-            other_dots: self.0.other_dots
+            other_dots: self.0.other_dots,
         }
     }
 }

@@ -1,6 +1,6 @@
 use super::ManseName;
 
-/// A mutation to remove a manse from a character. Will also remove the 
+/// A mutation to remove a manse from a character. Will also remove the
 /// associated demense and hearthstone.
 pub struct RemoveManse(pub ManseName);
 

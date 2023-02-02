@@ -3,5 +3,5 @@ pub mod builder;
 mod nonstackable;
 mod stackable;
 
-pub use nonstackable::{NonStackableMeritTemplateName, NonStackableMeritName};
+pub use nonstackable::{NonStackableMeritName, NonStackableMeritTemplateName};
 pub use stackable::StackableMeritTemplateName;

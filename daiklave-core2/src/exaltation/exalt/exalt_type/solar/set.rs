@@ -1,6 +1,6 @@
 use crate::CharacterMutation;
 
-use super::{SolarMemo, builder::SolarBuilder};
+use super::{builder::SolarBuilder, SolarMemo};
 
 /// A character mutation to set the character to be a Solar with the given
 /// traits, overriding any previous Exaltation in the process.

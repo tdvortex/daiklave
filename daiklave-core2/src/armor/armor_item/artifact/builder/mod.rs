@@ -34,7 +34,6 @@ impl ArtifactArmorItemBuilder {
         }
     }
 
-
     /// The book and page number where the named artifact armor is listed.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);

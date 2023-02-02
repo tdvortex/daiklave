@@ -3,7 +3,10 @@ pub(crate) use mutation::EvokableNameMutation;
 
 use crate::artifact::ArtifactName;
 
-use super::{EvocationName, builder::{EvocationBuilderWithName, EvocationBuilder}};
+use super::{
+    builder::{EvocationBuilder, EvocationBuilderWithName},
+    EvocationName,
+};
 
 /// The name of an item which is capable of having Evocations.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

@@ -1,7 +1,7 @@
 mod alias;
 mod memo;
 
-pub(crate) use alias::{PersonalCommitted, PeripheralCommitted};
+pub(crate) use alias::{PeripheralCommitted, PersonalCommitted};
 
 use std::collections::HashMap;
 
@@ -20,11 +20,13 @@ pub(crate) struct MotesState<'source> {
 
 impl<'source> MotesState<'source> {
     pub fn commitments(&self) -> impl Iterator<Item = MoteCommitment<'source>> + '_ {
-        self.other_commitments.iter().map(|(&name, &(peripheral, personal))| MoteCommitment {
-            name: MoteCommitmentName::Other(name),
-            peripheral,
-            personal,
-        })
+        self.other_commitments
+            .iter()
+            .map(|(&name, &(peripheral, personal))| MoteCommitment {
+                name: MoteCommitmentName::Other(name),
+                peripheral,
+                personal,
+            })
     }
 }
 

@@ -11,11 +11,11 @@ impl<'source> Character<'source> {
         &self.health
     }
 
-    /// Sets the character to have the specified number of each type of health 
+    /// Sets the character to have the specified number of each type of health
     /// box.
     pub fn set_health_track(
         &mut self,
-        _new_wound_penalties: &HashMap<WoundPenalty, u8>
+        _new_wound_penalties: &HashMap<WoundPenalty, u8>,
     ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }

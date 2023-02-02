@@ -23,7 +23,11 @@ impl<'source> From<&'source EclipseMemo> for Eclipse<'source> {
         Self {
             caste_not_supernal: memo.caste_not_supernal,
             supernal: memo.supernal,
-            eclipse_charms: memo.eclipse_charms.iter().map(|(charm_name, charm)| (charm_name.as_str(), charm)).collect(),
+            eclipse_charms: memo
+                .eclipse_charms
+                .iter()
+                .map(|(charm_name, charm)| (charm_name.as_str(), charm))
+                .collect(),
         }
     }
 }

@@ -1,6 +1,6 @@
 use std::num::NonZeroU8;
 
-use crate::{CharacterMutation, exaltation::exalt::essence::MotePoolName};
+use crate::{exaltation::exalt::essence::MotePoolName, CharacterMutation};
 
 /// A mutation to spend some number of motes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -27,7 +27,7 @@ use self::builder::SolarCharmBuilder;
 /// A Solar charm.
 pub struct SolarCharm<'source> {
     pub(crate) name: &'source str,
-    pub(crate) details: &'source SolarCharmDetails
+    pub(crate) details: &'source SolarCharmDetails,
 }
 
 impl<'source> SolarCharm<'source> {
@@ -107,7 +107,6 @@ impl<'source> SolarCharm<'source> {
         &self.details.duration
     }
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SolarCharmDetails {

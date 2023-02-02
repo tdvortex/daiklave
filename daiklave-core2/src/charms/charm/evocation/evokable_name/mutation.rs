@@ -1,6 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{artifact::{ArtifactNameMutation, wonders::WonderName}, hearthstones::hearthstone::HearthstoneName, armor::armor_item::artifact::ArtifactArmorName, weapons::weapon::artifact::ArtifactWeaponName};
+use crate::{
+    armor::armor_item::artifact::ArtifactArmorName,
+    artifact::{wonders::WonderName, ArtifactNameMutation},
+    hearthstones::hearthstone::HearthstoneName,
+    weapons::weapon::artifact::ArtifactWeaponName,
+};
 
 use super::EvokableName;
 

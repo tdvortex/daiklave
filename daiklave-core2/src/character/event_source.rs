@@ -66,11 +66,11 @@ impl<'source> CharacterEventSource {
         self.as_character()
     }
 
-    /// Applies an event to the event source and returns the Character after 
+    /// Applies an event to the event source and returns the Character after
     /// the event.
     pub fn apply_event(
         &'source mut self,
-        event: impl CharacterEvent<'source>
+        event: impl CharacterEvent<'source>,
     ) -> Result<Character<'source>, CharacterMutationError> {
         event.apply_event(self)
     }

@@ -1,6 +1,9 @@
 use crate::{
-    abilities::{Abilities, AbilitiesVanilla, AbilityError, AbilityNameVanilla, AbilityNameQualifiedMutation},
-    Character, CharacterMutationError, character::mutation::{RemoveSpecialty, SetAbility, AddSpecialty},
+    abilities::{
+        Abilities, AbilitiesVanilla, AbilityError, AbilityNameQualifiedMutation, AbilityNameVanilla,
+    },
+    character::mutation::{AddSpecialty, RemoveSpecialty, SetAbility},
+    Character, CharacterMutationError,
 };
 
 impl<'view, 'source> Character<'source> {
@@ -66,21 +69,33 @@ impl<'view, 'source> Character<'source> {
         set_ability: &'source SetAbility,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &set_ability.name {
-            AbilityNameQualifiedMutation::Vanilla(vanilla) => self.set_vanilla_ability_dots(*vanilla, set_ability.dots),
-            AbilityNameQualifiedMutation::Craft(focus) => self.set_craft_dots(focus, set_ability.dots),
-            AbilityNameQualifiedMutation::MartialArts(style) => self.set_martial_arts_dots(style, set_ability.dots)
+            AbilityNameQualifiedMutation::Vanilla(vanilla) => {
+                self.set_vanilla_ability_dots(*vanilla, set_ability.dots)
+            }
+            AbilityNameQualifiedMutation::Craft(focus) => {
+                self.set_craft_dots(focus, set_ability.dots)
+            }
+            AbilityNameQualifiedMutation::MartialArts(style) => {
+                self.set_martial_arts_dots(style, set_ability.dots)
+            }
         }
     }
 
     /// Adds a specialty to an ability.
     pub fn add_specialty(
         &mut self,
-        add_specialty: &'source AddSpecialty
+        add_specialty: &'source AddSpecialty,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &add_specialty.ability_name {
-            AbilityNameQualifiedMutation::Vanilla(vanilla) => self.add_vanilla_specialty(*vanilla, &add_specialty.specialty),
-            AbilityNameQualifiedMutation::Craft(focus) => self.add_craft_specialty(focus, &add_specialty.specialty),
-            AbilityNameQualifiedMutation::MartialArts(style) => self.add_martial_arts_specialty(style, &add_specialty.specialty),
+            AbilityNameQualifiedMutation::Vanilla(vanilla) => {
+                self.add_vanilla_specialty(*vanilla, &add_specialty.specialty)
+            }
+            AbilityNameQualifiedMutation::Craft(focus) => {
+                self.add_craft_specialty(focus, &add_specialty.specialty)
+            }
+            AbilityNameQualifiedMutation::MartialArts(style) => {
+                self.add_martial_arts_specialty(style, &add_specialty.specialty)
+            }
         }
     }
 
@@ -102,19 +117,27 @@ impl<'view, 'source> Character<'source> {
         remove_specialty: &RemoveSpecialty,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &remove_specialty.ability_name {
-            AbilityNameQualifiedMutation::Vanilla(vanilla) => self.remove_vanilla_specialty(*vanilla, &remove_specialty.specialty),
-            AbilityNameQualifiedMutation::Craft(focus) => self.remove_craft_specialty(focus, &remove_specialty.specialty),
-            AbilityNameQualifiedMutation::MartialArts(style) => self.remove_martial_arts_specialty(style, &remove_specialty.specialty),
-        }        
+            AbilityNameQualifiedMutation::Vanilla(vanilla) => {
+                self.remove_vanilla_specialty(*vanilla, &remove_specialty.specialty)
+            }
+            AbilityNameQualifiedMutation::Craft(focus) => {
+                self.remove_craft_specialty(focus, &remove_specialty.specialty)
+            }
+            AbilityNameQualifiedMutation::MartialArts(style) => {
+                self.remove_martial_arts_specialty(style, &remove_specialty.specialty)
+            }
+        }
     }
 
     /// Removes a specialty from a non-Craft, non-Martial Arts ability.
     pub fn remove_vanilla_specialty(
         &mut self,
         ability_name: AbilityNameVanilla,
-        specialty: &str
+        specialty: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.abilities.get_mut(ability_name).remove_specialty(specialty)?;
+        self.abilities
+            .get_mut(ability_name)
+            .remove_specialty(specialty)?;
         Ok(self)
     }
 }

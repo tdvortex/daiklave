@@ -12,7 +12,10 @@ use crate::{
     },
 };
 
-use super::{with_attack::BaseWeaponBuilderWithAttack, mundane::MundaneWeaponBuilderWithDamageType, BaseArtifactWeaponBuilderWithDamageType};
+use super::{
+    mundane::MundaneWeaponBuilderWithDamageType, with_attack::BaseWeaponBuilderWithAttack,
+    BaseArtifactWeaponBuilderWithDamageType,
+};
 
 /// A base weapon builder after having its damage type specified.
 pub struct BaseWeaponBuilderWithDamageType {

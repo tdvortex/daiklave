@@ -1,6 +1,6 @@
 use crate::CharacterMutation;
 
-use super::{LanguageMutation, MajorLanguage, LocalTongueName, Language};
+use super::{Language, LanguageMutation, LocalTongueName, MajorLanguage};
 
 /// A mutation to remove a language from the character. Native languages
 /// cannot be removed.

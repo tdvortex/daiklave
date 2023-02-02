@@ -1,5 +1,5 @@
 use crate::{
-    martial_arts::{charm::AddMartialArtsCharm, style::{AddMartialArtsStyle}, MartialArts},
+    martial_arts::{charm::AddMartialArtsCharm, style::AddMartialArtsStyle, MartialArts},
     Character, CharacterMutationError,
 };
 
@@ -14,7 +14,10 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         add_martial_arts_style: &'source AddMartialArtsStyle,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.add_martial_arts_style(&add_martial_arts_style.style_name, &add_martial_arts_style.style)?;
+        self.exaltation.add_martial_arts_style(
+            &add_martial_arts_style.style_name,
+            &add_martial_arts_style.style,
+        )?;
 
         Ok(self)
     }

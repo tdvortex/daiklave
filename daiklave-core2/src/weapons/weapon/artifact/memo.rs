@@ -1,23 +1,33 @@
-use crate::{CharacterMutation, artifact::AddArtifact, weapons::weapon::builder::base::{BaseArtifactWeaponBuilder, BaseWeaponBuilder}};
+use crate::{
+    artifact::AddArtifact,
+    weapons::weapon::builder::base::{BaseArtifactWeaponBuilder, BaseWeaponBuilder},
+    CharacterMutation,
+};
 
-use super::{ArtifactWeaponName, handedness::ArtifactWeaponHandedness, builder::{ArtifactWeaponBuilderWithHearthstoneSlots, ArtifactWeaponBuilder}, AddBaseArtifactWeapon};
+use super::{
+    builder::{ArtifactWeaponBuilder, ArtifactWeaponBuilderWithHearthstoneSlots},
+    handedness::ArtifactWeaponHandedness,
+    AddBaseArtifactWeapon, ArtifactWeaponName,
+};
 
 /// A mutation to add an artifact weapon to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddArtifactWeapon {
     pub(crate) name: ArtifactWeaponName,
-    pub(crate) handedness: ArtifactWeaponHandedness
+    pub(crate) handedness: ArtifactWeaponHandedness,
 }
 
 impl AddArtifactWeapon {
-    /// Starts constructing a new base artifact weapon as part of the builder 
+    /// Starts constructing a new base artifact weapon as part of the builder
     /// process.
     pub fn new_base_weapon(name: impl Into<String>) -> BaseArtifactWeaponBuilder {
         BaseWeaponBuilder::name(name).artifact()
     }
 
     /// Uses an existing weapon as a base to start creating a new artifact weapon.
-    pub fn with_base_weapon(add_base_weapon: impl Into<AddBaseArtifactWeapon>) -> ArtifactWeaponBuilder {
+    pub fn with_base_weapon(
+        add_base_weapon: impl Into<AddBaseArtifactWeapon>,
+    ) -> ArtifactWeaponBuilder {
         ArtifactWeaponBuilder::base_weapon(add_base_weapon)
     }
 }

@@ -24,7 +24,10 @@ impl<'source> Character<'source> {
             return Ok(self);
         }
         self.exaltation.set_mortal()?;
-        self.set_willpower_rating(NonZeroU8::new(self.willpower.rating.get().max(2) - 2).unwrap_or(NonZeroU8::new(1).unwrap()))?;
+        self.set_willpower_rating(
+            NonZeroU8::new(self.willpower.rating.get().max(2) - 2)
+                .unwrap_or(NonZeroU8::new(1).unwrap()),
+        )?;
         Ok(self)
     }
 

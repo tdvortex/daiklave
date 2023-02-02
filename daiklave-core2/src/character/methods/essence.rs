@@ -35,7 +35,10 @@ impl<'view, 'source> Character<'source> {
 
     /// Recovers motes, moving them from spent to available. Will not uncommit
     /// motes.
-    pub fn recover_motes(&mut self, amount: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn recover_motes(
+        &mut self,
+        amount: NonZeroU8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.recover_motes(amount)?;
         Ok(self)
     }
@@ -53,7 +56,10 @@ impl<'view, 'source> Character<'source> {
     /// Changes the essence rating of the character to the specified value.
     /// This also uncommits all active effects and recovers all motes. If
     /// the rating is decreased, may cause Charms or Sorcery to be lost.
-    pub fn set_essence_rating(&mut self, rating: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_essence_rating(
+        &mut self,
+        rating: NonZeroU8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         let old_rating = self.essence().map(|essence| essence.rating()).unwrap_or(0);
         if old_rating == rating.get() {
             return Ok(self);

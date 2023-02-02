@@ -3,9 +3,12 @@ pub use with_weight_class::BaseArtifactArmorBuilderWithWeightClass;
 
 use std::collections::HashSet;
 
-use crate::{book_reference::BookReference, armor::armor_item::{ArmorTag, ArmorWeightClass}};
+use crate::{
+    armor::armor_item::{ArmorTag, ArmorWeightClass},
+    book_reference::BookReference,
+};
 
-/// A builder to construct a basic piece of artifact armor. This is a 
+/// A builder to construct a basic piece of artifact armor. This is a
 /// generic base item like "Silken Armor" or "Articulated Plate (Artifact)",
 /// not a named item.
 pub struct BaseArtifactArmorBuilder {

@@ -1,4 +1,7 @@
-use crate::{exaltation::exalt::exalt_type::solar::charm::SolarCharmAbility, abilities::{AddSpecialty, RemoveSpecialty, SetAbility, AbilityError}};
+use crate::{
+    abilities::{AbilityError, AddSpecialty, RemoveSpecialty, SetAbility},
+    exaltation::exalt::exalt_type::solar::charm::SolarCharmAbility,
+};
 
 use super::AbilityName;
 
@@ -71,7 +74,7 @@ impl AbilityNameVanilla {
     pub fn remove_specialty(&self, specialty: impl Into<String>) -> RemoveSpecialty {
         RemoveSpecialty::new((*self).into(), specialty)
     }
-    
+
     /// Iterates over all ability names except for Craft and Martial Arts,
     /// in alphabetical order.
     pub fn iter() -> impl Iterator<Item = AbilityNameVanilla> {

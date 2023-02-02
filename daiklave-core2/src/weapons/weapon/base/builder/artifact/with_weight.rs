@@ -1,4 +1,7 @@
-use crate::{weapons::weapon::{OptionalWeaponTag, RangeBand, builder::base::BaseWeaponBuilderWithWeight}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    weapons::weapon::{builder::base::BaseWeaponBuilderWithWeight, OptionalWeaponTag, RangeBand},
+};
 
 use super::BaseArtifactWeaponBuilderWithHandedness;
 

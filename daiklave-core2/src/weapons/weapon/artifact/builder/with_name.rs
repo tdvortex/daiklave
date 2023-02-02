@@ -1,5 +1,6 @@
 use crate::{
-    artifact::MagicMaterial, book_reference::BookReference,
+    artifact::MagicMaterial,
+    book_reference::BookReference,
     weapons::weapon::artifact::{base::BaseArtifactWeapon, ArtifactWeaponName},
 };
 

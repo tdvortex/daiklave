@@ -1,4 +1,7 @@
-use crate::{sorcery::SorceryArchetypeName, merits::merit::instance::SorceryArchetypeMeritName, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference, merits::merit::instance::SorceryArchetypeMeritName,
+    sorcery::SorceryArchetypeName,
+};
 
 use super::SorceryArchetypeMeritBuilderWithDots;
 

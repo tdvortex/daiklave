@@ -244,7 +244,7 @@ impl<'source> MeritSource<'source> {
 
     pub fn description(&self) -> &'source str {
         match self {
-            MeritSource::Artifact { name: _, dots : _} => ARTIFACT_SHARED,
+            MeritSource::Artifact { name: _, dots: _ } => ARTIFACT_SHARED,
             MeritSource::Demense {
                 name: _,
                 has_manse: _,

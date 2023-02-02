@@ -7,8 +7,8 @@ use crate::{
     book_reference::BookReference,
     charms::{
         charm::{
-            evocation::{EvocationKeyword, EvokableNameMutation, EvocationName},
-            CharmNameMutation, CharmName,
+            evocation::{EvocationKeyword, EvocationName, EvokableNameMutation},
+            CharmName, CharmNameMutation,
         },
         CharmActionType, CharmCostType,
     },

@@ -1,6 +1,18 @@
-use std::{num::NonZeroU8, collections::{HashSet, HashMap}};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
-use crate::{charms::{charm::{evocation::{EvokableNameMutation, EvocationKeyword, EvocationName}, CharmNameMutation, CharmName}, CharmCostType}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    charms::{
+        charm::{
+            evocation::{EvocationKeyword, EvocationName, EvokableNameMutation},
+            CharmName, CharmNameMutation,
+        },
+        CharmCostType,
+    },
+};
 
 use super::EvocationBuilderWithEssenceRequirement;
 

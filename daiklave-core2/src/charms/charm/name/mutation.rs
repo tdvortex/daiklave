@@ -1,6 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{sorcery::spell::SpellName, charms::charm::{spirit::SpiritCharmName, evocation::EvocationName}, martial_arts::charm::MartialArtsCharmName, exaltation::exalt::exalt_type::solar::charm::SolarCharmName};
+use crate::{
+    charms::charm::{evocation::EvocationName, spirit::SpiritCharmName},
+    exaltation::exalt::exalt_type::solar::charm::SolarCharmName,
+    martial_arts::charm::MartialArtsCharmName,
+    sorcery::spell::SpellName,
+};
 
 use super::CharmName;
 

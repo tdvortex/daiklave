@@ -1,6 +1,16 @@
-use std::{collections::{HashSet, HashMap}, num::NonZeroU8};
+use std::{
+    collections::{HashMap, HashSet},
+    num::NonZeroU8,
+};
 
-use crate::{martial_arts::{charm::{MartialArtsCharmName, MartialArtsCharmKeyword}, style::MartialArtsStyleName}, book_reference::BookReference, charms::{CharmCostType}};
+use crate::{
+    book_reference::BookReference,
+    charms::CharmCostType,
+    martial_arts::{
+        charm::{MartialArtsCharmKeyword, MartialArtsCharmName},
+        style::MartialArtsStyleName,
+    },
+};
 
 use super::MartialArtsCharmBuilderWithEssenceRequirement;
 

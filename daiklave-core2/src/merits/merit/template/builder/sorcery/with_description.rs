@@ -1,4 +1,11 @@
-use crate::{sorcery::SorceryArchetypeName, merits::merit::{instance::{SorceryArchetypeMeritName, SorceryArchetypeMeritDetails}, AddSorceryArchetypeMerit}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{
+        instance::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName},
+        AddSorceryArchetypeMerit,
+    },
+    sorcery::SorceryArchetypeName,
+};
 
 /// A sorcery archetype merit builder, after the description has been supplied.
 pub struct SorceryArchetypeMeritBuilderWithDescription {
@@ -25,7 +32,7 @@ impl SorceryArchetypeMeritBuilderWithDescription {
                 book_reference: self.book_reference,
                 description: self.description,
                 dots: self.dots,
-            }
+            },
         }
     }
 }

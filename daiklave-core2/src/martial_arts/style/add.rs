@@ -1,8 +1,8 @@
-use crate::{CharacterMutation};
+use crate::CharacterMutation;
 
-use super::{MartialArtsStyleName, MartialArtsStyleDetails, builder::MartialArtsStyleBuilder};
+use super::{builder::MartialArtsStyleBuilder, MartialArtsStyleDetails, MartialArtsStyleName};
 
-/// Add a Martial Arts style (and the associated Martial Artist merit) to a 
+/// Add a Martial Arts style (and the associated Martial Artist merit) to a
 /// character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddMartialArtsStyle {
@@ -18,7 +18,6 @@ impl AddMartialArtsStyle {
             book_reference: None,
             max_armor_weight: None,
         }
-
     }
 }
 

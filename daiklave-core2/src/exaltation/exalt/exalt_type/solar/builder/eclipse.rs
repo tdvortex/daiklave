@@ -10,7 +10,8 @@ use crate::{
             },
             SetSolar, SolarError, SolarMemo,
         },
-        LimitMemo, limit::LimitTrigger,
+        limit::LimitTrigger,
+        LimitMemo,
     },
     experience::ExperiencePool,
 };

@@ -1,6 +1,11 @@
-use crate::armor::armor_item::builder::base::{BaseArtifactArmorBuilderWithWeightClass, BaseArtifactArmorBuilder};
+use crate::armor::armor_item::builder::base::{
+    BaseArtifactArmorBuilder, BaseArtifactArmorBuilderWithWeightClass,
+};
 
-use super::{BaseArtifactArmor, ArtifactArmorName, builder::{ArtifactArmorItemBuilderWithBaseArmor, ArtifactArmorItemBuilder}};
+use super::{
+    builder::{ArtifactArmorItemBuilder, ArtifactArmorItemBuilderWithBaseArmor},
+    ArtifactArmorName, BaseArtifactArmor,
+};
 
 /// The name and properties of a piece of generic artifact armor to be used as
 /// a base for a specific piece of artifact armor.
@@ -16,7 +21,10 @@ impl AddBaseArtifactArmor {
     }
 
     /// Starts to build a unique armor item out of this generic piece.
-    pub fn unique_name(self, name: impl Into<ArtifactArmorName>) -> ArtifactArmorItemBuilderWithBaseArmor {
+    pub fn unique_name(
+        self,
+        name: impl Into<ArtifactArmorName>,
+    ) -> ArtifactArmorItemBuilderWithBaseArmor {
         ArtifactArmorItemBuilder::name(name).base_artifact(self)
     }
 }

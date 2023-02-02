@@ -3,12 +3,13 @@ use crate::{
     exaltation::exalt::{
         exalt_type::solar::{
             caste::{
-                zenith::{ZenithAbility, Zenith},
+                zenith::{Zenith, ZenithAbility},
                 SolarCasteMemo,
             },
             SetSolar, SolarError, SolarMemo,
         },
-        LimitMemo, limit::LimitTrigger,
+        limit::LimitTrigger,
+        LimitMemo,
     },
     experience::ExperiencePool,
 };

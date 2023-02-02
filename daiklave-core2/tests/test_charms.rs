@@ -149,10 +149,7 @@ fn test_solar_charms() {
 
     // ...unless they have the ability as a Supernal ability
     event_source
-        .apply_mutation(CharacterMutation::SetAbility(
-            AbilityNameVanilla::Lore,
-            5,
-        ))
+        .apply_mutation(CharacterMutation::SetAbility(AbilityNameVanilla::Lore, 5))
         .unwrap();
 
     let order_affirming_blow = SolarCharm::builder("Order-Affirming Blow".to_owned())
@@ -646,10 +643,7 @@ fn test_spells() {
 
     // Mortal sorcerers can add Terrestrial Spells
     event_source
-        .apply_mutation(CharacterMutation::SetAbility(
-            AbilityNameVanilla::Occult,
-            5,
-        ))
+        .apply_mutation(CharacterMutation::SetAbility(AbilityNameVanilla::Occult, 5))
         .unwrap();
 
     let add_sorcery = Sorcery::builder()
@@ -974,10 +968,7 @@ fn test_martial_arts_charms() {
             .build();
 
     event_source
-        .apply_mutation(CharacterMutation::SetAbility(
-            AbilityNameVanilla::Brawl,
-            1,
-        ))
+        .apply_mutation(CharacterMutation::SetAbility(AbilityNameVanilla::Brawl, 1))
         .unwrap();
     event_source
         .apply_mutation(CharacterMutation::AddMartialArtsStyle(

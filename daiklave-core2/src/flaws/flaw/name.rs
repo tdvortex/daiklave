@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use super::RemoveFlaw;
 
@@ -15,7 +15,10 @@ impl FlawName {
     }
 }
 
-impl<T> From<T> for FlawName where T: Into<String> {
+impl<T> From<T> for FlawName
+where
+    T: Into<String>,
+{
     fn from(name: T) -> Self {
         Self(name.into())
     }

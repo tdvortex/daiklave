@@ -1,8 +1,11 @@
 use std::collections::HashSet;
 
-use crate::{merits::merit::{MeritType, MeritPrerequisite}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{MeritPrerequisite, MeritType},
+};
 
-use super::{FixedStackableMeritTemplateBuilder, FixedNonStackableMeritTemplateBuilder};
+use super::{FixedNonStackableMeritTemplateBuilder, FixedStackableMeritTemplateBuilder};
 
 /// A fixed-dot merit builder after the description has been supplied.
 pub struct FixedMeritTemplateBuilderWithDescription {
@@ -21,7 +24,7 @@ impl FixedMeritTemplateBuilderWithDescription {
         self
     }
 
-    /// Adds a prerequisite to purchase the merit. Merit prerequisites are 
+    /// Adds a prerequisite to purchase the merit. Merit prerequisites are
     /// always and "or" relationship, like Stamina 3 or Resistance 3.
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
         self.prerequisites.insert(prerequisite);
@@ -33,7 +36,7 @@ impl FixedMeritTemplateBuilderWithDescription {
         FixedNonStackableMeritTemplateBuilder(self)
     }
 
-    /// Indicates that this merit may be purchased multiple times per 
+    /// Indicates that this merit may be purchased multiple times per
     /// character.
     pub fn stackable(self) -> FixedStackableMeritTemplateBuilder {
         FixedStackableMeritTemplateBuilder(self)

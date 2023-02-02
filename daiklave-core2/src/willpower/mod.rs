@@ -6,8 +6,8 @@ use std::num::NonZeroU8;
 
 pub use error::WillpowerError;
 pub use gain::GainWillpower;
-pub use spend::SpendWillpower;
 pub use set_rating::SetWillpowerRating;
+pub use spend::SpendWillpower;
 
 use serde::{Deserialize, Serialize};
 

@@ -1,7 +1,6 @@
 use crate::sorcery::{
-    archetype::{SorceryArchetypeName},
-    spell::SpellName,
-    ShapingRitualDetails, SorceryArchetypeDetails,
+    archetype::SorceryArchetypeName, spell::SpellName, ShapingRitualDetails,
+    SorceryArchetypeDetails,
 };
 
 use super::CelestialSpell;

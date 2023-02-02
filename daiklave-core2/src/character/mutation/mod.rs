@@ -1,30 +1,34 @@
 mod error;
-use crate::merits::merit::RemoveMerit;
-use crate::{Character};
-pub use crate::abilities::{SetAbility, AddSpecialty, RemoveSpecialty};
-pub use crate::armor::armor_item::{EquipArmor, UnequipArmor};
+pub use crate::abilities::{AddSpecialty, RemoveSpecialty, SetAbility};
 pub use crate::armor::armor_item::mundane::{AddMundaneArmor, RemoveMundaneArmor};
+pub use crate::armor::armor_item::{EquipArmor, UnequipArmor};
 pub use crate::artifact::AttuneArtifact;
 pub use crate::attributes::SetAttribute;
 pub use crate::charms::charm::{AddCharm, RemoveCharm};
-pub use crate::exaltation::exalt::essence::{SetEssenceRating, SpendMotes, CommitMotes, RecoverMotes, UncommitMotes};
+pub use crate::concept::{RemoveConcept, SetConcept};
+pub use crate::exaltation::exalt::essence::{
+    CommitMotes, RecoverMotes, SetEssenceRating, SpendMotes, UncommitMotes,
+};
+pub use crate::exaltation::exalt::exalt_type::solar::SetSolar;
 pub use crate::exaltation::exalt::limit::{GainLimit, ReduceLimit, SetLimitTrigger};
-pub use crate::experience::{GainExperience, GainExaltExperience, SpendExperience, SpendExaltExperience};
+pub use crate::exaltation::mortal::SetMortal;
+pub use crate::experience::{
+    GainExaltExperience, GainExperience, SpendExaltExperience, SpendExperience,
+};
 pub use crate::flaws::flaw::{AddFlaw, RemoveFlaw};
 pub use crate::health::{HealDamage, SetHealthTrack, TakeDamage};
 pub use crate::hearthstones::hearthstone::{SlotHearthstone, UnslotHearthstone};
 pub use crate::intimacies::intimacy::{AddIntimacy, RemoveIntimacy};
-pub use crate::languages::language::{RemoveLanguage, AddLanguage};
 pub use crate::languages::language::SetNativeLanguage;
+pub use crate::languages::language::{AddLanguage, RemoveLanguage};
 pub use crate::merits::merit::AddMerit;
+use crate::merits::merit::RemoveMerit;
 pub use crate::name::SetName;
-pub use crate::concept::{RemoveConcept, SetConcept};
-pub use crate::exaltation::mortal::SetMortal;
-pub use crate::exaltation::exalt::exalt_type::solar::SetSolar;
 pub use crate::sorcery::{AddSorcery, RemoveSorcery};
-pub use crate::weapons::weapon::{EquipWeapon, UnequipWeapon};
 pub use crate::weapons::weapon::mundane::{AddMundaneWeapon, RemoveMundaneWeapon};
-pub use crate::willpower::{GainWillpower, SpendWillpower, SetWillpowerRating};
+pub use crate::weapons::weapon::{EquipWeapon, UnequipWeapon};
+pub use crate::willpower::{GainWillpower, SetWillpowerRating, SpendWillpower};
+use crate::Character;
 
 pub use error::CharacterMutationError;
 
@@ -151,8 +155,10 @@ pub enum CharacterMutation {
 
 impl<'view, 'source> CharacterMutation {
     /// Apply the mutation to a Character.
-    pub fn apply_mutation(&'source self, character: &'view mut Character<'source>) -> Result<&'view mut Character<'source>, CharacterMutationError> {
+    pub fn apply_mutation(
+        &'source self,
+        character: &'view mut Character<'source>,
+    ) -> Result<&'view mut Character<'source>, CharacterMutationError> {
         character.apply_mutation(self)
     }
 }
-

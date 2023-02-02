@@ -1,6 +1,10 @@
 use crate::CharacterMutation;
 
-use super::{artifact::{AddArtifactArmor, builder::ArtifactArmorItemBuilder, ArtifactArmorName}, mundane::{AddMundaneArmor, MundaneArmorName}, builder::base::{MundaneArmorBuilder, BaseArtifactArmorBuilder}};
+use super::{
+    artifact::{builder::ArtifactArmorItemBuilder, AddArtifactArmor, ArtifactArmorName},
+    builder::base::{BaseArtifactArmorBuilder, MundaneArmorBuilder},
+    mundane::{AddMundaneArmor, MundaneArmorName},
+};
 
 /// A mutation to add a piece of armor to a character.
 pub enum AddArmor {

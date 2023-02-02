@@ -12,4 +12,3 @@ pub enum SpellMutation {
     /// Unconquered Sun.
     Solar(SolarSpell),
 }
-

@@ -9,7 +9,7 @@ use super::EssenceError;
 pub struct SetEssenceRating(pub(crate) NonZeroU8);
 
 impl SetEssenceRating {
-    /// Specifies the dot rating to set Essence to. Returns Err if the dot 
+    /// Specifies the dot rating to set Essence to. Returns Err if the dot
     /// rating would be above 5.
     pub fn dots(dots: NonZeroU8) -> Result<Self, EssenceError> {
         if dots > NonZeroU8::new(5).unwrap() {

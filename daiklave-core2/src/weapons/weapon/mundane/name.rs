@@ -1,8 +1,11 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::weapons::{weapon::{EquipWeapon, WeaponName, UnequipWeapon, Equipped}, WeaponError};
+use crate::weapons::{
+    weapon::{EquipWeapon, Equipped, UnequipWeapon, WeaponName},
+    WeaponError,
+};
 
 use super::RemoveMundaneWeapon;
 
@@ -44,7 +47,10 @@ impl MundaneWeaponName {
     }
 }
 
-impl<T> From<T> for MundaneWeaponName where T: Into<String> {
+impl<T> From<T> for MundaneWeaponName
+where
+    T: Into<String>,
+{
     fn from(name: T) -> Self {
         Self(name.into())
     }

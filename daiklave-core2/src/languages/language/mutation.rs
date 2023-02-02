@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{MajorLanguage, LocalTongueName, Language};
-
+use super::{Language, LocalTongueName, MajorLanguage};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub(crate) enum LanguageMutation {
@@ -17,7 +16,7 @@ impl Default for LanguageMutation {
 
 impl From<Language<'_>> for LanguageMutation {
     fn from(language: Language<'_>) -> Self {
-         match language {
+        match language {
             Language::MajorLanguage(major) => Self::MajorLanguage(major),
             Language::LocalTongue(local) => Self::LocalTongue(local.into()),
         }

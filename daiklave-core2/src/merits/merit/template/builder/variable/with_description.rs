@@ -1,10 +1,13 @@
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap, HashSet};
 
-use crate::{merits::merit::{MeritType, MeritPrerequisite}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{MeritPrerequisite, MeritType},
+};
 
 use super::VariableMeritTemplateBuilderWithDots;
 
-/// A variable-dot merit template builder after the description has been 
+/// A variable-dot merit template builder after the description has been
 /// supplied.
 pub struct VariableMeritTemplateBuilderWithDescription {
     pub(crate) name: String,
@@ -21,7 +24,7 @@ impl VariableMeritTemplateBuilderWithDescription {
         self
     }
 
-    /// Adds a prerequisite to purchase the merit. Merit prerequisites are 
+    /// Adds a prerequisite to purchase the merit. Merit prerequisites are
     /// always and "or" relationship, like Stamina 3 or Resistance 3.
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
         self.prerequisites.insert(prerequisite);
@@ -30,7 +33,11 @@ impl VariableMeritTemplateBuilderWithDescription {
 
     /// Adds a dot level at which the merit can be purchased. These need not be
     /// consecutive.
-    pub fn dot_option(self, dots: u8, description: impl Into<String>) -> VariableMeritTemplateBuilderWithDots {
+    pub fn dot_option(
+        self,
+        dots: u8,
+        description: impl Into<String>,
+    ) -> VariableMeritTemplateBuilderWithDots {
         VariableMeritTemplateBuilderWithDots {
             name: self.name,
             merit_type: self.merit_type,

@@ -6,7 +6,7 @@ use crate::weapons::weapon::{
     artifact::HandlessArtifactWeaponNoAttunementMemo, mundane::HandlessMundaneWeaponMemo,
 };
 
-use super::{hands::MortalHandsMemo};
+use super::hands::MortalHandsMemo;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MortalEquippedWeaponsMemo {

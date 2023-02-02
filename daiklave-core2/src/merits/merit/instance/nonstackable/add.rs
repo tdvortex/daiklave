@@ -1,4 +1,7 @@
-use crate::{merits::merit::{template::NonStackableMeritTemplateName, AddMerit}, CharacterMutation};
+use crate::{
+    merits::merit::{template::NonStackableMeritTemplateName, AddMerit},
+    CharacterMutation,
+};
 
 use super::NonStackableMeritInstance;
 

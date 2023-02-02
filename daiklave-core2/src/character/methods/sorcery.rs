@@ -1,16 +1,16 @@
 use crate::{
     abilities::AbilityNameVanilla,
     attributes::AttributeName,
+    merits::merit::AddSorceryArchetypeMerit,
     sorcery::{
         circles::{
-            celestial::AddCelestialSorcery,
-            solar::AddSolarSorcery,
-            terrestrial::{AddTerrestrialSorcery},
+            celestial::AddCelestialSorcery, solar::AddSolarSorcery,
+            terrestrial::AddTerrestrialSorcery,
         },
         spell::SpellMutation,
-        Sorcery, AddSorcery, AddSorceryCircle,
+        AddSorcery, AddSorceryCircle, Sorcery,
     },
-    Character, CharacterMutationError, merits::merit::AddSorceryArchetypeMerit,
+    Character, CharacterMutationError,
 };
 
 impl<'view, 'source> Character<'source> {
@@ -27,7 +27,9 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_terrestrial_sorcery(
             add_terrestrial,
-            self.abilities().get_vanilla(AbilityNameVanilla::Occult).dots(),
+            self.abilities()
+                .get_vanilla(AbilityNameVanilla::Occult)
+                .dots(),
             self.attributes().get(AttributeName::Intelligence).dots(),
         )?;
         Ok(self)
@@ -46,7 +48,9 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_celestial_sorcery(
             add_celestial,
-            self.abilities().get_vanilla(AbilityNameVanilla::Occult).dots(),
+            self.abilities()
+                .get_vanilla(AbilityNameVanilla::Occult)
+                .dots(),
             self.attributes().get(AttributeName::Intelligence).dots(),
             self.essence().map_or(1, |essence| essence.rating()),
         )?;
@@ -66,7 +70,9 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         self.exaltation.add_solar_sorcery(
             add_solar,
-            self.abilities().get_vanilla(AbilityNameVanilla::Occult).dots(),
+            self.abilities()
+                .get_vanilla(AbilityNameVanilla::Occult)
+                .dots(),
             self.essence().map_or(1, |essence| essence.rating()),
         )?;
         Ok(self)
@@ -90,9 +96,14 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Adds a circle of sorcery to the character.
-    pub fn add_sorcery(&mut self, add_sorcery: &'source AddSorcery) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_sorcery(
+        &mut self,
+        add_sorcery: &'source AddSorcery,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match &add_sorcery.0.as_ref() {
-            AddSorceryCircle::Terrestrial(add_terrestrial) => self.add_terrestrial_sorcery(add_terrestrial),
+            AddSorceryCircle::Terrestrial(add_terrestrial) => {
+                self.add_terrestrial_sorcery(add_terrestrial)
+            }
             AddSorceryCircle::Celestial(add_celestial) => self.add_celestial_sorcery(add_celestial),
             AddSorceryCircle::Solar(add_solar) => self.add_solar_sorcery(add_solar),
         }
@@ -116,8 +127,7 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation
-            .remove_sorcery_archetype_merit(name)?;
+        self.exaltation.remove_sorcery_archetype_merit(name)?;
         Ok(self)
     }
 
@@ -139,7 +149,10 @@ impl<'view, 'source> Character<'source> {
     }
 
     pub(crate) fn correct_sorcery_level(&mut self) -> bool {
-        let occult_dots = self.abilities().get_vanilla(AbilityNameVanilla::Occult).dots();
+        let occult_dots = self
+            .abilities()
+            .get_vanilla(AbilityNameVanilla::Occult)
+            .dots();
         let intelligence_dots = self.attributes().get(AttributeName::Intelligence).dots();
         let essence_rating = self.essence().map(|essence| essence.rating()).unwrap_or(0);
         self.exaltation

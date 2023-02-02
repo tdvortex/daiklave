@@ -2,9 +2,9 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::charms::charm::{EclipseCharm, spirit::SpiritCharmName};
+use crate::charms::charm::{spirit::SpiritCharmName, EclipseCharm};
 
-use super::{EclipseAbility};
+use super::EclipseAbility;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EclipseMemo {

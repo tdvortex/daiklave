@@ -7,14 +7,18 @@ mod state;
 pub(crate) use state::{EssenceState, EssenceStateMemo};
 
 pub(crate) use error::EssenceError;
-pub use motes::{Motes, CommitMotes, RecoverMotes, SpendMotes, UncommitMotes};
-pub(crate) use motes::{MotesState};
+pub(crate) use motes::MotesState;
+pub use motes::{CommitMotes, Motes, RecoverMotes, SpendMotes, UncommitMotes};
 
-use crate::{artifact::ArtifactName, armor::armor_item::{ArmorType, ArmorWeightClass}, weapons::weapon::WeaponType};
+use crate::{
+    armor::armor_item::{ArmorType, ArmorWeightClass},
+    artifact::ArtifactName,
+    weapons::weapon::WeaponType,
+};
 
 use super::{AnimaEffect, Exalt};
-pub use mote_commitment::{MoteCommitment, MoteCommitmentName};
 pub(crate) use mote_commitment::MoteCommitmentNameMutation;
+pub use mote_commitment::{MoteCommitment, MoteCommitmentName};
 pub(crate) use mote_pool::MotePool;
 pub use mote_pool::MotePoolName;
 pub use set_rating::SetEssenceRating;
@@ -34,7 +38,8 @@ impl<'view, 'source> Essence<'view, 'source> {
         let weapon_attunements =
             self.0.weapons.iter().filter_map(|(weapon_id, equipped)| {
                 match self
-                    .0.weapons
+                    .0
+                    .weapons
                     .get_weapon(weapon_id, equipped)
                     .map(|weapon| weapon.0)
                 {
@@ -54,7 +59,8 @@ impl<'view, 'source> Essence<'view, 'source> {
             });
 
         let armor_attunements = self.0.armor.iter().filter_map(|armor_id| {
-            self.0.armor
+            self.0
+                .armor
                 .get(armor_id)
                 .and_then(|armor_item| match armor_item.0 {
                     ArmorType::Artifact(artifact_armor_name, armor, attunement) => {
@@ -85,7 +91,9 @@ impl<'view, 'source> Essence<'view, 'source> {
                 if let Some(personal) = wonder.2 {
                     if let Some(required) = wonder.1.attunement_cost {
                         Some(MoteCommitment {
-                            name: MoteCommitmentName::AttunedArtifact(ArtifactName::Wonder(wonder.0)),
+                            name: MoteCommitmentName::AttunedArtifact(ArtifactName::Wonder(
+                                wonder.0,
+                            )),
                             peripheral: required - personal.min(required),
                             personal: personal.min(required),
                         })
@@ -98,10 +106,15 @@ impl<'view, 'source> Essence<'view, 'source> {
             })
         });
 
-        let attunements = weapon_attunements.chain(armor_attunements).chain(wonder_attunements).collect();
+        let attunements = weapon_attunements
+            .chain(armor_attunements)
+            .chain(wonder_attunements)
+            .collect();
 
-
-        Motes { state: &self.0.essence.motes, attunements }
+        Motes {
+            state: &self.0.essence.motes,
+            attunements,
+        }
     }
 
     /// The anima effects the Exalt possesses.

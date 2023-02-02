@@ -1,6 +1,11 @@
 use std::collections::HashSet;
 
-use crate::{book_reference::BookReference, merits::merit::{MeritType, MeritPrerequisite, AddStackableMerit, MeritInstanceInner, StackableMeritInstance}};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{
+        AddStackableMerit, MeritInstanceInner, MeritPrerequisite, MeritType, StackableMeritInstance,
+    },
+};
 
 use super::StackableMeritTemplateName;
 
@@ -10,7 +15,7 @@ pub struct FixedStackableMeritTemplate {
     pub(crate) merit_type: MeritType,
     pub(crate) description: String,
     pub(crate) prerequisites: HashSet<MeritPrerequisite>,
-    pub(crate) dots: u8
+    pub(crate) dots: u8,
 }
 
 impl FixedStackableMeritTemplate {
@@ -24,7 +29,7 @@ impl FixedStackableMeritTemplate {
             dot_description: None,
         };
         let instance = StackableMeritInstance(inner);
-        
+
         AddStackableMerit {
             template_name: self.name,
             detail: detail.into(),

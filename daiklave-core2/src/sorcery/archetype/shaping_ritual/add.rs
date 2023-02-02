@@ -1,4 +1,4 @@
-use crate::{sorcery::archetype::SorceryArchetypeName};
+use crate::sorcery::archetype::SorceryArchetypeName;
 
 use super::ShapingRitualDetails;
 
@@ -6,5 +6,5 @@ use super::ShapingRitualDetails;
 pub struct AddShapingRitual {
     pub(crate) archetype_name: SorceryArchetypeName,
     pub(crate) summary: String,
-    pub(crate) ritual: ShapingRitualDetails
+    pub(crate) ritual: ShapingRitualDetails,
 }

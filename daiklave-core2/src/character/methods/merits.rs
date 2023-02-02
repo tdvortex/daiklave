@@ -2,12 +2,13 @@ use std::collections::hash_map::Entry;
 
 use crate::{
     abilities::{AbilityName, AbilityNameVanilla},
-    merits::{
-        merit::{
-            MeritError, MeritPrerequisite, NonStackableMerit, StackableMerit, Merit, MeritSource, AddStackableMerit, AddNonStackableMerit, AddMerit, RemoveMerit,
-        },
+    exaltation::Exaltation,
+    languages::language::LanguageMutation,
+    merits::merit::{
+        AddMerit, AddNonStackableMerit, AddStackableMerit, Merit, MeritError, MeritPrerequisite,
+        MeritSource, NonStackableMerit, RemoveMerit, StackableMerit,
     },
-    Character, CharacterMutationError, exaltation::Exaltation, languages::language::LanguageMutation,
+    Character, CharacterMutationError,
 };
 
 impl<'view, 'source> Character<'source> {
@@ -93,17 +94,16 @@ impl<'view, 'source> Character<'source> {
                 instance,
             }))
         });
-        let stackable =
-            self
-                .stackable_merits
-                .iter()
-                .map(|((template_name, detail), instance)| {
-                    Merit(MeritSource::Stackable(StackableMerit {
-                        template_name,
-                        detail,
-                        instance,
-                    }))
-                });
+        let stackable = self
+            .stackable_merits
+            .iter()
+            .map(|((template_name, detail), instance)| {
+                Merit(MeritSource::Stackable(StackableMerit {
+                    template_name,
+                    detail,
+                    instance,
+                }))
+            });
         let maybe_sorcery = self.sorcery();
         let sorcery_merits = maybe_sorcery.iter().flat_map(|sorcery| {
             sorcery
@@ -128,12 +128,18 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Adds a merit to the character.
-    pub fn add_merit(&mut self, _add_merit: &'source AddMerit) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_merit(
+        &mut self,
+        _add_merit: &'source AddMerit,
+    ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
     /// Removes a merit from the character.
-    pub fn remove_merit(&mut self, _remove_merit: &RemoveMerit) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_merit(
+        &mut self,
+        _remove_merit: &RemoveMerit,
+    ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
@@ -142,8 +148,13 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         add_stackable_merit: &'source AddStackableMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.validate_merit_prerequisites(add_stackable_merit.instance.0.prerequisites.iter().copied())?;
-        if let Entry::Vacant(e) = self.stackable_merits.entry((&add_stackable_merit.template_name, &add_stackable_merit.detail)) {
+        self.validate_merit_prerequisites(
+            add_stackable_merit.instance.0.prerequisites.iter().copied(),
+        )?;
+        if let Entry::Vacant(e) = self.stackable_merits.entry((
+            &add_stackable_merit.template_name,
+            &add_stackable_merit.detail,
+        )) {
             e.insert(&add_stackable_merit.instance);
             Ok(self)
         } else {
@@ -159,7 +170,11 @@ impl<'view, 'source> Character<'source> {
         template_name: &'source str,
         detail: &'source str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self.stackable_merits.remove(&(template_name, detail)).is_some() {
+        if self
+            .stackable_merits
+            .remove(&(template_name, detail))
+            .is_some()
+        {
             Ok(self)
         } else {
             Err(CharacterMutationError::MeritError(MeritError::NotFound))
@@ -203,7 +218,9 @@ impl<'view, 'source> Character<'source> {
                         }
                         other_ability => {
                             if let Ok(vanilla) = AbilityNameVanilla::try_from(other_ability) {
-                                if self.abilities().get_vanilla(vanilla).dots() >= dots_required.get() {
+                                if self.abilities().get_vanilla(vanilla).dots()
+                                    >= dots_required.get()
+                                {
                                     qualified = true;
                                     break;
                                 }
@@ -232,7 +249,14 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         add_nonstackable_merit: &'source AddNonStackableMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.validate_merit_prerequisites(add_nonstackable_merit.instance.0.prerequisites.iter().copied())?;
+        self.validate_merit_prerequisites(
+            add_nonstackable_merit
+                .instance
+                .0
+                .prerequisites
+                .iter()
+                .copied(),
+        )?;
 
         if let Entry::Vacant(e) = self.nonstackable_merits.entry(&add_nonstackable_merit.name) {
             e.insert(&add_nonstackable_merit.instance);

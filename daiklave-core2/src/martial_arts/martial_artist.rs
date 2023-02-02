@@ -1,9 +1,11 @@
 use crate::{
-    abilities::{Ability, AbilityNameQualified}, armor::armor_item::ArmorWeightClass, book_reference::BookReference,
+    abilities::{Ability, AbilityNameQualified},
+    armor::armor_item::ArmorWeightClass,
+    book_reference::BookReference,
     exaltation::ExaltationMartialArtist,
 };
 
-use super::{charm::{MartialArtsCharm}, style::MartialArtsStyleWeapon};
+use super::{charm::MartialArtsCharm, style::MartialArtsStyleWeapon};
 
 /// A specific Martial Arts style as known by a character.
 pub struct MartialArtsStyle<'view, 'source> {
@@ -43,9 +45,9 @@ impl<'view, 'source> MartialArtsStyle<'view, 'source> {
     /// The details of the Martial Arts ability the character has for this
     /// style, including rating and specialties.
     pub fn ability(&self) -> Ability<'view, 'source> {
-        Ability (
+        Ability(
             AbilityNameQualified::MartialArts(self.name),
-            self.maybe_exalt.ability_rating()
+            self.maybe_exalt.ability_rating(),
         )
     }
 

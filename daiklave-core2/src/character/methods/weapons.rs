@@ -2,7 +2,8 @@ use crate::{
     attributes::AttributeName,
     weapons::{
         weapon::{
-            mundane::{AddMundaneWeapon}, AttackRange, EquipHand, Equipped, WeaponName, WeaponWeightClass,
+            mundane::AddMundaneWeapon, AttackRange, EquipHand, Equipped, WeaponName,
+            WeaponWeightClass,
         },
         WeaponError, Weapons,
     },
@@ -20,9 +21,10 @@ impl<'view, 'source> Character<'source> {
     /// immediately readied and available.
     pub fn add_mundane_weapon(
         &mut self,
-        add_mundane_weapon: &'source AddMundaneWeapon
+        add_mundane_weapon: &'source AddMundaneWeapon,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.add_mundane_weapon(&add_mundane_weapon.name, &add_mundane_weapon.weapon)?;
+        self.exaltation
+            .add_mundane_weapon(&add_mundane_weapon.name, &add_mundane_weapon.weapon)?;
         Ok(self)
     }
 

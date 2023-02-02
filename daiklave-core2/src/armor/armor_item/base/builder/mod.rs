@@ -12,7 +12,6 @@ use crate::{
     book_reference::BookReference,
 };
 
-
 /// Constructs a base armor item, like "Chain Shirt" or "Articulated Plate".
 /// Weight class is required; book reference and tags are optional.
 pub struct BaseArmorBuilder {
@@ -42,7 +41,7 @@ impl BaseArmorBuilder {
             tags: self.tags,
         }
     }
-    
+
     /// Sets the base armor item to be mundane.
     pub fn mundane(self) -> MundaneArmorBuilder {
         MundaneArmorBuilder {

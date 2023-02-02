@@ -1,15 +1,18 @@
 mod name;
 mod rating;
 
-pub(crate) use rating::{AbilityRating, AbilityRatingMemo};
-pub use name::{AbilityName, AbilityNameQualified, AbilityNameVanilla};
 pub(crate) use name::AbilityNameQualifiedMutation;
+pub use name::{AbilityName, AbilityNameQualified, AbilityNameVanilla};
+pub(crate) use rating::{AbilityRating, AbilityRatingMemo};
 
 /// An individual ability, whether Craft, Martial Arts, or vanilla.
-pub struct Ability<'view, 'source>(pub(crate) AbilityNameQualified<'source>, pub(crate) &'view AbilityRating<'source>);
+pub struct Ability<'view, 'source>(
+    pub(crate) AbilityNameQualified<'source>,
+    pub(crate) &'view AbilityRating<'source>,
+);
 
 impl<'view, 'source> Ability<'view, 'source> {
-    /// The name of the ability, including the Craft focus or Martial Arts 
+    /// The name of the ability, including the Craft focus or Martial Arts
     /// style if applicable.
     pub fn name(&self) -> AbilityNameQualified<'source> {
         self.0

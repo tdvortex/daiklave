@@ -1,12 +1,17 @@
-use crate::weapons::weapon::builder::base::{BaseArtifactWeaponBuilderWithAttack, BaseArtifactWeaponBuilder, BaseWeaponBuilder};
+use crate::weapons::weapon::builder::base::{
+    BaseArtifactWeaponBuilder, BaseArtifactWeaponBuilderWithAttack, BaseWeaponBuilder,
+};
 
-use super::{BaseArtifactWeapon, ArtifactWeaponName, builder::{ArtifactWeaponBuilderWithName, ArtifactWeaponBuilder}};
+use super::{
+    builder::{ArtifactWeaponBuilder, ArtifactWeaponBuilderWithName},
+    ArtifactWeaponName, BaseArtifactWeapon,
+};
 
 /// A base artifact weapon which can be instantiated into a unique, named
 /// artifact weapon.
 pub struct AddBaseArtifactWeapon {
     pub(crate) name: String,
-    pub(crate) weapon: BaseArtifactWeapon
+    pub(crate) weapon: BaseArtifactWeapon,
 }
 
 impl From<BaseArtifactWeaponBuilderWithAttack> for AddBaseArtifactWeapon {

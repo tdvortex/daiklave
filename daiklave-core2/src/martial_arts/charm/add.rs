@@ -1,6 +1,10 @@
-use crate::{CharacterMutation, charms::charm::AddCharm, martial_arts::style::MartialArtsStyleName};
+use crate::{
+    charms::charm::AddCharm, martial_arts::style::MartialArtsStyleName, CharacterMutation,
+};
 
-use super::{MartialArtsCharmDetails, MartialArtsCharmName, builder::MartialArtsCharmBuilderWithDescription};
+use super::{
+    builder::MartialArtsCharmBuilderWithDescription, MartialArtsCharmDetails, MartialArtsCharmName,
+};
 
 /// A Martial Arts charm to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]

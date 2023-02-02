@@ -6,7 +6,14 @@ use std::{
 use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
-    martial_arts::{charm::{AddMartialArtsCharm, MartialArtsCharmDetails, MartialArtsCharmKeyword, MartialArtsCharmName}, style::MartialArtsStyleName}, CharacterMutation,
+    martial_arts::{
+        charm::{
+            AddMartialArtsCharm, MartialArtsCharmDetails, MartialArtsCharmKeyword,
+            MartialArtsCharmName,
+        },
+        style::MartialArtsStyleName,
+    },
+    CharacterMutation,
 };
 
 /// A Martial Arts Charm builder after the description has been provided. To

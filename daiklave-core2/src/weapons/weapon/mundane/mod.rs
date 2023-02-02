@@ -17,9 +17,8 @@ pub(crate) use grouped::{
     NonnaturalMundaneWeaponMemo,
 };
 pub use memo::MundaneWeapon;
-pub use name::MundaneWeaponName;
-pub use remove::RemoveMundaneWeapon;
 pub(crate) use memo::MundaneWeaponHandedness;
+pub use name::MundaneWeaponName;
 pub(crate) use newtype::unarmed;
 pub(crate) use newtype::{
     NaturalMundaneWeapon, OneHandedMundaneWeaponMemo, TwoHandedMundaneWeapon, WornMundaneWeapon,
@@ -28,6 +27,7 @@ pub(crate) use newtype::{
     NaturalMundaneWeaponView, OneHandedMundaneWeaponView, TwoHandedMundaneWeaponView,
     WornMundaneWeaponView,
 };
+pub use remove::RemoveMundaneWeapon;
 
 pub(crate) enum MundaneWeaponView<'source> {
     Natural(NaturalMundaneWeaponView<'source>),

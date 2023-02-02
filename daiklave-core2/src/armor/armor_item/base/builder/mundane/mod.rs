@@ -3,7 +3,10 @@ pub use with_weight_class::MundaneArmorBuilderWithWeightClass;
 
 use std::collections::HashSet;
 
-use crate::{book_reference::BookReference, armor::armor_item::{ArmorTag, mundane::MundaneArmorName, ArmorWeightClass}};
+use crate::{
+    armor::armor_item::{mundane::MundaneArmorName, ArmorTag, ArmorWeightClass},
+    book_reference::BookReference,
+};
 
 /// A builder to construct a mundane, non-artifact piece of armor.
 pub struct MundaneArmorBuilder {

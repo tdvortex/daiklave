@@ -1,7 +1,7 @@
 mod qualified;
 mod vanilla;
 
-pub use qualified::{AbilityNameQualified};
+pub use qualified::AbilityNameQualified;
 pub(crate) use qualified::AbilityNameQualifiedMutation;
 pub use vanilla::AbilityNameVanilla;
 

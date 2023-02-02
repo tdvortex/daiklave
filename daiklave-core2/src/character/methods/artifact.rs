@@ -1,7 +1,5 @@
 use crate::{
-    artifact::{
-        wonders::Wonders, AddArtifact, ArtifactName, MagicMaterial, Sonance,
-    },
+    artifact::{wonders::Wonders, AddArtifact, ArtifactName, MagicMaterial, Sonance},
     exaltation::{exalt::essence::MotePoolName, Exaltation},
     Character, CharacterMutationError,
 };
@@ -19,15 +17,20 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         match add_artifact {
             AddArtifact::Weapon(add_artifact_weapon) => {
-                self.exaltation
-                    .add_artifact_weapon(add_artifact_weapon.name.as_str(), (&add_artifact_weapon.handedness).into())?;
+                self.exaltation.add_artifact_weapon(
+                    add_artifact_weapon.name.as_str(),
+                    (&add_artifact_weapon.handedness).into(),
+                )?;
             }
             AddArtifact::Armor(add_artifact_armor) => {
-                self.exaltation
-                    .add_artifact_armor(add_artifact_armor.name.as_str(), (&add_artifact_armor.armor).into())?;
+                self.exaltation.add_artifact_armor(
+                    add_artifact_armor.name.as_str(),
+                    (&add_artifact_armor.armor).into(),
+                )?;
             }
             AddArtifact::Wonder(add_wonder) => {
-                self.exaltation.add_wonder(&add_wonder.name, &add_wonder.wonder)?;
+                self.exaltation
+                    .add_wonder(&add_wonder.name, &add_wonder.wonder)?;
             }
         }
         Ok(self)
@@ -44,8 +47,7 @@ impl<'view, 'source> Character<'source> {
                     .remove_artifact_weapon(artifact_weapon_name)?;
             }
             ArtifactName::Armor(artifact_armor_name) => {
-                self.exaltation
-                    .remove_artifact_armor(artifact_armor_name)?;
+                self.exaltation.remove_artifact_armor(artifact_armor_name)?;
             }
             ArtifactName::Wonder(wonder_name) => {
                 self.exaltation.remove_wonder(wonder_name)?;

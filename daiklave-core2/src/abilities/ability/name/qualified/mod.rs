@@ -1,7 +1,7 @@
 mod mutation;
 pub(crate) use mutation::AbilityNameQualifiedMutation;
 
-use crate::abilities::{AddSpecialty, RemoveSpecialty, SetAbility, AbilityError};
+use crate::abilities::{AbilityError, AddSpecialty, RemoveSpecialty, SetAbility};
 
 use super::AbilityNameVanilla;
 

@@ -7,8 +7,8 @@ use crate::{
     book_reference::BookReference,
     charms::{
         charm::{
-            evocation::{AddEvocation, EvocationKeyword, EvokableNameMutation, EvocationName},
-            CharmNameMutation, Evocation, CharmName,
+            evocation::{AddEvocation, EvocationKeyword, EvocationName, EvokableNameMutation},
+            CharmName, CharmNameMutation, Evocation,
         },
         CharmActionType, CharmCostType,
     },
@@ -72,7 +72,7 @@ impl EvocationBuilderWithDescription {
         self.upgrade_charm = Some(charm_name.into());
         self
     }
-    
+
     /// Adds a cost to use this Charm.
     pub fn cost(mut self, cost_type: CharmCostType, amount: NonZeroU8) -> Self {
         self.costs

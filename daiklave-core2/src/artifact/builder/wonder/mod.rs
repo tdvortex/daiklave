@@ -1,6 +1,6 @@
 use crate::{
     artifact::{
-        wonders::{AddWonder, Wonder, WonderNoAttunementMemo, WonderName},
+        wonders::{AddWonder, Wonder, WonderName, WonderNoAttunementMemo},
         MagicMaterial,
     },
     book_reference::BookReference,

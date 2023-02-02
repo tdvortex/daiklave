@@ -1,6 +1,6 @@
 use crate::{
     armor::{
-        armor_item::{mundane::{AddMundaneArmor}, ArmorName, artifact::AddArtifactArmor, AddArmor},
+        armor_item::{artifact::AddArtifactArmor, mundane::AddMundaneArmor, AddArmor, ArmorName},
         Armor,
     },
     Character, CharacterMutationError,
@@ -15,9 +15,12 @@ impl<'view, 'source> Character<'source> {
     /// Add a piece of artifact armor to a character.
     pub fn add_artifact_armor(
         &mut self,
-        add_artifact_armor: &'source AddArtifactArmor
+        add_artifact_armor: &'source AddArtifactArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.add_artifact_armor(add_artifact_armor.name.as_str(), (&add_artifact_armor.armor).into())?;
+        self.exaltation.add_artifact_armor(
+            add_artifact_armor.name.as_str(),
+            (&add_artifact_armor.armor).into(),
+        )?;
         Ok(self)
     }
 
@@ -26,10 +29,7 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         add_mundane_armor: &'source AddMundaneArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let AddMundaneArmor {
-            name,
-            armor,
-        } = add_mundane_armor;
+        let AddMundaneArmor { name, armor } = add_mundane_armor;
         self.exaltation.add_mundane_armor(name, armor)?;
         Ok(self)
     }
@@ -37,7 +37,7 @@ impl<'view, 'source> Character<'source> {
     /// Add a piece of armor to a character.
     pub fn add_armor(
         &mut self,
-        add_armor: &'source AddArmor
+        add_armor: &'source AddArmor,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &add_armor {
             AddArmor::Artifact(add_artifact_armor) => self.add_artifact_armor(add_artifact_armor),

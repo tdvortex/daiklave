@@ -2,13 +2,13 @@ use std::num::NonZeroU8;
 
 use crate::CharacterMutation;
 
-use super::{AttributeName, AttributeError};
+use super::{AttributeError, AttributeName};
 
 /// A mutation to set an attribute to a specific dot value.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SetAttribute {
     pub(crate) name: AttributeName,
-    pub(crate) dots: NonZeroU8
+    pub(crate) dots: NonZeroU8,
 }
 
 impl SetAttribute {
@@ -17,10 +17,7 @@ impl SetAttribute {
         if dots > NonZeroU8::new(5).unwrap() {
             Err(AttributeError::InvalidRating)
         } else {
-            Ok(Self {
-                name,
-                dots,
-            })
+            Ok(Self { name, dots })
         }
     }
 }

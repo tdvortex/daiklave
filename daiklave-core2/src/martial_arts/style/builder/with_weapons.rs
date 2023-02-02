@@ -3,7 +3,9 @@ use std::collections::HashSet;
 use crate::{
     armor::armor_item::ArmorWeightClass,
     book_reference::BookReference,
-    martial_arts::style::{MartialArtsStyleDetails, MartialArtsStyleWeapon, MartialArtsStyleName, AddMartialArtsStyle},
+    martial_arts::style::{
+        AddMartialArtsStyle, MartialArtsStyleDetails, MartialArtsStyleName, MartialArtsStyleWeapon,
+    },
 };
 
 /// A Martial Arts style builder after at least one weapon has been specified.

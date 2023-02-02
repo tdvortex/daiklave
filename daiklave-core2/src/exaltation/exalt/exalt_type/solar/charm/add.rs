@@ -1,6 +1,6 @@
-use crate::{CharacterMutation, charms::charm::AddCharm};
+use crate::{charms::charm::AddCharm, CharacterMutation};
 
-use super::{SolarCharmName, SolarCharmDetails};
+use super::{SolarCharmDetails, SolarCharmName};
 
 /// A Solar Charm to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]

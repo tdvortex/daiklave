@@ -1,8 +1,11 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::{weapons::weapon::artifact::ArtifactWeaponName, armor::armor_item::artifact::ArtifactArmorName, artifact::wonders::WonderName};
+use crate::{
+    armor::armor_item::artifact::ArtifactArmorName, artifact::wonders::WonderName,
+    weapons::weapon::artifact::ArtifactWeaponName,
+};
 
 use super::ArtifactName;
 

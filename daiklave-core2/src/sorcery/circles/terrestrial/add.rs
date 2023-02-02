@@ -1,8 +1,10 @@
-use crate::{sorcery::{
-    archetype::{SorceryArchetypeName},
-    spell::SpellName,
-    ShapingRitualDetails, SorceryArchetypeDetails, AddSorcery,
-}, CharacterMutation};
+use crate::{
+    sorcery::{
+        archetype::SorceryArchetypeName, spell::SpellName, AddSorcery, ShapingRitualDetails,
+        SorceryArchetypeDetails,
+    },
+    CharacterMutation,
+};
 
 use super::TerrestrialSpell;
 

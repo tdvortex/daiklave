@@ -1,11 +1,19 @@
 use std::num::NonZeroU8;
 
-use crate::{weapons::weapon::{builder::base::BaseWeaponBuilderWithDamageType, RangeBand, OptionalWeaponTag}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    weapons::weapon::{
+        builder::base::BaseWeaponBuilderWithDamageType, OptionalWeaponTag, RangeBand,
+    },
+};
 
 use super::MundaneWeaponBuilderWithAttack;
 
 /// A mundane weapon builder after the damage type has been specified.
-pub struct MundaneWeaponBuilderWithDamageType(pub(crate) BaseWeaponBuilderWithDamageType, pub(crate) NonZeroU8);
+pub struct MundaneWeaponBuilderWithDamageType(
+    pub(crate) BaseWeaponBuilderWithDamageType,
+    pub(crate) NonZeroU8,
+);
 
 impl MundaneWeaponBuilderWithDamageType {
     /// Sets the book reference for the mundane weapon.
@@ -95,5 +103,4 @@ impl MundaneWeaponBuilderWithDamageType {
     pub fn martial_arts(self) -> MundaneWeaponBuilderWithAttack {
         MundaneWeaponBuilderWithAttack(self.0.martial_arts(), self.1)
     }
-
 }

@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// The name of a non-stackable merit. The name of an individual merit and the
 /// template are the same.
@@ -11,7 +11,10 @@ pub struct NonStackableMeritTemplateName(String);
 /// template are the same.
 pub type NonStackableMeritName = NonStackableMeritTemplateName;
 
-impl<T> From<T> for NonStackableMeritTemplateName where T: Into<String> {
+impl<T> From<T> for NonStackableMeritTemplateName
+where
+    T: Into<String>,
+{
     fn from(name: T) -> Self {
         Self(name.into())
     }

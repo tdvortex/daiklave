@@ -2,7 +2,8 @@ use crate::{
     book_reference::BookReference,
     hearthstones::hearthstone::{
         details::HearthstoneDetailsMemo, stability::HearthstoneStability,
-        template::HearthstoneTemplate, AddHearthstone, GeomancyLevel, HearthstoneCategory, HearthstoneName,
+        template::HearthstoneTemplate, AddHearthstone, GeomancyLevel, HearthstoneCategory,
+        HearthstoneName,
     },
 };
 

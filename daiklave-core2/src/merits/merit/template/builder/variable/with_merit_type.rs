@@ -1,6 +1,9 @@
 use std::collections::HashSet;
 
-use crate::{merits::merit::{MeritType, MeritPrerequisite}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{MeritPrerequisite, MeritType},
+};
 
 use super::VariableMeritTemplateBuilderWithDescription;
 
@@ -19,7 +22,7 @@ impl VariableMeritTemplateBuilderWithMeritType {
         self
     }
 
-    /// Adds a prerequisite to purchase the merit. Merit prerequisites are 
+    /// Adds a prerequisite to purchase the merit. Merit prerequisites are
     /// always and "or" relationship, like Stamina 3 or Resistance 3.
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
         self.prerequisites.insert(prerequisite);
@@ -28,7 +31,10 @@ impl VariableMeritTemplateBuilderWithMeritType {
 
     /// Adds a description to the merit. This is the blanket description and
     /// applies for all dot levels.
-    pub fn description(self, description: impl Into<String>) -> VariableMeritTemplateBuilderWithDescription {
+    pub fn description(
+        self,
+        description: impl Into<String>,
+    ) -> VariableMeritTemplateBuilderWithDescription {
         VariableMeritTemplateBuilderWithDescription {
             name: self.name,
             merit_type: self.merit_type,

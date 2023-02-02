@@ -5,9 +5,12 @@ pub use fixed::*;
 pub use sorcery::*;
 pub use variable::*;
 
-use std::collections::{HashSet};
+use std::collections::HashSet;
 
-use crate::{book_reference::BookReference, merits::{merit::{instance::{SorceryArchetypeMeritName}}}, sorcery::SorceryArchetypeName};
+use crate::{
+    book_reference::BookReference, merits::merit::instance::SorceryArchetypeMeritName,
+    sorcery::SorceryArchetypeName,
+};
 
 /// A builder to construct a new merit template.
 pub struct MeritTemplateBuilder {
@@ -50,7 +53,10 @@ impl MeritTemplateBuilder {
     }
 
     /// Makes the merit dependent on a sorcery archetype.
-    pub fn sorcery_archetype(self, archetype_name: impl Into<SorceryArchetypeName>) -> SorceryArchetypeMeritBuilderWithName {
+    pub fn sorcery_archetype(
+        self,
+        archetype_name: impl Into<SorceryArchetypeName>,
+    ) -> SorceryArchetypeMeritBuilderWithName {
         SorceryArchetypeMeritBuilderWithName {
             name: SorceryArchetypeMeritName::from(self.name),
             archetype_name: archetype_name.into(),
@@ -58,4 +64,3 @@ impl MeritTemplateBuilder {
         }
     }
 }
-

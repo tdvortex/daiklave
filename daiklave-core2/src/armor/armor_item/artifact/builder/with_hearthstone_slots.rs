@@ -1,7 +1,7 @@
 use crate::{
     armor::armor_item::artifact::{
         no_attunement::ArtifactArmorNoAttunementMemo, AddArtifactArmor, ArtifactArmor,
-        BaseArtifactArmor, ArtifactArmorName,
+        ArtifactArmorName, BaseArtifactArmor,
     },
     artifact::MagicMaterial,
     book_reference::BookReference,

@@ -1,9 +1,10 @@
 use crate::{
     book_reference::BookReference,
     weapons::weapon::{
+        artifact::{AddBaseArtifactWeapon, BaseArtifactWeapon},
         base::BaseWeapon,
         builder::base::BaseWeaponBuilderWithAttack,
-        OptionalWeaponTag, RangeBand, artifact::{AddBaseArtifactWeapon, BaseArtifactWeapon},
+        OptionalWeaponTag, RangeBand,
     },
 };
 

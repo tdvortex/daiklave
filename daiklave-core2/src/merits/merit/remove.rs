@@ -1,6 +1,13 @@
-use crate::{hearthstones::hearthstone::HearthstoneName, languages::language::{RemoveLanguage}, CharacterMutation, artifact::RemoveArtifact, martial_arts::style::MartialArtsStyleName};
+use crate::{
+    artifact::RemoveArtifact, hearthstones::hearthstone::HearthstoneName,
+    languages::language::RemoveLanguage, martial_arts::style::MartialArtsStyleName,
+    CharacterMutation,
+};
 
-use super::{DemenseName, manse::ManseName, RemoveNonStackableMerit, RemoveSorceryArchetypeMerit, RemoveStackableMerit};
+use super::{
+    manse::ManseName, DemenseName, RemoveNonStackableMerit, RemoveSorceryArchetypeMerit,
+    RemoveStackableMerit,
+};
 
 /// A mutation to remove a merit from the character.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -16,7 +23,7 @@ pub enum RemoveMerit {
     /// Removes a hearthstone from a character. If the hearthstone has a manse,
     /// the manse and its demense will also be removed.
     Hearthstone(HearthstoneName),
-    /// Removes a language from the character. Native languages cannot be 
+    /// Removes a language from the character. Native languages cannot be
     /// removed.
     Language(RemoveLanguage),
     /// Removes a manse, its associated demense, and its associated hearthstone

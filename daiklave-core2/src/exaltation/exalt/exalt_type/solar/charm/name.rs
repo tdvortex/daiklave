@@ -1,12 +1,15 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /// The name of a Solar Charm.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SolarCharmName(String);
 
-impl<T> From<T> for SolarCharmName where T: Into<String> {
+impl<T> From<T> for SolarCharmName
+where
+    T: Into<String>,
+{
     fn from(name: T) -> Self {
         Self(name.into())
     }

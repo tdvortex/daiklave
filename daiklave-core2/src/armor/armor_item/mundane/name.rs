@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::armor::armor_item::builder::base::MundaneArmorBuilder;
 
@@ -22,7 +22,10 @@ impl MundaneArmorName {
     }
 }
 
-impl<T> From<T> for MundaneArmorName where T: Into<String> {
+impl<T> From<T> for MundaneArmorName
+where
+    T: Into<String>,
+{
     fn from(name: T) -> Self {
         Self(name.into())
     }

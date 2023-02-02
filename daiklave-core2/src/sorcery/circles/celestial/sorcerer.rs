@@ -10,7 +10,8 @@ use crate::{
             terrestrial::TerrestrialSpell,
         },
         spell::Spell,
-        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetype, SorceryError, ShapingRitual,
+        ShapingRitual, ShapingRitualDetails, SorceryArchetype, SorceryArchetypeDetails,
+        SorceryError,
     },
     CharacterMutationError,
 };
@@ -86,29 +87,21 @@ impl<'source> From<&'source CelestialCircleSorcererMemo> for CelestialCircleSorc
 }
 
 impl<'view, 'source> CelestialCircleSorcerer<'source> {
-    pub fn archetype(
-        &'view self,
-        name: &str,
-    ) -> Option<SorceryArchetype<'view, 'source>> {
+    pub fn archetype(&'view self, name: &str) -> Option<SorceryArchetype<'view, 'source>> {
         if self.circle_archetypes.contains(&name) {
             self.archetypes
                 .get_key_value(name)
-                .map(
-                    |(archetype_name, (archetype, merits))| SorceryArchetype {
-                        archetype_name: *archetype_name,
-                        archetype: *archetype,
-                        merits,
-                    },
-                )
+                .map(|(archetype_name, (archetype, merits))| SorceryArchetype {
+                    archetype_name: *archetype_name,
+                    archetype: *archetype,
+                    merits,
+                })
         } else {
             None
         }
     }
 
-    pub fn shaping_ritual(
-        &self,
-        circle: SorceryCircle,
-    ) -> Option<ShapingRitual<'source>> {
+    pub fn shaping_ritual(&self, circle: SorceryCircle) -> Option<ShapingRitual<'source>> {
         match circle {
             SorceryCircle::Terrestrial => Some(ShapingRitual {
                 archetype_name: self.circle_archetypes[0],

@@ -1,9 +1,15 @@
-use crate::{hearthstones::hearthstone::AddHearthstone, merits::{merit::instance::{manse::{AddManse, ManseName}, DemenseName}}};
+use crate::{
+    hearthstones::hearthstone::AddHearthstone,
+    merits::merit::instance::{
+        manse::{AddManse, ManseName},
+        DemenseName,
+    },
+};
 
 /// A manse builder after the hearthstone has been specified.
 pub struct ManseBuilderWithHearthstone {
     pub(crate) name: ManseName,
-    pub(crate) hearthstone: AddHearthstone
+    pub(crate) hearthstone: AddHearthstone,
 }
 
 impl ManseBuilderWithHearthstone {

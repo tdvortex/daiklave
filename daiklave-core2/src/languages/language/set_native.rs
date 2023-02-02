@@ -1,8 +1,8 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::CharacterMutation;
 
-use super::{MajorLanguage, LocalTongueName, LanguageMutation};
+use super::{LanguageMutation, LocalTongueName, MajorLanguage};
 
 /// A mutation to set the native language of the character.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -21,7 +21,6 @@ impl SetNativeLanguage {
         Self(LanguageMutation::LocalTongue(local_tongue))
     }
 }
-
 
 impl From<MajorLanguage> for SetNativeLanguage {
     fn from(major_language: MajorLanguage) -> Self {

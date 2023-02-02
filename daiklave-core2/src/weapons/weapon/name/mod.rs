@@ -3,7 +3,7 @@ pub(crate) use mutation::WeaponNameMutation;
 
 use crate::weapons::WeaponError;
 
-use super::{Equipped, UnequipWeapon, EquipWeapon};
+use super::{EquipWeapon, Equipped, UnequipWeapon};
 
 /// The name of a weapon.
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]

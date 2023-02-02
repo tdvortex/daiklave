@@ -10,7 +10,6 @@ pub(crate) use memo::OneHandedArtifactWeaponMemo;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct OneHandedArtifactWeaponView<'source>(pub(crate) ArtifactWeaponInner<'source>);
 
-
 impl<'source> From<&'source OneHandedArtifactWeaponMemo> for OneHandedArtifactWeaponView<'source> {
     fn from(memo: &'source OneHandedArtifactWeaponMemo) -> Self {
         Self((&memo.0).into())

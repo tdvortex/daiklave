@@ -2,7 +2,7 @@ use std::num::NonZeroU8;
 
 use serde::{Deserialize, Serialize};
 
-use super::{SetAttribute, AttributeError};
+use super::{AttributeError, SetAttribute};
 
 /// The nine attributes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

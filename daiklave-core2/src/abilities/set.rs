@@ -1,12 +1,12 @@
-use crate::{CharacterMutation};
+use crate::CharacterMutation;
 
-use super::{AbilityError, AbilityNameQualifiedMutation, AbilityNameQualified};
+use super::{AbilityError, AbilityNameQualified, AbilityNameQualifiedMutation};
 
 /// A mutation to set a specific ability to a dot level.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SetAbility {
     pub(crate) name: AbilityNameQualifiedMutation,
-    pub(crate) dots: u8    
+    pub(crate) dots: u8,
 }
 
 impl SetAbility {
@@ -15,7 +15,10 @@ impl SetAbility {
         if dots > 5 {
             Err(AbilityError::InvalidRating)
         } else {
-            Ok(Self { name: name.into(), dots })
+            Ok(Self {
+                name: name.into(),
+                dots,
+            })
         }
     }
 }

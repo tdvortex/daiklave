@@ -31,12 +31,18 @@ impl<'source> From<&'source ArtifactWeaponInnerMemo> for ArtifactWeaponInner<'so
             base_weapon: &memo.base_weapon,
             lore: memo.lore.as_deref(),
             powers: memo.powers.as_deref(),
-            hearthstone_slots: memo.hearthstone_slots.iter().map(|maybe_hearthstone| maybe_hearthstone.as_ref().map(|hearthstone| hearthstone.into())).collect(),
+            hearthstone_slots: memo
+                .hearthstone_slots
+                .iter()
+                .map(|maybe_hearthstone| {
+                    maybe_hearthstone
+                        .as_ref()
+                        .map(|hearthstone| hearthstone.into())
+                })
+                .collect(),
         }
     }
 }
-
-
 
 impl<'view, 'source> ArtifactWeaponInner<'source> {
     pub fn base_artifact_weapon(&self) -> &'source BaseWeapon {

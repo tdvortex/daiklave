@@ -10,8 +10,8 @@ pub use attribute::Attribute;
 pub use category::AttributeCategory;
 pub use error::AttributeError;
 pub use name::AttributeName;
-pub use set::SetAttribute;
 use serde::{Deserialize, Serialize};
+pub use set::SetAttribute;
 
 use crate::CharacterMutationError;
 

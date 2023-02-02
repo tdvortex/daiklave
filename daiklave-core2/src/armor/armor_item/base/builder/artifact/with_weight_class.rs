@@ -1,6 +1,16 @@
 use std::collections::HashSet;
 
-use crate::{book_reference::BookReference, armor::armor_item::{ArmorTag, ArmorWeightClass, artifact::{AddBaseArtifactArmor, BaseArtifactArmor, ArtifactArmorName, builder::{ArtifactArmorItemBuilderWithBaseArmor, ArtifactArmorItemBuilder}}, base::BaseArmor}};
+use crate::{
+    armor::armor_item::{
+        artifact::{
+            builder::{ArtifactArmorItemBuilder, ArtifactArmorItemBuilderWithBaseArmor},
+            AddBaseArtifactArmor, ArtifactArmorName, BaseArtifactArmor,
+        },
+        base::BaseArmor,
+        ArmorTag, ArmorWeightClass,
+    },
+    book_reference::BookReference,
+};
 
 /// A base artifact armor builder after the weight class has been specified.
 pub struct BaseArtifactArmorBuilderWithWeightClass {
@@ -33,12 +43,15 @@ impl BaseArtifactArmorBuilderWithWeightClass {
                 book_reference: self.book_reference,
                 weight_class: self.weight_class,
                 tags: self.tags,
-            })
+            }),
         }
     }
 
     /// Continues the builder into a named piece of artifact armor.
-    pub fn unique_name(self, name: impl Into<ArtifactArmorName>) -> ArtifactArmorItemBuilderWithBaseArmor {
+    pub fn unique_name(
+        self,
+        name: impl Into<ArtifactArmorName>,
+    ) -> ArtifactArmorItemBuilderWithBaseArmor {
         ArtifactArmorItemBuilder::name(name).base_artifact(self.build())
     }
 }

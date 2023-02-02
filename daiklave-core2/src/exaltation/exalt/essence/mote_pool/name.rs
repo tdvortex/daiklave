@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::artifact::{AttuneArtifact, ArtifactName};
+use crate::artifact::{ArtifactName, AttuneArtifact};
 
 /// Indicates whether motes are spent/committed from peripheral or peripheral
 /// pool first.

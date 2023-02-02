@@ -26,30 +26,34 @@ use crate::{
         CharmError,
     },
     hearthstones::UnslottedHearthstone,
-    martial_arts::{charm::{MartialArtsCharmDetails, MartialArtsCharm}, style::MartialArtsStyleDetails, MartialArtsStyle},
+    martial_arts::{
+        charm::{MartialArtsCharm, MartialArtsCharmDetails},
+        style::MartialArtsStyleDetails,
+        MartialArtsStyle,
+    },
+    merits::merit::SorceryArchetypeMeritDetails,
     sorcery::{
         circles::{
             celestial::{sorcerer::CelestialCircleSorcerer, AddCelestialSorcery},
             solar::AddSolarSorcery,
         },
         spell::SpellMutation,
-        Sorcery, SorceryError, AddTerrestrialSorcery,
+        AddTerrestrialSorcery, Sorcery, SorceryError,
     },
     weapons::weapon::{
-        artifact::ArtifactWeapon, mundane::MundaneWeapon, EquipHand, Equipped, Weapon,
-        WeaponName,
+        artifact::ArtifactWeapon, mundane::MundaneWeapon, EquipHand, Equipped, Weapon, WeaponName,
     },
-    CharacterMutationError, merits::merit::SorceryArchetypeMeritDetails,
+    CharacterMutationError,
 };
 
 use self::{
     exalt::{
         essence::{
-            Essence, EssenceError, EssenceState, MotePoolName,
-            MotesState, UncommitMotes, MoteCommitmentName, MoteCommitmentNameMutation,
+            Essence, EssenceError, EssenceState, MoteCommitmentName, MoteCommitmentNameMutation,
+            MotePoolName, MotesState, UncommitMotes,
         },
         exalt_type::{
-            solar::{charm::{SolarCharmDetails}, Solar, SolarMemo, SolarSorcererView},
+            solar::{charm::SolarCharmDetails, Solar, SolarMemo, SolarSorcererView},
             ExaltType,
         },
         Exalt,
@@ -515,7 +519,10 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub fn recover_motes(&mut self, amount: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn recover_motes(
+        &mut self,
+        amount: NonZeroU8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(_) => {
                 Err(CharacterMutationError::EssenceError(EssenceError::Mortal))
@@ -537,7 +544,9 @@ impl<'view, 'source> Exaltation<'source> {
                 MoteCommitmentNameMutation::AttunedArtifact(ArtifactNameMutation::Armor(name)) => {
                     MoteCommitmentName::AttunedArtifact(ArtifactName::Armor(name.as_str()))
                 }
-                MoteCommitmentNameMutation::AttunedArtifact(ArtifactNameMutation::Wonder(wonder_name)) => {
+                MoteCommitmentNameMutation::AttunedArtifact(ArtifactNameMutation::Wonder(
+                    wonder_name,
+                )) => {
                     MoteCommitmentName::AttunedArtifact(ArtifactName::Wonder(wonder_name.as_str()))
                 }
                 MoteCommitmentNameMutation::AttunedArtifact(ArtifactNameMutation::Weapon(name)) => {
@@ -549,7 +558,10 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 
-    pub fn set_essence_rating(&mut self, rating: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_essence_rating(
+        &mut self,
+        rating: NonZeroU8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Exalt(exalt) => {
                 if rating > NonZeroU8::new(5).unwrap() {
@@ -1108,7 +1120,14 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Exalt(exalt) => exalt
                 .martial_arts_styles
                 .iter()
-                .flat_map(|(style_name, martial_artist)| martial_artist.charms.iter().map(|(charm_name, charm_details)| (*style_name, *charm_name, *charm_details)))
+                .flat_map(|(style_name, martial_artist)| {
+                    martial_artist
+                        .charms
+                        .iter()
+                        .map(|(charm_name, charm_details)| {
+                            (*style_name, *charm_name, *charm_details)
+                        })
+                })
                 .find_map(|(style_name, known_charm_name, details)| {
                     if known_charm_name == name {
                         Some(Charm::MartialArts(MartialArtsCharm {

@@ -10,7 +10,7 @@ use crate::{
         exalt::exalt_type::{
             solar::{
                 caste::SolarCaste,
-                charm::{SolarCharmAbility, AddSolarCharm},
+                charm::{AddSolarCharm, SolarCharmAbility},
                 SetSolar,
             },
             ExaltType,
@@ -48,7 +48,7 @@ impl<'source> Character<'source> {
         &mut self,
         add_solar_charm: &'source AddSolarCharm,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let ability_dots = match add_solar_charm.details.ability{
+        let ability_dots = match add_solar_charm.details.ability {
             SolarCharmAbility::Craft => self.craft().max(),
             solar_ability => self
                 .abilities()
@@ -56,7 +56,11 @@ impl<'source> Character<'source> {
                 .dots(),
         };
 
-        self.exaltation.add_solar_charm(&add_solar_charm.name, &add_solar_charm.details, ability_dots)?;
+        self.exaltation.add_solar_charm(
+            &add_solar_charm.name,
+            &add_solar_charm.details,
+            ability_dots,
+        )?;
         Ok(self)
     }
 

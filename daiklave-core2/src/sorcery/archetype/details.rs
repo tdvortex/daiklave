@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::book_reference::BookReference;
 
@@ -7,6 +7,3 @@ pub(crate) struct SorceryArchetypeDetails {
     pub book_reference: Option<BookReference>,
     pub description: String,
 }
-
-
-

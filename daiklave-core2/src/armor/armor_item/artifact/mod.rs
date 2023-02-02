@@ -17,8 +17,7 @@ pub use name::ArtifactArmorName;
 pub(crate) use no_attunement::{ArtifactArmorNoAttunement, ArtifactArmorNoAttunementMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct ArtifactArmorView<'source>
-(
+pub(crate) struct ArtifactArmorView<'source>(
     pub ArtifactArmorNoAttunement<'source>,
     pub Option<u8>,
 );

@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{
-    equipped::MortalEquippedWeaponsMemo, unequipped::MortalUnequippedWeaponsMemo,
-};
+use super::{equipped::MortalEquippedWeaponsMemo, unequipped::MortalUnequippedWeaponsMemo};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MortalWeaponsMemo {

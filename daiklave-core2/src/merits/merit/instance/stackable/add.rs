@@ -1,4 +1,7 @@
-use crate::{merits::merit::{AddMerit, template::StackableMeritTemplateName}, CharacterMutation};
+use crate::{
+    merits::merit::{template::StackableMeritTemplateName, AddMerit},
+    CharacterMutation,
+};
 
 use super::StackableMeritInstance;
 

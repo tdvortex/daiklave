@@ -2,7 +2,7 @@ mod add;
 mod remove;
 pub use add::AddNonStackableMerit;
 pub use remove::RemoveNonStackableMerit;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::book_reference::BookReference;
 

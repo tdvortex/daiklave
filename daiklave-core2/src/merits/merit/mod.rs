@@ -5,7 +5,7 @@ mod merit_type;
 mod prerequisite;
 mod remove;
 mod source;
-/// Details related to a merit template that may be instantiated into a 
+/// Details related to a merit template that may be instantiated into a
 /// character.
 pub mod template;
 
@@ -13,9 +13,9 @@ pub use add::AddMerit;
 pub use error::MeritError;
 pub use instance::manse;
 pub use instance::{
-    AddDemense, SorceryArchetypeMeritName,
-    AddNonStackableMerit, AddSorceryArchetypeMerit, AddStackableMerit, DemenseName,
+    AddDemense, AddNonStackableMerit, AddSorceryArchetypeMerit, AddStackableMerit, DemenseName,
     RemoveNonStackableMerit, RemoveSorceryArchetypeMerit, RemoveStackableMerit,
+    SorceryArchetypeMeritName,
 };
 pub(crate) use instance::{
     MeritInstanceInner, NonStackableMerit, NonStackableMeritInstance, SorceryArchetypeMerit,

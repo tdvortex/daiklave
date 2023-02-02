@@ -1,9 +1,9 @@
 mod damage_level;
+mod heal_damage;
 mod health_iter;
-mod wound_penalty;
 mod set;
 mod take_damage;
-mod heal_damage;
+mod wound_penalty;
 
 pub use damage_level::DamageLevel;
 pub use heal_damage::HealDamage;

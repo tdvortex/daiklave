@@ -100,8 +100,6 @@ impl<'source> MartialArtsCharm<'source> {
     }
 }
 
-
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct MartialArtsCharmDetails {
     pub book_reference: Option<BookReference>,

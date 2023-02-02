@@ -1,6 +1,6 @@
 use crate::CharacterMutation;
 
-use super::{LanguageMutation, MajorLanguage, LocalTongueName, Language};
+use super::{Language, LanguageMutation, LocalTongueName, MajorLanguage};
 
 /// A mutation to add a language to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -1,6 +1,11 @@
-use crate::{sorcery::SorceryArchetypeName, merits::merit::template::builder::{SorceryArchetypeMeritBuilder, SorceryArchetypeMeritBuilderWithDescription}};
+use crate::{
+    merits::merit::template::builder::{
+        SorceryArchetypeMeritBuilder, SorceryArchetypeMeritBuilderWithDescription,
+    },
+    sorcery::SorceryArchetypeName,
+};
 
-use super::{SorceryArchetypeMeritName, details::SorceryArchetypeMeritDetails};
+use super::{details::SorceryArchetypeMeritDetails, SorceryArchetypeMeritName};
 
 /// A mutation to add a sorcery archetype merit to the character.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -12,7 +17,9 @@ pub struct AddSorceryArchetypeMerit {
 
 impl AddSorceryArchetypeMerit {
     /// Starts a builder to construct a sorcery archetyp merit for the given archetype name.
-    pub fn archetype_name(archetype_name: impl Into<SorceryArchetypeName>) -> SorceryArchetypeMeritBuilder {
+    pub fn archetype_name(
+        archetype_name: impl Into<SorceryArchetypeName>,
+    ) -> SorceryArchetypeMeritBuilder {
         SorceryArchetypeMeritBuilder::archetype_name(archetype_name)
     }
 }

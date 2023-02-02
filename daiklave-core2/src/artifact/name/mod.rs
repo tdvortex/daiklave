@@ -1,9 +1,11 @@
-
 mod mutation;
 
 pub(crate) use mutation::ArtifactNameMutation;
 
-use crate::{exaltation::exalt::essence::MotePoolName, hearthstones::hearthstone::{HearthstoneName, SlotHearthstone}};
+use crate::{
+    exaltation::exalt::essence::MotePoolName,
+    hearthstones::hearthstone::{HearthstoneName, SlotHearthstone},
+};
 
 use super::{AttuneArtifact, RemoveArtifact};
 
@@ -26,7 +28,7 @@ impl<'source> ArtifactName<'source> {
             first,
         }
     }
-    
+
     /// Slot a hearthstone into this artifact.
     pub fn slot_hearthstone(self, hearthstone_name: impl Into<HearthstoneName>) -> SlotHearthstone {
         Into::<HearthstoneName>::into(hearthstone_name).slot_into(self)

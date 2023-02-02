@@ -1,4 +1,4 @@
-use super::{IntimacyTypeMemo, IntimacyLevel, AddIntimacy};
+use super::{AddIntimacy, IntimacyLevel, IntimacyTypeMemo};
 
 /// A builder to construct a new Intimacy to add to a character.
 pub struct IntimacyBuilder;
@@ -7,7 +7,7 @@ impl IntimacyBuilder {
     /// Sets the intimacy to be a Tie, and details what it's a tie to.
     pub fn tie(target: impl Into<String>) -> TieBuilder {
         TieBuilder {
-            target: target.into()
+            target: target.into(),
         }
     }
 
@@ -21,7 +21,7 @@ impl IntimacyBuilder {
 
 /// A builder to construct a Tie intimacy.
 pub struct TieBuilder {
-    target: String
+    target: String,
 }
 
 impl TieBuilder {
@@ -41,6 +41,9 @@ pub struct IntimacyBuilderWithDescription {
 impl IntimacyBuilderWithDescription {
     /// Sets the level of the intimacy and completes the builder.
     pub fn level(self, level: IntimacyLevel) -> AddIntimacy {
-        AddIntimacy { intimacy_type: self.intimacy_type, level }
+        AddIntimacy {
+            intimacy_type: self.intimacy_type,
+            level,
+        }
     }
 }

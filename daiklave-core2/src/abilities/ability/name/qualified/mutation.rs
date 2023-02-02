@@ -1,4 +1,7 @@
-use crate::{craft::CraftName, martial_arts::style::MartialArtsStyleName, abilities::ability::name::AbilityNameVanilla};
+use crate::{
+    abilities::ability::name::AbilityNameVanilla, craft::CraftName,
+    martial_arts::style::MartialArtsStyleName,
+};
 
 use super::AbilityNameQualified;
 
@@ -13,8 +16,12 @@ impl From<AbilityNameQualified<'_>> for AbilityNameQualifiedMutation {
     fn from(name: AbilityNameQualified<'_>) -> Self {
         match name {
             AbilityNameQualified::Vanilla(vanilla) => vanilla.into(),
-            AbilityNameQualified::Craft(craft_name) => AbilityNameQualifiedMutation::Craft(craft_name.into()),
-            AbilityNameQualified::MartialArts(style_name) => AbilityNameQualifiedMutation::MartialArts(style_name.into()),
+            AbilityNameQualified::Craft(craft_name) => {
+                AbilityNameQualifiedMutation::Craft(craft_name.into())
+            }
+            AbilityNameQualified::MartialArts(style_name) => {
+                AbilityNameQualifiedMutation::MartialArts(style_name.into())
+            }
         }
     }
 }

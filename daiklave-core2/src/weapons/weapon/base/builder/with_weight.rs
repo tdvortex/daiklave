@@ -10,7 +10,10 @@ use crate::{
     },
 };
 
-use super::{with_handedness::BaseWeaponBuilderWithHandedness, mundane::MundaneWeaponBuilderWithWeight, BaseArtifactWeaponBuilderWithWeight};
+use super::{
+    mundane::MundaneWeaponBuilderWithWeight, with_handedness::BaseWeaponBuilderWithHandedness,
+    BaseArtifactWeaponBuilderWithWeight,
+};
 
 /// A base weapon builder after specifying weight class.
 pub struct BaseWeaponBuilderWithWeight {

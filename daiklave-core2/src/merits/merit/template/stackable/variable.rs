@@ -1,6 +1,12 @@
 use std::collections::{HashMap, HashSet};
 
-use crate::{book_reference::BookReference, merits::merit::{MeritType, MeritPrerequisite, MeritError, MeritInstanceInner, AddStackableMerit, StackableMeritInstance}};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{
+        AddStackableMerit, MeritError, MeritInstanceInner, MeritPrerequisite, MeritType,
+        StackableMeritInstance,
+    },
+};
 
 use super::StackableMeritTemplateName;
 
@@ -15,11 +21,17 @@ pub struct VariableStackableMeritTemplate {
 }
 
 impl VariableStackableMeritTemplate {
-    pub fn instance(mut self, dots: u8, detail: impl Into<String>) -> Result<AddStackableMerit, MeritError> {
+    pub fn instance(
+        mut self,
+        dots: u8,
+        detail: impl Into<String>,
+    ) -> Result<AddStackableMerit, MeritError> {
         let dot_description = if self.min_dots.0 == dots {
             self.min_dots.1
         } else {
-            self.other_dots.remove(&dots).ok_or(MeritError::InvalidDotRating)?
+            self.other_dots
+                .remove(&dots)
+                .ok_or(MeritError::InvalidDotRating)?
         };
         let inner = MeritInstanceInner {
             book_reference: self.book_reference,
@@ -30,7 +42,7 @@ impl VariableStackableMeritTemplate {
             dot_description: Some(dot_description),
         };
         let instance = StackableMeritInstance(inner);
-        
+
         Ok(AddStackableMerit {
             template_name: self.name,
             detail: detail.into(),

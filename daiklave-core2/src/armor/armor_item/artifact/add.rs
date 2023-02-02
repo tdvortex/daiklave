@@ -1,4 +1,4 @@
-use crate::{CharacterMutation, artifact::AddArtifact};
+use crate::{artifact::AddArtifact, CharacterMutation};
 
 use super::{ArtifactArmor, ArtifactArmorName};
 

@@ -28,12 +28,11 @@ use crate::{
     merits::merit::{MeritError, SorceryArchetypeMeritDetails},
     sorcery::{
         circles::{
-            celestial::AddCelestialSorcery,
-            solar::AddSolarSorcery,
-            terrestrial::{sorcerer::TerrestrialCircleSorcerer},
+            celestial::AddCelestialSorcery, solar::AddSolarSorcery,
+            terrestrial::sorcerer::TerrestrialCircleSorcerer,
         },
         spell::SpellMutation,
-        SorceryError, AddTerrestrialSorcery,
+        AddTerrestrialSorcery, SorceryError,
     },
     CharacterMutationError,
 };
@@ -42,7 +41,7 @@ use self::{
     anima_effect::{SOLAR_ONE, SOLAR_TWO},
     builder::SolarBuilder,
     caste::SolarCaste,
-    charm::{SolarCharmDetails, SolarCharm},
+    charm::{SolarCharm, SolarCharmDetails},
 };
 
 /// Traits which are unique to being a Solar Exalted.
@@ -63,7 +62,7 @@ impl<'source> Solar<'source> {
             limit_trigger: None,
         }
     }
-    
+
     /// Returns True if the ability is a caste ability for the charcter. Note
     /// that MartialArts is a caste ability if and only if Brawl is a caste
     /// ability.
@@ -265,11 +264,7 @@ impl<'source> Solar<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.sorcery {
             Some(SolarSorcererView::Terrestrial(terrestrial)) => {
-                if terrestrial
-                    .archetype_merits
-                    .remove(name)
-                    .is_none()
-                {
+                if terrestrial.archetype_merits.remove(name).is_none() {
                     Err(CharacterMutationError::MeritError(MeritError::NotFound))
                 } else {
                     Ok(self)
@@ -341,7 +336,11 @@ impl<'source> Solar<'source> {
                 CharmError::PrerequisitesNotMet,
             ));
         }
-        let mut unmet_tree_requirements = charm.charms_required.iter().map(|s| s.as_str()).collect::<HashSet<&str>>();
+        let mut unmet_tree_requirements = charm
+            .charms_required
+            .iter()
+            .map(|s| s.as_str())
+            .collect::<HashSet<&str>>();
 
         for known_charm_name in self
             .solar_charms

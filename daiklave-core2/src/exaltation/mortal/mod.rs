@@ -1,9 +1,9 @@
 mod armor;
 pub(crate) mod martial_arts;
 mod mortal_memo;
+mod set;
 mod weapons;
 mod wonders;
-mod set;
 pub use set::SetMortal;
 use std::{
     collections::{hash_map::Entry, HashMap},
@@ -30,9 +30,8 @@ use crate::{
     martial_arts::{style::MartialArtsStyleDetails, MartialArtsError},
     merits::merit::{MeritError, SorceryArchetypeMeritDetails},
     sorcery::{
-        circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer},
-        spell::SpellMutation,
-        SorceryError, AddTerrestrialSorcery,
+        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, spell::SpellMutation,
+        AddTerrestrialSorcery, SorceryError,
     },
     weapons::{
         weapon::{
@@ -45,7 +44,7 @@ use crate::{
     CharacterMutationError,
 };
 
-use self::martial_arts::{MortalMartialArtistDetails};
+use self::martial_arts::MortalMartialArtistDetails;
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct Mortal<'source> {

@@ -1,6 +1,6 @@
 use crate::artifact::ArtifactNameMutation;
 
-use super::{OtherMoteCommitmentName, MoteCommitmentName};
+use super::{MoteCommitmentName, OtherMoteCommitmentName};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum MoteCommitmentNameMutation {
@@ -11,8 +11,12 @@ pub(crate) enum MoteCommitmentNameMutation {
 impl From<&MoteCommitmentName<'_>> for MoteCommitmentNameMutation {
     fn from(name: &MoteCommitmentName<'_>) -> Self {
         match name {
-            MoteCommitmentName::AttunedArtifact(artifact_name) => MoteCommitmentNameMutation::AttunedArtifact((*artifact_name).into()),
-            MoteCommitmentName::Other(other_name) => MoteCommitmentNameMutation::Other((*other_name).into()),
+            MoteCommitmentName::AttunedArtifact(artifact_name) => {
+                MoteCommitmentNameMutation::AttunedArtifact((*artifact_name).into())
+            }
+            MoteCommitmentName::Other(other_name) => {
+                MoteCommitmentNameMutation::Other((*other_name).into())
+            }
         }
     }
 }
@@ -20,7 +24,9 @@ impl From<&MoteCommitmentName<'_>> for MoteCommitmentNameMutation {
 impl<'source> Into<MoteCommitmentName<'source>> for &'source MoteCommitmentNameMutation {
     fn into(self) -> MoteCommitmentName<'source> {
         match self {
-            MoteCommitmentNameMutation::AttunedArtifact(name) => MoteCommitmentName::AttunedArtifact(name.into()),
+            MoteCommitmentNameMutation::AttunedArtifact(name) => {
+                MoteCommitmentName::AttunedArtifact(name.into())
+            }
             MoteCommitmentNameMutation::Other(name) => MoteCommitmentName::Other(name.as_str()),
         }
     }

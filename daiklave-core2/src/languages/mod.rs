@@ -5,7 +5,7 @@ pub mod language;
 
 use crate::Character;
 
-use self::language::{Language};
+use self::language::Language;
 
 /// The languages spoken by a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -20,7 +20,8 @@ impl<'view, 'source> Languages<'view, 'source> {
     /// Iterates over all spoken languages the character knows, as a pair of (language, is_native).
     pub fn iter(&self) -> impl Iterator<Item = (Language<'source>, bool)> + '_ {
         std::iter::once((self.0.native_language.into(), true)).chain(
-            self.0.other_languages
+            self.0
+                .other_languages
                 .iter()
                 .map(|language| ((*language).into(), false)),
         )

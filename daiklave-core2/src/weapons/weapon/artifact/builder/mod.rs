@@ -1,12 +1,12 @@
-mod with_name;
 mod with_heartstone_slots;
 mod with_magic_material;
 mod with_merit_dots;
+mod with_name;
 
-pub use with_name::ArtifactWeaponBuilderWithName;
 pub use with_heartstone_slots::ArtifactWeaponBuilderWithHearthstoneSlots;
 pub use with_magic_material::ArtifactWeaponBuilderWithMagicMaterial;
 pub use with_merit_dots::ArtifactWeaponBuilderWithMeritDots;
+pub use with_name::ArtifactWeaponBuilderWithName;
 
 use crate::book_reference::BookReference;
 
@@ -36,10 +36,9 @@ impl ArtifactWeaponBuilder {
             base_weapon: add_base_weapon.weapon,
             lore: None,
             powers: None,
-            book_reference: None
+            book_reference: None,
         }
     }
-
 
     /// Add flavor text to describe the weapon's forging, history, and prior
     /// wielders.
@@ -63,10 +62,7 @@ impl ArtifactWeaponBuilder {
     }
 
     /// Sets the name for this artifact weapon.
-    pub fn name(
-        self,
-        name: impl Into<ArtifactWeaponName>,
-    ) -> ArtifactWeaponBuilderWithName {
+    pub fn name(self, name: impl Into<ArtifactWeaponName>) -> ArtifactWeaponBuilderWithName {
         ArtifactWeaponBuilderWithName {
             name: name.into(),
             base_weapon_name: self.base_weapon_name,

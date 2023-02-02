@@ -4,7 +4,7 @@ mod supernal_ability;
 
 pub use caste_ability::DawnCasteAbility;
 pub(crate) use caste_ability::DawnCasteAbilityNoBrawl;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 pub use supernal_ability::DawnSupernalAbility;
 pub(crate) use supernal_ability::DawnSupernalLayout;
 

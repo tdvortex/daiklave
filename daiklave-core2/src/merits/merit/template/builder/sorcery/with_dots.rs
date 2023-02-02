@@ -1,4 +1,7 @@
-use crate::{sorcery::SorceryArchetypeName, book_reference::BookReference, merits::merit::instance::SorceryArchetypeMeritName};
+use crate::{
+    book_reference::BookReference, merits::merit::instance::SorceryArchetypeMeritName,
+    sorcery::SorceryArchetypeName,
+};
 
 use super::SorceryArchetypeMeritBuilderWithDescription;
 
@@ -18,7 +21,10 @@ impl SorceryArchetypeMeritBuilderWithDots {
     }
 
     /// Sets the description of the merit.
-    pub fn description(self, description: impl Into<String>) -> SorceryArchetypeMeritBuilderWithDescription {
+    pub fn description(
+        self,
+        description: impl Into<String>,
+    ) -> SorceryArchetypeMeritBuilderWithDescription {
         SorceryArchetypeMeritBuilderWithDescription {
             archetype_name: self.archetype_name,
             name: self.name,

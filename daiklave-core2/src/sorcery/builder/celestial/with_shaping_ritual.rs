@@ -1,7 +1,6 @@
 use crate::sorcery::{
-    archetype::{SorceryArchetypeName},
-    circles::celestial::AddCelestialSpell,
-    AddCelestialSorcery, AddSorcery, ShapingRitualDetails, SorceryArchetypeDetails, add::AddSorceryCircle,
+    add::AddSorceryCircle, archetype::SorceryArchetypeName, circles::celestial::AddCelestialSpell,
+    AddCelestialSorcery, AddSorcery, ShapingRitualDetails, SorceryArchetypeDetails,
 };
 
 /// A Celestial sorcery builder after the shaping ritual has been specified.

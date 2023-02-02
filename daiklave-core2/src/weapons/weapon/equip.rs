@@ -1,12 +1,12 @@
 use crate::CharacterMutation;
 
-use super::{EquipHand, WeaponNameMutation, WeaponName};
+use super::{EquipHand, WeaponName, WeaponNameMutation};
 
 /// A mutation to equip a specific weapon.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EquipWeapon {
     pub(crate) weapon_name: WeaponNameMutation,
-    pub(crate) hand: Option<EquipHand>
+    pub(crate) hand: Option<EquipHand>,
 }
 
 impl EquipWeapon {
@@ -42,7 +42,6 @@ impl EquipWeapon {
         }
     }
 }
-
 
 impl From<EquipWeapon> for CharacterMutation {
     fn from(equip_weapon: EquipWeapon) -> Self {

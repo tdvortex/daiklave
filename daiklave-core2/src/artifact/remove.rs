@@ -1,6 +1,6 @@
-use crate::{CharacterMutation, merits::merit::RemoveMerit};
+use crate::{merits::merit::RemoveMerit, CharacterMutation};
 
-use super::{ArtifactNameMutation, ArtifactName};
+use super::{ArtifactName, ArtifactNameMutation};
 
 /// A mutation to remove an artifact from a character.
 #[derive(Debug, Clone, PartialEq, Eq)]

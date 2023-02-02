@@ -1,7 +1,7 @@
 mod mutation;
 pub(crate) use mutation::ArmorNameMutation;
 
-use super::{EquipArmor, remove::RemoveArmor};
+use super::{remove::RemoveArmor, EquipArmor};
 
 /// The name of a piece of armor.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

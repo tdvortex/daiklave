@@ -5,10 +5,13 @@ use std::{
 
 use crate::{
     book_reference::BookReference,
-    charms::{charm::{CharmNameMutation, CharmName}, CharmCostType},
+    charms::{
+        charm::{CharmName, CharmNameMutation},
+        CharmCostType,
+    },
 };
 
-use super::{EvocationKeyword, EvokableNameMutation, EvocationName, EvokableName};
+use super::{EvocationKeyword, EvocationName, EvokableName, EvokableNameMutation};
 
 mod with_action_type;
 mod with_description;
@@ -18,8 +21,8 @@ mod with_name;
 pub use with_action_type::EvocationBuilderWithActionType;
 pub use with_description::EvocationBuilderWithDescription;
 pub use with_duration::EvocationBuilderWithDuration;
-pub use with_name::EvocationBuilderWithName;
 pub use with_essence_requirement::EvocationBuilderWithEssenceRequirement;
+pub use with_name::EvocationBuilderWithName;
 
 /// A builder to construct a new Evocation charm.
 pub struct EvocationBuilder {
@@ -109,10 +112,7 @@ impl EvocationBuilder {
     }
 
     /// Specifies the name for this Evocation.
-    pub fn name(
-        self,
-        name: impl Into<EvocationName>,
-    ) -> EvocationBuilderWithName {
+    pub fn name(self, name: impl Into<EvocationName>) -> EvocationBuilderWithName {
         EvocationBuilderWithName {
             evokable_name: self.evokable_name,
             book_reference: self.book_reference,
@@ -128,7 +128,10 @@ impl EvocationBuilder {
     }
 }
 
-impl<'a, T> From<T> for EvocationBuilder where T: Into<EvokableName<'a>> {
+impl<'a, T> From<T> for EvocationBuilder
+where
+    T: Into<EvokableName<'a>>,
+{
     fn from(name: T) -> Self {
         Self::evocation_of(name.into())
     }

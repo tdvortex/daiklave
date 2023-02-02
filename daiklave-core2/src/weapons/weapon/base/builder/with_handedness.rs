@@ -11,7 +11,10 @@ use crate::{
     },
 };
 
-use super::{with_damage_type::BaseWeaponBuilderWithDamageType, mundane::MundaneWeaponBuilderWithHandedness, BaseArtifactWeaponBuilderWithHandedness};
+use super::{
+    mundane::MundaneWeaponBuilderWithHandedness, with_damage_type::BaseWeaponBuilderWithDamageType,
+    BaseArtifactWeaponBuilderWithHandedness,
+};
 
 /// A weapon builder, after being specified as natural, worn, one-handed,
 /// or two-handed.

@@ -1,6 +1,6 @@
 mod wonder;
 
-pub use wonder::{AddWonder, WonderName, OwnedWonder, Wonder};
+pub use wonder::{AddWonder, OwnedWonder, Wonder, WonderName};
 pub(crate) use wonder::{WonderNoAttunement, WonderNoAttunementMemo};
 
 use crate::exaltation::Exaltation;

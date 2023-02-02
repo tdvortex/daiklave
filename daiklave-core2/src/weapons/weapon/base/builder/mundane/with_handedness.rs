@@ -1,11 +1,19 @@
 use std::num::NonZeroU8;
 
-use crate::{weapons::weapon::{builder::base::BaseWeaponBuilderWithHandedness, RangeBand, OptionalWeaponTag}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    weapons::weapon::{
+        builder::base::BaseWeaponBuilderWithHandedness, OptionalWeaponTag, RangeBand,
+    },
+};
 
 use super::MundaneWeaponBuilderWithDamageType;
 
 /// A mundane weapon builder after the handedness has been specified.
-pub struct MundaneWeaponBuilderWithHandedness(pub(crate) BaseWeaponBuilderWithHandedness, pub(crate) NonZeroU8);
+pub struct MundaneWeaponBuilderWithHandedness(
+    pub(crate) BaseWeaponBuilderWithHandedness,
+    pub(crate) NonZeroU8,
+);
 
 impl MundaneWeaponBuilderWithHandedness {
     /// Sets the book reference for the mundane weapon.

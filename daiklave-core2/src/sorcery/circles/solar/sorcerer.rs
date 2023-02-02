@@ -8,7 +8,8 @@ use crate::{
             celestial::CelestialSpell, sorcery_circle::SorceryCircle, terrestrial::TerrestrialSpell,
         },
         spell::{Spell, SpellMutation},
-        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetype, SorceryError, ShapingRitual,
+        ShapingRitual, ShapingRitualDetails, SorceryArchetype, SorceryArchetypeDetails,
+        SorceryError,
     },
     CharacterMutationError,
 };
@@ -100,10 +101,7 @@ impl<'source> From<&'source SolarCircleSorcererMemo> for SolarCircleSorcerer<'so
 }
 
 impl<'view, 'source> SolarCircleSorcerer<'source> {
-    pub fn archetype(
-        &'view self,
-        name: &str,
-    ) -> Option<SorceryArchetype<'view, 'source>> {
+    pub fn archetype(&'view self, name: &str) -> Option<SorceryArchetype<'view, 'source>> {
         if self.circle_archetypes.contains(&name) {
             self.archetypes
                 .get_key_value(name)
@@ -117,10 +115,7 @@ impl<'view, 'source> SolarCircleSorcerer<'source> {
         }
     }
 
-    pub fn shaping_ritual(
-        &self,
-        circle: SorceryCircle,
-    ) -> ShapingRitual<'source> {
+    pub fn shaping_ritual(&self, circle: SorceryCircle) -> ShapingRitual<'source> {
         match circle {
             SorceryCircle::Terrestrial => ShapingRitual {
                 archetype_name: self.circle_archetypes[0],

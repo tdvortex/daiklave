@@ -1,11 +1,18 @@
-use crate::{artifact::AddArtifact, languages::language::AddLanguage, hearthstones::hearthstone::AddHearthstone, martial_arts::style::AddMartialArtsStyle, sorcery::AddTerrestrialSorcery, CharacterMutation};
+use crate::{
+    artifact::AddArtifact, hearthstones::hearthstone::AddHearthstone,
+    languages::language::AddLanguage, martial_arts::style::AddMartialArtsStyle,
+    sorcery::AddTerrestrialSorcery, CharacterMutation,
+};
 
-use super::{AddStackableMerit, AddNonStackableMerit, instance::AddDemense, AddSorceryArchetypeMerit, manse::AddManse, template::builder::MeritTemplateBuilder};
+use super::{
+    instance::AddDemense, manse::AddManse, template::builder::MeritTemplateBuilder,
+    AddNonStackableMerit, AddSorceryArchetypeMerit, AddStackableMerit,
+};
 
 /// A mutation to add a merit to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum AddMerit {
-    /// Adds an artifact, which may be a weapon, armor, warstrider, or other 
+    /// Adds an artifact, which may be a weapon, armor, warstrider, or other
     /// wonder.
     Artifact(AddArtifact),
     /// Adds a standalone demense (without a manse) to a character.
@@ -20,15 +27,15 @@ pub enum AddMerit {
     Language(AddLanguage),
     /// Adds a manse, and its associated demense and hearthstone, to a character.
     Manse(AddManse),
-    /// Adds a new Martial Arts style to a character. This conveys only the 
-    /// Martial Artist merit; purchasing the Martial Arts ability and Martial 
+    /// Adds a new Martial Arts style to a character. This conveys only the
+    /// Martial Artist merit; purchasing the Martial Arts ability and Martial
     /// Arts Charms must be done afterwards.
     MartialArtist(AddMartialArtsStyle),
     /// Adds the Terrestrial circle of sorcery to a mortal.
     MortalSorcerer(AddTerrestrialSorcery),
     /// Adds a non-stackable, single-purchase merit to a character.
     NonStackable(AddNonStackableMerit),
-    /// Adds a merit to a character which is tied to a sorcery archetype the 
+    /// Adds a merit to a character which is tied to a sorcery archetype the
     /// character possesses as part of their sorcerous initiation.
     Sorcery(AddSorceryArchetypeMerit),
     /// Adds a stackable, multi-purchase merit to a character.
@@ -41,7 +48,7 @@ impl AddMerit {
         MeritTemplateBuilder::name(name)
     }
 
-    /// Adds the Terrestrial circle of sorcery, but only if the character is a 
+    /// Adds the Terrestrial circle of sorcery, but only if the character is a
     /// mortal.
     pub fn mortal_sorcerer(add_terrestrial_sorcery: AddTerrestrialSorcery) -> Self {
         Self::MortalSorcerer(add_terrestrial_sorcery)

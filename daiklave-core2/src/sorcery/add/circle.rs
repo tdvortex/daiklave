@@ -1,4 +1,4 @@
-use crate::sorcery::{AddTerrestrialSorcery, AddCelestialSorcery, AddSolarSorcery};
+use crate::sorcery::{AddCelestialSorcery, AddSolarSorcery, AddTerrestrialSorcery};
 
 /// Which Sorcery circle is being added.
 #[derive(Debug, Clone, PartialEq, Eq)]

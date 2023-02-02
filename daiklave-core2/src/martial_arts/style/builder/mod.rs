@@ -23,7 +23,7 @@ impl MartialArtsStyleBuilder {
             name: name.into(),
             book_reference: None,
             max_armor_weight: None,
-        } 
+        }
     }
 
     /// The book reference for the style.
@@ -39,7 +39,10 @@ impl MartialArtsStyleBuilder {
     }
 
     /// The description of the style's practices.
-    pub fn description(self, description: impl Into<String>) -> MartialArtsStyleBuilderWithDescription {
+    pub fn description(
+        self,
+        description: impl Into<String>,
+    ) -> MartialArtsStyleBuilderWithDescription {
         MartialArtsStyleBuilderWithDescription {
             name: self.name,
             description: description.into(),

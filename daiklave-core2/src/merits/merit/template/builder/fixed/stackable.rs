@@ -1,4 +1,7 @@
-use crate::{book_reference::BookReference, merits::merit::{MeritPrerequisite, template::stackable::FixedStackableMeritTemplate}};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{template::stackable::FixedStackableMeritTemplate, MeritPrerequisite},
+};
 
 use super::FixedMeritTemplateBuilderWithDescription;
 
@@ -12,7 +15,7 @@ impl FixedStackableMeritTemplateBuilder {
         self
     }
 
-    /// Adds a prerequisite to purchase the merit. Merit prerequisites are 
+    /// Adds a prerequisite to purchase the merit. Merit prerequisites are
     /// always and "or" relationship, like Stamina 3 or Resistance 3.
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
         self = Self(self.0.prerequisite(prerequisite));

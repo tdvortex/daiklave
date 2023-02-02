@@ -9,7 +9,10 @@ pub use with_damage_type::MundaneWeaponBuilderWithDamageType;
 pub use with_handedness::MundaneWeaponBuilderWithHandedness;
 pub use with_weight::MundaneWeaponBuilderWithWeight;
 
-use crate::{weapons::weapon::{OptionalWeaponTag, RangeBand, WeaponWeightClass}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    weapons::weapon::{OptionalWeaponTag, RangeBand, WeaponWeightClass},
+};
 
 use super::BaseWeaponBuilder;
 

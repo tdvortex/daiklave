@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use super::SetLimitTrigger;
 
@@ -15,7 +15,10 @@ impl LimitTrigger {
     }
 }
 
-impl<T> From<T> for LimitTrigger where T: Into<String> {
+impl<T> From<T> for LimitTrigger
+where
+    T: Into<String>,
+{
     fn from(name: T) -> Self {
         Self(name.into())
     }

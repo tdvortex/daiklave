@@ -1,6 +1,6 @@
-use crate::{CharacterMutation, weapons::WeaponError};
+use crate::{weapons::WeaponError, CharacterMutation};
 
-use super::{WeaponNameMutation, Equipped, WeaponName};
+use super::{Equipped, WeaponName, WeaponNameMutation};
 
 /// A mutation to unequip a particular weapon.
 #[derive(Debug, Clone, PartialEq, Eq)]

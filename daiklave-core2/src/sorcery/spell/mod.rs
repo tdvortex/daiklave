@@ -13,7 +13,7 @@ use std::{collections::HashSet, num::NonZeroU8};
 pub use add::AddSpell;
 pub(crate) use inner::SpellInner;
 pub use keyword::SpellKeyword;
-pub use mutation::{SpellMutation};
+pub use mutation::SpellMutation;
 pub use name::SpellName;
 
 use crate::book_reference::BookReference;

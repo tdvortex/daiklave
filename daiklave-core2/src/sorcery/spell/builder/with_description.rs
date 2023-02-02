@@ -103,21 +103,21 @@ impl SpellBuilderWithDescription {
     pub fn build(self, circle: SorceryCircle) -> AddSpell {
         match circle {
             SorceryCircle::Terrestrial => {
-                let AddTerrestrialSpell{name, spell} = self.terrestrial();
+                let AddTerrestrialSpell { name, spell } = self.terrestrial();
                 AddSpell {
                     name,
                     spell: SpellMutation::Terrestrial(spell),
                 }
             }
             SorceryCircle::Celestial => {
-                let AddCelestialSpell{name, spell} = self.celestial();
+                let AddCelestialSpell { name, spell } = self.celestial();
                 AddSpell {
                     name,
                     spell: SpellMutation::Celestial(spell),
                 }
             }
             SorceryCircle::Solar => {
-                let AddSolarSpell{name, spell} = self.solar();
+                let AddSolarSpell { name, spell } = self.solar();
                 AddSpell {
                     name,
                     spell: SpellMutation::Solar(spell),

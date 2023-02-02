@@ -31,12 +31,10 @@ use std::{
 
 use crate::{
     abilities::{AbilityError, AbilityName, AbilityRating},
-    armor::{
-        armor_item::{
-            artifact::{ArtifactArmorView, ArtifactError},
-            mundane::MundaneArmor,
-            ArmorItem, ArmorName, EquippedArmor, ArmorWeightClass,
-        },
+    armor::armor_item::{
+        artifact::{ArtifactArmorView, ArtifactError},
+        mundane::MundaneArmor,
+        ArmorItem, ArmorName, ArmorWeightClass, EquippedArmor,
     },
     artifact::{
         wonders::{OwnedWonder, Wonder},
@@ -48,7 +46,9 @@ use crate::{
     },
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::UnslottedHearthstone,
-    martial_arts::{charm::MartialArtsCharmDetails, style::MartialArtsStyleDetails, MartialArtsError},
+    martial_arts::{
+        charm::MartialArtsCharmDetails, style::MartialArtsStyleDetails, MartialArtsError,
+    },
     merits::merit::SorceryArchetypeMeritDetails,
     sorcery::{
         circles::{celestial::AddCelestialSorcery, solar::AddSolarSorcery},
@@ -70,10 +70,8 @@ use crate::{
 };
 
 use self::{
-    essence::{
-        Essence, EssenceError, EssenceState, MoteCommitmentName, MotePoolName,
-    },
-    exalt_type::{solar::charm::{SolarCharmDetails}, ExaltType},
+    essence::{Essence, EssenceError, EssenceState, MoteCommitmentName, MotePoolName},
+    exalt_type::{solar::charm::SolarCharmDetails, ExaltType},
     martial_arts::ExaltMartialArtistDetails,
 };
 
@@ -103,7 +101,9 @@ impl<'view, 'source> Exalt<'source> {
         }
     }
 
-    pub fn martial_arts_styles(&self) -> &HashMap<&'source str, ExaltMartialArtistDetails<'source>> {
+    pub fn martial_arts_styles(
+        &self,
+    ) -> &HashMap<&'source str, ExaltMartialArtistDetails<'source>> {
         &self.martial_arts_styles
     }
 
@@ -150,9 +150,10 @@ impl<'view, 'source> Exalt<'source> {
         let (peripheral_available, personal_available) = (peripheral.available, personal.available);
 
         if amount > (peripheral_available + personal_available) {
-            return Err(CharacterMutationError::EssenceError(EssenceError::InsufficientMotes));
+            return Err(CharacterMutationError::EssenceError(
+                EssenceError::InsufficientMotes,
+            ));
         }
-
 
         let (peripheral_spent, personal_spent) = if let MotePoolName::Peripheral = first {
             let peripheral_spent = peripheral_available.min(amount);
@@ -178,7 +179,9 @@ impl<'view, 'source> Exalt<'source> {
         amount: NonZeroU8,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self.essence.motes.other_commitments.contains_key(name) {
-            return Err(CharacterMutationError::EssenceError(EssenceError::DuplicateCommitment));
+            return Err(CharacterMutationError::EssenceError(
+                EssenceError::DuplicateCommitment,
+            ));
         }
 
         let amount = amount.get();
@@ -186,7 +189,9 @@ impl<'view, 'source> Exalt<'source> {
         let (peripheral_available, personal_available) = (peripheral.available, personal.available);
 
         if amount > (peripheral_available + personal_available) {
-            return Err(CharacterMutationError::EssenceError(EssenceError::InsufficientMotes));
+            return Err(CharacterMutationError::EssenceError(
+                EssenceError::InsufficientMotes,
+            ));
         }
 
         let (peripheral_committed, personal_committed) = if let MotePoolName::Peripheral = first {
@@ -201,17 +206,25 @@ impl<'view, 'source> Exalt<'source> {
 
         self.essence.motes.peripheral_available -= peripheral_committed;
         self.essence.motes.personal_available -= personal_committed;
-        self.essence.motes.other_commitments.insert(name, (peripheral_committed, personal_committed));
+        self.essence
+            .motes
+            .other_commitments
+            .insert(name, (peripheral_committed, personal_committed));
         Ok(self)
     }
 
-    pub fn recover_motes(&mut self, amount: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn recover_motes(
+        &mut self,
+        amount: NonZeroU8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         let amount = amount.get();
         let (peripheral, personal) = self.essence().motes().peripheral_and_personal();
         let (peripheral_spent, personal_spent) = (peripheral.spent, personal.spent);
 
         if amount > peripheral_spent + peripheral_spent {
-            return Err(CharacterMutationError::EssenceError(EssenceError::InsufficientMotes));
+            return Err(CharacterMutationError::EssenceError(
+                EssenceError::InsufficientMotes,
+            ));
         }
 
         let peripheral_recovered = peripheral_spent.min(amount);
@@ -238,21 +251,27 @@ impl<'view, 'source> Exalt<'source> {
                 }
                 ArtifactName::Wonder(wonder_name) => self.wonders.unattune_wonder(wonder_name)?,
             },
-            MoteCommitmentName::Other(other_name) => {
-                self
-                    .essence
-                    .motes
-                    .other_commitments
-                    .remove(other_name)
-                    .ok_or(CharacterMutationError::EssenceError(EssenceError::NotFound))?
-            }
+            MoteCommitmentName::Other(other_name) => self
+                .essence
+                .motes
+                .other_commitments
+                .remove(other_name)
+                .ok_or(CharacterMutationError::EssenceError(EssenceError::NotFound))?,
         };
-        self.essence.motes.peripheral_spent = self.essence.motes.peripheral_spent.saturating_add(peripheral);
-        self.essence.motes.personal_spent = self.essence.motes.personal_spent.saturating_add(personal);
+        self.essence.motes.peripheral_spent = self
+            .essence
+            .motes
+            .peripheral_spent
+            .saturating_add(peripheral);
+        self.essence.motes.personal_spent =
+            self.essence.motes.personal_spent.saturating_add(personal);
         Ok(self)
     }
 
-    pub fn set_essence_rating(&mut self, rating: NonZeroU8) -> Result<&mut Self, CharacterMutationError> {
+    pub fn set_essence_rating(
+        &mut self,
+        rating: NonZeroU8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         if self.essence().rating() == rating.get() {
             return Ok(self);
         }
@@ -267,7 +286,12 @@ impl<'view, 'source> Exalt<'source> {
             ExaltType::Solar(_) => (rating.get() * 7 + 26, rating.get() * 3 + 10),
         };
 
-        let commitment_names = self.essence().motes().committed().map(|commitment| commitment.name()).collect::<Vec<MoteCommitmentName>>();
+        let commitment_names = self
+            .essence()
+            .motes()
+            .committed()
+            .map(|commitment| commitment.name())
+            .collect::<Vec<MoteCommitmentName>>();
         for name in commitment_names.into_iter() {
             self.uncommit_motes(name)?;
         }
@@ -472,7 +496,9 @@ impl<'view, 'source> Exalt<'source> {
             self.weapons.unequipped.artifact.get(name)
         {
             if matches!(attunement, Some(_)) {
-                self.uncommit_motes(MoteCommitmentName::AttunedArtifact(ArtifactName::Weapon(name)))?;
+                self.uncommit_motes(MoteCommitmentName::AttunedArtifact(ArtifactName::Weapon(
+                    name,
+                )))?;
             }
             self.weapons.unequipped.artifact.remove(name);
             Ok(self)
@@ -482,7 +508,9 @@ impl<'view, 'source> Exalt<'source> {
         )) = self.weapons.equipped.handless_artifact.get(name)
         {
             if matches!(attunement, Some(_)) {
-                self.uncommit_motes(MoteCommitmentName::AttunedArtifact(ArtifactName::Weapon(name)))?;
+                self.uncommit_motes(MoteCommitmentName::AttunedArtifact(ArtifactName::Weapon(
+                    name,
+                )))?;
             }
             self.weapons.equipped.handless_artifact.remove(name);
             Ok(self)
@@ -679,8 +707,12 @@ impl<'view, 'source> Exalt<'source> {
         first: MotePoolName,
     ) -> Result<&mut Self, CharacterMutationError> {
         match artifact_name {
-            ArtifactName::Weapon(artifact_weapon_name) => self.attune_artifact_weapon(artifact_weapon_name, first),
-            ArtifactName::Armor(artifact_armor_name) => self.attune_artifact_armor(artifact_armor_name, first),
+            ArtifactName::Weapon(artifact_weapon_name) => {
+                self.attune_artifact_weapon(artifact_weapon_name, first)
+            }
+            ArtifactName::Armor(artifact_armor_name) => {
+                self.attune_artifact_armor(artifact_armor_name, first)
+            }
             ArtifactName::Wonder(wonder_name) => self.attune_wonder(wonder_name, first),
         }
     }
@@ -691,7 +723,9 @@ impl<'view, 'source> Exalt<'source> {
         first: MotePoolName,
     ) -> Result<&mut Self, CharacterMutationError> {
         if self.essence.motes.peripheral_available + self.essence.motes.personal_available < 5 {
-            return Err(CharacterMutationError::EssenceError(EssenceError::InsufficientMotes));
+            return Err(CharacterMutationError::EssenceError(
+                EssenceError::InsufficientMotes,
+            ));
         }
         let (peripheral_committed, personal_committed) = if first == MotePoolName::Peripheral {
             let peripheral_committed = self.essence.motes.peripheral_available.min(5);
@@ -703,7 +737,8 @@ impl<'view, 'source> Exalt<'source> {
             (peripheral_committed, personal_committed)
         };
 
-        self.weapons.attune_artifact_weapon(artifact_weapon_name, personal_committed)?;
+        self.weapons
+            .attune_artifact_weapon(artifact_weapon_name, personal_committed)?;
         self.essence.motes.peripheral_available -= peripheral_committed;
         self.essence.motes.personal_available -= personal_committed;
         Ok(self)
@@ -727,9 +762,13 @@ impl<'view, 'source> Exalt<'source> {
             maybe_armor = self.armor.unequipped_artifact.get_mut(artifact_armor_name);
         }
 
-        let armor_mut = maybe_armor.ok_or(CharacterMutationError::ArtifactError(ArtifactError::NotFound))?;
+        let armor_mut = maybe_armor.ok_or(CharacterMutationError::ArtifactError(
+            ArtifactError::NotFound,
+        ))?;
         if armor_mut.1.is_some() {
-            Err(CharacterMutationError::EssenceError(EssenceError::AlreadyAttuned))
+            Err(CharacterMutationError::EssenceError(
+                EssenceError::AlreadyAttuned,
+            ))
         } else {
             let attunement_cost = match armor_mut.0.base_armor.weight_class {
                 ArmorWeightClass::Light => 4,
@@ -737,8 +776,12 @@ impl<'view, 'source> Exalt<'source> {
                 ArmorWeightClass::Heavy => 6,
             };
 
-            if attunement_cost > self.essence.motes.peripheral_available + self.essence.motes.peripheral_spent {
-                return Err(CharacterMutationError::EssenceError(EssenceError::InsufficientMotes));
+            if attunement_cost
+                > self.essence.motes.peripheral_available + self.essence.motes.peripheral_spent
+            {
+                return Err(CharacterMutationError::EssenceError(
+                    EssenceError::InsufficientMotes,
+                ));
             }
             let (peripheral_committed, personal_committed) = if first == MotePoolName::Peripheral {
                 let peripheral_committed = self.essence.motes.peripheral_available.min(5);
@@ -761,14 +804,31 @@ impl<'view, 'source> Exalt<'source> {
         wonder_name: &str,
         first: MotePoolName,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let (wonder, attunement) = self.wonders.0.get_mut(wonder_name).ok_or(CharacterMutationError::ArtifactError(ArtifactError::NotFound))?;
+        let (wonder, attunement) =
+            self.wonders
+                .0
+                .get_mut(wonder_name)
+                .ok_or(CharacterMutationError::ArtifactError(
+                    ArtifactError::NotFound,
+                ))?;
         if attunement.is_some() {
-            return Err(CharacterMutationError::EssenceError(EssenceError::AlreadyAttuned));
+            return Err(CharacterMutationError::EssenceError(
+                EssenceError::AlreadyAttuned,
+            ));
         }
 
-        let attunement_cost = wonder.attunement_cost.ok_or(CharacterMutationError::EssenceError(EssenceError::NoAttunementCost))?;
-        if attunement_cost > self.essence.motes.peripheral_available + self.essence.motes.peripheral_spent {
-            return Err(CharacterMutationError::EssenceError(EssenceError::InsufficientMotes));
+        let attunement_cost =
+            wonder
+                .attunement_cost
+                .ok_or(CharacterMutationError::EssenceError(
+                    EssenceError::NoAttunementCost,
+                ))?;
+        if attunement_cost
+            > self.essence.motes.peripheral_available + self.essence.motes.peripheral_spent
+        {
+            return Err(CharacterMutationError::EssenceError(
+                EssenceError::InsufficientMotes,
+            ));
         }
         let (peripheral_committed, personal_committed) = if first == MotePoolName::Peripheral {
             let peripheral_committed = self.essence.motes.peripheral_available.min(5);
@@ -954,9 +1014,10 @@ impl<'view, 'source> Exalt<'source> {
         name: &'source str,
         martial_arts_charm: &'source MartialArtsCharmDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let (&style_name, style_details) = self.martial_arts_styles.get_key_value(style_name).ok_or(
-            CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound),
-        )?;
+        let (&style_name, style_details) =
+            self.martial_arts_styles.get_key_value(style_name).ok_or(
+                CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound),
+            )?;
         let required_ability = martial_arts_charm.ability_required;
         let actual_ability = style_details.ability().dots();
 
@@ -990,7 +1051,10 @@ impl<'view, 'source> Exalt<'source> {
             .map(|prerequisite_charm_name| prerequisite_charm_name.as_str())
             .collect::<HashSet<&str>>();
 
-        for known_charm_id in style_details.charms(style_name).map(|known_charm| known_charm.name()) {
+        for known_charm_id in style_details
+            .charms(style_name)
+            .map(|known_charm| known_charm.name())
+        {
             if known_charm_id == name {
                 return Err(CharacterMutationError::CharmError(
                     CharmError::DuplicateCharm,
@@ -1035,9 +1099,7 @@ impl<'view, 'source> Exalt<'source> {
                         ids_to_remove.insert(*known_charm_name);
                     }
 
-                    if known_charm.essence_required > actual_essence
-                        && !is_martial_arts_supernal
-                    {
+                    if known_charm.essence_required > actual_essence && !is_martial_arts_supernal {
                         ids_to_remove.insert(*known_charm_name);
                     }
 

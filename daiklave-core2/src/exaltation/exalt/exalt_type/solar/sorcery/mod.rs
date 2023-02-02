@@ -8,7 +8,7 @@ use crate::sorcery::{
         terrestrial::sorcerer::TerrestrialCircleSorcerer,
     },
     spell::Spell,
-    SorceryArchetype, SorceryCircle, ShapingRitual,
+    ShapingRitual, SorceryArchetype, SorceryCircle,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -21,18 +21,19 @@ pub(crate) enum SolarSorcererView<'source> {
 impl<'source> From<&'source SolarSorcererMemo> for SolarSorcererView<'source> {
     fn from(memo: &'source SolarSorcererMemo) -> Self {
         match memo {
-            SolarSorcererMemo::Terrestrial(box_terrestrial) => Self::Terrestrial(box_terrestrial.as_ref().into()),
-            SolarSorcererMemo::Celestial(box_celestial) => Self::Celestial(box_celestial.as_ref().into()),
+            SolarSorcererMemo::Terrestrial(box_terrestrial) => {
+                Self::Terrestrial(box_terrestrial.as_ref().into())
+            }
+            SolarSorcererMemo::Celestial(box_celestial) => {
+                Self::Celestial(box_celestial.as_ref().into())
+            }
             SolarSorcererMemo::Solar(box_solar) => Self::Solar(box_solar.as_ref().into()),
         }
     }
 }
 
 impl<'view, 'source> SolarSorcererView<'source> {
-    pub fn archetype(
-        &'view self,
-        name: &str,
-    ) -> Option<SorceryArchetype<'view, 'source>> {
+    pub fn archetype(&'view self, name: &str) -> Option<SorceryArchetype<'view, 'source>> {
         match self {
             SolarSorcererView::Terrestrial(terrestrial) => terrestrial.archetype(name),
             SolarSorcererView::Celestial(celestial) => celestial.archetype(name),
@@ -55,10 +56,7 @@ impl<'view, 'source> SolarSorcererView<'source> {
         .into_iter()
     }
 
-    pub fn shaping_ritual(
-        &self,
-        circle: SorceryCircle,
-    ) -> Option<ShapingRitual<'source>> {
+    pub fn shaping_ritual(&self, circle: SorceryCircle) -> Option<ShapingRitual<'source>> {
         match (self, circle) {
             (SolarSorcererView::Terrestrial(terrestrial), SorceryCircle::Terrestrial) => {
                 Some(terrestrial.shaping_ritual())

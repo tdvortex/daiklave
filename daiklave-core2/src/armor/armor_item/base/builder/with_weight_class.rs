@@ -1,13 +1,11 @@
 use std::collections::HashSet;
 
 use crate::{
-    armor::armor_item::{
-        ArmorTag, ArmorWeightClass,
-    },
+    armor::armor_item::{ArmorTag, ArmorWeightClass},
     book_reference::BookReference,
 };
 
-use super::{MundaneArmorBuilderWithWeightClass, BaseArtifactArmorBuilderWithWeightClass};
+use super::{BaseArtifactArmorBuilderWithWeightClass, MundaneArmorBuilderWithWeightClass};
 
 /// A base armor item builder after the weight class has been set.
 pub struct BaseArmorItemBuilderWithWeightClass {

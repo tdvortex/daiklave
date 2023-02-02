@@ -1,6 +1,9 @@
 use crate::weapons::weapon::EquipHand;
 
-use super::{NaturalArtifactWeaponMemo, WornArtifactWeaponMemo, OneHandedArtifactWeaponMemo, TwoHandedArtifactWeaponMemo};
+use super::{
+    NaturalArtifactWeaponMemo, OneHandedArtifactWeaponMemo, TwoHandedArtifactWeaponMemo,
+    WornArtifactWeaponMemo,
+};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum ArtifactWeaponHandedness {

@@ -1,4 +1,9 @@
-use crate::{weapons::weapon::{builder::base::BaseWeaponBuilderWithDamageType, RangeBand, OptionalWeaponTag}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    weapons::weapon::{
+        builder::base::BaseWeaponBuilderWithDamageType, OptionalWeaponTag, RangeBand,
+    },
+};
 
 use super::BaseArtifactWeaponBuilderWithAttack;
 
@@ -87,5 +92,4 @@ impl BaseArtifactWeaponBuilderWithDamageType {
     pub fn martial_arts(self) -> BaseArtifactWeaponBuilderWithAttack {
         BaseArtifactWeaponBuilderWithAttack(self.0.martial_arts())
     }
-
 }

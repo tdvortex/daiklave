@@ -65,13 +65,9 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
             }
             (WeaponName::Artifact(name), Equipped::Natural) => {
                 match self.handless_artifact.get_key_value(name)? {
-                    (name, HandlessArtifactWeaponNoAttunement::Natural(weapon)) => {
-                        Some(Weapon(WeaponType::Artifact(
-                            *name,
-                            ArtifactWeapon::Natural(weapon.clone()),
-                            None,
-                        )))
-                    }
+                    (name, HandlessArtifactWeaponNoAttunement::Natural(weapon)) => Some(Weapon(
+                        WeaponType::Artifact(*name, ArtifactWeapon::Natural(weapon.clone()), None),
+                    )),
                     (_, HandlessArtifactWeaponNoAttunement::Worn(_)) => None,
                 }
             }

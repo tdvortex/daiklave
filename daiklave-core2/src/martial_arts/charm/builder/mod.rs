@@ -2,21 +2,23 @@ mod with_ability_requirement;
 mod with_action_type;
 mod with_description;
 mod with_duration;
-mod with_name;
 mod with_essence_requirement;
+mod with_name;
 pub use with_ability_requirement::MartialArtsCharmBuilderWithAbilityRequirement;
 pub use with_action_type::MartialArtsCharmBuilderWithActionType;
 pub use with_description::MartialArtsCharmBuilderWithDescription;
 pub use with_duration::MartialArtsCharmBuilderWithDuration;
-pub use with_name::MartialArtsCharmBuilderWithName;
 pub use with_essence_requirement::MartialArtsCharmBuilderWithEssenceRequirement;
+pub use with_name::MartialArtsCharmBuilderWithName;
 
 use std::{
     collections::{HashMap, HashSet},
     num::NonZeroU8,
 };
 
-use crate::{book_reference::BookReference, charms::{CharmCostType}, martial_arts::style::MartialArtsStyleName};
+use crate::{
+    book_reference::BookReference, charms::CharmCostType, martial_arts::style::MartialArtsStyleName,
+};
 
 use super::{MartialArtsCharmKeyword, MartialArtsCharmName};
 
@@ -48,7 +50,6 @@ impl MartialArtsCharmBuilder {
             summary: Default::default(),
         }
     }
-
 
     /// Sets the book reference for the Charm.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {

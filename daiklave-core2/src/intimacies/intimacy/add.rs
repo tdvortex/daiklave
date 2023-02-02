@@ -1,6 +1,9 @@
 use crate::CharacterMutation;
 
-use super::{IntimacyLevel, IntimacyTypeMemo, builder::{TieBuilder, IntimacyBuilder, IntimacyBuilderWithDescription}};
+use super::{
+    builder::{IntimacyBuilder, IntimacyBuilderWithDescription, TieBuilder},
+    IntimacyLevel, IntimacyTypeMemo,
+};
 
 /// An Intimacy to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]

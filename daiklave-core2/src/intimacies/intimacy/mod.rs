@@ -45,7 +45,9 @@ impl<'source> Intimacy<'source> {
     /// quality of a Tie, or is a statement of the Principle.
     pub fn description(&self) -> &'source str {
         match self.intimacy_type {
-            IntimacyTypeMemo::Tie(_, description) | IntimacyTypeMemo::Principle(description) => description,
+            IntimacyTypeMemo::Tie(_, description) | IntimacyTypeMemo::Principle(description) => {
+                description
+            }
         }
     }
 }

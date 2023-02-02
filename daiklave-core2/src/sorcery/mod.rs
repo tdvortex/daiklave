@@ -13,11 +13,8 @@ pub use spells::Spells;
 /// Properties of an individual Spell.
 pub mod spell;
 
+pub use archetype::{AddShapingRitual, ShapingRitual, SorceryArchetype, SorceryArchetypeName};
 pub(crate) use archetype::{ShapingRitualDetails, SorceryArchetypeDetails};
-pub use archetype::{
-    AddShapingRitual,
-    SorceryArchetypeName, SorceryArchetype, ShapingRitual
-};
 pub use circles::{
     AddCelestialSorcery, AddSolarSorcery, AddTerrestrialSorcery, CelestialSpell, SolarSpell,
     SorceryCircle, TerrestrialSpell,
@@ -48,10 +45,7 @@ impl<'view, 'source> Sorcery<'view, 'source> {
     }
 
     /// The shaping ritual the character learned at a specific circle induction.
-    pub fn shaping_ritual(
-        &self,
-        circle: SorceryCircle,
-    ) -> Option<ShapingRitual<'source>> {
+    pub fn shaping_ritual(&self, circle: SorceryCircle) -> Option<ShapingRitual<'source>> {
         self.0.shaping_ritual(circle)
     }
 

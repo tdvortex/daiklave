@@ -5,8 +5,15 @@ mod with_damage_type;
 mod with_handedness;
 mod with_weight;
 
-pub use artifact::{BaseArtifactWeaponBuilder, BaseArtifactWeaponBuilderWithAttack, BaseArtifactWeaponBuilderWithDamageType, BaseArtifactWeaponBuilderWithHandedness, BaseArtifactWeaponBuilderWithWeight};
-pub use mundane::{MundaneWeaponBuilder,MundaneWeaponBuilderWithAttack, MundaneWeaponBuilderWithDamageType, MundaneWeaponBuilderWithHandedness, MundaneWeaponBuilderWithWeight};
+pub use artifact::{
+    BaseArtifactWeaponBuilder, BaseArtifactWeaponBuilderWithAttack,
+    BaseArtifactWeaponBuilderWithDamageType, BaseArtifactWeaponBuilderWithHandedness,
+    BaseArtifactWeaponBuilderWithWeight,
+};
+pub use mundane::{
+    MundaneWeaponBuilder, MundaneWeaponBuilderWithAttack, MundaneWeaponBuilderWithDamageType,
+    MundaneWeaponBuilderWithHandedness, MundaneWeaponBuilderWithWeight,
+};
 pub use with_attack::BaseWeaponBuilderWithAttack;
 pub use with_damage_type::BaseWeaponBuilderWithDamageType;
 pub use with_handedness::BaseWeaponBuilderWithHandedness;
@@ -42,7 +49,7 @@ impl BaseWeaponBuilder {
             name: name.into(),
             book_reference: None,
             attack_range: WeaponRange::ContactOnly,
-            tags: HashSet::new()
+            tags: HashSet::new(),
         }
     }
 

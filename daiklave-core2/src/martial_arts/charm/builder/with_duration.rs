@@ -6,7 +6,10 @@ use std::{
 use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
-    martial_arts::{charm::{MartialArtsCharmKeyword, MartialArtsCharmName}, style::MartialArtsStyleName},
+    martial_arts::{
+        charm::{MartialArtsCharmKeyword, MartialArtsCharmName},
+        style::MartialArtsStyleName,
+    },
 };
 
 use super::MartialArtsCharmBuilderWithDescription;

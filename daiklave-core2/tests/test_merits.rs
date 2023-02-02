@@ -14,8 +14,8 @@ use daiklave_core2::{
     languages::language::{LanguageMutation, MajorLanguage},
     martial_arts::style::MartialArtsStyle,
     merits::merit::{
-        Merit, MeritInstanceName, MeritTemplateId, MeritType, NonStackableMerit, NonStackableMeritId,
-        StackableMerit, StackableMeritId, StackableMeritTemplateId,
+        Merit, MeritInstanceName, MeritTemplateId, MeritType, NonStackableMerit,
+        NonStackableMeritId, StackableMerit, StackableMeritId, StackableMeritTemplateId,
     },
     sorcery::{
         spell::{Spell, SpellKeyword},
@@ -314,7 +314,9 @@ fn test_merits() {
     let character = event_source.as_character().unwrap();
     let merits = character.merits();
     let volcano_cutter = merits
-        .get(MeritInstanceName::Artifact(ArtifactName::Weapon("Volcano Cutter")))
+        .get(MeritInstanceName::Artifact(ArtifactName::Weapon(
+            "Volcano Cutter",
+        )))
         .unwrap();
     assert_eq!(
         volcano_cutter.name(),
@@ -332,7 +334,9 @@ fn test_merits() {
     assert!(volcano_cutter.description().1.is_some());
 
     let brilliant_sentinel = merits
-        .get(MeritInstanceName::Artifact(ArtifactName::Armor("Brilliant Sentinel")))
+        .get(MeritInstanceName::Artifact(ArtifactName::Armor(
+            "Brilliant Sentinel",
+        )))
         .unwrap();
     assert_eq!(
         brilliant_sentinel.name(),
@@ -392,7 +396,10 @@ fn test_merits() {
     let nowhere = merits
         .get(MeritInstanceName::Demense("Nowhere special"))
         .unwrap();
-    assert_eq!(nowhere.name(), MeritInstanceName::Demense("Nowhere special"));
+    assert_eq!(
+        nowhere.name(),
+        MeritInstanceName::Demense("Nowhere special")
+    );
     assert_eq!(nowhere.template_name(), "Demense");
     assert_eq!(
         nowhere.book_reference(),
@@ -407,7 +414,10 @@ fn test_merits() {
     let eye = merits
         .get(MeritInstanceName::HearthstoneWithManse("Hierophant's Eye"))
         .unwrap();
-    assert_eq!(eye.name(), MeritInstanceName::HearthstoneWithManse("Hierophant's Eye"));
+    assert_eq!(
+        eye.name(),
+        MeritInstanceName::HearthstoneWithManse("Hierophant's Eye")
+    );
     assert_eq!(eye.template_name(), "Hearthstone");
     assert_eq!(
         eye.book_reference(),
@@ -419,7 +429,9 @@ fn test_merits() {
     assert_eq!(eye.template_id(), MeritTemplateId::Hearthstone);
     assert!(eye.description().1.is_some());
 
-    let manse = merits.get(MeritInstanceName::Manse("Hierophant's Eye")).unwrap();
+    let manse = merits
+        .get(MeritInstanceName::Manse("Hierophant's Eye"))
+        .unwrap();
     assert_eq!(manse.name(), MeritInstanceName::Manse("Hierophant's Eye"));
     assert_eq!(manse.template_name(), "Manse");
     assert_eq!(
@@ -432,8 +444,13 @@ fn test_merits() {
     assert_eq!(manse.template_id(), MeritTemplateId::Manse);
     assert!(manse.description().1.is_some());
 
-    let ma_crane = merits.get(MeritInstanceName::MartialArtist("Crane Style")).unwrap();
-    assert_eq!(ma_crane.name(), MeritInstanceName::MartialArtist("Crane Style"));
+    let ma_crane = merits
+        .get(MeritInstanceName::MartialArtist("Crane Style"))
+        .unwrap();
+    assert_eq!(
+        ma_crane.name(),
+        MeritInstanceName::MartialArtist("Crane Style")
+    );
     assert_eq!(ma_crane.template_name(), "Martial Artist");
     assert_eq!(
         ma_crane.book_reference(),
@@ -481,9 +498,9 @@ fn test_merits() {
     assert!(mortal_sorcerer.description().1.is_none());
 
     let astral_meditation = merits
-        .get(MeritInstanceName::SorceryArchetype(SorceryArchetypeMeritId(
-            UniqueId::Placeholder(1),
-        )))
+        .get(MeritInstanceName::SorceryArchetype(
+            SorceryArchetypeMeritId(UniqueId::Placeholder(1)),
+        ))
         .unwrap();
     assert_eq!(
         astral_meditation.name(),
@@ -535,9 +552,9 @@ fn test_merits() {
     assert!(other_languages.description().1.is_some());
 
     let retainers = merits
-        .get(MeritInstanceName::Stackable(StackableMeritId(UniqueId::Placeholder(
-            1,
-        ))))
+        .get(MeritInstanceName::Stackable(StackableMeritId(
+            UniqueId::Placeholder(1),
+        )))
         .unwrap();
     assert_eq!(
         retainers.name(),
@@ -647,9 +664,9 @@ fn test_merits() {
 
     // Sorcery archetype merit should still exist
     assert!(merits
-        .get(MeritInstanceName::SorceryArchetype(SorceryArchetypeMeritId(
-            UniqueId::Placeholder(1)
-        )))
+        .get(MeritInstanceName::SorceryArchetype(
+            SorceryArchetypeMeritId(UniqueId::Placeholder(1))
+        ))
         .is_some());
 
     // Dropping Occult below 3 removes sorcery and sorcery merits
@@ -659,9 +676,9 @@ fn test_merits() {
     assert!(character.sorcery().is_none());
     let merits = character.merits();
     assert!(merits
-        .get(MeritInstanceName::SorceryArchetype(SorceryArchetypeMeritId(
-            UniqueId::Placeholder(1)
-        )))
+        .get(MeritInstanceName::SorceryArchetype(
+            SorceryArchetypeMeritId(UniqueId::Placeholder(1))
+        ))
         .is_none());
 
     // Dropping Brawl to 0 removes Martial Arts and Martial Artist merit
@@ -669,7 +686,9 @@ fn test_merits() {
     event_source.apply_mutation(mutation).unwrap();
     let character = event_source.as_character().unwrap();
     let merits = character.merits();
-    assert!(merits.get(MeritInstanceName::MartialArtist("Crane Style")).is_none());
+    assert!(merits
+        .get(MeritInstanceName::MartialArtist("Crane Style"))
+        .is_none());
 
     // Dropping an ability or attribute removes dependent merits
     let mutation = CharacterMutation::SetAttribute(AttributeName::Stamina, 2);
@@ -744,9 +763,9 @@ fn test_merits() {
         )))
         .is_none());
     assert!(merits
-        .get(MeritInstanceName::Stackable(StackableMeritId(UniqueId::Placeholder(
-            1
-        ))))
+        .get(MeritInstanceName::Stackable(StackableMeritId(
+            UniqueId::Placeholder(1)
+        )))
         .is_none());
 
     // Only merit left should be Exalted Healing

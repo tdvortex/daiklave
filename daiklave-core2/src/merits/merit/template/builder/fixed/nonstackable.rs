@@ -1,9 +1,14 @@
-use crate::{merits::merit::{template::nonstackable::FixedNonStackableMeritTemplate, MeritPrerequisite}, book_reference::BookReference};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{template::nonstackable::FixedNonStackableMeritTemplate, MeritPrerequisite},
+};
 
 use super::FixedMeritTemplateBuilderWithDescription;
 
 /// A merit builder for a fixed-dot merit that may be only be purchased once.
-pub struct FixedNonStackableMeritTemplateBuilder(pub(crate) FixedMeritTemplateBuilderWithDescription);
+pub struct FixedNonStackableMeritTemplateBuilder(
+    pub(crate) FixedMeritTemplateBuilderWithDescription,
+);
 
 impl FixedNonStackableMeritTemplateBuilder {
     /// Sets the book reference for the merit.
@@ -12,7 +17,7 @@ impl FixedNonStackableMeritTemplateBuilder {
         self
     }
 
-    /// Adds a prerequisite to purchase the merit. Merit prerequisites are 
+    /// Adds a prerequisite to purchase the merit. Merit prerequisites are
     /// always and "or" relationship, like Stamina 3 or Resistance 3.
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
         self = Self(self.0.prerequisite(prerequisite));

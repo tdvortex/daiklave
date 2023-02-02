@@ -1,6 +1,10 @@
-use crate::{merits::merit::{instance::DemenseName, AddMerit}, hearthstones::hearthstone::AddHearthstone, CharacterMutation};
+use crate::{
+    hearthstones::hearthstone::AddHearthstone,
+    merits::merit::{instance::DemenseName, AddMerit},
+    CharacterMutation,
+};
 
-use super::{name::ManseName, builder::ManseBuilder};
+use super::{builder::ManseBuilder, name::ManseName};
 
 /// A mutation to add a Manse, and its associated demense and hearthstone, to
 /// a character.

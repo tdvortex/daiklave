@@ -18,7 +18,7 @@ mod evokable_name;
 mod keyword;
 mod name;
 pub use add::AddEvocation;
-pub use evokable_name::{EvokableName};
+pub use evokable_name::EvokableName;
 pub(crate) use evokable_name::EvokableNameMutation;
 pub use keyword::EvocationKeyword;
 pub use name::EvocationName;

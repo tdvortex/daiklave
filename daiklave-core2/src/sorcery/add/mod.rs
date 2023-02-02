@@ -3,7 +3,10 @@ use crate::CharacterMutation;
 
 pub use self::circle::AddSorceryCircle;
 
-use super::{builder::{TerrestrialSorceryBuilder, CelestialSorceryBuilder, SolarSorceryBuilder}, AddTerrestrialSorcery, AddCelestialSorcery, AddSolarSorcery};
+use super::{
+    builder::{CelestialSorceryBuilder, SolarSorceryBuilder, TerrestrialSorceryBuilder},
+    AddCelestialSorcery, AddSolarSorcery, AddTerrestrialSorcery,
+};
 
 /// A mutation to add Sorcery to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -28,7 +31,9 @@ impl AddSorcery {
 
 impl From<AddTerrestrialSorcery> for AddSorcery {
     fn from(add_terrestrial_sorcery: AddTerrestrialSorcery) -> Self {
-        Self(Box::new(AddSorceryCircle::Terrestrial(add_terrestrial_sorcery)))
+        Self(Box::new(AddSorceryCircle::Terrestrial(
+            add_terrestrial_sorcery,
+        )))
     }
 }
 

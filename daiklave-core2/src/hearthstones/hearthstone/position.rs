@@ -1,4 +1,8 @@
-use crate::{artifact::ArtifactName, book_reference::BookReference, merits::merit::{Merit, MeritSource}};
+use crate::{
+    artifact::ArtifactName,
+    book_reference::BookReference,
+    merits::merit::{Merit, MeritSource},
+};
 
 use super::{
     category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword,
@@ -18,14 +22,27 @@ impl<'source> HearthstonePosition<'source> {
             HearthstonePosition::Unslotted(name, slotted) => {
                 if let Some((manse, demense)) = slotted.manse_and_demense() {
                     vec![
-                        Merit(MeritSource::Demense { name: demense, has_manse: true, geomancy_level: self.geomancy_level() }),
-                        Merit(MeritSource::Hearthstone { name: *name, has_manse: true, geomancy_level: self.geomancy_level() }),
-                        Merit(MeritSource::Manse { name: manse, geomancy_level: self.geomancy_level() })
+                        Merit(MeritSource::Demense {
+                            name: demense,
+                            has_manse: true,
+                            geomancy_level: self.geomancy_level(),
+                        }),
+                        Merit(MeritSource::Hearthstone {
+                            name: *name,
+                            has_manse: true,
+                            geomancy_level: self.geomancy_level(),
+                        }),
+                        Merit(MeritSource::Manse {
+                            name: manse,
+                            geomancy_level: self.geomancy_level(),
+                        }),
                     ]
                 } else {
-                    vec![
-                        Merit(MeritSource::Hearthstone { name: *name, has_manse: false, geomancy_level: self.geomancy_level() })
-                    ]
+                    vec![Merit(MeritSource::Hearthstone {
+                        name: *name,
+                        has_manse: false,
+                        geomancy_level: self.geomancy_level(),
+                    })]
                 }
             }
         }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{ability::AbilityRatingMemo};
+use super::ability::AbilityRatingMemo;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct AbilitiesMemo {

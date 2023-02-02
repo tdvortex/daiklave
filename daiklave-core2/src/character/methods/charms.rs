@@ -1,4 +1,10 @@
-use crate::{charms::{Charms, charm::{AddCharm, CharmName}}, Character, CharacterMutationError};
+use crate::{
+    charms::{
+        charm::{AddCharm, CharmName},
+        Charms,
+    },
+    Character, CharacterMutationError,
+};
 
 impl<'view, 'source> Character<'source> {
     /// Read the Charms (and Evocations and Spells) owned by the character.
@@ -7,12 +13,18 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Adds a Charm (or Spell) to the character.
-    pub fn add_charm(&mut self, _add_charm: &'source AddCharm) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_charm(
+        &mut self,
+        _add_charm: &'source AddCharm,
+    ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
     /// Removes a Charm (or Spell) from the character.
-    pub fn remove_charm(&mut self, _remove_charm: CharmName<'source>) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_charm(
+        &mut self,
+        _remove_charm: CharmName<'source>,
+    ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 }

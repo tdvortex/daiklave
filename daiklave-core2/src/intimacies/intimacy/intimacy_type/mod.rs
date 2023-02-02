@@ -10,4 +10,3 @@ pub enum IntimacyType<'source> {
     /// A belief the character holds.
     Principle(&'source str),
 }
-

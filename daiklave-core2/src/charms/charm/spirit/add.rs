@@ -1,4 +1,4 @@
-use super::{AddEclipseCharm, spirit_only::AddSpiritOnlyCharm};
+use super::{spirit_only::AddSpiritOnlyCharm, AddEclipseCharm};
 
 /// A Spirit charm (which may be Eclipse or not) to be added to a character.
 pub enum AddSpiritCharm {

@@ -1,7 +1,14 @@
 use std::collections::HashSet;
 
-use crate::{armor::armor_item::{mundane::{MundaneArmorName, AddMundaneArmor, MundaneArmor}, ArmorTag, ArmorWeightClass, base::BaseArmor}, book_reference::BookReference, CharacterMutation};
-
+use crate::{
+    armor::armor_item::{
+        base::BaseArmor,
+        mundane::{AddMundaneArmor, MundaneArmor, MundaneArmorName},
+        ArmorTag, ArmorWeightClass,
+    },
+    book_reference::BookReference,
+    CharacterMutation,
+};
 
 /// A mundane armor builder after the weight class has been specified.
 pub struct MundaneArmorBuilderWithWeightClass {
@@ -32,7 +39,7 @@ impl MundaneArmorBuilderWithWeightClass {
                 book_reference: self.book_reference,
                 weight_class: self.weight_class,
                 tags: self.tags,
-            })
+            }),
         }
     }
 }

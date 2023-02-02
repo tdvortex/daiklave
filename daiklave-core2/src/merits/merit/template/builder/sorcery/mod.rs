@@ -5,7 +5,10 @@ pub use with_description::SorceryArchetypeMeritBuilderWithDescription;
 pub use with_dots::SorceryArchetypeMeritBuilderWithDots;
 pub use with_name::SorceryArchetypeMeritBuilderWithName;
 
-use crate::{sorcery::SorceryArchetypeName, book_reference::BookReference, merits::merit::instance::SorceryArchetypeMeritName};
+use crate::{
+    book_reference::BookReference, merits::merit::instance::SorceryArchetypeMeritName,
+    sorcery::SorceryArchetypeName,
+};
 
 /// A builder to construct a sorcery archetype merit.
 pub struct SorceryArchetypeMeritBuilder {
@@ -30,7 +33,10 @@ impl SorceryArchetypeMeritBuilder {
     }
 
     /// Sets the name for the merit.
-    pub fn name(self, name: impl Into<SorceryArchetypeMeritName>) -> SorceryArchetypeMeritBuilderWithName {
+    pub fn name(
+        self,
+        name: impl Into<SorceryArchetypeMeritName>,
+    ) -> SorceryArchetypeMeritBuilderWithName {
         SorceryArchetypeMeritBuilderWithName {
             archetype_name: self.archetype_name,
             name: name.into(),

@@ -1,10 +1,15 @@
-use crate::{book_reference::BookReference, merits::merit::{MeritPrerequisite, template::nonstackable::VariableNonStackableMeritTemplate}};
+use crate::{
+    book_reference::BookReference,
+    merits::merit::{template::nonstackable::VariableNonStackableMeritTemplate, MeritPrerequisite},
+};
 
 use super::VariableMeritTemplateBuilderWithDots;
 
 /// A builder for a merit which can be bought at multiple levels, but only once
 /// per character.
-pub struct VariableNonStackableMeritTemplateBuilder(pub(crate) VariableMeritTemplateBuilderWithDots);
+pub struct VariableNonStackableMeritTemplateBuilder(
+    pub(crate) VariableMeritTemplateBuilderWithDots,
+);
 
 impl VariableNonStackableMeritTemplateBuilder {
     /// Sets the book reference for the merit.
@@ -13,7 +18,7 @@ impl VariableNonStackableMeritTemplateBuilder {
         self
     }
 
-    /// Adds a prerequisite to purchase the merit. Merit prerequisites are 
+    /// Adds a prerequisite to purchase the merit. Merit prerequisites are
     /// always and "or" relationship, like Stamina 3 or Resistance 3.
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
         self = Self(self.0.prerequisite(prerequisite));
@@ -36,7 +41,7 @@ impl VariableNonStackableMeritTemplateBuilder {
             description: self.0.description,
             prerequisites: self.0.prerequisites,
             min_dots: self.0.min_dots,
-            other_dots: self.0.other_dots
+            other_dots: self.0.other_dots,
         }
     }
 }

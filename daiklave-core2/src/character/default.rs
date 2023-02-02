@@ -1,4 +1,7 @@
-use crate::{Character, languages::language::{LanguageMutation, MajorLanguage}};
+use crate::{
+    languages::language::{LanguageMutation, MajorLanguage},
+    Character,
+};
 
 impl<'source> Default for Character<'source> {
     fn default() -> Self {

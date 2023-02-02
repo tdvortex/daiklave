@@ -6,7 +6,9 @@ use std::{
 use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
-    exaltation::exalt::exalt_type::solar::charm::{ability::SolarCharmAbility, SolarCharmKeyword, SolarCharmName},
+    exaltation::exalt::exalt_type::solar::charm::{
+        ability::SolarCharmAbility, SolarCharmKeyword, SolarCharmName,
+    },
 };
 
 use super::with_action_type::SolarCharmBuilderWithActionType;

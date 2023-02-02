@@ -1,10 +1,13 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use crate::artifact::ArtifactName;
 
-use super::{HearthstoneCategory, builder::{HearthstoneBuilderWithCategory, HearthstoneBuilder}, SlotHearthstone, UnslotHearthstone};
+use super::{
+    builder::{HearthstoneBuilder, HearthstoneBuilderWithCategory},
+    HearthstoneCategory, SlotHearthstone, UnslotHearthstone,
+};
 
 /// The name of a Hearthstone.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -30,7 +33,10 @@ impl HearthstoneName {
     }
 }
 
-impl<T> From<T> for HearthstoneName where T: Into<String> {
+impl<T> From<T> for HearthstoneName
+where
+    T: Into<String>,
+{
     fn from(name: T) -> Self {
         Self(name.into())
     }

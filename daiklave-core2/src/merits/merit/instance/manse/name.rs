@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use super::RemoveManse;
 
@@ -16,7 +16,10 @@ impl ManseName {
     }
 }
 
-impl<T> From<T> for ManseName where T: Into<String> {
+impl<T> From<T> for ManseName
+where
+    T: Into<String>,
+{
     fn from(name: T) -> Self {
         Self(name.into())
     }

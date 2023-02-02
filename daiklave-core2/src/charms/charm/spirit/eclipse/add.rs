@@ -1,4 +1,7 @@
-use crate::{charms::charm::{spirit::SpiritCharmName, AddCharm}, CharacterMutation};
+use crate::{
+    charms::charm::{spirit::SpiritCharmName, AddCharm},
+    CharacterMutation,
+};
 
 use super::EclipseCharm;
 

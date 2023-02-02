@@ -2,7 +2,7 @@ use std::collections::hash_map::Entry;
 
 use crate::{
     intimacies::{
-        intimacy::{IntimacyError, AddIntimacy, RemoveIntimacy},
+        intimacy::{AddIntimacy, IntimacyError, RemoveIntimacy},
         Intimacies,
     },
     Character, CharacterMutationError,
@@ -39,11 +39,7 @@ impl<'view, 'source> Character<'source> {
         &mut self,
         intimacy: &'source RemoveIntimacy,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self
-            .intimacies
-            .remove(&intimacy.intimacy_type)
-            .is_some()
-        {
+        if self.intimacies.remove(&intimacy.intimacy_type).is_some() {
             Ok(self)
         } else {
             Err(CharacterMutationError::IntimacyError(

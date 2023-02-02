@@ -1,6 +1,6 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-use crate::weapons::weapon::{mundane::MundaneWeaponName, artifact::ArtifactWeaponName};
+use crate::weapons::weapon::{artifact::ArtifactWeaponName, mundane::MundaneWeaponName};
 
 use super::WeaponName;
 

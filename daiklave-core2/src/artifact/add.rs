@@ -1,6 +1,12 @@
-use crate::{weapons::weapon::artifact::AddArtifactWeapon, armor::armor_item::artifact::AddArtifactArmor, CharacterMutation, merits::merit::AddMerit};
+use crate::{
+    armor::armor_item::artifact::AddArtifactArmor, merits::merit::AddMerit,
+    weapons::weapon::artifact::AddArtifactWeapon, CharacterMutation,
+};
 
-use super::{wonders::{AddWonder, WonderName}, builder::wonder::WonderBuilder};
+use super::{
+    builder::wonder::WonderBuilder,
+    wonders::{AddWonder, WonderName},
+};
 
 /// A magical, Essence-infused object to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
