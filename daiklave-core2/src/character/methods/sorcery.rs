@@ -86,9 +86,7 @@ impl<'view, 'source> Character<'source> {
 
     /// Removes the highest level of sorcery the character has attained.
     pub fn remove_sorcery(&mut self) -> Result<&mut Self, CharacterMutationError> {
-        if self.remove_solar_sorcery().is_ok() {
-            Ok(self)
-        } else if self.remove_celestial_sorcery().is_ok() {
+        if self.remove_solar_sorcery().is_ok() || self.remove_celestial_sorcery().is_ok() {
             Ok(self)
         } else {
             self.remove_terrestrial_sorcery()

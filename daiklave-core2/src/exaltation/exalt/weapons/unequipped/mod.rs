@@ -48,21 +48,21 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
             WeaponName::Mundane(name) => match self.mundane.get_key_value(name)? {
                 (name, (NonnaturalMundaneWeapon::Worn(worn_weapon), count)) => {
                     Some(Weapon(WeaponType::Mundane(
-                        *name,
+                        name,
                         MundaneWeaponView::Worn(worn_weapon.clone(), false),
                         *count,
                     )))
                 }
                 (name, (NonnaturalMundaneWeapon::OneHanded(one), count)) => {
                     Some(Weapon(WeaponType::Mundane(
-                        *name,
+                        name,
                         MundaneWeaponView::OneHanded(one.clone(), None),
                         *count,
                     )))
                 }
                 (name, (NonnaturalMundaneWeapon::TwoHanded(two), count)) => {
                     Some(Weapon(WeaponType::Mundane(
-                        *name,
+                        name,
                         MundaneWeaponView::TwoHanded(two.clone(), false),
                         *count,
                     )))
@@ -103,11 +103,11 @@ impl<'view, 'source> ExaltUnequippedWeapons<'source> {
     pub fn iter(&self) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> + '_ {
         self.mundane
             .iter()
-            .map(|(name, _)| (WeaponName::Mundane(*name), None))
+            .map(|(name, _)| (WeaponName::Mundane(name), None))
             .chain(
                 self.artifact
                     .iter()
-                    .map(|(name, _)| (WeaponName::Artifact(*name), None)),
+                    .map(|(name, _)| (WeaponName::Artifact(name), None)),
             )
     }
 

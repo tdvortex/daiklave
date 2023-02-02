@@ -21,6 +21,7 @@ impl From<&MoteCommitmentName<'_>> for MoteCommitmentNameMutation {
     }
 }
 
+#[allow(clippy::from_over_into)]
 impl<'source> Into<MoteCommitmentName<'source>> for &'source MoteCommitmentNameMutation {
     fn into(self) -> MoteCommitmentName<'source> {
         match self {

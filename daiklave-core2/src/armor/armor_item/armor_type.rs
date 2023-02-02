@@ -19,8 +19,8 @@ pub(crate) enum ArmorType<'source> {
 impl<'source> ArmorType<'source> {
     pub fn name(&self) -> ArmorName<'source> {
         match self {
-            ArmorType::Artifact(name, _, _) => ArmorName::Artifact(*name),
-            ArmorType::Mundane(name, _) => ArmorName::Mundane(*name),
+            ArmorType::Artifact(name, _, _) => ArmorName::Artifact(name),
+            ArmorType::Mundane(name, _) => ArmorName::Mundane(name),
         }
     }
 
@@ -109,7 +109,7 @@ impl<'source> ArmorType<'source> {
                 .slotted_hearthstones()
                 .map(|slotted| {
                     Hearthstone(HearthstonePosition::Slotted(
-                        ArtifactName::Armor(*name),
+                        ArtifactName::Armor(name),
                         slotted,
                     ))
                 })

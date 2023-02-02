@@ -28,7 +28,7 @@ impl<'view, 'source> Character<'source> {
             ));
         }
 
-        let old_dots = self.abilities().get_vanilla(ability_name.into()).dots();
+        let old_dots = self.abilities().get_vanilla(ability_name).dots();
         self.abilities.get_mut(ability_name).set_dots(dots)?;
 
         if old_dots > dots {

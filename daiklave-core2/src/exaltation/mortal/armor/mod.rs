@@ -28,11 +28,11 @@ impl<'source> MortalArmor<'source> {
     pub fn worn_armor(&self) -> Option<ArmorItem<'source>> {
         if let Some(equipped) = &self.equipped {
             match equipped {
-                EquippedArmorNoAttunement::Mundane(id, mundane) => {
-                    Some(ArmorItem(ArmorType::Mundane(*id, *mundane), true))
+                EquippedArmorNoAttunement::Mundane(name, mundane) => {
+                    Some(ArmorItem(ArmorType::Mundane(name, *mundane), true))
                 }
-                EquippedArmorNoAttunement::Artifact(id, artifact) => Some(ArmorItem(
-                    ArmorType::Artifact(*id, artifact.clone(), None),
+                EquippedArmorNoAttunement::Artifact(name, artifact) => Some(ArmorItem(
+                    ArmorType::Artifact(name, artifact.clone(), None),
                     true,
                 )),
             }
@@ -48,12 +48,12 @@ impl<'source> MortalArmor<'source> {
             .chain(
                 self.unequipped_mundane
                     .keys()
-                    .map(|k| ArmorName::Mundane(*k)),
+                    .map(|k| ArmorName::Mundane(k)),
             )
             .chain(
                 self.unequipped_artifact
                     .keys()
-                    .map(|k| ArmorName::Artifact(*k)),
+                    .map(|k| ArmorName::Artifact(k)),
             )
             .collect::<Vec<ArmorName>>()
             .into_iter()
@@ -65,7 +65,7 @@ impl<'source> MortalArmor<'source> {
                 self.unequipped_mundane
                     .get_key_value(name)
                     .map(|(name, mundane_armor)| {
-                        ArmorItem(ArmorType::Mundane(*name, *mundane_armor), false)
+                        ArmorItem(ArmorType::Mundane(name, *mundane_armor), false)
                     })
             }
             ArmorName::Artifact(name) => {
@@ -73,7 +73,7 @@ impl<'source> MortalArmor<'source> {
                     .get_key_value(name)
                     .map(|(name, no_attunement)| {
                         ArmorItem(
-                            ArmorType::Artifact(*name, no_attunement.clone(), None),
+                            ArmorType::Artifact(name, no_attunement.clone(), None),
                             false,
                         )
                     })

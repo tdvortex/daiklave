@@ -17,11 +17,12 @@ impl From<IntimacyType<'_>> for IntimacyTypeMemo {
     }
 }
 
+#[allow(clippy::from_over_into)]
 impl<'source> Into<IntimacyType<'source>> for &'source IntimacyTypeMemo {
     fn into(self) -> IntimacyType<'source> {
         match self {
-            IntimacyTypeMemo::Tie(target, emotion) => IntimacyType::Tie(&target, &emotion),
-            IntimacyTypeMemo::Principle(description) => IntimacyType::Principle(&description),
+            IntimacyTypeMemo::Tie(target, emotion) => IntimacyType::Tie(target, emotion),
+            IntimacyTypeMemo::Principle(description) => IntimacyType::Principle(description),
         }
     }
 }

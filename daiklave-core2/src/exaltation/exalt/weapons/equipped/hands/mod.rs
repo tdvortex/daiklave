@@ -36,7 +36,7 @@ impl<'source> Default for ExaltHands<'source> {
     }
 }
 
-impl<'view, 'source> ExaltHands<'source> {
+impl<'source> ExaltHands<'source> {
     pub fn get_weapon(&self, name: WeaponName<'_>, equipped: Equipped) -> Option<Weapon<'source>> {
         match (self, equipped) {
             (ExaltHands::Empty, _) | (_, Equipped::Natural) | (_, Equipped::Worn) => None,

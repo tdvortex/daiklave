@@ -56,7 +56,7 @@ pub(crate) struct Mortal<'source> {
     pub exalted_healing: bool,
 }
 
-impl<'view, 'source> Mortal<'source> {
+impl<'source> Mortal<'source> {
     pub(crate) fn add_martial_arts_style(
         &mut self,
         name: &'source str,

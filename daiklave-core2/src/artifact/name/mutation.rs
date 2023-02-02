@@ -21,9 +21,9 @@ impl Deref for ArtifactNameMutation {
 
     fn deref(&self) -> &Self::Target {
         match self {
-            ArtifactNameMutation::Weapon(name) => &**name,
-            ArtifactNameMutation::Armor(name) => &**name,
-            ArtifactNameMutation::Wonder(name) => &**name,
+            ArtifactNameMutation::Weapon(name) => name,
+            ArtifactNameMutation::Armor(name) => name,
+            ArtifactNameMutation::Wonder(name) => name,
         }
     }
 }
@@ -38,6 +38,7 @@ impl From<ArtifactName<'_>> for ArtifactNameMutation {
     }
 }
 
+#[allow(clippy::from_over_into)]
 impl<'source> Into<ArtifactName<'source>> for &'source ArtifactNameMutation {
     fn into(self) -> ArtifactName<'source> {
         match self {

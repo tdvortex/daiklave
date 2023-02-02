@@ -22,7 +22,7 @@ impl<'view, 'source> Hearthstones<'view, 'source> {
         self.0
             .hearthstone_inventory
             .get_key_value(name)
-            .map(|(name, unslotted)| Hearthstone(HearthstonePosition::Unslotted(*name, *unslotted)))
+            .map(|(name, unslotted)| Hearthstone(HearthstonePosition::Unslotted(name, *unslotted)))
     }
 
     fn get_weapon_slotted(&self, name: &str) -> Option<Hearthstone<'source>> {

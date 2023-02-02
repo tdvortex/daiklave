@@ -42,21 +42,21 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
             WeaponName::Mundane(name) => match self.mundane.get_key_value(name)? {
                 (name, (NonnaturalMundaneWeapon::Worn(worn_weapon), count)) => {
                     Some(Weapon(WeaponType::Mundane(
-                        *name,
+                        name,
                         MundaneWeaponView::Worn(worn_weapon.clone(), false),
                         *count,
                     )))
                 }
                 (name, (NonnaturalMundaneWeapon::OneHanded(one), count)) => {
                     Some(Weapon(WeaponType::Mundane(
-                        *name,
+                        name,
                         MundaneWeaponView::OneHanded(one.clone(), None),
                         *count,
                     )))
                 }
                 (name, (NonnaturalMundaneWeapon::TwoHanded(two), count)) => {
                     Some(Weapon(WeaponType::Mundane(
-                        *name,
+                        name,
                         MundaneWeaponView::TwoHanded(two.clone(), false),
                         *count,
                     )))
@@ -64,18 +64,14 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
             },
             WeaponName::Artifact(name) => match self.artifact.get_key_value(name)? {
                 (name, NonnaturalArtifactWeaponNoAttunement::Worn(worn)) => Some(Weapon(
-                    WeaponType::Artifact(*name, ArtifactWeapon::Worn(worn.clone(), false), None),
+                    WeaponType::Artifact(name, ArtifactWeapon::Worn(worn.clone(), false), None),
                 )),
                 (name, NonnaturalArtifactWeaponNoAttunement::OneHanded(one)) => Some(Weapon(
-                    WeaponType::Artifact(*name, ArtifactWeapon::OneHanded(one.clone(), None), None),
+                    WeaponType::Artifact(name, ArtifactWeapon::OneHanded(one.clone(), None), None),
                 )),
-                (name, NonnaturalArtifactWeaponNoAttunement::TwoHanded(two)) => {
-                    Some(Weapon(WeaponType::Artifact(
-                        *name,
-                        ArtifactWeapon::TwoHanded(two.clone(), false),
-                        None,
-                    )))
-                }
+                (name, NonnaturalArtifactWeaponNoAttunement::TwoHanded(two)) => Some(Weapon(
+                    WeaponType::Artifact(name, ArtifactWeapon::TwoHanded(two.clone(), false), None),
+                )),
             },
         }
     }
@@ -83,11 +79,11 @@ impl<'view, 'source> MortalUnequippedWeapons<'source> {
     pub fn iter(&self) -> impl Iterator<Item = (WeaponName<'source>, Option<Equipped>)> + '_ {
         self.mundane
             .iter()
-            .map(|(name, _)| (WeaponName::Mundane(*name), None))
+            .map(|(name, _)| (WeaponName::Mundane(name), None))
             .chain(
                 self.artifact
                     .iter()
-                    .map(|(name, _)| (WeaponName::Artifact(*name), None)),
+                    .map(|(name, _)| (WeaponName::Artifact(name), None)),
             )
     }
 

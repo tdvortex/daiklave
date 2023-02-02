@@ -8,6 +8,7 @@ pub(crate) struct LimitMemo {
     pub trigger: LimitTrigger,
 }
 
+#[allow(clippy::from_over_into)]
 impl<'source> Into<Limit<'source>> for &'source LimitMemo {
     fn into(self) -> Limit<'source> {
         Limit {

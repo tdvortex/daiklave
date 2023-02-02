@@ -27,7 +27,7 @@ impl<'source> ExaltWonders<'source> {
         self.0
             .get_key_value(name)
             .map(|(name, (no_attunement, attunement))| {
-                OwnedWonder(*name, no_attunement.clone(), *attunement)
+                OwnedWonder(name, no_attunement.clone(), *attunement)
             })
     }
 

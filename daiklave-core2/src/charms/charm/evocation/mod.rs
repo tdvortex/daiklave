@@ -114,8 +114,9 @@ impl<'source> Evocation {
     /// If the Evocation is an upgrade to a non-Evocation Charm, the Id of that
     /// Charm.
     pub fn upgrade(&'source self) -> Option<CharmName<'source>> {
-        match &self.upgrade_charm {
-            Some(charm_name) => Some(match charm_name {
+        self.upgrade_charm
+            .as_ref()
+            .map(|charm_name| match charm_name {
                 CharmNameMutation::Spirit(spirit_charm_name) => {
                     CharmName::Spirit(spirit_charm_name.as_str())
                 }
@@ -127,9 +128,7 @@ impl<'source> Evocation {
                 }
                 CharmNameMutation::Solar(solar_id) => CharmName::Solar(solar_id.as_str()),
                 CharmNameMutation::Spell(spell_name) => CharmName::Spell(spell_name.as_str()),
-            }),
-            None => None,
-        }
+            })
     }
 
     /// Any keywords the Evocation possesses.

@@ -47,7 +47,7 @@ impl<'source> From<MortalEquippedWeapons<'source>> for ExaltEquippedWeapons<'sou
     }
 }
 
-impl<'view, 'source> ExaltEquippedWeapons<'source> {
+impl<'source> ExaltEquippedWeapons<'source> {
     pub fn get_weapon(
         &self,
         weapon_name: WeaponName<'_>,
@@ -62,7 +62,7 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
                 match self.handless_mundane.get_key_value(name)? {
                     (name, HandlessMundaneWeapon::Natural(weapon)) => {
                         Some(Weapon(WeaponType::Mundane(
-                            *name,
+                            name,
                             MundaneWeaponView::Natural(weapon.clone()),
                             NonZeroU8::new(1).unwrap(),
                         )))
@@ -74,7 +74,7 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
                 match self.handless_mundane.get_key_value(name)? {
                     (name, HandlessMundaneWeapon::Worn(weapon)) => {
                         Some(Weapon(WeaponType::Mundane(
-                            *name,
+                            name,
                             MundaneWeaponView::Worn(weapon.clone(), true),
                             NonZeroU8::new(1).unwrap(),
                         )))
@@ -125,7 +125,7 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
             .chain(self.hands.iter())
             .chain(self.handless_mundane.iter().map(|(name, weapon)| {
                 (
-                    WeaponName::Mundane(*name),
+                    WeaponName::Mundane(name),
                     match weapon {
                         HandlessMundaneWeapon::Natural(_) => Some(Equipped::Natural),
                         HandlessMundaneWeapon::Worn(_) => Some(Equipped::Worn),
@@ -134,7 +134,7 @@ impl<'view, 'source> ExaltEquippedWeapons<'source> {
             }))
             .chain(self.handless_artifact.iter().map(|(name, weapon)| {
                 (
-                    WeaponName::Artifact(*name),
+                    WeaponName::Artifact(name),
                     match weapon {
                         HandlessArtifactWeapon(
                             HandlessArtifactWeaponNoAttunement::Natural(_),

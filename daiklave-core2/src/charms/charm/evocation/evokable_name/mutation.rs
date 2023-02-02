@@ -26,13 +26,13 @@ impl From<EvokableName<'_>> for EvokableNameMutation {
 
 impl From<HearthstoneName> for EvokableNameMutation {
     fn from(name: HearthstoneName) -> Self {
-        Self::Hearthstone(name.into())
+        Self::Hearthstone(name)
     }
 }
 
 impl From<ArtifactNameMutation> for EvokableNameMutation {
     fn from(name: ArtifactNameMutation) -> Self {
-        Self::Artifact(name.into())
+        Self::Artifact(name)
     }
 }
 

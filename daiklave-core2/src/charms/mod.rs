@@ -36,7 +36,7 @@ impl<'view, 'source> Charms<'view, 'source> {
             exalt
                 .evocations
                 .iter()
-                .map(|(evocation_id, _)| CharmName::Evocation(*evocation_id))
+                .map(|(evocation_id, _)| CharmName::Evocation(evocation_id))
                 .collect::<Vec<CharmName>>()
         } else {
             vec![]

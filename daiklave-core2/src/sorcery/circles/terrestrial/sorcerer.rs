@@ -128,7 +128,7 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
             self.other_spells
                 .get_key_value(name)
                 .map(|(spell_name, terrestrial_spell)| {
-                    (Spell::Terrestrial(*spell_name, terrestrial_spell), false)
+                    (Spell::Terrestrial(spell_name, terrestrial_spell), false)
                 })
         }
     }

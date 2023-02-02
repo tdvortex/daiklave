@@ -17,6 +17,7 @@ impl From<ArmorName<'_>> for ArmorNameMutation {
     }
 }
 
+#[allow(clippy::from_over_into)]
 impl<'source> Into<ArmorName<'source>> for &'source ArmorNameMutation {
     fn into(self) -> ArmorName<'source> {
         match self {

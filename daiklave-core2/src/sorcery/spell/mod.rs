@@ -59,9 +59,7 @@ impl<'source> Spell<'source> {
     /// The Spell's name.
     pub fn name(&self) -> &'source str {
         match self {
-            Spell::Terrestrial(name, _) => *name,
-            Spell::Celestial(name, _) => *name,
-            Spell::Solar(name, _) => *name,
+            Spell::Terrestrial(name, _) | Spell::Celestial(name, _) | Spell::Solar(name, _) => name,
         }
     }
 

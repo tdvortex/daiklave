@@ -24,7 +24,7 @@ impl<'source> MortalWonders<'source> {
     pub fn get(&self, name: &str) -> Option<OwnedWonder<'source>> {
         self.0
             .get_key_value(name)
-            .map(|(name, no_attunement)| OwnedWonder(*name, no_attunement.clone(), None))
+            .map(|(name, no_attunement)| OwnedWonder(name, no_attunement.clone(), None))
     }
 
     pub fn slot_hearthstone(

@@ -21,6 +21,7 @@ impl From<WeaponName<'_>> for WeaponNameMutation {
     }
 }
 
+#[allow(clippy::from_over_into)]
 impl<'source> Into<WeaponName<'source>> for &'source WeaponNameMutation {
     fn into(self) -> WeaponName<'source> {
         match self {

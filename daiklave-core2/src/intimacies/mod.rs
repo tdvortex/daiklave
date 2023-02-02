@@ -15,7 +15,7 @@ impl<'view, 'source> Intimacies<'view, 'source> {
             .intimacies
             .iter()
             .map(|(intimacy_type, intimacy_level)| Intimacy {
-                intimacy_type: *intimacy_type,
+                intimacy_type,
                 level: *intimacy_level,
             })
     }

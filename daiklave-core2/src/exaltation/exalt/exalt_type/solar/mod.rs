@@ -372,7 +372,7 @@ impl<'source> Solar<'source> {
             .find_map(|(solar_charm_name, details)| {
                 if solar_charm_name == &name {
                     Some(Charm::Solar(SolarCharm {
-                        name: *solar_charm_name,
+                        name: solar_charm_name,
                         details,
                     }))
                 } else {

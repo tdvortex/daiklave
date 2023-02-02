@@ -750,11 +750,9 @@ impl<'view, 'source> Exalt<'source> {
         first: MotePoolName,
     ) -> Result<&mut Self, CharacterMutationError> {
         let mut maybe_armor = None;
-        if let Some(armor) = &mut self.armor.equipped {
-            if let EquippedArmor::Artifact(name, armor) = armor {
-                if name == &artifact_armor_name {
-                    maybe_armor = Some(armor);
-                }
+        if let Some(EquippedArmor::Artifact(name, armor)) = &mut self.armor.equipped {
+            if name == &artifact_armor_name {
+                maybe_armor = Some(armor);
             }
         }
 

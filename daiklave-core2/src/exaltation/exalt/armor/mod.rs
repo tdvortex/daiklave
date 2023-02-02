@@ -32,12 +32,12 @@ impl<'source> ExaltArmor<'source> {
         if let Some(equipped) = &self.equipped {
             match equipped {
                 EquippedArmor::Mundane(name, mundane) => {
-                    Some(ArmorItem(ArmorType::Mundane(*name, *mundane), true))
+                    Some(ArmorItem(ArmorType::Mundane(name, *mundane), true))
                 }
                 EquippedArmor::Artifact(name, artifact) => {
                     let (no_attunement, attunement) = (&artifact.0, artifact.1);
                     Some(ArmorItem(
-                        ArmorType::Artifact(*name, no_attunement.clone(), attunement),
+                        ArmorType::Artifact(name, no_attunement.clone(), attunement),
                         true,
                     ))
                 }
@@ -54,12 +54,12 @@ impl<'source> ExaltArmor<'source> {
             .chain(
                 self.unequipped_mundane
                     .keys()
-                    .map(|k| ArmorName::Mundane(*k)),
+                    .map(|k| ArmorName::Mundane(k)),
             )
             .chain(
                 self.unequipped_artifact
                     .keys()
-                    .map(|k| ArmorName::Artifact(*k)),
+                    .map(|k| ArmorName::Artifact(k)),
             )
             .collect::<Vec<ArmorName>>()
             .into_iter()
@@ -71,7 +71,7 @@ impl<'source> ExaltArmor<'source> {
                 self.unequipped_mundane
                     .get_key_value(name)
                     .map(|(name, mundane_armor)| {
-                        ArmorItem(ArmorType::Mundane(*name, *mundane_armor), false)
+                        ArmorItem(ArmorType::Mundane(name, *mundane_armor), false)
                     })
             }
             ArmorName::Artifact(name) => {
@@ -80,7 +80,7 @@ impl<'source> ExaltArmor<'source> {
                     .map(|(name, artifact_armor)| {
                         let (no_attunement, attunement) = (&artifact_armor.0, artifact_armor.1);
                         ArmorItem(
-                            ArmorType::Artifact(*name, no_attunement.clone(), attunement),
+                            ArmorType::Artifact(name, no_attunement.clone(), attunement),
                             false,
                         )
                     })

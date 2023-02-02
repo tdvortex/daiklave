@@ -32,9 +32,9 @@ impl<'view, 'source> ExaltMartialArtistDetails<'source> {
         style_name: &'source str,
     ) -> impl Iterator<Item = MartialArtsCharm<'source>> + '_ {
         self.charms.iter().map(|(name, details)| MartialArtsCharm {
-            name: *name,
+            name,
             style_name,
-            details: *details,
+            details,
         })
     }
 }

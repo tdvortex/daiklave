@@ -260,10 +260,10 @@ impl<'view, 'source> Exaltation<'source> {
         };
 
         ids.sort_by(|a, b| {
-            self.martial_artist(*a)
+            self.martial_artist(a)
                 .unwrap()
                 .name()
-                .cmp(self.martial_artist(*b).unwrap().name())
+                .cmp(self.martial_artist(b).unwrap().name())
         });
         ids.into_iter()
     }
@@ -437,7 +437,7 @@ impl<'view, 'source> Exaltation<'source> {
                     .motes
                     .other_commitments
                     .iter()
-                    .map(|(name, _)| MoteCommitmentName::Other(*name))
+                    .map(|(name, _)| MoteCommitmentName::Other(name))
                     .collect::<Vec<MoteCommitmentName>>();
                 for commit_id in to_uncommit.into_iter() {
                     exalt.uncommit_motes(commit_id)?;

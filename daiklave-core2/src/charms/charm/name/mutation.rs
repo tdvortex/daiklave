@@ -18,6 +18,7 @@ pub(crate) enum CharmNameMutation {
     Spell(SpellName),
 }
 
+#[allow(clippy::from_over_into)]
 impl<'source> Into<CharmName<'source>> for &'source CharmNameMutation {
     fn into(self) -> CharmName<'source> {
         match self {

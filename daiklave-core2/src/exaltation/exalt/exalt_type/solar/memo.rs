@@ -18,6 +18,7 @@ pub(crate) struct SolarMemo {
     pub experience: ExperiencePool,
 }
 
+#[allow(clippy::from_over_into)]
 impl<'source> Into<Solar<'source>> for &'source SolarMemo {
     fn into(self) -> Solar<'source> {
         Solar {

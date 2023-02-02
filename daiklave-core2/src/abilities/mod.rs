@@ -50,7 +50,7 @@ impl<'view, 'source> Abilities<'view, 'source> {
             .0
             .get_key_value(focus)
             .map(|(focus, ability_rating)| {
-                Ability(AbilityNameQualified::Craft(*focus), ability_rating)
+                Ability(AbilityNameQualified::Craft(focus), ability_rating)
             })
     }
 

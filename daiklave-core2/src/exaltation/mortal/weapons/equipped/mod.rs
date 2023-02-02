@@ -32,7 +32,7 @@ pub(crate) struct MortalEquippedWeapons<'source> {
     pub hands: MortalHands<'source>,
 }
 
-impl<'view, 'source> MortalEquippedWeapons<'source> {
+impl<'source> MortalEquippedWeapons<'source> {
     pub fn get_weapon(&self, name: WeaponName<'_>, equipped: Equipped) -> Option<Weapon<'source>> {
         match (name, equipped) {
             (WeaponName::Unarmed, Equipped::Natural) => {
@@ -43,7 +43,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                 match self.handless_mundane.get_key_value(name)? {
                     (name, HandlessMundaneWeapon::Natural(weapon)) => {
                         Some(Weapon(WeaponType::Mundane(
-                            *name,
+                            name,
                             MundaneWeaponView::Natural(weapon.clone()),
                             NonZeroU8::new(1).unwrap(),
                         )))
@@ -55,7 +55,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
                 match self.handless_mundane.get_key_value(name)? {
                     (name, HandlessMundaneWeapon::Worn(weapon)) => {
                         Some(Weapon(WeaponType::Mundane(
-                            *name,
+                            name,
                             MundaneWeaponView::Worn(weapon.clone(), true),
                             NonZeroU8::new(1).unwrap(),
                         )))
@@ -66,7 +66,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
             (WeaponName::Artifact(name), Equipped::Natural) => {
                 match self.handless_artifact.get_key_value(name)? {
                     (name, HandlessArtifactWeaponNoAttunement::Natural(weapon)) => Some(Weapon(
-                        WeaponType::Artifact(*name, ArtifactWeapon::Natural(weapon.clone()), None),
+                        WeaponType::Artifact(name, ArtifactWeapon::Natural(weapon.clone()), None),
                     )),
                     (_, HandlessArtifactWeaponNoAttunement::Worn(_)) => None,
                 }
@@ -91,7 +91,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
         let unarmed_iter = std::iter::once((WeaponName::Unarmed, Some(Equipped::Natural)));
         let handless_mundane_iter = self.handless_mundane.iter().map(|(name, weapon)| {
             (
-                WeaponName::Mundane(*name),
+                WeaponName::Mundane(name),
                 match weapon {
                     HandlessMundaneWeapon::Natural(_) => Some(Equipped::Natural),
                     HandlessMundaneWeapon::Worn(_) => Some(Equipped::Worn),
@@ -100,7 +100,7 @@ impl<'view, 'source> MortalEquippedWeapons<'source> {
         });
         let handless_artifact_iter = self.handless_artifact.iter().map(|(name, weapon)| {
             (
-                WeaponName::Artifact(*name),
+                WeaponName::Artifact(name),
                 match weapon {
                     HandlessArtifactWeaponNoAttunement::Natural(_) => Some(Equipped::Natural),
                     HandlessArtifactWeaponNoAttunement::Worn(_) => Some(Equipped::Worn),

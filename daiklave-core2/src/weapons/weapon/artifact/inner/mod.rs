@@ -44,7 +44,7 @@ impl<'source> From<&'source ArtifactWeaponInnerMemo> for ArtifactWeaponInner<'so
     }
 }
 
-impl<'view, 'source> ArtifactWeaponInner<'source> {
+impl<'source> ArtifactWeaponInner<'source> {
     pub fn base_artifact_weapon(&self) -> &'source BaseWeapon {
         self.base_weapon
     }

@@ -92,8 +92,8 @@ impl<'view, 'source> CelestialCircleSorcerer<'source> {
             self.archetypes
                 .get_key_value(name)
                 .map(|(archetype_name, (archetype, merits))| SorceryArchetype {
-                    archetype_name: *archetype_name,
-                    archetype: *archetype,
+                    archetype_name,
+                    archetype,
                     merits,
                 })
         } else {

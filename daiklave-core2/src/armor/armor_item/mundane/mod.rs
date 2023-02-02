@@ -30,8 +30,9 @@ impl<'source> From<&'source MundaneArmor> for MundaneArmorView<'source> {
 }
 
 // Do this as an Into to prevent it appearing in public interface
+#[allow(clippy::from_over_into)]
 impl Into<MundaneArmor> for &MundaneArmorView<'_> {
     fn into(self) -> MundaneArmor {
-        MundaneArmor((*self).0.to_owned())
+        MundaneArmor(self.0.to_owned())
     }
 }

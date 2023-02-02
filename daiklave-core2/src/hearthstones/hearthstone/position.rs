@@ -28,7 +28,7 @@ impl<'source> HearthstonePosition<'source> {
                             geomancy_level: self.geomancy_level(),
                         }),
                         Merit(MeritSource::Hearthstone {
-                            name: *name,
+                            name,
                             has_manse: true,
                             geomancy_level: self.geomancy_level(),
                         }),
@@ -39,7 +39,7 @@ impl<'source> HearthstonePosition<'source> {
                     ]
                 } else {
                     vec![Merit(MeritSource::Hearthstone {
-                        name: *name,
+                        name,
                         has_manse: false,
                         geomancy_level: self.geomancy_level(),
                     })]
@@ -51,7 +51,7 @@ impl<'source> HearthstonePosition<'source> {
     pub fn name(&self) -> &'source str {
         match self {
             HearthstonePosition::Slotted(_, slotted) => slotted.name,
-            HearthstonePosition::Unslotted(name, _) => *name,
+            HearthstonePosition::Unslotted(name, _) => name,
         }
     }
 

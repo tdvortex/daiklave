@@ -24,7 +24,7 @@ impl<'view, 'source> Character<'source> {
             level,
         } = intimacy;
 
-        if let Entry::Vacant(e) = self.intimacies.entry(intimacy_type.into()) {
+        if let Entry::Vacant(e) = self.intimacies.entry(intimacy_type) {
             e.insert(*level);
             Ok(self)
         } else {

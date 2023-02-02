@@ -28,7 +28,7 @@ impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
                     None
                 } else {
                     Some(Weapon(WeaponType::Mundane(
-                        *actual_name,
+                        actual_name,
                         MundaneWeaponView::TwoHanded(two.clone(), true),
                         NonZeroU8::new(1).unwrap(),
                     )))
@@ -42,7 +42,7 @@ impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
                     None
                 } else {
                     Some(Weapon(WeaponType::Artifact(
-                        *actual_name,
+                        actual_name,
                         ArtifactWeapon::TwoHanded(two.clone(), true),
                         None,
                     )))
@@ -55,10 +55,10 @@ impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
     pub fn iter(&self) -> impl Iterator<Item = WeaponName<'source>> {
         match self {
             EquippedTwoHandedWeaponNoAttunement::Mundane(name, _) => {
-                std::iter::once(WeaponName::Mundane(*name))
+                std::iter::once(WeaponName::Mundane(name))
             }
             EquippedTwoHandedWeaponNoAttunement::Artifact(name, _) => {
-                std::iter::once(WeaponName::Artifact(*name))
+                std::iter::once(WeaponName::Artifact(name))
             }
         }
     }

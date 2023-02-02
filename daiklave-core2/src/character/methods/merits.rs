@@ -11,7 +11,7 @@ use crate::{
     Character, CharacterMutationError,
 };
 
-impl<'view, 'source> Character<'source> {
+impl<'source> Character<'source> {
     /// Access all Merits owned by the character.
     pub fn merits(&self) -> Vec<Merit<'source>> {
         let armor = self.armor();
@@ -34,7 +34,7 @@ impl<'view, 'source> Character<'source> {
 
         let demenses = self.demenses_no_manse.iter().map(|(name, level)| {
             Merit(MeritSource::Demense {
-                name: *name,
+                name,
                 has_manse: false,
                 geomancy_level: *level,
             })

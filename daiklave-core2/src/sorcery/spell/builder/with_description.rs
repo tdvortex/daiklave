@@ -94,7 +94,7 @@ impl SpellBuilderWithDescription {
     pub fn solar(self) -> AddSolarSpell {
         let (name, inner) = self.build_inner();
         AddSolarSpell {
-            name: name.into(),
+            name,
             spell: SolarSpell::from(inner),
         }
     }

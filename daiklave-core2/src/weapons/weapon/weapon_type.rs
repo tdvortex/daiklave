@@ -67,7 +67,7 @@ impl<'view, 'source> WeaponType<'source> {
                 let personal = *maybe_personal.as_ref()?;
                 let peripheral = 5 - 5.min(personal);
                 Some(MoteCommitment {
-                    name: MoteCommitmentName::AttunedArtifact(ArtifactName::Weapon(*name)),
+                    name: MoteCommitmentName::AttunedArtifact(ArtifactName::Weapon(name)),
                     peripheral,
                     personal,
                 })
@@ -77,8 +77,8 @@ impl<'view, 'source> WeaponType<'source> {
 
     pub fn name(&'view self) -> WeaponName<'source> {
         match self {
-            WeaponType::Mundane(name, _, _) => WeaponName::Mundane(*name),
-            WeaponType::Artifact(name, _, _) => WeaponName::Artifact(*name),
+            WeaponType::Mundane(name, _, _) => WeaponName::Mundane(name),
+            WeaponType::Artifact(name, _, _) => WeaponName::Artifact(name),
             WeaponType::Unarmed => WeaponName::Unarmed,
         }
     }
@@ -126,7 +126,7 @@ impl<'view, 'source> WeaponType<'source> {
         match self {
             WeaponType::Mundane(_, _, _) | WeaponType::Unarmed => Vec::new().into_iter(),
             WeaponType::Artifact(name, artifact, _) => (**artifact)
-                .slotted_hearthstones(*name)
+                .slotted_hearthstones(name)
                 .collect::<Vec<Hearthstone<'source>>>()
                 .into_iter(),
         }
