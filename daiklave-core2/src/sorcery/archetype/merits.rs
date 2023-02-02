@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::merits::{merit_new::Merit, merit_new::{MeritSource, SorceryArchetypeMerit, SorceryArchetypeMeritDetails}};
+use crate::merits::{merit::Merit, merit::{MeritSource, SorceryArchetypeMerit, SorceryArchetypeMeritDetails}};
 
 pub struct SorceryArchetypeMerits<'view, 'source> {
     archetype_name: &'source str,

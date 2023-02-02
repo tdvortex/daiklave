@@ -3,15 +3,15 @@ use crate::{
     exaltation::ExaltationMartialArtist,
 };
 
-use super::{charm::MartialArtsCharmDetails, style::MartialArtsStyleWeapon};
+use super::{charm::{MartialArtsCharm}, style::MartialArtsStyleWeapon};
 
 /// A specific Martial Arts style as known by a character.
-pub struct MartialArtist<'view, 'source> {
+pub struct MartialArtsStyle<'view, 'source> {
     pub(crate) name: &'source str,
     pub(crate) maybe_exalt: ExaltationMartialArtist<'view, 'source>,
 }
 
-impl<'view, 'source> MartialArtist<'view, 'source> {
+impl<'view, 'source> MartialArtsStyle<'view, 'source> {
     /// The style's name.
     pub fn name(&self) -> &'source str {
         self.name
@@ -50,7 +50,7 @@ impl<'view, 'source> MartialArtist<'view, 'source> {
     }
 
     /// All of the Charms the character has for this style.
-    pub fn charms(&self) -> impl Iterator<Item = (&'source str, &'source MartialArtsCharmDetails)> + '_ {
-        self.maybe_exalt.charms()
+    pub fn charms(&self) -> impl Iterator<Item = MartialArtsCharm<'source>> + '_ {
+        self.maybe_exalt.charms(self.name)
     }
 }

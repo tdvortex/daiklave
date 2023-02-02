@@ -1,6 +1,6 @@
 use crate::{
     exaltation::exalt::exalt_type::solar::SolarSorcererView,
-    sorcery::{spell::Spell, ShapingRitualDetails, SorceryArchetypeWithMerits, SorceryCircle},
+    sorcery::{spell::Spell, SorceryArchetypeWithMerits, SorceryCircle, ShapingRitual},
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -27,7 +27,7 @@ impl<'view, 'source> ExaltSorcery<'view, 'source> {
     pub fn shaping_ritual(
         &self,
         circle: SorceryCircle,
-    ) -> Option<(&'source str, &'source ShapingRitualDetails)> {
+    ) -> Option<ShapingRitual<'source>> {
         match self {
             ExaltSorcery::Solar(solar_sorcerer) => solar_sorcerer.shaping_ritual(circle),
         }

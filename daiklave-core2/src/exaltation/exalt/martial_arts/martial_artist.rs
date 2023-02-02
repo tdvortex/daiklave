@@ -1,18 +1,18 @@
 use crate::{
     abilities::AbilityRating,
-    exaltation::mortal::martial_arts::MortalMartialArtist,
-    martial_arts::{charm::MartialArtsCharmDetails, style::MartialArtsStyle},
+    exaltation::mortal::martial_arts::MortalMartialArtistDetails,
+    martial_arts::{charm::{MartialArtsCharmDetails, MartialArtsCharm}, style::MartialArtsStyleDetails},
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct ExaltMartialArtist<'source> {
-    pub(crate) style: &'source MartialArtsStyle,
+pub(crate) struct ExaltMartialArtistDetails<'source> {
+    pub(crate) style: &'source MartialArtsStyleDetails,
     pub(crate) ability: AbilityRating<'source>,
     pub(crate) charms: Vec<(&'source str, &'source MartialArtsCharmDetails)>,
 }
 
-impl<'view, 'source> ExaltMartialArtist<'source> {
-    pub fn style(&'view self) -> &'source MartialArtsStyle {
+impl<'view, 'source> ExaltMartialArtistDetails<'source> {
+    pub fn style(&'view self) -> &'source MartialArtsStyleDetails {
         self.style
     }
 
@@ -25,14 +25,19 @@ impl<'view, 'source> ExaltMartialArtist<'source> {
     }
 
     pub fn charms(
-        &'view self,
-    ) -> impl Iterator<Item = (&'source str, &'source MartialArtsCharmDetails)> + '_ {
-        self.charms.iter().map(|(k, v)| (*k, *v))
+        &self,
+        style_name: &'source str,
+    ) -> impl Iterator<Item = MartialArtsCharm<'source>> + '_ {
+        self.charms.iter().map(|(name, details)| MartialArtsCharm {
+            name: *name,
+            style_name,
+            details: *details,
+        })
     }
 }
 
-impl<'source> From<MortalMartialArtist<'source>> for ExaltMartialArtist<'source> {
-    fn from(mortal_artist: MortalMartialArtist<'source>) -> Self {
+impl<'source> From<MortalMartialArtistDetails<'source>> for ExaltMartialArtistDetails<'source> {
+    fn from(mortal_artist: MortalMartialArtistDetails<'source>) -> Self {
         Self {
             style: mortal_artist.style(),
             ability: mortal_artist.ability().to_owned(),

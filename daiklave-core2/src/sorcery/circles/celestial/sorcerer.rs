@@ -2,7 +2,7 @@ use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
     charms::CharmError,
-    merits::merit_new::SorceryArchetypeMeritDetails,
+    merits::merit::SorceryArchetypeMeritDetails,
     sorcery::{
         circles::{
             solar::{sorcerer::SolarCircleSorcerer, AddSolarSorcery},
@@ -10,7 +10,7 @@ use crate::{
             terrestrial::TerrestrialSpell,
         },
         spell::Spell,
-        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeWithMerits, SorceryError,
+        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeWithMerits, SorceryError, ShapingRitual,
     },
     CharacterMutationError,
 };
@@ -108,14 +108,18 @@ impl<'view, 'source> CelestialCircleSorcerer<'source> {
     pub fn shaping_ritual(
         &self,
         circle: SorceryCircle,
-    ) -> Option<(&'source str, &'source ShapingRitualDetails)> {
+    ) -> Option<ShapingRitual<'source>> {
         match circle {
-            SorceryCircle::Terrestrial => {
-                Some((self.shaping_ritual_names[0], self.shaping_rituals[0]))
-            }
-            SorceryCircle::Celestial => {
-                Some((self.shaping_ritual_names[1], self.shaping_rituals[1]))
-            }
+            SorceryCircle::Terrestrial => Some(ShapingRitual {
+                archetype_name: self.circle_archetypes[0],
+                summary: self.shaping_ritual_names[0],
+                details: self.shaping_rituals[0],
+            }),
+            SorceryCircle::Celestial => Some(ShapingRitual {
+                archetype_name: self.circle_archetypes[1],
+                summary: self.shaping_ritual_names[1],
+                details: self.shaping_rituals[1],
+            }),
             SorceryCircle::Solar => None,
         }
     }

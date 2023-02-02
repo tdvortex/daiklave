@@ -3,7 +3,7 @@ use std::collections::hash_map::Entry;
 use crate::{
     abilities::{AbilityName, AbilityNameVanilla},
     merits::{
-        merit_new::{
+        merit::{
             MeritError, MeritPrerequisite, NonStackableMerit, StackableMerit, Merit, MeritSource, AddStackableMerit, AddNonStackableMerit, AddMerit, RemoveMerit,
         },
     },
@@ -128,12 +128,12 @@ impl<'view, 'source> Character<'source> {
     }
 
     /// Adds a merit to the character.
-    pub fn add_merit(&mut self, add_merit: &'source AddMerit) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_merit(&mut self, _add_merit: &'source AddMerit) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 
     /// Removes a merit from the character.
-    pub fn remove_merit(&mut self, remove_merit: &RemoveMerit) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_merit(&mut self, _remove_merit: &RemoveMerit) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
 

@@ -2,6 +2,7 @@ use std::ops::Deref;
 
 use serde::{Serialize, Deserialize};
 
+/// The name of a Martial Arts charm.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct MartialArtsCharmName(String);
 

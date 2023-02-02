@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{abilities::AbilityName, exaltation::exalt::LimitMemo, experience::ExperiencePool};
 
-use super::{caste::SolarCasteMemo, charm::{SolarCharm, SolarCharmName}, SolarSorcererMemo, Solar};
+use super::{caste::SolarCasteMemo, charm::{SolarCharmName, SolarCharmDetails}, SolarSorcererMemo, Solar};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) struct SolarMemo {
@@ -10,7 +10,7 @@ pub(crate) struct SolarMemo {
     pub favored_abilities: [AbilityName; 5],
     pub sorcery: Option<SolarSorcererMemo>,
     pub limit: LimitMemo,
-    pub solar_charms: Vec<(SolarCharmName, SolarCharm)>,
+    pub solar_charms: Vec<(SolarCharmName, SolarCharmDetails)>,
     pub experience: ExperiencePool,
 }
 

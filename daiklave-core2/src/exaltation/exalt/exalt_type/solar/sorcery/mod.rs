@@ -8,7 +8,7 @@ use crate::sorcery::{
         terrestrial::sorcerer::TerrestrialCircleSorcerer,
     },
     spell::Spell,
-    ShapingRitualDetails, SorceryArchetypeWithMerits, SorceryCircle,
+    SorceryArchetypeWithMerits, SorceryCircle, ShapingRitual,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -58,7 +58,7 @@ impl<'view, 'source> SolarSorcererView<'source> {
     pub fn shaping_ritual(
         &self,
         circle: SorceryCircle,
-    ) -> Option<(&'source str, &'source ShapingRitualDetails)> {
+    ) -> Option<ShapingRitual<'source>> {
         match (self, circle) {
             (SolarSorcererView::Terrestrial(terrestrial), SorceryCircle::Terrestrial) => {
                 Some(terrestrial.shaping_ritual())

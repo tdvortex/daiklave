@@ -1,4 +1,5 @@
 mod add;
+mod remove;
 
 /// Builders for Wonders and Warstriders.
 pub mod builder;
@@ -15,4 +16,5 @@ pub use attune::AttuneArtifact;
 pub use magic_material::MagicMaterial;
 pub use name::ArtifactName;
 pub(crate) use name::ArtifactNameMutation;
+pub use remove::RemoveArtifact;
 pub use sonance::Sonance;

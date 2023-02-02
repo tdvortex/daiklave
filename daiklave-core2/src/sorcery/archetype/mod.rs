@@ -10,7 +10,7 @@ pub use name::SorceryArchetypeName;
 
 mod shaping_ritual;
 pub(crate) use shaping_ritual::ShapingRitualDetails;
-pub use shaping_ritual::{AddShapingRitual};
+pub use shaping_ritual::{AddShapingRitual, ShapingRitual};
 
 mod with_merits;
 pub use with_merits::SorceryArchetypeWithMerits;

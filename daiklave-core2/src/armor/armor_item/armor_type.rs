@@ -2,7 +2,7 @@ use crate::{
     artifact::ArtifactName,
     book_reference::BookReference,
     hearthstones::{hearthstone::Hearthstone, HearthstonePosition},
-    merits::merit_new::{Merit, MeritSource},
+    merits::merit::{Merit, MeritSource},
 };
 
 use super::{

@@ -33,7 +33,7 @@ pub use unequip::UnequipArmor;
 pub use weight_class::ArmorWeightClass;
 
 use crate::{
-    book_reference::BookReference, hearthstones::hearthstone::Hearthstone, merits::merit_new::Merit,
+    book_reference::BookReference, hearthstones::hearthstone::Hearthstone, merits::merit::Merit,
 };
 
 use self::{

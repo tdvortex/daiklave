@@ -1,14 +1,17 @@
 use crate::{CharacterMutation};
 
-use super::{MartialArtsStyleName, MartialArtsStyle, builder::MartialArtsStyleBuilder};
+use super::{MartialArtsStyleName, MartialArtsStyleDetails, builder::MartialArtsStyleBuilder};
 
+/// Add a Martial Arts style (and the associated Martial Artist merit) to a 
+/// character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddMartialArtsStyle {
-    style_name: MartialArtsStyleName,
-    style: MartialArtsStyle,
+    pub(crate) style_name: MartialArtsStyleName,
+    pub(crate) style: MartialArtsStyleDetails,
 }
 
 impl AddMartialArtsStyle {
+    /// Starts building a Martial Arts style with the given name.
     pub fn name(name: impl Into<MartialArtsStyleName>) -> MartialArtsStyleBuilder {
         MartialArtsStyleBuilder {
             name: name.into(),

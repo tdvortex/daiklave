@@ -1,4 +1,4 @@
-use crate::{weapons::weapon::artifact::AddArtifactWeapon, armor::armor_item::artifact::AddArtifactArmor, CharacterMutation, merits::merit_new::AddMerit};
+use crate::{weapons::weapon::artifact::AddArtifactWeapon, armor::armor_item::artifact::AddArtifactArmor, CharacterMutation, merits::merit::AddMerit};
 
 use super::{wonders::{AddWonder, WonderName}, builder::wonder::WonderBuilder};
 

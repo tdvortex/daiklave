@@ -1,16 +1,16 @@
 use crate::{
-    abilities::AbilityRating, exaltation::exalt::martial_arts::ExaltMartialArtist,
-    martial_arts::style::MartialArtsStyle,
+    abilities::AbilityRating, exaltation::exalt::martial_arts::ExaltMartialArtistDetails,
+    martial_arts::style::MartialArtsStyleDetails,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct MortalMartialArtist<'source> {
-    pub style: &'source MartialArtsStyle,
+pub(crate) struct MortalMartialArtistDetails<'source> {
+    pub style: &'source MartialArtsStyleDetails,
     pub ability: AbilityRating<'source>,
 }
 
-impl<'view, 'source> MortalMartialArtist<'source> {
-    pub fn style(&'view self) -> &'source MartialArtsStyle {
+impl<'view, 'source> MortalMartialArtistDetails<'source> {
+    pub fn style(&self) -> &'source MartialArtsStyleDetails {
         self.style
     }
 
@@ -23,8 +23,8 @@ impl<'view, 'source> MortalMartialArtist<'source> {
     }
 }
 
-impl<'source> From<ExaltMartialArtist<'source>> for MortalMartialArtist<'source> {
-    fn from(exalt_artist: ExaltMartialArtist<'source>) -> Self {
+impl<'source> From<ExaltMartialArtistDetails<'source>> for MortalMartialArtistDetails<'source> {
+    fn from(exalt_artist: ExaltMartialArtistDetails<'source>) -> Self {
         Self {
             style: exalt_artist.style(),
             ability: exalt_artist.ability().to_owned(),

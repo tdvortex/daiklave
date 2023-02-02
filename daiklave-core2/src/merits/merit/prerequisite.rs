@@ -1,6 +1,6 @@
 use std::num::NonZeroU8;
 
-use serde::{Deserialize, Serialize};
+use serde::{Serialize, Deserialize};
 
 use crate::{abilities::AbilityName, attributes::AttributeName};
 

@@ -4,6 +4,7 @@ use crate::{martial_arts::{charm::{MartialArtsCharmName, MartialArtsCharmKeyword
 
 use super::MartialArtsCharmBuilderWithEssenceRequirement;
 
+/// A Martial Arts Charm builder after the name has been specified.
 pub struct MartialArtsCharmBuilderWithName {
     pub(crate) name: MartialArtsCharmName,
     pub(crate) style: MartialArtsStyleName,

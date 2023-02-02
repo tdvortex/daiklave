@@ -17,6 +17,15 @@ pub struct MartialArtsStyleBuilder {
 }
 
 impl MartialArtsStyleBuilder {
+    /// Starts the builder with the given name.
+    pub fn name(name: impl Into<MartialArtsStyleName>) -> Self {
+        Self {
+            name: name.into(),
+            book_reference: None,
+            max_armor_weight: None,
+        } 
+    }
+
     /// The book reference for the style.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
@@ -30,10 +39,10 @@ impl MartialArtsStyleBuilder {
     }
 
     /// The description of the style's practices.
-    pub fn description(self, description: String) -> MartialArtsStyleBuilderWithDescription {
+    pub fn description(self, description: impl Into<String>) -> MartialArtsStyleBuilderWithDescription {
         MartialArtsStyleBuilderWithDescription {
             name: self.name,
-            description,
+            description: description.into(),
             book_reference: self.book_reference,
             max_armor_weight: self.max_armor_weight,
         }

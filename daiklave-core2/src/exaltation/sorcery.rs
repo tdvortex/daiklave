@@ -1,8 +1,8 @@
 use crate::{
     exaltation::exalt::ExaltSorcery,
     sorcery::{
-        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, spell::Spell, ShapingRitualDetails,
-        SorceryArchetypeWithMerits, SorceryCircle,
+        circles::terrestrial::sorcerer::TerrestrialCircleSorcerer, spell::Spell,
+        SorceryArchetypeWithMerits, SorceryCircle, ShapingRitual,
     },
 };
 
@@ -33,7 +33,7 @@ impl<'view, 'source> ExaltationSorcery<'view, 'source> {
     pub fn shaping_ritual(
         &self,
         circle: SorceryCircle,
-    ) -> Option<(&'source str, &'source ShapingRitualDetails)> {
+    ) -> Option<ShapingRitual<'source>> {
         match (self, circle) {
             (ExaltationSorcery::Mortal(terrestrial), SorceryCircle::Terrestrial) => {
                 Some(terrestrial.shaping_ritual())

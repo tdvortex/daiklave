@@ -10,7 +10,7 @@ use crate::{
         exalt::exalt_type::{
             solar::{
                 caste::SolarCaste,
-                charm::{SolarCharm, SolarCharmAbility},
+                charm::{SolarCharmAbility, AddSolarCharm},
                 SetSolar,
             },
             ExaltType,
@@ -46,18 +46,17 @@ impl<'source> Character<'source> {
     /// Adds a Solar Charm to the character.
     pub fn add_solar_charm(
         &mut self,
-        name: &'source str,
-        charm: &'source SolarCharm,
+        add_solar_charm: &'source AddSolarCharm,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let ability_dots = match charm.ability_requirement() {
-            (SolarCharmAbility::Craft, _) => self.craft().max(),
-            (solar_ability, _) => self
+        let ability_dots = match add_solar_charm.details.ability{
+            SolarCharmAbility::Craft => self.craft().max(),
+            solar_ability => self
                 .abilities()
                 .get_vanilla(solar_ability.try_into().unwrap())
                 .dots(),
         };
 
-        self.exaltation.add_solar_charm(name, charm, ability_dots)?;
+        self.exaltation.add_solar_charm(&add_solar_charm.name, &add_solar_charm.details, ability_dots)?;
         Ok(self)
     }
 

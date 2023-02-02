@@ -13,28 +13,17 @@ use serde::{Deserialize, Serialize};
 
 use crate::{armor::armor_item::ArmorWeightClass, book_reference::BookReference};
 
-use self::builder::MartialArtsStyleBuilder;
 
-/// A Martial Arts style description.
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
-pub struct MartialArtsStyle {
-    book_reference: Option<BookReference>,
-    description: String,
-    first_weapon: MartialArtsStyleWeapon,
-    usable_weapons: HashSet<MartialArtsStyleWeapon>,
-    max_armor_weight: Option<ArmorWeightClass>,
+pub(crate) struct MartialArtsStyleDetails {
+    pub(crate) book_reference: Option<BookReference>,
+    pub(crate) description: String,
+    pub(crate) first_weapon: MartialArtsStyleWeapon,
+    pub(crate) usable_weapons: HashSet<MartialArtsStyleWeapon>,
+    pub(crate) max_armor_weight: Option<ArmorWeightClass>,
 }
 
-impl<'source> MartialArtsStyle {
-    /// Starts a builder to construct a new Martial Arts style.
-    pub fn with_name(name: impl Into<MartialArtsStyleName>) -> MartialArtsStyleBuilder {
-        MartialArtsStyleBuilder {
-            name: name.into(),
-            book_reference: None,
-            max_armor_weight: None,
-        }
-    }
-
+impl<'source> MartialArtsStyleDetails {
     /// The page reference for the style (if any).
     pub fn book_reference(&self) -> Option<BookReference> {
         self.book_reference

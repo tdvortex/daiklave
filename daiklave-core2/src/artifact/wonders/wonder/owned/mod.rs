@@ -5,7 +5,7 @@ use crate::{
     artifact::MagicMaterial,
     book_reference::BookReference,
     hearthstones::hearthstone::Hearthstone,
-    merits::merit_new::{Merit, MeritSource},
+    merits::merit::{Merit, MeritSource},
 };
 
 /// A Wonder that belongs to the character, and may be attuned or unattuned.

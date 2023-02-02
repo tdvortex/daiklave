@@ -1,5 +1,5 @@
 mod error;
-use crate::merits::merit_new::RemoveMerit;
+use crate::merits::merit::RemoveMerit;
 use crate::{Character};
 pub use crate::abilities::{SetAbility, AddSpecialty, RemoveSpecialty};
 pub use crate::armor::armor_item::{EquipArmor, UnequipArmor};
@@ -16,7 +16,7 @@ pub use crate::hearthstones::hearthstone::{SlotHearthstone, UnslotHearthstone};
 pub use crate::intimacies::intimacy::{AddIntimacy, RemoveIntimacy};
 pub use crate::languages::language::{RemoveLanguage, AddLanguage};
 pub use crate::languages::language::SetNativeLanguage;
-pub use crate::merits::merit_new::AddMerit;
+pub use crate::merits::merit::AddMerit;
 pub use crate::name::SetName;
 pub use crate::concept::{RemoveConcept, SetConcept};
 pub use crate::exaltation::mortal::SetMortal;

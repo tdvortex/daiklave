@@ -26,7 +26,7 @@ use crate::{
         CharmError,
     },
     hearthstones::UnslottedHearthstone,
-    martial_arts::{charm::MartialArtsCharmDetails, style::MartialArtsStyle, MartialArtist},
+    martial_arts::{charm::{MartialArtsCharmDetails, MartialArtsCharm}, style::MartialArtsStyleDetails, MartialArtsStyle},
     sorcery::{
         circles::{
             celestial::{sorcerer::CelestialCircleSorcerer, AddCelestialSorcery},
@@ -39,7 +39,7 @@ use crate::{
         artifact::ArtifactWeapon, mundane::MundaneWeapon, EquipHand, Equipped, Weapon,
         WeaponName,
     },
-    CharacterMutationError, merits::merit_new::SorceryArchetypeMeritDetails,
+    CharacterMutationError, merits::merit::SorceryArchetypeMeritDetails,
 };
 
 use self::{
@@ -49,7 +49,7 @@ use self::{
             MotesState, UncommitMotes, MoteCommitmentName, MoteCommitmentNameMutation,
         },
         exalt_type::{
-            solar::{charm::SolarCharm, Solar, SolarMemo, SolarSorcererView},
+            solar::{charm::{SolarCharmDetails}, Solar, SolarMemo, SolarSorcererView},
             ExaltType,
         },
         Exalt,
@@ -172,7 +172,7 @@ impl<'source> Exaltation<'source> {
     pub(crate) fn add_martial_arts_style(
         &mut self,
         name: &'source str,
-        style: &'source MartialArtsStyle,
+        style: &'source MartialArtsStyleDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
@@ -221,19 +221,19 @@ impl<'view, 'source> Exaltation<'source> {
     pub(crate) fn martial_artist(
         &'view self,
         name: &str,
-    ) -> Option<MartialArtist<'view, 'source>> {
+    ) -> Option<MartialArtsStyle<'view, 'source>> {
         match self {
             Exaltation::Mortal(mortal) => {
                 let (name, mortal_martial_artist) =
                     mortal.martial_arts_styles.get_key_value(name)?;
-                Some(MartialArtist {
+                Some(MartialArtsStyle {
                     name,
                     maybe_exalt: ExaltationMartialArtist::Mortal(mortal_martial_artist),
                 })
             }
             Exaltation::Exalt(exalt) => {
                 let (name, exalt_martial_artist) = exalt.martial_arts_styles.get_key_value(name)?;
-                Some(MartialArtist {
+                Some(MartialArtsStyle {
                     name,
                     maybe_exalt: ExaltationMartialArtist::Exalt(exalt_martial_artist),
                 })
@@ -1013,7 +1013,7 @@ impl<'view, 'source> Exaltation<'source> {
     pub fn add_solar_charm(
         &mut self,
         name: &'source str,
-        charm: &'source SolarCharm,
+        details: &'source SolarCharmDetails,
         ability_dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
@@ -1021,7 +1021,7 @@ impl<'view, 'source> Exaltation<'source> {
                 return Err(CharacterMutationError::CharmError(CharmError::Mortal));
             }
             Exaltation::Exalt(exalt) => {
-                exalt.add_solar_charm(name, charm, ability_dots)?;
+                exalt.add_solar_charm(name, details, ability_dots)?;
             }
         }
         Ok(self)
@@ -1108,10 +1108,14 @@ impl<'view, 'source> Exaltation<'source> {
             Exaltation::Exalt(exalt) => exalt
                 .martial_arts_styles
                 .iter()
-                .flat_map(|(_, martial_artist)| martial_artist.charms.iter())
-                .find_map(|(known_charm_name, charm)| {
-                    if known_charm_name == &name {
-                        Some(Charm::MartialArts(charm))
+                .flat_map(|(style_name, martial_artist)| martial_artist.charms.iter().map(|(charm_name, charm_details)| (*style_name, *charm_name, *charm_details)))
+                .find_map(|(style_name, known_charm_name, details)| {
+                    if known_charm_name == name {
+                        Some(Charm::MartialArts(MartialArtsCharm {
+                            name: known_charm_name,
+                            style_name,
+                            details,
+                        }))
                     } else {
                         None
                     }

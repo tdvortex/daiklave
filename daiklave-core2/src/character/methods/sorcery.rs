@@ -10,7 +10,7 @@ use crate::{
         spell::SpellMutation,
         Sorcery, AddSorcery, AddSorceryCircle,
     },
-    Character, CharacterMutationError, merits::merit_new::AddSorceryArchetypeMerit,
+    Character, CharacterMutationError, merits::merit::AddSorceryArchetypeMerit,
 };
 
 impl<'view, 'source> Character<'source> {

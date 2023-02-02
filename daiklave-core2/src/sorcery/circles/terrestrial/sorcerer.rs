@@ -2,11 +2,11 @@ use std::collections::{hash_map::Entry, HashMap};
 
 use crate::{
     charms::CharmError,
-    merits::merit_new::SorceryArchetypeMeritDetails,
+    merits::merit::SorceryArchetypeMeritDetails,
     sorcery::{
         circles::celestial::{sorcerer::CelestialCircleSorcerer, AddCelestialSorcery},
         spell::Spell,
-        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeWithMerits, SorceryError,
+        ShapingRitualDetails, SorceryArchetypeDetails, SorceryArchetypeWithMerits, SorceryError, ShapingRitual,
     },
     CharacterMutationError,
 };
@@ -64,8 +64,12 @@ impl<'view, 'source> TerrestrialCircleSorcerer<'source> {
         }
     }
 
-    pub fn shaping_ritual(&self) -> (&'source str, &'source ShapingRitualDetails) {
-        (self.shaping_ritual_name, self.shaping_ritual)
+    pub fn shaping_ritual(&self) -> ShapingRitual<'source> {
+        ShapingRitual {
+            archetype_name: self.archetype_name,
+            summary: self.shaping_ritual_name,
+            details: self.shaping_ritual
+        }
     }
 
     pub fn control_spell(&self) -> Spell<'source> {

@@ -1,4 +1,4 @@
-use crate::{merits::merit_new::{manse::{ManseName, builder::{ManseBuilderWithHearthstone, ManseBuilder}}, AddMerit}, hearthstones::HearthstoneError, CharacterMutation};
+use crate::{merits::merit::{manse::{ManseName, builder::{ManseBuilderWithHearthstone, ManseBuilder}}, AddMerit}, hearthstones::HearthstoneError, CharacterMutation};
 
 use super::{HearthstoneTemplate, HearthstoneName, builder::HearthstoneBuilder};
 

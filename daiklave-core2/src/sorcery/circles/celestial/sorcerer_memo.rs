@@ -7,7 +7,7 @@ use crate::{sorcery::{
     circles::terrestrial::TerrestrialSpell,
     spell::SpellName,
     ShapingRitualDetails, SorceryArchetypeDetails,
-}, merits::merit_new::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName}};
+}, merits::merit::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName}};
 
 use super::{spell::CelestialSpell};
 

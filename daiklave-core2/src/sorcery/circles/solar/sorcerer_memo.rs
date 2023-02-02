@@ -7,7 +7,7 @@ use crate::{sorcery::{
     spell::SpellName,
     ShapingRitualDetails, SorceryArchetypeDetails,
     SorceryArchetypeName,
-}, merits::merit_new::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName}};
+}, merits::merit::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName}};
 
 use super::{SolarSpell};
 

@@ -48,8 +48,8 @@ use crate::{
     },
     exaltation::sorcery::ExaltationSorcery,
     hearthstones::UnslottedHearthstone,
-    martial_arts::{charm::MartialArtsCharmDetails, style::MartialArtsStyle, MartialArtsError},
-    merits::merit_new::SorceryArchetypeMeritDetails,
+    martial_arts::{charm::MartialArtsCharmDetails, style::MartialArtsStyleDetails, MartialArtsError},
+    merits::merit::SorceryArchetypeMeritDetails,
     sorcery::{
         circles::{celestial::AddCelestialSorcery, solar::AddSolarSorcery},
         spell::SpellMutation,
@@ -73,8 +73,8 @@ use self::{
     essence::{
         Essence, EssenceError, EssenceState, MoteCommitmentName, MotePoolName,
     },
-    exalt_type::{solar::charm::SolarCharm, ExaltType},
-    martial_arts::ExaltMartialArtist,
+    exalt_type::{solar::charm::{SolarCharmDetails}, ExaltType},
+    martial_arts::ExaltMartialArtistDetails,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -82,7 +82,7 @@ pub(crate) struct Exalt<'source> {
     pub(crate) armor: ExaltArmor<'source>,
     pub(crate) essence: EssenceState<'source>,
     pub(crate) evocations: Vec<(&'source str, &'source Evocation)>,
-    pub(crate) martial_arts_styles: HashMap<&'source str, ExaltMartialArtist<'source>>,
+    pub(crate) martial_arts_styles: HashMap<&'source str, ExaltMartialArtistDetails<'source>>,
     pub(crate) exalt_type: ExaltType<'source>,
     pub(crate) weapons: ExaltWeapons<'source>,
     pub(crate) wonders: ExaltWonders<'source>,
@@ -103,13 +103,13 @@ impl<'view, 'source> Exalt<'source> {
         }
     }
 
-    pub fn martial_arts_styles(&self) -> &HashMap<&'source str, ExaltMartialArtist<'source>> {
+    pub fn martial_arts_styles(&self) -> &HashMap<&'source str, ExaltMartialArtistDetails<'source>> {
         &self.martial_arts_styles
     }
 
     pub fn martial_arts_styles_mut(
         &mut self,
-    ) -> &mut HashMap<&'source str, ExaltMartialArtist<'source>> {
+    ) -> &mut HashMap<&'source str, ExaltMartialArtistDetails<'source>> {
         &mut self.martial_arts_styles
     }
 
@@ -282,10 +282,10 @@ impl<'view, 'source> Exalt<'source> {
     pub(crate) fn add_martial_arts_style(
         &mut self,
         name: &'source str,
-        style: &'source MartialArtsStyle,
+        style: &'source MartialArtsStyleDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Entry::Vacant(e) = self.martial_arts_styles.entry(name) {
-            e.insert(ExaltMartialArtist {
+            e.insert(ExaltMartialArtistDetails {
                 style,
                 ability: AbilityRating::Zero,
                 charms: Vec::new(),
@@ -829,13 +829,13 @@ impl<'view, 'source> Exalt<'source> {
     pub fn add_solar_charm(
         &mut self,
         name: &'source str,
-        charm: &'source SolarCharm,
+        details: &'source SolarCharmDetails,
         ability_dots: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
         let essence_rating = self.essence.rating;
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => {
-                solar.add_solar_charm(name, charm, ability_dots, essence_rating.get())?;
+                solar.add_solar_charm(name, details, ability_dots, essence_rating.get())?;
             }
         }
         Ok(self)
@@ -954,11 +954,11 @@ impl<'view, 'source> Exalt<'source> {
         name: &'source str,
         martial_arts_charm: &'source MartialArtsCharmDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let style = self.martial_arts_styles.get(style_name).ok_or(
+        let (&style_name, style_details) = self.martial_arts_styles.get_key_value(style_name).ok_or(
             CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound),
         )?;
         let required_ability = martial_arts_charm.ability_required;
-        let actual_ability = style.ability().dots();
+        let actual_ability = style_details.ability().dots();
 
         if required_ability.get() > actual_ability {
             return Err(CharacterMutationError::CharmError(
@@ -990,7 +990,7 @@ impl<'view, 'source> Exalt<'source> {
             .map(|prerequisite_charm_name| prerequisite_charm_name.as_str())
             .collect::<HashSet<&str>>();
 
-        for known_charm_id in style.charms().map(|(known_charm_name, _)| known_charm_name) {
+        for known_charm_id in style_details.charms(style_name).map(|known_charm| known_charm.name()) {
             if known_charm_id == name {
                 return Err(CharacterMutationError::CharmError(
                     CharmError::DuplicateCharm,

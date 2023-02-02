@@ -1,4 +1,4 @@
-use crate::{artifact::ArtifactName, book_reference::BookReference, merits::merit_new::{Merit, MeritSource}};
+use crate::{artifact::ArtifactName, book_reference::BookReference, merits::merit::{Merit, MeritSource}};
 
 use super::{
     category::HearthstoneCategory, geomancy_level::GeomancyLevel, keyword::HearthstoneKeyword,

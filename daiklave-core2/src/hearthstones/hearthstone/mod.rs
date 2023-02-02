@@ -1,4 +1,4 @@
-use crate::{artifact::ArtifactName, book_reference::BookReference, merits::merit_new::{Merit}};
+use crate::{artifact::ArtifactName, book_reference::BookReference, merits::merit::{Merit}};
 
 mod add;
 /// A builder path for creating new Hearthstones.

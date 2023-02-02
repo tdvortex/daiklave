@@ -1,12 +1,12 @@
 use crate::{CharacterMutation, charms::charm::AddCharm};
 
-use super::{SolarCharm, SolarCharmName};
+use super::{SolarCharmName, SolarCharmDetails};
 
 /// A Solar Charm to be added to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddSolarCharm {
     pub(crate) name: SolarCharmName,
-    pub(crate) charm: SolarCharm,
+    pub(crate) details: SolarCharmDetails,
 }
 
 impl From<AddSolarCharm> for CharacterMutation {

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{book_reference::BookReference, merits::merit_new::SorceryArchetypeMeritDetails};
+use crate::{book_reference::BookReference, merits::merit::SorceryArchetypeMeritDetails};
 
 use super::{SorceryArchetypeDetails, SorceryArchetypeMerits};
 

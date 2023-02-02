@@ -1,5 +1,5 @@
 use crate::{
-    martial_arts::{charm::AddMartialArtsCharm, style::MartialArtsStyle, MartialArts},
+    martial_arts::{charm::AddMartialArtsCharm, style::{AddMartialArtsStyle}, MartialArts},
     Character, CharacterMutationError,
 };
 
@@ -12,10 +12,9 @@ impl<'view, 'source> Character<'source> {
     /// Adds a Martial Arts style to the character.
     pub fn add_martial_arts_style(
         &mut self,
-        name: &'source str,
-        style: &'source MartialArtsStyle,
+        add_martial_arts_style: &'source AddMartialArtsStyle,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.add_martial_arts_style(name, style)?;
+        self.exaltation.add_martial_arts_style(&add_martial_arts_style.style_name, &add_martial_arts_style.style)?;
 
         Ok(self)
     }
@@ -42,8 +41,8 @@ impl<'view, 'source> Character<'source> {
     /// Adds a specialty to a Martial Arts style ability.
     pub fn add_martial_arts_specialty(
         &mut self,
-        style_name: &'source str,
-        specialty: &'source str,
+        _style_name: &'source str,
+        _specialty: &'source str,
     ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }
@@ -51,8 +50,8 @@ impl<'view, 'source> Character<'source> {
     /// Removes a specialty from a Martial Arts style ability.
     pub fn remove_martial_arts_specialty(
         &mut self,
-        style_name: &str,
-        specialty: &str,
+        _style_name: &str,
+        _specialty: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         todo!()
     }

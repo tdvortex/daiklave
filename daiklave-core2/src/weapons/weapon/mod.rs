@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use crate::{
     book_reference::BookReference, exaltation::exalt::essence::MoteCommitment,
-    hearthstones::hearthstone::Hearthstone, merits::merit_new::Merit,
+    hearthstones::hearthstone::Hearthstone, merits::merit::Merit,
 };
 
 use self::{

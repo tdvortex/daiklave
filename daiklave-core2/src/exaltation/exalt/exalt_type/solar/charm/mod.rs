@@ -25,22 +25,12 @@ use crate::{
 use self::builder::SolarCharmBuilder;
 
 /// A Solar charm.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct SolarCharm {
-    book_reference: Option<BookReference>,
-    summary: Option<String>,
-    description: String,
-    essence_required: NonZeroU8,
-    ability: SolarCharmAbility,
-    ability_requirement: u8,
-    charms_required: HashSet<String>,
-    keywords: HashSet<SolarCharmKeyword>,
-    costs: HashMap<CharmCostType, NonZeroU8>,
-    action_type: CharmActionType,
-    duration: String,
+pub struct SolarCharm<'source> {
+    pub(crate) name: &'source str,
+    pub(crate) details: &'source SolarCharmDetails
 }
 
-impl<'source> SolarCharm {
+impl<'source> SolarCharm<'source> {
     /// Starts building a new Solar Charm.
     pub fn builder(name: impl Into<SolarCharmName>) -> SolarCharmBuilder {
         SolarCharmBuilder {
@@ -53,39 +43,44 @@ impl<'source> SolarCharm {
         }
     }
 
+    /// The name of the Charm.
+    pub fn name(&self) -> &'source str {
+        self.name
+    }
+
     /// The book reference of the Charm, if any
     pub fn book_reference(&self) -> Option<BookReference> {
-        self.book_reference
+        self.details.book_reference
     }
 
     /// A short summary of the Charm if provided
     pub fn summary(&self) -> Option<&str> {
-        self.summary.as_deref()
+        self.details.summary.as_deref()
     }
 
     /// The full Charm text description
     pub fn description(&self) -> &str {
-        self.description.as_str()
+        &self.details.description
     }
 
     /// The Essence requirement for the Charm
     pub fn essence_required(&self) -> NonZeroU8 {
-        self.essence_required
+        self.details.essence_required
     }
 
     /// The ability associated with the charm, and its minimum rating
     pub fn ability_requirement(&self) -> (SolarCharmAbility, u8) {
-        (self.ability, self.ability_requirement)
+        (self.details.ability, self.details.ability_requirement)
     }
 
     /// The Ids of Charms which are prerequisites for this Charm
     pub fn charm_prerequisites(&'source self) -> impl Iterator<Item = &'source str> + '_ {
-        self.charms_required.iter().map(|s| s.as_str())
+        self.details.charms_required.iter().map(|s| s.as_str())
     }
 
     /// Any keywords that the Charm has.
     pub fn keywords(&self) -> impl Iterator<Item = SolarCharmKeyword> + '_ {
-        let mut list = self.keywords.iter().copied().collect::<Vec<_>>();
+        let mut list = self.details.keywords.iter().copied().collect::<Vec<_>>();
         list.sort();
         list.into_iter()
     }
@@ -93,6 +88,7 @@ impl<'source> SolarCharm {
     /// The costs to use the Charm.
     pub fn costs(&self) -> impl Iterator<Item = CharmCost> + '_ {
         let mut list = self
+            .details
             .costs
             .iter()
             .map(|(cost_type, amount)| CharmCost::new(*cost_type, amount.get()))
@@ -103,11 +99,27 @@ impl<'source> SolarCharm {
 
     /// The action required to use the Charm.
     pub fn action_type(&self) -> CharmActionType {
-        self.action_type
+        self.details.action_type
     }
 
     /// The duration of the Charm's effects.
     pub fn duration(&self) -> &str {
-        self.duration.as_str()
+        &self.details.duration
     }
+}
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub(crate) struct SolarCharmDetails {
+    pub book_reference: Option<BookReference>,
+    pub summary: Option<String>,
+    pub description: String,
+    pub essence_required: NonZeroU8,
+    pub ability: SolarCharmAbility,
+    pub ability_requirement: u8,
+    pub charms_required: HashSet<String>,
+    pub keywords: HashSet<SolarCharmKeyword>,
+    pub costs: HashMap<CharmCostType, NonZeroU8>,
+    pub action_type: CharmActionType,
+    pub duration: String,
 }

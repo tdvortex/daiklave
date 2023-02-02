@@ -31,7 +31,7 @@ use crate::{
     hearthstones::{hearthstone::GeomancyLevel, UnslottedHearthstone},
     intimacies::intimacy::{IntimacyLevel, IntimacyTypeMemo},
     languages::language::LanguageMutation,
-    merits::{merit_new::{NonStackableMeritInstance, StackableMeritInstance}},
+    merits::{merit::{NonStackableMeritInstance, StackableMeritInstance}},
     willpower::Willpower,
 };
 

@@ -5,7 +5,7 @@ pub(crate) use mutation::ArtifactNameMutation;
 
 use crate::{exaltation::exalt::essence::MotePoolName, hearthstones::hearthstone::{HearthstoneName, SlotHearthstone}};
 
-use super::AttuneArtifact;
+use super::{AttuneArtifact, RemoveArtifact};
 
 /// The name of a magical creation (weapon, armor, warstrider, or wonder).
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
@@ -30,5 +30,10 @@ impl<'source> ArtifactName<'source> {
     /// Slot a hearthstone into this artifact.
     pub fn slot_hearthstone(self, hearthstone_name: impl Into<HearthstoneName>) -> SlotHearthstone {
         Into::<HearthstoneName>::into(hearthstone_name).slot_into(self)
+    }
+
+    /// Remove this artifact from a character.
+    pub fn remove(self) -> RemoveArtifact {
+        RemoveArtifact(self.into())
     }
 }

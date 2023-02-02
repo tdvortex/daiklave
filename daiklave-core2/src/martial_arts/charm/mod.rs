@@ -20,13 +20,19 @@ use crate::{
     charms::{CharmActionType, CharmCost, CharmCostType},
 };
 
+/// A Charm associated with a Martial Arts style.
 pub struct MartialArtsCharm<'source> {
-    name: &'source str,
-    style_name: &'source str,
-    details: &'source MartialArtsCharmDetails,
+    pub(crate) name: &'source str,
+    pub(crate) style_name: &'source str,
+    pub(crate) details: &'source MartialArtsCharmDetails,
 }
 
 impl<'source> MartialArtsCharm<'source> {
+    /// The name of the Charm.
+    pub fn name(&self) -> &'source str {
+        self.name
+    }
+
     /// The Martial Arts style associated with the Charm.
     pub fn style(&self) -> &'source str {
         self.style_name

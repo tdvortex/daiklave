@@ -3,7 +3,7 @@ use std::num::NonZeroU8;
 use crate::{
     book_reference::{Book, BookReference},
     exaltation::exalt::essence::{MoteCommitment, MoteCommitmentName},
-    hearthstones::hearthstone::Hearthstone, merits::merit_new::{Merit, MeritSource}, artifact::ArtifactName,
+    hearthstones::hearthstone::Hearthstone, merits::merit::{Merit, MeritSource}, artifact::ArtifactName,
 };
 
 use super::{

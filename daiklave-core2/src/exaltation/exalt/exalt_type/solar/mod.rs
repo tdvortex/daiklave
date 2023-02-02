@@ -25,7 +25,7 @@ use crate::{
     charms::{charm::Charm, CharmError},
     exaltation::exalt::{AnimaEffect, Limit},
     experience::ExperiencePool,
-    merits::merit_new::{MeritError, SorceryArchetypeMeritDetails},
+    merits::merit::{MeritError, SorceryArchetypeMeritDetails},
     sorcery::{
         circles::{
             celestial::AddCelestialSorcery,
@@ -42,7 +42,7 @@ use self::{
     anima_effect::{SOLAR_ONE, SOLAR_TWO},
     builder::SolarBuilder,
     caste::SolarCaste,
-    charm::SolarCharm,
+    charm::{SolarCharmDetails, SolarCharm},
 };
 
 /// Traits which are unique to being a Solar Exalted.
@@ -53,7 +53,7 @@ pub struct Solar<'source> {
     pub(crate) experience: ExperiencePool,
     pub(crate) sorcery: Option<SolarSorcererView<'source>>,
     pub(crate) limit: Limit<'source>,
-    pub(crate) solar_charms: Vec<(&'source str, &'source SolarCharm)>,
+    pub(crate) solar_charms: Vec<(&'source str, &'source SolarCharmDetails)>,
 }
 
 impl<'source> Solar<'source> {
@@ -329,19 +329,19 @@ impl<'source> Solar<'source> {
     pub(crate) fn add_solar_charm(
         &mut self,
         name: &'source str,
-        charm: &'source SolarCharm,
+        charm: &'source SolarCharmDetails,
         ability_dots: u8,
         essence_rating: u8,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if charm.ability_requirement().1 > ability_dots
-            || (Into::<AbilityName>::into(charm.ability_requirement().0) != self.supernal_ability()
-                && charm.essence_required().get() > essence_rating)
+        if charm.ability_requirement > ability_dots
+            || (Into::<AbilityName>::into(charm.ability) != self.supernal_ability()
+                && charm.essence_required.get() > essence_rating)
         {
             return Err(CharacterMutationError::CharmError(
                 CharmError::PrerequisitesNotMet,
             ));
         }
-        let mut unmet_tree_requirements = charm.charm_prerequisites().collect::<HashSet<&str>>();
+        let mut unmet_tree_requirements = charm.charms_required.iter().map(|s| s.as_str()).collect::<HashSet<&str>>();
 
         for known_charm_name in self
             .solar_charms
@@ -370,9 +370,12 @@ impl<'source> Solar<'source> {
     pub(crate) fn get_solar_charm(&self, name: &str) -> Option<Charm<'source>> {
         self.solar_charms
             .iter()
-            .find_map(|(solar_charm_name, charm)| {
+            .find_map(|(solar_charm_name, details)| {
                 if solar_charm_name == &name {
-                    Some(Charm::Solar(charm))
+                    Some(Charm::Solar(SolarCharm {
+                        name: *solar_charm_name,
+                        details,
+                    }))
                 } else {
                     None
                 }

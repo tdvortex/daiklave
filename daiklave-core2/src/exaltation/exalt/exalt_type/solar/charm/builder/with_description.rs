@@ -7,7 +7,7 @@ use crate::{
     book_reference::BookReference,
     charms::{CharmActionType, CharmCostType},
     exaltation::exalt::exalt_type::solar::charm::{
-        ability::SolarCharmAbility, AddSolarCharm, SolarCharm, SolarCharmKeyword, SolarCharmName,
+        ability::SolarCharmAbility, AddSolarCharm, SolarCharmKeyword, SolarCharmName, SolarCharmDetails,
     },
 };
 
@@ -69,7 +69,7 @@ impl SolarCharmBuilderWithDescription {
     pub fn build(self) -> AddSolarCharm {
         AddSolarCharm {
             name: self.name,
-            charm: SolarCharm {
+            details: SolarCharmDetails {
                 book_reference: self.book_reference,
                 summary: self.summary,
                 description: self.description,

@@ -1,4 +1,4 @@
-use crate::{CharacterMutation, merits::merit_new::RemoveMerit};
+use crate::{CharacterMutation, merits::merit::RemoveMerit, artifact::{RemoveArtifact}};
 
 use super::{artifact::ArtifactArmorName, mundane::{MundaneArmorName, RemoveMundaneArmor}, ArmorName};
 
@@ -16,7 +16,7 @@ impl From<ArmorName<'_>> for RemoveArmor {
 impl From<RemoveArmor> for CharacterMutation {
     fn from(remove_armor: RemoveArmor) -> Self {
         match remove_armor {
-            RemoveArmor::Artifact(artifact_armor_name) => RemoveMerit::Artifact(artifact_armor_name.into()).into(),
+            RemoveArmor::Artifact(artifact_armor_name) => RemoveMerit::Artifact(RemoveArtifact(artifact_armor_name.into())).into(),
             RemoveArmor::Mundane(mundane_armor_name) => RemoveMundaneArmor(mundane_armor_name).into(),
         }
     }

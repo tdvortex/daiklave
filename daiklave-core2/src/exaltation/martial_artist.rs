@@ -3,14 +3,14 @@ use crate::{
     armor::armor_item::ArmorWeightClass,
     book_reference::BookReference,
     exaltation::{
-        exalt::martial_arts::ExaltMartialArtist, mortal::martial_arts::MortalMartialArtist,
+        exalt::martial_arts::ExaltMartialArtistDetails, mortal::martial_arts::MortalMartialArtistDetails,
     },
-    martial_arts::{charm::MartialArtsCharmDetails, style::MartialArtsStyleWeapon},
+    martial_arts::{charm::{MartialArtsCharm}, style::MartialArtsStyleWeapon},
 };
 
 pub(crate) enum ExaltationMartialArtist<'view, 'source> {
-    Mortal(&'view MortalMartialArtist<'source>),
-    Exalt(&'view ExaltMartialArtist<'source>),
+    Mortal(&'view MortalMartialArtistDetails<'source>),
+    Exalt(&'view ExaltMartialArtistDetails<'source>),
 }
 
 impl<'view, 'source> ExaltationMartialArtist<'view, 'source> {
@@ -49,12 +49,12 @@ impl<'view, 'source> ExaltationMartialArtist<'view, 'source> {
         }
     }
 
-    pub fn charms(&self) -> impl Iterator<Item = (&'source str, &'source MartialArtsCharmDetails)> + '_ {
+    pub fn charms(&self, style_name: &'source str) -> impl Iterator<Item = MartialArtsCharm<'source>> + '_ {
         match self {
-            ExaltationMartialArtist::Mortal(_) => Vec::new().into_iter(),
+            ExaltationMartialArtist::Mortal(_) => vec![].into_iter(),
             ExaltationMartialArtist::Exalt(view) => view
-                .charms()
-                .collect::<Vec<(&'source str, &'source MartialArtsCharmDetails)>>()
+                .charms(style_name)
+                .collect::<Vec<MartialArtsCharm<'source>>>()
                 .into_iter(),
         }
     }

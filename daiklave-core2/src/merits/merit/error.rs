@@ -3,12 +3,12 @@ use thiserror::Error;
 /// An error relating to Merits.
 #[derive(Debug, Error)]
 pub enum MeritError {
-    /// Can't have two merits with the same Id or two flaws with the same name
-    #[error("Can't have two merits with the same Id, or two Flaws with the same name")]
+    /// Can't have two merits or flaws with the same name and detail
+    #[error("Can't have two merits or flaws with the same name and detail")]
     DuplicateMerit,
     /// All Exalts must have Exalted Healing
     #[error("Exalted Healing is required for all Exalts")]
-    ExaltedHealing,
+    RemoveExaltedHealing,
     /// Merit templates require at least one valid dot rating.
     #[error("At least one valid rating required")]
     MissingDotRating,

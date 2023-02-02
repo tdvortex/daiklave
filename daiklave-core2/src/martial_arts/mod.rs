@@ -8,7 +8,7 @@ pub mod style;
 
 pub(crate) use error::MartialArtsError;
 
-pub use martial_artist::MartialArtist;
+pub use martial_artist::MartialArtsStyle;
 
 use crate::exaltation::Exaltation;
 
@@ -17,7 +17,7 @@ pub struct MartialArts<'view, 'source>(pub(crate) &'view Exaltation<'source>);
 
 impl<'view, 'source> MartialArts<'view, 'source> {
     /// The details of a particular Martial Arts style.
-    pub fn style(&self, name: &str) -> Option<MartialArtist<'view, 'source>> {
+    pub fn style(&self, name: &str) -> Option<MartialArtsStyle<'view, 'source>> {
         self.0.martial_artist(name)
     }
 

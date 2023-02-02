@@ -20,6 +20,7 @@ use crate::{book_reference::BookReference, charms::{CharmCostType}, martial_arts
 
 use super::{MartialArtsCharmKeyword, MartialArtsCharmName};
 
+/// A builder to construct a new Martial Arts charm.
 pub struct MartialArtsCharmBuilder {
     pub(crate) style: MartialArtsStyleName,
     pub(crate) book_reference: Option<BookReference>,
@@ -33,6 +34,7 @@ pub struct MartialArtsCharmBuilder {
 }
 
 impl MartialArtsCharmBuilder {
+    /// Starts a new builder by specifying the Martial Arts style it belongs to.
     pub fn style(style_name: impl Into<MartialArtsStyleName>) -> Self {
         Self {
             style: style_name.into(),
@@ -102,6 +104,7 @@ impl MartialArtsCharmBuilder {
         self
     }
 
+    /// Sets the name of the Charm.
     pub fn name(self, name: impl Into<MartialArtsCharmName>) -> MartialArtsCharmBuilderWithName {
         MartialArtsCharmBuilderWithName {
             name: name.into(),

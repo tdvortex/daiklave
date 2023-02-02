@@ -6,7 +6,7 @@ use crate::{sorcery::{
     archetype::{SorceryArchetypeName},
     spell::SpellName,
     ShapingRitualDetails, SorceryArchetypeDetails,
-}, merits::merit_new::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName}};
+}, merits::merit::{SorceryArchetypeMeritDetails, SorceryArchetypeMeritName}};
 
 use super::{TerrestrialSpell};
 

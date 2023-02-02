@@ -27,8 +27,8 @@ use crate::{
     artifact::wonders::{OwnedWonder, Wonder},
     charms::CharmError,
     hearthstones::UnslottedHearthstone,
-    martial_arts::{style::MartialArtsStyle, MartialArtsError},
-    merits::merit_new::{MeritError, SorceryArchetypeMeritDetails},
+    martial_arts::{style::MartialArtsStyleDetails, MartialArtsError},
+    merits::merit::{MeritError, SorceryArchetypeMeritDetails},
     sorcery::{
         circles::terrestrial::{sorcerer::TerrestrialCircleSorcerer},
         spell::SpellMutation,
@@ -45,12 +45,12 @@ use crate::{
     CharacterMutationError,
 };
 
-use self::martial_arts::MortalMartialArtist;
+use self::martial_arts::{MortalMartialArtistDetails};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct Mortal<'source> {
     pub armor: MortalArmor<'source>,
-    pub martial_arts_styles: HashMap<&'source str, MortalMartialArtist<'source>>,
+    pub martial_arts_styles: HashMap<&'source str, MortalMartialArtistDetails<'source>>,
     pub sorcery: Option<TerrestrialCircleSorcerer<'source>>,
     pub weapons: MortalWeapons<'source>,
     pub wonders: MortalWonders<'source>,
@@ -61,11 +61,11 @@ impl<'view, 'source> Mortal<'source> {
     pub(crate) fn add_martial_arts_style(
         &mut self,
         name: &'source str,
-        style: &'source MartialArtsStyle,
+        style_details: &'source MartialArtsStyleDetails,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Entry::Vacant(e) = self.martial_arts_styles.entry(name) {
-            e.insert(MortalMartialArtist {
-                style,
+            e.insert(MortalMartialArtistDetails {
+                style: style_details,
                 ability: AbilityRating::Zero,
             });
             Ok(self)

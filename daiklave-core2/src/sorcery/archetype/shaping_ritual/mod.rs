@@ -8,9 +8,9 @@ use crate::book_reference::BookReference;
 
 
 pub struct ShapingRitual<'source> {
-    archetype_name: &'source str,
-    summary: &'source str,
-    details: &'source ShapingRitualDetails
+    pub(crate) archetype_name: &'source str,
+    pub(crate) summary: &'source str,
+    pub(crate) details: &'source ShapingRitualDetails
 }
 
 impl<'source> ShapingRitual<'source> {
