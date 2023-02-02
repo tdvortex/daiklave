@@ -2,16 +2,19 @@ use crate::CharacterMutation;
 
 use super::{LanguageMutation, MajorLanguage, LocalTongueName, Language};
 
+/// A mutation to add a language to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddLanguage(pub(crate) LanguageMutation);
 
 impl AddLanguage {
+    /// Add a major language of Creation.
     pub fn major_language(major_language: MajorLanguage) -> Self {
         Self(LanguageMutation::MajorLanguage(major_language))
     }
 
-    pub fn local_tongue(local_tongue: LocalTongueName) -> Self {
-        Self(LanguageMutation::LocalTongue(local_tongue))
+    /// Add a local tongue to the character.
+    pub fn local_tongue(local_tongue: impl Into<LocalTongueName>) -> Self {
+        Self(LanguageMutation::LocalTongue(local_tongue.into()))
     }
 }
 

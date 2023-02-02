@@ -13,7 +13,7 @@ use crate::{
     hearthstones::{hearthstone::{GeomancyLevel, HearthstoneName}, UnslottedHearthstoneMemo},
     intimacies::intimacy::{IntimacyLevel, IntimacyTypeMemo},
     languages::{language::LanguageMutation},
-    merits::merit::{DemenseName, NonStackableMeritName, StackableMeritTemplateName, NonStackableMeritInstance, StackableMeritInstance},
+    merits::merit::{DemenseName, NonStackableMeritInstance, StackableMeritInstance, template::{NonStackableMeritName, StackableMeritTemplateName}},
     willpower::Willpower,
     flaws::flaw::FlawName,
 };

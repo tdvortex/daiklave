@@ -11,6 +11,7 @@ use std::collections::HashSet;
 
 use crate::{merits::{merit::{MeritPrerequisite, MeritType}}, book_reference::BookReference};
 
+/// A builder for a merit with a fixed dot cost.
 pub struct FixedMeritTemplateBuilder {
     pub(crate) name: String,
     pub(crate) dots: u8,
@@ -19,16 +20,20 @@ pub struct FixedMeritTemplateBuilder {
 }
 
 impl FixedMeritTemplateBuilder {
+    /// Sets the book reference for the merit.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
         self
     }
 
+    /// Adds a prerequisite to purchase the merit. Merit prerequisites are 
+    /// always and "or" relationship, like Stamina 3 or Resistance 3.
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
         self.prerequisites.insert(prerequisite);
         self
     }
 
+    /// Defines the type of the merit (like Innate or Purchased).
     pub fn merit_type(self, merit_type: MeritType) -> FixedMeritTemplateBuilderWithMeritType {
         FixedMeritTemplateBuilderWithMeritType {
             name: self.name,

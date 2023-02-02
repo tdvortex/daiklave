@@ -13,7 +13,7 @@ pub use spells::Spells;
 /// Properties of an individual Spell.
 pub mod spell;
 
-pub(crate) use archetype::{ShapingRitualDetails};
+pub(crate) use archetype::{ShapingRitualDetails, SorceryArchetypeDetails};
 pub use archetype::{
     AddShapingRitual,
     SorceryArchetypeName, SorceryArchetype, ShapingRitual
@@ -26,7 +26,7 @@ pub(crate) use error::SorceryError;
 
 use crate::exaltation::ExaltationSorcery;
 
-use self::{builder::SorceryBuilder, spell::Spell, archetype::SorceryArchetypeDetails};
+use self::{builder::SorceryBuilder, spell::Spell};
 
 /// A character's Sorcery abilities.
 pub struct Sorcery<'view, 'source>(pub(crate) ExaltationSorcery<'view, 'source>);

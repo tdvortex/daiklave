@@ -1,5 +1,6 @@
 use crate::{sorcery::SorceryArchetypeName, merits::merit::{instance::{SorceryArchetypeMeritName, SorceryArchetypeMeritDetails}, AddSorceryArchetypeMerit}, book_reference::BookReference};
 
+/// A sorcery archetype merit builder, after the description has been supplied.
 pub struct SorceryArchetypeMeritBuilderWithDescription {
     pub(crate) archetype_name: SorceryArchetypeName,
     pub(crate) name: SorceryArchetypeMeritName,
@@ -9,11 +10,13 @@ pub struct SorceryArchetypeMeritBuilderWithDescription {
 }
 
 impl SorceryArchetypeMeritBuilderWithDescription {
+    /// Sets the book reference for the merit.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
         self
     }
 
+    /// Completes the builder, returning an AddSorceryArchetypeMerit.
     pub fn build(self) -> AddSorceryArchetypeMerit {
         AddSorceryArchetypeMerit {
             archetype_name: self.archetype_name,

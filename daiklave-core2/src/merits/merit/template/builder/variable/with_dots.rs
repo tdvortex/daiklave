@@ -4,6 +4,8 @@ use crate::{book_reference::BookReference, merits::merit::{MeritType, MeritPrere
 
 use super::{VariableStackableMeritTemplateBuilder, nonstackable::VariableNonStackableMeritTemplateBuilder};
 
+/// A variable-dot merit template builder with at least one dot option 
+/// supplied.
 pub struct VariableMeritTemplateBuilderWithDots {
     pub(crate) name: String,
     pub(crate) merit_type: MeritType,
@@ -15,16 +17,21 @@ pub struct VariableMeritTemplateBuilderWithDots {
 }
 
 impl VariableMeritTemplateBuilderWithDots {
+    /// Sets the book reference for the merit.
     pub fn book_reference(mut self, book_reference: BookReference) -> Self {
         self.book_reference = Some(book_reference);
         self
     }
 
+    /// Adds a prerequisite to purchase the merit. Merit prerequisites are 
+    /// always and "or" relationship, like Stamina 3 or Resistance 3.
     pub fn prerequisite(mut self, prerequisite: MeritPrerequisite) -> Self {
         self.prerequisites.insert(prerequisite);
         self
     }
 
+    /// Adds a dot level at which the merit can be purchased. These need not be
+    /// consecutive.
     pub fn dot_option(mut self, dots: u8, description: impl Into<String>) -> Self {
         match dots.cmp(&self.min_dots.0) {
             std::cmp::Ordering::Less => {
@@ -48,10 +55,13 @@ impl VariableMeritTemplateBuilderWithDots {
         self
     }
 
+    /// Indicates that this merit can only be purchased once per character.
     pub fn nonstackable(self) -> VariableNonStackableMeritTemplateBuilder {
         VariableNonStackableMeritTemplateBuilder(self)
     }
 
+    /// Indicates that this merit may be purchased multiple times per 
+    /// character.
     pub fn stackable(self) -> VariableStackableMeritTemplateBuilder {
         VariableStackableMeritTemplateBuilder(self)
     }

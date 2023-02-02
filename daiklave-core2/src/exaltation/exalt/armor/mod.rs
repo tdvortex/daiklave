@@ -306,38 +306,6 @@ impl<'source> ExaltArmor<'source> {
         Ok((name, UnslottedHearthstone { details, origin }))
     }
 
-    pub fn attune_artifact_armor(
-        &mut self,
-        artifact_armor_name: &str,
-        personal_committed: u8,
-    ) -> Result<&mut Self, CharacterMutationError> {
-        let attunement = &mut self
-            .equipped
-            .as_mut()
-            .and_then(|equipped| match equipped {
-                EquippedArmor::Mundane(_, _) => None,
-                EquippedArmor::Artifact(worn_id, worn_armor) => {
-                    if worn_id == &artifact_armor_name {
-                        Some(worn_armor)
-                    } else {
-                        None
-                    }
-                }
-            })
-            .or_else(|| self.unequipped_artifact.get_mut(artifact_armor_name))
-            .ok_or(CharacterMutationError::ArmorError(ArmorError::NotFound))?
-            .1;
-
-        if attunement.is_none() {
-            *attunement = Some(personal_committed);
-            Ok(self)
-        } else {
-            Err(CharacterMutationError::EssenceError(
-                EssenceError::AlreadyAttuned,
-            ))
-        }
-    }
-
     pub fn unattune_artifact_armor(
         &mut self,
         artifact_armor_name: &str,

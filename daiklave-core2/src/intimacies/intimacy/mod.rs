@@ -1,4 +1,7 @@
 mod add;
+
+/// A builder to construct a new Intimacy.
+pub mod builder;
 mod error;
 mod intimacy_type;
 mod level;

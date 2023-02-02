@@ -11,6 +11,7 @@ pub struct MoteCommitment<'source> {
 }
 
 impl<'source> MoteCommitment<'source> {
+    /// The name of the effect the motes were committed to.
     pub fn name(&self) -> MoteCommitmentName<'source> {
         self.name
     }

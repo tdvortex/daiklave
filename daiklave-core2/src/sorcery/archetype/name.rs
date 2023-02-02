@@ -6,10 +6,12 @@ use crate::book_reference::BookReference;
 
 use super::{AddShapingRitual, ShapingRitualDetails};
 
+/// The name of a sorcery archetype.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SorceryArchetypeName(String);
 
 impl SorceryArchetypeName {
+    /// Create a new shaping ritual associated with this archetype.
     pub fn new_shaping_ritual(&self, 
         summary: impl Into<String>, 
         book_reference: Option<BookReference>, 

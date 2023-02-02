@@ -2,6 +2,7 @@ use std::ops::Deref;
 
 use serde::{Serialize, Deserialize};
 
+/// The name of a local languages in one region of Creation.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct LocalTongueName(String);
 

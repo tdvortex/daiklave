@@ -4,11 +4,14 @@ use crate::CharacterMutation;
 
 use super::EssenceError;
 
+/// A mutation to set the Essence rating of the character.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SetEssenceRating(pub(crate) NonZeroU8);
 
 impl SetEssenceRating {
-    pub fn new(dots: NonZeroU8) -> Result<Self, EssenceError> {
+    /// Specifies the dot rating to set Essence to. Returns Err if the dot 
+    /// rating would be above 5.
+    pub fn dots(dots: NonZeroU8) -> Result<Self, EssenceError> {
         if dots > NonZeroU8::new(5).unwrap() {
             Err(EssenceError::InvalidRating)
         } else {

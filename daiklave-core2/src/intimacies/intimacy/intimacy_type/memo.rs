@@ -8,11 +8,11 @@ pub(crate) enum IntimacyTypeMemo {
     Principle(String),
 }
 
-impl From<&IntimacyType<'_>> for IntimacyTypeMemo {
-    fn from(view: &IntimacyType<'_>) -> Self {
+impl From<IntimacyType<'_>> for IntimacyTypeMemo {
+    fn from(view: IntimacyType<'_>) -> Self {
         match view {
-            IntimacyType::Tie(target, emotion) => Self::Tie((*target).to_owned(), (*emotion).to_owned()),
-            IntimacyType::Principle(description) => Self::Principle((*description).to_owned()),
+            IntimacyType::Tie(target, emotion) => Self::Tie(target.to_owned(), emotion.to_owned()),
+            IntimacyType::Principle(description) => Self::Principle(description.to_owned()),
         }
     }
 }

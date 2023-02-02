@@ -2,14 +2,18 @@ use crate::CharacterMutation;
 
 use super::{LanguageMutation, MajorLanguage, LocalTongueName, Language};
 
+/// A mutation to remove a language from the character. Native languages
+/// cannot be removed.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RemoveLanguage(pub(crate) LanguageMutation);
 
 impl RemoveLanguage {
+    /// Remove a major language.
     pub fn major_language(major_language: MajorLanguage) -> Self {
         Self(LanguageMutation::MajorLanguage(major_language))
     }
 
+    /// Remove a local tongue from the character.
     pub fn local_tongue(local_tongue: LocalTongueName) -> Self {
         Self(LanguageMutation::LocalTongue(local_tongue))
     }

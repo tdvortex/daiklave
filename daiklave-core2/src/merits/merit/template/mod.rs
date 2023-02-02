@@ -1,3 +1,4 @@
+/// A builder path to construct a new merit.
 pub mod builder;
 mod nonstackable;
 mod stackable;

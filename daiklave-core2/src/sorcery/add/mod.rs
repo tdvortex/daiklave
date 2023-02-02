@@ -3,15 +3,26 @@ use crate::CharacterMutation;
 
 pub use self::circle::AddSorceryCircle;
 
-use super::{builder::SorceryBuilder, AddTerrestrialSorcery, AddCelestialSorcery, AddSolarSorcery};
+use super::{builder::{TerrestrialSorceryBuilder, CelestialSorceryBuilder, SolarSorceryBuilder}, AddTerrestrialSorcery, AddCelestialSorcery, AddSolarSorcery};
 
 /// A mutation to add Sorcery to a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct AddSorcery(pub Box<AddSorceryCircle>);
 
 impl AddSorcery {
-    pub fn builder() -> SorceryBuilder {
-        SorceryBuilder
+    /// Starts a builder to add the terrestrial circle of sorcery.
+    pub fn terrestrial_circle() -> TerrestrialSorceryBuilder {
+        TerrestrialSorceryBuilder
+    }
+
+    /// Starts a builder to add the celestial circle of sorcery.
+    pub fn celestial_circle() -> CelestialSorceryBuilder {
+        CelestialSorceryBuilder
+    }
+
+    /// Starts a builder to add the solar circle of sorcery.
+    pub fn solar_circle() -> SolarSorceryBuilder {
+        SolarSorceryBuilder
     }
 }
 

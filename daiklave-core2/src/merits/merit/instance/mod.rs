@@ -4,6 +4,7 @@ mod exalted_healing;
 mod hearthstone;
 mod inner;
 mod language;
+/// Details related the Manse merit.
 pub mod manse;
 mod martial_artist;
 mod mortal_sorcerer;

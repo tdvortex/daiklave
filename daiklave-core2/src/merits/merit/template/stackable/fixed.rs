@@ -5,12 +5,12 @@ use crate::{book_reference::BookReference, merits::merit::{MeritType, MeritPrere
 use super::StackableMeritTemplateName;
 
 pub struct FixedStackableMeritTemplate {
-    name: StackableMeritTemplateName,
-    book_reference: Option<BookReference>,
-    merit_type: MeritType,
-    description: String,
-    prerequisites: HashSet<MeritPrerequisite>,
-    dots: u8
+    pub(crate) name: StackableMeritTemplateName,
+    pub(crate) book_reference: Option<BookReference>,
+    pub(crate) merit_type: MeritType,
+    pub(crate) description: String,
+    pub(crate) prerequisites: HashSet<MeritPrerequisite>,
+    pub(crate) dots: u8
 }
 
 impl FixedStackableMeritTemplate {
