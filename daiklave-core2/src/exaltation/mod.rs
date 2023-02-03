@@ -1198,18 +1198,34 @@ impl<'view, 'source> Exaltation<'source> {
         .into_iter()
     }
 
-    pub fn add_martial_arts_specialty(&mut self, style_name: &str, specialty: &'source str) -> Result<&mut Self, CharacterMutationError> {
+    pub fn add_martial_arts_specialty(
+        &mut self,
+        style_name: &str,
+        specialty: &'source str,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(mortal) => {mortal.add_martial_arts_specialty(style_name, specialty)?;}
-            Exaltation::Exalt(exalt) => {exalt.add_martial_arts_specialty(style_name, specialty)?;}
+            Exaltation::Mortal(mortal) => {
+                mortal.add_martial_arts_specialty(style_name, specialty)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.add_martial_arts_specialty(style_name, specialty)?;
+            }
         }
         Ok(self)
     }
 
-    pub fn remove_martial_arts_specialty(&mut self, style_name: &str, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
+    pub fn remove_martial_arts_specialty(
+        &mut self,
+        style_name: &str,
+        specialty: &str,
+    ) -> Result<&mut Self, CharacterMutationError> {
         match self {
-            Exaltation::Mortal(mortal) => {mortal.remove_martial_arts_specialty(style_name, specialty)?;}
-            Exaltation::Exalt(exalt) => {exalt.remove_martial_arts_specialty(style_name, specialty)?;}
+            Exaltation::Mortal(mortal) => {
+                mortal.remove_martial_arts_specialty(style_name, specialty)?;
+            }
+            Exaltation::Exalt(exalt) => {
+                exalt.remove_martial_arts_specialty(style_name, specialty)?;
+            }
         }
         Ok(self)
     }

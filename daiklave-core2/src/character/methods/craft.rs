@@ -28,7 +28,13 @@ impl<'view, 'source> Character<'source> {
         focus: &str,
         specialty: &'source str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.craft.0.get_mut(focus).ok_or(CharacterMutationError::AbilityError(AbilityError::ZeroAbilitySpecialty))?.add_specialty(specialty)?;
+        self.craft
+            .0
+            .get_mut(focus)
+            .ok_or(CharacterMutationError::AbilityError(
+                AbilityError::ZeroAbilitySpecialty,
+            ))?
+            .add_specialty(specialty)?;
         Ok(self)
     }
 
@@ -38,7 +44,13 @@ impl<'view, 'source> Character<'source> {
         focus: &str,
         specialty: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.craft.0.get_mut(focus).ok_or(CharacterMutationError::AbilityError(AbilityError::SpecialtyNotFound))?.remove_specialty(specialty)?;
+        self.craft
+            .0
+            .get_mut(focus)
+            .ok_or(CharacterMutationError::AbilityError(
+                AbilityError::SpecialtyNotFound,
+            ))?
+            .remove_specialty(specialty)?;
         Ok(self)
     }
 }

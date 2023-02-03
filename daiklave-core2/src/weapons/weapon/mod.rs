@@ -46,7 +46,7 @@ pub use weight_class::WeaponWeightClass;
 /// The interface for a specific individual weapon
 pub struct Weapon<'source>(pub(crate) WeaponType<'source>);
 
-impl<'view, 'source> Weapon<'source> {
+impl<'source> Weapon<'source> {
     pub(crate) fn merits(&self) -> Vec<Merit<'source>> {
         self.0.merits()
     }

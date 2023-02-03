@@ -3,7 +3,7 @@ use std::collections::{hash_map::Entry, HashSet};
 use crate::{
     abilities::AbilityName,
     charms::{
-        charm::{Charm, CharmName, spirit::AddEclipseCharm},
+        charm::{spirit::AddEclipseCharm, Charm, CharmName},
         CharmError,
     },
     exaltation::{
@@ -78,12 +78,9 @@ impl<'source> Character<'source> {
     /// Adds an Eclipse Charm to the character.
     pub fn add_eclipse_charm(
         &mut self,
-        add_eclipse_charm: &'source AddEclipseCharm
+        add_eclipse_charm: &'source AddEclipseCharm,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let AddEclipseCharm {
-            name,
-            charm,
-        } = add_eclipse_charm;
+        let AddEclipseCharm { name, charm } = add_eclipse_charm;
         if let Exaltation::Exalt(exalt) = &mut self.exaltation {
             let actual_essence = exalt.essence.rating;
 

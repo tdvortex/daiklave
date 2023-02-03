@@ -417,12 +417,8 @@ impl<'source> Mortal<'source> {
         merit_name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(terrestrial) = &mut self.sorcery {
-            if terrestrial.archetype_name != archetype_name {
-                Err(CharacterMutationError::MeritError(MeritError::NotFound))
-            } else if terrestrial
-                .archetype_merits
-                .remove(merit_name)
-                .is_none()
+            if terrestrial.archetype_name != archetype_name
+                || terrestrial.archetype_merits.remove(merit_name).is_none()
             {
                 Err(CharacterMutationError::MeritError(MeritError::NotFound))
             } else {
@@ -481,13 +477,33 @@ impl<'source> Mortal<'source> {
         }
     }
 
-    pub fn add_martial_arts_specialty(&mut self, style_name: &str, specialty: &'source str) -> Result<&mut Self, CharacterMutationError> {
-        self.martial_arts_styles.get_mut(style_name).ok_or(CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound))?.ability.add_specialty(specialty)?;
+    pub fn add_martial_arts_specialty(
+        &mut self,
+        style_name: &str,
+        specialty: &'source str,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.martial_arts_styles
+            .get_mut(style_name)
+            .ok_or(CharacterMutationError::MartialArtsError(
+                MartialArtsError::StyleNotFound,
+            ))?
+            .ability
+            .add_specialty(specialty)?;
         Ok(self)
     }
 
-    pub fn remove_martial_arts_specialty(&mut self, style_name: &str, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
-        self.martial_arts_styles.get_mut(style_name).ok_or(CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound))?.ability.remove_specialty(specialty)?;
+    pub fn remove_martial_arts_specialty(
+        &mut self,
+        style_name: &str,
+        specialty: &str,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        self.martial_arts_styles
+            .get_mut(style_name)
+            .ok_or(CharacterMutationError::MartialArtsError(
+                MartialArtsError::StyleNotFound,
+            ))?
+            .ability
+            .remove_specialty(specialty)?;
         Ok(self)
     }
 }

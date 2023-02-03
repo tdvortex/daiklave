@@ -81,13 +81,15 @@ impl<'view, 'source> Character<'source> {
                     .filter_map(|(weapon_name, equipped)| self.weapons().get(weapon_name, equipped))
                     .find_map(|weapon| {
                         weapon.slotted_hearthstones().find_map(|hearthstone| {
-                            hearthstone.manse_and_demense().and_then(|(actual_manse, _)| {
-                                if actual_manse == manse_name {
-                                    Some(hearthstone.name())
-                                } else {
-                                    None
-                                }
-                            })
+                            hearthstone
+                                .manse_and_demense()
+                                .and_then(|(actual_manse, _)| {
+                                    if actual_manse == manse_name {
+                                        Some(hearthstone.name())
+                                    } else {
+                                        None
+                                    }
+                                })
                         })
                     })
             })
@@ -97,13 +99,15 @@ impl<'view, 'source> Character<'source> {
                     .filter_map(|armor_name| self.armor().get(armor_name))
                     .find_map(|armor| {
                         armor.slotted_hearthstones().find_map(|hearthstone| {
-                            hearthstone.manse_and_demense().and_then(|(actual_manse, _)| {
-                                if actual_manse == manse_name {
-                                    Some(hearthstone.name())
-                                } else {
-                                    None
-                                }
-                            })
+                            hearthstone
+                                .manse_and_demense()
+                                .and_then(|(actual_manse, _)| {
+                                    if actual_manse == manse_name {
+                                        Some(hearthstone.name())
+                                    } else {
+                                        None
+                                    }
+                                })
                         })
                     })
             })
@@ -113,13 +117,15 @@ impl<'view, 'source> Character<'source> {
                     .filter_map(|wonder_name| self.wonders().get(wonder_name))
                     .find_map(|wonder| {
                         wonder.slotted_hearthstones().find_map(|hearthstone| {
-                            hearthstone.manse_and_demense().and_then(|(actual_manse, _)| {
-                                if actual_manse == manse_name {
-                                    Some(hearthstone.name())
-                                } else {
-                                    None
-                                }
-                            })
+                            hearthstone
+                                .manse_and_demense()
+                                .and_then(|(actual_manse, _)| {
+                                    if actual_manse == manse_name {
+                                        Some(hearthstone.name())
+                                    } else {
+                                        None
+                                    }
+                                })
                         })
                     })
             })

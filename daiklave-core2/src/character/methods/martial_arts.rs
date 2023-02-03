@@ -47,7 +47,8 @@ impl<'view, 'source> Character<'source> {
         style_name: &'source str,
         specialty: &'source str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.add_martial_arts_specialty(style_name, specialty)?;
+        self.exaltation
+            .add_martial_arts_specialty(style_name, specialty)?;
         Ok(self)
     }
 
@@ -57,7 +58,8 @@ impl<'view, 'source> Character<'source> {
         style_name: &str,
         specialty: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.remove_martial_arts_specialty(style_name, specialty)?;
+        self.exaltation
+            .remove_martial_arts_specialty(style_name, specialty)?;
         Ok(self)
     }
 

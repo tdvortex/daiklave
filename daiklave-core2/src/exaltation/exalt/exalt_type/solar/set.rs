@@ -1,6 +1,11 @@
 use crate::CharacterMutation;
 
-use super::{builder::{SolarBuilder, DawnBuilder, ZenithBuilder, TwilightBuilder, NightBuilder, EclipseBuilder}, SolarMemo};
+use super::{
+    builder::{
+        DawnBuilder, EclipseBuilder, NightBuilder, SolarBuilder, TwilightBuilder, ZenithBuilder,
+    },
+    SolarMemo,
+};
 
 /// A character mutation to set the character to be a Solar with the given
 /// traits, overriding any previous Exaltation in the process.

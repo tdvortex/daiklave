@@ -2,13 +2,15 @@ use std::collections::hash_map::Entry;
 
 use crate::{
     abilities::{AbilityName, AbilityNameVanilla},
+    artifact::RemoveArtifact,
     exaltation::Exaltation,
     languages::language::LanguageMutation,
     merits::merit::{
         AddMerit, AddNonStackableMerit, AddStackableMerit, Merit, MeritError, MeritPrerequisite,
-        MeritSource, NonStackableMerit, RemoveMerit, StackableMerit, RemoveNonStackableMerit, RemoveSorceryArchetypeMerit, RemoveStackableMerit,
+        MeritSource, NonStackableMerit, RemoveMerit, RemoveNonStackableMerit,
+        RemoveSorceryArchetypeMerit, RemoveStackableMerit, StackableMerit,
     },
-    Character, CharacterMutationError, artifact::RemoveArtifact,
+    Character, CharacterMutationError,
 };
 
 impl<'source> Character<'source> {
@@ -157,7 +159,9 @@ impl<'source> Character<'source> {
             AddMerit::Sorcery(add_sorcery_archetype_merit) => {
                 self.add_sorcery_archetype_merit(add_sorcery_archetype_merit)
             }
-            AddMerit::Stackable(add_stackable_merit) => self.add_stackable_merit(add_stackable_merit),
+            AddMerit::Stackable(add_stackable_merit) => {
+                self.add_stackable_merit(add_stackable_merit)
+            }
         }
     }
 
@@ -167,13 +171,15 @@ impl<'source> Character<'source> {
         remove_merit: &RemoveMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
         match remove_merit {
-            RemoveMerit::Artifact(RemoveArtifact(artifact_name)) => self.remove_artifact(artifact_name.into()),
+            RemoveMerit::Artifact(RemoveArtifact(artifact_name)) => {
+                self.remove_artifact(artifact_name.into())
+            }
             RemoveMerit::Demense(demense) => self.remove_demense(demense),
             RemoveMerit::ExaltedHealing => self.remove_exalted_healing(),
             RemoveMerit::Hearthstone(hearthstone_name) => self.remove_hearthstone(hearthstone_name),
             RemoveMerit::Language(remove_language) => self.remove_language(remove_language),
-            RemoveMerit::Manse(name) => self.remove_manse(&name),
-            RemoveMerit::MartialArtist(style_name) => self.remove_martial_arts_style(&style_name),
+            RemoveMerit::Manse(name) => self.remove_manse(name),
+            RemoveMerit::MartialArtist(style_name) => self.remove_martial_arts_style(style_name),
             RemoveMerit::MortalSorcerer => {
                 if matches!(self.exaltation, Exaltation::Mortal(_)) {
                     self.remove_sorcery()
@@ -181,11 +187,13 @@ impl<'source> Character<'source> {
                     Err(CharacterMutationError::MeritError(MeritError::NotFound))
                 }
             }
-            RemoveMerit::NonStackable(RemoveNonStackableMerit { name: nonstackable_merit_name}) => self.remove_nonstackable_merit(nonstackable_merit_name),
+            RemoveMerit::NonStackable(RemoveNonStackableMerit {
+                name: nonstackable_merit_name,
+            }) => self.remove_nonstackable_merit(nonstackable_merit_name),
             RemoveMerit::Sorcery(RemoveSorceryArchetypeMerit {
                 archetype_name,
                 name: merit_name,
-            }) => self.remove_sorcery_archetype_merit(&archetype_name, &merit_name),
+            }) => self.remove_sorcery_archetype_merit(archetype_name, merit_name),
             RemoveMerit::Stackable(RemoveStackableMerit {
                 template_name,
                 detail,
@@ -220,8 +228,14 @@ impl<'source> Character<'source> {
         template_name: &str,
         detail: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let &key = self.stackable_merits.keys().find(|(k1, k2)| k1 == &template_name && k2 == &detail).ok_or(CharacterMutationError::MeritError(MeritError::NotFound))?;
-        self.stackable_merits.remove(&key).ok_or(CharacterMutationError::MeritError(MeritError::NotFound))?;
+        let &key = self
+            .stackable_merits
+            .keys()
+            .find(|(k1, k2)| k1 == &template_name && k2 == &detail)
+            .ok_or(CharacterMutationError::MeritError(MeritError::NotFound))?;
+        self.stackable_merits
+            .remove(&key)
+            .ok_or(CharacterMutationError::MeritError(MeritError::NotFound))?;
         Ok(self)
     }
 

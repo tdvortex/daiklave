@@ -3,7 +3,6 @@
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
-
 /// Structs related to a character's Abilities (skills) and specialties.
 pub mod abilities;
 
@@ -72,5 +71,6 @@ pub(crate) mod name;
 mod willpower;
 
 pub use character::{
-    Character, CharacterEventSource, CharacterMemo, CharacterMutation, CharacterMutationError, CharacterEvent
+    Character, CharacterEvent, CharacterEventSource, CharacterMemo, CharacterMutation,
+    CharacterMutationError,
 };

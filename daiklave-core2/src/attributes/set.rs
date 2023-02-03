@@ -17,7 +17,10 @@ impl SetAttribute {
         if dots > 5 {
             Err(AttributeError::InvalidRating)
         } else {
-            Ok(Self { name, dots: NonZeroU8::new(dots).ok_or(AttributeError::InvalidRating)? })
+            Ok(Self {
+                name,
+                dots: NonZeroU8::new(dots).ok_or(AttributeError::InvalidRating)?,
+            })
         }
     }
 }

@@ -8,7 +8,7 @@ use crate::{
     artifact::ArtifactName,
     charms::{
         charm::{
-            evocation::{EvokableName, AddEvocation},
+            evocation::{AddEvocation, EvokableName},
             Charm, CharmName,
         },
         CharmError,
@@ -23,12 +23,9 @@ impl<'source> Character<'source> {
     /// Adds an evocation to the character.
     pub fn add_evocation(
         &mut self,
-        add_evocation: &'source AddEvocation
+        add_evocation: &'source AddEvocation,
     ) -> Result<&mut Self, CharacterMutationError> {
-        let AddEvocation {
-            name,
-            evocation,
-        } = add_evocation;
+        let AddEvocation { name, evocation } = add_evocation;
         match evocation.evokable_name() {
             EvokableName::Hearthstone(hearthstone_id) => {
                 if self.hearthstones().get(hearthstone_id).is_none() {

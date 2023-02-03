@@ -5,7 +5,8 @@ use crate::{
     book_reference::BookReference,
     martial_arts::style::{
         AddMartialArtsStyle, MartialArtsStyleDetails, MartialArtsStyleName, MartialArtsStyleWeapon,
-    }, CharacterMutation,
+    },
+    CharacterMutation,
 };
 
 /// A Martial Arts style builder after at least one weapon has been specified.

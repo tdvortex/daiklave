@@ -2,7 +2,7 @@ use std::num::NonZeroU8;
 
 use crate::{
     exaltation::exalt::essence::{mote_commitment::OtherMoteCommitmentName, MotePoolName},
-    CharacterMutation,  
+    CharacterMutation,
 };
 
 /// A mutation to commit motes to an effect other than attuning to
