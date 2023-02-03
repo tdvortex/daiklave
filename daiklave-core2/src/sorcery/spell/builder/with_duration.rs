@@ -27,8 +27,8 @@ impl SpellBuilderWithDuration {
     }
 
     /// Provides a short summary of the Spell.
-    pub fn summary(mut self, summary: String) -> Self {
-        self.summary = Some(summary);
+    pub fn summary(mut self, summary: impl Into<String>) -> Self {
+        self.summary = Some(summary.into());
         self
     }
 
@@ -39,26 +39,26 @@ impl SpellBuilderWithDuration {
     }
 
     /// Describes the control spell bonus of the Spell, if any.
-    pub fn control_spell_description(mut self, description: String) -> Self {
-        self.control_spell_description = Some(description);
+    pub fn control_spell_description(mut self, description: impl Into<String>) -> Self {
+        self.control_spell_description = Some(description.into());
         self
     }
 
     /// Describes the methods opposing sorcerers may use to distort this spell.
-    pub fn distortion(mut self, goal_number: NonZeroU8, description: String) -> Self {
-        self.distortion = Some((goal_number, description));
+    pub fn distortion(mut self, goal_number: NonZeroU8, description: impl Into<String>) -> Self {
+        self.distortion = Some((goal_number, description.into()));
         self
     }
 
     /// Provides a description for the spell's effect.
-    pub fn description(self, description: String) -> SpellBuilderWithDescription {
+    pub fn description(self, description: impl Into<String>) -> SpellBuilderWithDescription {
         SpellBuilderWithDescription {
             name: self.name,
             book_reference: self.book_reference,
             summary: self.summary,
             cost: self.cost,
             duration: self.duration,
-            description,
+            description: description.into(),
             keywords: self.keywords,
             control_spell_description: self.control_spell_description,
             distortion: self.distortion,

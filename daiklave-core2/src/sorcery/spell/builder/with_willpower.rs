@@ -26,8 +26,8 @@ impl SpellBuilderWithWillpower {
     }
 
     /// Provides a short summary of the Spell.
-    pub fn summary(mut self, summary: String) -> Self {
-        self.summary = Some(summary);
+    pub fn summary(mut self, summary: impl Into<String>) -> Self {
+        self.summary = Some(summary.into());
         self
     }
 
@@ -38,26 +38,26 @@ impl SpellBuilderWithWillpower {
     }
 
     /// Describes the control spell bonus of the Spell, if any.
-    pub fn control_spell_description(mut self, description: String) -> Self {
-        self.control_spell_description = Some(description);
+    pub fn control_spell_description(mut self, description: impl Into<String>) -> Self {
+        self.control_spell_description = Some(description.into());
         self
     }
 
     /// Describes the methods opposing sorcerers may use to distort this spell.
-    pub fn distortion(mut self, goal_number: NonZeroU8, description: String) -> Self {
-        self.distortion = Some((goal_number, description));
+    pub fn distortion(mut self, goal_number: NonZeroU8, description: impl Into<String>) -> Self {
+        self.distortion = Some((goal_number, description.into()));
         self
     }
 
     /// Sets the duration of the Spell's effects. Often "Instant" but may
     /// be any defined string, such as "Until the next full moon".
-    pub fn duration(self, duration: String) -> SpellBuilderWithDuration {
+    pub fn duration(self, duration: impl Into<String>) -> SpellBuilderWithDuration {
         SpellBuilderWithDuration {
             name: self.name,
             book_reference: self.book_reference,
             summary: self.summary,
             cost: self.cost,
-            duration,
+            duration: duration.into(),
             keywords: self.keywords,
             control_spell_description: self.control_spell_description,
             distortion: self.distortion,

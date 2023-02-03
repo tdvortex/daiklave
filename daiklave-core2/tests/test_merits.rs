@@ -181,7 +181,7 @@ fn test_merits() {
     let mutation = CharacterMutation::SetAbility(AbilityNameVanilla::Occult, 3);
     event_source.apply_mutation(mutation).unwrap();
 
-    let add_sorcery = Sorcery::builder().terrestrial().archetype(SorceryArchetype::new("The Talisman of Ten Thousand Eyes".to_owned(), Some(BookReference::new(Book::CoreRulebook, 470)), "A phylactery of great sorcerous puissance[...]".to_owned()))
+    let add_sorcery = Sorcery::builder().terrestrial().add_archetype(SorceryArchetype::new("The Talisman of Ten Thousand Eyes".to_owned(), Some(BookReference::new(Book::CoreRulebook, 470)), "A phylactery of great sorcerous puissance[...]".to_owned()))
     .shaping_ritual(ShapingRitual::new("The Talisman of Ten Thousand Eyes".to_owned(), "Gain motes by stunting Shape Sorcery".to_owned(), Some(BookReference::new(Book::CoreRulebook, 470)), "When the sorcerer takes the first shape sorcery action to \
     begin casting a spell and stunts it with a description of \
     how she casts the spell through the talisman or draws on \

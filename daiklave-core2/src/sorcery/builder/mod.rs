@@ -8,10 +8,7 @@ pub use celestial::{
 pub use solar::{
     SolarSorceryBuilder, SolarSorceryBuilderWithArchetype, SolarSorceryBuilderWithShapingRitual,
 };
-pub use terrestrial::{
-    TerrestrialSorceryBuilder, TerrestrialSorceryBuilderWithArchetype,
-    TerrestrialSorceryBuilderWithShapingRitual,
-};
+pub use terrestrial::*;
 
 /// A builder to create a sorcerer's initiation into a new level of srocery.
 pub struct SorceryBuilder;

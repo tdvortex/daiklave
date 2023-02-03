@@ -2,11 +2,14 @@ use daiklave_core2::{
     abilities::{AbilityName, AbilityNameQualified, AbilityNameVanilla},
     armor::armor_item::ArmorWeightClass,
     attributes::AttributeName,
+    book_reference::{Book, BookReference},
     exaltation::exalt::exalt_type::solar::caste::EclipseAbility,
     martial_arts::style::AddMartialArtsStyle,
     mutations::{SetConcept, SetName, SetSolar},
-    CharacterEvent, CharacterEventSource, CharacterMutationError, sorcery::{AddSorcery, AddSorceryArchetype},
+    sorcery::{AddSorcery, SorceryCircle},
+    CharacterEvent, CharacterEventSource, CharacterMutationError,
 };
+use std::num::NonZeroU8;
 
 #[test]
 fn lib_doctest() {
@@ -101,6 +104,7 @@ fn lib_doctest_inner() -> Result<(), CharacterMutationError> {
 
     // Add a martial arts style and give it some dots
     AddMartialArtsStyle::name("Single Point Shining Into the Void Style")
+        .book_reference(BookReference::new(Book::CoreRulebook, 434))
         .description(
             "Single Point Shining Into the Void is a sword style that \
     emphasizes blinding speed and deadly-perfect finishing \
@@ -113,8 +117,80 @@ fn lib_doctest_inner() -> Result<(), CharacterMutationError> {
     AbilityNameQualified::MartialArts("Single Point Shining Into the Void Style")
         .set_dots(3)?
         .apply_event(&mut event_source)?;
+    let character = event_source.as_character()?;
+    assert_eq!(
+        character
+            .merits()
+            .iter()
+            .find(|merit| {
+                merit.name() == "Martial Artist"
+                    && matches!(
+                        merit.detail(),
+                        Some("Single Point Shining Into the Void Style")
+                    )
+            })
+            .unwrap()
+            .dots(),
+        4
+    );
+    assert_eq!(
+        character
+            .abilities()
+            .get(AbilityNameQualified::MartialArts(
+                "Single Point Shining Into the Void Style"
+            ))
+            .unwrap()
+            .dots(),
+        3
+    );
 
     // Add Sorcery
+    AddSorcery::terrestrial_circle()
+        .archetype_name("Pact with an Ifrit Lord")
+        .book_reference(BookReference::new(Book::CoreRulebook, 467))
+        .description("You have stood in the court of one of the ifrits or another elemental lord of fire[...]")
+        .shaping_ritual_summary("Gain motes by extinguishing flames")
+        .description("Whenever the sorcerer takes a shape sorcery action, she \
+            may draw an additional (Essence) sorcerous motes from \
+            any fire within medium range, coaxing its power into her \
+            spell[...]")
+        .control_spell_name("Cirrus Skiff")
+        .book_reference(BookReference::new(Book::CoreRulebook, 471))
+        .sorcerous_motes(NonZeroU8::new(15).unwrap())
+        .willpower(NonZeroU8::new(1).unwrap())
+        .duration("Until ended")
+        .summary("Summon a cloud to ride on")
+        .description("The sorcerer calls down a Cirrus Skiff to bear her skyward, \
+            a small white puffy cloud just large enough for her and \
+            one other passenger to ride upon[...]")
+        .control_spell_description("A character who knows Cirrus Skiff as her control spell \
+            may cast it with an Indefinite duration[...]")
+        .distortion(NonZeroU8::new(7).unwrap(), "Distorting a Cirrus Skiff \
+        weighs it down, turning the cloud into a heavy, dense fog \
+        for a scene[...]")
+        .apply_event(&mut event_source)?;
+
+    let character = event_source.as_character()?;
+    assert!(character
+        .sorcery()
+        .unwrap()
+        .archetype("Pact with an Ifrit Lord")
+        .is_some());
+    assert!(character
+        .sorcery()
+        .unwrap()
+        .shaping_ritual(SorceryCircle::Terrestrial)
+        .is_some());
+    assert_eq!(
+        character
+            .sorcery()
+            .unwrap()
+            .control_spell(SorceryCircle::Terrestrial)
+            .unwrap()
+            .name(),
+        "Cirrus Skiff"
+    );
+
     // Set native language
     // Add a second language
     // Add an artifact
@@ -125,10 +201,8 @@ fn lib_doctest_inner() -> Result<(), CharacterMutationError> {
     // Add a Solar Charm
     // Add an Eclipse Charm
     // Add a Martial Arts Charm
-    /// Add a Spell
+    // Add a Spell
     // Add an Evocation
     // Raise Willpower rating
-
-
     Ok(())
 }

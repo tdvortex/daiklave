@@ -648,7 +648,7 @@ fn test_spells() {
 
     let add_sorcery = Sorcery::builder()
         .terrestrial()
-        .archetype(SorceryArchetype::new(
+        .add_archetype(SorceryArchetype::new(
             "Scarred by Nightmares".to_owned(),
             Some(BookReference::new(Book::CoreRulebook, 468)),
             "Perhaps you were a child lost in the warped depths of the \

@@ -3,7 +3,7 @@ use crate::sorcery::{
     SorceryArchetypeDetails, SorceryError,
 };
 
-use super::TerrestrialSorceryBuilderWithShapingRitual;
+use super::{TerrestrialShapingRitualBuilder, TerrestrialSorceryBuilderWithShapingRitual};
 
 /// A Terrestrial Sorcery builder after the archetype has been specified.
 pub struct TerrestrialSorceryBuilderWithArchetype {
@@ -12,6 +12,20 @@ pub struct TerrestrialSorceryBuilderWithArchetype {
 }
 
 impl TerrestrialSorceryBuilderWithArchetype {
+    /// Starts building a new shaping ritual for the archetype by supplying 
+    /// a short, unique summary for it.
+    pub fn shaping_ritual_summary(
+        self,
+        summary: impl Into<String>,
+    ) -> TerrestrialShapingRitualBuilder {
+        TerrestrialShapingRitualBuilder {
+            archetype_name: self.archetype_name,
+            archetype: self.archetype,
+            summary: summary.into(),
+            book_reference: None,
+        }
+    }
+
     /// Sets the shaping ritual for the circle.
     pub fn shaping_ritual(
         self,

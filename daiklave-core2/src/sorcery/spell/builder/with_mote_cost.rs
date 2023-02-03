@@ -30,8 +30,8 @@ impl SpellBuilderWithMoteCost {
     }
 
     /// Provides a short summary of the Spell.
-    pub fn summary(mut self, summary: String) -> Self {
-        self.summary = Some(summary);
+    pub fn summary(mut self, summary: impl Into<String>) -> Self {
+        self.summary = Some(summary.into());
         self
     }
 
@@ -42,14 +42,14 @@ impl SpellBuilderWithMoteCost {
     }
 
     /// Describes the control spell bonus of the Spell, if any.
-    pub fn control_spell_description(mut self, description: String) -> Self {
-        self.control_spell_description = Some(description);
+    pub fn control_spell_description(mut self, description: impl Into<String>) -> Self {
+        self.control_spell_description = Some(description.into());
         self
     }
 
     /// Describes the methods opposing sorcerers may use to distort this spell.
-    pub fn distortion(mut self, goal_number: NonZeroU8, description: String) -> Self {
-        self.distortion = Some((goal_number, description));
+    pub fn distortion(mut self, goal_number: NonZeroU8, description: impl Into<String>) -> Self {
+        self.distortion = Some((goal_number, description.into()));
         self
     }
 

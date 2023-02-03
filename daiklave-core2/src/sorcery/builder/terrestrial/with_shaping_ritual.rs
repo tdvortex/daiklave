@@ -1,8 +1,11 @@
 use crate::sorcery::{
-    add::AddSorceryCircle, archetype::SorceryArchetypeName,
-    circles::terrestrial::AddTerrestrialSpell, AddSorcery, AddTerrestrialSorcery,
-    ShapingRitualDetails, SorceryArchetypeDetails,
+    archetype::SorceryArchetypeName,
+    circles::terrestrial::AddTerrestrialSpell,
+    spell::{builder::SpellBuilder, SpellName},
+    AddTerrestrialSorcery, ShapingRitualDetails, SorceryArchetypeDetails,
 };
+
+use super::control_spell_builder::TerrestrialControlSpellBuilder;
 
 /// A Terrestrial sorcery builder after the shaping ritual has been specified.
 pub struct TerrestrialSorceryBuilderWithShapingRitual {
@@ -13,17 +16,27 @@ pub struct TerrestrialSorceryBuilderWithShapingRitual {
 }
 
 impl TerrestrialSorceryBuilderWithShapingRitual {
+    /// Starts building a new control spell for the circle initiation with the 
+    /// given name.
+    pub fn control_spell_name(self, name: impl Into<SpellName>) -> TerrestrialControlSpellBuilder {
+        TerrestrialControlSpellBuilder {
+            archetype_name: self.archetype_name,
+            archetype: self.archetype,
+            shaping_ritual_summary: self.shaping_ritual_summary,
+            shaping_ritual: self.shaping_ritual,
+            spell_builder: SpellBuilder::name(name.into()),
+        }
+    }
+
     /// Sets the control spell for the circle and ends the builder.
-    pub fn control_spell(self, control_spell: AddTerrestrialSpell) -> AddSorcery {
-        AddSorcery(Box::new(AddSorceryCircle::Terrestrial(
-            AddTerrestrialSorcery {
-                archetype_name: self.archetype_name,
-                archetype: self.archetype,
-                shaping_ritual_summary: self.shaping_ritual_summary,
-                shaping_ritual: self.shaping_ritual,
-                control_spell_name: control_spell.name,
-                control_spell: control_spell.spell,
-            },
-        )))
+    pub fn control_spell(self, control_spell: AddTerrestrialSpell) -> AddTerrestrialSorcery {
+        AddTerrestrialSorcery {
+            archetype_name: self.archetype_name,
+            archetype: self.archetype,
+            shaping_ritual_summary: self.shaping_ritual_summary,
+            shaping_ritual: self.shaping_ritual,
+            control_spell_name: control_spell.name,
+            control_spell: control_spell.spell,
+        }
     }
 }
