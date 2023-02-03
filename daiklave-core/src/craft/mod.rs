@@ -1,87 +1,47 @@
-pub mod diff;
-use crate::abilities::{Ability, AbilityName, AbilityRating, NonZeroAbility};
-use eyre::{eyre, Result};
-use serde::{Deserialize, Serialize};
+mod craft_memo;
+mod name;
+pub use name::CraftName;
 
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq, Clone)]
-pub(crate) struct CraftAbilities(Vec<(String, AbilityRating)>);
+use std::collections::HashMap;
 
-impl CraftAbilities {
-    pub(crate) fn get_rating(&self, focus: &str) -> Option<&AbilityRating> {
-        self.0.iter().find_map(|(known_focus, rating)| {
-            if known_focus.as_str() == focus {
-                Some(rating)
-            } else {
-                None
-            }
-        })
-    }
+pub(crate) use craft_memo::CraftMemo;
 
-    fn get_rating_mut(&mut self, focus: &str) -> Option<&mut AbilityRating> {
-        self.0.iter_mut().find_map(|(known_focus, rating)| {
-            if known_focus.as_str() == focus {
-                Some(rating)
-            } else {
-                None
-            }
-        })
-    }
+use crate::{abilities::AbilityRating, CharacterMutationError};
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct Craft<'source>(pub(crate) HashMap<&'source str, AbilityRating<'source>>);
 
-    fn add_focus(&mut self, focus: String, dots: u8) -> Result<()> {
+impl<'source> Craft<'source> {
+    pub fn set_dots(
+        &mut self,
+        focus: &'source str,
+        dots: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
         if dots == 0 {
-            Err(eyre!("Cannot add a Craft focus with zero dots"))
+            self.0.remove(focus);
         } else {
-            self.0.push((
-                focus,
-                AbilityRating::NonZero(NonZeroAbility {
-                    dots,
-                    specialties: Vec::new(),
-                }),
-            ));
             self.0
-                .sort_by(|(a_focus, _), (b_focus, _)| a_focus.as_str().cmp(b_focus.as_str()));
-            self.0
-                .dedup_by(|(a_focus, _), (b_focus, _)| a_focus.as_str() == b_focus.as_str());
-            Ok(())
+                .entry(focus)
+                .or_insert(AbilityRating::Zero)
+                .set_dots(dots)?;
         }
+        Ok(self)
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = Ability> {
-        self.0.iter().map(|(focus_string, rating)| Ability {
-            name: AbilityName::Craft(focus_string.as_str()),
-            rating,
-        })
+    pub fn dots(&self, focus: &str) -> u8 {
+        self.0.get(focus).map_or(0, |ability| ability.dots())
     }
 
-    pub fn set_dots(&mut self, focus: &str, dots: u8) {
-        if dots == 0 {
-            self.0
-                .iter()
-                .enumerate()
-                .find_map(|(index, (known_focus, _))| {
-                    if known_focus.as_str() == focus {
-                        Some(index)
-                    } else {
-                        None
-                    }
-                })
-                .map(|delete_index| self.0.remove(delete_index));
-        } else if let Some(rating) = self.get_rating_mut(focus) {
-            rating.set_dots(dots);
-        } else {
-            self.add_focus(focus.to_owned(), dots).unwrap()
-        }
+    pub fn max(&self) -> u8 {
+        self.0
+            .values()
+            .map(|rating| rating.dots())
+            .max()
+            .unwrap_or(0)
     }
 
-    pub fn add_specialty(&mut self, focus: &str, specialty: String) -> Result<()> {
-        self.get_rating_mut(focus)
-            .ok_or_else(|| eyre!("Zero-rated abilities cannot have specialties"))?
-            .add_specialty(specialty)
-    }
-
-    pub fn remove_specialty(&mut self, focus: &str, specialty: &str) -> Result<()> {
-        self.get_rating_mut(focus)
-            .ok_or_else(|| eyre!("Zero-rated abilities cannot have specialties"))?
-            .remove_specialty(specialty)
+    pub fn iter(&self) -> impl Iterator<Item = &'source str> + '_ {
+        let mut vec: Vec<&str> = self.0.keys().copied().collect();
+        vec.sort();
+        vec.into_iter()
     }
 }

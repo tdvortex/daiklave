@@ -1,236 +1,191 @@
-mod builder;
-mod command;
-mod diff;
-use std::collections::HashMap;
+mod default;
 
-// mod guided; // Not sure about this; maybe Yew-only?
-pub use builder::CharacterBuilder;
-pub use diff::{CharacterBaseDiff, CharacterDiff};
-use eyre::{eyre, Result};
+mod event;
+pub use event::CharacterEvent;
+mod event_source;
+pub use event_source::CharacterEventSource;
 
-use crate::abilities::Abilities;
-use crate::abilities::Ability;
-use crate::abilities::AbilityName;
-use crate::abilities::AbilityNameVanilla;
-use crate::armor::Armor;
-use crate::attributes::Attributes;
-use crate::campaign::Campaign;
-use crate::charms::MartialArtsCharm;
-use crate::craft::CraftAbilities;
-use crate::exalt_type::ExaltType;
-use crate::health::Health;
-use crate::hearthstone::OwnedHearthstone;
-use crate::id::CharacterId;
-use crate::id::MartialArtsStyleId;
-use crate::id::OwnedHearthstoneId;
-use crate::id::WonderId;
-use crate::initiative::Initiative;
-use crate::intimacies::Intimacies;
-use crate::martial_arts::MartialArtistTraits;
-use crate::martial_arts::MartialArtsStyle;
-use crate::merits::Merits;
-use crate::player::Player;
-use crate::sorcery::Sorcerer;
-use crate::weapons::Weapons;
-use crate::wonder::Wonder;
-use serde::{Deserialize, Serialize};
+mod memo;
+pub use memo::CharacterMemo;
 
-/// The basic Character object, representing a full player character.
-/// This represents the state of a valid character at a given instant of a game.
-/// It is also the serialization format to be moved back and forth between client and server.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Clone)]
-pub struct Character {
-    id: CharacterId,
-    player: Player,
-    campaign: Option<Campaign>,
-    pub name: String,
-    pub concept: Option<String>,
-    pub willpower: Willpower,
-    pub experience: ExperiencePoints,
-    pub initiative: Initiative,
-    pub attributes: Attributes,
-    abilities: Abilities,
-    pub intimacies: Intimacies,
-    pub health: Health,
-    pub weapons: Weapons,
-    pub armor: Armor,
-    pub merits: Merits,
-    exalt_type: ExaltType,
-    craft_abilities: CraftAbilities,
-    martial_arts_styles: MartialArtistTraits,
-    unslotted_hearthstones: HashMap<OwnedHearthstoneId, OwnedHearthstone>,
-    wonders: HashMap<WonderId, Wonder>,
+mod methods;
+
+pub mod mutation;
+pub use mutation::{CharacterMutation, CharacterMutationError};
+
+mod redo;
+mod undo;
+pub use redo::Redo;
+pub use undo::Undo;
+
+use std::collections::{HashMap, HashSet};
+
+use crate::{
+    abilities::AbilitiesVanilla,
+    attributes::Attributes,
+    book_reference::BookReference,
+    craft::Craft,
+    exaltation::Exaltation,
+    experience::ExperiencePool,
+    health::Health,
+    hearthstones::{hearthstone::GeomancyLevel, UnslottedHearthstone},
+    intimacies::intimacy::{IntimacyLevel, IntimacyTypeMemo},
+    languages::language::LanguageMutation,
+    merits::merit::{NonStackableMeritInstance, StackableMeritInstance},
+    willpower::Willpower,
+};
+
+use self::mutation::{
+    AttuneArtifact, CommitMotes, EquipArmor, EquipWeapon, GainExaltExperience, GainExperience,
+    GainLimit, GainWillpower, HealDamage, RecoverMotes, ReduceLimit, RemoveCharm, RemoveFlaw,
+    RemoveMundaneArmor, RemoveMundaneWeapon, SetAttribute, SetConcept, SetEssenceRating,
+    SetHealthTrack, SetLimitTrigger, SetName, SetWillpowerRating, SlotHearthstone,
+    SpendExaltExperience, SpendExperience, SpendMotes, SpendWillpower, TakeDamage, UnequipWeapon,
+    UnslotHearthstone,
+};
+
+/// A borrowed instance of a Character which references a CharacterEventSource
+/// object.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Character<'source> {
+    pub(crate) name: &'source str,
+    pub(crate) concept: Option<&'source str>,
+    pub(crate) exaltation: Exaltation<'source>,
+    pub(crate) willpower: Willpower,
+    pub(crate) health: Health,
+    pub(crate) attributes: Attributes,
+    pub(crate) abilities: AbilitiesVanilla<'source>,
+    pub(crate) craft: Craft<'source>,
+    pub(crate) hearthstone_inventory: HashMap<&'source str, UnslottedHearthstone<'source>>,
+    pub(crate) demenses_no_manse: HashMap<&'source str, GeomancyLevel>,
+    pub(crate) stackable_merits:
+        HashMap<(&'source str, &'source str), &'source StackableMeritInstance>,
+    pub(crate) nonstackable_merits: HashMap<&'source str, &'source NonStackableMeritInstance>,
+    pub(crate) flaws: HashMap<&'source str, (Option<BookReference>, &'source str)>,
+    pub(crate) native_language: &'source LanguageMutation,
+    pub(crate) other_languages: HashSet<&'source LanguageMutation>,
+    pub(crate) intimacies: HashMap<&'source IntimacyTypeMemo, IntimacyLevel>,
+    pub(crate) experience: ExperiencePool,
 }
 
-impl Character {
-    pub fn blank(placeholder_id: i32, player: Player) -> Character {
-        Character::builder(placeholder_id, player)
-            .build()
-            .expect("Default CharacterBuilder should not error")
-    }
-
-    pub fn builder(placeholder_id: i32, player: Player) -> CharacterBuilder {
-        CharacterBuilder::default()
-            .with_placeholder_id(placeholder_id)
-            .with_player(player)
-            .with_name("New Character".to_owned())
-    }
-
-    pub fn id(&self) -> CharacterId {
-        self.id
-    }
-
-    pub fn player(&self) -> &Player {
-        &self.player
-    }
-
-    pub fn campaign(&self) -> &Option<Campaign> {
-        &self.campaign
-    }
-
-    pub fn get_ability(&self, ability_name_vanilla: AbilityNameVanilla) -> Ability {
-        self.abilities.get(ability_name_vanilla)
-    }
-
-    pub fn get_craft_ability(&self, focus: &str) -> Option<Ability> {
-        self.craft_abilities
-            .iter()
-            .find(|a| *a.name() == AbilityName::Craft(focus))
-    }
-
-    pub fn get_martial_arts_ability(&self, style_id: MartialArtsStyleId) -> Option<Ability> {
-        self.martial_arts_styles.get_ability(style_id)
-    }
-
-    pub fn martial_arts_iter(
-        &self,
-    ) -> impl Iterator<Item = (&MartialArtsStyle, Ability, &Vec<MartialArtsCharm>)> + '_ {
-        self.martial_arts_styles.iter()
-    }
-
-    pub fn set_ability_dots(&mut self, ability_name: AbilityNameVanilla, dots: u8) {
-        self.abilities.set_dots(ability_name, dots);
-    }
-
-    pub fn set_craft_ability_dots(&mut self, focus: &str, dots: u8) {
-        self.craft_abilities.set_dots(focus, dots);
-    }
-
-    pub fn set_martial_arts_ability_dots(
+impl<'source> Character<'source> {
+    /// Applies a specific CharacterMutation or returns an error.
+    pub fn apply_mutation(
         &mut self,
-        style_id: MartialArtsStyleId,
-        dots: u8,
-    ) -> Result<()> {
-        self.martial_arts_styles.set_dots(style_id, dots)
-    }
-
-    pub fn add_specialty(
-        &mut self,
-        ability_name: AbilityNameVanilla,
-        specialty: String,
-    ) -> Result<()> {
-        self.abilities.add_specialty(ability_name, specialty)
-    }
-
-    pub fn add_craft_specialty(&mut self, focus: &str, specialty: String) -> Result<()> {
-        self.craft_abilities.add_specialty(focus, specialty)
-    }
-
-    pub fn add_martial_arts_specialty(
-        &mut self,
-        style_id: MartialArtsStyleId,
-        specialty: String,
-    ) -> Result<()> {
-        self.martial_arts_styles.add_specialty(style_id, specialty)
-    }
-
-    pub fn remove_specialty(
-        &mut self,
-        ability_name: AbilityNameVanilla,
-        specialty: &str,
-    ) -> Result<()> {
-        self.abilities.remove_specialty(ability_name, specialty)
-    }
-
-    pub fn remove_craft_specialty(&mut self, focus: &str, specialty: &str) -> Result<()> {
-        self.craft_abilities.remove_specialty(focus, specialty)
-    }
-
-    pub fn remove_martial_arts_specialty(
-        &mut self,
-        style_id: MartialArtsStyleId,
-        specialty: &str,
-    ) -> Result<()> {
-        self.martial_arts_styles
-            .remove_specialty(style_id, specialty)
-    }
-}
-
-impl Sorcerer for Character {
-    fn shaping_rituals(&self) -> Option<Vec<&crate::sorcery::ShapingRitual>> {
-        self.exalt_type.shaping_rituals()
-    }
-
-    fn spells(&self) -> Option<Vec<(&crate::charms::Spell, bool)>> {
-        self.exalt_type.spells()
-    }
-}
-
-// TODO: refactor to current + spent with total() method
-#[derive(Debug, Default, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct ExperiencePoints {
-    pub current: u16,
-    pub total: u16,
-}
-
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
-pub(crate) struct CraftingExperience {
-    pub _silver: u16,
-    pub _gold: u16,
-    pub _white: u16,
-    pub _major_slots: u16,
-}
-
-pub(crate) enum _CraftingExperienceType {
-    Silver,
-    Gold,
-    White,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct Willpower {
-    pub current: u8,
-    pub maximum: u8,
-}
-
-impl Default for Willpower {
-    fn default() -> Self {
-        Self {
-            current: 5,
-            maximum: 5,
-        }
-    }
-}
-
-impl Willpower {
-    pub fn recover_all(&mut self) {
-        self.current = self.current.max(self.maximum);
-    }
-
-    pub fn recover_one(&mut self) {
-        self.current = self.maximum.min(self.current + 1);
-    }
-
-    pub fn gain_one(&mut self) {
-        self.current += 1;
-    }
-
-    pub fn spend_one(&mut self) -> Result<()> {
-        if self.current == 0 {
-            Err(eyre!("Cannot spend willpower while at zero"))
-        } else {
-            self.current -= 1;
-            Ok(())
+        mutation: &'source CharacterMutation,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        match mutation {
+            CharacterMutation::SetName(SetName(name)) => self.set_name(name.as_str()),
+            CharacterMutation::SetConcept(SetConcept(concept)) => {
+                self.set_concept(concept.as_str())
+            }
+            CharacterMutation::RemoveConcept => self.remove_concept(),
+            CharacterMutation::SetMortal => self.set_mortal(),
+            CharacterMutation::SetSolar(set_solar) => self.set_solar(set_solar),
+            CharacterMutation::SpendMotes(SpendMotes { first, amount }) => {
+                self.spend_motes(*first, *amount)
+            }
+            CharacterMutation::CommitMotes(CommitMotes {
+                effect_name,
+                first,
+                amount,
+            }) => self.commit_motes(effect_name.as_str(), *first, *amount),
+            CharacterMutation::RecoverMotes(RecoverMotes(amount)) => self.recover_motes(*amount),
+            CharacterMutation::UncommitMotes(uncommit_motes) => self.uncommit_motes(uncommit_motes),
+            CharacterMutation::SetEssenceRating(SetEssenceRating(rating)) => {
+                self.set_essence_rating(*rating)
+            }
+            CharacterMutation::SetWillpowerRating(SetWillpowerRating(dots)) => {
+                self.set_willpower_rating(*dots)
+            }
+            CharacterMutation::TakeDamage(TakeDamage { level, amount }) => {
+                self.take_damage(*level, amount.get())
+            }
+            CharacterMutation::HealDamage(HealDamage(amount)) => self.heal_damage(amount.get()),
+            CharacterMutation::SetAttribute(SetAttribute { name, dots }) => {
+                self.set_attribute(*name, dots.get())
+            }
+            CharacterMutation::SetAbility(set_ability) => self.set_ability_dots(set_ability),
+            CharacterMutation::AddSpecialty(add_specialty) => self.add_specialty(add_specialty),
+            CharacterMutation::RemoveSpecialty(remove_specialty) => {
+                self.remove_specialty(remove_specialty)
+            }
+            CharacterMutation::AddMundaneWeapon(add_mundane_weapon) => {
+                self.add_mundane_weapon(add_mundane_weapon)
+            }
+            CharacterMutation::EquipWeapon(EquipWeapon { weapon_name, hand }) => {
+                self.equip_weapon(weapon_name.into(), *hand)
+            }
+            CharacterMutation::UnequipWeapon(UnequipWeapon { name, equipped }) => {
+                self.unequip_weapon(name.into(), *equipped)
+            }
+            CharacterMutation::RemoveMundaneWeapon(RemoveMundaneWeapon { name, quantity }) => {
+                (1..=quantity.get()).try_fold(self, |acc, _| acc.remove_mundane_weapon(name))
+            }
+            CharacterMutation::AddMundaneArmor(add_mundane_armor) => {
+                self.add_mundane_armor(add_mundane_armor)
+            }
+            CharacterMutation::EquipArmor(EquipArmor(name)) => self.equip_armor(name.into()),
+            CharacterMutation::RemoveMundaneArmor(RemoveMundaneArmor(name)) => {
+                self.remove_mundane_armor(name.as_str())
+            }
+            CharacterMutation::UnequipArmor => self.unequip_armor(),
+            CharacterMutation::SlotHearthstone(SlotHearthstone {
+                artifact_name,
+                hearthstone_name,
+            }) => self.slot_hearthstone(artifact_name.into(), hearthstone_name),
+            CharacterMutation::UnslotHearthstone(UnslotHearthstone(hearthstone_name)) => {
+                self.unslot_hearthstone(hearthstone_name)
+            }
+            CharacterMutation::AttuneArtifact(AttuneArtifact {
+                artifact_name,
+                first,
+            }) => self.attune_artifact(artifact_name.into(), *first),
+            CharacterMutation::SetNativeLanguage(language_mutation) => {
+                self.set_native_language(language_mutation)
+            }
+            CharacterMutation::AddCharm(add_charm) => self.add_charm(add_charm),
+            CharacterMutation::RemoveCharm(RemoveCharm(charm_name)) => {
+                self.remove_charm(charm_name.into())
+            }
+            CharacterMutation::AddFlaw(add_flaw) => self.add_flaw(add_flaw),
+            CharacterMutation::RemoveFlaw(RemoveFlaw(name)) => self.remove_flaw(name),
+            CharacterMutation::AddIntimacy(add_intimacy) => self.add_intimacy(add_intimacy),
+            CharacterMutation::RemoveIntimacy(remove_intimcay) => {
+                self.remove_intimacy(remove_intimcay)
+            }
+            CharacterMutation::GainLimit(GainLimit(amount)) => self.gain_limit(*amount),
+            CharacterMutation::ReduceLimit(ReduceLimit(amount)) => self.reduce_limit(*amount),
+            CharacterMutation::SetLimitTrigger(SetLimitTrigger(trigger)) => {
+                self.set_limit_trigger(trigger)
+            }
+            CharacterMutation::GainExperience(GainExperience(amount)) => {
+                self.gain_base_experience(*amount)
+            }
+            CharacterMutation::SpendExperience(SpendExperience(amount)) => {
+                self.spend_base_experience(*amount)
+            }
+            CharacterMutation::GainExaltExperience(GainExaltExperience(amount)) => {
+                self.gain_exalt_experience(*amount)
+            }
+            CharacterMutation::SpendExaltExperience(SpendExaltExperience(amount)) => {
+                self.spend_exalt_experience(*amount)
+            }
+            CharacterMutation::RemoveSorcery => self.remove_sorcery(),
+            CharacterMutation::GainWillpower(GainWillpower(amount)) => self.gain_willpower(*amount),
+            CharacterMutation::SpendWillpower(SpendWillpower(amount)) => {
+                self.spend_willpower(*amount)
+            }
+            CharacterMutation::SetHealthTrack(SetHealthTrack(hashmap)) => {
+                self.set_health_track(hashmap)
+            }
+            CharacterMutation::AddSorcery(add_sorcery) => self.add_sorcery(add_sorcery),
+            CharacterMutation::AddMerit(add_merit) => self.add_merit(add_merit),
+            CharacterMutation::RemoveMerit(remove_merit) => self.remove_merit(remove_merit),
+            CharacterMutation::AddLanguage(add_language) => self.add_language(add_language),
+            CharacterMutation::RemoveLanguage(remove_language) => {
+                self.remove_language(remove_language)
+            }
         }
     }
 }

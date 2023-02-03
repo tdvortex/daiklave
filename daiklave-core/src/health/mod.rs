@@ -1,170 +1,168 @@
-use serde::{Deserialize, Serialize};
-pub(crate) mod diff;
-pub use diff::HealthDiff;
-use eyre::Result;
+mod damage_level;
+mod heal_damage;
+mod health_iter;
+mod set;
+mod take_damage;
+mod wound_penalty;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+pub use damage_level::DamageLevel;
+pub use heal_damage::HealDamage;
+pub use set::SetHealthTrack;
+pub use take_damage::TakeDamage;
+pub use wound_penalty::WoundPenalty;
+
+use serde::{Deserialize, Serialize};
+
+use crate::CharacterMutationError;
+
+use self::health_iter::HealthIter;
+
+/// Struct for a character's health track.
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 pub struct Health {
-    health_boxes: Vec<HealthBox>,
+    pub(crate) zero_boxes: u8,
+    pub(crate) minus_one_boxes: u8,
+    pub(crate) minus_two_boxes: u8,
+    pub(crate) minus_four_boxes: u8,
+    pub(crate) incapacitated_boxes: u8,
+    pub(crate) bashing_damage: u8,
+    pub(crate) lethal_damage: u8,
+    pub(crate) aggravated_damage: u8,
 }
 
 impl Default for Health {
     fn default() -> Self {
         Self {
-            health_boxes: vec![
-                HealthBox::new(WoundPenalty::Zero),
-                HealthBox::new(WoundPenalty::MinusOne),
-                HealthBox::new(WoundPenalty::MinusOne),
-                HealthBox::new(WoundPenalty::MinusTwo),
-                HealthBox::new(WoundPenalty::MinusTwo),
-                HealthBox::new(WoundPenalty::MinusFour),
-                HealthBox::new(WoundPenalty::Incapacitated),
-            ],
+            zero_boxes: 1,
+            minus_one_boxes: 2,
+            minus_two_boxes: 2,
+            minus_four_boxes: 1,
+            incapacitated_boxes: 1,
+            bashing_damage: 0,
+            lethal_damage: 0,
+            aggravated_damage: 0,
         }
-    }
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Copy)]
-pub struct HealthBox {
-    wound_penalty: WoundPenalty,
-    damage: DamageLevel,
-}
-
-impl HealthBox {
-    fn new(wound_penalty: WoundPenalty) -> Self {
-        Self {
-            wound_penalty,
-            damage: DamageLevel::None,
-        }
-    }
-
-    pub fn wound_penalty(&self) -> WoundPenalty {
-        self.wound_penalty
-    }
-
-    pub fn damage(&self) -> DamageLevel {
-        self.damage
     }
 }
 
 impl Health {
-    pub(crate) fn empty() -> Self {
-        Self {
-            health_boxes: Vec::new(),
+    /// Iterates over a health track as boxes from left to right. Lower wound
+    /// penalties (-0, -1) appear before higher wound penalties (-4, INC);
+    /// worse damage types (Agg, Lethal) appear before lighter wound penalties
+    /// (Bashing, no damage)
+    pub fn iter(&self) -> impl Iterator<Item = (WoundPenalty, Option<DamageLevel>)> {
+        HealthIter {
+            zero_boxes: self.zero_boxes,
+            minus_one_boxes: self.minus_one_boxes,
+            minus_two_boxes: self.minus_two_boxes,
+            minus_four_boxes: self.minus_four_boxes,
+            incapacitated_boxes: self.incapacitated_boxes,
+            bashing_damage: self.bashing_damage,
+            lethal_damage: self.lethal_damage,
+            aggravated_damage: self.aggravated_damage,
         }
     }
 
-    pub fn damage(&self) -> (u8, u8, u8) {
-        self.health_boxes
-            .iter()
-            .fold(
-                (0, 0, 0),
-                |(bashing, lethal, aggravated), health_box| match health_box.damage {
-                    DamageLevel::None => (bashing, lethal, aggravated),
-                    DamageLevel::Bashing => (bashing + 1, lethal, aggravated),
-                    DamageLevel::Lethal => (bashing, lethal + 1, aggravated),
-                    DamageLevel::Aggravated => (bashing, lethal, aggravated + 1),
-                },
-            )
-    }
-
-    pub fn heal_all_damage(&mut self) {
-        self.health_boxes
-            .iter_mut()
-            .for_each(|health_box| health_box.damage = DamageLevel::None);
-    }
-
-    pub fn set_damage(&mut self, mut bashing: u8, mut lethal: u8, mut aggravated: u8) {
-        // Note: excess damage is dropped, not rolled over
-        self.heal_all_damage();
-        self.health_boxes.iter_mut().for_each(|health_box| {
-            match (&mut bashing, &mut lethal, &mut aggravated) {
-                (0, 0, 0) => {}
-                (bashing, 0, 0) => {
-                    health_box.damage = DamageLevel::Bashing;
-                    *bashing -= 1;
-                }
-                (_, lethal, 0) => {
-                    health_box.damage = DamageLevel::Lethal;
-                    *lethal -= 1;
-                }
-                (_, _, aggravated) => {
-                    health_box.damage = DamageLevel::Aggravated;
-                    *aggravated -= 1;
-                }
-            }
-        });
-    }
-
-    fn sort_boxes(&mut self) {
-        let (bashing, lethal, aggravated) = self.damage();
-        self.heal_all_damage();
-        self.health_boxes
-            .sort_by(|a, b| a.wound_penalty.cmp(&b.wound_penalty));
-        self.set_damage(bashing, lethal, aggravated);
-    }
-
-    pub fn health_boxes(&self) -> &Vec<HealthBox> {
-        &self.health_boxes
-    }
-
+    /// The character's current wound penalty, given their current damage
+    /// amount.
     pub fn current_wound_penalty(&self) -> WoundPenalty {
-        let (bashing, lethal, aggravated) = self.damage();
-        let total_damage: usize = (bashing + lethal + aggravated).into();
-        if total_damage == 0 {
-            WoundPenalty::Zero
+        let mut damage = self.bashing_damage + self.lethal_damage + self.aggravated_damage;
+        if damage <= self.zero_boxes {
+            return WoundPenalty::Zero;
         } else {
-            self.health_boxes[total_damage - 1].wound_penalty
+            damage -= self.zero_boxes;
+        }
+
+        if damage <= self.minus_one_boxes {
+            return WoundPenalty::MinusOne;
+        } else {
+            damage -= self.minus_one_boxes;
+        }
+
+        if damage <= self.minus_two_boxes {
+            return WoundPenalty::MinusTwo;
+        } else {
+            damage -= self.minus_two_boxes;
+        }
+
+        if damage <= self.minus_four_boxes {
+            WoundPenalty::MinusFour
+        } else {
+            WoundPenalty::Incapacitated
         }
     }
 
-    pub fn set_health_boxes(&mut self, wound_penalties: &[WoundPenalty]) {
-        let (bashing, lethal, aggravated) = self.damage();
-        *self = Health::empty();
-        for wound_penalty in wound_penalties.iter() {
-            self.health_boxes.push(HealthBox::new(*wound_penalty));
-        }
-        self.sort_boxes();
-        self.set_damage(bashing, lethal, aggravated);
-    }
+    pub(crate) fn take_damage(
+        &mut self,
+        damage_level: DamageLevel,
+        amount: u8,
+    ) -> Result<&mut Self, CharacterMutationError> {
+        let total_health = self.zero_boxes
+            + self.minus_one_boxes
+            + self.minus_two_boxes
+            + self.minus_four_boxes
+            + self.incapacitated_boxes;
 
-    pub fn add_health_box(&mut self, wound_penalty: WoundPenalty) {
-        self.health_boxes.push(HealthBox::new(wound_penalty));
-        self.sort_boxes();
-    }
-
-    pub fn remove_health_box(&mut self, wound_penalty: WoundPenalty) -> Result<()> {
-        // Attempt to preserve damage totals
-        let (bashing, lethal, aggravated) = self.damage();
-        self.heal_all_damage();
-
-        for i in 0..self.health_boxes.len() {
-            if self.health_boxes[i].wound_penalty == wound_penalty {
-                self.health_boxes.remove(i);
-                self.set_damage(bashing, lethal, aggravated);
-                return Ok(());
+        match damage_level {
+            DamageLevel::Bashing => {
+                self.bashing_damage += amount;
+            }
+            DamageLevel::Lethal => {
+                self.lethal_damage += amount;
+            }
+            DamageLevel::Aggravated => {
+                self.aggravated_damage += amount;
             }
         }
-        Err(eyre::eyre!(
-            "no health box with wound penalty {:?}",
-            wound_penalty
-        ))
+
+        while self.bashing_damage + self.lethal_damage + self.aggravated_damage > total_health {
+            if self.bashing_damage >= 2 {
+                // Bashing damage rolls over into lethal
+                self.bashing_damage -= 2;
+                self.lethal_damage += 1;
+            } else if self.bashing_damage == 1 && self.lethal_damage >= 1 {
+                // If full up with lethal and still have 1 bashing damage,
+                // upgrades lethal to aggravated
+                self.bashing_damage -= 1;
+                self.lethal_damage -= 1;
+                self.aggravated_damage += 1;
+            } else if self.lethal_damage >= 2 {
+                // If full up with lethal, starts upgrading to aggravated
+                self.lethal_damage -= 2;
+                self.aggravated_damage += 1;
+            } else {
+                // If full up with aggravated, all other damage is irrelevant
+                self.bashing_damage = 0;
+                self.lethal_damage = 0;
+                self.aggravated_damage = total_health;
+            }
+        }
+
+        Ok(self)
     }
-}
 
-#[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize)]
-pub enum WoundPenalty {
-    Zero,
-    MinusOne,
-    MinusTwo,
-    MinusFour,
-    Incapacitated,
-}
+    pub(crate) fn heal_damage(&mut self, amount: u8) -> Result<&mut Self, CharacterMutationError> {
+        if amount == 0 {
+            return Ok(self);
+        }
+        let mut amount = amount;
+        let bashing_healed = self.bashing_damage.min(amount);
+        self.bashing_damage -= bashing_healed;
+        amount -= bashing_healed;
 
-#[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize)]
-pub enum DamageLevel {
-    None,
-    Bashing,
-    Lethal,
-    Aggravated,
+        if amount == 0 {
+            return Ok(self);
+        }
+        let lethal_healed = self.lethal_damage.min(amount);
+        self.lethal_damage -= lethal_healed;
+        amount -= lethal_healed;
+
+        if amount == 0 {
+            return Ok(self);
+        }
+        let aggravated_healed = self.aggravated_damage.min(amount);
+        self.aggravated_damage -= aggravated_healed;
+
+        Ok(self)
+    }
 }

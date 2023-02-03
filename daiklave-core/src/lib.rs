@@ -1,95 +1,76 @@
-#![allow(clippy::large_enum_variant)] // TODO: box stuff where needed
-// #![warn(missing_docs)]
+#![warn(missing_docs)]
 //! **Daiklave** is a Rust character sheet application, designed to be as
 //! flexible as a paper sheet, as easy to use as a virtual tabletop (VTT),
 //! with full Discord integration for over-the-internet play.
 
-/// Defines the Interface for accessing character abilities (aka skills) and
-/// specialties.
+/// Structs related to a character's Abilities (skills) and specialties.
 pub mod abilities;
 
-/// Defines the AnimaLevel enum.
-pub mod anima;
-
-/// Defines constructors and types for individual armor pieces (ArmorItem),
-/// as well as the interface to own and equip them.
-pub mod armor;
-
-pub mod artifact;
-
-/// Defines the interface for character attributes (Strength, Intelligence,
-/// etc.).
+/// Structs related to a character's Attributes.
 pub mod attributes;
 
-mod brainstorming;
+/// Structs related to a character's armor.
+pub mod armor;
 
-/// Defines the properties of a campaign, to which players and characters
-/// may be added.
-pub mod campaign;
+/// General properties of artifacts.
+pub mod artifact;
 
-/// Defines he core Character struct, and its builders. Also includes values
-/// that are common to all player characters with simple interfaces, including
-/// Willpower and Experience.
-pub mod character;
+/// Official page references.
+pub mod book_reference;
 
+/// Resources that are common across multiple types of Charms. Individual Charm
+/// type definitions are recorded separately.
 pub mod charms;
-pub mod craft;
 
-/// Defines a DataSource field, allowing for resources (Merits, Charms,
-/// Weapons, etc.) to be specified from either an official sourcebook
-/// or with a custom creator Id.
-pub mod data_source;
+/// Traits which depend on being Mortal or Exalted.
+pub mod exaltation;
 
-/// Defines the Essence trait and MotePool interface, which is shared by
-/// most Exalt varieties.
-pub mod essence;
+/// A character's Experience points.
+pub mod experience;
 
-/// Defines a trait to allow a character to switch between various Exalt
-/// types (as well as Mortal and MortalSorcerer).
-pub(crate) mod exalt_type;
+/// Flaws, which can earn extra experience or add an interesting dimension to
+/// a character.
+pub mod flaws;
 
-/// Defines the Health interface for damage and healing.
+// A character builder with additional logic for bonus points, free starting
+// dots, and other constraints.
+// pub mod guided;
+
+/// The Health struct and methods related to damage and healing.
 pub mod health;
 
-pub mod hearthstone;
+/// Hearthstones logic
+pub mod hearthstones;
 
-/// Defines an Id enum to uniquely identify a resource, both client-side
-/// and database-side.
-pub mod id;
-
-pub mod initiative;
-
-/// Defines the Intimacy item and its collection, Intimacies.
+/// Character Intimacy logic
 pub mod intimacies;
 
-/// Defines the Limit track for Celestial Exalted (Solars and Lunars).
-pub mod limit;
+/// Languages of the Realm and Threshold
+pub mod languages;
 
-/// Defines the configuration related to Martial Arts, including
-/// MartialArtsStyles, the MartialArts ability, and MartialArtsCharms.
+/// Martial Arts style logic
 pub mod martial_arts;
 
-/// Defines the structure of an individual Merit and the Merits collection.
+/// Merits logic
 pub mod merits;
 
-/// Defines a Player, who may own Characters and participate in Campaigns.
-pub mod player;
+/// All of the ways a character can be atomically updated.
+pub mod mutations;
 
-/// TODO: delete this, fold important stuff into Merits
-pub mod prerequisite;
-
-/// Defines the Solar Exalt type, including its five Castes and its unique
-/// systems (such as Supernal abilities and Eclipse charms).
-pub mod solar;
-
-/// Defines the Sorcery interface.
+/// Sorcery logic
 pub mod sorcery;
 
-/// Defines the Weapon interface for creating weaponry (including daiklaves!)
-/// and the character Weapons interface for adding, removing, and unequipping
-/// them.
+/// Logic for building and equipping weapons
 pub mod weapons;
 
-pub mod wonder;
+mod character;
+pub(crate) mod concept;
+pub use concept::ConceptError;
+pub(crate) mod craft;
+pub(crate) mod name;
+mod willpower;
 
-pub use character::Character;
+pub use character::{
+    Character, CharacterEvent, CharacterEventSource, CharacterMemo, CharacterMutation,
+    CharacterMutationError,
+};
