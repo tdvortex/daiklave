@@ -7,7 +7,7 @@ use crate::{
             celestial::AddCelestialSorcery, solar::AddSolarSorcery,
             terrestrial::AddTerrestrialSorcery,
         },
-        spell::SpellMutation,
+        spell::{AddSpell},
         AddSorcery, AddSorceryCircle, Sorcery,
     },
     Character, CharacterMutationError,
@@ -123,18 +123,19 @@ impl<'view, 'source> Character<'source> {
     /// Removes a merit from a Sorcery Archetype owned by a character
     pub fn remove_sorcery_archetype_merit(
         &mut self,
-        name: &str,
+        sorcery_archetype_name: &str,
+        merit_name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        self.exaltation.remove_sorcery_archetype_merit(name)?;
+        self.exaltation.remove_sorcery_archetype_merit(sorcery_archetype_name, merit_name)?;
         Ok(self)
     }
 
     /// Adds a Spell to the character.
     pub fn add_spell(
         &mut self,
-        name: &'source str,
-        spell: &'source SpellMutation,
+        add_spell: &'source AddSpell
     ) -> Result<&mut Self, CharacterMutationError> {
+        let AddSpell { name, spell } = add_spell;
         self.exaltation.add_spell(name, spell)?;
         Ok(self)
     }

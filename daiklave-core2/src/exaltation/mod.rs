@@ -988,14 +988,15 @@ impl<'view, 'source> Exaltation<'source> {
 
     pub fn remove_sorcery_archetype_merit(
         &mut self,
-        name: &str,
+        sorcery_archetype_name: &str,
+        merit_name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         match self {
             Exaltation::Mortal(mortal) => {
-                mortal.remove_sorcery_archetype_merit(name)?;
+                mortal.remove_sorcery_archetype_merit(sorcery_archetype_name, merit_name)?;
             }
             Exaltation::Exalt(exalt) => {
-                exalt.remove_sorcery_archetype_merit(name)?;
+                exalt.remove_sorcery_archetype_merit(sorcery_archetype_name, merit_name)?;
             }
         }
         Ok(self)

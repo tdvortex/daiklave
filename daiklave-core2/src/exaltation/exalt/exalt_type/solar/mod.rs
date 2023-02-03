@@ -260,11 +260,12 @@ impl<'source> Solar<'source> {
 
     pub(crate) fn remove_sorcery_archetype_merit(
         &mut self,
-        name: &str,
+        archetype_name: &str,
+        merit_name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.sorcery {
             Some(SolarSorcererView::Terrestrial(terrestrial)) => {
-                if terrestrial.archetype_merits.remove(name).is_none() {
+                if terrestrial.archetype_name != archetype_name && terrestrial.archetype_merits.remove(merit_name).is_none() {
                     Err(CharacterMutationError::MeritError(MeritError::NotFound))
                 } else {
                     Ok(self)
@@ -274,7 +275,7 @@ impl<'source> Solar<'source> {
                 if !celestial
                     .archetypes
                     .iter_mut()
-                    .any(|(_, (_, merits))| merits.remove(name).is_some())
+                    .any(|(&actual_archetype_name, (_, merits))| actual_archetype_name == archetype_name && merits.remove(merit_name).is_some())
                 {
                     Err(CharacterMutationError::MeritError(MeritError::NotFound))
                 } else {
@@ -285,7 +286,7 @@ impl<'source> Solar<'source> {
                 if !solar
                     .archetypes
                     .iter_mut()
-                    .any(|(_, (_, merits))| merits.remove(name).is_some())
+                    .any(|(&actual_archetype_name, (_, merits))| actual_archetype_name == archetype_name && merits.remove(merit_name).is_some())
                 {
                     Err(CharacterMutationError::MeritError(MeritError::NotFound))
                 } else {

@@ -863,11 +863,12 @@ impl<'view, 'source> Exalt<'source> {
 
     pub fn remove_sorcery_archetype_merit(
         &mut self,
-        name: &str,
+        archetype_name: &str,
+        merit_name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         match &mut self.exalt_type {
             ExaltType::Solar(solar) => {
-                solar.remove_sorcery_archetype_merit(name)?;
+                solar.remove_sorcery_archetype_merit(archetype_name, merit_name)?;
             }
         }
         Ok(self)

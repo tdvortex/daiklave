@@ -170,7 +170,7 @@ impl<'source> Character<'source> {
             RemoveMerit::Artifact(RemoveArtifact(artifact_name)) => self.remove_artifact(artifact_name.into()),
             RemoveMerit::Demense(demense) => self.remove_demense(demense),
             RemoveMerit::ExaltedHealing => self.remove_exalted_healing(),
-            RemoveMerit::Hearthstone(hearthstone) => self.remove_hearthstone(&hearthstone_name),
+            RemoveMerit::Hearthstone(hearthstone_name) => self.remove_hearthstone(hearthstone_name),
             RemoveMerit::Language(remove_language) => self.remove_language(remove_language),
             RemoveMerit::Manse(name) => self.remove_manse(&name),
             RemoveMerit::MartialArtist(style_name) => self.remove_martial_arts_style(&style_name),

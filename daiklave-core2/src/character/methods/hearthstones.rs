@@ -3,9 +3,11 @@ use std::collections::hash_map::Entry;
 use crate::{
     artifact::ArtifactName,
     hearthstones::{
-        hearthstone::{HearthstoneTemplate, AddHearthstone}, HearthstoneError, HearthstoneOrigin,
-        HearthstoneStability, Hearthstones, UnslottedHearthstone,
+        hearthstone::{AddHearthstone},
+        HearthstoneError, HearthstoneOrigin, HearthstoneStability, Hearthstones,
+        UnslottedHearthstone,
     },
+    merits::merit::manse::AddManse,
     Character, CharacterMutationError,
 };
 
@@ -18,11 +20,14 @@ impl<'view, 'source> Character<'source> {
     /// Adds a manse (and demense and hearthstone) to the character.
     pub fn add_manse(
         &mut self,
-        manse_name: &'source str,
-        demense_name: &'source str,
-        hearthstone_name: &'source str,
-        template: &'source HearthstoneTemplate,
+        add_manse: &'source AddManse,
     ) -> Result<&mut Self, CharacterMutationError> {
+        let AddManse {
+            manse_name,
+            demense_name,
+            hearthstone: AddHearthstone { name: hearthstone_name, template },
+        } = add_manse;
+
         let unslotted = UnslottedHearthstone {
             details: (&template.details).into(),
             origin: match template.stability {
@@ -60,7 +65,7 @@ impl<'view, 'source> Character<'source> {
     ) -> Result<&mut Self, CharacterMutationError> {
         let AddHearthstone {
             name: hearthstone_name,
-            template
+            template,
         } = add_hearthstone;
 
         let unslotted = UnslottedHearthstone {

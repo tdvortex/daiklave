@@ -413,12 +413,15 @@ impl<'source> Mortal<'source> {
 
     pub fn remove_sorcery_archetype_merit(
         &mut self,
-        sorcery_archetype_merit_name: &str,
+        archetype_name: &str,
+        merit_name: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
         if let Some(terrestrial) = &mut self.sorcery {
-            if terrestrial
+            if terrestrial.archetype_name != archetype_name {
+                Err(CharacterMutationError::MeritError(MeritError::NotFound))
+            } else if terrestrial
                 .archetype_merits
-                .remove(sorcery_archetype_merit_name)
+                .remove(merit_name)
                 .is_none()
             {
                 Err(CharacterMutationError::MeritError(MeritError::NotFound))
