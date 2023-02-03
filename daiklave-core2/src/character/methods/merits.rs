@@ -6,9 +6,9 @@ use crate::{
     languages::language::LanguageMutation,
     merits::merit::{
         AddMerit, AddNonStackableMerit, AddStackableMerit, Merit, MeritError, MeritPrerequisite,
-        MeritSource, NonStackableMerit, RemoveMerit, StackableMerit,
+        MeritSource, NonStackableMerit, RemoveMerit, StackableMerit, RemoveNonStackableMerit, RemoveSorceryArchetypeMerit, RemoveStackableMerit,
     },
-    Character, CharacterMutationError,
+    Character, CharacterMutationError, artifact::RemoveArtifact, mutations::RemoveLanguage,
 };
 
 impl<'source> Character<'source> {
@@ -130,17 +130,67 @@ impl<'source> Character<'source> {
     /// Adds a merit to the character.
     pub fn add_merit(
         &mut self,
-        _add_merit: &'source AddMerit,
+        add_merit: &'source AddMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
-        todo!()
+        match &add_merit {
+            AddMerit::Artifact(add_artifact) => self.add_artifact(add_artifact),
+            AddMerit::Demense(add_demense) => self.add_demense(add_demense),
+            AddMerit::ExaltedHealing => self.add_exalted_healing(),
+            AddMerit::Hearthstone(add_hearthstone) => self.add_hearthstone(add_hearthstone),
+            AddMerit::Language(add_language) => self.add_language(add_language),
+            AddMerit::Manse(add_manse) => self.add_manse(add_manse),
+            AddMerit::MartialArtist(add_martial_arts_style) => {
+                self.add_martial_arts_style(add_martial_arts_style)
+            }
+            AddMerit::MortalSorcerer(add_terrestrial_sorcery) => {
+                if matches!(self.exaltation, Exaltation::Mortal(_)) {
+                    self.add_terrestrial_sorcery(add_terrestrial_sorcery)
+                } else {
+                    Err(CharacterMutationError::MeritError(
+                        MeritError::PrerequisitesNotMet,
+                    ))
+                }
+            }
+            AddMerit::NonStackable(add_nonstackable_merit) => {
+                self.add_nonstackable_merit(add_nonstackable_merit)
+            }
+            AddMerit::Sorcery(add_sorcery_archetype_merit) => {
+                self.add_sorcery_archetype_merit(add_sorcery_archetype_merit)
+            }
+            AddMerit::Stackable(add_stackable_merit) => self.add_stackable_merit(add_stackable_merit),
+        }
     }
 
     /// Removes a merit from the character.
     pub fn remove_merit(
         &mut self,
-        _remove_merit: &RemoveMerit,
+        remove_merit: &RemoveMerit,
     ) -> Result<&mut Self, CharacterMutationError> {
-        todo!()
+        match remove_merit {
+            RemoveMerit::Artifact(RemoveArtifact(artifact_name)) => self.remove_artifact(artifact_name.into()),
+            RemoveMerit::Demense(demense) => self.remove_demense(demense),
+            RemoveMerit::ExaltedHealing => self.remove_exalted_healing(),
+            RemoveMerit::Hearthstone(hearthstone) => self.remove_hearthstone(&hearthstone_name),
+            RemoveMerit::Language(remove_language) => self.remove_language(remove_language),
+            RemoveMerit::Manse(name) => self.remove_manse(&name),
+            RemoveMerit::MartialArtist(style_name) => self.remove_martial_arts_style(&style_name),
+            RemoveMerit::MortalSorcerer => {
+                if matches!(self.exaltation, Exaltation::Mortal(_)) {
+                    self.remove_sorcery()
+                } else {
+                    Err(CharacterMutationError::MeritError(MeritError::NotFound))
+                }
+            }
+            RemoveMerit::NonStackable(RemoveNonStackableMerit { name: nonstackable_merit_name}) => self.remove_nonstackable_merit(nonstackable_merit_name),
+            RemoveMerit::Sorcery(RemoveSorceryArchetypeMerit {
+                archetype_name,
+                name: merit_name,
+            }) => self.remove_sorcery_archetype_merit(&archetype_name, &merit_name),
+            RemoveMerit::Stackable(RemoveStackableMerit {
+                template_name,
+                detail,
+            }) => self.remove_stackable_merit(template_name, detail),
+        }
     }
 
     /// Adds a stackable merit to the character.

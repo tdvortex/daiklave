@@ -44,19 +44,21 @@ impl<'view, 'source> Character<'source> {
     /// Adds a specialty to a Martial Arts style ability.
     pub fn add_martial_arts_specialty(
         &mut self,
-        _style_name: &'source str,
-        _specialty: &'source str,
+        style_name: &'source str,
+        specialty: &'source str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        todo!()
+        self.exaltation.add_martial_arts_specialty(style_name, specialty)?;
+        Ok(self)
     }
 
     /// Removes a specialty from a Martial Arts style ability.
     pub fn remove_martial_arts_specialty(
         &mut self,
-        _style_name: &str,
-        _specialty: &str,
+        style_name: &str,
+        specialty: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        todo!()
+        self.exaltation.remove_martial_arts_specialty(style_name, specialty)?;
+        Ok(self)
     }
 
     /// Adds a Martial Arts Charm to the character.

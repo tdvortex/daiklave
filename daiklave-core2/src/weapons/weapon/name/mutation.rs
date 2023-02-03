@@ -14,7 +14,7 @@ pub(crate) enum WeaponNameMutation {
 impl From<WeaponName<'_>> for WeaponNameMutation {
     fn from(name: WeaponName) -> Self {
         match name {
-            WeaponName::Unarmed => todo!(),
+            WeaponName::Unarmed => Self::Unarmed,
             WeaponName::Mundane(name) => Self::Mundane(name.into()),
             WeaponName::Artifact(name) => Self::Artifact(name.into()),
         }

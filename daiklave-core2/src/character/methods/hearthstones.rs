@@ -3,7 +3,7 @@ use std::collections::hash_map::Entry;
 use crate::{
     artifact::ArtifactName,
     hearthstones::{
-        hearthstone::HearthstoneTemplate, HearthstoneError, HearthstoneOrigin,
+        hearthstone::{HearthstoneTemplate, AddHearthstone}, HearthstoneError, HearthstoneOrigin,
         HearthstoneStability, Hearthstones, UnslottedHearthstone,
     },
     Character, CharacterMutationError,
@@ -56,9 +56,13 @@ impl<'view, 'source> Character<'source> {
     /// Adds a standalone hearthstone (without a manse) to the character.
     pub fn add_hearthstone(
         &mut self,
-        hearthstone_name: &'source str,
-        template: &'source HearthstoneTemplate,
+        add_hearthstone: &'source AddHearthstone,
     ) -> Result<&mut Self, CharacterMutationError> {
+        let AddHearthstone {
+            name: hearthstone_name,
+            template
+        } = add_hearthstone;
+
         let unslotted = UnslottedHearthstone {
             details: (&template.details).into(),
             origin: match template.stability {

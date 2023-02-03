@@ -20,14 +20,14 @@ use self::health_iter::HealthIter;
 /// Struct for a character's health track.
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 pub struct Health {
-    zero_boxes: u8,
-    minus_one_boxes: u8,
-    minus_two_boxes: u8,
-    minus_four_boxes: u8,
-    incapacitated_boxes: u8,
-    bashing_damage: u8,
-    lethal_damage: u8,
-    aggravated_damage: u8,
+    pub(crate) zero_boxes: u8,
+    pub(crate) minus_one_boxes: u8,
+    pub(crate) minus_two_boxes: u8,
+    pub(crate) minus_four_boxes: u8,
+    pub(crate) incapacitated_boxes: u8,
+    pub(crate) bashing_damage: u8,
+    pub(crate) lethal_damage: u8,
+    pub(crate) aggravated_damage: u8,
 }
 
 impl Default for Health {

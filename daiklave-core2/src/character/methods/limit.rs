@@ -12,7 +12,7 @@ impl<'source> Character<'source> {
     /// If the character has Limit, returns its details.
     pub fn limit(&self) -> Option<Limit<'source>> {
         match &self.exaltation {
-            Exaltation::Mortal(_) => todo!(),
+            Exaltation::Mortal(_) => None,
             Exaltation::Exalt(exalt) => exalt.exalt_type.limit(),
         }
     }
