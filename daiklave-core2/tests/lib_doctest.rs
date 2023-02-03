@@ -5,7 +5,7 @@ use daiklave_core2::{
     exaltation::exalt::exalt_type::solar::caste::EclipseAbility,
     martial_arts::style::AddMartialArtsStyle,
     mutations::{SetConcept, SetName, SetSolar},
-    CharacterEvent, CharacterEventSource, CharacterMutationError,
+    CharacterEvent, CharacterEventSource, CharacterMutationError, sorcery::{AddSorcery, AddSorceryArchetype},
 };
 
 #[test]
@@ -99,7 +99,7 @@ fn lib_doctest_inner() -> Result<(), CharacterMutationError> {
         2
     );
 
-    // Add a martial arts style
+    // Add a martial arts style and give it some dots
     AddMartialArtsStyle::name("Single Point Shining Into the Void Style")
         .description(
             "Single Point Shining Into the Void is a sword style that \
@@ -113,6 +113,22 @@ fn lib_doctest_inner() -> Result<(), CharacterMutationError> {
     AbilityNameQualified::MartialArts("Single Point Shining Into the Void Style")
         .set_dots(3)?
         .apply_event(&mut event_source)?;
+
+    // Add Sorcery
+    // Set native language
+    // Add a second language
+    // Add an artifact
+    // Add a hearthstone and manse
+    // Add a stackable merit
+    // Add a nonstackable merit
+    // Add a sorcery archetype merit
+    // Add a Solar Charm
+    // Add an Eclipse Charm
+    // Add a Martial Arts Charm
+    /// Add a Spell
+    // Add an Evocation
+    // Raise Willpower rating
+
 
     Ok(())
 }
