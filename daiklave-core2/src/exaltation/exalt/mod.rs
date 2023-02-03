@@ -1135,4 +1135,22 @@ impl<'view, 'source> Exalt<'source> {
             ExaltType::Solar(solar) => solar.eclipse_charms_iter(),
         }
     }
+
+    pub fn remove_spirit_charm(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
+        match &mut self.exalt_type {
+            ExaltType::Solar(solar) => {solar.remove_spirit_charm(name)?;}
+        }
+        Ok(self)
+    }
+
+
+    pub fn add_martial_arts_specialty(&mut self, style_name: &str, specialty: &'source str) -> Result<&mut Self, CharacterMutationError> {
+        self.martial_arts_styles.get_mut(style_name).ok_or(CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound))?.ability.add_specialty(specialty)?;
+        Ok(self)
+    }
+
+    pub fn remove_martial_arts_specialty(&mut self, style_name: &str, specialty: &str) -> Result<&mut Self, CharacterMutationError> {
+        self.martial_arts_styles.get_mut(style_name).ok_or(CharacterMutationError::MartialArtsError(MartialArtsError::StyleNotFound))?.ability.remove_specialty(specialty)?;
+        Ok(self)
+    }
 }

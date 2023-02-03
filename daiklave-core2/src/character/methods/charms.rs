@@ -1,9 +1,9 @@
 use crate::{
     charms::{
         charm::{AddCharm, CharmName},
-        Charms,
+        Charms, CharmError,
     },
-    Character, CharacterMutationError,
+    Character, CharacterMutationError, exaltation::Exaltation,
 };
 
 impl<'view, 'source> Character<'source> {
@@ -37,6 +37,19 @@ impl<'view, 'source> Character<'source> {
             CharmName::MartialArts(name) => self.remove_martial_arts_charm(name),
             CharmName::Solar(name) => self.remove_solar_charm(name),
             CharmName::Spell(name) => self.remove_spell(name),
+        }
+    }
+
+    /// Removes a Spirit Charm (typically an Eclipse charm) from the character.
+    pub fn remove_spirit_charm(
+        &mut self,
+        spirit_charm_name: &str
+    ) -> Result<&mut Self, CharacterMutationError> {
+        if let Exaltation::Exalt(exalt) = &mut self.exaltation {
+            exalt.remove_spirit_charm(spirit_charm_name)?;
+            Ok(self)
+        } else {
+            Err(CharacterMutationError::CharmError(CharmError::Mortal))
         }
     }
 }

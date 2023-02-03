@@ -9,7 +9,8 @@ use crate::{
 /// A mutation to remove a nonstackable merit from a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RemoveNonStackableMerit {
-    name: NonStackableMeritTemplateName,
+    /// The name of the merit to remove.
+    pub name: NonStackableMeritTemplateName,
 }
 
 impl RemoveNonStackableMerit {

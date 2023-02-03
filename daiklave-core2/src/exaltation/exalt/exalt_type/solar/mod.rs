@@ -464,6 +464,22 @@ impl<'source> Solar<'source> {
         }
         .into_iter()
     }
+
+    pub(crate) fn remove_spirit_charm(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
+        match &mut self.caste {
+            SolarCaste::Dawn(_)
+            | SolarCaste::Zenith(_)
+            | SolarCaste::Twilight(_)
+            | SolarCaste::Night(_) => Err(CharacterMutationError::CharmError(CharmError::NotFound)),
+            SolarCaste::Eclipse(eclipse) => {
+                if eclipse.eclipse_charms.remove(name).is_some() {
+                    Ok(self)
+                } else {
+                    Err(CharacterMutationError::CharmError(CharmError::NotFound))
+                }
+            }
+        }
+    }
 }
 
 impl<'view, 'source> Solar<'source> {

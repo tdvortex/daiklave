@@ -8,7 +8,7 @@ use crate::{
         AddMerit, AddNonStackableMerit, AddStackableMerit, Merit, MeritError, MeritPrerequisite,
         MeritSource, NonStackableMerit, RemoveMerit, StackableMerit, RemoveNonStackableMerit, RemoveSorceryArchetypeMerit, RemoveStackableMerit,
     },
-    Character, CharacterMutationError, artifact::RemoveArtifact, mutations::RemoveLanguage,
+    Character, CharacterMutationError, artifact::RemoveArtifact,
 };
 
 impl<'source> Character<'source> {
@@ -217,18 +217,12 @@ impl<'source> Character<'source> {
     /// Removes a nonstackable merit from the character.
     pub fn remove_stackable_merit(
         &mut self,
-        template_name: &'source str,
-        detail: &'source str,
+        template_name: &str,
+        detail: &str,
     ) -> Result<&mut Self, CharacterMutationError> {
-        if self
-            .stackable_merits
-            .remove(&(template_name, detail))
-            .is_some()
-        {
-            Ok(self)
-        } else {
-            Err(CharacterMutationError::MeritError(MeritError::NotFound))
-        }
+        let &key = self.stackable_merits.keys().find(|(k1, k2)| k1 == &template_name && k2 == &detail).ok_or(CharacterMutationError::MeritError(MeritError::NotFound))?;
+        self.stackable_merits.remove(&key).ok_or(CharacterMutationError::MeritError(MeritError::NotFound))?;
+        Ok(self)
     }
 
     fn validate_merit_prerequisites<P>(

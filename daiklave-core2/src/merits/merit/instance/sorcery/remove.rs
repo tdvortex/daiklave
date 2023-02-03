@@ -5,8 +5,10 @@ use super::SorceryArchetypeMeritName;
 /// A mutation to remove a sorcery archetype merit from a character.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RemoveSorceryArchetypeMerit {
-    archetype_name: SorceryArchetypeName,
-    name: SorceryArchetypeMeritName,
+    /// The name of the archetype to which the merit belongs.
+    pub archetype_name: SorceryArchetypeName,
+    /// The name of the merit.
+    pub name: SorceryArchetypeMeritName,
 }
 
 impl From<RemoveSorceryArchetypeMerit> for CharacterMutation {

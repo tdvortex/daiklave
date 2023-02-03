@@ -3,11 +3,10 @@ use std::collections::hash_map::Entry;
 use crate::{
     artifact::ArtifactName,
     hearthstones::{
-        hearthstone::{AddHearthstone},
-        HearthstoneError, HearthstoneOrigin, HearthstoneStability, Hearthstones,
-        UnslottedHearthstone,
+        hearthstone::AddHearthstone, HearthstoneError, HearthstoneOrigin, HearthstoneStability,
+        Hearthstones, UnslottedHearthstone,
     },
-    merits::merit::manse::AddManse,
+    merits::merit::{manse::AddManse, MeritError},
     Character, CharacterMutationError,
 };
 
@@ -25,7 +24,11 @@ impl<'view, 'source> Character<'source> {
         let AddManse {
             manse_name,
             demense_name,
-            hearthstone: AddHearthstone { name: hearthstone_name, template },
+            hearthstone:
+                AddHearthstone {
+                    name: hearthstone_name,
+                    template,
+                },
         } = add_manse;
 
         let unslotted = UnslottedHearthstone {
@@ -58,6 +61,78 @@ impl<'view, 'source> Character<'source> {
         Ok(self)
     }
 
+    fn hearthstone_name_for_manse(&self, manse_name: &str) -> Option<&'source str> {
+        self.hearthstone_inventory
+            .iter()
+            .find_map(
+                |(hearthstone_name, UnslottedHearthstone { details: _, origin })| {
+                    origin.manse_and_demense().and_then(|(actual_manse, _)| {
+                        if actual_manse == manse_name {
+                            Some(*hearthstone_name)
+                        } else {
+                            None
+                        }
+                    })
+                },
+            )
+            .or_else(|| {
+                self.weapons()
+                    .iter()
+                    .filter_map(|(weapon_name, equipped)| self.weapons().get(weapon_name, equipped))
+                    .find_map(|weapon| {
+                        weapon.slotted_hearthstones().find_map(|hearthstone| {
+                            hearthstone.manse_and_demense().and_then(|(actual_manse, _)| {
+                                if actual_manse == manse_name {
+                                    Some(hearthstone.name())
+                                } else {
+                                    None
+                                }
+                            })
+                        })
+                    })
+            })
+            .or_else(|| {
+                self.armor()
+                    .iter()
+                    .filter_map(|armor_name| self.armor().get(armor_name))
+                    .find_map(|armor| {
+                        armor.slotted_hearthstones().find_map(|hearthstone| {
+                            hearthstone.manse_and_demense().and_then(|(actual_manse, _)| {
+                                if actual_manse == manse_name {
+                                    Some(hearthstone.name())
+                                } else {
+                                    None
+                                }
+                            })
+                        })
+                    })
+            })
+            .or_else(|| {
+                self.wonders()
+                    .iter()
+                    .filter_map(|wonder_name| self.wonders().get(wonder_name))
+                    .find_map(|wonder| {
+                        wonder.slotted_hearthstones().find_map(|hearthstone| {
+                            hearthstone.manse_and_demense().and_then(|(actual_manse, _)| {
+                                if actual_manse == manse_name {
+                                    Some(hearthstone.name())
+                                } else {
+                                    None
+                                }
+                            })
+                        })
+                    })
+            })
+    }
+
+    /// Removes a manse (and its associated demense and hearthstone) from a character.
+    pub fn remove_manse(&mut self, name: &str) -> Result<&mut Self, CharacterMutationError> {
+        self.remove_hearthstone(
+            self.hearthstone_name_for_manse(name)
+                .ok_or(CharacterMutationError::MeritError(MeritError::NotFound))?,
+        )
+    }
+
     /// Adds a standalone hearthstone (without a manse) to the character.
     pub fn add_hearthstone(
         &mut self,
@@ -67,6 +142,13 @@ impl<'view, 'source> Character<'source> {
             name: hearthstone_name,
             template,
         } = add_hearthstone;
+
+        // Check to make sure the hearthstone doesn't already exist
+        if self.hearthstones().get(hearthstone_name).is_some() {
+            return Err(CharacterMutationError::HearthstoneError(
+                HearthstoneError::DuplicateHearthstone,
+            ));
+        }
 
         let unslotted = UnslottedHearthstone {
             details: (&template.details).into(),
