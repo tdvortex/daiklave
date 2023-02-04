@@ -1,3 +1,3 @@
 [workspace]
 
-members = ["daiklave-core", "daiklave-mongo", "daiklave-yew"]
+members = ["daiklave-axum", "daiklave-core", "daiklave-mongo", "daiklave-yew"]
