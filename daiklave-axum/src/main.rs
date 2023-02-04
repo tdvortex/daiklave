@@ -1,18 +1,24 @@
+#![warn(missing_docs)]
+//! daiklave-axum is the binary for the HTTP server component of the Daiklave 
+//! app. It is responsible for handing Discord webhook interactions; serving
+//! static content for the Yew application; and serving API requests from the
+//! Yew client (and potentially other 3rd party Exalted tools.)
+
+/// The module responsible for handling all interactions with Discord, both 
+/// responding to incoming POSTs and serving outgoing requests their API.
+pub mod discord;
+
 use std::net::SocketAddr;
 
 use axum::{
-    http::{HeaderMap, StatusCode},
-    response::{IntoResponse, Response},
-    routing::{get, post},
-    Json, Router, extract::{RawBody, State},
+    routing::{get, post}, Router,
 };
-use hyper::body::to_bytes;
-use ed25519_dalek::Verifier;
 
-use serenity::{all::Interaction, builder::CreateInteractionResponse};
+use crate::discord::{create_app_commands::create_app_commands, post_discord_handler};
 
+/// 
 #[derive(Clone)]
-struct AppState {
+pub struct AppState {
     public_key: ed25519_dalek::PublicKey,
 }
 
@@ -20,19 +26,28 @@ struct AppState {
 async fn main() {
     tracing_subscriber::fmt::init();
 
+    create_app_commands().await;
+
+    // Public key for verifying incoming POST requests from Discord
     let public_key = ed25519_dalek::PublicKey::from_bytes(
         std::env::var("DISCORD_PUBLIC_KEY")
-            .expect("Discord public key in environment")
+            .expect("Expected DISCORD_PUBLIC_KEY in environment")
             .as_bytes(),
     )
-    .expect("invalid public key");
+    .expect("Expected DISCORD_PUBLIC_KEY to be a valid ed25519 public key");
+    
+    // All resources needed to handle a request not contained in the request's 
+    // URL, headers, or body.
     let state = AppState { public_key };
 
+    // Initialize the router for the app.
     let app = Router::new()
         .route("/", get(root))
-        .route("/discord", post(discord_interaction))
+        .route("/discord", post(post_discord_handler))
         .with_state(state);
+   
 
+    // Start listening on port 3000
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     tracing::debug!("listening on {}", addr);
     axum::Server::bind(&addr)
@@ -43,49 +58,5 @@ async fn main() {
 
 async fn root() -> &'static str {
     "Hello, World!"
-}
-
-async fn discord_interaction(State(state): State<AppState>, headers: HeaderMap, RawBody(raw_body): RawBody) -> Response {
-    let AppState {
-        public_key
-    } = state;
-
-    // Verify discord interaction signature
-    let signature: ed25519_dalek::Signature = match headers.get("X-Signature-Ed25519").map(|header_value| header_value.as_bytes().try_into()) {
-        Some(Ok(signature)) => signature,
-        _ => {return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();}
-    };
-
-    let timestamp = match headers.get("X-Signature-Timestamp").map(|header_value| header_value.as_bytes()) {
-        Some(bytes) => bytes,
-        _ => {return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();}
-    };
-
-    let message_bytes = match to_bytes(raw_body).await {
-        Ok(bytes) => bytes,
-        Err(_) => {return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();}
-    };
-
-    let mut joined_message = timestamp.to_vec();
-    joined_message.extend_from_slice(&message_bytes);
-
-    if public_key.verify(&joined_message, &signature).is_err() {
-        return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
-    }
-
-    // Deserialize the raw message bytes into a typed Interaction
-    let interaction = match serde_json::from_slice::<Interaction>(&message_bytes) {
-        Ok(interaction) => interaction,
-        Err(_) => {return (StatusCode::BAD_REQUEST, ()).into_response();}
-    };
-
-    // Handle the interaction
-    match interaction {
-        Interaction::Ping(_) => Json(CreateInteractionResponse::Pong).into_response(),
-        Interaction::Command(_) => ().into_response(),
-        Interaction::Autocomplete(_) => ().into_response(),
-        Interaction::Component(_) => ().into_response(),
-        Interaction::Modal(_) => ().into_response(),
-    }
 }
 
