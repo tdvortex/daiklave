@@ -1,0 +1,5 @@
+[build]
+target = "index.html"
+dist = "../daiklave-axum/assets"
+public_url = "/assets/"
+release = true

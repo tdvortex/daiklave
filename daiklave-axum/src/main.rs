@@ -14,8 +14,10 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use axum_extra::routing::SpaRouter;
 
 use crate::discord::{create_app_commands::create_app_commands, post_discord_handler};
+use hex::decode;
 
 ///
 #[derive(Clone)]
@@ -27,15 +29,17 @@ pub struct AppState {
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    create_app_commands().await;
+    // Need to set up an endpoint first
+    // create_app_commands().await;
 
     // Public key for verifying incoming POST requests from Discord
-    let public_key = ed25519_dalek::PublicKey::from_bytes(
-        std::env::var("DISCORD_PUBLIC_KEY")
-            .expect("Expected DISCORD_PUBLIC_KEY in environment")
-            .as_bytes(),
-    )
-    .expect("Expected DISCORD_PUBLIC_KEY to be a valid ed25519 public key");
+    let hex_string = std::env::var("DISCORD_PUBLIC_KEY")
+        .expect("Expected DISCORD_PUBLIC_KEY in environment");
+    let hex_bytes = decode(hex_string)
+        .expect("Expected DISCORD_PUBLIC_KEY to be valid hexadecimal");
+
+    let public_key = ed25519_dalek::PublicKey::from_bytes(&hex_bytes)
+        .expect("Expected DISCORD_PUBLIC_KEY to be a valid ed25519 public key");
 
     // All resources needed to handle a request not contained in the request's
     // URL, headers, or body.
@@ -43,7 +47,7 @@ async fn main() {
 
     // Initialize the router for the app.
     let app = Router::new()
-        .route("/", get(root))
+        .merge(SpaRouter::new("/assets", "assets"))
         .route("/discord", post(post_discord_handler))
         .with_state(state);
 
@@ -54,8 +58,4 @@ async fn main() {
         .serve(app.into_make_service())
         .await
         .expect("unexpected error");
-}
-
-async fn root() -> &'static str {
-    "Hello, World!"
 }
