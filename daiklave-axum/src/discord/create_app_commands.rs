@@ -9,8 +9,10 @@ pub async fn create_app_commands() {
     // Get an access token so that we can update commands
     let http_client = reqwest::Client::new();
 
-    let client_secret = std::env::var("DISCORD_CLIENT_SECRET").expect("Expected DISCORD_CLIENT_SECRET in environment");
-    let application_id = std::env::var("DISCORD_TOKEN").expect("Expected DISCORD_TOKEN in environment");
+    let client_secret = std::env::var("DISCORD_CLIENT_SECRET")
+        .expect("Expected DISCORD_CLIENT_SECRET in environment");
+    let application_id =
+        std::env::var("DISCORD_TOKEN").expect("Expected DISCORD_TOKEN in environment");
     let token_url = format!("{}{}", DISCORD_API_URL_BASE, "/oauth2/token");
     let payload = json!({
         "grant_type": "client_credentials",
@@ -33,7 +35,8 @@ pub async fn create_app_commands() {
         .to_string();
 
     // Use that token to set application commands
-    let dev_guild_id = std::env::var("DISCORD_TEST_GUILD").expect("Expected DISCORD_TEST_GUILD in environment");
+    let dev_guild_id =
+        std::env::var("DISCORD_TEST_GUILD").expect("Expected DISCORD_TEST_GUILD in environment");
 
     let guild_application_commands_url = format!(
         "{}{}{}{}{}{}",
@@ -45,9 +48,14 @@ pub async fn create_app_commands() {
         "/commands"
     );
 
-    let commands = vec![
-        CreateCommand::new("version").description("Returns the Daiklave version being used")
-    ];
+    let commands =
+        vec![CreateCommand::new("version").description("Returns the Daiklave version being used")];
 
-    http_client.put(&guild_application_commands_url).bearer_auth(access_token).json(&commands).send().await.expect("Expected to be able to update dev guild app commands");
+    http_client
+        .put(&guild_application_commands_url)
+        .bearer_auth(access_token)
+        .json(&commands)
+        .send()
+        .await
+        .expect("Expected to be able to update dev guild app commands");
 }

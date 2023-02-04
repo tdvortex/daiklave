@@ -1,4 +1,4 @@
-use axum::response::{Response, IntoResponse};
+use axum::response::{IntoResponse, Response};
 use serenity::all::CommandInteraction;
 
 use crate::discord::handle_interaction::ok_empty_message;
