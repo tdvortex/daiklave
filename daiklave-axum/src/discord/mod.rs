@@ -31,42 +31,68 @@ pub async fn post_discord_handler(
     let AppState { public_key } = state;
 
     // Verify discord interaction signature
-    let signature: ed25519_dalek::Signature = match headers
-        .get("X-Signature-Ed25519")
-        .map(|header_value| header_value.as_bytes().try_into())
-    {
-        Some(Ok(signature)) => signature,
-        _ => {
-            return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
-        }
+    // Check that "X-Signature-Ed25519" header is present
+    let header_value = if let Some(header_value) = headers.get("X-Signature-Ed25519") {
+        header_value
+    } else {
+        return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
+    };
+    // Check that it is a value utf-8 string
+    let header_str = if let Ok(s) = header_value.to_str() {
+        s
+    } else {
+        return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
+    };
+    // Check that the utf-8 string decodes to a byte vec
+    let bytes = if let Ok(v) = hex::decode(header_str) {
+        v
+    } else {
+        return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
+    };
+    // Check that the bytes are a valid ed25519 signature
+    let signature = if let Ok(sig) = ed25519_dalek::Signature::from_bytes(&bytes) {
+        sig
+    } else {
+        return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
     };
 
-    let timestamp = match headers
-        .get("X-Signature-Timestamp")
-        .map(|header_value| header_value.as_bytes())
-    {
-        Some(bytes) => bytes,
-        _ => {
-            return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
-        }
+    // Check that "X-Signature-Timestamp" header is present
+    let header_value = if let Some(header_value) = headers.get("X-Signature-Timestamp") {
+        header_value
+    } else {
+        return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
+    };
+    // Check that it is a value utf-8 string
+    let timestamp_str = if let Ok(s) = header_value.to_str() {
+        s
+    } else {
+        return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
     };
 
-    let message_bytes = match to_bytes(raw_body).await {
-        Ok(bytes) => bytes,
-        Err(_) => {
-            return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
-        }
+    // Get the body of the message as bytes
+    let bytes = if let Ok(b) = to_bytes(raw_body).await {
+        b
+    } else {
+        return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
+    };
+    // Get the body of the message as a str
+    let body_str = if let Ok(s) = std::str::from_utf8(&bytes) {
+        s
+    } else {
+        return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
     };
 
-    let mut joined_message = timestamp.to_vec();
-    joined_message.extend_from_slice(&message_bytes);
+    // Concatenate the timestamp and the body into a single UTF-8 string
+    let joined_string = format!("{}{}", timestamp_str, body_str);
 
-    if public_key.verify(&joined_message, &signature).is_err() {
+    // Convert the joined utf-8 string back to bytes and verify it using the 
+    // public key and signature
+    if public_key.verify(joined_string.as_bytes(), &signature).is_err() {
         return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
     }
 
-    // Deserialize the raw message bytes into a typed Interaction
-    let interaction = match serde_json::from_slice::<Interaction>(&message_bytes) {
+    // Deserialize the raw message string into a typed Interaction
+    let interaction = match serde_json::from_str::<Interaction>(body_str) {
         Ok(interaction) => interaction,
         Err(_) => {
             return (StatusCode::BAD_REQUEST, ()).into_response();
