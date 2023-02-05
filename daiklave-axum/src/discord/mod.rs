@@ -9,8 +9,8 @@
 /// * Modal: sent when a user closes a modal popup.
 pub mod handle_interaction;
 
-use axum::Json;
 use axum::response::IntoResponse;
+use axum::Json;
 use axum::{
     extract::{RawBody, State},
     response::Response,
@@ -30,7 +30,10 @@ pub async fn post_discord_handler(
     headers: HeaderMap,
     RawBody(raw_body): RawBody,
 ) -> Response {
-    let AppState { public_key } = state;
+    let AppState {
+        discord_public_key: public_key,
+        _mongodb_client: _,
+    } = state;
 
     // Verify discord interaction signature
     // Check that "X-Signature-Ed25519" header is present
@@ -112,5 +115,5 @@ pub async fn post_discord_handler(
 
     // Handle the interaction. This should always return 200/OK.
     // This is isolated for readability and testability.
-    handle_interaction(&interaction)
+    handle_interaction(&interaction, &state)
 }

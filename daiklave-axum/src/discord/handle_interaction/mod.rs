@@ -27,6 +27,8 @@ use serenity::{
     builder::{CreateInteractionResponse, CreateInteractionResponseMessage},
 };
 
+use crate::AppState;
+
 /// Response to Discord with a message to tell the user that the message is 
 /// unrecognized, just to prevent an empty screen or a vague "message failed".
 pub fn unknown_command_message(command_name: &str) -> Response {
@@ -38,14 +40,14 @@ pub fn unknown_command_message(command_name: &str) -> Response {
 }
 
 /// Handles an interaction base on its type.
-pub fn handle_interaction(interaction: &Interaction) -> Response {
+pub fn handle_interaction(interaction: &Interaction, state: &AppState) -> Response {
     match &interaction {
         Interaction::Ping(_) => Json(CreateInteractionResponse::Pong).into_response(),
         Interaction::Command(command_interaction) => {
-            handle_command_interaction(command_interaction)
+            handle_command_interaction(command_interaction, state)
         }
-        Interaction::Autocomplete(autocomplete_interaction) => handle_autocomplete_interaction(autocomplete_interaction),
-        Interaction::Component(component_interaction) => handle_component_interaction(component_interaction),
-        Interaction::Modal(modal_submit) => handle_modal_interaction(modal_submit),
+        Interaction::Autocomplete(autocomplete_interaction) => handle_autocomplete_interaction(autocomplete_interaction, state),
+        Interaction::Component(component_interaction) => handle_component_interaction(component_interaction, state),
+        Interaction::Modal(modal_submit) => handle_modal_interaction(modal_submit, state),
     }
 }
