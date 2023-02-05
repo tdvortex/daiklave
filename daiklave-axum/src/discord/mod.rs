@@ -1,6 +1,3 @@
-/// The module for the initial definition of app commands in Discord.
-pub mod create_app_commands;
-
 /// The module for receiving and responding to POST requests from Discord
 /// to the interactions endpoint. Interactions may be one of the following:
 /// * Ping: used by Discord to confirm the endpoint is alive
@@ -24,8 +21,6 @@ use hyper::{HeaderMap, StatusCode};
 use serenity::all::Interaction;
 
 use crate::AppState;
-
-const DISCORD_API_URL_BASE: &str = "https://discord.com/api/v10/";
 
 /// The handler for POST requests to the Discord endpoint.
 pub async fn post_discord_handler(
@@ -79,5 +74,6 @@ pub async fn post_discord_handler(
     };
 
     // Handle the interaction. This should always return 200/OK.
+    // This is isolated for readability and testability.
     handle_interaction(&interaction)
 }

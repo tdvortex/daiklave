@@ -1,10 +1,11 @@
 use serde_json::{json, Value};
 use serenity::builder::CreateCommand;
 
-use super::DISCORD_API_URL_BASE;
+const DISCORD_API_URL_BASE: &str = "https://discord.com/api/v10/";
 
-/// Creates all app commands, both globally and in the dev server.
-pub async fn create_app_commands() {
+async fn create_app_commands() {
+    dotenvy::dotenv().unwrap();
+
     // Register all application commands in the dev server.
     // Get an access token so that we can update commands
     let http_client = reqwest::Client::new();
@@ -58,4 +59,8 @@ pub async fn create_app_commands() {
         .send()
         .await
         .expect("Expected to be able to update dev guild app commands");
+}
+
+fn main() {
+    futures::executor::block_on(create_app_commands());
 }

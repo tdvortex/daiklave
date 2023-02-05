@@ -11,15 +11,15 @@ pub mod discord;
 use std::net::SocketAddr;
 
 use axum::{
-    routing::{get, post},
+    routing::{post},
     Router,
 };
 use axum_extra::routing::SpaRouter;
 
-use crate::discord::{create_app_commands::create_app_commands, post_discord_handler};
+use crate::discord::{post_discord_handler};
 use hex::decode;
 
-///
+/// Any handles or resources not tied to an individual request.
 #[derive(Clone)]
 pub struct AppState {
     public_key: ed25519_dalek::PublicKey,
