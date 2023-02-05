@@ -9,6 +9,7 @@
 /// * Modal: sent when a user closes a modal popup.
 pub mod handle_interaction;
 
+use axum::Json;
 use axum::response::IntoResponse;
 use axum::{
     extract::{RawBody, State},
@@ -19,6 +20,7 @@ use handle_interaction::handle_interaction;
 use hyper::body::to_bytes;
 use hyper::{HeaderMap, StatusCode};
 use serenity::all::Interaction;
+use serenity::builder::{CreateInteractionResponse, CreateInteractionResponseMessage};
 
 use crate::AppState;
 
@@ -85,9 +87,12 @@ pub async fn post_discord_handler(
     // Concatenate the timestamp and the body into a single UTF-8 string
     let joined_string = format!("{}{}", timestamp_str, body_str);
 
-    // Convert the joined utf-8 string back to bytes and verify it using the 
+    // Convert the joined utf-8 string back to bytes and verify it using the
     // public key and signature
-    if public_key.verify(joined_string.as_bytes(), &signature).is_err() {
+    if public_key
+        .verify(joined_string.as_bytes(), &signature)
+        .is_err()
+    {
         return (StatusCode::UNAUTHORIZED, "invalid request signature").into_response();
     }
 
@@ -95,7 +100,13 @@ pub async fn post_discord_handler(
     let interaction = match serde_json::from_str::<Interaction>(body_str) {
         Ok(interaction) => interaction,
         Err(_) => {
-            return (StatusCode::BAD_REQUEST, ()).into_response();
+            return (
+                StatusCode::OK,
+                Json(CreateInteractionResponse::Message(
+                    CreateInteractionResponseMessage::new().content("Could not parse command"),
+                )),
+            )
+                .into_response();
         }
     };
 
