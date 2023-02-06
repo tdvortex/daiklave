@@ -1,0 +1,33 @@
+[
+    {
+        "schema_version": "v0",
+        "type": "evocation",
+        "name": "required string",
+        "evokableName": {
+            "artifactName" : "required string, or hearthstoneName"
+        },
+        "bookReference": {
+            "title": "The title of the book",
+            "page_number": 123
+        },
+        "summary": "An (optional) summary",
+        "description": "A required description",
+        "duration" : "A required string",
+        "resonant": "An optional description",
+        "dissonant": "An optional description",
+        "essenceRequired": 1,
+        "evocationTree": [
+            "An optional set of evocation names"
+        ],
+        "upgrades": "An optional charm name",
+        "keywords": [
+            "keyword1",
+            "keyword2"
+        ],
+        "costs": {
+            "motes": 5,
+            "willpower": 1
+        },
+        "actionType": "simple"
+    }
+]
