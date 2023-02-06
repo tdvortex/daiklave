@@ -6,3 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+bson = "2.5.0"
+mongodb = "2.3.1"
+serenity = { git = "https://github.com/serenity-rs/serenity.git", rev = "f0c511a" }
+daiklave_core = { path = "../daiklave-core" }
