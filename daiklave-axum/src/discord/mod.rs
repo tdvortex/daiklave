@@ -33,6 +33,7 @@ pub async fn post_discord_handler(
     let AppState {
         discord_public_key: public_key,
         _mongodb_client: _,
+        _redis_client: _,
     } = state;
 
     // Verify discord interaction signature

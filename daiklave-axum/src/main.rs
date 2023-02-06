@@ -15,12 +15,13 @@ use axum_extra::routing::SpaRouter;
 
 use crate::discord::post_discord_handler;
 use hex::decode;
-
+use redis::AsyncCommands;
 /// Any handles or resources not tied to an individual request.
 #[derive(Clone)]
 pub struct AppState {
     discord_public_key: ed25519_dalek::PublicKey,
     _mongodb_client: mongodb::Client,
+    _redis_client: redis::Client,
 }
 
 #[tokio::main]
@@ -41,23 +42,36 @@ async fn main() {
         std::env::var("MONGDOB_USER").expect("Expected MONGODB_USER in environment");
     let mongodb_password =
         std::env::var("MONGODB_PASSWORD").expect("Expected MONGODB_PASSWORD in environment");
-    let mongodb_url = std::env::var("MONGODB_URL").expect("Expected MONGODB_URL in environment");
-    let mongodb_connection_string = format!(
+    let mongodb_host = std::env::var("MONGODB_URL").expect("Expected MONGODB_URL in environment");
+    let mongodb_url = format!(
         "mongodb+srv://{}:{}@{}/?retryWrites=true&w=majority",
-        mongodb_username, mongodb_password, mongodb_url
+        mongodb_username, mongodb_password, mongodb_host
     );
     let mongodb_client = mongodb::Client::with_options(
-        mongodb::options::ClientOptions::parse(mongodb_connection_string)
+        mongodb::options::ClientOptions::parse(mongodb_url)
             .await
             .expect("Expected successful connection to MongdoDB"),
     )
     .expect("Expected successful connection to MongdoDB");
+
+    // Handle to connect to redis
+    let redis_host_and_port = std::env::var("REDIS_URL").expect("Expected REDIS_URL in environment");
+    let redis_username = std::env::var("REDIS_USER").expect("Expected REDIS_USER in environment");
+    let redis_password = std::env::var("REDIS_PASSWORD").expect("Expected REDIS_PASSWORD in environment");
+    let redis_url = format!(
+        "redis://{}:{}@{}/0",
+        redis_username,
+        redis_password,
+        redis_host_and_port
+    );
+    let redis_client = redis::Client::open(redis_url).expect("Expected to be able to connect to Redis");
 
     // All resources needed to handle a request not contained in the request's
     // URL, headers, or body.
     let state = AppState { 
         discord_public_key,
         _mongodb_client: mongodb_client,
+        _redis_client: redis_client,
     };
 
     // Initialize the router for the app.
