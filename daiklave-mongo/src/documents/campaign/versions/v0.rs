@@ -1,11 +1,15 @@
 use std::collections::{HashMap, HashSet};
 
 use bson::oid::ObjectId;
+use serde::{Serialize, Deserialize};
 use serenity::all::{UserId, ChannelId};
 
 use crate::PlayerCharacters;
 
 /// Version 0 of the campaign document schema.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename = "campaign")]
+#[serde(rename_all = "camelCase")]
 pub struct CampaignV0 {
     /// The MongoDB database ID for the campaign.
     pub _id: ObjectId,

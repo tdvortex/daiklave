@@ -1,9 +1,12 @@
 use bson::oid::ObjectId;
 use daiklave_core::CharacterMemo as Character;
+use serde::{Serialize, Deserialize};
 use serenity::all::{UserId, ChannelId};
 
 /// A document to insert a new character into MongoDb.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename = "character")]
+#[serde(rename_all = "camelCase")]
 pub struct NewCharacter {
     /// The version of the Character document to be inserted.
     pub version: String,

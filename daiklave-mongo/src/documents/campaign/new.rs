@@ -1,10 +1,14 @@
 use std::collections::{HashMap, HashSet};
 
+use serde::{Serialize, Deserialize};
 use serenity::all::{UserId, ChannelId};
 
 use crate::PlayerCharacters;
 
 /// A Campaign document to be inserted.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename = "campaign")]
+#[serde(rename_all = "camelCase")]
 pub struct NewCampaign {
     /// The version of the Campaign document to be inserted.
     pub version: String,

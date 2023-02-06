@@ -15,7 +15,6 @@ use axum_extra::routing::SpaRouter;
 
 use crate::discord::post_discord_handler;
 use hex::decode;
-use redis::AsyncCommands;
 /// Any handles or resources not tied to an individual request.
 #[derive(Clone)]
 pub struct AppState {

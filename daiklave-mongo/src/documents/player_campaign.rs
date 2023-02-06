@@ -1,11 +1,14 @@
 use std::collections::HashSet;
 
+use serde::{Serialize, Deserialize};
 use serenity::all::ChannelId;
 
 use crate::PlayerCharacters;
 
 /// A subdocument representing one of the campaigns a player is a part of, 
 /// from their perspective.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PlayerCampaign {
     /// The name of the campaign.
     pub name: String,
