@@ -1,10 +1,11 @@
-use std::collections::HashMap;
-
 use bson::oid::ObjectId;
+use mongodb::results::InsertOneResult;
 use serde::{Serialize, Deserialize};
 use serenity::all::UserId;
 
-use crate::PlayerCampaign;
+use crate::error::DocumentError;
+
+use super::versions::UserVersion;
 
 /// A document to insert a new User.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -12,9 +13,21 @@ use crate::PlayerCampaign;
 #[serde(rename_all = "camelCase")]
 pub struct NewUser {
     /// The version of the User document to be inserted.
-    pub version: String,
+    pub version: UserVersion,
     /// The Discord snowflake for this user.
     pub discord_id: UserId,
-    /// The campaigns that this player is a part of.
-    pub campaigns: HashMap<ObjectId, PlayerCampaign>,
+}
+
+impl NewUser {
+    /// Inserts a new user into the "users" collection with no campaigns.
+    pub async fn create(&self, database: &mongodb::Database) -> Result<ObjectId, DocumentError> {
+        let users = database.collection::<NewUser>("users");
+
+        let InsertOneResult {
+            inserted_id,
+            ..
+        } = users.insert_one(self, None).await?;
+
+        inserted_id.as_object_id().ok_or(DocumentError::DeserializationError)
+    }
 }

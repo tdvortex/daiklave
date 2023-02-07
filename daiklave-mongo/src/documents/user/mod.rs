@@ -1,8 +1,10 @@
+mod find;
 mod new;
 mod versions;
+pub use find::FindUser;
 pub use new::NewUser;
+pub use versions::{UserCurrent, UserVersion, UserV0};
 use serde::{Serialize, Deserialize};
-pub use versions::{UserCurrent, UserV0};
 
 /// A versioned User document.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

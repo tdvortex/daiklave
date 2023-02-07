@@ -2,7 +2,7 @@ mod new;
 mod versions;
 pub use new::NewCampaign;
 use serde::{Serialize, Deserialize};
-pub use versions::{CampaignCurrent, CampaignV0};
+pub use versions::{CampaignCurrent, CampaignV0, CampaignVersion};
 
 /// A versioned Campaign document.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

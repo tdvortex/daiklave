@@ -16,5 +16,6 @@ pub struct UserV0 {
     /// The Discord snowflake for this user.
     pub discord_id: UserId,
     /// The campaigns that this player is a part of.
+    #[serde(default)]
     pub campaigns: HashMap<ObjectId, PlayerCampaign>,
 }
