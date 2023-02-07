@@ -3,6 +3,9 @@ use thiserror::Error;
 /// An error related to using a MongoDb document.
 #[derive(Debug, Error)]
 pub enum DocumentError {
+    /// Each channel can only belong to one campaign.
+    #[error("Channel is already in use")]
+    DuplicateChannelCampaign,
     /// An error in deserializing a MongoDb result.
     #[error("An error occured while deserializing a MongoDb response")]
     DeserializationError,

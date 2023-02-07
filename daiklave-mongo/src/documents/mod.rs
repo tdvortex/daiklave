@@ -1,6 +1,9 @@
 /// The Campaign document interface.
 pub mod campaign;
 
+/// The Channel document interface.
+pub mod channel;
+
 /// The Character document interface.
 pub mod character;
 

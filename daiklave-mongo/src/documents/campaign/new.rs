@@ -1,4 +1,4 @@
-use std::collections::{HashSet};
+use std::collections::HashSet;
 
 use bson::{doc, oid::ObjectId, Bson};
 use futures::TryStreamExt;
@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use serenity::all::{ChannelId, UserId};
 
 use crate::{
+    channel::{ChannelDocument, NewChannel, ChannelVersion},
     error::DocumentError,
     user::{NewUser, UserCurrent, UserDocument, UserVersion},
     PlayerCampaign,
@@ -24,7 +25,7 @@ pub struct NewCampaign {
     pub name: String,
     /// The Discord Snowflake representing the storyteller for the campaign.
     pub storyteller: UserId,
-    /// All the Discord snowflakes for the players in the 
+    /// All the Discord snowflakes for the players in the
     /// campaign (including the storyteller).
     pub players: HashSet<UserId>,
     /// The Id of the channel to which dice rolls are sent when invoked from
@@ -46,6 +47,35 @@ impl NewCampaign {
     ) -> Result<ObjectId, crate::error::DocumentError> {
         // Start a session to ensure all operations complete atomically
         session.start_transaction(None).await?;
+
+        // Check if any of the channels here is already in use.
+        let channel_ids: Vec<Bson> = self
+            .channels
+            .iter()
+            .map(|channel_id| bson::to_bson(channel_id).or(Err(DocumentError::SerializationError)))
+            .fold(
+                Ok(Vec::new()),
+                |acc: Result<Vec<Bson>, DocumentError>, res_bson| match (acc, res_bson) {
+                    (Ok(mut v), Ok(b)) => {
+                        v.push(b);
+                        Ok(v)
+                    }
+                    (Err(e), _) => Err(e),
+                    (_, Err(e)) => Err(e),
+                },
+            )?;
+        let channels = database.collection::<ChannelDocument>("channels");
+        let filter = doc! {
+            "channel_id": {
+                "$in": channel_ids
+            }
+        };
+        let maybe_channel = channels
+            .find_one_with_session(filter, None, session)
+            .await?;
+        if maybe_channel.is_some() {
+            return Err(DocumentError::DuplicateChannelCampaign);
+        }
 
         // Get a handle to the "campaigns" collection, but serializing document using NewCampaign
         let campaigns = database.collection::<NewCampaign>("campaigns");
@@ -154,6 +184,20 @@ impl NewCampaign {
                 )
                 .await?;
         }
+
+        // Create channel documents for all of the channels in this campaign
+        let mut new_channels = Vec::new();
+
+        for channel in self.channels.iter() {
+            let new_channel = NewChannel {
+                version: ChannelVersion::V0,
+                channel_id: *channel,
+                campaign_id: new_campaign_id.clone(),
+            };
+            new_channels.push(new_channel);
+        }
+        let channels = database.collection::<NewChannel>("channels");
+        channels.insert_many_with_session(new_channels, None, session).await?;
 
         // Transaction complete, commit it
         session.commit_transaction().await?;
