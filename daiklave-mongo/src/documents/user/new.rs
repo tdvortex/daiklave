@@ -19,7 +19,8 @@ pub struct NewUser {
 }
 
 impl NewUser {
-    /// Inserts a new user into the "users" collection with no campaigns.
+    /// Inserts a new user into the "users" collection with no campaigns. No
+    /// session is required here as the update is atomic.
     pub async fn create(&self, database: &mongodb::Database) -> Result<ObjectId, DocumentError> {
         let users = database.collection::<NewUser>("users");
 

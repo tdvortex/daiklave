@@ -28,7 +28,8 @@ use crate::{
 /// serialization and deserialization.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CharacterMemo {
-    pub(crate) name: String,
+    /// The name of the character.
+    pub name: String,
     pub(crate) concept: Option<String>,
     pub(crate) exalt_state: ExaltationMemo,
     pub(crate) willpower: Willpower,
