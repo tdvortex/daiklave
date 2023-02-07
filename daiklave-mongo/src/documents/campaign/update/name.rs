@@ -14,7 +14,7 @@ pub struct UpdateCampaignName {
 impl UpdateCampaignName {
     /// Changes the name of a campaign. Uses a session to atomically update 
     /// all characters for all players in the campaign.
-    pub async fn update(&self, database: &mongodb::Database, session: &mut ClientSession) -> Result<(), DocumentError> {
+    pub async fn execute(&self, database: &mongodb::Database, session: &mut ClientSession) -> Result<(), DocumentError> {
         session.start_transaction(None).await?;
 
         // Update the name in the campaign document itself

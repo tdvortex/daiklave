@@ -1,6 +1,6 @@
-mod new;
+mod create;
 mod versions;
-pub use new::NewCharacter;
+pub use create::CreateCharacter;
 use serde::{Serialize, Deserialize};
 pub use versions::{CharacterCurrent, CharacterV0};
 
@@ -14,3 +14,16 @@ pub enum CharacterDocument {
     V0(CharacterV0),
 }
 
+impl From<CharacterCurrent> for CharacterDocument {
+    fn from(value: CharacterCurrent) -> Self {
+        Self::V0(value)
+    }
+}
+
+impl From<CharacterDocument> for CharacterCurrent {
+    fn from(value: CharacterDocument) -> Self {
+        match value {
+            CharacterDocument::V0(value) => value,
+        }
+    }
+}

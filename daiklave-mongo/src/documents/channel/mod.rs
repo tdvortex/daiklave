@@ -1,7 +1,7 @@
-mod new;
+mod create;
 mod versions;
 use serde::{Serialize, Deserialize};
-pub use new::NewChannel;
+pub use create::CreateChannel;
 pub use versions::{ChannelV0, ChannelVersion, ChannelCurrent};
 
 /// A versioned Channel document.

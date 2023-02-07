@@ -8,7 +8,7 @@ use super::ChannelVersion;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename = "channel")]
 #[serde(rename_all = "camelCase")]
-pub struct NewChannel {
+pub struct CreateChannel {
     /// The MongoDb database id.
     pub version: ChannelVersion,
     /// The Discord snowflake for the channel.

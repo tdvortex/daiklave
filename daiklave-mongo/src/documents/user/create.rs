@@ -11,18 +11,18 @@ use super::versions::UserVersion;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename = "user")]
 #[serde(rename_all = "camelCase")]
-pub struct NewUser {
+pub struct CreateUser {
     /// The version of the User document to be inserted.
     pub version: UserVersion,
     /// The Discord snowflake for this user.
     pub discord_id: UserId,
 }
 
-impl NewUser {
+impl CreateUser {
     /// Inserts a new user into the "users" collection with no campaigns. No
     /// session is required here as the update is atomic.
-    pub async fn create(&self, database: &mongodb::Database) -> Result<ObjectId, DocumentError> {
-        let users = database.collection::<NewUser>("users");
+    pub async fn execute(&self, database: &mongodb::Database) -> Result<ObjectId, DocumentError> {
+        let users = database.collection::<CreateUser>("users");
 
         let InsertOneResult {
             inserted_id,

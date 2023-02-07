@@ -6,9 +6,9 @@ use serde::{Deserialize, Serialize};
 use serenity::all::{ChannelId, UserId};
 
 use crate::{
-    channel::{ChannelDocument, NewChannel, ChannelVersion},
+    channel::{ChannelDocument, CreateChannel, ChannelVersion},
     error::DocumentError,
-    user::{NewUser, UserCurrent, UserDocument, UserVersion},
+    user::{CreateUser, UserCurrent, UserDocument, UserVersion},
     PlayerCampaign,
 };
 
@@ -18,7 +18,7 @@ use super::versions::CampaignVersion;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename = "campaign")]
 #[serde(rename_all = "camelCase")]
-pub struct NewCampaign {
+pub struct CreateCampaign {
     /// The version of the Campaign document to be inserted.
     pub version: CampaignVersion,
     /// The human-readable name of the campaign.
@@ -37,10 +37,10 @@ pub struct NewCampaign {
     pub channels: HashSet<ChannelId>,
 }
 
-impl NewCampaign {
+impl CreateCampaign {
     /// Create a new campaign. Requires ClientSession, as this involves
     /// modifying all of the Users in the campaign simultaneously.
-    pub async fn create(
+    pub async fn execute(
         &self,
         database: &mongodb::Database,
         session: &mut mongodb::ClientSession,
@@ -78,7 +78,7 @@ impl NewCampaign {
         }
 
         // Get a handle to the "campaigns" collection, but serializing document using NewCampaign
-        let campaigns = database.collection::<NewCampaign>("campaigns");
+        let campaigns = database.collection::<CreateCampaign>("campaigns");
 
         // Create a new document for this campaign
         let mongodb::results::InsertOneResult { inserted_id, .. } = campaigns
@@ -125,13 +125,13 @@ impl NewCampaign {
 
         if !insert_ids.is_empty() {
             // Make a NewUser for each missing Id
-            let insert_users = insert_ids.iter().map(|user_id| NewUser {
+            let insert_users = insert_ids.iter().map(|user_id| CreateUser {
                 version: UserVersion::V0,
                 discord_id: *user_id,
             });
 
             // Insert all of them at once
-            let new_users = database.collection::<NewUser>("users");
+            let new_users = database.collection::<CreateUser>("users");
             new_users
                 .insert_many_with_session(insert_users, None, session)
                 .await?;
@@ -190,14 +190,14 @@ impl NewCampaign {
         let mut new_channels = Vec::new();
 
         for channel in self.channels.iter() {
-            let new_channel = NewChannel {
+            let new_channel = CreateChannel {
                 version: ChannelVersion::V0,
                 channel_id: *channel,
                 campaign_id: new_campaign_id.clone(),
             };
             new_channels.push(new_channel);
         }
-        let channels = database.collection::<NewChannel>("channels");
+        let channels = database.collection::<CreateChannel>("channels");
         channels.insert_many_with_session(new_channels, None, session).await?;
 
         // Transaction complete, commit it

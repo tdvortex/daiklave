@@ -6,7 +6,7 @@ use serenity::all::ChannelId;
 
 use crate::{
     campaign::CampaignDocument,
-    channel::{ChannelCurrent, ChannelDocument, ChannelVersion, NewChannel},
+    channel::{ChannelCurrent, ChannelDocument, ChannelVersion, CreateChannel},
     error::DocumentError,
     user::UserDocument,
 };
@@ -27,7 +27,7 @@ pub struct UpdateCampaignChannels {
 impl UpdateCampaignChannels {
     /// Updates the channel list for a campaign. This requires a session to
     /// update campaigns, users, and channels atomically.
-    pub async fn update(
+    pub async fn execute(
         &self,
         database: &mongodb::Database,
         session: &mut mongodb::ClientSession,
@@ -81,14 +81,14 @@ impl UpdateCampaignChannels {
         let mut new_channels = Vec::new();
 
         for channel in self.channels.iter() {
-            let new_channel = NewChannel {
+            let new_channel = CreateChannel {
                 version: ChannelVersion::V0,
                 channel_id: *channel,
                 campaign_id: self._id,
             };
             new_channels.push(new_channel);
         }
-        let channels = database.collection::<NewChannel>("channels");
+        let channels = database.collection::<CreateChannel>("channels");
         channels
             .insert_many_with_session(new_channels, None, session)
             .await?;

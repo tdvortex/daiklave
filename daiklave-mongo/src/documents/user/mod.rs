@@ -1,8 +1,6 @@
-mod find;
-mod new;
+mod create;
 mod versions;
-pub use find::FindUser;
-pub use new::NewUser;
+pub use create::CreateUser;
 pub use versions::{UserCurrent, UserVersion, UserV0};
 use serde::{Serialize, Deserialize};
 

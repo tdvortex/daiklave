@@ -1,7 +1,7 @@
-mod new;
+mod create;
 mod update;
 mod versions;
-pub use new::NewCampaign;
+pub use create::CreateCampaign;
 use serde::{Serialize, Deserialize};
 pub use update::{UpdateCampaignChannels, UpdateCampaignName};
 pub use versions::{CampaignCurrent, CampaignV0, CampaignVersion};

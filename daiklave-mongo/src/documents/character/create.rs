@@ -14,7 +14,7 @@ use crate::{
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename = "character")]
 #[serde(rename_all = "camelCase")]
-pub struct NewCharacter {
+pub struct CreateCharacter {
     /// The version of the Character document to be inserted.
     pub version: String,
     /// The Discord snowflake for this character's player.
@@ -29,10 +29,10 @@ pub struct NewCharacter {
     pub character: Character,
 }
 
-impl NewCharacter {
+impl CreateCharacter {
     /// Creates a new Character for a player. This requires a session transaction
     /// because it requires overwriting the player as well as the character.
-    pub async fn create(
+    pub async fn execute(
         &self,
         database: &mongodb::Database,
         session: &mut mongodb::ClientSession,
@@ -41,7 +41,7 @@ impl NewCharacter {
         session.start_transaction(None).await?;
 
         // Create the character and get the created OID
-        let characters = database.collection::<NewCharacter>("characters");
+        let characters = database.collection::<CreateCharacter>("characters");
         let InsertOneResult { inserted_id, .. } = characters
             .insert_one_with_session(self, None, session)
             .await?;
