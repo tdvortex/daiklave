@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 
+use bson::oid::ObjectId;
 use serde::{Serialize, Deserialize};
 use serenity::all::ChannelId;
 
@@ -10,6 +11,8 @@ use crate::PlayerCharacters;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PlayerCampaign {
+    /// The MongoDb ID of the campaign.
+    pub campaign_id: ObjectId,
     /// The name of the campaign.
     pub name: String,
     /// Whether the player is the Storyteller of this campaign.

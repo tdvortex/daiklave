@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use bson::oid::ObjectId;
 use serde::{Serialize, Deserialize};
 
@@ -13,5 +11,12 @@ pub struct PlayerCharacters {
     pub active_character: Option<ObjectId>,
     /// The Ids and names of the player's characters in this campaign (active 
     /// and inactive).
-    pub character: HashMap<ObjectId, String>
+    pub character: Vec<CharacterStub>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CharacterStub {
+    pub character_id: ObjectId,
+    pub name: String,
 }

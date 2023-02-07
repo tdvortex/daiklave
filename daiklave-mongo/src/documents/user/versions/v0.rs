@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use bson::oid::ObjectId;
 use serde::{Serialize, Deserialize};
 use serenity::all::UserId;
@@ -17,5 +15,5 @@ pub struct UserV0 {
     pub discord_id: UserId,
     /// The campaigns that this player is a part of.
     #[serde(default)]
-    pub campaigns: HashMap<ObjectId, PlayerCampaign>,
+    pub campaigns: Vec<PlayerCampaign>,
 }

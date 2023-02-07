@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use serenity::all::{ChannelId, UserId};
 
 use crate::{
+    documents::player_characters::CharacterStub,
     error::DocumentError,
     user::{UserCurrent, UserDocument},
 };
@@ -62,12 +63,13 @@ impl NewCharacter {
         let mut new_player: UserCurrent = old_player.clone().into();
         let player_campaign = new_player
             .campaigns
-            .get_mut(&self.campaign_id)
+            .iter_mut()
+            .find(|player_campaign| player_campaign.campaign_id == self.campaign_id)
             .ok_or(DocumentError::NotFound)?;
-        player_campaign
-            .characters
-            .character
-            .insert(character_oid.clone(), self.character.name.clone());
+        player_campaign.characters.character.push(CharacterStub {
+            character_id: character_oid.clone(),
+            name: self.character.name.clone(),
+        });
 
         // Replace that user with the updated document
         users

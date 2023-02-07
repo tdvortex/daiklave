@@ -164,6 +164,7 @@ impl NewCampaign {
         for old_user in existing_users.into_iter() {
             let mut new_user = old_user.clone();
             let player_campaign = PlayerCampaign {
+                campaign_id: new_campaign_id.clone(),
                 name: self.name.clone(),
                 is_storyteller: self.storyteller == new_user.discord_id,
                 characters: Default::default(),
@@ -172,7 +173,7 @@ impl NewCampaign {
             };
             new_user
                 .campaigns
-                .insert(new_campaign_id.clone(), player_campaign);
+                .push(player_campaign);
 
             users
                 .replace_one_with_session(
