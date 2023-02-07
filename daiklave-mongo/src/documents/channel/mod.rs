@@ -13,3 +13,17 @@ pub enum ChannelDocument {
     /// Version zero
     V0(ChannelV0),
 }
+
+impl From<ChannelCurrent> for ChannelDocument {
+    fn from(value: ChannelCurrent) -> Self {
+        Self::V0(value)
+    }
+}
+
+impl From<ChannelDocument> for ChannelCurrent {
+    fn from(value: ChannelDocument) -> Self {
+        match value {
+            ChannelDocument::V0(value) => value,
+        }
+    }
+}

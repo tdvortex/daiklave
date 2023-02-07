@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serenity::all::ChannelId;
 
 /// Version zero of the Channel document.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename = "channel")]
 #[serde(rename_all = "camelCase")]
 pub struct ChannelV0 {

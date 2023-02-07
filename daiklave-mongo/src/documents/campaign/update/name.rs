@@ -6,9 +6,9 @@ use crate::{error::DocumentError, campaign::CampaignDocument, character::Charact
 /// Instruction to change the name of a campaign.
 pub struct UpdateCampaignName {
     /// The MongoDb OID of the campaign to be renamed.
-    pub campaign_id: ObjectId,
+    pub _id: ObjectId,
     /// The new name of the campaign.
-    pub new_name: String,
+    pub name: String,
 }
 
 impl UpdateCampaignName {
@@ -20,11 +20,11 @@ impl UpdateCampaignName {
         // Update the name in the campaign document itself
         let campaigns = database.collection::<CampaignDocument>("campaigns");
         let query = doc!{
-            "_id": self.campaign_id
+            "_id": self._id
         };
         let update = doc!{
             "$set": {
-                "name": &self.new_name
+                "name": &self.name
             }
         };
         campaigns.update_one_with_session(query, update, None, session).await?;
@@ -32,11 +32,11 @@ impl UpdateCampaignName {
         // Update the name of the campaign in all characters
         let characters = database.collection::<CharacterDocument>("characters");
         let query = doc!{
-            "campaignId": self.campaign_id
+            "campaignId": self._id
         };
         let update = doc!{
             "$set": {
-                "campaignName": &self.new_name
+                "campaignName": &self.name
             }
         };
         characters.update_many_with_session(query, update, None, session).await?;
@@ -45,16 +45,16 @@ impl UpdateCampaignName {
         let users = database.collection::<UserDocument>("users");
         let query = doc!{
             "campaigns": {
-                "campaignId": self.campaign_id
+                "campaignId": self._id
             }
         };
         let update = doc!{
             "$set": {
-                "campaigns.$[elem].name" : &self.new_name
+                "campaigns.$[elem].name" : &self.name
             }
         };
         let array_filter = doc!{
-            "elem.campaignId": self.campaign_id
+            "elem.campaignId": self._id
         };
         let options = mongodb::options::UpdateOptions::builder().array_filters(Some(vec![array_filter])).build();
         users.update_many_with_session(query, update, options, session).await?;

@@ -66,7 +66,7 @@ impl NewCampaign {
             )?;
         let channels = database.collection::<ChannelDocument>("channels");
         let filter = doc! {
-            "channel_id": {
+            "channelId": {
                 "$in": channel_ids
             }
         };
