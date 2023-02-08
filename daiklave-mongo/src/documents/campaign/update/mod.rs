@@ -4,3 +4,4 @@ mod players;
 
 pub use channels::UpdateCampaignChannels;
 pub use name::UpdateCampaignName;
+pub use players::UpdateCampaignPlayers;

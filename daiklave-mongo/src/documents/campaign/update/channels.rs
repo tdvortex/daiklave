@@ -93,42 +93,46 @@ impl UpdateCampaignChannels {
             .collect::<Vec<ChannelId>>();
 
         // Drop the removed channels
-        let drop_channels_bson = drop_channels
-            .iter()
-            .map(|channel_id| bson::to_bson(channel_id).or(Err(DocumentError::SerializationError)))
-            .fold(
-                Ok(Vec::new()),
-                |acc: Result<Vec<Bson>, DocumentError>, res_bson| match (acc, res_bson) {
-                    (Ok(mut v), Ok(b)) => {
-                        v.push(b);
-                        Ok(v)
-                    }
-                    (Err(e), _) => Err(e),
-                    (_, Err(e)) => Err(e),
-                },
-            )?;
-        let query = doc! {
-            "channelId": {
-                "$in": drop_channels_bson
-            }
-        };
-        channels
-            .delete_many_with_session(query, None, session)
-            .await?;
+        if !drop_channels.is_empty() {
+            let drop_channels_bson = drop_channels
+                .iter()
+                .map(|channel_id| bson::to_bson(channel_id).or(Err(DocumentError::SerializationError)))
+                .fold(
+                    Ok(Vec::new()),
+                    |acc: Result<Vec<Bson>, DocumentError>, res_bson| match (acc, res_bson) {
+                        (Ok(mut v), Ok(b)) => {
+                            v.push(b);
+                            Ok(v)
+                        }
+                        (Err(e), _) => Err(e),
+                        (_, Err(e)) => Err(e),
+                    },
+                )?;
+            let query = doc! {
+                "channelId": {
+                    "$in": drop_channels_bson
+                }
+            };
+            channels
+                .delete_many_with_session(query, None, session)
+                .await?;
+        }
 
         // Instantiate new channel documents for this campaign
-        let new_channels = add_channels
-            .into_iter()
-            .map(|channel_id| CreateChannel {
-                version: ChannelVersion::V0,
-                channel_id,
-                campaign_id: self._id,
-            })
-            .collect::<Vec<CreateChannel>>();
-        let channels = database.collection::<CreateChannel>("channels");
-        channels
-            .insert_many_with_session(new_channels, None, session)
-            .await?;
+        if !add_channels.is_empty() {
+            let new_channels = add_channels
+                .into_iter()
+                .map(|channel_id| CreateChannel {
+                    version: ChannelVersion::V0,
+                    channel_id,
+                    campaign_id: self._id,
+                })
+                .collect::<Vec<CreateChannel>>();
+            let channels = database.collection::<CreateChannel>("channels");
+            channels
+                .insert_many_with_session(new_channels, None, session)
+                .await?;
+        }
 
         // Override the channels in the campaign document
         let campaigns = database.collection::<CampaignDocument>("campaigns");

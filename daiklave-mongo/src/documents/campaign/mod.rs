@@ -3,7 +3,7 @@ mod update;
 mod versions;
 pub use create::CreateCampaign;
 use serde::{Serialize, Deserialize};
-pub use update::{UpdateCampaignChannels, UpdateCampaignName};
+pub use update::{UpdateCampaignChannels, UpdateCampaignPlayers, UpdateCampaignName};
 pub use versions::{CampaignCurrent, CampaignV0, CampaignVersion};
 
 /// A versioned Campaign document.
