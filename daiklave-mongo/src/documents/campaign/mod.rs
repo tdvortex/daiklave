@@ -1,8 +1,10 @@
 mod create;
+mod delete;
 mod retrieve;
 mod update;
 mod versions;
 pub use create::CreateCampaign;
+pub use delete::DeleteCampaign;
 pub use retrieve::{GetCampaign, ListCampaigns};
 pub use update::{UpdateCampaignChannels, UpdateCampaignPlayers, UpdateCampaignName};
 pub use versions::{CampaignCurrent, CampaignV0, CampaignVersion};
