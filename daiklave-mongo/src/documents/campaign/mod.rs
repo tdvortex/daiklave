@@ -1,11 +1,13 @@
 mod create;
+mod retrieve;
 mod update;
 mod versions;
 pub use create::CreateCampaign;
-use serde::{Serialize, Deserialize};
+pub use retrieve::GetCampaign;
 pub use update::{UpdateCampaignChannels, UpdateCampaignPlayers, UpdateCampaignName};
 pub use versions::{CampaignCurrent, CampaignV0, CampaignVersion};
 
+use serde::{Serialize, Deserialize};
 /// A versioned Campaign document.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename = "campaign")]
