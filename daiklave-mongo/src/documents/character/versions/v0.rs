@@ -1,7 +1,7 @@
 use bson::oid::ObjectId;
 use daiklave_core::CharacterMemo as Character;
-use serde::{Serialize, Deserialize};
-use serenity::all::{UserId, ChannelId};
+use serde::{Deserialize, Serialize};
+use serenity::all::UserId;
 
 use crate::character::CharacterDocument;
 
@@ -18,8 +18,6 @@ pub struct CharacterV0 {
     pub campaign_id: ObjectId,
     /// The name of the campaign this character belongs to.
     pub campaign_name: String,
-    /// The dice channel for the campaign this character belongs to.
-    pub dice_channel: ChannelId,
     /// The current Character struct from daiklave-core.
     pub character: Character,
 }
