@@ -2,10 +2,12 @@ use bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use serenity::all::ChannelId;
 
+use crate::channel::ChannelDocument;
+
 /// Version zero of the Channel document.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename = "channel")]
-#[serde(rename_all = "camelCase")]
+#[serde(into = "ChannelDocument")]
+#[serde(from = "ChannelDocument")]
 pub struct ChannelV0 {
     /// The MongoDb database id.
     pub _id: ObjectId,

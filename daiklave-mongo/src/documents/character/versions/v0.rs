@@ -3,10 +3,12 @@ use daiklave_core::CharacterMemo as Character;
 use serde::{Serialize, Deserialize};
 use serenity::all::{UserId, ChannelId};
 
+use crate::character::CharacterDocument;
+
 /// V0 of the Character document.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename = "character")]
-#[serde(rename_all = "camelCase")]
+#[serde(into = "CharacterDocument")]
+#[serde(from = "CharacterDocument")]
 pub struct CharacterV0 {
     /// The MongoDb database Id for this character.
     pub _id: ObjectId,

@@ -18,7 +18,7 @@ pub enum CampaignDocument {
 
 impl From<CampaignCurrent> for CampaignDocument {
     fn from(value: CampaignCurrent) -> Self {
-        Self::V0(value)
+        Self::V0(value.into())
     }
 }
 

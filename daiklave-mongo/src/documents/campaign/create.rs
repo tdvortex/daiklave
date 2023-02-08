@@ -6,9 +6,9 @@ use serde::{Deserialize, Serialize};
 use serenity::all::{ChannelId, UserId};
 
 use crate::{
-    channel::{ChannelDocument, CreateChannel, ChannelVersion},
+    channel::{CreateChannel, ChannelVersion, ChannelCurrent},
     error::DocumentError,
-    user::{CreateUser, UserCurrent, UserDocument, UserVersion},
+    user::{CreateUser, UserCurrent, UserVersion},
     PlayerCampaign,
 };
 
@@ -64,7 +64,7 @@ impl CreateCampaign {
                     (_, Err(e)) => Err(e),
                 },
             )?;
-        let channels = database.collection::<ChannelDocument>("channels");
+        let channels = database.collection::<ChannelCurrent>("channels");
         let filter = doc! {
             "channelId": {
                 "$in": channel_ids
@@ -77,7 +77,7 @@ impl CreateCampaign {
             return Err(DocumentError::DuplicateChannelCampaign);
         }
 
-        // Get a handle to the "campaigns" collection, but serializing document using NewCampaign
+        // Get a handle to the "campaigns" collection, but serializing document using CreateCampaign
         let campaigns = database.collection::<CreateCampaign>("campaigns");
 
         // Create a new document for this campaign
@@ -89,7 +89,7 @@ impl CreateCampaign {
             .ok_or(DocumentError::DeserializationError)?;
 
         // Get documents for all the players of this campaign
-        let users = database.collection::<UserDocument>("users");
+        let users = database.collection::<UserCurrent>("users");
         let user_ids = self
             .players
             .iter()
@@ -104,11 +104,8 @@ impl CreateCampaign {
             .find_with_session(filter, None, session)
             .await?
             .stream(session)
-            .try_collect::<Vec<UserDocument>>()
-            .await?
-            .into_iter()
-            .map(|user_document| UserCurrent::from(user_document))
-            .collect::<Vec<UserCurrent>>();
+            .try_collect::<Vec<UserCurrent>>()
+            .await?;
         let existing_user_ids = existing_users
             .iter()
             .map(|user| user.discord_id)
@@ -149,11 +146,8 @@ impl CreateCampaign {
             let created_users = users
                 .find(filter, None)
                 .await?
-                .try_collect::<Vec<UserDocument>>()
-                .await?
-                .into_iter()
-                .map(|user_document| UserCurrent::from(user_document))
-                .collect::<Vec<UserCurrent>>();
+                .try_collect::<Vec<UserCurrent>>()
+                .await?;
 
             // Add those to our existing users vec
             existing_users.extend(created_users.into_iter());
@@ -177,9 +171,9 @@ impl CreateCampaign {
 
             users
                 .replace_one_with_session(
-                    bson::to_document(&UserDocument::from(old_user))
+                    bson::to_document(&old_user)
                         .or(Err(DocumentError::SerializationError))?,
-                    &UserDocument::from(new_user),
+                    &new_user,
                     None,
                     session,
                 )

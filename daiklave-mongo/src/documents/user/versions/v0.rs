@@ -2,12 +2,12 @@ use bson::oid::ObjectId;
 use serde::{Serialize, Deserialize};
 use serenity::all::UserId;
 
-use crate::PlayerCampaign;
+use crate::{PlayerCampaign, user::UserDocument};
 
 /// Version zero of the User document.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename = "user")]
-#[serde(rename_all = "camelCase")]
+#[serde(into = "UserDocument")]
+#[serde(from = "UserDocument")]
 pub struct UserV0 {
     /// The MongoDB ID field for this user.
     pub _id: ObjectId,

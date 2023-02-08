@@ -7,7 +7,7 @@ use serenity::all::{ChannelId, UserId};
 use crate::{
     documents::player_characters::CharacterStub,
     error::DocumentError,
-    user::{UserCurrent, UserDocument},
+    user::{UserCurrent},
 };
 
 /// A document to insert a new character into MongoDb.
@@ -50,7 +50,7 @@ impl CreateCharacter {
             .ok_or(DocumentError::DeserializationError)?;
 
         // Get the player with the relevant discord snowflake
-        let users = database.collection::<UserDocument>("users");
+        let users = database.collection::<UserCurrent>("users");
         let filter = doc! {
             "discordId": bson::to_bson(&self.player).or(Err(DocumentError::SerializationError))?
         };
@@ -75,7 +75,7 @@ impl CreateCharacter {
         users
             .replace_one_with_session(
                 bson::to_document(&old_player).or(Err(DocumentError::SerializationError))?,
-                &UserDocument::from(new_player),
+                &new_player,
                 None,
                 session,
             )
