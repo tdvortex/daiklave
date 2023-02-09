@@ -15,7 +15,7 @@ pub use player_campaign::PlayerCampaign;
 
 
 mod player_characters;
-pub use player_characters::PlayerCharacters;
+pub use player_characters::{CharacterStub, PlayerCharacters};
 
 /// The User document interface.
 pub mod user;
