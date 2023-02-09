@@ -1,7 +1,7 @@
 use bson::{oid::ObjectId, doc};
 use mongodb::ClientSession;
 
-use crate::{error::DocumentError, campaign::CampaignDocument, character::CharacterDocument, user::UserDocument};
+use crate::{error::DocumentError, campaign::CampaignDocument, user::UserDocument};
 
 /// Instruction to change the name of a campaign.
 pub struct UpdateCampaignName {
@@ -28,18 +28,6 @@ impl UpdateCampaignName {
             }
         };
         campaigns.update_one_with_session(query, update, None, session).await?;
-
-        // Update the name of the campaign in all characters
-        let characters = database.collection::<CharacterDocument>("characters");
-        let query = doc!{
-            "campaignId": self._id
-        };
-        let update = doc!{
-            "$set": {
-                "campaignName": &self.name
-            }
-        };
-        characters.update_many_with_session(query, update, None, session).await?;
 
         // Update the name of the campaign for all players
         let users = database.collection::<UserDocument>("users");

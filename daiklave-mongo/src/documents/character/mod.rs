@@ -1,8 +1,10 @@
 mod create;
+mod update;
 mod versions;
 pub use create::CreateCharacter;
-use serde::{Serialize, Deserialize};
+pub use update::UpdateCharacter;
 pub use versions::{CharacterCurrent, CharacterV0};
+use serde::{Serialize, Deserialize};
 
 /// A versioned Character document.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

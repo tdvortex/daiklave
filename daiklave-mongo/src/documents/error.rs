@@ -15,9 +15,6 @@ pub enum DocumentError {
     /// Failed to find a document using find_one.
     #[error("Document not found")]
     NotFound,
-    /// The user is not authorized to do this.
-    #[error("Not authorized for this command")]
-    Unauthorized,
     /// An error in trying to serialize something into a BSON document
     #[error("An error occurred while serializing into BSON")]
     SerializationError,

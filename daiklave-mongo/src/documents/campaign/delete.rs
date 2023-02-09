@@ -12,9 +12,6 @@ use super::CampaignCurrent;
 pub struct DeleteCampaign {
     /// The Id of the campaign to be deleted.
     pub campaign_id: ObjectId,
-    /// The Id of the user requesting the delete--must match the storyteller
-    /// field of the campaign document.
-    pub storyteller: UserId,
 }
 
 impl DeleteCampaign {
@@ -37,9 +34,6 @@ impl DeleteCampaign {
             .find_one_with_session(filter, None, session)
             .await?
             .ok_or(DocumentError::NotFound)?;
-        if campaign.storyteller != self.storyteller {
-            return Err(DocumentError::Unauthorized);
-        }
 
         let dropped_channels = campaign.channels;
         let players = campaign.players;

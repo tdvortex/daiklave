@@ -16,8 +16,6 @@ pub struct CharacterV0 {
     pub player: UserId,
     /// The database Id for the campaign this character belongs to.
     pub campaign_id: ObjectId,
-    /// The name of the campaign this character belongs to.
-    pub campaign_name: String,
     /// The current Character struct from daiklave-core.
     pub character: Character,
 }
