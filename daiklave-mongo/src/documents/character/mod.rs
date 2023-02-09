@@ -1,9 +1,11 @@
 mod create;
+mod delete;
 mod retrieve;
 mod switch;
 mod update;
 mod versions;
 pub use create::CreateCharacter;
+pub use delete::DeleteCharacter;
 pub use retrieve::{GetCharacter, ListCharacters};
 pub use switch::{SwitchCharacter};
 pub use update::UpdateCharacter;
