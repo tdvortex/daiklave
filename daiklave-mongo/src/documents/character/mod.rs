@@ -1,9 +1,11 @@
 mod create;
 mod retrieve;
+mod switch;
 mod update;
 mod versions;
 pub use create::CreateCharacter;
 pub use retrieve::{GetCharacter, ListCharacters};
+pub use switch::{SwitchCharacter};
 pub use update::UpdateCharacter;
 pub use versions::{CharacterCurrent, CharacterV0};
 use serde::{Serialize, Deserialize};

@@ -7,8 +7,7 @@ use crate::{error::DocumentError, user::UserCurrent};
 
 use super::CharacterCurrent;
 
-/// An instruction to update a character to a certain state. This also makes 
-/// the character the "active" character for this player for this campaign.
+/// An instruction to update a character to a certain state.
 pub struct UpdateCharacter {
     /// The MongoDb database Id for this character.
     pub _id: ObjectId,
@@ -21,9 +20,8 @@ pub struct UpdateCharacter {
 }
 
 impl UpdateCharacter {
-    /// Replaces the character document, and updates the player document to 
-    /// reflect this character as "active". Requires a quick transaction to
-    /// sync the name/activity of the character with the users collection.
+    /// Replaces the character document. Requires a quick transaction to
+    /// sync the name of the character with the users collection.
     pub async fn execute(&self, database: &mongodb::Database, session: &mut mongodb::ClientSession) -> Result<(), DocumentError> {
         session.start_transaction(None).await?;
 
@@ -40,7 +38,7 @@ impl UpdateCharacter {
         };
         characters.replace_one_with_session(query, replacement, None, session).await?;
 
-        // Update the name and activity status in the player document
+        // Update the name in the player document
         let users = database.collection::<UserCurrent>("users");
         let player_bson = bson::to_bson(&self.player).or(Err(DocumentError::SerializationError))?;
         let query = doc! {
@@ -52,7 +50,6 @@ impl UpdateCharacter {
         };
         let update = doc! {
             "$set": {
-                "campaigns.$.characters.active": Some(self._id),
                 "campaigns.$.characters.character.$.name": self.character.name.clone(),
             }
         };
