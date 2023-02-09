@@ -4,12 +4,12 @@ use serenity::all::ChannelId;
 
 use super::ChannelVersion;
 
-/// Version zero of the Channel document.
+/// A document to be inserted as a new Channel document.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename = "channel")]
 #[serde(rename_all = "camelCase")]
 pub struct CreateChannel {
-    /// The MongoDb database id.
+    /// The version of the document.
     pub version: ChannelVersion,
     /// The Discord snowflake for the channel.
     pub channel_id: ChannelId,
