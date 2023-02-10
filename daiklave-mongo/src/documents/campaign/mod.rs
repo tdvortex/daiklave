@@ -6,7 +6,7 @@ mod versions;
 pub use create::CreateCampaign;
 pub use delete::DeleteCampaign;
 pub use retrieve::{GetCampaign, ListCampaigns};
-pub use update::{UpdateCampaignChannels, UpdateCampaignPlayers, UpdateCampaignName};
+pub use update::{UpdateCampaignChannels, UpdateCampaignName, AddCampaignPlayer, SetStoryteller, RemoveCampaignPlayer};
 pub use versions::{CampaignCurrent, CampaignV0, CampaignVersion};
 
 use serde::{Serialize, Deserialize};

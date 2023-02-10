@@ -1,7 +1,6 @@
 use std::collections::HashSet;
 
 use bson::{doc, oid::ObjectId, Bson};
-use futures::TryStreamExt;
 use serde::{Deserialize, Serialize};
 use serenity::all::{ChannelId, UserId};
 
@@ -25,9 +24,6 @@ pub struct CreateCampaign {
     pub name: String,
     /// The Discord Snowflake representing the storyteller for the campaign.
     pub storyteller: UserId,
-    /// All the Discord snowflakes for the players in the
-    /// campaign (including the storyteller).
-    pub players: HashSet<UserId>,
     /// The Id of the channel to which dice rolls are sent when invoked from
     /// the browser. (Slash commands will roll dice in the channel where they
     /// are invoked.)
@@ -88,96 +84,46 @@ impl CreateCampaign {
             .as_object_id()
             .ok_or(DocumentError::DeserializationError)?;
 
-        // Get documents for all the players of this campaign
+        // Get the storyteller's document, if it exists
         let users = database.collection::<UserCurrent>("users");
-        let user_ids = self
-            .players
-            .iter()
-            .map(|discord_id| bson::to_bson(discord_id).unwrap_or(Bson::Int32(-1)))
-            .collect::<Vec<Bson>>();
+        let storyteller_bson = bson::to_bson(&self.storyteller).or(Err(DocumentError::SerializationError))?;
         let filter = doc! {
-            "discordId" : {
-                "$in": user_ids
-            }
+            "discordId": &storyteller_bson
         };
-        let mut existing_users = users
-            .find_with_session(filter, None, session)
-            .await?
-            .stream(session)
-            .try_collect::<Vec<UserCurrent>>()
-            .await?;
-        let existing_user_ids = existing_users
-            .iter()
-            .map(|user| user.discord_id)
-            .collect::<HashSet<UserId>>();
+        let maybe_player = users.find_one_with_session(filter, None, session).await?;
 
-        // Create documents for any users that don't already have documents
-        // Check to see if there are any
-        let mut insert_ids = Vec::new();
-        for snowflake in self.players.iter() {
-            if !existing_user_ids.contains(snowflake) {
-                insert_ids.push(*snowflake);
+        if let Some(mut player) = maybe_player {
+            // Update and replace the existing player document
+            if player.campaigns.iter().find(|player_campaign| player_campaign.campaign_id == new_campaign_id).is_none() {
+                player.campaigns.push(PlayerCampaign {
+                    campaign_id: new_campaign_id,
+                    name: self.name.clone(),
+                    is_storyteller: true,
+                    characters: Default::default(),
+                    dice_channel: self.dice_channel,
+                    channels: self.channels.clone(),
+                });
             }
-        }
-
-        if !insert_ids.is_empty() {
-            // Make a NewUser for each missing Id
-            let insert_users = insert_ids.iter().map(|user_id| CreateUser {
+            let query = doc! {
+                "discordId": &storyteller_bson
+            };
+            users.replace_one_with_session(query, player, None, session).await?;
+        } else {
+            // Create a new user with this campaign.
+            let new_user = CreateUser {
                 version: UserVersion::V0,
-                discord_id: *user_id,
-            });
-
-            // Insert all of them at once
-            let new_users = database.collection::<CreateUser>("users");
-            new_users
-                .insert_many_with_session(insert_users, None, session)
-                .await?;
-
-            // Retrieve just the newly inserted UserCurrent documents
-            let new_ids_bson = insert_ids
-                .iter()
-                .map(|discord_id| bson::to_bson(discord_id).unwrap_or(Bson::Int32(-1)))
-                .collect::<Vec<Bson>>();
-            let filter = doc! {
-                "discordId" : {
-                    "$in": new_ids_bson
-                }
+                discord_id: self.storyteller,
+                campaigns: vec![PlayerCampaign {
+                    campaign_id: new_campaign_id,
+                    name: self.name.clone(),
+                    is_storyteller: true,
+                    characters: Default::default(),
+                    dice_channel: self.dice_channel,
+                    channels: self.channels.clone(),
+                }]
             };
-            let created_users = users
-                .find(filter, None)
-                .await?
-                .try_collect::<Vec<UserCurrent>>()
-                .await?;
-
-            // Add those to our existing users vec
-            existing_users.extend(created_users.into_iter());
-        }
-
-        // Update all the players in the campaign to be a part of it
-        // There is no "replace many" option in MongoDb, just chain replace_one
-        for old_user in existing_users.into_iter() {
-            let mut new_user = old_user.clone();
-            let player_campaign = PlayerCampaign {
-                campaign_id: new_campaign_id.clone(),
-                name: self.name.clone(),
-                is_storyteller: self.storyteller == new_user.discord_id,
-                characters: Default::default(),
-                dice_channel: self.dice_channel,
-                channels: self.channels.clone(),
-            };
-            new_user
-                .campaigns
-                .push(player_campaign);
-
-            users
-                .replace_one_with_session(
-                    bson::to_document(&old_user)
-                        .or(Err(DocumentError::SerializationError))?,
-                    &new_user,
-                    None,
-                    session,
-                )
-                .await?;
+            let users = database.collection::<CreateUser>("users");
+            users.insert_one_with_session(new_user, None, session).await?;
         }
 
         // Create channel documents for all of the channels in this campaign

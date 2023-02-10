@@ -3,7 +3,7 @@ use mongodb::results::InsertOneResult;
 use serde::{Serialize, Deserialize};
 use serenity::all::UserId;
 
-use crate::error::DocumentError;
+use crate::{error::DocumentError, PlayerCampaign};
 
 use super::versions::UserVersion;
 
@@ -16,6 +16,8 @@ pub struct CreateUser {
     pub version: UserVersion,
     /// The Discord snowflake for this user.
     pub discord_id: UserId,
+    /// The campaigns that this player is a part of.
+    pub campaigns: Vec<PlayerCampaign>,
 }
 
 impl CreateUser {
