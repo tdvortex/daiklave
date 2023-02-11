@@ -7,7 +7,7 @@ use serenity::all::{UserId, ChannelId};
 use crate::shared::error::DatabaseError;
 
 /// A partially-created campaign.
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PartialCreateCampaign {
     /// The name of the campaign (supplied through slash command params)
     pub name: String,

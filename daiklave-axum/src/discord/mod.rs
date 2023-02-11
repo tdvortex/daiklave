@@ -1,3 +1,8 @@
+/// The module for storing functions to create JSON payloads of messages
+/// with components. These are both used as responses to slash commands,
+/// and to update the messages after interaction.
+pub mod components;
+
 /// The module for receiving and responding to POST requests from Discord
 /// to the interactions endpoint. Interactions may be one of the following:
 /// * Ping: used by Discord to confirm the endpoint is alive

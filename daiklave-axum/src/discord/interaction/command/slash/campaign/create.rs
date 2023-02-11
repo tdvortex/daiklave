@@ -6,16 +6,14 @@ use axum::{
 };
 
 use serenity::{
-    all::{
-        ButtonStyle, ChannelType, CommandDataOptionValue, CommandInteraction,
-    },
-    builder::{
-        CreateActionRow, CreateButton, CreateInteractionResponse, CreateInteractionResponseMessage,
-        CreateSelectMenu, CreateSelectMenuKind,
-    },
+    all::{CommandDataOptionValue, CommandInteraction},
+    builder::{CreateInteractionResponse, CreateInteractionResponseMessage},
 };
 
-use crate::{AppState, discord::partial::PartialCreateCampaign};
+use crate::{
+    discord::{components::create_campaign_message_components, partial::PartialCreateCampaign},
+    AppState,
+};
 
 pub async fn campaign_create(interaction: &CommandInteraction, state: &mut AppState) -> Response {
     let token = interaction.token.clone();
@@ -62,39 +60,5 @@ pub async fn campaign_create(interaction: &CommandInteraction, state: &mut AppSt
         .into_response();
     }
 
-    Json(CreateInteractionResponse::Message(
-        CreateInteractionResponseMessage::new()
-            .content("Choose the channels for this campaign:")
-            .components(vec![
-                CreateActionRow::SelectMenu(
-                    CreateSelectMenu::new(
-                        "create_dice_channel",
-                        CreateSelectMenuKind::Channel {
-                            channel_types: Some(vec![ChannelType::Text]),
-                        },
-                    )
-                    .min_values(1)
-                    .max_values(1)
-                    .placeholder("Choose a dice channel"),
-                ),
-                CreateActionRow::SelectMenu(
-                    CreateSelectMenu::new(
-                        "create_all_channels",
-                        CreateSelectMenuKind::Channel {
-                            channel_types: Some(vec![ChannelType::Text]),
-                        },
-                    )
-                    .min_values(1)
-                    .max_values(25)
-                    .placeholder("Choose campaign channels"),
-                ),
-                CreateActionRow::Buttons(vec![CreateButton::new("create_campaign_submit")
-                    .label("Submit")
-                    .disabled(true)
-                    .style(ButtonStyle::Primary)]),
-            ]),
-    ))
-    .into_response()
+    create_campaign_message_components(false)
 }
-
-
