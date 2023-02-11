@@ -30,11 +30,7 @@ pub async fn post_discord_handler(
     headers: HeaderMap,
     RawBody(raw_body): RawBody,
 ) -> Response {
-    let AppState {
-        discord_public_key: public_key,
-        _mongodb_client: _,
-        _redis_client: _,
-    } = state;
+    let public_key = state.discord_public_key;
 
     // Verify discord interaction signature
     // Check that "X-Signature-Ed25519" header is present

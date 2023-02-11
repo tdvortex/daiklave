@@ -110,6 +110,7 @@ checksum = "f9a320103719de37b7b4da4c8eb629d4573f6bcfd3dfe80d3208806895ccf81d"
 dependencies = [
  "axum",
  "bytes",
+ "cookie",
  "futures-util",
  "http",
  "mime",
@@ -126,6 +127,12 @@ name = "base64"
 version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
+
+[[package]]
+name = "base64"
+version = "0.20.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0ea22880d78093b0cbe17c89f64a7d457941e65759157ec6cb31a31d652b05e5"
 
 [[package]]
 name = "base64"
@@ -282,6 +289,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "cookie"
+version = "0.16.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e859cd57d0710d9e06c381b550c06e76992472a8c6d527aecd2fc673dcc231fb"
+dependencies = [
+ "base64 0.20.0",
+ "hmac",
+ "percent-encoding",
+ "rand 0.8.5",
+ "sha2 0.10.6",
+ "subtle",
+ "time 0.3.17",
+ "version_check",
+]
+
+[[package]]
 name = "core-foundation"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -392,10 +415,12 @@ dependencies = [
  "hex",
  "hyper",
  "mongodb",
+ "rand 0.8.5",
  "redis",
  "reqwest",
  "serde_json",
  "serenity",
+ "time 0.3.17",
  "tokio",
  "tracing",
  "tracing-subscriber",
