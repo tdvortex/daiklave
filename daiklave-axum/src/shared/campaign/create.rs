@@ -1,11 +1,13 @@
 use std::collections::HashSet;
 
 use mongodb::bson::{oid::ObjectId, Bson, self, doc};
+use serde::Deserialize;
 use serenity::all::{ChannelId, UserId};
 
 use crate::{shared::error::{DatabaseError, ConstraintError}, mongo::{campaigns::{InsertCampaign, CampaignVersion}, channels::{ChannelCurrent, InsertChannel, ChannelVersion}, users::{UserCurrent, PlayerCampaign, UserVersion, InsertUser}}};
 
 /// The expected body contents of a POST request to create a new campaign.
+#[derive(Debug, Deserialize)]
 pub struct PostCampaignBody {
     /// The human-readable name of the campaign.
     pub name: String,

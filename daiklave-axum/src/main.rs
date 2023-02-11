@@ -33,7 +33,7 @@ use std::net::SocketAddr;
 use axum::{routing::{post, get}, Router, extract::FromRef};
 use axum_extra::routing::SpaRouter;
 
-use crate::{discord::post_discord, api::{get_login, get_login_callback, list_campaigns}};
+use crate::{discord::post_discord, api::{get_login, get_login_callback, list_campaigns, create_campaign}};
 /// Any handles or resources not tied to an individual request.
 #[derive(Clone)]
 pub struct AppState {
@@ -73,6 +73,7 @@ async fn main() {
     let app = Router::new()
         .merge(SpaRouter::new("/assets", "assets"))
         .route("/campaigns/", get(list_campaigns))
+        .route("/campaigns/", post(create_campaign))
         .route("/discord", post(post_discord))
         .route("/login", get(get_login))
         .route("/login/callback", get(get_login_callback))
