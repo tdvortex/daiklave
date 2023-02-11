@@ -1,7 +1,7 @@
-use mongodb::bson::{oid::ObjectId, doc, self};
+use mongodb::bson::{self, doc, oid::ObjectId};
 use serenity::all::UserId;
 
-use crate::{shared::error::DataError, mongo::users::UserCurrent};
+use crate::{mongo::users::UserCurrent, shared::error::DataError};
 
 use super::Authorization;
 
@@ -22,7 +22,8 @@ impl GetCampaignAuthorization {
         database: &mongodb::Database,
     ) -> Result<Option<Authorization>, DataError> {
         let users = database.collection::<UserCurrent>("users");
-        let user_id_bson = bson::to_bson(&self.user_id).or_else(|_| Err(DataError::SerializationError(format!("{:?}", self.user_id))))?;
+        let user_id_bson = bson::to_bson(&self.user_id)
+            .or_else(|_| Err(DataError::SerializationError(format!("{:?}", self.user_id))))?;
         let filter = doc! {
             "discordId": user_id_bson,
             "campaigns": {
@@ -30,16 +31,18 @@ impl GetCampaignAuthorization {
             }
         };
 
-        let user = if let Some(user) = users
-        .find_one(filter, None)
-        .await? {
+        let user = if let Some(user) = users.find_one(filter, None).await? {
             user
         } else {
             // The database successfully returned no user with this Id and campaign
             return Ok(None);
         };
 
-        let campaign = if let Some(campaign) = user.campaigns.iter().find(|player_campaign| player_campaign.campaign_id == self.campaign_id) {
+        let campaign = if let Some(campaign) = user
+            .campaigns
+            .iter()
+            .find(|player_campaign| player_campaign.campaign_id == self.campaign_id)
+        {
             campaign
         } else {
             // This shouldn't happen, but if we get a user that doesn't have this campaign treat them as unauthorized
@@ -49,24 +52,45 @@ impl GetCampaignAuthorization {
         Ok(Some(Authorization {
             user_id: self.user_id,
             campaign_id: campaign.campaign_id,
-            is_storyteller: campaign.is_storyteller
+            is_storyteller: campaign.is_storyteller,
         }))
     }
 
-    async fn execute_redis<CON: redis::ConnectionLike>(
+    async fn execute_redis<CON>(
         &self,
         connection: &mut CON,
-    ) -> Result<Option<Authorization>, redis::RedisError> {
-        todo!()
+    ) -> Result<Option<Authorization>, redis::RedisError>
+    where
+        CON: redis::AsyncCommands,
+    {
+        let mut key = "userId:".as_bytes().to_vec();
+        key.extend(self.user_id.0.get().to_be_bytes());
+
+        let mut field = "campaignId:".as_bytes().to_vec();
+        field.extend(self.campaign_id.bytes());
+
+        let maybe_is_storyteller: Option<bool> = connection.hget(key, field).await?;
+        if let Some(is_storyteller) = maybe_is_storyteller {
+            Ok(Some(Authorization {
+                user_id: self.user_id,
+                campaign_id: self.campaign_id,
+                is_storyteller,
+            }))
+        } else {
+            Ok(None)
+        }
     }
 
     /// Executes a cache-aside lookup; try to retrieve from Redis, fall back to
     /// MongoDb on a cache miss, and populate cache if found.
-    pub async fn execute<CON: redis::ConnectionLike>(
+    pub async fn execute<CON>(
         &self,
         database: &mongodb::Database,
         connection: &mut CON,
-    ) -> Result<Option<Authorization>, DataError> {
+    ) -> Result<Option<Authorization>, DataError>
+    where
+        CON: redis::AsyncCommands,
+    {
         // Try to get from the cache
         if let Ok(Some(authorization)) = self.execute_redis(connection).await {
             // Cache hit, return
