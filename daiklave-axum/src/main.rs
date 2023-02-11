@@ -33,7 +33,7 @@ use std::net::SocketAddr;
 use axum::{routing::{post, get}, Router, extract::FromRef};
 use axum_extra::routing::SpaRouter;
 
-use crate::{discord::post_discord, api::{get_login, get_login_callback}};
+use crate::{discord::post_discord, api::{get_login, get_login_callback, list_campaigns}};
 /// Any handles or resources not tied to an individual request.
 #[derive(Clone)]
 pub struct AppState {
@@ -48,7 +48,9 @@ pub struct AppState {
     /// Client for outgoing network requests
     pub reqwest_client: reqwest::Client,
     /// Handle to connect to mongodb
-    pub _mongodb_client: mongodb::Client,
+    pub mongodb_client: mongodb::Client,
+    /// The name of the MongoDb database to use (like "dev" or "prod")
+    pub mongodb_database_name: String,
     /// Handle to connect to redis
     pub _redis_client: redis::Client,
 }
@@ -70,6 +72,7 @@ async fn main() {
     // Initialize the router for the app.
     let app = Router::new()
         .merge(SpaRouter::new("/assets", "assets"))
+        .route("/campaigns/", get(list_campaigns))
         .route("/discord", post(post_discord))
         .route("/login", get(get_login))
         .route("/login/callback", get(get_login_callback))

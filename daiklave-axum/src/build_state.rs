@@ -44,6 +44,9 @@ pub async fn build_state() -> AppState {
     )
     .expect("Expected successful connection to MongdoDB");
 
+    // Name of mongodb database to use
+    let mongodb_database_name = std::env::var("MONGODB_DATABASE").expect("Expected MONGODB_DATABASE in environment");
+
     // Handle to connect to redis
     let redis_host_and_port = std::env::var("REDIS_URL").expect("Expected REDIS_URL in environment");
     let redis_username = std::env::var("REDIS_USER").expect("Expected REDIS_USER in environment");
@@ -62,7 +65,8 @@ pub async fn build_state() -> AppState {
         discord_client_secret,
         cookie_signing_key,
         reqwest_client,
-        _mongodb_client: mongodb_client,
+        mongodb_client,
+        mongodb_database_name,
         _redis_client: redis_client,
     }
 }
