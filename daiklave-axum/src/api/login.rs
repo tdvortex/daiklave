@@ -7,7 +7,7 @@ use crate::AppState;
 
 /// Handles GET requests made to daiklave.app/login by setting the user's cookie
 /// and redirecting them to the Discord OAuth2 endpoint for validation.
-pub async fn handle_login(State(state): State<AppState>, jar: SignedCookieJar) -> (SignedCookieJar, Redirect) {
+pub async fn get_login(State(state): State<AppState>, jar: SignedCookieJar) -> (SignedCookieJar, Redirect) {
     // Generate a new random string to use as discord state
     let discord_state_nonce = rand::thread_rng().sample_iter(&rand::distributions::Alphanumeric).take(20).map(char::from).collect::<String>();
 

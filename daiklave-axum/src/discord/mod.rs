@@ -7,7 +7,7 @@
 /// * Component: sent when a user clicks a button or makes a selection from
 /// a string select list or contextual select list.
 /// * Modal: sent when a user closes a modal popup.
-pub mod handle_interaction;
+pub mod interaction;
 
 use axum::response::IntoResponse;
 use axum::Json;
@@ -16,7 +16,7 @@ use axum::{
     response::Response,
 };
 use ed25519_dalek::Verifier;
-use handle_interaction::handle_interaction;
+use interaction::post_interaction;
 use hyper::body::to_bytes;
 use hyper::{HeaderMap, StatusCode};
 use serenity::all::Interaction;
@@ -25,7 +25,7 @@ use serenity::builder::{CreateInteractionResponse, CreateInteractionResponseMess
 use crate::AppState;
 
 /// The handler for POST requests to the Discord endpoint.
-pub async fn post_discord_handler(
+pub async fn post_discord(
     State(state): State<AppState>,
     headers: HeaderMap,
     RawBody(raw_body): RawBody,
@@ -112,5 +112,5 @@ pub async fn post_discord_handler(
 
     // Handle the interaction. This should always return 200/OK.
     // This is isolated for readability and testability.
-    handle_interaction(&interaction, &state)
+    post_interaction(&interaction, &state)
 }

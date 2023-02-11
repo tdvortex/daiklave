@@ -1,27 +1,27 @@
 /// The module for handling application command interactions. This includes
 /// slash commands (aka "chat input"), user commands (from right clicking
 /// users), and message commands (from right clicking messages).
-pub mod handle_command_interaction;
+pub mod command;
 
 /// The module for handling application autocomplete interactions.
-pub mod handle_autocomplete_interaction;
+pub mod autocomplete;
 
 /// The module for handling interactions on message components 
 /// (buttons and select dropdowns).
-pub mod handle_component_interaction;
+pub mod component;
 
 /// The module for handling application submission of text input via modal 
 /// popup.
-pub mod handle_modal_interaction;
+pub mod modal;
 
 use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use handle_autocomplete_interaction::handle_autocomplete_interaction;
-use handle_component_interaction::handle_component_interaction;
-use handle_command_interaction::handle_command_interaction;
-use handle_modal_interaction::handle_modal_interaction;
+use autocomplete::post_autocomplete;
+use component::post_component;
+use command::post_command;
+use modal::post_modal;
 use serenity::{
     all::Interaction,
     builder::{CreateInteractionResponse, CreateInteractionResponseMessage},
@@ -40,14 +40,14 @@ pub fn unknown_command_message(command_name: &str) -> Response {
 }
 
 /// Handles an interaction base on its type.
-pub fn handle_interaction(interaction: &Interaction, state: &AppState) -> Response {
+pub fn post_interaction(interaction: &Interaction, state: &AppState) -> Response {
     match &interaction {
         Interaction::Ping(_) => Json(CreateInteractionResponse::Pong).into_response(),
         Interaction::Command(command_interaction) => {
-            handle_command_interaction(command_interaction, state)
+            post_command(command_interaction, state)
         }
-        Interaction::Autocomplete(autocomplete_interaction) => handle_autocomplete_interaction(autocomplete_interaction, state),
-        Interaction::Component(component_interaction) => handle_component_interaction(component_interaction, state),
-        Interaction::Modal(modal_submit) => handle_modal_interaction(modal_submit, state),
+        Interaction::Autocomplete(autocomplete_interaction) => post_autocomplete(autocomplete_interaction, state),
+        Interaction::Component(component_interaction) => post_component(component_interaction, state),
+        Interaction::Modal(modal_submit) => post_modal(modal_submit, state),
     }
 }

@@ -7,10 +7,10 @@ use serenity::{
     builder::{CreateInteractionResponse, CreateInteractionResponseMessage},
 };
 
-use crate::{discord::handle_interaction::unknown_command_message, AppState};
+use crate::{discord::interaction::unknown_command_message, AppState};
 
 /// Handle a slash command (of type CHAT INPUT).
-pub fn handle_slash_command(interaction: &CommandInteraction, _state: &AppState) -> Response {
+pub fn post_slash(interaction: &CommandInteraction, _state: &AppState) -> Response {
     // Exact data needs may vary by command, but we need the name to route it
     let command_name = interaction.data.name.as_str();
 

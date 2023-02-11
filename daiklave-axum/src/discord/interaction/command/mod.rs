@@ -1,6 +1,6 @@
 /// Module for handling explicit slash commands.
-pub mod handle_slash_command;
-use handle_slash_command::handle_slash_command;
+pub mod slash;
+use slash::post_slash;
 
 use axum::response::Response;
 use serenity::all::{CommandInteraction, CommandType};
@@ -11,11 +11,11 @@ use super::unknown_command_message;
 
 /// Handle a command interaction, which may be a slash command ("CHAT_INPUT"),
 /// a user (right-click) interaction, or a message (right-click) interaction.
-pub fn handle_command_interaction(interaction: &CommandInteraction, state: &AppState) -> Response {
+pub fn post_command(interaction: &CommandInteraction, state: &AppState) -> Response {
     let data = &interaction.data;
     match data.kind {
         // aka slash command
-        CommandType::ChatInput => handle_slash_command(interaction, state),
+        CommandType::ChatInput => post_slash(interaction, state),
         // No implementations; responding with a message but
         _ => unknown_command_message(&data.name),
     }

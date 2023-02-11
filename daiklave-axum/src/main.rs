@@ -4,21 +4,33 @@
 //! static content for the Yew application; and serving API requests from the
 //! Yew client (and potentially other 3rd party Exalted tools.)
 
-/// Routes and handlers related to login and session management.
-pub mod auth;
+
+/// The module responsible for parsing incoming requests to the API, and 
+/// providing a suitable HTTP response and status code to the client 
+/// (typically the daiklave-yew frontend).
+pub mod api;
 
 mod build_state;
 use build_state::build_state;
-/// The module responsible for handling all interactions with Discord, both
-/// responding to incoming POSTs and serving outgoing requests their API.
+
+/// The module responsible for parsing incoming POST requests from Discord for
+/// interactions, and providing a 200 OK response with a message payload to 
+/// communicate the result of the interaction to the user.
 pub mod discord;
+
+/// The module which processes the shared application logic of the API and
+/// Discord interaction interfaces. The functions here do not return a complete
+/// response, but simply a Result type that conveys whether the action was
+/// successful and if not, why not.
+pub mod shared;
+
 
 use std::net::SocketAddr;
 
 use axum::{routing::{post, get}, Router, extract::FromRef};
 use axum_extra::routing::SpaRouter;
 
-use crate::{discord::post_discord_handler, auth::{handle_login, handle_login_callback}};
+use crate::{discord::post_discord, api::{get_login, get_login_callback}};
 /// Any handles or resources not tied to an individual request.
 #[derive(Clone)]
 pub struct AppState {
@@ -55,9 +67,9 @@ async fn main() {
     // Initialize the router for the app.
     let app = Router::new()
         .merge(SpaRouter::new("/assets", "assets"))
-        .route("/discord", post(post_discord_handler))
-        .route("/login", get(handle_login))
-        .route("/login/callback", get(handle_login_callback))
+        .route("/discord", post(post_discord))
+        .route("/login", get(get_login))
+        .route("/login/callback", get(get_login_callback))
         .with_state(state);
 
     // Start listening on port 3000

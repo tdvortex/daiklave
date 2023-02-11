@@ -22,7 +22,7 @@ const DISCORD_API_URL_BASE: &str = "https://discord.com/api/v10/";
 
 /// Handles GET requests received after the user returns from Discord's OAuth2
 /// endpoint with an authorization code.
-pub async fn handle_login_callback(
+pub async fn get_login_callback(
     State(state): State<AppState>,
     jar: SignedCookieJar,
     code_grant: Query<DiscordCodeGrant>,
