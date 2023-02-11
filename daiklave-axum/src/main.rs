@@ -18,6 +18,9 @@ use build_state::build_state;
 /// communicate the result of the interaction to the user.
 pub mod discord;
 
+/// A module representing the format of documents in MongdoDb collections.
+pub mod mongo;
+
 /// The module which processes the shared application logic of the API and
 /// Discord interaction interfaces. The functions here do not return a complete
 /// response, but simply a Result type that conveys whether the action was

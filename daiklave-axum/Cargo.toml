@@ -18,6 +18,7 @@ reqwest = {version = "0.11.14", features = ["json"]}
 serde = "1.0.152"
 serde_json = "1.0.91"
 serenity = { git = "https://github.com/serenity-rs/serenity.git", rev = "f0c511a" }
+thiserror = "1.0.38"
 time = "0.3.17"
 tokio = {version = "1.25.0", features = ["macros", "rt-multi-thread"]}
 tracing = "0.1.37"
