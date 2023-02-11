@@ -51,8 +51,8 @@ pub struct AppState {
     pub mongodb_client: mongodb::Client,
     /// The name of the MongoDb database to use (like "dev" or "prod")
     pub mongodb_database_name: String,
-    /// Handle to connect to redis
-    pub _redis_client: redis::Client,
+    /// Multiplexed, async, managed Redis connection pool
+    pub redis_connection_manager: redis::aio::ConnectionManager,
 }
 
 impl FromRef<AppState> for axum_extra::extract::cookie::Key {

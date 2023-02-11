@@ -40,11 +40,11 @@ pub fn unknown_command_message(command_name: &str) -> Response {
 }
 
 /// Handles an interaction base on its type.
-pub fn post_interaction(interaction: &Interaction, state: &AppState) -> Response {
+pub async fn post_interaction(interaction: &Interaction, state: &mut AppState) -> Response {
     match &interaction {
         Interaction::Ping(_) => Json(CreateInteractionResponse::Pong).into_response(),
         Interaction::Command(command_interaction) => {
-            post_command(command_interaction, state)
+            post_command(command_interaction, state).await
         }
         Interaction::Autocomplete(autocomplete_interaction) => post_autocomplete(autocomplete_interaction, state),
         Interaction::Component(component_interaction) => post_component(component_interaction, state),

@@ -26,4 +26,7 @@ pub enum DatabaseError {
     /// MongoDb returned an error
     #[error("An error occurred connecting to MongoDb")]
     MongoDb(#[from] mongodb::error::Error),
+    /// Redis returned an error
+    #[error("An error occurred connecting to Redis")]
+    Redis(#[from] redis::RedisError),
 }

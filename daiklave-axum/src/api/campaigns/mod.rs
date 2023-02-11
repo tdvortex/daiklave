@@ -94,9 +94,7 @@ pub async fn create_campaign(
                     why: format!("{:?}", constraint),
                 }),
             )),
-            DatabaseError::DeserializationError(_)
-            | DatabaseError::SerializationError(_)
-            | DatabaseError::MongoDb(_) => Err((
+            _ => Err((
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(PostCampaignError {
                     why: "internal error".to_owned(),

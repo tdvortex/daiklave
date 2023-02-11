@@ -47,7 +47,7 @@ pub async fn build_state() -> AppState {
     // Name of mongodb database to use
     let mongodb_database_name = std::env::var("MONGODB_DATABASE").expect("Expected MONGODB_DATABASE in environment");
 
-    // Handle to connect to redis
+    // Multiplexed, async, managed Redis connection pool
     let redis_host_and_port = std::env::var("REDIS_URL").expect("Expected REDIS_URL in environment");
     let redis_username = std::env::var("REDIS_USER").expect("Expected REDIS_USER in environment");
     let redis_password = std::env::var("REDIS_PASSWORD").expect("Expected REDIS_PASSWORD in environment");
@@ -58,6 +58,7 @@ pub async fn build_state() -> AppState {
         redis_host_and_port
     );
     let redis_client = redis::Client::open(redis_url).expect("Expected to be able to connect to Redis");
+    let redis_connection_manager = redis_client.get_tokio_connection_manager().await.expect("Expected to be able to create Redis ConnectionManager");
 
     AppState { 
         discord_public_key,
@@ -67,6 +68,6 @@ pub async fn build_state() -> AppState {
         reqwest_client,
         mongodb_client,
         mongodb_database_name,
-        _redis_client: redis_client,
+        redis_connection_manager,
     }
 }

@@ -9,6 +9,11 @@
 /// * Modal: sent when a user closes a modal popup.
 pub mod interaction;
 
+/// Structs for storing in-progress, partially completed Interactions. These
+/// are short-lived values that are serialized and deserialized to Redis but
+/// do not hit MongoDb and are not used for the REST API routes.
+pub mod partial;
+
 use axum::response::IntoResponse;
 use axum::Json;
 use axum::{
@@ -26,7 +31,7 @@ use crate::AppState;
 
 /// The handler for POST requests to the Discord endpoint.
 pub async fn post_discord(
-    State(state): State<AppState>,
+    State(mut state): State<AppState>,
     headers: HeaderMap,
     RawBody(raw_body): RawBody,
 ) -> Response {
@@ -112,5 +117,5 @@ pub async fn post_discord(
 
     // Handle the interaction. This should always return 200/OK.
     // This is isolated for readability and testability.
-    post_interaction(&interaction, &state)
+    post_interaction(&interaction, &mut state).await
 }
