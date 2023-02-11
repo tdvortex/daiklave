@@ -1,7 +1,9 @@
+mod campaign;
+mod version;
+
 use std::collections::HashMap;
 
-use serde_json::{Value};
-use serenity::{builder::CreateCommand, all::CommandType};
+use serde_json::Value;
 
 const DISCORD_API_URL_BASE: &str = "https://discord.com/api/v10/";
 
@@ -21,19 +23,23 @@ fn main() {
     payload.insert("scope", "applications.commands.update");
 
     let request = http_client
-    .post(&token_url)
-    .form(&payload)
-    .basic_auth(&application_id, Some(&client_secret))
-    .build()
-    .unwrap();
+        .post(&token_url)
+        .form(&payload)
+        .basic_auth(&application_id, Some(&client_secret))
+        .build()
+        .unwrap();
 
     println!("{:?}", request.headers());
-    println!("{}", std::str::from_utf8(request.body().unwrap().as_bytes().unwrap()).unwrap());
+    println!(
+        "{}",
+        std::str::from_utf8(request.body().unwrap().as_bytes().unwrap()).unwrap()
+    );
 
-    let json_response = http_client.execute(request)
-    .expect("Expected client credentials request to succeed")
-    .json::<Value>()
-    .expect("Expected client credentials response to be json");
+    let json_response = http_client
+        .execute(request)
+        .expect("Expected client credentials request to succeed")
+        .json::<Value>()
+        .expect("Expected client credentials response to be json");
 
     println!("{}", json_response);
 
@@ -69,9 +75,7 @@ fn main() {
     );
     println!("{}", &guild_application_commands_url);
 
-
-    let guild_commands =
-        vec![CreateCommand::new("version").description("Returns the Daiklave version being used").kind(CommandType::ChatInput)];
+    let guild_commands = vec![version::version(), campaign::campaign()];
     let request = http_client
         .put(&guild_application_commands_url)
         .bearer_auth(access_token)
@@ -80,7 +84,10 @@ fn main() {
         .unwrap();
 
     println!("{:?}", request.headers());
-    println!("{}", std::str::from_utf8(request.body().unwrap().as_bytes().unwrap()).unwrap());
+    println!(
+        "{}",
+        std::str::from_utf8(request.body().unwrap().as_bytes().unwrap()).unwrap()
+    );
 
     let response = http_client.execute(request).unwrap();
 
