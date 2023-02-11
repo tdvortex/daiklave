@@ -32,30 +32,6 @@ impl GetCampaignAuthorization {
         };
 
         Ok(users.find_one(filter, None).await?)
-
-        // let user = if let Some(user) = users.find_one(filter, None).await? {
-        //     user
-        // } else {
-        //     // The database successfully returned no user with this Id and campaign
-        //     return Ok(None);
-        // };
-
-        // let campaign = if let Some(campaign) = user
-        //     .campaigns
-        //     .iter()
-        //     .find(|player_campaign| player_campaign.campaign_id == self.campaign_id)
-        // {
-        //     campaign
-        // } else {
-        //     // This shouldn't happen, but if we get a user that doesn't have this campaign treat them as unauthorized
-        //     return Ok(None);
-        // };
-
-        // Ok(Some(Authorization {
-        //     user_id: self.user_id,
-        //     campaign_id: campaign.campaign_id,
-        //     is_storyteller: campaign.is_storyteller,
-        // }))
     }
 
     async fn execute_redis<CON>(
@@ -65,12 +41,15 @@ impl GetCampaignAuthorization {
     where
         CON: redis::AsyncCommands,
     {
+        // Key = "userId:" + big-endian bytes of their Discord snowflake
         let mut key = "userId:".as_bytes().to_vec();
         key.extend(self.user_id.0.get().to_be_bytes());
-
+        
+        // Campaign field = "campaignId" + bytes of the campaign's ObjectId
         let mut field = "campaignId:".as_bytes().to_vec();
         field.extend(self.campaign_id.bytes());
 
+        // Campaign value = vec![u8::from(is_storyteller)], to have a consistent data type with channel
         let maybe_value_bytes: Option<Vec<u8>> = connection.hget(key, field).await?;
         if let Some(value_bytes) = maybe_value_bytes {
             if let Some(is_storyteller) = value_bytes.get(0).map(|byte| byte == &u8::from(true)) {
@@ -127,7 +106,7 @@ impl GetCampaignAuthorization {
             // Campaign field = "campaignId" + bytes of the campaign's ObjectId
             // Campaign value = vec![u8::from(is_storyteller)], to have a consistent data type
             // Channel field(s) = "channelId" + big-endian bytes of the channel's Discord snowflake
-            // Channel value(s) = bytes of the campaign's ObjectId, extended with [u8::from(is_storyteller)
+            // Channel value(s) = bytes of the campaign's ObjectId, extended with u8::from(is_storyteller)
             let is_storyteller = campaign.is_storyteller;
 
             let mut key = "userId:".as_bytes().to_vec();
@@ -135,7 +114,7 @@ impl GetCampaignAuthorization {
 
             let mut items = Vec::new();
             let mut campaign_field = "campaignId:".as_bytes().to_vec();
-            campaign_field.extend(self.campaign_id.bytes());
+            campaign_field.extend(campaign.campaign_id.bytes());
 
             let campaign_value = vec![u8::from(campaign.is_storyteller)];
             items.push((campaign_field, campaign_value));
@@ -144,7 +123,7 @@ impl GetCampaignAuthorization {
                 let mut channel_field = "channelId:".as_bytes().to_vec();
                 channel_field.extend(channel.0.get().to_be_bytes());
 
-                let mut channel_value = self.campaign_id.bytes().to_vec();
+                let mut channel_value = campaign.campaign_id.bytes().to_vec();
                 channel_value.push(u8::from(is_storyteller));
 
                 items.push((channel_field, channel_value));

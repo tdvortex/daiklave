@@ -2,6 +2,7 @@ mod get_campaign;
 mod get_channel;
 
 pub use get_campaign::GetCampaignAuthorization;
+pub use get_channel::GetChannelAuthorization;
 
 use mongodb::bson::oid::ObjectId;
 use serenity::all::UserId;
