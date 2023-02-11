@@ -1,7 +1,7 @@
 use mongodb::bson::{doc, self};
 use serenity::all::UserId;
 
-use crate::{shared::error::DataError, mongo::users::{PlayerCampaign, UserCurrent}};
+use crate::{shared::error::DatabaseError, mongo::users::{PlayerCampaign, UserCurrent}};
 
 /// A data-layer request to get all of the campaigns the player is a part of,
 /// as well as the names and Ids of characters in those campaigns. 
@@ -15,10 +15,10 @@ pub struct ListCampaigns {
 impl ListCampaigns {
     /// Retrieves the user's PlayerCampaign list. Returns an empty list
     /// if the user has no campaigns.
-    pub async fn execute(&self, database: &mongodb::Database) -> Result<Vec<PlayerCampaign>, DataError> {
+    pub async fn execute(&self, database: &mongodb::Database) -> Result<Vec<PlayerCampaign>, DatabaseError> {
         let users = database.collection::<UserCurrent>("users");
         let user_id_bson = bson::to_bson(&self.user_id)
-            .or_else(|_| Err(DataError::SerializationError(format!("{:?}", self.user_id))))?;
+            .or_else(|_| Err(DatabaseError::SerializationError(format!("{:?}", self.user_id))))?;
         let filter = doc! {
             "discordId": user_id_bson
         };

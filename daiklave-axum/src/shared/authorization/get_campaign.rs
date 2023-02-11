@@ -1,7 +1,7 @@
 use mongodb::bson::{self, doc, oid::ObjectId};
 use serenity::all::UserId;
 
-use crate::{mongo::users::UserCurrent, shared::error::DataError};
+use crate::{mongo::users::UserCurrent, shared::error::DatabaseError};
 
 use super::Authorization;
 
@@ -20,10 +20,10 @@ impl GetCampaignAuthorization {
     async fn execute_mongo(
         &self,
         database: &mongodb::Database,
-    ) -> Result<Option<UserCurrent>, DataError> {
+    ) -> Result<Option<UserCurrent>, DatabaseError> {
         let users = database.collection::<UserCurrent>("users");
         let user_id_bson = bson::to_bson(&self.user_id)
-            .or_else(|_| Err(DataError::SerializationError(format!("{:?}", self.user_id))))?;
+            .or_else(|_| Err(DatabaseError::SerializationError(format!("{:?}", self.user_id))))?;
         let filter = doc! {
             "discordId": user_id_bson,
             "campaigns": {
@@ -72,7 +72,7 @@ impl GetCampaignAuthorization {
         &self,
         database: &mongodb::Database,
         connection: &mut CON,
-    ) -> Result<Option<Authorization>, DataError>
+    ) -> Result<Option<Authorization>, DatabaseError>
     where
         CON: redis::AsyncCommands,
     {
