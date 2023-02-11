@@ -4,6 +4,7 @@ use self::versions::{UserV0};
 pub use versions::UserCurrent;
 
 mod player_campaign;
+pub use player_campaign::PlayerCampaign;
 mod versions;
 
 /// A versioned User document.
