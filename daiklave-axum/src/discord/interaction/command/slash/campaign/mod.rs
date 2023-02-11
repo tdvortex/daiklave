@@ -8,7 +8,7 @@ use crate::{AppState, discord::interaction::unknown_command_message};
 pub async fn campaign(interaction: &CommandInteraction, state: &mut AppState) -> Response {
     if let Some(option) = interaction.data.options.first() {
         match option.name.as_str() {
-            "campaign_create" => campaign_create(interaction, state).await,
+            "create" => campaign_create(interaction, state).await,
             other => unknown_command_message(other)
         }
     } else {

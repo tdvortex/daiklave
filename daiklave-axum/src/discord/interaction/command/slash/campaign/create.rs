@@ -41,7 +41,7 @@ pub async fn campaign_create(interaction: &CommandInteraction, state: &mut AppSt
 
     let name = if let Some(name_option) = params
         .iter()
-        .find(|option| option.name == "campaign_name")
+        .find(|option| option.name == "name")
     {
         match &name_option.value {
             CommandDataOptionValue::String(name) => name.to_owned(),

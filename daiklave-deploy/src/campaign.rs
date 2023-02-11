@@ -3,13 +3,13 @@ use serenity::{builder::{CreateCommand, CreateCommandOption}, all::{CommandOptio
 pub fn campaign() -> CreateCommand {
     let campaign_create = CreateCommandOption::new(
         CommandOptionType::SubCommand,
-        "campaign_create",
+        "create",
         "Create a new campaign",
     )
     .add_sub_option({
         let mut campaign_name = CreateCommandOption::new(
             CommandOptionType::String,
-            "campaign_name",
+            "name",
             "The name of the new campaign",
         ).required(true);
         campaign_name.min_length(1);
