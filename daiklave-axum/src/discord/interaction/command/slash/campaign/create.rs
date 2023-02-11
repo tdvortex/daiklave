@@ -18,9 +18,28 @@ use crate::{
 pub async fn campaign_create(interaction: &CommandInteraction, state: &mut AppState) -> Response {
     let token = interaction.token.clone();
     let storyteller = interaction.user.id;
-    let name = if let Some(name_option) = interaction
-        .data
-        .options
+
+    let subcommand = if let Some(subcommand) = interaction.data.options.first() {
+        subcommand
+    } else {
+        return Json(CreateInteractionResponse::Message(
+            CreateInteractionResponseMessage::new()
+                .content("Campaign not created: malformed request"),
+        ))
+        .into_response(); 
+    };
+
+    let params = match &subcommand.value {
+        CommandDataOptionValue::SubCommand(params) => params,
+        _ => {return Json(CreateInteractionResponse::Message(
+            CreateInteractionResponseMessage::new()
+                .content("Campaign not created: malformed request"),
+        ))
+        .into_response(); 
+        },
+    };
+
+    let name = if let Some(name_option) = params
         .iter()
         .find(|option| option.name == "campaign_name")
     {

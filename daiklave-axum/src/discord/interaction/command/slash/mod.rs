@@ -3,7 +3,7 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use campaign::campaign_create;
+use campaign::{campaign};
 use serenity::{
     all::CommandInteraction,
     builder::{CreateInteractionResponse, CreateInteractionResponseMessage},
@@ -21,7 +21,7 @@ pub async fn post_slash(interaction: &CommandInteraction, state: &mut AppState) 
             CreateInteractionResponseMessage::new().content("Daiklave version 0.1.0"),
         ))
         .into_response(),
-        "campaign_create" => campaign_create(interaction, state).await,
+        "campaign" => campaign(interaction, state).await,
         // We don't have support for this command yet
         other_name => unknown_command_message(other_name),
     }
