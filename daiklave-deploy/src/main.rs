@@ -1,5 +1,6 @@
 mod campaign;
 mod character;
+mod help;
 mod version;
 
 use std::collections::HashMap;
@@ -76,7 +77,12 @@ fn main() {
     );
     // println!("{}", &guild_application_commands_url);
 
-    let guild_commands = vec![version::version(), campaign::campaign(), character::character()];
+    let guild_commands = vec![
+        version::version(),
+        campaign::campaign(),
+        character::character(),
+        help::help(),
+    ];
     let request = http_client
         .put(&guild_application_commands_url)
         .bearer_auth(access_token)

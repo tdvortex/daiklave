@@ -1,9 +1,13 @@
 mod campaign;
+mod character;
+mod help;
 use axum::{
     response::{IntoResponse, Response},
     Json,
 };
 use campaign::{campaign};
+use character::character;
+use help::help;
 use serenity::{
     all::CommandInteraction,
     builder::{CreateInteractionResponse, CreateInteractionResponseMessage},
@@ -17,11 +21,13 @@ pub async fn post_slash(interaction: &CommandInteraction, state: &mut AppState) 
     let command_name = interaction.data.name.as_str();
 
     match command_name {
+        "campaign" => campaign(interaction, state).await,
+        "character" => character(interaction, state).await,
+        "help" => help(),
         "version" => Json(CreateInteractionResponse::Message(
             CreateInteractionResponseMessage::new().content("Daiklave version 0.1.0"),
         ))
         .into_response(),
-        "campaign" => campaign(interaction, state).await,
         // We don't have support for this command yet
         other_name => unknown_command_message(other_name),
     }
