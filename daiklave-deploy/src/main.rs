@@ -1,4 +1,5 @@
 mod campaign;
+mod character;
 mod version;
 
 use std::collections::HashMap;
@@ -29,11 +30,11 @@ fn main() {
         .build()
         .unwrap();
 
-    println!("{:?}", request.headers());
-    println!(
-        "{}",
-        std::str::from_utf8(request.body().unwrap().as_bytes().unwrap()).unwrap()
-    );
+    // println!("{:?}", request.headers());
+    // println!(
+    //     "{}",
+    //     std::str::from_utf8(request.body().unwrap().as_bytes().unwrap()).unwrap()
+    // );
 
     let json_response = http_client
         .execute(request)
@@ -41,7 +42,7 @@ fn main() {
         .json::<Value>()
         .expect("Expected client credentials response to be json");
 
-    println!("{}", json_response);
+    // println!("{}", json_response);
 
     let access_token = json_response
         .get("access_token")
@@ -49,7 +50,7 @@ fn main() {
         .as_str()
         .expect("Expected client credentials response to include an access token");
 
-    println!("{:?}", access_token);
+    // println!("{:?}", access_token);
 
     // Use that token to set application commands
     // let global_application_commands_url = format!(
@@ -73,9 +74,9 @@ fn main() {
         dev_guild_id,
         "/commands"
     );
-    println!("{}", &guild_application_commands_url);
+    // println!("{}", &guild_application_commands_url);
 
-    let guild_commands = vec![version::version(), campaign::campaign()];
+    let guild_commands = vec![version::version(), campaign::campaign(), character::character()];
     let request = http_client
         .put(&guild_application_commands_url)
         .bearer_auth(access_token)
@@ -83,11 +84,11 @@ fn main() {
         .build()
         .unwrap();
 
-    println!("{:?}", request.headers());
-    println!(
-        "{}",
-        std::str::from_utf8(request.body().unwrap().as_bytes().unwrap()).unwrap()
-    );
+    // println!("{:?}", request.headers());
+    // println!(
+    //     "{}",
+    //     std::str::from_utf8(request.body().unwrap().as_bytes().unwrap()).unwrap()
+    // );
 
     let response = http_client.execute(request).unwrap();
 
