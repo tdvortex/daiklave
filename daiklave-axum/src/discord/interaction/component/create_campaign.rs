@@ -10,7 +10,7 @@ use serenity::{
 };
 
 use crate::{
-    discord::{partial::PartialCreateCampaign, components::create_campaign_message_components}, shared::campaign::PostCampaignBody, AppState,
+    discord::{partial::PartialCreateCampaign, components::create_campaign_message_components}, shared::campaign::InsertCampaignRequest, AppState,
 };
 
 use super::acknowledge_component;
@@ -55,12 +55,13 @@ pub async fn create_campaign_components(
                             .into_response();
                         };
 
-                    if (PostCampaignBody {
+                    if (InsertCampaignRequest {
                         name: old_partial.name.clone(),
+                        storyteller: old_partial.storyteller,
                         dice_channel,
                         channels: old_partial.channels,
                     })
-                    .prepare_document(old_partial.storyteller)
+                    .into_document()
                     .execute(&database, &mut session)
                     .await
                     .is_ok()

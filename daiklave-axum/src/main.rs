@@ -4,9 +4,8 @@
 //! static content for the Yew application; and serving API requests from the
 //! Yew client (and potentially other 3rd party Exalted tools.)
 
-
-/// The module responsible for parsing incoming requests to the API, and 
-/// providing a suitable HTTP response and status code to the client 
+/// The module responsible for parsing incoming requests to the API, and
+/// providing a suitable HTTP response and status code to the client
 /// (typically the daiklave-yew frontend).
 pub mod api;
 
@@ -14,7 +13,7 @@ mod build_state;
 use build_state::build_state;
 
 /// The module responsible for parsing incoming POST requests from Discord for
-/// interactions, and providing a 200 OK response with a message payload to 
+/// interactions, and providing a 200 OK response with a message payload to
 /// communicate the result of the interaction to the user.
 pub mod discord;
 
@@ -27,13 +26,29 @@ pub mod mongo;
 /// successful and if not, why not.
 pub mod shared;
 
-
 use std::net::SocketAddr;
 
-use axum::{routing::{post, get}, Router, extract::FromRef};
+use axum::{
+    extract::FromRef,
+    routing::{delete, get, patch, post, put},
+    Router,
+};
 use axum_extra::routing::SpaRouter;
 
-use crate::{discord::post_discord, api::{get_login, get_login_callback, list_campaigns, create_campaign}};
+use crate::{
+    api::{
+        campaigns::{
+            campaign::{get_campaign, players::player::delete_campaign_player},
+            get_campaigns,
+        },
+        characters::{
+            character::{delete_character, get_character, patch_character, put_character},
+            post_character,
+        },
+        login::{callback::get_login_callback, get_login},
+    },
+    discord::post_discord,
+};
 /// Any handles or resources not tied to an individual request.
 #[derive(Clone)]
 pub struct AppState {
@@ -72,8 +87,29 @@ async fn main() {
     // Initialize the router for the app.
     let app = Router::new()
         .merge(SpaRouter::new("/assets", "assets"))
-        .route("/campaigns/", get(list_campaigns))
-        .route("/campaigns/", post(create_campaign))
+        .route("/campaigns", get(get_campaigns))
+        .route("/campaigns/:campaign", get(get_campaign))
+        .route(
+            "/campaigns/:campaign/players/:player",
+            delete(delete_campaign_player),
+        )
+        .route("/campaigns/:campaign/characters", post(post_character))
+        .route(
+            "/campaigns/:campaign/characters/:character",
+            delete(delete_character),
+        )
+        .route(
+            "/campaigns/:campaign/characters/:character",
+            get(get_character),
+        )
+        .route(
+            "/campaigns/:campaign/characters/:character",
+            patch(patch_character),
+        )
+        .route(
+            "/campaigns/:campaign/characters/:character",
+            put(put_character),
+        )
         .route("/discord", post(post_discord))
         .route("/login", get(get_login))
         .route("/login/callback", get(get_login_callback))

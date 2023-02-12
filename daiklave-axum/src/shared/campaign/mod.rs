@@ -1,4 +1,4 @@
 mod create;
 mod list;
-pub use create::PostCampaignBody;
+pub use create::InsertCampaignRequest;
 pub use list::ListCampaigns;

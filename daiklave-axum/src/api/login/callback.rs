@@ -12,6 +12,7 @@ use time::Duration;
 
 use crate::AppState;
 
+/// The expected format of a Discord access code grant querystring.
 #[derive(Deserialize)]
 pub struct DiscordCodeGrant {
     code: String,

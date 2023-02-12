@@ -1,5 +1,6 @@
-mod callback;
-pub use callback::get_login_callback;
+/// The login callback route.
+pub mod callback;
+
 
 use axum::{response::{Redirect}, extract::State};
 use axum_extra::extract::{SignedCookieJar, cookie::{Cookie}};

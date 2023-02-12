@@ -6,11 +6,13 @@ use serenity::all::{ChannelId, UserId};
 
 use crate::{shared::error::{DatabaseError, ConstraintError}, mongo::{campaigns::{InsertCampaign, CampaignVersion}, channels::{ChannelCurrent, InsertChannel, ChannelVersion}, users::{UserCurrent, PlayerCampaign, UserVersion, InsertUser}}};
 
-/// The expected body contents of a POST request to create a new campaign.
+/// The information needed to process a request to insert a new campaign.
 #[derive(Debug, Deserialize)]
-pub struct PostCampaignBody {
+pub struct InsertCampaignRequest {
     /// The human-readable name of the campaign.
     pub name: String,
+    /// The Discord Snowflake representing the storyteller for the campaign.
+    pub storyteller: UserId,
     /// The Id of the channel to which dice rolls are sent when invoked from
     /// the browser. (Slash commands will roll dice in the channel where they
     /// are invoked.)
@@ -20,21 +22,18 @@ pub struct PostCampaignBody {
     pub channels: HashSet<ChannelId>,
 }
 
-impl PostCampaignBody {
+impl InsertCampaignRequest {
     /// Converts the body of a POST request into a ready-to-insert document.
-    pub fn prepare_document(self, storyteller: UserId) -> InsertCampaign {
+    pub fn into_document(self) -> InsertCampaign {
         // Make sure channels includes dice_channel
         let mut channels = self.channels;
         channels.insert(self.dice_channel);
 
-        let players = [storyteller].into_iter().collect::<HashSet<UserId>>();
-        
-        
         InsertCampaign { 
             version: CampaignVersion::V0, 
             name: self.name, 
-            storyteller, 
-            players, 
+            storyteller: self.storyteller,
+            players: [self.storyteller].into(),
             dice_channel: self.dice_channel,
             channels,
         }

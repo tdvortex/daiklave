@@ -1,6 +1,8 @@
-mod campaigns;
+/// Routes under the campaigns header. Most routes fall under here.
+pub mod campaigns;
+/// Routes related to managing characters in a campaign. 
+pub mod characters;
 mod decode_cookie;
-mod login;
-pub use campaigns::{create_campaign, list_campaigns};
+/// The login route.
+pub mod login;
 pub use decode_cookie::decode_user_id_cookie;
-pub use login::{get_login, get_login_callback};
