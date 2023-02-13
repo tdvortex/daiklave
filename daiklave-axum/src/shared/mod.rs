@@ -9,3 +9,6 @@ pub mod campaign;
 /// (such as 404 Not Found or 500 Internal Server Error) for an API response,
 /// or 200 Ok with a Discord message payload describing the error.
 pub mod error;
+
+mod to_bson;
+pub use to_bson::to_bson;

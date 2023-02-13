@@ -5,13 +5,9 @@ use axum::http::StatusCode;
 use axum::{extract::State, Json};
 use axum_extra::extract::SignedCookieJar;
 
-use crate::{
-    mongo::users::PlayerCampaign,
-    shared::campaign::{ListCampaigns},
-    AppState,
-};
+use crate::{mongo::users::PlayerCampaign, shared::campaign::ListCampaigns, AppState};
 
-use super::decode_user_id_cookie;
+use super::{decode_user_id_cookie, internal_server_error, WhyError};
 
 /// Returns a list of campaigns for an authenticated player as a JSON payload.
 /// Returns 401 UNAUTHORIZED if the user is not logged in, or 500 INTERNAL
@@ -19,16 +15,13 @@ use super::decode_user_id_cookie;
 pub async fn get_campaigns(
     State(state): State<AppState>,
     jar: SignedCookieJar,
-) -> Result<Json<Vec<PlayerCampaign>>, StatusCode> {
+) -> Result<Json<Vec<PlayerCampaign>>, (StatusCode, Json<WhyError>)> {
     let user_id = decode_user_id_cookie(jar)?;
     let database = state.mongodb_client.database(&state.mongodb_database_name);
 
     match (ListCampaigns { user_id }).execute(&database).await {
         Ok(player_campaigns) => Ok(Json(player_campaigns)),
-        Err(e) => {
-            tracing::error!("Data error: {:?}", e);
-            Err(StatusCode::INTERNAL_SERVER_ERROR)
-        }
+        Err(_) => Err(internal_server_error()),
     }
 }
 
@@ -38,13 +31,12 @@ pub async fn get_campaigns(
 //     campaign_id: ObjectId,
 // }
 
-
 // #[derive(Serialize)]
 // pub struct PostCampaignError {
 //     why: String,
 // }
 
-// /// Creates a campaign based on the provided message body, with the user ID 
+// /// Creates a campaign based on the provided message body, with the user ID
 // /// of the creator as the default storyteller. If successful, returns JSON with
 // /// the created campaign Id. If unsuccessful, may return a 401 UNAUTHORIZED,
 // /// 400 BAD REQUEST, or 500 INTERNAL SERVER ERROR with a "why" JSON response.

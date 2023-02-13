@@ -1,14 +1,14 @@
 use std::collections::HashSet;
 
 use mongodb::{
-    bson::{self, doc, oid::ObjectId},
+    bson::{doc, oid::ObjectId},
     ClientSession,
 };
 use serenity::all::{ChannelId, UserId};
 
 use crate::{
     mongo::{campaigns::CampaignCurrent, characters::CharacterCurrent, users::UserCurrent},
-    shared::error::{ConstraintError, DatabaseError},
+    shared::{error::{ConstraintError, DatabaseError}, to_bson},
 };
 
 /// Removes a player from a campaign. The storyteller cannot be removed.
@@ -27,8 +27,7 @@ impl RemoveCampaignPlayer {
     ) -> Result<HashSet<ChannelId>, DatabaseError> {
         session.start_transaction(None).await?;
 
-        let player_bson = bson::to_bson(&self.user_id)
-            .map_err(|_| DatabaseError::SerializationError("user_id".to_owned()))?;
+        let player_bson = to_bson(&self.user_id)?;
 
         // Get the campaign document for this campaign
         let campaigns = database.collection::<CampaignCurrent>("campaigns");

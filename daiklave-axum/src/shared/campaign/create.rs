@@ -1,10 +1,10 @@
 use std::collections::HashSet;
 
-use mongodb::bson::{oid::ObjectId, Bson, self, doc};
+use mongodb::bson::{oid::ObjectId, Bson, doc};
 use serde::Deserialize;
 use serenity::all::{ChannelId, UserId};
 
-use crate::{shared::error::{DatabaseError, ConstraintError}, mongo::{campaigns::{InsertCampaign, CampaignVersion}, channels::{ChannelCurrent, InsertChannel, ChannelVersion}, users::{UserCurrent, PlayerCampaign, UserVersion, InsertUser}}};
+use crate::{shared::{error::{DatabaseError, ConstraintError}, to_bson}, mongo::{campaigns::{InsertCampaign, CampaignVersion}, channels::{ChannelCurrent, InsertChannel, ChannelVersion}, users::{UserCurrent, PlayerCampaign, UserVersion, InsertUser}}};
 
 /// The information needed to process a request to insert a new campaign.
 #[derive(Debug, Deserialize)]
@@ -51,7 +51,7 @@ impl InsertCampaign {
                 let channel_ids: Vec<Bson> = self
                     .channels
                     .iter()
-                    .map(|channel_id| bson::to_bson(channel_id).or_else(|_| Err(DatabaseError::SerializationError(format!{"{:?}", channel_id}))))
+                    .map(|channel_id| to_bson(channel_id))
                     .fold(
                         Ok(Vec::new()),
                         |acc: Result<Vec<Bson>, DatabaseError>, res_bson| match (acc, res_bson) {
@@ -89,9 +89,9 @@ impl InsertCampaign {
         
                 // Get the storyteller's document, if it exists
                 let users = database.collection::<UserCurrent>("users");
-                let storyteller_bson = bson::to_bson(&self.storyteller).or_else(|_| Err(DatabaseError::SerializationError(format!{"{:?}", self.storyteller})))?;
+                let storyteller_bson = to_bson(&self.storyteller)?;
                 let filter = doc! {
-                    "discordId": &storyteller_bson
+                    "discordId": &storyteller_bson,
                 };
                 let maybe_player = users.find_one_with_session(filter, None, session).await?;
         

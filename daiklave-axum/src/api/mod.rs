@@ -2,10 +2,11 @@
 pub mod campaigns;
 /// Routes related to managing characters in a campaign. 
 pub mod characters;
-mod decode_cookie;
+mod auth;
+
 /// The login route.
 pub mod login;
-pub use decode_cookie::decode_user_id_cookie;
-
 mod why_error;
-pub use why_error::WhyError;
+
+pub use auth::{decode_user_id_cookie, get_auth, validate_player, validate_storyteller};
+pub use why_error::{internal_server_error, not_found, not_logged_in, not_storyteller, WhyError};
