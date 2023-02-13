@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 axum = {version = "0.6.4", features = ["headers"]}
 axum-extra = {version = "0.4.2", features = ["cookie-signed", "spa"]}
+daiklave_core = { path = "../daiklave-core" }
 ed25519-dalek = "1.0.1"
 hex = "0.4.3"
 hyper = "0.14.24"

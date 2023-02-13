@@ -438,6 +438,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "axum-extra",
+ "daiklave_core",
  "ed25519-dalek",
  "hex",
  "hyper",

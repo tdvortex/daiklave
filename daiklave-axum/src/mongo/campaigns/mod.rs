@@ -3,9 +3,9 @@ use std::collections::HashSet;
 use serde::{Serialize, Deserialize};
 use serenity::all::{UserId, ChannelId};
 
-use self::versions::{CampaignV0, CampaignCurrent};
+use self::versions::{CampaignV0};
 
-pub use versions::{CampaignVersion};
+pub use versions::{CampaignVersion, CampaignCurrent};
 
 mod versions;
 

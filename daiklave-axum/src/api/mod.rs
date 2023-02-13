@@ -6,3 +6,6 @@ mod decode_cookie;
 /// The login route.
 pub mod login;
 pub use decode_cookie::decode_user_id_cookie;
+
+mod why_error;
+pub use why_error::WhyError;

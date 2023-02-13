@@ -8,6 +8,10 @@ pub enum ConstraintError {
     /// campaign.
     #[error("Channel {0:?} already in use")]
     ChannelCampaignUnique(ChannelId),
+    /// Campaigns must always have a storyteller; cannot remove a storyteller
+    /// without deleting the entire campaign.
+    #[error("Cannot remove the storyteller from a campaign")]
+    RemoveStoryteller,
 }
 
 
@@ -26,6 +30,9 @@ pub enum DatabaseError {
     /// MongoDb returned an error
     #[error("An error occurred connecting to MongoDb")]
     MongoDb(#[from] mongodb::error::Error),
+    /// A document could not be found
+    #[error("Could not find document {0}")]
+    NotFound(String),
     /// Redis returned an error
     #[error("An error occurred connecting to Redis")]
     Redis(#[from] redis::RedisError),
