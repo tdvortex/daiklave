@@ -1,3 +1,4 @@
+use daiklave_core::CharacterMutationError;
 use serenity::all::ChannelId;
 use thiserror::Error;
 
@@ -8,6 +9,9 @@ pub enum ConstraintError {
     /// campaign.
     #[error("Channel {0:?} already in use")]
     ChannelCampaignUnique(ChannelId),
+    /// A error occurred attempting to mutate a character.
+    #[error("Character mutation error: {0}")]
+    MutationError(CharacterMutationError),
     /// Campaigns must always have a storyteller; cannot remove a storyteller
     /// without deleting the entire campaign.
     #[error("Cannot remove the storyteller from a campaign")]
