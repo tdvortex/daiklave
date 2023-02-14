@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     artifact::RemoveArtifact, hearthstones::hearthstone::HearthstoneName,
     languages::language::RemoveLanguage, martial_arts::style::MartialArtsStyleName,
@@ -10,7 +12,7 @@ use super::{
 };
 
 /// A mutation to remove a merit from the character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RemoveMerit {
     /// Removes a specific artifact from the character.
     Artifact(RemoveArtifact),

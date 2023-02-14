@@ -1,7 +1,9 @@
+use serde::{Serialize, Deserialize};
+
 use crate::sorcery::{CelestialSpell, SolarSpell, TerrestrialSpell};
 
 /// A Spell, grouped by its Circle.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SpellMutation {
     /// The First Circle of spells, accessible to all Exalts and some mortals.
     Terrestrial(TerrestrialSpell),

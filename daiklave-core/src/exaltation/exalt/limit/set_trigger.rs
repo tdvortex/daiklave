@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::trigger::LimitTrigger;
 
 /// A mutation to set the Limit Trigger for a Celestial Exalt.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SetLimitTrigger(pub LimitTrigger);
 
 impl From<SetLimitTrigger> for CharacterMutation {

@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::{
@@ -6,7 +8,7 @@ use super::{
 };
 
 /// An Intimacy to be added to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddIntimacy {
     pub(crate) intimacy_type: IntimacyTypeMemo,
     pub(crate) level: IntimacyLevel,

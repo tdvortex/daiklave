@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     armor::armor_item::builder::base::{MundaneArmorBuilder, MundaneArmorBuilderWithWeightClass},
     CharacterMutation,
@@ -7,7 +9,7 @@ use super::{MundaneArmor, MundaneArmorName};
 
 /// The name and properties of a piece of mundane armor to be added to a
 /// character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddMundaneArmor {
     pub(crate) name: MundaneArmorName,
     pub(crate) armor: MundaneArmor,

@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     charms::charm::AddCharm, martial_arts::style::MartialArtsStyleName, CharacterMutation,
 };
@@ -7,7 +9,7 @@ use super::{
 };
 
 /// A Martial Arts charm to be added to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddMartialArtsCharm {
     pub(crate) name: MartialArtsCharmName,
     pub(crate) style: MartialArtsStyleName,

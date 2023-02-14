@@ -1,7 +1,9 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{exaltation::exalt::essence::MoteCommitmentNameMutation, CharacterMutation};
 
 /// An instruction to uncommit a specific mote commitment.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct UncommitMotes(pub(crate) MoteCommitmentNameMutation);
 
 impl From<UncommitMotes> for CharacterMutation {

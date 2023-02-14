@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     merits::merit::template::builder::{
         SorceryArchetypeMeritBuilder, SorceryArchetypeMeritBuilderWithDescription,
@@ -8,7 +10,7 @@ use crate::{
 use super::{details::SorceryArchetypeMeritDetails, SorceryArchetypeMeritName};
 
 /// A mutation to add a sorcery archetype merit to the character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddSorceryArchetypeMerit {
     pub(crate) archetype_name: SorceryArchetypeName,
     pub(crate) name: SorceryArchetypeMeritName,

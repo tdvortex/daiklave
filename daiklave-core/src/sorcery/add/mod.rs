@@ -1,4 +1,6 @@
 mod circle;
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 pub use self::circle::AddSorceryCircle;
@@ -9,7 +11,7 @@ use super::{
 };
 
 /// A mutation to add Sorcery to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddSorcery(pub Box<AddSorceryCircle>);
 
 impl AddSorcery {

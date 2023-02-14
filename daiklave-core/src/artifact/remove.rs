@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{merits::merit::RemoveMerit, CharacterMutation};
 
 use super::{ArtifactName, ArtifactNameMutation};
 
 /// A mutation to remove an artifact from a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RemoveArtifact(pub(crate) ArtifactNameMutation);
 
 impl RemoveArtifact {

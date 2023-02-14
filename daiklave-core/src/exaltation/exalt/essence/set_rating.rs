@@ -1,11 +1,13 @@
 use std::num::NonZeroU8;
 
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::EssenceError;
 
 /// A mutation to set the Essence rating of the character.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SetEssenceRating(pub(crate) NonZeroU8);
 
 impl SetEssenceRating {

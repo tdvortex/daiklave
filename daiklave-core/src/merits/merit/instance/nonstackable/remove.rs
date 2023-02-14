@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     merits::merit::{
         template::{NonStackableMeritName, NonStackableMeritTemplateName},
@@ -7,7 +9,7 @@ use crate::{
 };
 
 /// A mutation to remove a nonstackable merit from a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RemoveNonStackableMerit {
     /// The name of the merit to remove.
     pub name: NonStackableMeritTemplateName,

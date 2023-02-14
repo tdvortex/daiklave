@@ -1,11 +1,13 @@
 use std::num::NonZeroU8;
 
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::{AttributeError, AttributeName};
 
 /// A mutation to set an attribute to a specific dot value.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SetAttribute {
     pub(crate) name: AttributeName,
     pub(crate) dots: NonZeroU8,

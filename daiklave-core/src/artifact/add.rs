@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     armor::armor_item::artifact::AddArtifactArmor, merits::merit::AddMerit,
     weapons::weapon::artifact::AddArtifactWeapon, CharacterMutation,
@@ -9,7 +11,7 @@ use super::{
 };
 
 /// A magical, Essence-infused object to be added to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AddArtifact {
     /// An artifact weapon.
     Weapon(AddArtifactWeapon),

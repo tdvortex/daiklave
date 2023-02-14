@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     abilities::ability::name::AbilityNameVanilla, craft::CraftName,
     martial_arts::style::MartialArtsStyleName,
@@ -5,7 +7,7 @@ use crate::{
 
 use super::AbilityNameQualified;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum AbilityNameQualifiedMutation {
     Vanilla(AbilityNameVanilla),
     Craft(CraftName),

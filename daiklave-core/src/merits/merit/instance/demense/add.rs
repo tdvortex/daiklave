@@ -1,10 +1,12 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{hearthstones::hearthstone::GeomancyLevel, merits::merit::AddMerit, CharacterMutation};
 
 use super::DemenseName;
 
 /// A mutation to add a standalone Demense (no hearthstone or manse) to a
 /// character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddDemense {
     /// The name of the demense.
     pub name: DemenseName,

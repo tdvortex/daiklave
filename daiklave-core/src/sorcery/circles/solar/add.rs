@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::sorcery::{
     archetype::SorceryArchetypeName, spell::SpellName, ShapingRitualDetails,
     SorceryArchetypeDetails,
@@ -7,7 +9,7 @@ use super::SolarSpell;
 
 /// A mutation to upgrade the character from Celestial-level
 /// Sorcery to Solar-level.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddSolarSorcery {
     pub(crate) archetype_name: SorceryArchetypeName,
     pub(crate) archetype: Option<SorceryArchetypeDetails>,

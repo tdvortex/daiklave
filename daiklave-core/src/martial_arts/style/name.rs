@@ -1,11 +1,13 @@
 use std::ops::Deref;
 
+use serde::{Serialize, Deserialize};
+
 use crate::martial_arts::charm::builder::MartialArtsCharmBuilder;
 
 use super::builder::{MartialArtsStyleBuilder, MartialArtsStyleBuilderWithDescription};
 
 /// The name of a Martial Arts style.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MartialArtsStyleName(String);
 
 impl MartialArtsStyleName {

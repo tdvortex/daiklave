@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::weapons::weapon::EquipHand;
 
 use super::{
@@ -5,7 +7,7 @@ use super::{
     WornArtifactWeaponMemo,
 };
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum ArtifactWeaponHandedness {
     Natural(NaturalArtifactWeaponMemo),
     Worn(WornArtifactWeaponMemo, bool),

@@ -1,5 +1,7 @@
+use serde::{Serialize, Deserialize};
+
 /// For one-handed weapons, the position of that weapon.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum EquipHand {
     /// Wielded in the main hand
     MainHand,

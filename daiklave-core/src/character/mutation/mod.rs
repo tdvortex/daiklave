@@ -31,12 +31,13 @@ pub use crate::willpower::{GainWillpower, SetWillpowerRating, SpendWillpower};
 use crate::Character;
 
 pub use error::CharacterMutationError;
+use serde::{Deserialize, Serialize};
 
 /// The API for the character, expressed as an owned struct. Each mutation has
 /// an associated pub method on Character and CharacterEventSource which
 /// returns Result<&mut Self, CharacterMutationError>. All API events also has
 ///  a "check_" variant which returns Result<(), CharacterMutationError>.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum CharacterMutation {
     /// Set the Character's name
     SetName(SetName),

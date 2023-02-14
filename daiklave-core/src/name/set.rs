@@ -1,7 +1,9 @@
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 /// A mutation to set the character's name.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SetName(pub String);
 
 impl SetName {

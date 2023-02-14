@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     merits::merit::{template::NonStackableMeritTemplateName, AddMerit},
     CharacterMutation,
@@ -6,7 +8,7 @@ use crate::{
 use super::NonStackableMeritInstance;
 
 /// A mutation to add a non-stackable merit to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddNonStackableMerit {
     pub(crate) name: NonStackableMeritTemplateName,
     pub(crate) instance: NonStackableMeritInstance,

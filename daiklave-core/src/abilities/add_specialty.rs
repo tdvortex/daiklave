@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::{ability::AbilityNameQualifiedMutation, AbilityNameQualified};
 
 /// A mutation to add a specialty to an ability.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddSpecialty {
     pub(crate) ability_name: AbilityNameQualifiedMutation,
     pub(crate) specialty: String,

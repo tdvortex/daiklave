@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     sorcery::{
         archetype::SorceryArchetypeName,
@@ -12,7 +14,7 @@ use super::TerrestrialSpell;
 
 /// A struct containing all of the details to start the character as a
 /// Terrestrial-circle Sorcerer.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddTerrestrialSorcery {
     pub(crate) archetype_name: SorceryArchetypeName,
     pub(crate) archetype: SorceryArchetypeDetails,

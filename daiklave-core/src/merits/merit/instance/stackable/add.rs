@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     merits::merit::{template::StackableMeritTemplateName, AddMerit},
     CharacterMutation,
@@ -6,7 +8,7 @@ use crate::{
 use super::StackableMeritInstance;
 
 /// A mutation to add a stackable merit to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddStackableMerit {
     pub(crate) template_name: StackableMeritTemplateName,
     pub(crate) detail: String,

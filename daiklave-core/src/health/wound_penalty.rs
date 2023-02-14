@@ -1,5 +1,7 @@
+use serde::{Serialize, Deserialize};
+
 /// The possible wound penalty levels for a health box or character
-#[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize)]
 pub enum WoundPenalty {
     /// -0 wound penalty
     Zero,

@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{merits::merit::RemoveMerit, sorcery::SorceryArchetypeName, CharacterMutation};
 
 use super::SorceryArchetypeMeritName;
 
 /// A mutation to remove a sorcery archetype merit from a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RemoveSorceryArchetypeMerit {
     /// The name of the archetype to which the merit belongs.
     pub archetype_name: SorceryArchetypeName,

@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{artifact::AddArtifact, CharacterMutation};
 
 use super::{Wonder, WonderName};
 
 /// The name and details for a Wonder to be added to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddWonder {
     pub(crate) name: WonderName,
     pub(crate) wonder: Wonder,

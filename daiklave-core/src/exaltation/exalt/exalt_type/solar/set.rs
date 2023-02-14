@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use crate::CharacterMutation;
 
 use super::{
@@ -9,7 +11,7 @@ use super::{
 
 /// A character mutation to set the character to be a Solar with the given
 /// traits, overriding any previous Exaltation in the process.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SetSolar(pub(crate) Box<SolarMemo>);
 
 impl SetSolar {

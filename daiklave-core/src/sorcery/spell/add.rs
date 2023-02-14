@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{charms::charm::AddCharm, CharacterMutation};
 
 use super::{SpellMutation, SpellName};
 
 /// A mutation to add a spell to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddSpell {
     pub(crate) name: SpellName,
     pub(crate) spell: SpellMutation,

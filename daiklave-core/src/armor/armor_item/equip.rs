@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::ArmorNameMutation;
 
 /// A mutation to equip a specific piece of armor.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EquipArmor(pub(crate) ArmorNameMutation);
 
 impl From<EquipArmor> for CharacterMutation {

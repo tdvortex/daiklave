@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{charms::charm::AddCharm, CharacterMutation};
 
 use super::{builder::EvocationBuilder, Evocation, EvocationName, EvokableName};
 
 /// An Evocation to add to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddEvocation {
     pub(crate) name: EvocationName,
     pub(crate) evocation: Evocation,

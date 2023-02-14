@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{book_reference::BookReference, CharacterMutation};
 
 use super::FlawName;
 
 /// A Flaw to be added to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddFlaw {
     /// The name of the Flaw.
     pub name: FlawName,

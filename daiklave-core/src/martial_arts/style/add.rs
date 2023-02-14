@@ -1,10 +1,12 @@
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::{builder::MartialArtsStyleBuilder, MartialArtsStyleDetails, MartialArtsStyleName};
 
 /// Add a Martial Arts style (and the associated Martial Artist merit) to a
 /// character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddMartialArtsStyle {
     pub(crate) style_name: MartialArtsStyleName,
     pub(crate) style: MartialArtsStyleDetails,

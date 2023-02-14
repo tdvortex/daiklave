@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{weapons::WeaponError, CharacterMutation};
 
 use super::{Equipped, WeaponName, WeaponNameMutation};
 
 /// A mutation to unequip a particular weapon.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct UnequipWeapon {
     pub(crate) name: WeaponNameMutation,
     pub(crate) equipped: Equipped,

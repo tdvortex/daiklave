@@ -1,11 +1,13 @@
 use std::num::NonZeroU8;
 
+use serde::{Deserialize, Serialize};
+
 use crate::CharacterMutation;
 
 use super::WillpowerError;
 
 /// A mutation to set the character's willpower rating.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SetWillpowerRating(pub(crate) NonZeroU8);
 
 impl SetWillpowerRating {

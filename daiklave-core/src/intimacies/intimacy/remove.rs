@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::{IntimacyType, IntimacyTypeMemo};
 
 /// An Intimacy to be removed from a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RemoveIntimacy {
     pub(crate) intimacy_type: IntimacyTypeMemo,
 }

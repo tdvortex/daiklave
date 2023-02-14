@@ -1,7 +1,9 @@
+use serde::{Serialize, Deserialize};
+
 use crate::merits::merit::template::StackableMeritTemplateName;
 
 /// A mutation to remove a stackable merit from the character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RemoveStackableMerit {
     /// The name of the merit to remove, like "Allies".
     pub template_name: StackableMeritTemplateName,

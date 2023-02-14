@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     artifact::AddArtifact, hearthstones::hearthstone::AddHearthstone,
     languages::language::AddLanguage, martial_arts::style::AddMartialArtsStyle,
@@ -10,7 +12,7 @@ use super::{
 };
 
 /// A mutation to add a merit to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AddMerit {
     /// Adds an artifact, which may be a weapon, armor, warstrider, or other
     /// wonder.

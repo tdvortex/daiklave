@@ -6,13 +6,14 @@ pub(crate) use one_handed::{
     EquippedOneHandedWeapon, EquippedOneHandedWeaponMemo, EquippedOneHandedWeaponNoAttunement,
     EquippedOneHandedWeaponNoAttunementMemo,
 };
+use serde::{Serialize, Deserialize};
 pub(crate) use two_handed::{
     EquippedTwoHandedWeapon, EquippedTwoHandedWeaponMemo, EquippedTwoHandedWeaponNoAttunement,
     EquippedTwoHandedWeaponNoAttunementMemo,
 };
 
 /// The position of an equipped weapon.
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Copy, Serialize, Deserialize)]
 pub enum Equipped {
     /// Natural weapons are always equipped.
     Natural,

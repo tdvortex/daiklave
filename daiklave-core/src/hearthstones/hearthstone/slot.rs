@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     artifact::{ArtifactName, ArtifactNameMutation},
     CharacterMutation,
@@ -6,7 +8,7 @@ use crate::{
 use super::HearthstoneName;
 
 /// A mutation to slot a hearhtstone into a specified artifact.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SlotHearthstone {
     pub(crate) artifact_name: ArtifactNameMutation,
     pub(crate) hearthstone_name: HearthstoneName,

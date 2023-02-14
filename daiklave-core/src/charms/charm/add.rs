@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     exaltation::exalt::exalt_type::solar::charm::AddSolarCharm,
     martial_arts::charm::AddMartialArtsCharm, sorcery::spell::AddSpell, CharacterMutation,
@@ -6,7 +8,7 @@ use crate::{
 use super::{evocation::AddEvocation, spirit::AddEclipseCharm};
 
 /// A Charm to be added to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AddCharm {
     /// A Spirit charm with the Eclipse keyword, purchasable by Eclipse caste
     /// Solars.

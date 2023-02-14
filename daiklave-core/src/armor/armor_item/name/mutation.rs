@@ -1,8 +1,10 @@
+use serde::{Serialize, Deserialize};
+
 use crate::armor::armor_item::{artifact::ArtifactArmorName, mundane::MundaneArmorName};
 
 use super::ArmorName;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum ArmorNameMutation {
     Mundane(MundaneArmorName),
     Artifact(ArtifactArmorName),

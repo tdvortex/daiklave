@@ -1,5 +1,7 @@
 use std::num::NonZeroU8;
 
+use serde::{Serialize, Deserialize};
+
 use crate::{
     weapons::weapon::builder::base::{BaseWeaponBuilder, MundaneWeaponBuilder},
     CharacterMutation,
@@ -8,7 +10,7 @@ use crate::{
 use super::{MundaneWeapon, MundaneWeaponName};
 
 /// A Mundane weapon and its name, to be added to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddMundaneWeapon {
     pub(crate) name: MundaneWeaponName,
     pub(crate) weapon: MundaneWeapon,

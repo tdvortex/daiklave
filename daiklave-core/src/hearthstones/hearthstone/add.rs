@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     hearthstones::HearthstoneError,
     merits::merit::{
@@ -13,7 +15,7 @@ use crate::{
 use super::{builder::HearthstoneBuilder, HearthstoneName, HearthstoneTemplate};
 
 /// A hearthstone and its name, to be added to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddHearthstone {
     pub(crate) name: HearthstoneName,
     pub(crate) template: HearthstoneTemplate,

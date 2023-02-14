@@ -1,11 +1,13 @@
 use std::num::NonZeroU8;
 
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::MundaneWeaponName;
 
 /// A mutation to remove a specific quantity of a mundane weapon.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RemoveMundaneWeapon {
     /// The name of the weapon to remove.
     pub name: MundaneWeaponName,

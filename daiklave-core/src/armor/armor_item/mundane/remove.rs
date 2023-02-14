@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::MundaneArmorName;
 
 /// A mutation to remove a piece of mundane armor from a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RemoveMundaneArmor(pub MundaneArmorName);
 
 impl RemoveMundaneArmor {

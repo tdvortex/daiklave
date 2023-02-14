@@ -1,12 +1,14 @@
 use std::collections::HashMap;
 
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::WoundPenalty;
 
 /// A mutation to set the character's health track to have the specified
 /// boxes.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SetHealthTrack(pub HashMap<WoundPenalty, u8>);
 
 impl From<SetHealthTrack> for CharacterMutation {

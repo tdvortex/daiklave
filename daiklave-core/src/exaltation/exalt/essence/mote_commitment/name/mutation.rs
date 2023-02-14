@@ -1,8 +1,10 @@
+use serde::{Serialize, Deserialize};
+
 use crate::artifact::ArtifactNameMutation;
 
 use super::{MoteCommitmentName, OtherMoteCommitmentName};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub(crate) enum MoteCommitmentNameMutation {
     AttunedArtifact(ArtifactNameMutation),
     Other(OtherMoteCommitmentName),

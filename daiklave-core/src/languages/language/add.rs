@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::{Language, LanguageMutation, LocalTongueName, MajorLanguage};
 
 /// A mutation to add a language to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddLanguage(pub(crate) LanguageMutation);
 
 impl AddLanguage {

@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::{EquipHand, WeaponName, WeaponNameMutation};
 
 /// A mutation to equip a specific weapon.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EquipWeapon {
     pub(crate) weapon_name: WeaponNameMutation,
     pub(crate) hand: Option<EquipHand>,

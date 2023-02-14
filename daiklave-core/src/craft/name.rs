@@ -1,6 +1,8 @@
 use std::ops::Deref;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+use serde::{Serialize, Deserialize};
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CraftName(String);
 
 impl<T> From<T> for CraftName

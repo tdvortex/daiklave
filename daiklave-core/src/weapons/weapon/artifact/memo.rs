@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     artifact::AddArtifact,
     weapons::weapon::builder::base::{BaseArtifactWeaponBuilder, BaseWeaponBuilder},
@@ -11,7 +13,7 @@ use super::{
 };
 
 /// A mutation to add an artifact weapon to a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddArtifactWeapon {
     pub(crate) name: ArtifactWeaponName,
     pub(crate) handedness: ArtifactWeaponHandedness,

@@ -1,9 +1,11 @@
+use serde::{Serialize, Deserialize};
+
 use crate::CharacterMutation;
 
 use super::{AbilityError, AbilityNameQualified, AbilityNameQualifiedMutation};
 
 /// A mutation to set a specific ability to a dot level.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SetAbility {
     pub(crate) name: AbilityNameQualifiedMutation,
     pub(crate) dots: u8,

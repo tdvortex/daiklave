@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{
     hearthstones::hearthstone::AddHearthstone,
     merits::merit::{instance::DemenseName, AddMerit},
@@ -8,7 +10,7 @@ use super::{builder::ManseBuilder, name::ManseName};
 
 /// A mutation to add a Manse, and its associated demense and hearthstone, to
 /// a character.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AddManse {
     pub(crate) manse_name: ManseName,
     pub(crate) demense_name: DemenseName,
