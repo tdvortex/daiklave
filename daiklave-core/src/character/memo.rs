@@ -22,7 +22,7 @@ use crate::{
         DemenseName, NonStackableMeritInstance, StackableMeritInstance,
     },
     willpower::Willpower,
-    Character,
+    Character, CharacterMutation, CharacterMutationError,
 };
 
 /// An owned instance of a full (player) character. This is the format used in
@@ -103,5 +103,16 @@ impl From<Character<'_>> for CharacterMemo {
                 .collect(),
             experience: character.experience,
         }
+    }
+}
+
+impl CharacterMemo {
+    /// Applies a specific CharacterMutation or returns an error. Note that
+    /// this operation is applied immutably, returning a cloned and updated
+    /// version of the character.
+    pub fn apply_mutation(&self, mutation: &CharacterMutation) -> Result<CharacterMemo, CharacterMutationError> {
+        let mut character_view: Character = self.into();
+        character_view.apply_mutation(mutation)?;
+        Ok(character_view.into())
     }
 }
