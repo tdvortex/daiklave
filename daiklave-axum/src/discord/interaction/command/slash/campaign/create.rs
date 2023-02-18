@@ -11,7 +11,7 @@ use serenity::{
 };
 
 use crate::{
-    discord::{components::create_campaign_message_components, partial::PartialCreateCampaign},
+    discord::{components::create_campaign_message_components, partial::PartialCreateCampaign, interaction::invalid_command_message},
     AppState,
 };
 
@@ -22,21 +22,13 @@ pub async fn campaign_create(interaction: &CommandInteraction, state: &mut AppSt
     let subcommand = if let Some(subcommand) = interaction.data.options.first() {
         subcommand
     } else {
-        return Json(CreateInteractionResponse::Message(
-            CreateInteractionResponseMessage::new()
-                .content("Campaign not created: malformed request"),
-        ))
-        .into_response();
+        return invalid_command_message("/campaign requires a subcommand");
     };
 
     let params = match &subcommand.value {
         CommandDataOptionValue::SubCommand(params) => params,
         _ => {
-            return Json(CreateInteractionResponse::Message(
-                CreateInteractionResponseMessage::new()
-                    .content("Campaign not created: malformed request"),
-            ))
-            .into_response();
+            return invalid_command_message("/campaign create should be a subcommand");
         }
     };
 
@@ -44,19 +36,11 @@ pub async fn campaign_create(interaction: &CommandInteraction, state: &mut AppSt
         match &name_option.value {
             CommandDataOptionValue::String(name) => name.to_owned(),
             _ => {
-                return Json(CreateInteractionResponse::Message(
-                    CreateInteractionResponseMessage::new()
-                        .content("Campaign not created: campaign name must be a string"),
-                ))
-                .into_response();
+                return invalid_command_message("Campaign name must be a string");
             }
         }
     } else {
-        return Json(CreateInteractionResponse::Message(
-            CreateInteractionResponseMessage::new()
-                .content("Campaign not created: campaign name is required"),
-        ))
-        .into_response();
+        return invalid_command_message("Campaign name is required");
     };
 
     let partial_create_campaign = PartialCreateCampaign {

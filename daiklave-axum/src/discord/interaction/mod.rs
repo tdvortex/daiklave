@@ -34,7 +34,17 @@ use crate::AppState;
 pub fn unknown_command_message(command_name: &str) -> Response {
     Json(CreateInteractionResponse::Message(
         CreateInteractionResponseMessage::default()
-            .content(format!("Unknown command: {}", command_name)),
+            .content(format!("Unknown command: /{}", command_name)),
+    ))
+    .into_response()
+}
+
+/// Response to Discord with a message to tell the user that the message is
+/// recognized, but invalid somehow. 
+pub fn invalid_command_message(why: &str) -> Response {
+    Json(CreateInteractionResponse::Message(
+        CreateInteractionResponseMessage::default()
+            .content(format!("Invalid command: {}", why)),
     ))
     .into_response()
 }

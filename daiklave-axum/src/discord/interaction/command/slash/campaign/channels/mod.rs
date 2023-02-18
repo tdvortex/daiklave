@@ -2,7 +2,7 @@ mod help;
 mod set;
 mod show;
 
-use crate::{discord::interaction::unknown_command_message, AppState};
+use crate::{discord::interaction::{unknown_command_message, invalid_command_message}, AppState};
 use axum::response::Response;
 use serenity::all::{CommandDataOptionValue, CommandInteraction};
 
@@ -19,13 +19,13 @@ pub async fn campaign_channels(interaction: &CommandInteraction, state: &mut App
             }
         }
     } else {
-        return unknown_command_message(interaction.data.name.as_str());
+        return invalid_command_message("/campaign requires a subcommand");
     };
 
     if let Some(channels_subcommand) = match channels_value {
         CommandDataOptionValue::SubCommandGroup(channels_group) => channels_group.first(),
         _ => {
-            return unknown_command_message(interaction.data.name.as_str());
+            return invalid_command_message("/campaign channels should be a subcommand group");
         }
     } {
         match channels_subcommand.name.as_str() {
@@ -35,6 +35,6 @@ pub async fn campaign_channels(interaction: &CommandInteraction, state: &mut App
             other => unknown_command_message(&format!("campaign channels {}", other)),
         }
     } else {
-        unknown_command_message("campaign channels")
+        invalid_command_message("/campaign channels requires a subcommand")
     }
 }

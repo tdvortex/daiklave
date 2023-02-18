@@ -17,7 +17,7 @@ pub fn acknowledge_component() -> Response {
 
 /// Handle an interaction on a message component. This may be a button click
 /// or an interaction with a select menu. It does NOT include text fields; text
-/// fields only appear on modals (see [crate::discord::handle_interaction::handle_modal_interaction::handle_modal_interaction])
+/// fields only appear on modals.
 pub async fn post_component(
     component_interaction: &ComponentInteraction,
     state: &mut AppState,

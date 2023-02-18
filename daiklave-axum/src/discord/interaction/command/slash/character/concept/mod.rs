@@ -6,7 +6,7 @@ mod show;
 use axum::response::Response;
 use serenity::all::{CommandDataOptionValue, CommandInteraction};
 
-use crate::{discord::interaction::unknown_command_message, AppState};
+use crate::{discord::interaction::{unknown_command_message, invalid_command_message}, AppState};
 
 use self::{
     delete::character_concept_delete, help::character_concept_help, set::character_concept_set,
@@ -22,13 +22,13 @@ pub async fn character_concept(interaction: &CommandInteraction, state: &mut App
             }
         }
     } else {
-        return unknown_command_message(interaction.data.name.as_str());
+        return invalid_command_message("/character requires a subcommand");
     };
 
     if let Some(concept_subcommand) = match character_concept {
         CommandDataOptionValue::SubCommandGroup(concept_group) => concept_group.first(),
         _ => {
-            return unknown_command_message(interaction.data.name.as_str());
+            return invalid_command_message("/character concept should be a subcommand group");
         }
     } {
         match concept_subcommand.name.as_str() {
@@ -39,6 +39,6 @@ pub async fn character_concept(interaction: &CommandInteraction, state: &mut App
             other => unknown_command_message(&format!("character concept {}", other)),
         }
     } else {
-        unknown_command_message("campaign concept")
+        invalid_command_message("/campaign concept requires a subcommand")
     }
 }

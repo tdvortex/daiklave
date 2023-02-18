@@ -8,7 +8,7 @@ mod switch;
 use axum::response::Response;
 use serenity::all::CommandInteraction;
 
-use crate::{discord::interaction::unknown_command_message, AppState};
+use crate::{discord::interaction::{unknown_command_message, invalid_command_message}, AppState};
 
 use self::{
     concept::character_concept, create::character_create, delete::character_delete,
@@ -27,6 +27,6 @@ pub async fn character(interaction: &CommandInteraction, state: &mut AppState) -
             other => unknown_command_message(&format!("character {}", other)),
         }
     } else {
-        unknown_command_message(interaction.data.name.as_str())
+        invalid_command_message("/character requires a subcommand")
     }
 }
