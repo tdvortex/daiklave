@@ -17,3 +17,9 @@ impl<'source> Deref for OneHandedMundaneWeaponView<'source> {
         self.0
     }
 }
+
+impl<'source> From<&'source OneHandedMundaneWeaponMemo> for OneHandedMundaneWeaponView<'source> {
+    fn from(value: &'source OneHandedMundaneWeaponMemo) -> Self {
+        Self(&value.0)
+    }
+}

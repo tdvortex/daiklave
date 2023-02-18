@@ -10,6 +10,18 @@ use crate::{abilities::AbilityRating, CharacterMutationError};
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Craft<'source>(pub(crate) HashMap<&'source str, AbilityRating<'source>>);
 
+impl<'source> From<&'source CraftMemo> for Craft<'source> {
+    fn from(value: &'source CraftMemo) -> Self {
+        Self(
+            value
+                .0
+                .iter()
+                .map(|(name, rating)| (name.as_str(), rating.into()))
+                .collect(),
+        )
+    }
+}
+
 impl<'source> Craft<'source> {
     pub fn set_dots(
         &mut self,

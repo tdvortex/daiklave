@@ -19,6 +19,12 @@ pub(crate) struct HandlessArtifactWeapon<'source>(
     pub Option<u8>,
 );
 
+impl<'source> From<&'source HandlessArtifactWeaponMemo> for HandlessArtifactWeapon<'source> {
+    fn from(value: &'source HandlessArtifactWeaponMemo) -> Self {
+        Self((&value.0).into(), value.1)
+    }
+}
+
 impl<'source> HandlessArtifactWeapon<'source> {
     pub(crate) fn hearthstone_slots_mut(
         &mut self,

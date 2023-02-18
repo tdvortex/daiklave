@@ -189,3 +189,55 @@ impl<'source> Character<'source> {
         }
     }
 }
+
+impl<'source> From<&'source CharacterMemo> for Character<'source> {
+    fn from(memo: &'source CharacterMemo) -> Self {
+        Self {
+            name: &memo.name,
+            concept: memo.concept.as_deref(),
+            exaltation: (&memo.exaltation).into(),
+            willpower: memo.willpower,
+            health: memo.health,
+            attributes: memo.attributes,
+            abilities: (&memo.abilities).into(),
+            craft: (&memo.craft).into(),
+            hearthstone_inventory: memo
+                .hearthstone_inventory
+                .iter()
+                .map(|(name, hearthstone)| (name.as_str(), hearthstone.into()))
+                .collect(),
+            demenses_no_manse: memo
+                .demenses_no_manse
+                .iter()
+                .map(|(name, &level)| (name.as_str(), level))
+                .collect(),
+            stackable_merits: memo
+                .stackable_merits
+                .iter()
+                .map(|((template_name, details), instance)| {
+                    ((template_name.as_str(), details.as_str()), instance.into())
+                })
+                .collect(),
+            nonstackable_merits: memo
+                .nonstackable_merits
+                .iter()
+                .map(|(name, instance)| (name.as_str(), instance.into()))
+                .collect(),
+            flaws: memo
+                .flaws
+                .iter()
+                .map(|(name, (book_reference, description))| {
+                    (name.as_str(), (*book_reference, description.as_str()))
+                })
+                .collect(),
+            native_language: &memo.native_language,
+            other_languages: memo.other_languages.iter().collect(),
+            intimacies: memo
+                .intimacies
+                .iter()
+                .map(|(intimacy_type, &level)| (intimacy_type, level))
+                .collect(),
+            experience: memo.experience,
+        }
+    }
+}

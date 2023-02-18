@@ -32,6 +32,24 @@ pub(crate) struct MortalEquippedWeapons<'source> {
     pub hands: MortalHands<'source>,
 }
 
+impl<'source> From<&'source MortalEquippedWeaponsMemo> for MortalEquippedWeapons<'source> {
+    fn from(value: &'source MortalEquippedWeaponsMemo) -> Self {
+        Self {
+            handless_mundane: value
+                .handless_mundane
+                .iter()
+                .map(|(name, weapon)| (name.as_str(), weapon.into()))
+                .collect(),
+            handless_artifact: value
+                .handless_artifact
+                .iter()
+                .map(|(name, weapon)| (name.as_str(), weapon.into()))
+                .collect(),
+            hands: (&value.hands).into(),
+        }
+    }
+}
+
 impl<'source> MortalEquippedWeapons<'source> {
     pub fn get_weapon(&self, name: WeaponName<'_>, equipped: Equipped) -> Option<Weapon<'source>> {
         match (name, equipped) {

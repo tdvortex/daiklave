@@ -86,6 +86,28 @@ pub(crate) struct Exalt<'source> {
     pub(crate) wonders: ExaltWonders<'source>,
 }
 
+impl<'source> From<&'source ExaltMemo> for Exalt<'source> {
+    fn from(value: &'source ExaltMemo) -> Self {
+        Self {
+            armor: (&value.armor).into(),
+            essence: (&value.essence).into(),
+            evocations: value
+                .evocations
+                .iter()
+                .map(|(name, evocation)| (name.as_str(), evocation))
+                .collect(),
+            martial_arts_styles: value
+                .martial_arts_styles
+                .iter()
+                .map(|(name, details)| (name.as_str(), details.into()))
+                .collect(),
+            exalt_type: (&value.exalt_type).into(),
+            weapons: (&value.weapons).into(),
+            wonders: (&value.wonders).into(),
+        }
+    }
+}
+
 impl<'view, 'source> Exalt<'source> {
     pub fn exalt_type(&self) -> &ExaltType<'source> {
         &self.exalt_type

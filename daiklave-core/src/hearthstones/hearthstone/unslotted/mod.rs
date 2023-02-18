@@ -39,3 +39,12 @@ impl<'source> UnslottedHearthstone<'source> {
         self.origin.manse_and_demense()
     }
 }
+
+impl<'source> From<&'source UnslottedHearthstoneMemo> for UnslottedHearthstone<'source> {
+    fn from(value: &'source UnslottedHearthstoneMemo) -> Self {
+        Self {
+            details: (&value.details).into(),
+            origin: (&value.origin).into(),
+        }
+    }
+}

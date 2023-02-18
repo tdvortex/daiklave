@@ -11,3 +11,13 @@ pub(crate) enum NonnaturalMundaneWeapon<'source> {
     OneHanded(OneHandedMundaneWeaponView<'source>),
     TwoHanded(TwoHandedMundaneWeaponView<'source>),
 }
+
+impl<'source> From<&'source NonnaturalMundaneWeaponMemo> for NonnaturalMundaneWeapon<'source> {
+    fn from(value: &'source NonnaturalMundaneWeaponMemo) -> Self {
+        match value {
+            NonnaturalMundaneWeaponMemo::Worn(weapon) => Self::Worn(weapon.into()),
+            NonnaturalMundaneWeaponMemo::OneHanded(weapon) => Self::OneHanded(weapon.into()),
+            NonnaturalMundaneWeaponMemo::TwoHanded(weapon) => Self::TwoHanded(weapon.into()),
+        }
+    }
+}

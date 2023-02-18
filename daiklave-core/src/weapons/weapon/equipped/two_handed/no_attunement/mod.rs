@@ -16,6 +16,15 @@ pub(crate) enum EquippedTwoHandedWeaponNoAttunement<'source> {
     Artifact(&'source str, TwoHandedArtifactWeaponView<'source>),
 }
 
+impl<'source> From<&'source EquippedTwoHandedWeaponNoAttunementMemo> for EquippedTwoHandedWeaponNoAttunement<'source> {
+    fn from(value: &'source EquippedTwoHandedWeaponNoAttunementMemo) -> Self {
+        match value {
+            EquippedTwoHandedWeaponNoAttunementMemo::Mundane(name, weapon) => Self::Mundane(name.as_str(), weapon.into()),
+            EquippedTwoHandedWeaponNoAttunementMemo::Artifact(name, weapon) => Self::Artifact(name.as_str(), weapon.into()),
+        }
+    }
+}
+
 impl<'view, 'source> EquippedTwoHandedWeaponNoAttunement<'source> {
     pub fn get_weapon(&'view self, name: WeaponName<'_>) -> Option<Weapon<'source>> {
         match (name, self) {

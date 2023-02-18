@@ -17,6 +17,17 @@ impl<'source> Default for AbilityRating<'source> {
     }
 }
 
+impl<'source> From<&'source AbilityRatingMemo> for AbilityRating<'source> {
+    fn from(value: &'source AbilityRatingMemo) -> Self {
+        match value {
+            AbilityRatingMemo::Zero => Self::Zero,
+            AbilityRatingMemo::NonZero(dots, specialties) => {
+                Self::NonZero(*dots, specialties.iter().map(|s| s.as_str()).collect())
+            }
+        }
+    }
+}
+
 impl<'source> AbilityRating<'source> {
     pub fn dots(&self) -> u8 {
         match self {

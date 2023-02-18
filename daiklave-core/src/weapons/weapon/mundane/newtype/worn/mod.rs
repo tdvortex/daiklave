@@ -16,3 +16,9 @@ impl<'source> Deref for WornMundaneWeaponView<'source> {
         self.0
     }
 }
+
+impl<'source> From<&'source WornMundaneWeapon> for WornMundaneWeaponView<'source> {
+    fn from(value: &'source WornMundaneWeapon) -> Self {
+        Self(&value.0)
+    }
+}

@@ -10,3 +10,12 @@ pub(crate) struct EssenceState<'source> {
     pub rating: NonZeroU8,
     pub motes: MotesState<'source>,
 }
+
+impl<'source> From<&'source EssenceStateMemo> for EssenceState<'source> {
+    fn from(value: &'source EssenceStateMemo) -> Self {
+        Self {
+            rating: value.rating,
+            motes: (&value.motes).into(),
+        }
+    }
+}

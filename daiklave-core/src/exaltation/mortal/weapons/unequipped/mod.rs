@@ -35,6 +35,23 @@ impl<'source> From<ExaltUnequippedWeapons<'source>> for MortalUnequippedWeapons<
     }
 }
 
+impl<'source> From<&'source MortalUnequippedWeaponsMemo> for MortalUnequippedWeapons<'source> {
+    fn from(value: &'source MortalUnequippedWeaponsMemo) -> Self {
+        Self {
+            mundane: value
+                .mundane
+                .iter()
+                .map(|(name, (weapon, quantity))| (name.as_str(), (weapon.into(), *quantity)))
+                .collect(),
+            artifact: value
+                .artifact
+                .iter()
+                .map(|(name, weapon)| (name.as_str(), weapon.into()))
+                .collect(),
+        }
+    }
+}
+
 impl<'view, 'source> MortalUnequippedWeapons<'source> {
     pub fn get_weapon(&'view self, name: WeaponName<'_>) -> Option<Weapon<'source>> {
         match name {

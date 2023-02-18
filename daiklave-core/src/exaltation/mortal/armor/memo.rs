@@ -32,3 +32,21 @@ impl From<&MortalArmor<'_>> for MortalArmorMemo {
         }
     }
 }
+
+impl<'source> Into<MortalArmor<'source>> for &'source MortalArmorMemo {
+    fn into(self) -> MortalArmor<'source> {
+        MortalArmor {
+            equipped: self.equipped.as_ref().map(|memo| memo.into()),
+            unequipped_mundane: self
+                .unequipped_mundane
+                .iter()
+                .map(|(name, armor)| (name.as_str(), armor.into()))
+                .collect(),
+            unequipped_artifact: self
+                .unequipped_artifact
+                .iter()
+                .map(|(name, armor)| (name.as_str(), armor.into()))
+                .collect(),
+        }
+    }
+}

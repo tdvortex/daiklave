@@ -18,6 +18,18 @@ pub(crate) struct ExaltWonders<'source>(
     pub(crate) HashMap<&'source str, (WonderNoAttunement<'source>, Option<u8>)>,
 );
 
+impl<'source> From<&'source ExaltWondersMemo> for ExaltWonders<'source> {
+    fn from(value: &'source ExaltWondersMemo) -> Self {
+        Self(
+            value
+                .0
+                .iter()
+                .map(|(name, (wonder, attunement))| (name.as_str(), (wonder.into(), *attunement)))
+                .collect(),
+        )
+    }
+}
+
 impl<'source> ExaltWonders<'source> {
     pub fn iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         self.0.keys().copied()

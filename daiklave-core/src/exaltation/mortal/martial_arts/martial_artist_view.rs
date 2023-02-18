@@ -3,10 +3,21 @@ use crate::{
     martial_arts::style::MartialArtsStyleDetails,
 };
 
+use super::MortalMartialArtistDetailsMemo;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MortalMartialArtistDetails<'source> {
     pub style: &'source MartialArtsStyleDetails,
     pub ability: AbilityRating<'source>,
+}
+
+impl<'source> From<&'source MortalMartialArtistDetailsMemo> for MortalMartialArtistDetails<'source> {
+    fn from(value: &'source MortalMartialArtistDetailsMemo) -> Self {
+        Self {
+            style: &value.style,
+            ability: (&value.ability).into(),
+        }
+    }
 }
 
 impl<'view, 'source> MortalMartialArtistDetails<'source> {

@@ -19,3 +19,9 @@ impl<'source> From<NonnaturalArtifactWeaponNoAttunement<'source>>
         Self(unattuned, None)
     }
 }
+
+impl<'source> From<&'source NonnaturalArtifactWeaponMemo> for NonnaturalArtifactWeapon<'source> {
+    fn from(value: &'source NonnaturalArtifactWeaponMemo) -> Self {
+        Self((&value.0).into(), value.1)
+    }
+}

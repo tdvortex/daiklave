@@ -16,6 +16,12 @@ pub(crate) struct MortalWonders<'source>(
     pub(crate) HashMap<&'source str, WonderNoAttunement<'source>>,
 );
 
+impl<'source> From<&'source MortalWondersMemo> for MortalWonders<'source> {
+    fn from(value: &'source MortalWondersMemo) -> Self {
+        Self(value.0.iter().map(|(name, wonder)| (name.as_str(), wonder.into())).collect())
+    }
+}
+
 impl<'source> MortalWonders<'source> {
     pub fn iter(&self) -> impl Iterator<Item = &'source str> + '_ {
         self.0.keys().copied()

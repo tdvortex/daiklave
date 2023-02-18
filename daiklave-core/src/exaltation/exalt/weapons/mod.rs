@@ -36,9 +36,18 @@ pub(crate) struct ExaltWeapons<'source> {
     pub unequipped: ExaltUnequippedWeapons<'source>,
 }
 
-impl<'view, 'source> ExaltWeapons<'source> {
+impl<'source> From<&'source ExaltWeaponsMemo> for ExaltWeapons<'source> {
+    fn from(value: &'source ExaltWeaponsMemo) -> Self {
+        Self {
+            equipped: (&value.equipped).into(),
+            unequipped: (&value.unequipped).into(),
+        }
+    }
+}
+
+impl<'source> ExaltWeapons<'source> {
     pub fn get_weapon(
-        &'view self,
+        &self,
         name: WeaponName<'_>,
         equipped: Option<Equipped>,
     ) -> Option<Weapon<'source>> {

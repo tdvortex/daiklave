@@ -1,4 +1,4 @@
-use super::ability::{AbilityNameVanilla, AbilityRating};
+use super::{ability::{AbilityNameVanilla, AbilityRating}, AbilitiesVanillaMemo};
 
 /// A struct representing all non-Craft, non-Martial Arts abilities, including
 /// any specialties.
@@ -92,6 +92,37 @@ impl<'view, 'source> AbilitiesVanilla<'source> {
             AbilityNameVanilla::Survival => &mut self.survival,
             AbilityNameVanilla::Thrown => &mut self.thrown,
             AbilityNameVanilla::War => &mut self.war,
+        }
+    }
+}
+
+impl<'source> From<&'source AbilitiesVanillaMemo> for AbilitiesVanilla<'source> {
+    fn from(value: &'source AbilitiesVanillaMemo) -> Self {
+        Self {
+            archery: (&value.archery).into(),
+            athletics: (&value.athletics).into(),
+            awareness: (&value.awareness).into(),
+            brawl: (&value.brawl).into(),
+            bureaucracy: (&value.bureaucracy).into(),
+            dodge: (&value.dodge).into(),
+            integrity: (&value.integrity).into(),
+            investigation: (&value.investigation).into(),
+            larceny: (&value.larceny).into(),
+            linguistics: (&value.linguistics).into(),
+            lore: (&value.lore).into(),
+            medicine: (&value.medicine).into(),
+            melee: (&value.melee).into(),
+            occult: (&value.occult).into(),
+            performance: (&value.performance).into(),
+            presence: (&value.presence).into(),
+            resistance: (&value.resistance).into(),
+            ride: (&value.ride).into(),
+            sail: (&value.sail).into(),
+            socialize: (&value.socialize).into(),
+            stealth: (&value.stealth).into(),
+            survival: (&value.survival).into(),
+            thrown: (&value.thrown).into(),
+            war: (&value.war).into(),
         }
     }
 }

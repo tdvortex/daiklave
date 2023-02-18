@@ -3,7 +3,7 @@ use mongodb::bson::{oid::ObjectId, doc};
 use redis::AsyncCommands;
 use serenity::all::UserId;
 
-use crate::{mongo::characters::CharacterCurrent, shared::{error::DatabaseError, to_bson}};
+use crate::{mongo::characters::{CharacterCurrent, CharacterV0}, shared::{error::DatabaseError, to_bson}};
 
 /// An instruction to partially update a character using a [CharacterMutation].
 pub struct PatchCharacter {
@@ -31,8 +31,12 @@ impl PatchCharacter {
             "player": to_bson(&self.player)?,
             "campaignId": self.character_id,
         };
-        let old_character = characters.find_one_with_session(filter, None, session).await?.ok_or_else(|| DatabaseError::NotFound("Character".to_string()))?;
-
+        let CharacterV0 {
+            _id,
+            player,
+            campaign_id,
+            character,
+        } = characters.find_one_with_session(filter, None, session).await?.ok_or_else(|| DatabaseError::NotFound("Character".to_string()))?;
 
         session.commit_transaction().await?;
         todo!()

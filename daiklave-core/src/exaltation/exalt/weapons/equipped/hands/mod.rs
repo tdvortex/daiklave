@@ -18,6 +18,18 @@ pub(crate) enum ExaltHands<'source> {
     TwoHanded(EquippedTwoHandedWeapon<'source>),
 }
 
+impl<'source> From<&'source ExaltHandsMemo> for ExaltHands<'source> {
+    fn from(value: &'source ExaltHandsMemo) -> Self {
+        match value {
+            ExaltHandsMemo::Empty => Self::Empty,
+            ExaltHandsMemo::MainHand(weapon) => Self::MainHand(weapon.into()),
+            ExaltHandsMemo::OffHand(weapon) => Self::OffHand(weapon.into()),
+            ExaltHandsMemo::Both(weapons) => Self::Both([(&weapons[0]).into(), (&weapons[1]).into()]),
+            ExaltHandsMemo::TwoHanded(weapon) => Self::TwoHanded(weapon.into()),
+        }
+    }
+}
+
 impl<'source> From<MortalHands<'source>> for ExaltHands<'source> {
     fn from(hands: MortalHands<'source>) -> Self {
         match hands {

@@ -18,6 +18,15 @@ pub enum ExaltType<'source> {
     Solar(Solar<'source>),
 }
 
+impl<'source> From<&'source ExaltTypeMemo> for ExaltType<'source> {
+    fn from(value: &'source ExaltTypeMemo) -> Self {
+        match value {
+            ExaltTypeMemo::Solar(solar) => Self::Solar(solar.into()),
+        }
+    }
+}
+
+
 impl<'source> ExaltType<'source> {
     pub(crate) fn sonance(&self, magic_material: MagicMaterial) -> Option<Sonance> {
         match (self, magic_material) {

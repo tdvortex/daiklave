@@ -68,6 +68,18 @@ impl<'source> Default for MortalHands<'source> {
     }
 }
 
+impl<'source> From<&'source MortalHandsMemo> for MortalHands<'source> {
+    fn from(value: &'source MortalHandsMemo) -> Self {
+        match value {
+            MortalHandsMemo::Empty => Self::Empty,
+            MortalHandsMemo::MainHand(weapon) => Self::MainHand(weapon.into()),
+            MortalHandsMemo::OffHand(weapon) => Self::OffHand(weapon.into()),
+            MortalHandsMemo::Both(weapons) => Self::Both([(&weapons[0]).into(), (&weapons[1]).into()]),
+            MortalHandsMemo::TwoHanded(weapon) => Self::TwoHanded(weapon.into()),
+        }
+    }
+}
+
 impl<'view, 'source> MortalHands<'source> {
     pub fn get_weapon(
         &'view self,

@@ -38,3 +38,12 @@ impl<'source> Deref for HandlessArtifactWeaponNoAttunement<'source> {
         }
     }
 }
+
+impl<'source> From<&'source HandlessArtifactWeaponNoAttunementMemo> for HandlessArtifactWeaponNoAttunement<'source> {
+    fn from(value: &'source HandlessArtifactWeaponNoAttunementMemo) -> Self {
+        match value {
+            HandlessArtifactWeaponNoAttunementMemo::Natural(weapon) => Self::Natural(weapon.into()),
+            HandlessArtifactWeaponNoAttunementMemo::Worn(weapon) => Self::Worn(weapon.into()),
+        }
+    }
+}

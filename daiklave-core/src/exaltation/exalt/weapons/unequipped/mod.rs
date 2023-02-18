@@ -28,6 +28,15 @@ pub(crate) struct ExaltUnequippedWeapons<'source> {
     pub artifact: HashMap<&'source str, NonnaturalArtifactWeapon<'source>>,
 }
 
+impl<'source> From<&'source ExaltUnequippedWeaponsMemo> for ExaltUnequippedWeapons<'source> {
+    fn from(value: &'source ExaltUnequippedWeaponsMemo) -> Self {
+        Self {
+            mundane: value.mundane.iter().map(|(name, (weapon, quantity))| (name.as_str(), (weapon.into(), *quantity))).collect(),
+            artifact: value.artifact.iter().map(|(name, weapon)| (name.as_str(), weapon.into())).collect(),
+        }
+    }
+}
+
 impl<'source> From<MortalUnequippedWeapons<'source>> for ExaltUnequippedWeapons<'source> {
     fn from(mortal: MortalUnequippedWeapons<'source>) -> Self {
         Self {

@@ -7,11 +7,23 @@ use crate::{
     },
 };
 
+use super::ExaltMartialArtistDetailsMemo;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ExaltMartialArtistDetails<'source> {
     pub(crate) style: &'source MartialArtsStyleDetails,
     pub(crate) ability: AbilityRating<'source>,
     pub(crate) charms: Vec<(&'source str, &'source MartialArtsCharmDetails)>,
+}
+
+impl<'source> From<&'source ExaltMartialArtistDetailsMemo> for ExaltMartialArtistDetails<'source> {
+    fn from(value: &'source ExaltMartialArtistDetailsMemo) -> Self {
+        Self {
+            style: &value.style,
+            ability: (&value.ability).into(),
+            charms: value.charms.iter().map(|(name, details)| (name.as_str(), details)).collect(),
+        }
+    }
 }
 
 impl<'view, 'source> ExaltMartialArtistDetails<'source> {

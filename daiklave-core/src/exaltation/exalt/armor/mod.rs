@@ -27,6 +27,24 @@ pub(crate) struct ExaltArmor<'source> {
     pub unequipped_artifact: HashMap<&'source str, ArtifactArmorView<'source>>,
 }
 
+impl<'source> From<&'source ExaltArmorMemo> for ExaltArmor<'source> {
+    fn from(value: &'source ExaltArmorMemo) -> Self {
+        Self {
+            equipped: value.equipped.as_ref().map(|armor| armor.into()),
+            unequipped_mundane: value
+                .unequipped_mundane
+                .iter()
+                .map(|(name, armor)| (name.as_str(), armor.into()))
+                .collect(),
+            unequipped_artifact: value
+                .unequipped_artifact
+                .iter()
+                .map(|(name, armor)| (name.as_str(), armor.into()))
+                .collect(),
+        }
+    }
+}
+
 impl<'source> ExaltArmor<'source> {
     pub fn worn_armor(&self) -> Option<ArmorItem<'source>> {
         if let Some(equipped) = &self.equipped {

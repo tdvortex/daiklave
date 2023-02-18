@@ -26,6 +26,19 @@ pub(crate) enum EquippedOneHandedWeapon<'source> {
     ),
 }
 
+impl<'source> From<&'source EquippedOneHandedWeaponMemo> for EquippedOneHandedWeapon<'source> {
+    fn from(value: &'source EquippedOneHandedWeaponMemo) -> Self {
+        match value {
+            EquippedOneHandedWeaponMemo::Mundane(name, weapon) => {
+                Self::Mundane(name.as_str(), weapon.into())
+            }
+            EquippedOneHandedWeaponMemo::Artifact(name, weapon, attunement) => {
+                Self::Artifact(name.as_str(), weapon.into(), *attunement)
+            }
+        }
+    }
+}
+
 impl<'source> From<EquippedOneHandedWeaponNoAttunement<'source>>
     for EquippedOneHandedWeapon<'source>
 {

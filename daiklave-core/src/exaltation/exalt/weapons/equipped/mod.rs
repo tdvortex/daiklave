@@ -33,6 +33,24 @@ pub(crate) struct ExaltEquippedWeapons<'source> {
     pub hands: ExaltHands<'source>,
 }
 
+impl<'source> From<&'source ExaltEquippedWeaponsMemo> for ExaltEquippedWeapons<'source> {
+    fn from(value: &'source ExaltEquippedWeaponsMemo) -> Self {
+        Self {
+            handless_mundane: value
+                .handless_mundane
+                .iter()
+                .map(|(name, weapon)| (name.as_str(), weapon.into()))
+                .collect(),
+            handless_artifact: value
+                .handless_artifact
+                .iter()
+                .map(|(name, weapon)| (name.as_str(), weapon.into()))
+                .collect(),
+            hands: (&value.hands).into(),
+        }
+    }
+}
+
 impl<'source> From<MortalEquippedWeapons<'source>> for ExaltEquippedWeapons<'source> {
     fn from(mortal: MortalEquippedWeapons<'source>) -> Self {
         Self {

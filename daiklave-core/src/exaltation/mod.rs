@@ -1230,3 +1230,13 @@ impl<'view, 'source> Exaltation<'source> {
         Ok(self)
     }
 }
+
+
+impl<'source> From<&'source ExaltationMemo> for Exaltation<'source> {
+    fn from(value: &'source ExaltationMemo) -> Self {
+        match value {
+            ExaltationMemo::Mortal(mortal) => Self::Mortal(Box::new(mortal.as_ref().into())),
+            ExaltationMemo::Exalt(exalt) => Self::Exalt(Box::new(exalt.as_ref().into())),
+        }
+    }
+}

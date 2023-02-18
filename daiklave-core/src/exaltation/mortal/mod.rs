@@ -507,3 +507,16 @@ impl<'source> Mortal<'source> {
         Ok(self)
     }
 }
+
+impl<'source> From<&'source MortalMemo> for Mortal<'source> {
+    fn from(value: &'source MortalMemo) -> Self {
+        Self {
+            armor: (&value.armor).into(),
+            martial_arts_styles: value.martial_arts_styles.iter().map(|(name, details)| (name.as_str(), details.into())).collect(),
+            sorcery: value.sorcery.as_ref().map(|terrestrial| terrestrial.into()),
+            weapons: (&value.weapons).into(),
+            wonders: (&value.wonders).into(),
+            exalted_healing: value.exalted_healing,
+        }
+    }
+}
