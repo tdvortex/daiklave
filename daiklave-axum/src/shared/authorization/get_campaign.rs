@@ -6,7 +6,7 @@ use crate::{
     shared::{error::DatabaseError, to_bson},
 };
 
-use super::Authorization;
+use super::{Authorization, ChannelAuthorization, CampaignAuthorization};
 
 /// A data-layer request to return the authorization status of a user with
 /// regards to a specific campaign. This is mostly used from the HTTP API
@@ -38,7 +38,7 @@ impl GetCampaignAuthorization {
     async fn execute_redis<CON>(
         &self,
         connection: &mut CON,
-    ) -> Result<Option<Authorization>, redis::RedisError>
+    ) -> Result<Option<CampaignAuthorization>, DatabaseError>
     where
         CON: redis::AsyncCommands,
     {
@@ -50,17 +50,12 @@ impl GetCampaignAuthorization {
         let mut field = "campaignId:".as_bytes().to_vec();
         field.extend(self.campaign_id.bytes());
 
-        // Campaign value = vec![u8::from(is_storyteller)], to have a consistent data type with channel
         let maybe_value_bytes: Option<Vec<u8>> = connection.hget(key, field).await?;
         if let Some(value_bytes) = maybe_value_bytes {
-            if let Some(is_storyteller) = value_bytes.get(0).map(|byte| byte == &u8::from(true)) {
-                Ok(Some(Authorization {
-                    user_id: self.user_id,
-                    campaign_id: self.campaign_id,
-                    is_storyteller,
-                }))
+            if let Ok(campaign_auth) = postcard::from_bytes(&value_bytes) {
+                Ok(Some(campaign_auth))
             } else {
-                Ok(None)
+                Err(DatabaseError::DeserializationError("Campaign Auth".to_owned()))
             }
         } else {
             Ok(None)
@@ -78,9 +73,9 @@ impl GetCampaignAuthorization {
         CON: redis::AsyncCommands,
     {
         // Try to get from the cache
-        if let Ok(Some(authorization)) = self.execute_redis(connection).await {
+        if let Ok(Some(CampaignAuthorization { is_storyteller })) = self.execute_redis(connection).await {
             // Cache hit, return
-            return Ok(Some(authorization));
+            return Ok(Some(Authorization { user_id: self.user_id, campaign_id: self.campaign_id, is_storyteller, active_character: None }));
         }
 
         // Either a connection error with Redis or a cache miss, try to get user from Mongo
@@ -105,9 +100,9 @@ impl GetCampaignAuthorization {
             // Populate the user's permissions hash set in Redis
             // Key = "userId:" + big-endian bytes of their Discord snowflake
             // Campaign field = "campaignId" + bytes of the campaign's ObjectId
-            // Campaign value = vec![u8::from(is_storyteller)], to have a consistent data type
+            // Campaign value = Postcart serialization of CampaignAuthorization
             // Channel field(s) = "channelId" + big-endian bytes of the channel's Discord snowflake
-            // Channel value(s) = bytes of the campaign's ObjectId, extended with u8::from(is_storyteller)
+            // Channel value(s) = Postcard serialization of ChannelAuthorization
             let is_storyteller = campaign.is_storyteller;
 
             let mut key = "userId:".as_bytes().to_vec();
@@ -117,15 +112,20 @@ impl GetCampaignAuthorization {
             let mut campaign_field = "campaignId:".as_bytes().to_vec();
             campaign_field.extend(campaign.campaign_id.bytes());
 
-            let campaign_value = vec![u8::from(campaign.is_storyteller)];
+            let campaign_value = postcard::to_allocvec(&CampaignAuthorization {
+                is_storyteller,
+            }).map_err(|_| DatabaseError::SerializationError("Campaign Auth".to_owned()))?;
             items.push((campaign_field, campaign_value));
 
             for channel in campaign.channels.iter() {
                 let mut channel_field = "channelId:".as_bytes().to_vec();
                 channel_field.extend(channel.0.get().to_be_bytes());
 
-                let mut channel_value = campaign.campaign_id.bytes().to_vec();
-                channel_value.push(u8::from(is_storyteller));
+                let channel_value = postcard::to_allocvec(&ChannelAuthorization {
+                    campaign_id: campaign.campaign_id,
+                    active_character: campaign.characters.active_character,
+                    is_storyteller,
+                }).map_err(|_| DatabaseError::SerializationError("Channel Auth".to_owned()))?;
 
                 items.push((channel_field, channel_value));
             }
@@ -139,6 +139,7 @@ impl GetCampaignAuthorization {
                 user_id: self.user_id,
                 campaign_id: campaign.campaign_id,
                 is_storyteller,
+                active_character: campaign.characters.active_character,
             }))
         } else {
             // The user is not authorized for this campaign

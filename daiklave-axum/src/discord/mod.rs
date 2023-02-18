@@ -19,6 +19,9 @@ pub mod interaction;
 /// do not hit MongoDb and are not used for the REST API routes.
 pub mod partial;
 
+mod auth;
+pub use auth::{ChannelAuthResult, get_channel_auth};
+
 use axum::response::IntoResponse;
 use axum::Json;
 use axum::{
