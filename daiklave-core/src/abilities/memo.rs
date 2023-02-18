@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use super::ability::AbilityRatingMemo;
+use super::{ability::AbilityRatingMemo, AbilitiesVanilla};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub(crate) struct AbilitiesMemo {
+pub(crate) struct AbilitiesVanillaMemo {
     pub(in crate::abilities) archery: AbilityRatingMemo,
     pub(in crate::abilities) athletics: AbilityRatingMemo,
     pub(in crate::abilities) awareness: AbilityRatingMemo,
@@ -28,4 +28,35 @@ pub(crate) struct AbilitiesMemo {
     pub(in crate::abilities) survival: AbilityRatingMemo,
     pub(in crate::abilities) thrown: AbilityRatingMemo,
     pub(in crate::abilities) war: AbilityRatingMemo,
+}
+
+impl From<&AbilitiesVanilla<'_>> for AbilitiesVanillaMemo {
+    fn from(view: &AbilitiesVanilla<'_>) -> Self {
+        Self {
+            archery: (&view.archery).into(),
+            athletics: (&view.athletics).into(),
+            awareness: (&view.awareness).into(),
+            brawl: (&view.brawl).into(),
+            bureaucracy: (&view.bureaucracy).into(),
+            dodge: (&view.dodge).into(),
+            integrity: (&view.integrity).into(),
+            investigation: (&view.investigation).into(),
+            larceny: (&view.larceny).into(),
+            linguistics: (&view.linguistics).into(),
+            lore: (&view.lore).into(),
+            medicine: (&view.medicine).into(),
+            melee: (&view.melee).into(),
+            occult: (&view.occult).into(),
+            performance: (&view.performance).into(),
+            presence: (&view.presence).into(),
+            resistance: (&view.resistance).into(),
+            ride: (&view.ride).into(),
+            sail: (&view.sail).into(),
+            socialize: (&view.socialize).into(),
+            stealth: (&view.stealth).into(),
+            survival: (&view.survival).into(),
+            thrown: (&view.thrown).into(),
+            war: (&view.war).into(),
+        }
+    }
 }

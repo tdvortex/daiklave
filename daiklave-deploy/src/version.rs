@@ -1,4 +1,4 @@
-use serenity::{builder::CreateCommand, all::CommandType};
+use serenity::{all::CommandType, builder::CreateCommand};
 
 pub fn version() -> CreateCommand {
     CreateCommand::new("version")

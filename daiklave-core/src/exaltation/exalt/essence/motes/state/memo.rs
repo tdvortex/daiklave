@@ -16,8 +16,8 @@ pub(crate) struct MotesStateMemo {
         HashMap<OtherMoteCommitmentName, (PeripheralCommitted, PersonalCommitted)>,
 }
 
-impl From<MotesState<'_>> for MotesStateMemo {
-    fn from(motes: MotesState<'_>) -> Self {
+impl From<&MotesState<'_>> for MotesStateMemo {
+    fn from(motes: &MotesState<'_>) -> Self {
         Self {
             peripheral_available: motes.peripheral_available,
             peripheral_spent: motes.peripheral_spent,

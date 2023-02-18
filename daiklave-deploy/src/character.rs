@@ -101,7 +101,7 @@ pub fn character() -> CreateCommand {
     let switch = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "switch",
-        "Switch your active character in this campaign"
+        "Switch your active character in this campaign",
     )
     .add_sub_option(
         CreateCommandOption::new(

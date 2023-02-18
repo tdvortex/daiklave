@@ -91,7 +91,7 @@ pub fn campaign() -> CreateCommand {
     let storyteller_help = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "help",
-        "Help with Storyteller commands"
+        "Help with Storyteller commands",
     );
 
     // TODO
@@ -99,7 +99,8 @@ pub fn campaign() -> CreateCommand {
         CommandOptionType::SubCommand,
         "set",
         "Reassign the Storyteller for this campaign (Storyteller only)",
-    ).add_sub_option(
+    )
+    .add_sub_option(
         CreateCommandOption::new(CommandOptionType::User, "player", "The new storyteller")
             .required(true),
     );
@@ -108,8 +109,9 @@ pub fn campaign() -> CreateCommand {
     let storyteller = CreateCommandOption::new(
         CommandOptionType::SubCommandGroup,
         "storyteller",
-        "Commands related to the Storyteller"
-    ).add_sub_option(storyteller_help)
+        "Commands related to the Storyteller",
+    )
+    .add_sub_option(storyteller_help)
     .add_sub_option(storyteller_set);
 
     CreateCommand::new("campaign")

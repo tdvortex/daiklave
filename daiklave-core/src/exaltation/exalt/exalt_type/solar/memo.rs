@@ -35,3 +35,16 @@ impl<'source> Into<Solar<'source>> for &'source SolarMemo {
         }
     }
 }
+
+impl From<&Solar<'_>> for SolarMemo {
+    fn from(value: &Solar<'_>) -> Self {
+        Self {
+            caste: (&value.caste).into(),
+            favored_abilities: value.favored_abilities,
+            sorcery: value.sorcery.as_ref().map(|view| view.into()),
+            limit: (&value.limit).into(),
+            solar_charms: value.solar_charms.iter().map(|(name, details)| ((*name).into(), (*details).to_owned())).collect(),
+            experience: value.experience,
+        }
+    }
+}

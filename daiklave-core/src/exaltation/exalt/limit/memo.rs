@@ -17,3 +17,12 @@ impl<'source> Into<Limit<'source>> for &'source LimitMemo {
         }
     }
 }
+
+impl From<&Limit<'_>> for LimitMemo {
+    fn from(value: &Limit<'_>) -> Self {
+        Self {
+            track: value.track,
+            trigger: value.trigger.into(),
+        }
+    }
+}
