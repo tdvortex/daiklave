@@ -4,7 +4,6 @@ use serenity::{
 };
 
 pub fn campaign() -> CreateCommand {
-    // TODO
     let channels_help = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "help",
@@ -51,7 +50,6 @@ pub fn campaign() -> CreateCommand {
         campaign_name
     });
 
-    // TODO
     let help = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "help",

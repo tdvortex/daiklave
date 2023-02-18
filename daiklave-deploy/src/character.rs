@@ -11,7 +11,6 @@ pub fn character() -> CreateCommand {
         "Delete your character concept",
     );
 
-    // TODO
     let concept_help = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "help",
@@ -66,7 +65,6 @@ pub fn character() -> CreateCommand {
         .required(true),
     );
 
-    // TODO
     let help = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "help",
