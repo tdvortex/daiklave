@@ -8,6 +8,7 @@ use serde::{Serialize, Deserialize};
 use serenity::all::ChannelId;
 
 use self::player_characters::PlayerCharacters;
+pub use player_characters::CharacterStub;
 
 /// A subdocument representing one of the campaigns a player is a part of, 
 /// from their perspective.

@@ -1,7 +1,7 @@
 use mongodb::bson::oid::ObjectId;
 use serde::{Serialize, Deserialize};
 
-use self::character_stub::CharacterStub;
+pub use character_stub::CharacterStub;
 
 mod character_stub;
 

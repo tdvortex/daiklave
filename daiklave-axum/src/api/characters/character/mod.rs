@@ -73,7 +73,7 @@ pub async fn delete_character(
     }
 }
 
-/// TODO
+/// Handler for PATCH requests to apply a mutation to a character.
 pub async fn patch_character(
     State(mut state): State<AppState>,
     jar: SignedCookieJar,
