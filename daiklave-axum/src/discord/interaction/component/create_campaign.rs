@@ -4,13 +4,13 @@ use axum::{
 };
 use serenity::{
     all::{ComponentInteraction, ComponentInteractionDataKind},
-    builder::{
-        CreateInteractionResponse, CreateInteractionResponseMessage,
-    },
+    builder::{CreateInteractionResponse, CreateInteractionResponseMessage},
 };
 
 use crate::{
-    discord::{partial::PartialCreateCampaign, components::create_campaign_message_components}, shared::campaign::InsertCampaignRequest, AppState,
+    discord::{components::create_campaign_message_components, partial::PartialCreateCampaign},
+    shared::campaign::InsertCampaignRequest,
+    AppState,
 };
 
 use super::acknowledge_component;
@@ -97,7 +97,7 @@ pub async fn create_campaign_components(
             }
         }
         ComponentInteractionDataKind::ChannelSelect { values } => {
-            // Update the partial create value to reflect the new selections, 
+            // Update the partial create value to reflect the new selections,
             // and check if it's now ready to submit
             let (new_partial, enable_submit) = match component_interaction.data.custom_id.as_str() {
                 "create_dice_channel" => {

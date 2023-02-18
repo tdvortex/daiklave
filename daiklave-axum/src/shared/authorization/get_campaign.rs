@@ -1,7 +1,10 @@
 use mongodb::bson::{doc, oid::ObjectId};
 use serenity::all::UserId;
 
-use crate::{mongo::users::UserCurrent, shared::{error::DatabaseError, to_bson}};
+use crate::{
+    mongo::users::UserCurrent,
+    shared::{error::DatabaseError, to_bson},
+};
 
 use super::Authorization;
 
@@ -42,7 +45,7 @@ impl GetCampaignAuthorization {
         // Key = "userId:" + big-endian bytes of their Discord snowflake
         let mut key = "userId:".as_bytes().to_vec();
         key.extend(self.user_id.0.get().to_be_bytes());
-        
+
         // Campaign field = "campaignId" + bytes of the campaign's ObjectId
         let mut field = "campaignId:".as_bytes().to_vec();
         field.extend(self.campaign_id.bytes());
@@ -93,8 +96,8 @@ impl GetCampaignAuthorization {
             {
                 campaign
             } else {
-                // This shouldn't happen, but if we get a user that doesn't 
-                // have this campaign treat them as unauthorized and don't 
+                // This shouldn't happen, but if we get a user that doesn't
+                // have this campaign treat them as unauthorized and don't
                 // update cache
                 return Ok(None);
             };
@@ -128,10 +131,15 @@ impl GetCampaignAuthorization {
             }
 
             // We don't need the redis result (or even for it to succeed)
-            let _: Result<Vec<Vec<u8>>, redis::RedisError> = connection.hset_multiple(key, &items).await;
+            let _: Result<Vec<Vec<u8>>, redis::RedisError> =
+                connection.hset_multiple(key, &items).await;
 
             // Return the completed auth
-            Ok(Some(Authorization { user_id: self.user_id, campaign_id: campaign.campaign_id, is_storyteller }))
+            Ok(Some(Authorization {
+                user_id: self.user_id,
+                campaign_id: campaign.campaign_id,
+                is_storyteller,
+            }))
         } else {
             // The user is not authorized for this campaign
             Ok(None)

@@ -1,8 +1,8 @@
+mod auth;
 /// Routes under the campaigns header. Most routes fall under here.
 pub mod campaigns;
-/// Routes related to managing characters in a campaign. 
+/// Routes related to managing characters in a campaign.
 pub mod characters;
-mod auth;
 
 /// The login route.
 pub mod login;

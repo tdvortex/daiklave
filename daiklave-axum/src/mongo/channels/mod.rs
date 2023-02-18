@@ -1,8 +1,8 @@
 mod versions;
 use mongodb::bson::oid::ObjectId;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serenity::all::ChannelId;
-pub use versions::{ChannelV0, ChannelVersion, ChannelCurrent};
+pub use versions::{ChannelCurrent, ChannelV0, ChannelVersion};
 
 /// A versioned Channel document.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -31,7 +31,7 @@ impl From<ChannelDocument> for ChannelCurrent {
 /// A new channel document, specifying the version but not the _id.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct InsertChannel {
-    /// The version of the channel. 
+    /// The version of the channel.
     pub version: ChannelVersion,
     /// The Discord snowflake for the channel.
     pub channel_id: ChannelId,

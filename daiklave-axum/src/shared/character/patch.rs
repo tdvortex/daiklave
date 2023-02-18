@@ -4,10 +4,7 @@ use redis::AsyncCommands;
 use serenity::all::UserId;
 
 use crate::{
-    mongo::{
-        characters::{CharacterCurrent},
-        users::UserCurrent,
-    },
+    mongo::{characters::CharacterCurrent, users::UserCurrent},
     shared::{
         error::{ConstraintError, DatabaseError},
         to_bson,
@@ -184,7 +181,7 @@ impl PatchCharacter {
         connection: &mut CON,
     ) -> Result<(), DatabaseError> {
         let cached_character = if let CharacterMutation::SetName(_) = self.mutation {
-            // If we have to update the character's name, a multi-collection 
+            // If we have to update the character's name, a multi-collection
             // transaction is required anyway
             None
         } else {
@@ -200,17 +197,23 @@ impl PatchCharacter {
                 character,
             } = character_current;
 
-            let new_character = character.apply_mutation(&self.mutation).map_err(|mutation_error| {
-                DatabaseError::ConstraintError(ConstraintError::MutationError(mutation_error))
-            })?;
+            let new_character =
+                character
+                    .apply_mutation(&self.mutation)
+                    .map_err(|mutation_error| {
+                        DatabaseError::ConstraintError(ConstraintError::MutationError(
+                            mutation_error,
+                        ))
+                    })?;
 
             let database = client.database(database_name);
-            self.execute_mongo_replacement(new_character.clone(), &database).await?;
+            self.execute_mongo_replacement(new_character.clone(), &database)
+                .await?;
             CharacterCurrent {
                 _id,
                 player,
                 campaign_id,
-                character: new_character
+                character: new_character,
             }
         } else {
             // Use a session transaction to retrive and update the character from MongoDb
@@ -220,7 +223,8 @@ impl PatchCharacter {
         };
 
         // Override the previous cache with the new character
-        self.execute_redis_set(&patched_character, connection).await?;
+        self.execute_redis_set(&patched_character, connection)
+            .await?;
 
         Ok(())
     }

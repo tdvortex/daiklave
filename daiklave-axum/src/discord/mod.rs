@@ -26,9 +26,9 @@ use axum::{
     response::Response,
 };
 use ed25519_dalek::Verifier;
-use interaction::post_interaction;
 use hyper::body::to_bytes;
 use hyper::{HeaderMap, StatusCode};
+use interaction::post_interaction;
 use serenity::all::Interaction;
 use serenity::builder::{CreateInteractionResponse, CreateInteractionResponseMessage};
 

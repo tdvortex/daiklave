@@ -5,7 +5,7 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use campaign::{campaign};
+use campaign::campaign;
 use character::character;
 use help::help;
 use serenity::{

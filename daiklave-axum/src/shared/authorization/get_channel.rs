@@ -1,7 +1,10 @@
 use mongodb::bson::{doc, oid::ObjectId};
 use serenity::all::{ChannelId, UserId};
 
-use crate::{mongo::users::UserCurrent, shared::{error::DatabaseError, to_bson}};
+use crate::{
+    mongo::users::UserCurrent,
+    shared::{error::DatabaseError, to_bson},
+};
 
 use super::Authorization;
 
@@ -57,7 +60,13 @@ impl GetChannelAuthorization {
             };
 
             let campaign_id = if value_bytes.len() == 12 {
-                ObjectId::from_bytes(value_bytes.into_iter().take(12).enumerate().fold([0; 12], |mut arr, (i, byte)| {arr[i] = byte; arr}))
+                ObjectId::from_bytes(value_bytes.into_iter().take(12).enumerate().fold(
+                    [0; 12],
+                    |mut arr, (i, byte)| {
+                        arr[i] = byte;
+                        arr
+                    },
+                ))
             } else {
                 // Channel value is not 13 bytes long as expected, technically a deserialization error
                 return Ok(None);
@@ -102,8 +111,8 @@ impl GetChannelAuthorization {
             {
                 campaign
             } else {
-                // This shouldn't happen, but if we get a user that doesn't 
-                // have a campaign with this channel treat them as unauthorized and don't 
+                // This shouldn't happen, but if we get a user that doesn't
+                // have a campaign with this channel treat them as unauthorized and don't
                 // update cache
                 return Ok(None);
             };
@@ -137,10 +146,15 @@ impl GetChannelAuthorization {
             }
 
             // We don't need the redis result (or even for it to succeed)
-            let _: Result<Vec<Vec<u8>>, redis::RedisError> = connection.hset_multiple(key, &items).await;
+            let _: Result<Vec<Vec<u8>>, redis::RedisError> =
+                connection.hset_multiple(key, &items).await;
 
             // Return the completed auth
-            Ok(Some(Authorization { user_id: self.user_id, campaign_id: campaign.campaign_id, is_storyteller }))
+            Ok(Some(Authorization {
+                user_id: self.user_id,
+                campaign_id: campaign.campaign_id,
+                is_storyteller,
+            }))
         } else {
             // The user is not authorized for this campaign
             Ok(None)

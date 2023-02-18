@@ -8,7 +8,10 @@ use serenity::all::{ChannelId, UserId};
 
 use crate::{
     mongo::{campaigns::CampaignCurrent, characters::CharacterCurrent, users::UserCurrent},
-    shared::{error::{ConstraintError, DatabaseError}, to_bson},
+    shared::{
+        error::{ConstraintError, DatabaseError},
+        to_bson,
+    },
 };
 
 /// Removes a player from a campaign. The storyteller cannot be removed.

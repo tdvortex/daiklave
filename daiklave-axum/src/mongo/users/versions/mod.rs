@@ -1,5 +1,5 @@
 mod v0;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 pub use v0::UserV0;
 
 /// The current version of the User document.

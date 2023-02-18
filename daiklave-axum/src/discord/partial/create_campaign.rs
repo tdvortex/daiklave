@@ -1,8 +1,8 @@
 use std::collections::HashSet;
 
 use redis::AsyncCommands;
-use serde::{Serialize, Deserialize};
-use serenity::all::{UserId, ChannelId};
+use serde::{Deserialize, Serialize};
+use serenity::all::{ChannelId, UserId};
 
 use crate::shared::error::DatabaseError;
 
@@ -20,7 +20,7 @@ pub struct PartialCreateCampaign {
 }
 
 impl PartialCreateCampaign {
-    /// Saves a partially-loaded campaign into Redis with the interaction 
+    /// Saves a partially-loaded campaign into Redis with the interaction
     /// token as the key.
     pub async fn save_partial<CON: AsyncCommands>(
         &self,
@@ -35,7 +35,7 @@ impl PartialCreateCampaign {
         Ok(())
     }
 
-    /// Loads a partially-loaded campaign into Redis with the interaction 
+    /// Loads a partially-loaded campaign into Redis with the interaction
     /// token as the key.
     pub async fn load_partial<CON: AsyncCommands>(
         token: String,

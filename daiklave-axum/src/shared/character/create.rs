@@ -1,8 +1,17 @@
 use daiklave_core::CharacterMemo;
-use mongodb::{bson::{oid::ObjectId, doc}, results::InsertOneResult};
+use mongodb::{
+    bson::{doc, oid::ObjectId},
+    results::InsertOneResult,
+};
 use serenity::all::UserId;
 
-use crate::{shared::{error::DatabaseError, to_bson}, mongo::{characters::{InsertCharacter, CharacterVersion}, users::{UserCurrent, CharacterStub}}};
+use crate::{
+    mongo::{
+        characters::{CharacterVersion, InsertCharacter},
+        users::{CharacterStub, UserCurrent},
+    },
+    shared::{error::DatabaseError, to_bson},
+};
 
 /// The information needed to process a request to create a new character document.
 pub struct CreateCharacter {
@@ -15,10 +24,14 @@ pub struct CreateCharacter {
 }
 
 impl CreateCharacter {
-    /// Creates the new character document in MongoDb. Requires a session to 
-    /// record this character on the player as well. Does not update Redis 
+    /// Creates the new character document in MongoDb. Requires a session to
+    /// record this character on the player as well. Does not update Redis
     /// at this time (lazy-loading).
-    pub async fn execute(&self, database: &mongodb::Database, session: &mut mongodb::ClientSession) -> Result<ObjectId, DatabaseError> {
+    pub async fn execute(
+        &self,
+        database: &mongodb::Database,
+        session: &mut mongodb::ClientSession,
+    ) -> Result<ObjectId, DatabaseError> {
         session.start_transaction(None).await?;
 
         let character_name = self.character.name.clone();
@@ -30,12 +43,13 @@ impl CreateCharacter {
             campaign_id: self.campaign_id,
             character: self.character.clone(),
         };
-        let InsertOneResult {
-            inserted_id,
-            ..
-        } = characters.insert_one_with_session(&insert_character, None, session).await?;
+        let InsertOneResult { inserted_id, .. } = characters
+            .insert_one_with_session(&insert_character, None, session)
+            .await?;
 
-        let inserted_id = inserted_id.as_object_id().ok_or_else(|| DatabaseError::DeserializationError(inserted_id.to_string()))?;
+        let inserted_id = inserted_id
+            .as_object_id()
+            .ok_or_else(|| DatabaseError::DeserializationError(inserted_id.to_string()))?;
 
         let users = database.collection::<UserCurrent>("users");
         let query = doc! {
@@ -49,7 +63,9 @@ impl CreateCharacter {
                 "campaigns.$.characters.character": to_bson(&CharacterStub { character_id: inserted_id, name: character_name })?,
             }
         };
-        users.update_one_with_session(query, update, None, session).await?;
+        users
+            .update_one_with_session(query, update, None, session)
+            .await?;
 
         session.commit_transaction().await?;
         Ok(inserted_id)

@@ -53,7 +53,7 @@ impl GetCharacter {
         Ok(None)
     }
 
-    /// Perform a cache-aside lookup to retrieve a specific character, in a 
+    /// Perform a cache-aside lookup to retrieve a specific character, in a
     /// specific campaign, for that character's player.
     pub async fn execute<CON: AsyncCommands>(
         &self,

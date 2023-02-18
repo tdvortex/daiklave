@@ -1,9 +1,15 @@
 use daiklave_core::CharacterMemo;
-use mongodb::{bson::{oid::ObjectId, doc}, ClientSession};
+use mongodb::{
+    bson::{doc, oid::ObjectId},
+    ClientSession,
+};
 use redis::AsyncCommands;
 use serenity::all::UserId;
 
-use crate::{shared::{error::DatabaseError, to_bson}, mongo::{characters::CharacterCurrent, users::UserCurrent}};
+use crate::{
+    mongo::{characters::CharacterCurrent, users::UserCurrent},
+    shared::{error::DatabaseError, to_bson},
+};
 
 /// Fully replaces an exiting character. This is mostly used from the Yew
 /// frontend to bundle multiple operations together.
@@ -39,7 +45,9 @@ impl PutCharacter {
             campaign_id: self.campaign_id,
             character: self.character.clone(),
         };
-        let replace_result = characters.replace_one_with_session(query, replacement, None, session).await?;
+        let replace_result = characters
+            .replace_one_with_session(query, replacement, None, session)
+            .await?;
         if replace_result.matched_count < 1 {
             return Err(DatabaseError::NotFound("Character".to_owned()));
         }
@@ -58,7 +66,9 @@ impl PutCharacter {
                 "campaigns.$.characters.character.$.name": self.character.name.clone(),
             }
         };
-        users.update_one_with_session(query, update, None, session).await?;
+        users
+            .update_one_with_session(query, update, None, session)
+            .await?;
 
         // Done with database
         session.commit_transaction().await?;

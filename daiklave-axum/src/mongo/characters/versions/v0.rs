@@ -1,5 +1,5 @@
-use mongodb::bson::oid::ObjectId;
 use daiklave_core::CharacterMemo as Character;
+use mongodb::bson::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 use serenity::all::UserId;
 

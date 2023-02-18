@@ -1,11 +1,11 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serenity::all::UserId;
 
-use self::versions::{UserV0};
+use self::versions::UserV0;
 pub use versions::{UserCurrent, UserVersion};
 
 mod player_campaign;
-pub use player_campaign::{PlayerCampaign, CharacterStub};
+pub use player_campaign::{CharacterStub, PlayerCampaign};
 mod versions;
 
 /// A versioned User document.
@@ -15,7 +15,7 @@ mod versions;
 #[serde(tag = "version")]
 pub enum UserDocument {
     /// Version zero.
-    V0(UserV0),   
+    V0(UserV0),
 }
 
 impl From<UserCurrent> for UserDocument {

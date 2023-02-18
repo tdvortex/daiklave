@@ -1,7 +1,7 @@
 mod v0;
 
-use serde::{Serialize, Deserialize};
-pub use v0::{CampaignV0};
+use serde::{Deserialize, Serialize};
+pub use v0::CampaignV0;
 
 /// The current version of the Campaign document.
 pub type CampaignCurrent = CampaignV0;
@@ -13,4 +13,3 @@ pub enum CampaignVersion {
     /// Version zero
     V0,
 }
-

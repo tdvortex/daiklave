@@ -13,15 +13,18 @@ pub async fn build_state() -> AppState {
         .expect("Expected DISCORD_PUBLIC_KEY to be a valid ed25519 public key");
 
     // Discord Id for this application
-    let discord_token = std::env::var("DISCORD_TOKEN").expect("Expected DISCORD_TOKEN in environment");
+    let discord_token =
+        std::env::var("DISCORD_TOKEN").expect("Expected DISCORD_TOKEN in environment");
 
     // Discord secret for token exchanges
     let discord_client_secret = std::env::var("DISCORD_CLIENT_SECRET")
         .expect("Expected DISCORD_CLIENT_SECRET in environment");
 
     // Key for signing authentication cookies
-    let hex_string = std::env::var("COOKIE_SIGNING_KEY").expect("Expected COOKIE_SIGNING_KEY in environment");
-    let hex_bytes = decode(hex_string).expect("Expected COOKIE_SIGNING_KEY to be valid hexadecimal");
+    let hex_string =
+        std::env::var("COOKIE_SIGNING_KEY").expect("Expected COOKIE_SIGNING_KEY in environment");
+    let hex_bytes =
+        decode(hex_string).expect("Expected COOKIE_SIGNING_KEY to be valid hexadecimal");
     let cookie_signing_key = axum_extra::extract::cookie::Key::from(&hex_bytes);
 
     // Client for outgoing network requests
@@ -45,22 +48,27 @@ pub async fn build_state() -> AppState {
     .expect("Expected successful connection to MongdoDB");
 
     // Name of mongodb database to use
-    let mongodb_database_name = std::env::var("MONGODB_DATABASE").expect("Expected MONGODB_DATABASE in environment");
+    let mongodb_database_name =
+        std::env::var("MONGODB_DATABASE").expect("Expected MONGODB_DATABASE in environment");
 
     // Multiplexed, async, managed Redis connection pool
-    let redis_host_and_port = std::env::var("REDIS_URL").expect("Expected REDIS_URL in environment");
+    let redis_host_and_port =
+        std::env::var("REDIS_URL").expect("Expected REDIS_URL in environment");
     let redis_username = std::env::var("REDIS_USER").expect("Expected REDIS_USER in environment");
-    let redis_password = std::env::var("REDIS_PASSWORD").expect("Expected REDIS_PASSWORD in environment");
+    let redis_password =
+        std::env::var("REDIS_PASSWORD").expect("Expected REDIS_PASSWORD in environment");
     let redis_url = format!(
         "redis://{}:{}@{}/0",
-        redis_username,
-        redis_password,
-        redis_host_and_port
+        redis_username, redis_password, redis_host_and_port
     );
-    let redis_client = redis::Client::open(redis_url).expect("Expected to be able to connect to Redis");
-    let redis_connection_manager = redis_client.get_tokio_connection_manager().await.expect("Expected to be able to create Redis ConnectionManager");
+    let redis_client =
+        redis::Client::open(redis_url).expect("Expected to be able to connect to Redis");
+    let redis_connection_manager = redis_client
+        .get_tokio_connection_manager()
+        .await
+        .expect("Expected to be able to create Redis ConnectionManager");
 
-    AppState { 
+    AppState {
         discord_public_key,
         discord_token,
         discord_client_secret,

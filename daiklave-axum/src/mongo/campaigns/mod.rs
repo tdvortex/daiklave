@@ -1,11 +1,11 @@
 use std::collections::HashSet;
 
-use serde::{Serialize, Deserialize};
-use serenity::all::{UserId, ChannelId};
+use serde::{Deserialize, Serialize};
+use serenity::all::{ChannelId, UserId};
 
-use self::versions::{CampaignV0};
+use self::versions::CampaignV0;
 
-pub use versions::{CampaignVersion, CampaignCurrent};
+pub use versions::{CampaignCurrent, CampaignVersion};
 
 mod versions;
 
@@ -43,15 +43,15 @@ pub struct InsertCampaign {
     pub name: String,
     /// The Discord Snowflake representing the storyteller for the campaign.
     pub storyteller: UserId,
-    /// All the Discord snowflakes for the players in the 
+    /// All the Discord snowflakes for the players in the
     /// campaign (including the storyteller).
     #[serde(default)]
     pub players: HashSet<UserId>,
     /// The Id of the channel to which dice rolls are sent when invoked from
-    /// the browser. (Slash commands will roll dice in the channel where they 
+    /// the browser. (Slash commands will roll dice in the channel where they
     /// are invoked.)
     pub dice_channel: ChannelId,
-    /// All channels that the campaign claims ownership of (including the dice 
+    /// All channels that the campaign claims ownership of (including the dice
     /// channel)
     #[serde(default)]
     pub channels: HashSet<ChannelId>,

@@ -4,17 +4,22 @@ mod set;
 mod show;
 
 use axum::response::Response;
-use serenity::all::{CommandInteraction, CommandDataOptionValue};
+use serenity::all::{CommandDataOptionValue, CommandInteraction};
 
-use crate::{AppState, discord::interaction::unknown_command_message};
+use crate::{discord::interaction::unknown_command_message, AppState};
 
-use self::{delete::character_concept_delete, help::character_concept_help, set::character_concept_set, show::character_concept_show};
+use self::{
+    delete::character_concept_delete, help::character_concept_help, set::character_concept_set,
+    show::character_concept_show,
+};
 
 pub async fn character_concept(interaction: &CommandInteraction, state: &mut AppState) -> Response {
     let character_concept = if let Some(option) = interaction.data.options.first() {
         match option.name.as_str() {
             "concept" => &option.value,
-            other => {return unknown_command_message(&format!("character {}", other));}
+            other => {
+                return unknown_command_message(&format!("character {}", other));
+            }
         }
     } else {
         return unknown_command_message(interaction.data.name.as_str());

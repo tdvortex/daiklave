@@ -9,11 +9,7 @@ use crate::{
     AppState,
 };
 
-use super::{
-    internal_server_error, not_logged_in,
-    not_found, not_storyteller,
-    WhyError,
-};
+use super::{internal_server_error, not_found, not_logged_in, not_storyteller, WhyError};
 
 /// Utility function to try to get a UserId out of a SignedCookieJar. If
 /// unsuccessful, returns 401 UNAUTHORIZED to force reauthentication.

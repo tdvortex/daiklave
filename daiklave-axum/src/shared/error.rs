@@ -18,7 +18,6 @@ pub enum ConstraintError {
     RemoveStoryteller,
 }
 
-
 /// An error that occurs when interacting with the data layer (Redis+MongoDB).
 #[derive(Debug, Error)]
 pub enum DatabaseError {

@@ -1,6 +1,6 @@
 use axum::{
     extract::{Path, State},
-    Json, 
+    Json,
 };
 use axum_extra::extract::SignedCookieJar;
 use hyper::StatusCode;
@@ -8,7 +8,7 @@ use mongodb::bson::oid::ObjectId;
 use serenity::all::UserId;
 
 use crate::{
-    api::{decode_user_id_cookie, WhyError, not_found, internal_server_error, get_auth},
+    api::{decode_user_id_cookie, get_auth, internal_server_error, not_found, WhyError},
     shared::{
         campaign::RemoveCampaignPlayer,
         error::{ConstraintError, DatabaseError},
@@ -24,7 +24,6 @@ fn cannot_remove_storyteller() -> (StatusCode, Json<WhyError>) {
         }),
     )
 }
-
 
 /// Handles a REST API request to remove a character from a campaign. The campaign ID
 /// and user ID must be passed as querystring parameters
@@ -55,7 +54,11 @@ pub async fn delete_campaign_player(
 
     // Try to remove the player from the campaign
     let database = &state.mongodb_client.database(&state.mongodb_database_name);
-    let mut session = state.mongodb_client.start_session(None).await.map_err(|_| internal_server_error())?;
+    let mut session = state
+        .mongodb_client
+        .start_session(None)
+        .await
+        .map_err(|_| internal_server_error())?;
     let connection = &mut state.redis_connection_manager;
     match (RemoveCampaignPlayer {
         campaign_id,
@@ -65,7 +68,9 @@ pub async fn delete_campaign_player(
     .await
     {
         Ok(_) => Ok(StatusCode::NO_CONTENT),
-        Err(DatabaseError::ConstraintError(ConstraintError::RemoveStoryteller)) => Err(cannot_remove_storyteller()),
+        Err(DatabaseError::ConstraintError(ConstraintError::RemoveStoryteller)) => {
+            Err(cannot_remove_storyteller())
+        }
         _ => Err(internal_server_error()),
     }
 }

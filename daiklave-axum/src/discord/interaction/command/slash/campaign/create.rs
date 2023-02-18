@@ -26,23 +26,21 @@ pub async fn campaign_create(interaction: &CommandInteraction, state: &mut AppSt
             CreateInteractionResponseMessage::new()
                 .content("Campaign not created: malformed request"),
         ))
-        .into_response(); 
+        .into_response();
     };
 
     let params = match &subcommand.value {
         CommandDataOptionValue::SubCommand(params) => params,
-        _ => {return Json(CreateInteractionResponse::Message(
-            CreateInteractionResponseMessage::new()
-                .content("Campaign not created: malformed request"),
-        ))
-        .into_response(); 
-        },
+        _ => {
+            return Json(CreateInteractionResponse::Message(
+                CreateInteractionResponseMessage::new()
+                    .content("Campaign not created: malformed request"),
+            ))
+            .into_response();
+        }
     };
 
-    let name = if let Some(name_option) = params
-        .iter()
-        .find(|option| option.name == "name")
-    {
+    let name = if let Some(name_option) = params.iter().find(|option| option.name == "name") {
         match &name_option.value {
             CommandDataOptionValue::String(name) => name.to_owned(),
             _ => {

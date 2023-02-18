@@ -92,18 +92,15 @@ pub async fn get_login_callback(
 
     // Authentication successful!
     // Clear the pending auth cookie and add a 1-year login cookie
-    let jar = jar
-        .remove(Cookie::named("daiklavePendingAuth"))
-        .add(Cookie::build(
-            "daiklaveAuth", 
-            hex::encode(user_id.0.get().to_be_bytes())
-        )
-        .domain("https%3A%2F%2Fwpizmuff3s.us-west-2.awsapprunner.com")
-        .max_age(Duration::days(365))
-        .http_only(true)
-        .secure(true)
-        .same_site(SameSite::Strict)
-        .finish());
+    let jar = jar.remove(Cookie::named("daiklavePendingAuth")).add(
+        Cookie::build("daiklaveAuth", hex::encode(user_id.0.get().to_be_bytes()))
+            .domain("https%3A%2F%2Fwpizmuff3s.us-west-2.awsapprunner.com")
+            .max_age(Duration::days(365))
+            .http_only(true)
+            .secure(true)
+            .same_site(SameSite::Strict)
+            .finish(),
+    );
 
     // Redirect the user back to the homepage
     Ok((jar, Redirect::to("/")))

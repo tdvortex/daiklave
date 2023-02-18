@@ -1,8 +1,8 @@
 mod versions;
 use mongodb::bson::oid::ObjectId;
+use serde::{Deserialize, Serialize};
 use serenity::all::UserId;
 pub use versions::{CharacterCurrent, CharacterV0, CharacterVersion};
-use serde::{Serialize, Deserialize};
 
 use daiklave_core::CharacterMemo as Character;
 

@@ -1,9 +1,9 @@
 use bson::oid::ObjectId;
 use mongodb::bson;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serenity::all::UserId;
 
-use crate::mongo::users::{UserDocument, player_campaign::PlayerCampaign};
+use crate::mongo::users::{player_campaign::PlayerCampaign, UserDocument};
 
 /// Version zero of the User document.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

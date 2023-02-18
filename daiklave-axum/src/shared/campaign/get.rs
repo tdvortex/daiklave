@@ -6,17 +6,17 @@ use crate::{
     shared::{error::DatabaseError, to_bson},
 };
 
-/// An instruction to retrieve the PlayerCampaign subdocument for a player and 
+/// An instruction to retrieve the PlayerCampaign subdocument for a player and
 /// campaign.
 pub struct GetCampaign {
     /// The user making the request.
     pub user_id: UserId,
-    /// 
+    ///
     pub campaign_id: ObjectId,
 }
 
 impl GetCampaign {
-    /// Executes the get request against the database. This is not cached to 
+    /// Executes the get request against the database. This is not cached to
     /// avoid conflict with permissions caching.
     pub async fn execute(
         &self,
