@@ -53,7 +53,6 @@ pub fn campaign() -> CreateCommand {
         "Help with campaign commands",
     );
 
-    // TODO
     let join =
         CreateCommandOption::new(CommandOptionType::SubCommand, "join", "Join this campaign");
 

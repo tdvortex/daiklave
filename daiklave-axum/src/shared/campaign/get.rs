@@ -11,7 +11,7 @@ use crate::{
 pub struct GetCampaign {
     /// The user making the request.
     pub user_id: UserId,
-    ///
+    /// The Id of the desired campaign.
     pub campaign_id: ObjectId,
 }
 
