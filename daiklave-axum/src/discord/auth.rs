@@ -12,9 +12,19 @@ pub enum ChannelAuthResult {
     /// The user is not in this campaign at all.
     NotInCampaign,
     /// The user is a player who may or may not have an active character.
-    Player(Option<ObjectId>),
+    Player {
+        /// The id of the campaign.
+        campaign_id: ObjectId,
+        /// The player's active character, if any.
+        active_character: Option<ObjectId>,
+    },
     /// The user is the storyteller who may or may not have an active character.
-    Storyteller(Option<ObjectId>),
+    Storyteller{
+        /// The id of the campaign.
+        campaign_id: ObjectId,
+        /// The storyteller's active character, if any.
+        active_character: Option<ObjectId>,
+    },
 }
 
 /// A helper function to quickly get the authorization for a user in this channel.
@@ -34,9 +44,15 @@ pub async fn get_channel_auth(
     .await?
     .map(|auth| {
         if auth.is_storyteller {
-            ChannelAuthResult::Storyteller(auth.active_character)
+            ChannelAuthResult::Storyteller {
+                campaign_id: auth.campaign_id,
+                active_character: auth.active_character,
+            }
         } else {
-            ChannelAuthResult::Player(auth.active_character)
+            ChannelAuthResult::Player {
+                campaign_id: auth.campaign_id,
+                active_character: auth.active_character,
+            }
         }
     })
     .unwrap_or(ChannelAuthResult::NotInCampaign))

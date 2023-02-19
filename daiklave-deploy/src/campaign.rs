@@ -16,7 +16,6 @@ pub fn campaign() -> CreateCommand {
         "Set the channels used in this campaign",
     );
 
-    // TODO
     let channels_show = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "show",

@@ -7,9 +7,8 @@ use crate::{
     discord::{
         components::set_channels_message,
         interaction::{forbidden, internal_server_error, not_authorized},
-        partial::PartialSetChannels,
+        partial::PartialSetChannels, get_channel_auth, ChannelAuthResult,
     },
-    shared::authorization::GetChannelAuthorization,
     AppState,
 };
 
@@ -20,27 +19,12 @@ pub async fn campaign_channels_set(
     let token = interaction.token.clone();
     let user_id = interaction.user.id;
     let channel_id = interaction.channel_id;
-    let database = state.mongodb_client.database(&state.mongodb_database_name);
-    let connection = &mut state.redis_connection_manager;
 
-    let campaign_id = if let Ok(maybe_auth) = (GetChannelAuthorization {
-        user_id,
-        channel_id,
-    })
-    .execute(&database, connection)
-    .await
-    {
-        if let Some(auth) = maybe_auth {
-            if auth.is_storyteller {
-                auth.campaign_id
-            } else {
-                return forbidden();
-            }
-        } else {
-            return not_authorized();
-        }
-    } else {
-        return internal_server_error();
+    let campaign_id = match get_channel_auth(state, user_id, channel_id).await {
+        Ok(ChannelAuthResult::NotInCampaign) => {return not_authorized();}
+        Ok(ChannelAuthResult::Player { campaign_id: _, active_character: _ }) => {return forbidden();}
+        Ok(ChannelAuthResult::Storyteller { campaign_id, active_character: _ }) => campaign_id,
+        Err(_) => {return internal_server_error();}
     };
 
     let partial_set_channels = PartialSetChannels {
@@ -50,7 +34,7 @@ pub async fn campaign_channels_set(
     };
 
     if partial_set_channels
-        .save_partial(token, connection)
+        .save_partial(token, &mut state.redis_connection_manager)
         .await
         .is_err()
     {
