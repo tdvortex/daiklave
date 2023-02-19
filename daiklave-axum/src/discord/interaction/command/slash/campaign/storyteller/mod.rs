@@ -4,7 +4,10 @@ mod set;
 use axum::response::Response;
 use serenity::all::{CommandDataOptionValue, CommandInteraction};
 
-use crate::{discord::interaction::{unknown_command_message, invalid_command_message}, AppState};
+use crate::{
+    discord::interaction::{invalid_command_message, unknown_command_message},
+    AppState,
+};
 
 use self::{help::campaign_storyteller_help, set::campaign_storyteller_set};
 

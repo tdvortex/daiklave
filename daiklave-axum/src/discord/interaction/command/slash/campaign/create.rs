@@ -1,17 +1,15 @@
 use std::collections::HashSet;
 
-use axum::{
-    response::{IntoResponse, Response},
-    Json,
-};
+use axum::response::Response;
 
-use serenity::{
-    all::{CommandDataOptionValue, CommandInteraction},
-    builder::{CreateInteractionResponse, CreateInteractionResponseMessage},
-};
+use serenity::all::{CommandDataOptionValue, CommandInteraction};
 
 use crate::{
-    discord::{components::create_campaign_message_components, partial::PartialCreateCampaign, interaction::invalid_command_message},
+    discord::{
+        components::create_campaign_message,
+        interaction::{internal_server_error, invalid_command_message},
+        partial::PartialCreateCampaign,
+    },
     AppState,
 };
 
@@ -54,12 +52,8 @@ pub async fn campaign_create(interaction: &CommandInteraction, state: &mut AppSt
         .save_partial(token, connection)
         .await
     {
-        return Json(CreateInteractionResponse::Message(
-            CreateInteractionResponseMessage::new()
-                .content("Campaign not created: internal server error"),
-        ))
-        .into_response();
+        return internal_server_error();
     }
 
-    create_campaign_message_components(false)
+    create_campaign_message(false)
 }

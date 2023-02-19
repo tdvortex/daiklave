@@ -8,7 +8,10 @@ mod switch;
 use axum::response::Response;
 use serenity::all::CommandInteraction;
 
-use crate::{discord::interaction::{unknown_command_message, invalid_command_message}, AppState};
+use crate::{
+    discord::interaction::{invalid_command_message, unknown_command_message},
+    AppState,
+};
 
 use self::{
     concept::character_concept, create::character_create, delete::character_delete,

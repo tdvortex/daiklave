@@ -5,7 +5,7 @@ pub use get_campaign::GetCampaignAuthorization;
 pub use get_channel::GetChannelAuthorization;
 
 use mongodb::bson::oid::ObjectId;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serenity::all::UserId;
 
 /// The authorization of a user with regards to a specific campaign.

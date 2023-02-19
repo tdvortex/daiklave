@@ -1,5 +1,8 @@
-use axum::{response::{Response, IntoResponse}, Json};
-use serenity::builder::{CreateInteractionResponse, CreateInteractionResponseMessage, CreateEmbed};
+use axum::{
+    response::{IntoResponse, Response},
+    Json,
+};
+use serenity::builder::{CreateEmbed, CreateInteractionResponse, CreateInteractionResponseMessage};
 
 pub fn campaign_help() -> Response {
     Json(CreateInteractionResponse::Message(

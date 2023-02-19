@@ -20,7 +20,7 @@ pub mod interaction;
 pub mod partial;
 
 mod auth;
-pub use auth::{ChannelAuthResult, get_channel_auth};
+pub use auth::{get_channel_auth, ChannelAuthResult};
 
 use axum::response::IntoResponse;
 use axum::Json;

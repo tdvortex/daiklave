@@ -9,22 +9,22 @@ use serenity::{
 
 use crate::{
     discord::{
-        components::create_campaign_message,
+        components::set_channels_message,
         interaction::{internal_server_error, invalid_command_message},
-        partial::PartialCreateCampaign,
+        partial::PartialSetChannels,
     },
-    shared::campaign::InsertCampaignRequest,
+    shared::{campaign::SetCampaignChannels, error::DatabaseError},
     AppState,
 };
 
 use super::acknowledge_component;
 
-pub async fn create_campaign_components(
+pub async fn set_channels_components(
     component_interaction: &ComponentInteraction,
     state: &mut AppState,
 ) -> Response {
     // Load whatever we have saved in Redis for this interaction
-    let old_partial: PartialCreateCampaign = match PartialCreateCampaign::load_partial(
+    let old_partial: PartialSetChannels = match PartialSetChannels::load_partial(
         component_interaction.token.clone(),
         &mut state.redis_connection_manager,
     )
@@ -38,7 +38,7 @@ pub async fn create_campaign_components(
 
     match &component_interaction.data.kind {
         ComponentInteractionDataKind::Button => {
-            if component_interaction.data.custom_id == "create_campaign_submit" {
+            if component_interaction.data.custom_id == "set_channels_submit" {
                 // Make sure the partial is ready to submit
                 if let Some(dice_channel) = old_partial.dice_channel {
                     // Submit approved
@@ -52,28 +52,35 @@ pub async fn create_campaign_components(
                             return internal_server_error();
                         };
 
-                    if (InsertCampaignRequest {
-                        name: old_partial.name.clone(),
-                        storyteller: old_partial.storyteller,
+                    let update_result = SetCampaignChannels {
+                        campaign_id: old_partial.campaign_id,
                         dice_channel,
                         channels: old_partial.channels,
-                    })
-                    .into_document()
-                    .execute(&database, &mut session)
-                    .await
-                    .is_ok()
-                    {
-                        // Replace the completed message to prevent extra button presses
-                        Json(CreateInteractionResponse::UpdateMessage(
-                            CreateInteractionResponseMessage::new().content(format!(
-                                "Campaign \"{}\" created successfully",
-                                old_partial.name
-                            )),
+                    }
+                    .execute(&database, &mut session, &mut state.redis_connection_manager)
+                    .await;
+
+                    match update_result {
+                        Ok(_) => Json(CreateInteractionResponse::Message(
+                            CreateInteractionResponseMessage::default()
+                                .content("Channels updated successfully."),
                         ))
-                        .into_response()
-                    } else {
-                        // Something went wrong in the database, tell the user
-                        internal_server_error()
+                        .into_response(),
+                        Err(e) => match e {
+                            DatabaseError::ConstraintError(c) => match c {
+                                crate::shared::error::ConstraintError::ChannelCampaignUnique(
+                                    channel_id,
+                                ) => invalid_command_message(
+                                    format!(
+                                        "channel <#{}> is already in use by another campaign",
+                                        channel_id.0
+                                    )
+                                    .as_str(),
+                                ),
+                                _ => internal_server_error(),
+                            },
+                            _ => internal_server_error(),
+                        },
                     }
                 } else {
                     // This shouldn't happen, but if if does tell the user why we
@@ -89,14 +96,14 @@ pub async fn create_campaign_components(
             // Update the partial create value to reflect the new selections,
             // and check if it's now ready to submit
             let (new_partial, enable_submit) = match component_interaction.data.custom_id.as_str() {
-                "create_dice_channel" => {
+                "set_dice_channel" => {
                     let mut new_partial = old_partial.clone();
                     if let Some(&channel_id) = values.first() {
                         new_partial.dice_channel = Some(channel_id);
                     }
                     (new_partial, true)
                 }
-                "create_all_channels" => {
+                "set_all_channels" => {
                     let mut new_partial = old_partial.clone();
                     new_partial.channels = values.iter().copied().collect();
                     let enable_submit = new_partial.dice_channel.is_some();
@@ -116,7 +123,7 @@ pub async fn create_campaign_components(
                 .await
                 .is_ok()
             {
-                create_campaign_message(enable_submit)
+                set_channels_message(enable_submit)
             } else {
                 // Something went wrong in the database, tell the user
                 internal_server_error()

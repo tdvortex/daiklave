@@ -1,2 +1,4 @@
 mod create_campaign;
-pub use create_campaign::create_campaign_message_components;
+mod set_channels;
+pub use create_campaign::create_campaign_message;
+pub use set_channels::set_channels_message;

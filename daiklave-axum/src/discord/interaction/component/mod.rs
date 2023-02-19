@@ -1,5 +1,7 @@
 mod create_campaign;
+mod set_channels;
 use create_campaign::create_campaign_components;
+use set_channels::set_channels_components;
 
 use axum::{
     response::{IntoResponse, Response},
@@ -25,6 +27,9 @@ pub async fn post_component(
     match component_interaction.data.custom_id.as_str() {
         "create_dice_channel" | "create_all_channels" | "create_campaign_submit" => {
             create_campaign_components(component_interaction, state).await
+        }
+        "set_dice_channel" | "set_all_channels" | "set_channels_submit" => {
+            set_channels_components(component_interaction, state).await
         }
         // If we get an unexpected component interaction, can use
         // DEFERRED_UPDATE_MESSAGE to tell Discord "acknowledged, do nothing"

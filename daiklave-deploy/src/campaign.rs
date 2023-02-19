@@ -10,7 +10,6 @@ pub fn campaign() -> CreateCommand {
         "Help with campaign channels commands",
     );
 
-    // TODO
     let channels_set = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "set",
