@@ -13,7 +13,7 @@ use crate::{
         interaction::{internal_server_error, not_authorized},
         ChannelAuthResult,
     },
-    shared::{campaign::GetCampaign},
+    shared::campaign::GetCampaign,
     AppState,
 };
 

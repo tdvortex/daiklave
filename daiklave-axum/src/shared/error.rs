@@ -16,6 +16,9 @@ pub enum ConstraintError {
     /// without deleting the entire campaign.
     #[error("Cannot remove the storyteller from a campaign")]
     RemoveStoryteller,
+    /// The storyteller of a campaign must be a player as well.
+    #[error("The storyteller must be a player as well")]
+    StorytellerNotPlayer,
 }
 
 /// An error that occurs when interacting with the data layer (Redis+MongoDB).

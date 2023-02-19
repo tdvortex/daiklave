@@ -22,7 +22,6 @@ pub fn campaign() -> CreateCommand {
         "Show the channels used by this campaign",
     );
 
-    // TODO
     let channels = CreateCommandOption::new(
         CommandOptionType::SubCommandGroup,
         "channels",
@@ -83,14 +82,12 @@ pub fn campaign() -> CreateCommand {
         "Rename this campaign (Storyteller only)",
     );
 
-    // TODO
     let storyteller_help = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "help",
         "Help with Storyteller commands",
     );
 
-    // TODO
     let storyteller_set = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "set",
@@ -101,7 +98,6 @@ pub fn campaign() -> CreateCommand {
             .required(true),
     );
 
-    // TODO
     let storyteller = CreateCommandOption::new(
         CommandOptionType::SubCommandGroup,
         "storyteller",

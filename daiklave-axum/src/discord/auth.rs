@@ -19,7 +19,7 @@ pub enum ChannelAuthResult {
         active_character: Option<ObjectId>,
     },
     /// The user is the storyteller who may or may not have an active character.
-    Storyteller{
+    Storyteller {
         /// The id of the campaign.
         campaign_id: ObjectId,
         /// The storyteller's active character, if any.
