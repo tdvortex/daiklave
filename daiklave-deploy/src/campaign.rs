@@ -44,6 +44,7 @@ pub fn campaign() -> CreateCommand {
         )
         .required(true);
         campaign_name.min_length(1);
+        campaign_name.max_length(100);
         campaign_name
     });
 
@@ -72,12 +73,22 @@ pub fn campaign() -> CreateCommand {
         "Leave this campaign",
     );
 
-    // TODO
     let rename = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "rename",
         "Rename this campaign (Storyteller only)",
-    );
+    )
+    .add_sub_option({
+        let mut campaign_name = CreateCommandOption::new(
+            CommandOptionType::String,
+            "name",
+            "The new name for the campaign",
+        )
+        .required(true);
+        campaign_name.min_length(1);
+        campaign_name.max_length(100);
+        campaign_name
+    });
 
     let storyteller_help = CreateCommandOption::new(
         CommandOptionType::SubCommand,
