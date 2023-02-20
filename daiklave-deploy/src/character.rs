@@ -4,7 +4,6 @@ use serenity::{
 };
 
 pub fn character() -> CreateCommand {
-    // TODO
     let concept_delete = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "delete",
