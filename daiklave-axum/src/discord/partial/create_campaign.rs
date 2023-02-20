@@ -22,7 +22,7 @@ pub struct PartialCreateCampaign {
 impl PartialCreateCampaign {
     /// Saves a partially-loaded campaign into Redis with the interaction
     /// token as the key.
-    pub async fn save_partial<CON: AsyncCommands>(
+    pub async fn save<CON: AsyncCommands>(
         &self,
         token: String,
         connection: &mut CON,
@@ -37,7 +37,7 @@ impl PartialCreateCampaign {
 
     /// Loads a partially-loaded campaign into Redis with the interaction
     /// token as the key.
-    pub async fn load_partial<CON: AsyncCommands>(
+    pub async fn load<CON: AsyncCommands>(
         token: String,
         connection: &mut CON,
     ) -> Result<Option<Self>, DatabaseError> {

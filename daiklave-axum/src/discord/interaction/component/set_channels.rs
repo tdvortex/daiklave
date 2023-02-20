@@ -24,7 +24,7 @@ pub async fn set_channels_components(
     state: &mut AppState,
 ) -> Response {
     // Load whatever we have saved in Redis for this interaction
-    let old_partial: PartialSetChannels = match PartialSetChannels::load_partial(
+    let old_partial: PartialSetChannels = match PartialSetChannels::load(
         component_interaction.token.clone(),
         &mut state.redis_connection_manager,
     )
@@ -61,7 +61,7 @@ pub async fn set_channels_components(
                     .await;
 
                     match update_result {
-                        Ok(_) => Json(CreateInteractionResponse::Message(
+                        Ok(_) => Json(CreateInteractionResponse::UpdateMessage(
                             CreateInteractionResponseMessage::default()
                                 .content("Channels updated successfully."),
                         ))
@@ -116,7 +116,7 @@ pub async fn set_channels_components(
 
             // Save the partial create value
             if new_partial
-                .save_partial(
+                .save(
                     component_interaction.token.clone(),
                     &mut state.redis_connection_manager,
                 )

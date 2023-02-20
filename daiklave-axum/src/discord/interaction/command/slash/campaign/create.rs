@@ -48,10 +48,7 @@ pub async fn campaign_create(interaction: &CommandInteraction, state: &mut AppSt
         channels: HashSet::new(),
     };
     let connection = &mut state.redis_connection_manager;
-    if let Err(_) = partial_create_campaign
-        .save_partial(token, connection)
-        .await
-    {
+    if let Err(_) = partial_create_campaign.save(token, connection).await {
         return internal_server_error();
     }
 

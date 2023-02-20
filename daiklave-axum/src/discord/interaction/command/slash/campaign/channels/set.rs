@@ -48,7 +48,7 @@ pub async fn campaign_channels_set(
     };
 
     if partial_set_channels
-        .save_partial(token, &mut state.redis_connection_manager)
+        .save(token, &mut state.redis_connection_manager)
         .await
         .is_err()
     {

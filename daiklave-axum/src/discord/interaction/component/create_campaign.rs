@@ -24,7 +24,7 @@ pub async fn create_campaign_components(
     state: &mut AppState,
 ) -> Response {
     // Load whatever we have saved in Redis for this interaction
-    let old_partial: PartialCreateCampaign = match PartialCreateCampaign::load_partial(
+    let old_partial: PartialCreateCampaign = match PartialCreateCampaign::load(
         component_interaction.token.clone(),
         &mut state.redis_connection_manager,
     )
@@ -109,7 +109,7 @@ pub async fn create_campaign_components(
 
             // Save the partial create value
             if new_partial
-                .save_partial(
+                .save(
                     component_interaction.token.clone(),
                     &mut state.redis_connection_manager,
                 )

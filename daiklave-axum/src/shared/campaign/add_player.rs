@@ -1,10 +1,11 @@
-use mongodb::bson::{doc};
-use serenity::all::{UserId, ChannelId};
+use mongodb::bson::doc;
+use serenity::all::{ChannelId, UserId};
 
 use crate::{
     mongo::{
         campaigns::CampaignCurrent,
-        users::{InsertUser, PlayerCampaign, UserCurrent, UserVersion}, channels::ChannelCurrent,
+        channels::ChannelCurrent,
+        users::{InsertUser, PlayerCampaign, UserCurrent, UserVersion},
     },
     shared::{error::DatabaseError, to_bson},
 };
@@ -32,7 +33,10 @@ impl AddCampaignPlayer {
         let filter = doc! {
             "channelId": to_bson(&self.channel_id)?,
         };
-        let channel = channels.find_one_with_session(filter, None, session).await?.ok_or_else(|| DatabaseError::NotFound("Channel".to_owned()))?;
+        let channel = channels
+            .find_one_with_session(filter, None, session)
+            .await?
+            .ok_or_else(|| DatabaseError::NotFound("Channel".to_owned()))?;
         let campaign_id = channel.campaign_id;
 
         let campaigns = database.collection::<CampaignCurrent>("campaigns");

@@ -1,26 +1,21 @@
-use std::collections::HashSet;
-
 use mongodb::bson::oid::ObjectId;
 use redis::AsyncCommands;
 use serde::{Deserialize, Serialize};
-use serenity::all::ChannelId;
+use serenity::all::UserId;
 
 use crate::shared::error::DatabaseError;
 
-/// An in-progress update to a campaign's channels.
+/// An instruction to kick a specific campaign player, awaiting confirmation.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PartialSetChannels {
-    /// The Id of the campaign being updated
+pub struct PartialKickPlayer {
+    /// The Id to kick the player from.
     pub campaign_id: ObjectId,
-    /// If set, the dice channel for the campaign
-    pub dice_channel: Option<ChannelId>,
-    /// If set, the other channels for the campaign
-    pub channels: HashSet<ChannelId>,
+    /// The Id of the player to kick.
+    pub kicked_id: UserId,
 }
 
-impl PartialSetChannels {
-    /// Saves a partially-loaded channels update to Redis with the interaction
-    /// token as the key.
+impl PartialKickPlayer {
+    /// Saves the command data to Redis.
     pub async fn save<CON: AsyncCommands>(
         &self,
         token: String,
@@ -34,8 +29,7 @@ impl PartialSetChannels {
         Ok(())
     }
 
-    /// Loads a partially-loaded channels update from Redis with the interaction
-    /// token as the key.
+    /// Loads the command data from Redis.
     pub async fn load<CON: AsyncCommands>(
         token: String,
         connection: &mut CON,
@@ -44,7 +38,7 @@ impl PartialSetChannels {
 
         if let Some(bytes) = maybe_partial_bytes {
             Ok(Some(postcard::from_bytes(&bytes).map_err(|_| {
-                DatabaseError::DeserializationError("PartialSetChannels".to_owned())
+                DatabaseError::DeserializationError("PartialKickPlayer".to_owned())
             })?))
         } else {
             Ok(None)
