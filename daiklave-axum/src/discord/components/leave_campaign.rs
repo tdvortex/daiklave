@@ -3,7 +3,7 @@ use axum::{
     Json,
 };
 use serenity::{
-    all::{ButtonStyle},
+    all::ButtonStyle,
     builder::{CreateButton, CreateInteractionResponse, CreateInteractionResponseMessage},
 };
 

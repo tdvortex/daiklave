@@ -10,14 +10,12 @@ use serenity::{
 use crate::{
     discord::{
         components::create_campaign_message,
-        interaction::{internal_server_error, invalid_command_message},
+        interaction::{acknowledge_component, internal_server_error, invalid_command_message},
         partial::PartialCreateCampaign,
     },
     shared::campaign::InsertCampaignRequest,
     AppState,
 };
-
-use super::acknowledge_component;
 
 pub async fn create_campaign_components(
     component_interaction: &ComponentInteraction,

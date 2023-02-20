@@ -7,19 +7,12 @@ use kick_player::kick_player_components;
 use leave_campaign::leave_campaign_components;
 use set_channels::set_channels_components;
 
-use axum::{
-    response::{IntoResponse, Response},
-    Json,
-};
-use serenity::{all::ComponentInteraction, builder::CreateInteractionResponse};
+use axum::response::Response;
+use serenity::all::ComponentInteraction;
 
 use crate::AppState;
 
-/// Creates a 200 OK response with a response to a component or modal interaction with
-/// DEFERRED_UPDATE_MESSAGE to acknowledge the interaction but otherwise do nothing.
-pub fn acknowledge_component() -> Response {
-    Json(CreateInteractionResponse::Acknowledge).into_response()
-}
+use super::acknowledge_component;
 
 /// Handle an interaction on a message component. This may be a button click
 /// or an interaction with a select menu. It does NOT include text fields; text

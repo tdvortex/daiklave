@@ -80,7 +80,13 @@ pub fn not_authorized() -> Response {
 /// Response to Discord with a message saying that the user has no active
 /// character in this campaign.
 pub fn no_active_character() -> Response {
-    invalid_command_message("no active character for this campaign")
+    invalid_command_message("You do not have an active character in this campaign. Use **/character switch** to choose an existing character, or **/character create** to make a new one.")
+}
+
+/// Creates a 200 OK response with a response to a component or modal interaction with
+/// DEFERRED_UPDATE_MESSAGE to acknowledge the interaction but otherwise do nothing.
+pub fn acknowledge_component() -> Response {
+    Json(CreateInteractionResponse::Acknowledge).into_response()
 }
 
 /// Handles an interaction base on its type.
@@ -94,6 +100,6 @@ pub async fn post_interaction(interaction: &Interaction, state: &mut AppState) -
         Interaction::Component(component_interaction) => {
             post_component(component_interaction, state).await
         }
-        Interaction::Modal(modal_submit) => post_modal(modal_submit, state),
+        Interaction::Modal(modal_submit) => post_modal(modal_submit, state).await,
     }
 }

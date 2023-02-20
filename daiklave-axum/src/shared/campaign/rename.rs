@@ -1,6 +1,9 @@
-use mongodb::bson::{oid::ObjectId, doc};
+use mongodb::bson::{doc, oid::ObjectId};
 
-use crate::{shared::error::DatabaseError, mongo::{campaigns::CampaignCurrent, users::UserCurrent}};
+use crate::{
+    mongo::{campaigns::CampaignCurrent, users::UserCurrent},
+    shared::error::DatabaseError,
+};
 
 /// An instruction to rename a campaign.
 pub struct RenameCampaign {
@@ -12,7 +15,11 @@ pub struct RenameCampaign {
 
 impl RenameCampaign {
     /// Updates MongoDb to have the new name for this campaign.
-    pub async fn execute(&self, database: &mongodb::Database, session: &mut mongodb::ClientSession) -> Result<(), DatabaseError> {
+    pub async fn execute(
+        &self,
+        database: &mongodb::Database,
+        session: &mut mongodb::ClientSession,
+    ) -> Result<(), DatabaseError> {
         session.start_transaction(None).await?;
 
         let campaigns = database.collection::<CampaignCurrent>("campaigns");
@@ -24,9 +31,14 @@ impl RenameCampaign {
                 "name": &self.name
             }
         };
-        let update_result = campaigns.update_one_with_session(query, update, None, session).await?;
+        let update_result = campaigns
+            .update_one_with_session(query, update, None, session)
+            .await?;
         if update_result.matched_count < 1 {
-            return Err(DatabaseError::NotFound(format!("campaign {}", &self.campaign_id)));
+            return Err(DatabaseError::NotFound(format!(
+                "campaign {}",
+                &self.campaign_id
+            )));
         }
 
         let users = database.collection::<UserCurrent>("users");
@@ -40,7 +52,9 @@ impl RenameCampaign {
                 "campaigns.$.name": &self.name
             }
         };
-        users.update_many_with_session(query, update, None, session).await?;
+        users
+            .update_many_with_session(query, update, None, session)
+            .await?;
 
         session.commit_transaction().await?;
         Ok(())

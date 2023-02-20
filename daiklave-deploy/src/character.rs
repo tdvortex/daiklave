@@ -16,7 +16,6 @@ pub fn character() -> CreateCommand {
         "Help with character concept commands",
     );
 
-    // TODO
     let concept_set = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "set",

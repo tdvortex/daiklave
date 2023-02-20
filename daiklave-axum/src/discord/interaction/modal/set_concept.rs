@@ -2,31 +2,25 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use daiklave_core::{CharacterMutation, CharacterMutationError, ConceptError};
+use daiklave_core::{mutations::SetConcept, CharacterMutation};
 use serenity::{
-    all::CommandInteraction,
+    all::{ActionRowComponent, ModalInteraction},
     builder::{CreateInteractionResponse, CreateInteractionResponseMessage},
 };
 
 use crate::{
     discord::{
         get_channel_auth,
-        interaction::{
-            internal_server_error, invalid_command_message, no_active_character, not_authorized,
-        },
+        interaction::{internal_server_error, no_active_character, not_authorized},
         ChannelAuthResult,
     },
-    shared::{
-        character::PatchCharacter,
-        error::{ConstraintError, DatabaseError},
-    },
+    shared::character::PatchCharacter,
     AppState,
 };
 
-pub async fn character_concept_delete(
-    interaction: &CommandInteraction,
-    state: &mut AppState,
-) -> Response {
+/// Handle the closing of a set concept modal by changing the character's
+/// concept as specified in the modal's text box.
+pub async fn set_concept_modal(interaction: &ModalInteraction, state: &mut AppState) -> Response {
     let user_id = interaction.user.id;
     let channel_id = interaction.channel_id;
     let (campaign_id, maybe_active_character) =
@@ -51,7 +45,19 @@ pub async fn character_concept_delete(
         return no_active_character();
     };
 
-    let mutation = CharacterMutation::RemoveConcept;
+    let Some(action_row) = interaction.data.components.iter().next() else {
+        return internal_server_error();
+    };
+
+    let Some(ActionRowComponent::InputText(input_text)) = action_row.components.iter().next() else {
+        return internal_server_error();
+    };
+
+    if input_text.custom_id != "set_concept" {
+        return internal_server_error();
+    }
+
+    let mutation = CharacterMutation::SetConcept(SetConcept(input_text.value.clone()));
 
     let patch_result = PatchCharacter {
         player: user_id,
@@ -66,23 +72,15 @@ pub async fn character_concept_delete(
     )
     .await;
 
-    match patch_result {
-        Ok(_) => Json(CreateInteractionResponse::Message(
-            CreateInteractionResponseMessage::new().content("Character concept has been deleted."),
+    if patch_result.is_ok() {
+        Json(CreateInteractionResponse::Message(
+            CreateInteractionResponseMessage::new().content(format!(
+                "Character name successfully changed to {}",
+                input_text.value
+            )),
         ))
-        .into_response(),
-        Err(e) => match e {
-            DatabaseError::ConstraintError(ConstraintError::MutationError(
-                CharacterMutationError::ConceptError(c),
-            )) => match c {
-                ConceptError::NotFound => {
-                    invalid_command_message("character does not have a concept to remove")
-                }
-            },
-            DatabaseError::NotFound(missing) => {
-                invalid_command_message(&format!("not found: {}", missing))
-            }
-            _ => internal_server_error(),
-        },
+        .into_response()
+    } else {
+        internal_server_error()
     }
 }

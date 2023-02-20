@@ -9,14 +9,12 @@ use serenity::{
 
 use crate::{
     discord::{
-        interaction::{internal_server_error, invalid_command_message},
+        interaction::{acknowledge_component, internal_server_error, invalid_command_message},
         partial::PartialKickPlayer,
     },
     shared::campaign::RemoveCampaignPlayer,
     AppState,
 };
-
-use super::acknowledge_component;
 
 pub async fn kick_player_components(
     component_interaction: &ComponentInteraction,
