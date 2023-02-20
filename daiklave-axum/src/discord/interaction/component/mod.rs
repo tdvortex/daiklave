@@ -1,8 +1,10 @@
 mod create_campaign;
 mod kick_player;
+mod leave_campaign;
 mod set_channels;
 use create_campaign::create_campaign_components;
 use kick_player::kick_player_components;
+use leave_campaign::leave_campaign_components;
 use set_channels::set_channels_components;
 
 use axum::{
@@ -35,6 +37,9 @@ pub async fn post_component(
         }
         "kick_player_confirm" | "kick_player_cancel" => {
             kick_player_components(component_interaction, state).await
+        }
+        "leave_campaign_confirm" | "leave_campaign_cancel" => {
+            leave_campaign_components(component_interaction, state).await
         }
         // If we get an unexpected component interaction, can use
         // DEFERRED_UPDATE_MESSAGE to tell Discord "acknowledged, do nothing"

@@ -56,7 +56,6 @@ pub fn campaign() -> CreateCommand {
     let join =
         CreateCommandOption::new(CommandOptionType::SubCommand, "join", "Join this campaign");
 
-    // TODO
     let kick = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "kick",
@@ -67,7 +66,6 @@ pub fn campaign() -> CreateCommand {
             .required(true),
     );
 
-    // TODO
     let leave = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "leave",
