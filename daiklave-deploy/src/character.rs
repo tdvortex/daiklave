@@ -22,14 +22,12 @@ pub fn character() -> CreateCommand {
         "Set your character concept",
     );
 
-    // TODO
     let concept_show = CreateCommandOption::new(
         CommandOptionType::SubCommand,
         "show",
         "Show your character concept",
     );
 
-    // TODO
     let concept = CreateCommandOption::new(
         CommandOptionType::SubCommandGroup,
         "concept",
